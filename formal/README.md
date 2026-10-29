@@ -39,7 +39,7 @@ scripts/check-formal.sh
 | Range の元ソースと標識付きソース | `vm/range/original/`・`vm/range/instrumented/` |
 | シフトの元ソースと標識付きソース | `vm/shifts/original/`・`vm/shifts/instrumented/` |
 
-独立交換の版は `interval-corpus` 1・Surface 14・走査順1であり、既存の六入口の corpus/sidecar へ解析結果を混ぜない。正常値・警告候補・統合後の利用者向け警告・操作数・最大同時保持・停止位置と分類を Rust/Lean 間で照合し、全関係定義の manifest と未発見・未解析の範囲も確認する。型検査の成功件数、解析の対象外・Top・予算停止と、評価の理由付き除外を分けて読む。空の比較・全 Top だけの一致・解析の深さ除外を成功にしない。
+独立交換の版は `interval-corpus` 1・Surface 14 か 15・走査順1であり、既存の六入口の corpus/sidecar へ解析結果を混ぜない。正常値・警告候補・統合後の利用者向け警告・操作数・最大同時保持・停止位置と分類を Rust/Lean 間で照合し、全関係定義の manifest と未発見・未解析の範囲も確認する。型検査の成功件数、解析の対象外・Top・予算停止と、評価の理由付き除外を分けて読む。空の比較・全 Top だけの一致・解析の深さ除外を成功にしない。
 
 比較の出力は `comparison/` に置く。五 profile の両モードは `profile-manifest.json`、10系統の解析は `real-source-summary.json`、評価関係と実 VM は `vm/vm-summary.json`・`vm/range/range-vm-summary.json`・`vm/shifts/shift-vm-summary.json` にまとめる（いずれも `comparison/` 配下）。シフトの域内と Byte・UnsignedInteger8 の入力は独立期待値による VM の照合として分け、評価関係との一致件数に加えない。Range の三欄・同じ成功値の射影・逆転の優先を含む比較範囲と A1 の限界は [07-04「区間解析の対象構文の評価関係」](../docs/design/07-quality/07-04-formal-semantics.md#区間解析の対象構文の評価関係)に従う。
 
@@ -416,6 +416,12 @@ python3 -B formal/tests/test_batch2_exchange.py
 ```
 
 この独立入力は七定義と、Failを含む型・文字全域を六入口で検査する。`--rust-dir target/formal-batch2-op` または `--rust-dir target/formal-batch2-failure` は、局所Rust出力の五形式（corpus.json・builtins.json・stdlib.json・coverage.json・coverage-program.json）を追加で読む。ファイル不在・旧版・空の比較を成功扱いせず、Cargoを起動しない。Rustの通常出力は11/4であり、辞書付き操作の実ソースは `export_batch2_op` が `target/formal-batch2-op/` へ五形式を出力する。通常節はfailureType=null、行のnoFail=falseであり、Failの原子はまだ出力しない。独立したFailの入力の成功を、Rustの型付きの失敗の比較の証拠には使わない。
+
+交換15/7の範囲の独立入力は、手書きの corpus・型表・標準ライブラリ・網羅性の五形式を六入口へ渡し、埋め込みの Surface 15 の区間の入力を `intervalDiff` へ渡す。範囲付きの原子と不透明型、組み込みの呼び出しの範囲の列、型表の範囲の変数と表のデータ、必須の判定の入力（`scopeAcceptance`）を持ち、原子の種類別（パス・endpoint のホスト名と IP）、Top でない範囲、型検査器の入口の拒否と理由（`notCovered`・`unknownSource`・`budgetExceeded`）、予算の停止による由来の忘却、被覆だけの効果の上限の受理、範囲の正規形と範囲の変数の入力の検査を確かめる。全て Top だけの入力の一致を成功に数えない（`desugarDiff`・`surfaceCheckAll` の報告の `nonTopRanges` が Top でない範囲の数である）。Rust の書き出しとの比較は含まない（Rust は未接続。`check-formal.sh` への組み込みは Rust の書き出しを切り替える段で行う）。
+
+```sh
+python3 -B formal/tests/test_range_exchange.py
+```
 
 ## 構成
 

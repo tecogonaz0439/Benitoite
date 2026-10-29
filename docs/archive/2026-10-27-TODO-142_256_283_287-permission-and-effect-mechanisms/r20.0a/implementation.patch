@@ -1,0 +1,938 @@
+diff --git a/crates/benitoite/skill/references/stdlib/Scope.md b/crates/benitoite/skill/references/stdlib/Scope.md
+index 9e7f3614..87279595 100644
+--- a/crates/benitoite/skill/references/stdlib/Scope.md
++++ b/crates/benitoite/skill/references/stdlib/Scope.md
+@@ -108,6 +108,18 @@ public function checkPath(pattern: String, path: String) -> Result[CheckedPath,
+ 
+ Checks an exact absolute path or a trailing /** tree, which includes its stem. This does not resolve links or access the filesystem.
+ 
++```benitoite
++public function checkPathIn(pattern: String, path: String) -> Result[PathIn, ScopeError]
++```
++
++Checks an exact absolute path or a trailing /** tree and retains the same path. The static scope is unrestricted; dynamic spelling and membership are always checked. This does not access the filesystem or authorize IO.
++
++```benitoite
++public function pathInValue(path: PathIn) -> String
++```
++
++Returns the same path retained by checkPathIn. The accepted static scope is unrestricted.
++
+ ```benitoite
+ public function checkEndpoint(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[CheckedEndpoint, ScopeError]
+ ```
+diff --git a/crates/benitoite/src/builtins/funcs/scope.rs b/crates/benitoite/src/builtins/funcs/scope.rs
+index f2fd7f88..8248729b 100644
+--- a/crates/benitoite/src/builtins/funcs/scope.rs
++++ b/crates/benitoite/src/builtins/funcs/scope.rs
+@@ -70,5 +70,78 @@ builtin! {
+     }
+ }
+ 
++fn path_in_result<'e>(
++    ctx: &ValueCtx<'e>,
++    pattern: Value<'e>,
++    path: Value<'e>,
++) -> Result<Value<'e>, Stop> {
++    let checked = checked_scope::check_path(Some(string(ctx, pattern)?), Some(string(ctx, path)?));
++    let (tag, value) = match checked {
++        Ok(Some(_)) => {
++            // 不透明型の欄に検査したStringそのものを残す。既存の構成子の追跡で
++            // 安全点を越えて保持でき、射影で複製も再検査も要らない
++            // （設計書 02-08「値の表現」、03-06「Scope」）。
++            let value = ctx.alloc_fields(FieldsKind::Ctor, tags::RECORD, &[path])?;
++            (tags::RESULT_OK, value)
++        }
++        Ok(None) => return Err(Stop::Internal("Scope runtime input was incomplete".into())),
++        Err(failure) => {
++            let (tag, args) = match failure {
++                Failure::InvalidPattern(reason) => (
++                    tags::SCOPE_ERROR_INVALID_PATTERN,
++                    [pattern, ctx.alloc_str(reason, "Scope.checkPathIn")?],
++                ),
++                Failure::InvalidTarget(reason) => (
++                    tags::SCOPE_ERROR_INVALID_TARGET,
++                    [path, ctx.alloc_str(reason, "Scope.checkPathIn")?],
++                ),
++                Failure::OutsideScope => (tags::SCOPE_ERROR_OUTSIDE_SCOPE, [pattern, path]),
++                Failure::InvalidMinimum
++                | Failure::InvalidMaximum
++                | Failure::InvalidBounds
++                | Failure::InvalidPort
++                | Failure::PortOutsideScope => {
++                    return Err(Stop::Internal(
++                        "Scope path check returned a port failure".into(),
++                    ));
++                }
++            };
++            let error = ctx.alloc_fields(FieldsKind::Ctor, tag, &args)?;
++            (tags::RESULT_ERROR, error)
++        }
++    };
++    ctx.alloc_fields(FieldsKind::Ctor, tag, &[value])
++}
++
++builtin! {
++    /// 動的なパターンと所属を検査し、同じパスを保存する（設計書 03-06「Scope」）。
++    name = "Scope.checkPathIn",
++    pure fn check_path_in(ctx, pattern: Value<'e>, path: Value<'e>) -> Value<'e> {
++        path_in_result(&ctx, pattern, path)
++    }
++}
++
++builtin! {
++    /// 検査済みの不透明値から保存したパスを直接返す（設計書 03-06「Scope」）。
++    name = "Scope.pathInValue",
++    pure fn path_in_value(ctx, path: Value<'e>) -> Value<'e> {
++        if ctx.fields_header(path) != Some((FieldsKind::Ctor, tags::RECORD))
++            || ctx.fields_len(path) != Some(1)
++        {
++            return Err(Stop::Internal("Scope expected PathIn".into()));
++        }
++        let value = ctx.field(path, 0)
++            .ok_or_else(|| Stop::Internal("Scope PathIn lost its path".into()))?;
++        string(&ctx, value)?;
++        Ok(value)
++    }
++}
++
+ /// 番号を保つため、表の末尾にだけ登録する。
+-pub const DECLS: &[BuiltinDecl] = &[check_host::DECL, check_path::DECL, check_endpoint::DECL];
++pub const DECLS: &[BuiltinDecl] = &[
++    check_host::DECL,
++    check_path::DECL,
++    check_endpoint::DECL,
++    check_path_in::DECL,
++    path_in_value::DECL,
++];
+diff --git a/crates/benitoite/src/builtins/table.rs b/crates/benitoite/src/builtins/table.rs
+index 9296b8e1..f7e2cfe7 100644
+--- a/crates/benitoite/src/builtins/table.rs
++++ b/crates/benitoite/src/builtins/table.rs
+@@ -99,6 +99,12 @@ pub mod tags {
+     pub const RESULT_OK: u32 = 0;
+     /// `Result.Error`
+     pub const RESULT_ERROR: u32 = 1;
++    /// `Scope.ScopeError.InvalidPattern`
++    pub const SCOPE_ERROR_INVALID_PATTERN: u32 = 0;
++    /// `Scope.ScopeError.InvalidTarget`
++    pub const SCOPE_ERROR_INVALID_TARGET: u32 = 1;
++    /// `Scope.ScopeError.OutsideScope`
++    pub const SCOPE_ERROR_OUTSIDE_SCOPE: u32 = 4;
+     /// `Pair`
+     pub const PAIR: u32 = 0;
+     /// `Triple`
+@@ -761,6 +767,61 @@ pub fn list_pattern_builtin(op: ListPatternOp) -> Option<BuiltinId> {
+     lookup_builtin(name)
+ }
+ 
++// 標準ソースには書けない範囲変数を、認定した組み込みの対象位置だけへ入れる。
++// 戻り値の型引数の位置と引数の位置を区別し、他の不透明型は書き換えない
++// （設計書 02-05「型とエフェクトの表現」）。
++#[derive(Clone, Copy)]
++enum RangePosition {
++    Parameter(usize),
++    ReturnArgument(usize),
++}
++
++fn builtin_range_positions(id: BuiltinId) -> Option<&'static [(RangePosition, BuiltinTypeId)]> {
++    match builtin_decl(id)?.name {
++        "Scope.checkPathIn" => Some(&[(RangePosition::ReturnArgument(0), BuiltinTypeId::PATH_IN)]),
++        "Scope.pathInValue" => Some(&[(RangePosition::Parameter(0), BuiltinTypeId::PATH_IN)]),
++        _ => Some(&[]),
++    }
++}
++
++/// 標準ソースの Top の対象位置に、登録表の範囲変数を入れる。
++/// 利用者の宣言や旧 Checked 型をこの経路で変換しない。
++pub(crate) fn parameterize_builtin_signature(id: BuiltinId, scheme: &Scheme) -> Option<Scheme> {
++    use crate::types::builtin::RangeIndex;
++    use crate::types::{Ty, TyCon};
++    let positions = builtin_range_positions(id)?;
++    let ranges = builtin_range_signature(id)?;
++    if positions.len() != ranges.range_count() {
++        return None;
++    }
++    let mut scheme = scheme.clone();
++    for (index, (position, expected)) in positions.iter().enumerate() {
++        let target = match position {
++            RangePosition::Parameter(position) => scheme.params.get_mut(*position)?,
++            RangePosition::ReturnArgument(position) => match &mut scheme.ret {
++                Ty::Con(TyCon::Adt(_), args, ix) if ix == &RangeIndex::TOP => {
++                    args.get_mut(*position)?
++                }
++                Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => {
++                    return None;
++                }
++            },
++        };
++        let Ty::Con(TyCon::Builtin(actual), args, ix) = target else {
++            return None;
++        };
++        if actual != expected
++            || !args.is_empty()
++            || ix != &RangeIndex::TOP
++            || actual.value_kind() != ranges.kinds.get(index).copied()
++        {
++            return None;
++        }
++        *ix = RangeIndex::var(u32::try_from(index).ok()?);
++    }
++    Some(scheme)
++}
++
+ /// 認定した組み込みの項目の範囲の情報。利用者の同じ綴りの名前はこの番号を持たない。
+ /// 新しい API の登録は宣言と実行本体を追加する枝で行う。
+ pub fn builtin_range_signature(id: BuiltinId) -> Option<crate::types::signature::RangeSignature> {
+@@ -776,7 +837,12 @@ pub fn builtin_range_signature(id: BuiltinId) -> Option<crate::types::signature:
+     } else {
+         IoShape::Untargeted
+     };
++    let kinds = builtin_range_positions(id)?
++        .iter()
++        .map(|(_, ty)| ty.value_kind())
++        .collect::<Option<Vec<_>>>()?;
+     Some(RangeSignature {
++        kinds,
+         shape,
+         ..RangeSignature::default()
+     })
+@@ -961,7 +1027,7 @@ mod tests {
+         let lengths = [
+             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
+             16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
+-            11, 39, 3, 4, 6, 14,
++            11, 39, 5, 4, 6, 14,
+         ];
+         assert_eq!(
+             super::super::funcs::PARTS
+@@ -1051,8 +1117,8 @@ mod tests {
+             );
+         }
+         assert_eq!(lengths.len(), 58);
+-        assert_eq!(names.len(), 510);
+-        assert_eq!(capabilities, [435, 16, 59]);
++        assert_eq!(names.len(), 512);
++        assert_eq!(capabilities, [437, 16, 59]);
+         assert!(lookup_builtin("missing.name").is_none());
+         let invalid = BuiltinId(u16::MAX);
+         assert!(builtin_decl(invalid).is_none());
+diff --git a/crates/benitoite/src/ir/check.rs b/crates/benitoite/src/ir/check.rs
+index 106f8f7c..47743e9b 100644
+--- a/crates/benitoite/src/ir/check.rs
++++ b/crates/benitoite/src/ir/check.rs
+@@ -362,10 +362,31 @@ impl<'a> Checker<'a> {
+     fn instantiate(
+         &mut self,
+         scheme: &Scheme,
++        declaration: Option<BindingId>,
+         targs: &TypeArgs,
+         env: &Env<'_>,
+         origin: Span,
+     ) -> Ty {
++        // 宣言の範囲情報を失わずに保持し、型／行代入の前に Top で具体化する
++        // （設計書 02-06「コア IR の検査器」）。
++        let closed;
++        let scheme = if let Some((binding, ranges)) = declaration.and_then(|binding| {
++            self.program
++                .range_signatures
++                .get(binding)
++                .map(|ranges| (binding, ranges))
++        }) {
++            let operation = self.program.ops.iter().any(|op| op.binding == binding);
++            if let Some(scheme) = ranges.instantiate_top(scheme, operation) {
++                closed = scheme;
++                &closed
++            } else {
++                self.error(origin, "standard signature scope instantiation failed");
++                scheme
++            }
++        } else {
++            scheme
++        };
+         self.count(
+             origin,
+             "type arguments",
+@@ -516,14 +537,16 @@ impl<'a> Checker<'a> {
+                     self.error(val.origin, "unknown top-level function");
+                     None
+                 } else if let Some(scheme) = self.program.schemes.get(*def) {
+-                    Some(self.instantiate(scheme, targs, env, val.origin))
++                    Some(self.instantiate(scheme, Some(*def), targs, env, val.origin))
+                 } else {
+                     self.error(val.origin, "missing function scheme");
+                     None
+                 }
+             }
+             ValKind::External { def, .. } => match self.program.schemes.get(*def) {
+-                Some(s) => Some(self.instantiate(s, &TypeArgs::default(), env, val.origin)),
++                Some(s) => {
++                    Some(self.instantiate(s, Some(*def), &TypeArgs::default(), env, val.origin))
++                }
+                 None => {
+                     self.error(val.origin, "missing external scheme");
+                     None
+@@ -535,7 +558,7 @@ impl<'a> Checker<'a> {
+                     None => builtin_scheme(*id),
+                 };
+                 match scheme {
+-                    Some(s) => Some(self.instantiate(&s, targs, env, val.origin)),
++                    Some(s) => Some(self.instantiate(&s, info.decl, targs, env, val.origin)),
+                     None => {
+                         self.error(val.origin, "missing builtin scheme");
+                         None
+@@ -543,7 +566,7 @@ impl<'a> Checker<'a> {
+                 }
+             }
+             ValKind::Op { op, targs } => match self.program.schemes.get(*op) {
+-                Some(s) => Some(self.instantiate(s, targs, env, val.origin)),
++                Some(s) => Some(self.instantiate(s, Some(*op), targs, env, val.origin)),
+                 None => {
+                     self.error(val.origin, "missing operation scheme");
+                     None
+@@ -1159,7 +1182,7 @@ impl<'a> Checker<'a> {
+         };
+         let mut targs = call.targs.clone();
+         targs.tys.insert(0, call.dict.arg.clone());
+-        let ty = self.instantiate(s, &targs, env, origin);
++        let ty = self.instantiate(s, None, &targs, env, origin);
+         self.dictionary_arguments(
+             &call.dicts,
+             Some((s.class_constraints.get(1..).unwrap_or(&[]), &targs.tys)),
+@@ -1430,7 +1453,16 @@ impl<'a> Checker<'a> {
+                     })
+                 })
+                 .collect();
+-            let expected = s.fn_ty().subst(&tys, &[]);
++            let expected = self.instantiate(
++                s,
++                Some(clause.op),
++                &TypeArgs {
++                    tys,
++                    effects: vec![],
++                },
++                env,
++                clause.span,
++            );
+             if let Ty::Fn(f) = expected {
+                 self.count(
+                     clause.span,
+@@ -1820,6 +1852,7 @@ mod tests {
+             adts: AdtTable::default(),
+             traits: BindingMap::new(),
+             schemes: BindingMap::new(),
++            range_signatures: BindingMap::new(),
+             main: Some(MAIN),
+             main_returns_result: false,
+             body_count: 100,
+diff --git a/crates/benitoite/src/ir/core_ir.rs b/crates/benitoite/src/ir/core_ir.rs
+index 3784ade0..896eaf9b 100644
+--- a/crates/benitoite/src/ir/core_ir.rs
++++ b/crates/benitoite/src/ir/core_ir.rs
+@@ -551,6 +551,8 @@ pub struct Program<C> {
+     pub traits: BindingMap<TraitDef>,
+     /// 宣言の型（型検査の `decl_types` の写し）。検査器が関数・操作・メソッドの型を引く
+     pub schemes: BindingMap<Scheme>,
++    /// 標準署名の範囲の情報。未具体化の schemes と組で保持する。
++    pub range_signatures: BindingMap<crate::types::signature::RangeSignature>,
+     /// `main` の束縛。`main` を検査しない経路（`typecheck` の `require_main` が偽。`test` の経路と、
+     /// `main` を持たないプログラムを脱糖する単体テスト）では `None`（型検査の出力の `main` を写す）
+     pub main: Option<BindingId>,
+diff --git a/crates/benitoite/src/ir/decision.rs b/crates/benitoite/src/ir/decision.rs
+index a1d671dd..a27c4fa7 100644
+--- a/crates/benitoite/src/ir/decision.rs
++++ b/crates/benitoite/src/ir/decision.rs
+@@ -83,6 +83,7 @@ pub fn lower_program(program: &CoreProgram) -> Result<LowerProgram, LowerError>
+         adts: program.adts.clone(),
+         traits: program.traits.clone(),
+         schemes: program.schemes.clone(),
++        range_signatures: program.range_signatures.clone(),
+         main: program.main,
+         main_returns_result: program.main_returns_result,
+         body_count,
+@@ -2100,6 +2101,7 @@ mod tests {
+             adts: adts(),
+             traits: BindingMap::new(),
+             schemes: BindingMap::new(),
++            range_signatures: BindingMap::new(),
+             main: Some(BindingId(0)),
+             main_returns_result: false,
+             body_count: 10,
+diff --git a/crates/benitoite/src/ir/desugar/decls.rs b/crates/benitoite/src/ir/desugar/decls.rs
+index 53f2dfc1..3aac47d1 100644
+--- a/crates/benitoite/src/ir/desugar/decls.rs
++++ b/crates/benitoite/src/ir/desugar/decls.rs
+@@ -19,6 +19,7 @@ pub(super) fn program(
+         adts: types.adts.clone(),
+         traits: types.traits.clone(),
+         schemes: types.decl_types.clone(),
++        range_signatures: types.range_signatures.clone(),
+         main: types.main.map(|m| m.binding),
+         main_returns_result: types.main.is_some_and(|m| m.returns_result),
+         body_count: 0,
+diff --git a/crates/benitoite/src/prelude/stdlib/Scope.bnt b/crates/benitoite/src/prelude/stdlib/Scope.bnt
+index 6d35676a..b2bcf017 100644
+--- a/crates/benitoite/src/prelude/stdlib/Scope.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Scope.bnt
+@@ -96,6 +96,14 @@ public function checkPath(pattern: String, path: String) -> Result[CheckedPath,
+   end match
+ end function
+ 
++/// Checks an exact absolute path or a trailing /** tree and retains the same path. The static scope is unrestricted; dynamic spelling and membership are always checked. This does not access the filesystem or authorize IO.
++@builtin("Scope.checkPathIn")
++public function checkPathIn(pattern: String, path: String) -> Result[PathIn, ScopeError]
++
++/// Returns the same path retained by checkPathIn. The accepted static scope is unrestricted.
++@builtin("Scope.pathInValue")
++public function pathInValue(path: PathIn) -> String
++
+ /// Checks host forms, inclusive bounds 0..65535, the port, host membership, then port membership. Known invalid parts of a direct call are rejected even if other arguments are dynamic.
+ public function checkEndpoint(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[CheckedEndpoint, ScopeError]
+   return match inspectEndpoint(hostPattern: hostPattern, host: host, minimumPort: minimumPort, maximumPort: maximumPort, port: port) with
+diff --git a/crates/benitoite/src/typeck/context.rs b/crates/benitoite/src/typeck/context.rs
+index dea36096..65776b9d 100644
+--- a/crates/benitoite/src/typeck/context.rs
++++ b/crates/benitoite/src/typeck/context.rs
+@@ -684,46 +684,49 @@ impl<'a, 'd> Body<'a, 'd> {
+         }
+         self.decls.diagnostics.append(&mut self.diagnostics);
+     }
++    /// 呼び出しと宣言の直接読者へ、範囲を先に具体化した署名を渡す。
++    pub fn signature_at_top(&mut self, binding: BindingId) -> Option<Scheme> {
++        if self.decls.invalid.contains(&binding) {
++            return None;
++        }
++        let scheme = self.decls.out.decl_types.get(binding)?.clone();
++        let Some(ranges) = self
++            .decls
++            .out
++            .range_signatures
++            .get(binding)
++            .filter(|ranges| ranges.range_count() != 0)
++        else {
++            return Some(scheme);
++        };
++        let operation = self
++            .decls
++            .resolved
++            .bindings
++            .get(binding)
++            .is_some_and(|b| matches!(b.kind, crate::resolve::BindingKind::Op { .. }));
++        let instantiated = ranges.instantiate_top(&scheme, operation);
++        if instantiated.is_none() {
++            self.diagnostic(crate::runtime::report::internal_diagnostic(
++                "check",
++                "standard signature scope instantiation did not produce closed indices",
++                None,
++                crate::runtime::report::FaultThread::Stage,
++            ));
++        }
++        instantiated
++    }
++
+     pub fn instantiate(
+         &mut self,
+         node: NodeId,
+         span: Span,
+         binding: BindingId,
+     ) -> (ITy, Vec<ITy>, ITy) {
+-        let Some(s) = self.decls.out.decl_types.get(binding).cloned() else {
+-            return (ITy::Error, vec![], ITy::Error);
+-        };
+-        if self.decls.invalid.contains(&binding) {
+-            return (ITy::Error, vec![], ITy::Error);
+-        }
+         // 範囲を先に確定し、型／行の代入に未具体化の変数を渡さない
+         // （設計書 02-05「型とエフェクトの表現」）。
+-        // 変数0個の署名は宣言時に検査済みなので、そのまま型／行の具体化へ渡す。
+-        let s = if let Some(ranges) = self
+-            .decls
+-            .out
+-            .range_signatures
+-            .get(binding)
+-            .filter(|ranges| ranges.range_count() != 0)
+-        {
+-            let operation = self
+-                .decls
+-                .resolved
+-                .bindings
+-                .get(binding)
+-                .is_some_and(|b| matches!(b.kind, crate::resolve::BindingKind::Op { .. }));
+-            let Some(s) = ranges.instantiate_top(&s, operation) else {
+-                self.diagnostic(crate::runtime::report::internal_diagnostic(
+-                    "check",
+-                    "standard signature scope instantiation did not produce closed indices",
+-                    None,
+-                    crate::runtime::report::FaultThread::Stage,
+-                ));
+-                return (ITy::Error, vec![], ITy::Error);
+-            };
+-            s
+-        } else {
+-            s
++        let Some(s) = self.signature_at_top(binding) else {
++            return (ITy::Error, vec![], ITy::Error);
+         };
+         let args: Vec<_> = s
+             .type_params
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index aff08d29..c1c9de0a 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -1302,22 +1302,51 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+ // 分類は標準の組み込み表にだけ持たせ、解決済みの束縛へ対応を保存する
+ // （設計書 02-05「型とエフェクトの表現」）。
+ fn check_range_signatures(d: &mut Decls<'_>) {
+-    for (binding, scheme) in d.out.decl_types.iter() {
+-        if d.invalid.contains(&binding) {
+-            continue;
+-        }
+-        let builtin = d.resolved.bindings.get(binding).and_then(|b| {
++    let resolved = d.resolved;
++    let builtin = |binding| {
++        resolved.bindings.get(binding).and_then(|b| {
+             if let BindingKind::BuiltinFn(id) = b.kind {
+                 Some(id)
+             } else {
+-                d.resolved.builtin_ops.get(binding).copied()
++                resolved.builtin_ops.get(binding).copied()
+             }
+-        });
+-        let valid = if let Some(id) = builtin {
++        })
++    };
++    // 書き換えが必要な標準署名だけを複製し、利用者の宣言は参照のまま検査する。
++    let parameterized = d
++        .out
++        .decl_types
++        .iter()
++        .filter_map(|(binding, scheme)| {
++            let id = builtin(binding)?;
++            let ranges = crate::builtins::table::builtin_range_signature(id)?;
++            if ranges.range_count() == 0 {
++                return None;
++            }
++            Some((
++                binding,
++                crate::builtins::table::parameterize_builtin_signature(id, scheme),
++            ))
++        })
++        .collect::<Vec<_>>();
++    let mut failed = BTreeSet::new();
++    for (binding, scheme) in parameterized {
++        if let Some(scheme) = scheme {
++            d.out.decl_types.insert(binding, scheme);
++        } else {
++            failed.insert(binding);
++        }
++    }
++    for (binding, scheme) in d.out.decl_types.iter() {
++        if d.invalid.contains(&binding) {
++            continue;
++        }
++        let valid = if let Some(id) = builtin(binding) {
+             if let Some(ranges) = crate::builtins::table::builtin_range_signature(id) {
+                 d.out.range_signatures.insert(binding, ranges);
+             }
+-            crate::builtins::table::builtin_signature_valid(id, scheme)
++            !failed.contains(&binding)
++                && crate::builtins::table::builtin_signature_valid(id, scheme)
+         } else {
+             scheme.fn_ty().indices_valid(0)
+         };
+diff --git a/crates/benitoite/src/typeck/effects/handle.rs b/crates/benitoite/src/typeck/effects/handle.rs
+index 309fb3e2..dcf9ec4b 100644
+--- a/crates/benitoite/src/typeck/effects/handle.rs
++++ b/crates/benitoite/src/typeck/effects/handle.rs
+@@ -48,10 +48,7 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
+                 .get(op)
+                 .is_some_and(|b| matches!(b.kind, BindingKind::Op { .. }))
+         });
+-        let signature = op
+-            .filter(|_| valid)
+-            .and_then(|op| ctx.decls.out.decl_types.get(op))
+-            .cloned();
++        let signature = op.filter(|_| valid).and_then(|op| ctx.signature_at_top(op));
+         if !valid {
+             let mut d = DiagBuilder::new(DiagCode::E0507)
+                 .primary(clause.op.span)
+diff --git a/crates/benitoite/src/typeck/traits/solve.rs b/crates/benitoite/src/typeck/traits/solve.rs
+index c7e3d507..639ce2cc 100644
+--- a/crates/benitoite/src/typeck/traits/solve.rs
++++ b/crates/benitoite/src/typeck/traits/solve.rs
+@@ -533,7 +533,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
+         let expected = ctx
+             .decls
+             .reference(node)
+-            .and_then(|id| ctx.decls.out.decl_types.get(id))
++            .and_then(|id| ctx.signature_at_top(id))
+             .map_or(0, |s| s.class_constraints.len());
+         // 失敗した制約を詰めると辞書の番号がずれる。成功した使用だけを表に載せる。
+         if dicts.len() == expected {
+diff --git a/crates/benitoite/tests/desugar_export/scope_tables.rs b/crates/benitoite/tests/desugar_export/scope_tables.rs
+index d2033495..ec6dfb0f 100644
+--- a/crates/benitoite/tests/desugar_export/scope_tables.rs
++++ b/crates/benitoite/tests/desugar_export/scope_tables.rs
+@@ -17,6 +17,78 @@ use std::collections::BTreeSet;
+ // 本番の差し込み口は増やさず、通常の書き出しと同じ関数を呼ぶ。
+ const EXPECTED: &str = include_str!("scope-tables-expected.json");
+ 
++// 関門: 合成した署名の検査では、標準宣言から rvar を登録する経路の欠落や、
++// 通常ソースを対象外へ戻す退行を捕まえられない。項側の型は閉じたまま保つ。
++#[test]
++fn exports_used_path_checks_with_range_variables_only_in_signatures() {
++    let checked = benitoite::pipeline::check_text(
++        "path-in-export.bnt",
++        br#"import Benitoite.Unofficial.Scope
++function roundTrip(pattern: String, raw: String) -> String
++  bind result <- Scope.checkPathIn(pattern: pattern, path: raw)
++  return match result with
++    case Result.Ok(path) -> Scope.pathInValue(path: path)
++    case Result.Error(_) -> "outside"
++  end match
++end function
++"#,
++        benitoite::pipeline::CheckOptions {
++            require_main: false,
++            deny_warnings: false,
++        },
++    );
++    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
++    let p = checked.program.unwrap();
++    let core = benitoite::pipeline::desugar_checked(&p).unwrap();
++    assert!(benitoite::ir::check::check_program(&core).is_empty());
++    let definitions = super::exchange::named_definitions(&p, &core);
++    assert_eq!(definitions.len(), 1);
++    assert!(
++        definitions[0]["scope"].get("inScope").is_some(),
++        "{definitions:?}"
++    );
++    let mut input = super::named::input("path-in", definitions);
++    let table = named_builtin_tables(&p, &input, &complete_stdlib());
++    let path =
++        json!({"opaque":{"name":format!("{}:[]", BuiltinTypeId::PATH_IN.0),"ix":{"rvar":0}}});
++    for (name, names) in [
++        ("Scope.checkPathIn", vec!["pattern", "path"]),
++        ("Scope.pathInValue", vec!["path"]),
++    ] {
++        let signature = table["prims"]
++            .as_array()
++            .unwrap()
++            .iter()
++            .find(|p| p["name"] == name)
++            .unwrap();
++        assert_eq!(signature["rkinds"], json!(["path"]));
++        assert_eq!(signature["names"], json!(names));
++        assert_eq!(signature["kind"], "pure");
++        assert_eq!(signature["eff"], json!([]));
++        assert_eq!(signature["shape"], "untargeted");
++        if name == "Scope.checkPathIn" {
++            assert_eq!(signature["ret"]["data"]["args"][0], path);
++        } else {
++            assert_eq!(signature["params"], json!([path]));
++        }
++    }
++    super::exchange::attach_metadata(&mut input, &table, &mut Value::Null);
++    // Surface と Core の通常の型の書き出しは署名の文脈を持たず、rvar を拒否する。
++    assert!(!super::contains_json(
++        &input["definitions"],
++        &json!({"rvar":0})
++    ));
++    assert!(super::contains_json(
++        &input["definitions"],
++        &json!({"fixed":"top"})
++    ));
++    let output = super::export_directory("path-in");
++    let corpus = json!({"version":15,"operators":super::exchange::operators(),
++        "inputs":[input],"annotations":{"tailMatch":[0,0]}});
++    std::fs::write(output.join("path-in-corpus.json"), to_vec(&corpus).unwrap()).unwrap();
++    super::named::write_tables(&output, "path-in", &p, &corpus["inputs"][0]);
++}
++
+ fn builtin(id: BuiltinTypeId) -> Ty {
+     Ty::Con(TyCon::Builtin(id), vec![], RangeIndex::TOP)
+ }
+diff --git a/crates/benitoite/tests/runtime_builtins.rs b/crates/benitoite/tests/runtime_builtins.rs
+index 4fc23925..8bc2e97d 100644
+--- a/crates/benitoite/tests/runtime_builtins.rs
++++ b/crates/benitoite/tests/runtime_builtins.rs
+@@ -1548,6 +1548,91 @@ end function
+     }
+ }
+ 
++// 関門: 新しい純粋入口の動的な所属判定・元のパス・失敗入力と優先順を、
++// 通常ソースからVMと参照実行器で守る。旧Checked型の検査はこの入口を通らず、
++// Topだけを見て検査を省く退行や、Okの保存後のGCでの消失を捕まえない。
++// 差し込み口は増やさず、同じResultの受け渡しと既存のstress環境を使う。
++#[test]
++fn scope_path_in_checks_dynamic_inputs_and_preserves_the_same_ok() {
++    let source = r#"
++import Benitoite.Unofficial.Scope
++function retain[T](value: T) -> T
++ return value
++end function
++function accepted(pattern: String, path: String) -> Boolean
++ bind original <- Scope.checkPathIn(pattern: pattern, path: path)
++ bind kept <- retain(original)
++ bind unused <- String.repeat(s: "猫", n: 4000)
++ return String.byteLength(unused) = 12000 and match kept with
++   case Result.Ok(value) -> Scope.pathInValue(path: value) = path and Scope.pathInValue(path: value) = path
++   case Result.Error(_) -> false
++ end match
++end function
++function rejected(pattern: String, path: String, expected: Integer) -> Boolean
++ return match Scope.checkPathIn(pattern: pattern, path: path) with
++   case Result.Error(Scope.ScopeError.InvalidPattern(input, reason)) -> expected = 1 and input = pattern and String.byteLength(reason) > 0
++   case Result.Error(Scope.ScopeError.InvalidTarget(input, reason)) -> expected = 2 and input = path and String.byteLength(reason) > 0
++   case Result.Error(Scope.ScopeError.OutsideScope(p, t)) -> expected = 3 and p = pattern and t = path
++   case _ -> false
++ end match
++end function
++function main() -> Result[Unit, String]
++ if not accepted(pattern: "/data/**", path: "/data") then return Result.Error("tree stem") end if
++ if not accepted(pattern: "/data/**", path: "/data/猫/*") then return Result.Error("same target spelling") end if
++ if not accepted(pattern: "/data/exact", path: "/data/exact") then return Result.Error("exact") end if
++ if not accepted(pattern: "/**", path: "/") then return Result.Error("root") end if
++ if not rejected(pattern: "/data/**", path: "/database/file", expected: 3) then return Result.Error("component membership") end if
++ if not rejected(pattern: "/data/exact", path: "/data/exact/child", expected: 3) then return Result.Error("exact excludes child") end if
++ if not rejected(pattern: "/data/*", path: "/data/child", expected: 1) then return Result.Error("invalid pattern") end if
++ if not rejected(pattern: "/data/**", path: "/data/../else", expected: 2) then return Result.Error("invalid target") end if
++ if not rejected(pattern: "/data/*", path: "relative", expected: 1) then return Result.Error("pattern before target") end if
++ bind direct <- Scope.checkPathIn(pattern: "/data/**", path: "/data/direct")
++ return match retain(direct) with
++   case Result.Ok(value) -> if Scope.pathInValue(path: value) = "/data/direct" then Result.Ok(()) else Result.Error("direct projection") end if
++   case Result.Error(_) -> Result.Error("direct check")
++ end match
++end function
++"#;
++    let program = compile(source);
++    for mode in [ExecMode::Direct, ExecMode::Request] {
++        let end = run::run_program(
++            &program,
++            environment(mode, Arc::new(Mutex::new(Vec::new()))),
++        );
++        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
++        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
++        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
++        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
++
++        let checked = pipeline::check_text(
++            "scope-path-in.bnt",
++            source.as_bytes(),
++            CheckOptions {
++                require_main: true,
++                deny_warnings: false,
++            },
++        );
++        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
++        let compared = differential::compare(
++            checked.program.unwrap(),
++            checked.sources,
++            environment(mode, Arc::new(Mutex::new(Vec::new()))).input,
++            VmConfig::default(),
++            mode,
++            differential::CompareOptions {
++                require_returned: true,
++                ..Default::default()
++            },
++            Box::new(|| Ok(())),
++        );
++        match compared {
++            differential::Comparison::Matched => {}
++            differential::Comparison::Failed(reason)
++            | differential::Comparison::Excluded(reason) => panic!("{mode:?}: {reason}"),
++        }
++    }
++}
++
+ // 関門: 標準ソースの辞書選択と全ての損失なし変換を、独立した値の期待で守る。
+ #[test]
+ fn log_scalar_conversions_use_explicit_instances_and_evaluate_inputs_once() {
+diff --git a/crates/benitoite/tests/scope_annotations.rs b/crates/benitoite/tests/scope_annotations.rs
+index 2229b2c6..fcc973b6 100644
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -1050,6 +1050,18 @@ end function
+         assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
+         assert_eq!(ds[0].code.unwrap().info().id, "E0401", "{ds:?}");
+     }
++
++    // 射影の入口も不変の添字を保ち、旧 CheckedPath から無検査で受け取らない。
++    // 一般のacceptの比較だけでは、標準署名の誤った登録や具体化を捕まえない。
++    for argument in ["Scope.CheckedPath", "Scope.PathIn[\"/data/**\"]"] {
++        let source = format!(
++            "import Benitoite.Unofficial.Scope\nfunction project(value: {argument}) -> String\n return Scope.pathInValue(path: value)\nend function\n"
++        );
++        let checked = check(&source);
++        let ds = errors(&checked);
++        assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
++        assert_eq!(ds[0].code.unwrap().info().id, "E0401", "{source}\n{ds:?}");
++    }
+ }
+ 
+ // 関門: 認定を名前の綴りや一般の@opaqueへ広げず、標準型には一つの範囲だけを許す。
+diff --git a/docs/design/01-spec/01-06-type-system.md b/docs/design/01-spec/01-06-type-system.md
+index 118822c8..43d5c566 100644
+--- a/docs/design/01-spec/01-06-type-system.md
++++ b/docs/design/01-spec/01-06-type-system.md
+@@ -54,6 +54,8 @@
+ 
+ 【決定】範囲付きの値型として認定するのは、上記の標準型だけである。利用者の同名の型、一般の `@opaque` のdata・レコード、`IOError`・`Task`・`Regex.Pattern` などのほかの不透明型は、この認定を受けない。資源を含むほかの名前の型の添字は Top に限る。範囲変数は標準署名の内部だけで用い、利用者は宣言できない。理由: 不透明であることと、値が保持する対象の範囲を追跡することは、別の条件であるためである。
+ 
++【決定】`Scope.checkPathIn` は、動的なパターンへの所属を検査し、成功時に同じパスを保持する `Scope.PathIn` を返す。現在、この入口の成功型と `Scope.pathInValue` の引数型の静的な範囲は Top である。`pathInValue` は保持した同じパスを `String` として返す。二つの入口は純粋であり、Top であっても実行時の検査を省かない。署名と失敗の条件は[標準ライブラリ](../03-interop/03-06-stdlib.md#scope)に従う。
++
+ ### 名前を持つ関数型の適合と推論
+ 
+ 【決定】関数型どうしを比べるときは、個数と位置ごとの名前の一致を検査し、その後で引数型・戻り値型・エフェクトの規則を適用する。名前と宣言順を保持し、名前の alpha 変換は行わない。型パラメータの置き換え、型の別名の展開、エフェクトの包含でも名前を失わない。
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index 5a8aa4ef..8a59084c 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -477,10 +477,14 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ 
+ 【決定】認定した標準署名には、範囲変数の個数・番号順の種類・許容条件・IO の対象位置を `RangeSignature` に保持し、解決済みの束縛から `TypeckOutput.range_signatures` で参照する。範囲の列は、個数と各範囲の種類が一致し、`any` または `covers i j` の条件を満たさなければならない。後者は j 番目（outer）の一範囲が i 番目（inner）を覆う条件であり、Rust の `Covers { outer, inner }` はこの二つの番号を名前付きの欄に保持する。すべて Top の列は許容条件を満たすものとする。個数・種類と `Covers` の番号・種類の妥当性は、すべて Top の列でも検査する。
+ 
++標準署名の登録では、`builtin_range_signature` が認定する種類・個数と対象位置に従って、宣言の型の表 `decl_types` へ範囲変数を入れる。`Scope.checkPathIn` は `Result` の成功型 `PathIn`、`Scope.pathInValue` は引数の位置 0 の `PathIn` に、種類 path の範囲変数 0 を持つ。登録後の署名は、番号・種類・位置の条件を検査する。利用者の宣言から範囲変数を作る構文は設けない。
++
+ 署名の検査は、型・効果の中の範囲変数の番号と種類を照合する。引数の範囲変数は最上位の認定済み不透明値型だけに置き、ほかの引数の型の内部には置かない。IO の戻り値にも範囲変数を置かず、IO の署名には行パラメータを宣言できない。対象のない IO と旧 Top の IO は範囲変数を持たず、効果を一原子に限る。単一対象の IO は一つの範囲変数を持ち、指定した引数位置の値型と効果の一原子に同じ番号を使う。資源の添字は Top、演算子・負号・連結・die の署名は範囲変数なしに限る。
+ 
+ 具体化は型の添字、潜在効果、Fail の内部、原子の添字へ同じ範囲の列を適用する。型／行の代入は範囲の添字を保持する。通常の標準名の具体化では範囲を先に Top で具体化し、その後に型／行を代入する。範囲変数0個の署名は、宣言時に検査済みの型をそのまま型／行の具体化へ渡し、署名の再検査と空の範囲の列の適用を繰り返さない。列が不足した場合は変数を残し、確定した型と効果の検査で断る。理由: 標準署名の変数を利用者の型と区別し、未確定の変数を Top とみなして受理しないためである。
+ 
++節の署名を読む `effects/handle` と、型クラスの辞書の引数を調べる `traits/solve` も、通常の具体化と同じ `Body::signature_at_top` を通す。脱糖は未具体化の標準署名と対応する範囲情報をコア IR へ写し、コアの具体化でも範囲を Top にしてから型／行を代入する。
++
+ 【方針】型の形は、値の型と、型引数を一つとる型構成子の二つである（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。宣言の検査は、型を書く位置ごとに求める形と書いた型の形が合うかを検査する。単一化は次の規則を加える。
+ 
+ - `F[A]` と `D[B1, …, Bn]` を等しくするときは、D のとる型引数の個数が 1 の場合に限り、F を D と等しくし、A と B1 を等しくする。それ以外は誤りとする。
+diff --git a/docs/design/02-impl/02-06-ir-and-lowering.md b/docs/design/02-impl/02-06-ir-and-lowering.md
+index e6095835..d3a0eb51 100644
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -37,9 +37,9 @@
+ | 定義 | 関数 `fn f[ᾱ; ρ̄](x̄:Ā) : B ! ε = M`、実装 `impl I[β̄](d̄ : Dict[Cl', β̄']) : Dict[Cl, τ] = { S̄ = Ū; m̄ = D̄ }`、定数 `const k : A = M` |
+ 
+ - 型は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型に、初回リリース版の拡張で加えたもの（基本型 `Byte`・`Decimal`、`Map`・`Set`・`Bytes`、`Reference`・`Lazy`、等値を持たない組み込みの不透明型 O（`IOError`・`NetworkError`・`Task[A]`・リソースの型、`Regex.Pattern` など）、辞書の型 `Dict[Cl, τ]`、型構成子を表す型パラメータの適用 `α[Ā]`、継続の型 `Cont(B → T ! ε)`）を含む。継続の型を持つのは、`handle` の節で継続を束縛する変数だけである。型の別名は型検査で展開してあるので、コア IR に現れない。
+-- 名前の型は型検査器と同じ `Ty::Con(TyCon, Vec<Ty>, RangeIndex)` を使い、脱糖後も不変の添字を保持する。既存の型は明示の Top を持つ。コア IR の検査器は、範囲変数がないことと、非 Top の添字が値の種類を持つ標準型 `Scope.PathIn`・`Http.RequestIn` だけに付くことを検査する。資源の型、基本型、コレクション、ほかの不透明型、代数的データ型、外部型は Top に限る。同じ名前で添字が違う型の照合を断る。型／行の代入は Fail 内にも添字を残す。判定の木の複製前のメモリ計上には、型の添字が所有する文字列と要素列も含める。
++- 名前の型は型検査器と同じ `Ty::Con(TyCon, Vec<Ty>, RangeIndex)` を使い、脱糖後も不変の添字を保持する。既存の型は明示の Top を持つ。コア IR の検査器は、各ノードの確定した型に範囲変数がないことと、非 Top の添字が値の種類を持つ標準型 `Scope.PathIn`・`Http.RequestIn` だけに付くことを検査する。資源の型、基本型、コレクション、ほかの不透明型、代数的データ型、外部型は Top に限る。同じ名前で添字が違う型の照合を断る。型／行の代入は Fail 内にも添字を残す。判定の木の複製前のメモリ計上には、型の添字が所有する文字列と要素列も含める。
+ - 辞書と継続は、コア計算の型付けでは型 `Dict[Cl, τ]`・`Cont(B → T ! ε)` を持つ値であるが、表層で値として束縛・返却・格納できない。辞書が現れるのは制約を持つ関数・操作の呼び出しの辞書の引数、メソッドの呼び出しの辞書、実装の定義の上位の型クラスの辞書と実装の制約の辞書、辞書の中の辞書だけであり、継続が現れるのは `handle` の節の継続の変数と `resume` だけである。そこで、処理系のコア IR は、辞書と継続を普通の値と別の分類に置き、型検査器の型の表現（表層の型）に辞書の型と継続の型を加えなくてよい。このとき、辞書の型は辞書の型クラスと対象の型の組で、継続の型は継続の変数が持つ引数の型 B と、節を持つ `handle` の型とエフェクト（T と ε）で表す。辞書の引数は、定義の値の引数と別に並べてよい。制約を持つ関数・操作を呼ばずに値として使う箇所は、同章の表のとおり辞書を渡すラムダに移すので、`f[T̄; Ē]` の値の型を値の引数だけの関数の型としてよい。コア IR の検査器は、この表し方の上で、後述の V-Dict・V-Super・C-Meth・D-Impl・C-Handle・C-Resume と同じ条件を調べる。
+-- エフェクトの集合は、名前と閉じた範囲を持つ原子、エフェクト変数、型付きの失敗の列を持つ `types::EffectSet` で表す。原子の `types::EffectName` は、組み込みの番号または宣言の束縛の番号と `types::builtin::RangeIndex` の組である。既存の名前だけの原子は明示の `RangeIndex::TOP` を持つ。範囲変数は標準署名の内部だけに現れ、コア IR の型と効果には残せない。脱糖は原子の範囲を保持し、ハンドラで除く原子の照合は名前と範囲の構造を使う。コア IR の検査は、計算の効果の拡大と関数型の最外側の潜在効果では一原子の被覆、型の等号とハンドラの保護本体では構造を使う。`IO.All` は型検査が Top の原子の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
++- エフェクトの集合は、名前と閉じた範囲を持つ原子、エフェクト変数、型付きの失敗の列を持つ `types::EffectSet` で表す。原子の `types::EffectName` は、組み込みの番号または宣言の束縛の番号と `types::builtin::RangeIndex` の組である。既存の名前だけの原子は明示の `RangeIndex::TOP` を持つ。範囲変数は標準署名の内部だけに現れ、コア IR の各ノードの確定した型と効果には残せない。脱糖は原子の範囲を保持し、ハンドラで除く原子の照合は名前と範囲の構造を使う。コア IR の検査は、計算の効果の拡大と関数型の最外側の潜在効果では一原子の被覆、型の等号とハンドラの保護本体では構造を使う。`IO.All` は型検査が Top の原子の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
+ - 各ノードは、型（値は A、計算は A ! ε）と、由来位置（[ソース管理と位置情報](02-02-source-and-spans.md)の「合成ノードの由来位置」）を持つ。型とエフェクトの求め方は、この節の後の表で定める。
+ - 変数は、定義ごとに重ならない番号で表す。脱糖で作る新しい変数も、ソースの名前から移した変数も、同じ数え上げから番号を振る。したがって、コア IR の中で変数の名前が衝突することはない。ただし、`match` の同じ分岐から展開した行（後述）は、その分岐の同じ変数を束縛する。ソースの名前は、診断と読みやすさのために変数に添える。
+ - 組み込みの関数 `b` は、組み込みの関数の表の項目を指す（[名前解決とモジュール読込](02-04-resolver.md)）。組み込みの関数は、外部に作用する操作（組み込みのエフェクトの操作）、`State` を型に持つ関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）、純粋な関数の三つに分かれ、項目がどれに当たるかを持つ。外部に作用する操作だけがハンドラで処理される（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「ハンドラ」）。
+@@ -48,6 +48,8 @@
+ 
+ 【方針】プログラムは、定義の集まり Σ と、型の宣言の表、型クラスの宣言の表、エフェクトの操作の表（操作ごとに、属するエフェクト、エフェクトで修飾した名前、引数の数、対応する組み込みの関数）、宣言の型の表、`main` の束縛からなる。エフェクトの宣言そのものは持たず、操作の表がエフェクトごとの操作を表す。定義は、プログラムを構成するすべてのモジュール（標準ライブラリのソースを含む）のトップレベルの関数、レコードのフィールドを取り出す関数、実装、定数である（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「モジュール」）。定義は、名前解決の束縛の番号で識別する。束縛の番号は、プログラム全体で一意であり、モジュールの ID を持つ（[名前解決とモジュール読込](02-04-resolver.md)の「束縛と表」）。ただし、実装は束縛を作らないので、実装の宣言のノード番号で識別する（[名前解決とモジュール読込](02-04-resolver.md)の「束縛と表」）。ノード番号も、一つの検査で解析するすべてのファイルにわたって重ならない（[字句解析器と構文解析器](02-03-frontend.md)の「AST」）。実装 I の辞書 `I[T̄](V̄)` の I も、このノード番号で実装を指す。名前は表示のためだけに持つので、利用者の関数 `mapInto` と標準ライブラリのソースの補助の関数 `mapInto` のように名前が同じ定義も区別できる。トップレベルの関数の値 `f[T̄; Ē]` の `f` も、束縛の番号で定義を指す。構成子には、同じ型の中で 0 から数えた番号（タグ）を振る。レコードの構成子のタグは 0 である。
+ 
++【決定】`ir::Program.schemes` は、標準署名の範囲変数を保った宣言の型を持ち、`Program.range_signatures` は同じ束縛番号で対応する `RangeSignature` を持つ。脱糖は、型検査の二つの表からこの対応を保って写す。`ir::check::instantiate` は宣言の束縛番号から範囲情報を引き、範囲を Top へ具体化してから型と行を代入する。`Scope.checkPathIn` と `Scope.pathInValue` の署名の範囲変数は、この経路で消える。未具体化の署名の保持と、各ノードの型・効果に範囲変数を残さない条件を分ける。
++
+ 【方針】定数は、コア計算では名前を定数式の計算 ⟦e⟧ に置き換える（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「トップレベルの定数」）。処理系は、定数を定義 `const k : A = M`（M は ⟦e⟧）として Σ に残し、定数を参照する箇所を値 `k` とする。`k` の値は、型検査の定数の評価器が求めた値（[型検査器](02-05-typechecker.md)の「定数の値」の表）である。定数式は純粋で、実行時エラーを起こさずに終わることを型検査で確かめてあるので、同章が述べるとおり、参照するたびに M を計算しても、一度だけ計算した値を共有しても、観測できる違いはない。参照インタプリタは M を実行して値を求め、コード生成は求めた値の記述を使う（[バイトコードとコード生成](02-07-bytecode.md)）。定数の値は、実行ごとに、最初に参照したときに一度だけ作って共有する（[バイトコードとコード生成](02-07-bytecode.md)の「定数表」）。
+ 
+ 【方針】コア IR の各ノードの型とエフェクトは、次のように付ける。表の「元の式の型」は、そのノードを作った表層の式について、型検査の「式の型」の表に書いた型である。
+@@ -56,7 +58,7 @@
+ |---|---|---|
+ | 変数 | 束縛したときの型 | — |
+ | 定数 | 定数の型 | — |
+-| `f[T̄; Ē]`、`b[T̄; Ē]` | 宣言の型（f は型検査の「宣言の型」の表、b は組み込みの関数の宣言）の型パラメータを T̄ で、エフェクト変数を Ē で置き換えた型 | — |
++| `f[T̄; Ē]`、`b[T̄; Ē]` | 宣言の型（f は型検査の「宣言の型」の表、b は組み込みの関数の宣言）について、標準署名の範囲を Top へ具体化した後、型パラメータを T̄ で、エフェクト変数を Ē で置き換えた型 | — |
+ | `op[T̄]` | 操作の宣言の型の型パラメータを T̄ で置き換えた型。エフェクトは {L}（L は操作を宣言したエフェクト） | — |
+ | `C[T̄](V̄)` | `D[T̄]`（D は C を宣言した型） | — |
+ | `[V̄]` | 元の式の型 | — |
+diff --git a/docs/design/02-impl/02-08-vm.md b/docs/design/02-impl/02-08-vm.md
+index 4e0f2394..51c16f43 100644
+--- a/docs/design/02-impl/02-08-vm.md
++++ b/docs/design/02-impl/02-08-vm.md
+@@ -48,6 +48,7 @@ VM は、レジスタ型のバイトコードからなるコンパイル済み
+ | `Task` | なし | タスクの対象（状態と結果）。タスクが終わった後も、結果は `Task` の値から辿れる間だけ残る |
+ | `IOError`、`NetworkError` | なし | 失敗の種類と理由を持つ対象。どちらも等値の型ではないので、`EQV` がこの値を受け取ることはない |
+ | 組み込みの不透明型の値（`Regex.Pattern`・`Regex.Match`・`Random.Generator`） | なし | 組み込みの関数が作った Rust の値（組み立てた正規表現、一致の全体と捕獲グループの位置、生成器の状態）を持つ対象。作った後に変更しない。等値の型ではない |
++| `Scope.PathIn` | なし | 既存の構成子の対象で、一つの欄に検査した入力の文字列の値を保持する。新しい値の種類と固定タグは持たず、利用者には表現を公開しない。等値の型ではない |
+ 
+ 【決定】新しい七種は、`Value<'epoch>` と `SlotRaw` の `Int8`・`Int16`・`Int32`・`UInt16`・`UInt32`・`UInt64`・`Float32` で区別する。保存領域に置き、次の回収しない区間で読み直しても、幅と値は変わらない。`Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger64` の正の名前と別名は、それぞれ同じ値の種類を持つ。`Float32` は `f32` のまま持ち、各算術の結果もその幅に丸める（[基本型の意味論](../01-spec/01-04-types-basic.md)の「Float」）。通常の `List[Float32]` の要素も 16 バイトの値であり、4 バイトの列として格納するわけではない。理由: 既存の保存領域と永続コレクションの表現を保ちながら、数の幅を区別するためである。
+ 
+@@ -211,6 +212,8 @@ VM は、中断の印を、実行ごとの状態の中断の要求の読み口
+ 
+ IO を行わない組み込みの関数は、実行ごとの状態のうち IO に関わるものに触れない。ハンドラ表の関数が返すのは、完了・待つ・終了のどれかである（[ランタイム](02-09-runtime.md)の「IO 実行器」）。`State` を型に持つ組み込みの関数（`Reference` と `TaskGroup` の関数、`Task.await`、リソースを解放する関数）は、`PRIM`（`Reference.update` は `UPDATE`）で呼び、ハンドラの連鎖を調べず、送り出しの列も通さない。`State` は操作を持たず、ハンドラで処理できないからである。送り出しの列を通さないことは、待たないことを意味しない。`Task.await`、`TaskGroup` の解放、貸しているリソースの解放は、上の表の理由で待つ。`Reference` の関数は待たない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「ハンドラ」）。演算の命令（`DIVI`、`CONCAT` など）の実行時エラーと資源の不足も、組み込みの関数の応答と同じく扱う。
+ 
++【決定】`Scope.checkPathIn`・`Scope.pathInValue` は、純粋な組み込みの関数として `PRIM` で呼ぶ。検査は、共通のパスの判定で動的なパターンと入力の所属を確かめ、成功した入力の文字列の値を一欄の構成子に保存して `Result.Ok` を作る。射影は、その欄の値を直接返す。二つの入口の標準署名はパスの範囲変数を一つ持ち、型検査とコアの検査では、範囲を Top へ具体化してから型と行を代入する。コアの Scheme と対応する範囲情報を保持し、未具体化の範囲変数をプログラムの型へ残さない。
++
+ 【決定】構造の `=`（`EQV`）など、値の構造を辿る組み込みの処理は、Rust の再帰に頼らず、明示の積み重ねを使って辿る。長いリストや深い木の値でも、処理系のスタックを使い果たさないようにするためである。値の解放と回収の印付けも同じく明示の積み重ねで行う。
+ 
+ 【決定】構造の `=`（`EQV`）と鍵の順序の比較は、子を持つ対象の種類と構成子の `tag` を確かめて子を積むときに、その対象の組を覚える。構造の `=` では、欄の数・長さ（組の数）も等しいと確かめてから覚える。鍵の順序の比較では、辞書式の順序を保つため、欄の数・長さは成分を比べた後に比べる。同じ組に再び出会ったら、子の比較を省く。小さな比較では覚えない。比較の手数を、異なる対象の組とその成分を調べる手数で抑える。理由: 共有した部分木を持つ値を繰り返し展開し、深さに対して指数時間を使うことを防ぐためである。
+@@ -443,6 +446,8 @@ VM の実行関数は、要求と応答の方式では「要求を返して止
+ 
+ 【決定】通常値とヒープ値の橋渡しは、一呼び出しの引数全体と戻り値にそれぞれ私有の変換区間を設ける。構成子・List・Map・Set・String・Bytes の行きの対応表は、保持した Rc の対象の同一性と値の種類を鍵とし、構成子はタグ、String・Bytes は長さも含める。戻りの対応表は `ValueCtx::object_id` の ObjId と ObjKind を鍵とする。明示の作業列で子を先に変換し、完成した対象を再利用する。処理中の対象への再入は循環として処理系の不具合を返す。理由: 共有する子を繰り返し展開せず、同じ並びを異なる種類・タグで使う値も区別するためである。
+ 
++`Scope.PathIn` は、参照側でも既存の構成子と文字列の値で表し、この橋渡しを通す。専用のホスト側の値を設けず、検査で保持したパスの内容を射影まで保つ。
++
+ 対応表は `heap.epoch` 内で破棄し、次の呼び出しに裸のヒープ値を残さない。通常の組み込みの関数と外部関数に同じ区間の規則を適用する。Opaque の RootStack と RefValue の呼び出し世代の検査を保ち、セル・Lazy・継続・リソースは独自のストアで扱う。局所構築器の内部 Slot は通常値の変換へ渡さない。平坦な参照 List と永続ベクタの内部ノードの形は一致させない。
+ 
+ 【決定】参照インタプリタも、報告付き App が標準の `Process.exit(1)` であることを確かめる。ハンドラの探索後、既定の実装へ進む呼び出しだけで原因と任意の説明を所有した String にし、採用した終了の `RefOutcome::Exited.die_failure` に位置とともに保持する。ハンドラの継続に報告情報を保存しない。VM との差分比較は、終了状態に加え、原因・説明の有無と文章・ソース位置も比較する。
+diff --git a/docs/design/02-impl/02-09-runtime.md b/docs/design/02-impl/02-09-runtime.md
+index fb258c4e..d06953a3 100644
+--- a/docs/design/02-impl/02-09-runtime.md
++++ b/docs/design/02-impl/02-09-runtime.md
+@@ -24,6 +24,8 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し
+ 
+ 【決定】ヒープのモジュールは、回収しない区間を Rust の寿命で表す型（`Value<'epoch>`・`NoGcCtx<'epoch>`）を外に出し、区間の中の処理には回収の機能を渡さない。安全点へ戻る前に、この先使う値を VM の根の保存領域に置く。区間の寿命を外した値を扱うのは、根の保存領域と根の列挙を管理する小さな内部の実装だけである。別の実行のヒープの値を渡す誤りは、区間の中では型の印で防ぎ、根の保存領域では、保存した値が持つヒープの番号をすべてのビルドで比べて見つける。根の列挙の漏れは型で防げないので、ヒープのモジュールの API が安全と言えるのは、VM が根を漏れなく列挙し、列挙しなかった根を回収の後に読まないかぎりにおいてである。
+ 
++【決定】`Scope.checkPathIn` は、一つの回収しない区間の中で、入力の文字列の値を保持する `PathIn` と、それを保持する `Result.Ok` を既存の `alloc_fields` で作る。成功値を結果のレジスタへ保存した後は、構成子の既存の子の走査で入力の文字列まで辿る。`pathInValue` は保存した欄の値を返し、文字列を作り直さない。専用の根とホスト側の保存領域は設けず、既存の安全点と書き込みの障壁の規則に従う。
++
+ 【決定】根の列挙の漏れにより解放された対象への参照は、機能 `heap-verify` の構成では確保の世代の照合で見つけるが、既定の構成（`gc-mark-sweep` だけ）では見つけない。理由: 既定の構成で読み出しのたびに領域の外の表を引く費用を避けるためである。
+ 
+ 【決定】対象の識別（`ObjId`）は、確保ごとにヒープの中で一意な 64 ビットの通し番号とし、一周させず、解放した番地に作った対象にも別の番号を振る。理由: 番地を識別に使うと、解放後に同じ番地を再利用した対象と区別できないためである。
+diff --git a/docs/design/03-interop/03-06-stdlib.md b/docs/design/03-interop/03-06-stdlib.md
+index 788d3174..1210d895 100644
+--- a/docs/design/03-interop/03-06-stdlib.md
++++ b/docs/design/03-interop/03-06-stdlib.md
+@@ -129,6 +129,15 @@ end function
+ | `endpointHost`・`endpointHostPattern` | `function(value: CheckedEndpoint) -> String` |
+ | `endpointPort`・`endpointMinimumPort`・`endpointMaximumPort` | `function(value: CheckedEndpoint) -> Integer` |
+ 
++【決定】範囲付きのパスの検査と射影には、次の純粋な入口を提供する。標準署名の内部では、`checkPathIn` の成功型と `pathInValue` の引数型に、パスの範囲変数を一つ持つ。現在の呼び出しでは常に Top へ具体化するため、利用者から見た型は次のとおりである。Top はパターンへの所属を静的に絞らないことを表し、実行時の検査の成功を表す値の代用ではない。
++
++| 関数 | 型 |
++|---|---|
++| `checkPathIn` | `function(pattern: String, path: String) -> Result[PathIn, ScopeError]` |
++| `pathInValue` | `function(path: PathIn) -> String` |
++
++`checkPathIn` は、後述のパスの字面とパターンの規則で動的な入力を検査する。パターンの形式不良は `InvalidPattern`、対象の形式不良は `InvalidTarget`、所属不良は `OutsideScope` とし、この順で判定する。成功時は入力された同じパスを保持する `PathIn` を `Result.Ok` に入れる。`pathInValue` は、その同じパスを変更せず返す。既存の `CheckedPath` から検査を省いて変換する入口は持たない。
++
+ CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhostPattern/host/minimumPort/maximumPort/portを宣言順に保存する。ホストの条件と対象はASCIIの小文字に揃え、パスの条件と対象は受理した字面を保つ。整数は入力をそのまま保つ。変更する場合は公開の検査関数で再検査する。同じ型名の値でも、保存する条件は値ごとに異なる。
+ 
+ ホストは、ASCIIの英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非ASCII、NUL、URL、ポート付き、IPv6を拒否する。四つのラベルがすべて十進数字だけなら、数の範囲を問わずIPv4形式として拒否する。localhostは認める。DNSの長さの規格への適合は保証しない。パターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）だけであり、後二者は幹自身を含まない。
+@@ -148,9 +157,9 @@ CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhost
+ 
+ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のShowで引用・エスケープする。表示用の入力をUTF-8の境目で4096バイト以内へ省略し、引用後の各引数を2000バイト以内へ収める。引用後に長すぎる場合は、引用前の入力をUTF-8の境目で半分へ縮めて `...` を加え、引用し直す。構成子名・括弧・引用符・完成したエスケープを残し、省略時は閉じ括弧の後にも `...` を付ける。最終結果は4096バイト以内とする。保存した入力自体は切り詰めない。
+ 
+-形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。静的検査は借用した入力の判定までとし、成功文字列を複製しない。実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。VM値・構成子の固定タグは追加しない。
++形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。静的検査は借用した入力の判定までとし、成功文字列を複製しない。既存の三つの検査の実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。`checkPathIn` の実行本体も同じパスの判定を使い、成功時は入力の文字列の値を保持し、失敗時は既存の `ScopeError` の構成子を直接作る。`PathIn` 専用のVM値・構成子の固定タグは追加しない。
+ 
+-直接呼び出しでは既知の部分を追加検査する。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
++既存の `checkHost`・`checkPath`・`checkEndpoint` の直接呼び出しでは既知の部分を追加検査する。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
+ 
+ 成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
+ 
+diff --git a/docs/design/07-quality/07-04-formal-semantics.md b/docs/design/07-quality/07-04-formal-semantics.md
+index c2b68ed9..a4a4c7de 100644
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -276,6 +276,8 @@ Releaseの七判断と表層の七判断はQをパラメータに持ち、従来
+ - `TargetAgreement` の唯一の欄 `io_target` は、計画済みの新しい信頼条件（決定の判断 15）である。範囲の具体化の許容を満たす範囲の列 R̄ と、`s.inst R̄` で型の付いた引数について、応答の関係が許す観測が項目の形の観測の条件 `Scope.Signature.ShapeTargets` を満たすことを求める。範囲の列は欄の中で量化し、応答の関係は範囲の列を受け取らない。対象なしの形は対象を報告しない。旧 Top の形は宣言した種類の対象だけを報告する（リダイレクト・再帰・複数の対象を含めてよい）。単一の対象の形は、対象の位置の引数が保持する同じ対象をちょうど一つ報告する（問 9 の E1）。単一の対象の形でも、対象の位置の引数が対象を保持しないとき（検査済みの対象の値でも検査済みの要求の値でもない、範囲が Top の不透明型の定数の値）は、旧 Top の形として読む（`PrimSig.shapeAt`。対象は `Val.target?` で取り出す）。理由: 範囲が Top の不透明型には不透明型の定数も属し、その値は対象を持たないので、「ちょうど一つ」を求めると `io_exists` と両立しないためである。入力が範囲に属することは仮定せず、値の型付け（V-Checked・V-CheckedRequest）から示す。`io_target` と形の検査から、一回の呼び出しの観測の対象はどれも具体化した署名の効果の同じ名前の原子が許すことを示した（`Release/Lemmas/TargetSound.lean` の `Builtins.TargetAgreement.obs_allowed`。許可の関係の κ は表の `effKind` で読む `Builtins.Allows`）。この補題と継続を通した伝播から、一段の対象健全性と到達先の対象健全性を示した（前述の「証明する性質」）。
+ - 旧 Top の形には、文言として「実装が作用した対象をすべて観測に含む」（完全性。問 10）を加えて信頼する。完全性は対象の健全性の証明に使わないので、`io_target` の Lean の条件には書かない。`io_target` と完全性の文言、形の検査が読む表のデータ（`shape`・`effKind`・`valKind`）は、処理系の表と実装（観測の報告）との照合の対象であり、まだ照合していない。
+ 
++【決定】Rust の `Scope.checkPathIn` が作る `PathIn` は、入力のパスを保持する構成子の値であり、形式化の `Val.checked t` に対応させる。静的な範囲が Top でも対象を保持し、`pathInValue` は同じパスを返す。この成功値を、対象を持たない Top の不透明型の定数へ対応させない。`PrimSig.shapeAt` がその定数を旧 Top の形として読む条件は形式化に残るが、この条件は実装の所属検査と対象の保持を省く根拠にはしない。二つの純粋な入口の標準署名には種類 path の範囲変数を一つ持ち、Rust の型検査とコアの検査は Top で具体化する。署名の範囲変数と種類は通常の交換で書き出すが、プログラムの型には範囲変数を残さない。動的な検査・対象の保持と、[仮想機械](../02-impl/02-08-vm.md#値の表現)・[ランタイム](../02-impl/02-09-runtime.md#メモリの管理)の安全条件は Rust の実装とテストで照合する。この接続だけで、非 Top の局所解析、範囲付き IO、Rust と Lean の全比較の完了とはしない。
++
+ 範囲付きの項目の表（決定の判断 8、DET-03 の問 22、DET-04 の問 23）を `Release/TargetTable.lean` に置いた。七つの IO（`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn`、`Http.sendIn`）は単一の対象の形（`File.*In` は種類 path、`Http.sendIn` は種類 endpoint、引数の位置 0）、検査・射影・拡大（`Scope.checkPathIn`・`Http.checkRequestIn`・`Scope.pathInValue`・`Http.requestInValue`・`Scope.widenPathIn`・`Http.widenRequestIn`）は純粋な項目である。表のデータは、`effKind` が `File.Read`・`File.Write` で path、`Http.Connect` で endpoint、`valKind` が `Scope.PathIn` で path、`Http.RequestIn` で endpoint、`admitsR` が検査・射影・IO の一つの範囲と、拡大の入力の範囲 R を戻りの範囲 S が覆う組（`Range.Covers`）である。範囲付きの値型は資源の型にしない（`release_exists` の量化は以前と同じ）。全ての項目は `sig_scoped` の内容を満たし（`TargetTable.entries_scoped`）、七つの IO は形の検査を通る（`TargetTable.io_op`）。表のデータの `valContent` は `Http.RequestIn` に `Http.ClientRequest` を与える。δ と応答の関係はこの表の引数である。
+ 
+ 旧の条件と対象一致の条件の両方を満たす実例は `Release.ModelTargets.assumptions` である。次の表の項目を持ち、`Result` の構成子 `Ok`・`Err` を宣言したどのプログラムについても全体の信頼条件を満たす。文字列のパターンと対象の解析は形式化の外側であり、表の引数の関数とする。
+@@ -678,8 +680,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の
+ | 表層の節の添字と脱糖の範囲 | 段階 C・E2 の型付け・検査の関数を変更し、補題と例を追加。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Surface.HasClausesQ` は保護本体のエフェクト εb を受け取り、捕捉した組み込みの操作の型を `Surface.clauseIx B εb o`（規則の値 `Eff.clauseRange`、組み込みの操作でなければ Top）で具体化した `opSigAt` で節を型付ける（`Surface/Typing.lean`）。検査器は同じ規則を候補の原子の一覧の上で計算し（`Surface/ClauseIxRule.lean` の `clauseRangeIn`・`clauseIxIn`・`clauseOpSigIn`）、一覧が εb の原子を含むとき規則の値に等しい（`clauseRangeIn_eq`・`clauseIxIn_eq`・`opSigAt_clauseIxIn`・`clauseOpSigIn_eq`）。添字はコアの `ClauseIxOk` が許し（`clauseIx_ok`・`ClauseSig.of_clauseIx`）、表層の節の操作の型は εb から一つに決まり（`Surface/DesugarRange.lean` の `HasClausesQ.cons_sig_unique`・`cons_prim_rule`）、脱糖はコアの保護本体の効果を同じ εb にする（`handle_desugar_same_body_effect`）。旧の像での同値は `clauseSig_iff_old_of_rangeFree`・`HasClausesQ.sel_congr_of_rangeFree`。組み込みの呼び出しの範囲の列は、受理した列がそのままコアの項になり、検査の規則の `index` は由来の添字だけからなり、受理した範囲はそれを覆う（`desugar_checkRule_index`。受理は被覆で、等号を求めない。成功値の範囲への所属は δ から得る。`desugar_checkDelta_mem`）。脱糖の出力の定義の型は範囲の変数を持たない（`desugar_rangeFree`）。例 3a の節の添字 `/data/**` を表層の規則と検査器の計算から作る例は `Surface/ClauseIxExamples.lean` にある。規則の値を一つに選ぶのは εb を固定した型付けと検査器であり、表層の型付けの集合は狭まらない。導出は εb を `B_Sub` で広げられるので、純粋な保護本体を同じ名前の二つの範囲の原子へ広げると規則の値は Top になり、Top の操作の型で節を型付ける導出ができる（同ファイルの `wide_clauseIx`・`top_clause_typed`）。交換の書き出しは範囲の列と範囲付きの原子を書く（「交換の形式の版」） |
+ | 表記・構文（名前の原子と不透明型の範囲の位置） | 段階 B・C・E の共有型の構成子を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Atom.name l ix` と `Release.Ty.opaque o ix` は範囲の位置 `Scope.Signature.Ix`（`fixed`・`rvar`）を持ち、旧の綴りは `abbrev` の明示の Top の構築関数 `Atom.nameTop`・`Ty.opaqueTop` で書く（既定引数と暗黙の変換なし）。`Eff.single` は Top の原子を作る。原子の符号は `Release.Order.Range` の `nameIxCode`、不透明型の木と比較は `ixCode` を使う。型・行の代入は範囲の位置を変えない。代入の5補題（`Eff.mem_rawBind_rowImage`・`Eff.mem_bind`・`Eff.mem_substRho_rowImage`・`Eff.substRho_true_scoped`・`Eff.substAt_name`）の言明は範囲の位置へ一般化し、L10.2 は旧の言明を `Atom.TopImage` に限る系として残したが、利用側が全て一般化した言明へ移ったので、L50.3 で系を除いた（旧の言明は一般化した言明を Top の原子に当てて得る）。`handled` は範囲の位置を見ない（`handled_name`・`mem_handled_name_iff`）。資源の型・`release_exists`・`K_Release`・`C_Use`・表層の `with` は Top の不透明型に限り、`BuiltinOnly` は L10.2 の時点では Top の名前の原子だけを許した（L20.7 で範囲の位置によらない形にした。後述の「エフェクトの名前と開始状態（`BuiltinOnly` の案 BA）・信頼条件の分離」の行）。定数の型は Top であり、閉じた値に範囲付きの型を与える規則はない。進行・保存・エフェクトの健全性・脱糖の型の保存・`step_sound` の言明と `Builtins.Assumptions` の欄は変えず、`release_exists` の字面だけが Top の構築関数になる。Rust の処理系は範囲の位置を持たない。交換形式は corpus 15・sidecar 7 で範囲の位置を読み書きし、旧版は明示の Top として読む（「交換の形式の版」） |
+ | 型付け規則（範囲の変数の整形式性） | 段階 B・C・E の整形式と変数の範囲を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Ty.WF nr n`・`Ty.VarsIn nr n pe` は範囲の変数の個数の文脈 `nr` を持ち、不透明型の範囲の位置に `Scope.Signature.Ix.WF nr` を求める。`Ty.VarsIn`・`Eff.VarsIn` は効果の名前の原子にも `Atom.WF nr` を求め、`Eff.WF` は原子を読まない。プログラムの宣言・項・型付け・状態と `PrimSig.Scoped` は `nr = 0` で読む。型の移動・代入・正規化の整形式の補題（`Ty.shift_wf`・`Ty.subst_wf`・`Ty.bind_wf`・`Ty.norm_WF` など）は任意の `nr` で成り立つ。表層の検査器の有限支持の判定（`wfTy`・`cleanTy`・`cleanEff`・`cleanTopEff`）は範囲の変数を拒否する。`Release/RangeWF.lean` は以前の定義の写し `Ty.WFOld`・`Ty.VarsInOld`・`PrimSig.ScopedOld` と、範囲の位置の条件 `Ty.OpaqueRangesIn`・`Ty.RangesIn` への分解（`Ty.wf_iff_old`・`Ty.varsIn_iff_old`・`PrimSig.scoped_iff_old`）、`Builtins.Assumptions` の三つの欄の同値（`sat_unconstrained_iff_old`・`sat_local_iff_old`・`admits_local_iff_old`）と、範囲の変数を持つ型を文脈 0 で拒否する例を置く |
+-| 構文（検査済みの対象の値、署名の範囲の変数と具体化、範囲の具体化の許容） | 段階 B・C・E の共有型の構成子と組み込みの表を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Val.checked t` は検査済みの対象の値であり、代入・改名・移動で変わらない（`Release/RangeInst.lean` の `Val.substTyAt_checked` ほか）。型付けは「型付け規則（値の所属の葉の規則 V-Checked）」の行の規則で行い、`Val` を場合分けする定義と定理は新しい場合を自明に閉じる。`PrimSig.rkinds`（既定は空の列）と `PrimSig.nranges`、範囲の変数の番号の上限で読む `PrimSig.ScopedRanges`、`Builtins` の `effKind`・`valKind`・`admitsR`（既定は対象なし・何も許さない）を加えた。`Release/RangeInst.lean` は具体化 `Ty.rawInstR`・`Ty.instR`・`Eff.instR`・`Ty.instTarget`・`PrimSig.inst`、具体化と代入・移動・正規化の交換（`Ty.instR_bind`・`Ty.instR_substAt`・`Eff.norm_rawInstR_substAt`・`Ty.instR_shift`・`Ty.instTarget_substAt`・`Ty.norm_rawInstR`）、空の列と範囲の変数のない署名の具体化（`PrimSig.inst_nil`・`PrimSig.inst_of_scoped`）、引数の最上位の対象の位置の外の一致（`PrimSig.inst_params_agree_off_target`）、整形式性（`Ty.instR_wf_zero`・`PrimSig.inst_wf_zero`）、許容 `Builtins.RangeAdmissible` と Top の列の許容（`Builtins.rangeAdmissible_tops`）、範囲の変数 0 の表での `sig_scoped` の同値（`sig_scopedRanges_iff`・`sig_scopedRanges_iff_old`）を示す。`PrimSig.Scoped` と V-Prim の具体化は「型付け規則・実行の規則（組み込みの呼び出しの範囲の列と V-Prim の具体化）」の行にある。Rust の処理系は範囲の変数と検査済みの対象の値を持たない。交換形式は sidecar 7 の組み込みの表の署名で範囲の変数と種類・IO の形を持ち、検査済みの対象の値を持たない |
+-| 型付け規則（値の所属の葉の規則 V-Checked） | 段階 B・C・E の型付けの規則を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.HasTypeVQ.V_Checked` は、`B.valKind o = some t.kind` と `R.Mem t` を前提に `Val.checked t` に `Ty.opaque o (.fixed R)` を与える。網羅性の値の形 `Inhabits` に `checked`（範囲付きの値型の検査済みの対象の値）を加えた。`HasTypeVQ.inv_checked` は逆転の補題であり、標準形の定理の検査済みの対象の値の場合は不透明型でない型との矛盾で閉じる。`Release/Lemmas/Membership.lean` は逆転（`HasTypeVQ.checked_iff`）、範囲の拡大（`checked_widen`・`checked_widen_covers`・`checked_widen_top`・`widen_opaque`・`widen_opaque_top`）、不透明型の閉じた値の標準形（`canonical_opaque`）、旧の像での同値（`not_checked_of_noValKind`・`canonical_opaque_of_noValKind`・`release_exists_iff_old`・`Inhabits.opaque_iff`・`Exhaustive.opaqueTop_iff`）と、`/data/a.txt` の値が `Scope.PathIn[/data/**]` の型を持つ例を示す。V-Prim・実行の規則・`Builtins.Assumptions` の欄は変えていない。Rust の処理系と交換形式は検査済みの対象の値を持たない（交換の書き出しは `unsupported` にする） |
++| 構文（検査済みの対象の値、署名の範囲の変数と具体化、範囲の具体化の許容） | 段階 B・C・E の共有型の構成子と組み込みの表を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Val.checked t` は検査済みの対象の値であり、代入・改名・移動で変わらない（`Release/RangeInst.lean` の `Val.substTyAt_checked` ほか）。型付けは「型付け規則（値の所属の葉の規則 V-Checked）」の行の規則で行い、`Val` を場合分けする定義と定理は新しい場合を自明に閉じる。`PrimSig.rkinds`（既定は空の列）と `PrimSig.nranges`、範囲の変数の番号の上限で読む `PrimSig.ScopedRanges`、`Builtins` の `effKind`・`valKind`・`admitsR`（既定は対象なし・何も許さない）を加えた。`Release/RangeInst.lean` は具体化 `Ty.rawInstR`・`Ty.instR`・`Eff.instR`・`Ty.instTarget`・`PrimSig.inst`、具体化と代入・移動・正規化の交換（`Ty.instR_bind`・`Ty.instR_substAt`・`Eff.norm_rawInstR_substAt`・`Ty.instR_shift`・`Ty.instTarget_substAt`・`Ty.norm_rawInstR`）、空の列と範囲の変数のない署名の具体化（`PrimSig.inst_nil`・`PrimSig.inst_of_scoped`）、引数の最上位の対象の位置の外の一致（`PrimSig.inst_params_agree_off_target`）、整形式性（`Ty.instR_wf_zero`・`PrimSig.inst_wf_zero`）、許容 `Builtins.RangeAdmissible` と Top の列の許容（`Builtins.rangeAdmissible_tops`）、範囲の変数 0 の表での `sig_scoped` の同値（`sig_scopedRanges_iff`・`sig_scopedRanges_iff_old`）を示す。`PrimSig.Scoped` と V-Prim の具体化は「型付け規則・実行の規則（組み込みの呼び出しの範囲の列と V-Prim の具体化）」の行にある。Rust の処理系は標準署名の範囲変数を持ち、`Scope.checkPathIn` の成功値は入力のパスを保持する。`pathInValue` はその同じパスを返す。現在は Top で具体化し、非 Top の局所解析と呼び出しごとの範囲の列は未接続である。交換形式は sidecar 7 の組み込みの表の署名で範囲変数と種類・IO の形を持ち、検査済みの実行時の対象の値は書き出さない |
++| 型付け規則（値の所属の葉の規則 V-Checked） | 段階 B・C・E の型付けの規則を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.HasTypeVQ.V_Checked` は、`B.valKind o = some t.kind` と `R.Mem t` を前提に `Val.checked t` に `Ty.opaque o (.fixed R)` を与える。網羅性の値の形 `Inhabits` に `checked`（範囲付きの値型の検査済みの対象の値）を加えた。`HasTypeVQ.inv_checked` は逆転の補題であり、標準形の定理の検査済みの対象の値の場合は不透明型でない型との矛盾で閉じる。`Release/Lemmas/Membership.lean` は逆転（`HasTypeVQ.checked_iff`）、範囲の拡大（`checked_widen`・`checked_widen_covers`・`checked_widen_top`・`widen_opaque`・`widen_opaque_top`）、不透明型の閉じた値の標準形（`canonical_opaque`）、旧の像での同値（`not_checked_of_noValKind`・`canonical_opaque_of_noValKind`・`release_exists_iff_old`・`Inhabits.opaque_iff`・`Exhaustive.opaqueTop_iff`）と、`/data/a.txt` の値が `Scope.PathIn[/data/**]` の型を持つ例を示す。V-Prim・実行の規則・`Builtins.Assumptions` の欄は変えていない。Rust の処理系は、入力のパスを保持する `Scope.PathIn` の成功値を既存の構成子で表す。交換は、この実行時の値自体を表す節点を持たない（交換の書き出しは `unsupported` にする） |
+ | 構文・型付け規則（検査済みの要求の値と葉の規則 V-CheckedRequest）と Http の項目の実例 | 段階 B・C・E の共有型の構成子・型付けの規則・組み込みの表を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Val.checkedRequest t c` は、実効の endpoint の対象 t と要求の不透明型の定数 c を保持する検査済みの要求の値であり、代入・改名・移動で変わらない。`Release.Builtins.valContent`（既定は全て none）は範囲付きの値型の名前の値が保持する要求の型の名前であり、`Release/TargetTable.lean` の表は `Http.RequestIn` に `Http.ClientRequest` を与える。`Release.HasTypeVQ.V_CheckedRequest` は、`B.valKind o = some t.kind`・`R.Mem t`・`B.valContent o = some n`・`c.type = .opaqueTop n` を前提に `Ty.opaque o (.fixed R)` を与える。網羅性の値の形 `Inhabits` に `checkedRequest` を加えた。`Release/Lemmas/Inversion.lean` の `inv_checkedRequest`、`Release/Lemmas/MembershipBase.lean` の `checkedRequest_iff`・`checkedRequest_widen` と三つの場合の `canonical_opaque`、`Release/Lemmas/Membership.lean` の旧の像での同値（`not_checkedRequest_of_noValKind`・`not_checkedRequest_of_noValContent`・`Exhaustive.opaque_iff_noRequest`）を示す。`Release/ModelHttp.lean` は `Http.checkRequestIn`・`Http.requestInValue`・`Http.sendIn` の δ と応答を持ち二つの信頼条件を満たす実例の表（`assumptions`）、検査した要求が送信まで保たれること（`check_send_preserves`）、一段・到達先の対象健全性を Http の項目に当てる例を置く。`Surface.ScopeState` の成功値の対応と検査の契約は `Val.target?` で述べ、検査済みの要求の値を含む（「Scope の局所解析の接続定理」の行）。Rust の処理系と交換形式は検査済みの要求の値を持たない（交換の書き出しは `unsupported` にする） |
+ | 型付け規則・実行の規則（組み込みの呼び出しの範囲の列と V-Prim の具体化） | 段階 B・C・E の構文・型付け・実行の規則と仮定の欄を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Val.prim b ts es rs` は具体化した範囲の列を持つ。`Release.HasTypeVQ.V_Prim` は `B.RangeAdmissible b s rs` を前提に `s.inst rs` で型付ける（具体化の定義は `Release/RangeInstDef.lean`、`PrimSig.inst`・`Builtins.RangeAdmissible` は `Release/Typing.lean`）。`Builtins.delta` は範囲の列を受け取り、`delta_typed`・`io_typed`・`io_exists` は範囲の列で量化する。`PrimSig.Scoped` は範囲の変数の個数の文脈で読み、引数の位置の条件と操作の結果の条件を含む。`PrimSig.StoreShape` は `rkinds = []` を含む。`opSig` は引数を `Ty.instTarget s.topRanges` で具体化する（計算できる形）。正則性は `PrimSig.Scoped.inst_wf_zero`、型代入との交換は `PrimSig.Scoped.inst_varsIn_zero`（`Ty.instR_varsIn_zero`）、`E_OpPrim` の保存は `HasTypeVsQ.widen_topRanges`（`Release/Lemmas/MembershipBase.lean`）と `PrimSig.Scoped.inst_ret_of_opEff` で閉じる。交換の旧版の読み込みは空の範囲の列を書き、corpus 15 は範囲の列を読み書きする。表層の組み込みの関数の名前は範囲の列を持ち、脱糖はそれを写す（後述の表層の組み込みの名前の範囲の列の行）。表層の `E_Binary`・`E_Neg`・`StringAddOk`・`DieExitOk` は `s.nranges = 0` を求める（`HasTypeVQ.V_PrimNil`）。旧の像での同値は `Release/Lemmas/PrimRanges.lean` と `Surface/RangeFree.lean`、閉じた非 Top の値が組み込みへ渡る小例（E-Prim・E-IO・E-OpPrim）は `PrimRangeExamples` にある。小例の表は `Builtins.Assumptions` を満たす実例ではない。Rust の処理系は範囲の列を持たない（交換形式は corpus 15 で持つ） |
+ | 実行の規則（IO の事象の観測） | 段階 B の事象・遷移の規則・`Oracle`・`step` と仮定の欄を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Event.io` は観測 `obs : List Scope.Domain.Target` を持ち、`Builtins.ioResponse` は応答とともに観測を受け取り、`Oracle` は応答と観測の組を返す。E-IO・E-IOErr・E-Exit と `step` は応答の関係（`step` では `Oracle`）が与えた観測を事象に記録する。`io_kind`・`io_typed`・`io_exists` は観測を量化する。`Release/Lemmas/Observation.lean` は、観測を捨てた欄と以前の欄の同値（`Builtins.ioKind_iff_noObs`・`ioTyped_iff_noObs`・`ioExists_iff_noObs`・`ioFields_iff_old_of_liftNoObs`、範囲の量化との合成 `ioTyped_iff_oldNoObs`・`ioExists_iff_oldNoObs`）、`horacle` の新旧の関係（`horacle_noObs`・`horacle_of_noObs`）、観測を持つ遷移の逆転（`Step.io_inv`・`Step.io_noObs`）、旧 Top の HTTP の操作がリダイレクトの追従先を観測に含められる小例（`ObservationExamples.redirect_step`・`redirect_only_step`・`not_requires_first`）を示す。Rust の処理系と交換形式は観測を持たない |

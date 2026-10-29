@@ -1,0 +1,14 @@
+{
+  "id": "report-not-covered-test",
+  "command": [
+    "<repo>/target/release/benitoite",
+    "test",
+    "--check",
+    "--report=json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+  ],
+  "exit": 2,
+  "seconds": 0.01440129200000001,
+  "stdoutSha256": "d7a7955a1bf87d779997597eb9922b0b5d8fb7df5f2832d171acda04847fb43a",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

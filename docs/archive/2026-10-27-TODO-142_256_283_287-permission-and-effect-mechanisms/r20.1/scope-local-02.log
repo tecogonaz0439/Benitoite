@@ -1,0 +1,777 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.01s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 4 tests
+
+thread 'typeck::scope::tests::entry_scope_counts_function_and_implementation_dictionaries_first' (4293307) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        252,
+                    ),
+                    end: BytePos(
+                        262,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                252,
+                            ),
+                            end: BytePos(
+                                252,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                264,
+                            ),
+                            end: BytePos(
+                                264,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        388,
+                    ),
+                    end: BytePos(
+                        397,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                388,
+                            ),
+                            end: BytePos(
+                                388,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                399,
+                            ),
+                            end: BytePos(
+                                399,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments' (4293309) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        207,
+                    ),
+                    end: BytePos(
+                        216,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                207,
+                            ),
+                            end: BytePos(
+                                207,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                218,
+                            ),
+                            end: BytePos(
+                                218,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        280,
+                    ),
+                    end: BytePos(
+                        291,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                280,
+                            ),
+                            end: BytePos(
+                                280,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                293,
+                            ),
+                            end: BytePos(
+                                293,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        377,
+                    ),
+                    end: BytePos(
+                        384,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                377,
+                            ),
+                            end: BytePos(
+                                377,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                386,
+                            ),
+                            end: BytePos(
+                                386,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        421,
+                    ),
+                    end: BytePos(
+                        428,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                421,
+                            ),
+                            end: BytePos(
+                                421,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                430,
+                            ),
+                            end: BytePos(
+                                430,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+
+thread 'typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters' (4293308) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        190,
+                    ),
+                    end: BytePos(
+                        195,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                190,
+                            ),
+                            end: BytePos(
+                                190,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                197,
+                            ),
+                            end: BytePos(
+                                197,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments ... FAILED
+test typeck::scope::tests::entry_scope_counts_function_and_implementation_dictionaries_first ... FAILED
+test typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters ... FAILED
+
+thread 'typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations' (4293310) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        477,
+                    ),
+                    end: BytePos(
+                        482,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                477,
+                            ),
+                            end: BytePos(
+                                477,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                484,
+                            ),
+                            end: BytePos(
+                                484,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        513,
+                    ),
+                    end: BytePos(
+                        518,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                513,
+                            ),
+                            end: BytePos(
+                                513,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                520,
+                            ),
+                            end: BytePos(
+                                520,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        553,
+                    ),
+                    end: BytePos(
+                        558,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                553,
+                            ),
+                            end: BytePos(
+                                553,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                560,
+                            ),
+                            end: BytePos(
+                                560,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        622,
+                    ),
+                    end: BytePos(
+                        627,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                622,
+                            ),
+                            end: BytePos(
+                                622,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                629,
+                            ),
+                            end: BytePos(
+                                629,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::tests::entry_scope_counts_function_and_implementation_dictionaries_first
+    typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters
+    typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments
+    typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 1380 filtered out; finished in 0.15s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+
+exit: 101

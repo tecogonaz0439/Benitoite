@@ -1,5 +1,7 @@
 import Benitoite.Release.Lemmas.TySubst
 import Benitoite.Release.FailureEffects
+import Benitoite.Release.RangeInst
+import Benitoite.Release.ShapeOk
 
 /-!
 # 型とエフェクトの置き換えで型付けが保たれること：本体（契約名を持つコア）
@@ -24,14 +26,14 @@ theorem ConDecl.args_substAt {cd : ConDecl} (hcd : cd.Scoped) {ts : List Ty} (ht
     (c : Nat) (ts' : List Ty) (es' : List Eff) :
     (cd.args.map (Ty.subst ts [])).map (Ty.substAt c ts' es') =
       cd.args.map (Ty.subst (ts.map (Ty.substAt c ts' es')) []) := by
-  have h : Ty.VarsInList ts.length (· < ([] : List Eff).length) cd.args :=
+  have h : Ty.VarsInList 0 ts.length (· < ([] : List Eff).length) cd.args :=
     Ty.VarsInList.mono (by omega) (fun i hi => hi.elim) cd.args hcd
   rw [Ty.subst_comp_list c ts' es' cd.args h]
   rfl
 
 /-- 関数の型の置き換えの合成（V-Fun・V-Prim・V-Op の型に θ を施したもの）。 -/
 theorem fnTy_substAt {names : List String} {ps : List Ty} {r : Ty} {ε : Eff} {nt ne : Nat}
-    (hs : Ty.VarsInList nt (· < ne) ps ∧ Ty.VarsIn nt (· < ne) r ∧ Eff.VarsIn nt (· < ne) ε)
+    (hs : Ty.VarsInList 0 nt (· < ne) ps ∧ Ty.VarsIn 0 nt (· < ne) r ∧ Eff.VarsIn 0 nt (· < ne) ε)
     {ts : List Ty} {es : List Eff} (hts : ts.length = nt) (hes : es.length = ne)
     (c : Nat) (ts' : List Ty) (es' : List Eff) :
     (fnTy names ps r ε ts es).substAt c ts' es' =
@@ -109,6 +111,42 @@ mutual
         | dict _ _ => exact .dict
         | tapp _ _ => exact .tapp
         | ctor _ => exact .ctor
+    | .checked, t, hu => by
+        cases t with
+        | tvar i => exact .tvar
+        | «opaque» o ix =>
+            simp only [Ty.substAt, Ty.opaque.injEq] at hu
+            obtain ⟨rfl, rfl⟩ := hu
+            exact .checked
+        | fn names ps r ε => exact .fn
+        | reference a => exact .reference
+        | lazy a => exact .lazy
+        | cont b t ε => exact .cont
+        | map _ _ => exact .map
+        | set _ => exact .set
+        | bytes => exact .bytes
+        | dict _ _ => exact .dict
+        | tapp _ _ => exact .tapp
+        | ctor _ => exact .ctor
+        | _ => simp_all [Ty.substAt]
+    | .checkedRequest, t, hu => by
+        cases t with
+        | tvar i => exact .tvar
+        | «opaque» o ix =>
+            simp only [Ty.substAt, Ty.opaque.injEq] at hu
+            obtain ⟨rfl, rfl⟩ := hu
+            exact .checkedRequest
+        | fn names ps r ε => exact .fn
+        | reference a => exact .reference
+        | lazy a => exact .lazy
+        | cont b t ε => exact .cont
+        | map _ _ => exact .map
+        | set _ => exact .set
+        | bytes => exact .bytes
+        | dict _ _ => exact .dict
+        | tapp _ _ => exact .tapp
+        | ctor _ => exact .ctor
+        | _ => simp_all [Ty.substAt]
     | .con (cd := cd) (ts := ts) hc hn hargs, t, hu => by
         cases t with
         | tvar i => exact .tvar
@@ -338,18 +376,19 @@ theorem Exhaustive.substAt (hwf : P.WellFormed) (c : Nat) (ts' : List Ty) (es' :
 noncomputable def envSubst (c : Nat) (ts : List Ty) (es : List Eff) (Γ : List (Option Ty)) : List (Option Ty) :=
   Γ.map (Option.map (Ty.substAt c ts es))
 
-theorem opSig_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {o sg} (h : opSig P B o = some sg) :
+/-- 節の添字 S で具体化した操作の型は、宣言した型パラメータだけを使う（`opSig_scoped` の一般化。L30.1）。 -/
+theorem opSigAt_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {S o sg} (h : opSigAt P B S o = some sg) :
     NamesWF sg.names sg.params ∧
-    Ty.VarsInList sg.tparams.length (fun _ => False) sg.params ∧
-      Ty.VarsIn sg.tparams.length (fun _ => False) sg.ret := by
+    Ty.VarsInList 0 sg.tparams.length (fun _ => False) sg.params ∧
+      Ty.VarsIn 0 sg.tparams.length (fun _ => False) sg.ret := by
   cases o with
   | fail => cases h
   | user o =>
-      simp only [opSig, Option.map_eq_some_iff] at h
+      simp only [opSigAt, Option.map_eq_some_iff] at h
       obtain ⟨od, hod, rfl⟩ := h
       exact hwf.2.2.1 _ _ hod
   | prim b =>
-      simp only [opSig] at h
+      simp only [opSigAt] at h
       split at h
       · rename_i s hs
         split at h
@@ -357,14 +396,61 @@ theorem opSig_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {o sg} (h : opS
           simp only [Option.some.injEq] at h
           subst h
           have hio := hb.opEff_io _ _ _ hs hl
-          obtain ⟨_, _, _, _, hne, _, _⟩ := hb.io_op _ _ hs hio
+          obtain ⟨_, _, _, hne, _, _⟩ := (hb.io_op _ _ hs hio).common
           have hsc := hb.sig_scoped _ _ hs
-          unfold PrimSig.Scoped at hsc
-          rw [hne] at hsc
-          exact ⟨hsc.1, Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.1,
-            Ty.VarsIn.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.2.1⟩
+          have hp := (hsc.inst_varsIn_zero (rs := List.replicate s.nranges S) (by simp)).1
+          rw [PrimSig.inst_params] at hp
+          refine ⟨by simpa only [NamesWF, List.length_map] using hsc.1, ?_, ?_⟩
+          · exact Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hp
+          · exact Ty.VarsIn.mono (Nat.le_refl _) (fun i hi => by omega) _ (hsc.2.2.2.2.2 l hl)
         · cases h
       · cases h
+
+/-- 節の操作の型は、宣言した型パラメータだけを使う。 -/
+theorem ClauseSig.scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {e o sg} (h : ClauseSig P B e o sg) :
+    NamesWF sg.names sg.params ∧
+    Ty.VarsInList 0 sg.tparams.length (fun _ => False) sg.params ∧
+      Ty.VarsIn 0 sg.tparams.length (fun _ => False) sg.ret := by
+  obtain ⟨S, -, h⟩ := h
+  exact opSigAt_scoped hwf hb h
+
+/-- 行の変数を持たない効果は、代入で名前の原子が変わらず、行の変数を持たないままである。 -/
+theorem Eff.mem_substAt_of_noRows {c : Nat} {ts : List Ty} {es : List Eff} {e : Eff}
+    (he : ∀ i, ¬ Eff.mem e (.rho i)) (a : Atom) :
+    Eff.mem (Eff.substAt c ts es e) a ↔ Eff.mem e a := by
+  change Eff.mem (Eff.bind (SubstEnv.at c ts es) e) a ↔ _
+  rw [Eff.mem_bind]
+  constructor
+  · rintro (⟨l, r, rfl, h⟩ | ⟨i, hi, -⟩)
+    · exact h
+    · exact absurd hi (he i)
+  · intro h
+    cases a with
+    | name l r => exact Or.inl ⟨l, r, rfl, h⟩
+    | rho i => exact absurd h (he i)
+
+/-- 節の添字の規則の条件は、保護本体の効果への型の代入で保たれる（行の変数を持たない効果だけが条件を満たす）。 -/
+theorem Eff.ClauseRangeIs.substAt {c : Nat} {ts : List Ty} {es : List Eff} {e : Eff} {l : EffName}
+    {r : Scope.Domain.Range} (h : e.ClauseRangeIs l r) : (Eff.substAt c ts es e).ClauseRangeIs l r := by
+  obtain ⟨hno, hm, hu⟩ := h
+  refine ⟨fun i hi => hno i ((Eff.mem_substAt_of_noRows hno _).mp hi),
+    (Eff.mem_substAt_of_noRows hno _).mpr hm, fun ix hix => hu ix ((Eff.mem_substAt_of_noRows hno _).mp hix)⟩
+
+/-- 節の操作の型は、保護本体の効果への型の代入で保たれる。Top の節の添字は代入の後も Top のまま許される
+（代入で行の変数を具体化すると規則の値が Top から変わりうる）。 -/
+theorem ClauseSig.substAt {c : Nat} {ts : List Ty} {es : List Eff} {e o sg} (h : ClauseSig P B e o sg) :
+    ClauseSig P B (Eff.substAt c ts es e) o sg := by
+  obtain ⟨S, hS, h⟩ := h
+  refine ⟨S, ?_, h⟩
+  rcases hS with hS | ⟨b, s, l, ho, hs, hl, hr⟩
+  · exact Or.inl hS
+  · exact Or.inr ⟨b, s, l, ho, hs, hl, hr.substAt⟩
+
+theorem opSig_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {o sg} (h : opSig P B o = some sg) :
+    NamesWF sg.names sg.params ∧
+    Ty.VarsInList 0 sg.tparams.length (fun _ => False) sg.params ∧
+      Ty.VarsIn 0 sg.tparams.length (fun _ => False) sg.ret :=
+  opSigAt_scoped hwf hb (S := .top) (by rw [opSigAt_top]; exact h)
 
 theorem unguardedPats_substTy (c : Nat) (ts : List Ty) (es : List Eff) (arms : List Arm) :
     unguardedPats (Arm.substTyAtList c ts es arms) = unguardedPats arms := by
@@ -381,13 +467,13 @@ theorem Clause.substTyAtList_ops (c : Nat) (ts : List Ty) (es : List Eff) (h : L
   | cons cl cs ih => cases cl <;> simp [Clause.substTyAtList, Clause.op, ih]
 
 /-- 閉じた型引数が、空の制約の並びのもとで満たす制約は、どの並びのもとでも満たす。 -/
-theorem SatAll.closed (hb : B.Assumptions P) {ts tps} (hts : ClosedArgs ts) (h : SatAll B [] ts tps)
+theorem SatAll.closed (hb : B.CoreAssumptions P) {ts tps} (hts : ClosedArgs ts) (h : SatAll B [] ts tps)
     (C : List TParam) : SatAll B C ts tps :=
   ⟨h.1, fun i t p hi hp => by
     have := hb.sat_local [] C t p (by simpa using (hts _ (List.mem_of_getElem? hi)).1) (h.2 i t p hi hp)
     simpa using this⟩
 
-theorem SatAll.substAt (hb : B.Assumptions P) {C1 C0 : List TParam} {ts tps ts' es'}
+theorem SatAll.substAt (hb : B.CoreAssumptions P) {C1 C0 : List TParam} {ts tps ts' es'}
     (hts' : ClosedArgs ts') (hsat : SatAll B [] ts' C0) (h : SatAll B (C1 ++ C0) ts tps) :
     SatAll B C1 (ts.map (Ty.substAt C1.length ts' es')) tps := by
   refine ⟨by simpa using h.1, fun i t p hi hp => ?_⟩
@@ -406,13 +492,13 @@ theorem envSubst_get {c : Nat} {ts : List Ty} {es : List Eff} {Γ : List (Option
   simp [envSubst, h]
 
 theorem Ty.varsInList_of_forall {n : Nat} {pe : Nat → Prop} :
-    {as : List Ty} → (∀ a ∈ as, Ty.VarsIn n pe a) → Ty.VarsInList n pe as
+    {as : List Ty} → (∀ a ∈ as, Ty.VarsIn 0 n pe a) → Ty.VarsInList 0 n pe as
   | [], _ => trivial
   | a :: as, h => ⟨h a (by simp), Ty.varsInList_of_forall (fun x hx => h x (by simp [hx]))⟩
 
 /-- 実装の辞書の引数の型は、実装の型パラメータだけを使う。 -/
 theorem ImplDecl.dictTys_varsIn {P : Program} {id : ImplDecl} (hsc : id.Scoped P) (pe : Nat → Prop) :
-    Ty.VarsInList id.tparams.length pe id.dictTys := by
+    Ty.VarsInList 0 id.tparams.length pe id.dictTys := by
   apply Ty.varsInList_of_forall
   intro a ha
   simp only [ImplDecl.dictTys, List.mem_map] at ha
@@ -427,36 +513,36 @@ theorem ImplDecl.subst_substAt {P : Program} {id : ImplDecl} (hsc : id.Scoped P)
     (id.dictTys.map (Ty.subst ts [])).map (Ty.substAt c ts' es') =
       id.dictTys.map (Ty.subst (ts.map (Ty.substAt c ts' es')) []) := by
   constructor
-  · have h : Ty.VarsIn ts.length (· < ([] : List Eff).length) id.target :=
+  · have h : Ty.VarsIn 0 ts.length (· < ([] : List Eff).length) id.target :=
       Ty.VarsIn.mono (by omega) (fun i hi => hi.elim) _ hsc.2.1
     rw [Ty.subst_comp c ts' es' _ h]; rfl
-  · have h : Ty.VarsInList ts.length (· < ([] : List Eff).length) id.dictTys := by
+  · have h : Ty.VarsInList 0 ts.length (· < ([] : List Eff).length) id.dictTys := by
       rw [hts]; exact ImplDecl.dictTys_varsIn hsc _
     rw [Ty.subst_comp_list c ts' es' _ h]; rfl
 
 
 /-- 残す型束縛と閉じた像から、具体化後の型の範囲を得る。 -/
 theorem substTy_wf {C : List TParam} {c : Nat} {ts es x}
-    (hc : c ≤ C.length) (hts : ClosedArgs ts) (hes : ∀ e ∈ es, Eff.WF 0 e)
-    (hlen : ts.length = (C.drop c).length) (hx : Ty.WF C.length x) :
-    Ty.WF (C.take c).length (x.substAt c ts es) := by
+    (hc : c ≤ C.length) (hts : ClosedArgs ts) (hes : ∀ e ∈ es, Eff.WF 0 0 e)
+    (hlen : ts.length = (C.drop c).length) (hx : Ty.WF 0 C.length x) :
+    Ty.WF 0 (C.take c).length (x.substAt c ts es) := by
   have htc : (C.take c).length = c := by simp; omega
   rw [htc]
   apply Ty.substAt_wf es (fun t ht => (hts t ht).1) hes x
   apply Ty.WF.mono (by simp [hlen]; omega) x hx
 
 theorem substEff_wf {C : List TParam} {c : Nat} {ts es e}
-    (hc : c ≤ C.length) (hts : ClosedArgs ts) (hes : ∀ e ∈ es, Eff.WF 0 e)
-    (hlen : ts.length = (C.drop c).length) (he : Eff.WF C.length e) :
-    Eff.WF (C.take c).length (Eff.substAt c ts es e) := by
+    (hc : c ≤ C.length) (hts : ClosedArgs ts) (hes : ∀ e ∈ es, Eff.WF 0 0 e)
+    (hlen : ts.length = (C.drop c).length) (he : Eff.WF 0 C.length e) :
+    Eff.WF 0 (C.take c).length (Eff.substAt c ts es e) := by
   have htc : (C.take c).length = c := by simp; omega
   rw [htc]
   apply Eff.substAt_wf es (fun t ht => (hts t ht).1) hes e
   apply Eff.WF.mono (by simp [hlen]; omega) e he
 
-theorem Admissible.substTy (hb : B.Assumptions P) {C c tps ne Qs Qt Qt' ts es e ts' es'}
+theorem Admissible.substTy (hb : B.CoreAssumptions P) {C c tps ne Qs Qt Qt' ts es e ts' es'}
     (h : Admissible B C tps ne Qs Qt ts es e)
-    (hc : c ≤ C.length) (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 e)
+    (hc : c ≤ C.length) (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 0 e)
     (hsat : SatAll B [] ts' (C.drop c)) (hr : RowTransport Qt Qt' es') :
     Admissible B (C.take c) tps ne Qs Qt'
       (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) e := by
@@ -477,16 +563,16 @@ theorem Admissible.substTy (hb : B.Assumptions P) {C c tps ne Qs Qt Qt' ts es e 
   · simpa only [List.length_map] using h.sourceRows
   · simpa only [List.length_map] using h.sourceQ
 
-theorem PrimitiveAdmissible.substTy (hb : B.Assumptions P) {C c b s Q Q' ts es ts' es'}
-    (hs : B.sig b = some s) (h : PrimitiveAdmissible C s Q ts es)
-    (hc : c ≤ C.length) (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 e)
+theorem PrimitiveAdmissible.substTy (hb : B.CoreAssumptions P) {C c b s rs Q Q' ts es ts' es'}
+    (hs : B.sig b = some s) (h : PrimitiveAdmissible C (s.inst rs) Q ts es)
+    (hc : c ≤ C.length) (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 0 e)
     (hsat : SatAll B [] ts' (C.drop c)) (hr : RowTransport Q Q' es') :
-    PrimitiveAdmissible (C.take c) s Q'
+    PrimitiveAdmissible (C.take c) (s.inst rs) Q'
       (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) := by
   have htc : (C.take c).length = c := by simp; omega
   have had := h.admits
   rw [← List.take_append_drop c C] at had
-  have had' := hb.admits_subst _ _ _ _ _ _ es' hs had
+  have had' := hb.admits_subst _ s _ _ _ _ es' hs had
     ⟨fun t ht => (hts t ht).1, hsat.closed hb hts _⟩ hsat.1
   rw [htc] at had'
   refine ⟨by simpa using h.typeCount, had', ?_, by simpa using h.rowCount, ?_, ?_, ?_,
@@ -503,7 +589,7 @@ theorem PrimitiveAdmissible.substTy (hb : B.Assumptions P) {C c b s Q Q' ts es t
 
 theorem MethodRowsAdmissible.substTy {C c Q Q' ms es ts' es'}
     (h : MethodRowsAdmissible C Q ms es) (hc : c ≤ C.length)
-    (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 e)
+    (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 0 e)
     (hlen : ts'.length = (C.drop c).length) (hr : RowTransport Q Q' es') :
     MethodRowsAdmissible (C.take c) Q' ms (es.map (Eff.substAt c ts' es')) := by
   refine ⟨by simpa using h.1, ?_, ?_, ?_, h.2.2.2.2.compose_scoped h.2.2.2.1 hr c ts'⟩
@@ -515,12 +601,12 @@ theorem MethodRowsAdmissible.substTy {C c Q Q' ms es ts' es'}
 
 -- 置き換える位置の内側で束縛された型パラメータは、並び `C` の先頭の `c` 個である。
 mutual
-  theorem HasTypeVQ.substTy (hwf : P.WellFormed) (hb : B.Assumptions P) {Q' : NoFailCtx} {Ψ C Γ v a ts' es'} {c : Nat}
+  theorem HasTypeVQ.substTy (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Q' : NoFailCtx} {Ψ C Γ v a ts' es'} {c : Nat}
       (h : HasTypeVQ P B Ψ Q C Γ v a) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeVQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (v.substTyAt c ts' es') (a.substAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
-    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+    have transportWF : ∀ {x}, Ty.WF 0 C.length x → Ty.WF 0 (C.take c).length (x.substAt c ts' es') := by
       intro x hx
       rw [htc]
       refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_
@@ -537,12 +623,11 @@ mutual
         unfold Def.Scoped at hsc
         rw [fnTy_substAt ⟨hsc.2.1, hsc.2.2.1, hsc.2.2.2.1⟩ had.types.1 had.rowCount]
         exact .V_Fun hd hnames (had.substTy hb hc hts hes' hsat hrow)
-    | .V_Prim hs hnames had =>
+    | .V_Prim (s := s) (rs := rs) hs hrs hnames had =>
         simp only [Val.substTyAt]
-        have hsc := hb.sig_scoped _ _ hs
-        unfold PrimSig.Scoped at hsc
-        rw [fnTy_substAt hsc.2 had.typeCount had.rowCount]
-        exact .V_Prim hs hnames (had.substTy hb hs hc hts hes' hsat hrow)
+        have hsc := (hb.sig_scoped _ _ hs).inst_varsIn_zero hrs.nranges_le
+        rw [fnTy_substAt hsc had.typeCount had.rowCount]
+        exact .V_Prim hs hrs hnames (had.substTy hb hs hc hts hes' hsat hrow)
     | .V_Op hod hnames hsat' =>
         simp only [Val.substTyAt]
         have hsc := hwf.2.2.1 _ _ hod
@@ -552,7 +637,7 @@ mutual
           by constructor
              · intro i hi
                cases hi
-             · trivial⟩ hsat'.1 rfl]
+             · exact ⟨trivial, Eff.single_atoms_wf 0 _⟩⟩ hsat'.1 rfl]
         rw [hCsplit] at hsat'
         have := SatAll.substAt (es' := es') hb hts hsat hsat'
         rw [htc] at this
@@ -591,7 +676,7 @@ mutual
         rw [hCsplit] at hkey
         have hkey' := hb.sat_subst _ _ _ _ ts' es' hkey ⟨fun t ht => (hts t ht).1, hsat.closed hb hts _⟩ hsat.1
         rw [htc] at hkey'
-        have hwf' : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+        have hwf' : ∀ {x}, Ty.WF 0 C.length x → Ty.WF 0 (C.take c).length (x.substAt c ts' es') := by
           intro x hx
           rw [htc]
           refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_
@@ -608,6 +693,8 @@ mutual
         refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_
         rw [hsat.1]; exact Ty.WF.mono (by simp; omega) _ hw
     | .V_Bytes => simp only [Val.substTyAt, Ty.substAt]; exact .V_Bytes
+    | .V_Checked hk hm => simp only [Val.substTyAt, Ty.substAt]; exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => simp only [Val.substTyAt, Ty.substAt]; exact .V_CheckedRequest hk hm hc ht
     | .V_Dict (id := id) hi hsat' hvs =>
         simp only [Val.substTyAt, Ty.substAt]
         have hsc := hwf.2.2.2.2 _ _ hi
@@ -627,9 +714,9 @@ mutual
     | .V_Sub h hle hw =>
         exact .V_Sub (HasTypeVQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hle.substAt _ _ _) (transportWF hw)
 
-  theorem HasTypeVsQ.substTy (hwf : P.WellFormed) (hb : B.Assumptions P) {Q' : NoFailCtx} {Ψ C Γ vs as ts' es'} {c : Nat}
+  theorem HasTypeVsQ.substTy (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Q' : NoFailCtx} {Ψ C Γ vs as ts' es'} {c : Nat}
       (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeVsQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (Val.substTyAtList c ts' es' vs)
         (as.map (Ty.substAt c ts' es')) := by
     match h with
@@ -638,9 +725,9 @@ mutual
         simp only [Val.substTyAtList, List.map_cons]
         exact .cons (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow) (HasTypeVsQ.substTy hwf hb hvs hc hts hes' hsat hΨ hrow)
 
-  theorem HasTypeEachQ.substTy (hwf : P.WellFormed) (hb : B.Assumptions P) {Q' : NoFailCtx} {Ψ C Γ vs a ts' es'} {c : Nat}
+  theorem HasTypeEachQ.substTy (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Q' : NoFailCtx} {Ψ C Γ vs a ts' es'} {c : Nat}
       (h : HasTypeEachQ P B Ψ Q C Γ vs a) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeEachQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (Val.substTyAtList c ts' es' vs)
         (a.substAt c ts' es') := by
     match h with
@@ -649,13 +736,13 @@ mutual
         simp only [Val.substTyAtList]
         exact .cons (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow) (HasTypeEachQ.substTy hwf hb hvs hc hts hes' hsat hΨ hrow)
 
-  theorem HasTypeCQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P) {Q' : NoFailCtx} {Ψ C Γ R m a ε ts' es'} {c : Nat}
+  theorem HasTypeCQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Q' : NoFailCtx} {Ψ C Γ R m a ε ts' es'} {c : Nat}
       (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeCQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
         (m.substTyAt c ts' es') (a.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
-    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+    have transportWF : ∀ {x}, Ty.WF 0 C.length x → Ty.WF 0 (C.take c).length (x.substAt c ts' es') := by
       intro x hx
       rw [htc]
       refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_
@@ -678,9 +765,9 @@ mutual
         exact .C_Return (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow)
     | .C_Sub h hle hs hw =>
         exact .C_Sub (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hle.substAt _ _ _)
-          (Eff.substAt_mono c ts' es' hs) (transportWF hw)
+          (hs.substAt c ts' es') (transportWF hw)
     | .C_Eff h hs =>
-        exact .C_Eff (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (Eff.substAt_mono c ts' es' hs)
+        exact .C_Eff (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hs.substAt c ts' es')
     | .C_Let hm hn =>
         simp only [Comp.substTyAt]
         have h2 := HasTypeCQ.substTy hwf hb hn hc hts hes' hsat hΨ hrow
@@ -769,7 +856,7 @@ mutual
           hv' hcl hmeth hnames hsat''
           (by
             have hscope' : ∀ t ∈ (ss ++ [τ]).map (Ty.substAt c ts' es'),
-                Ty.WF (C.take c).length t ∧ ∀ b r e, t ≠ .cont b r e := by
+                Ty.WF 0 (C.take c).length t ∧ ∀ b r e, t ≠ .cont b r e := by
               intro t ht
               obtain ⟨u, hu, rfl⟩ := List.mem_map.mp ht
               exact ⟨substTy_wf hc hts hes' hsat.1 (hscope u hu).1,
@@ -780,15 +867,15 @@ mutual
         rw [h2, h3]
         simpa using this
 
-  theorem HasTypeArmsQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
+  theorem HasTypeArmsQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.CoreAssumptions P)
       {Q' : NoFailCtx} {Ψ C Γ R arms a b ε ts' es'} {c : Nat}
       (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeArmsQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
         (Arm.substTyAtList c ts' es' arms) (a.substAt c ts' es')
         (b.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
-    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+    have transportWF : ∀ {x}, Ty.WF 0 C.length x → Ty.WF 0 (C.take c).length (x.substAt c ts' es') := by
       intro x hx
       rw [htc]
       refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_
@@ -820,23 +907,23 @@ mutual
           rw [envSubst_binds] at hh
           simpa only [List.length_map, LocalCtx.substTyAt_extend] using hh
 
-  theorem HasTypeClausesQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
-      {Q' : NoFailCtx} {Ψ C Γ R h t ε ts' es'} {c : Nat}
-      (hcl : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+  theorem HasTypeClausesQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.CoreAssumptions P)
+      {Q' : NoFailCtx} {Ψ C Γ R εb h t ε ts' es'} {c : Nat}
+      (hcl : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasTypeClausesQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
-        (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
+        (Eff.substAt c ts' es' εb) (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     match hcl with
     | .nil => simp only [Clause.substTyAtList]; exact .nil
     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
         simp only [Clause.substTyAtList]
-        refine .cons hsg hnames hn hk (by
+        refine .cons hsg.substAt hnames hn hk (by
           have htc : (C.take c).length = c := by simp; omega
           rw [htc]
           apply Eff.substAt_wf es' (fun t ht => (hts t ht).1) hes' ε
           rw [hsat.1]
           exact Eff.WF.mono (by simp; omega) ε hew) ?_ (HasTypeClausesQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
-        have hsc := opSig_scoped hwf hb hsg
+        have hsc := hsg.scoped hwf hb
         have hc' : c + k ≤ (sg.tparams ++ C).length := by simp; omega
         have hdrop : (sg.tparams ++ C).drop (c + k) = C.drop c := by
           rw [hk, Nat.add_comm]; simp [List.drop_append]
@@ -860,16 +947,16 @@ mutual
           | some r => simp only [Option.map_some]; rw [Ty.shift_substAt es' (fun t ht => (hts t ht).1) hes']
         rw [hR] at this
         simpa only [LocalCtx.substTyAt, List.map_nil, envSubst, Eff.shift_substAt es' (fun t ht => (hts t ht).1) hes'] using this
-  theorem HasFailureClause.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
+  theorem HasFailureClause.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.CoreAssumptions P)
       {Q' : NoFailCtx} {Ψ C Γ E R h t ε ts' es'} {c : Nat}
       (hcl : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
-      (hes' : ∀ e ∈ es', Eff.WF 0 e) (hsat : SatAll B [] ts' (C.drop c))
+      (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c))
       (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
       HasFailureClause P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (E.substAt c ts' es')
         (R.map (Ty.substAt c ts' es')) (Clause.substTyAtList c ts' es' h)
         (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
     have htc : (C.take c).length = c := by simp; omega
-    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+    have transportWF : ∀ {x}, Ty.WF 0 C.length x → Ty.WF 0 (C.take c).length (x.substAt c ts' es') := by
       intro x hx
       rw [htc]
       refine Ty.substAt_wf es' (fun t ht => (hts t ht).1) hes' _ ?_

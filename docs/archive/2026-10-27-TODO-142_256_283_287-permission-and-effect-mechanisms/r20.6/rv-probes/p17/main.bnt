@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.Scope as S
+trait Scope[T]
+ function checkPathIn(pattern: String, path: T) -> Result[S.PathIn["/data/a"], S.ScopeError]
+end trait
+implement Scope[String]
+ function checkPathIn(pattern: String, path: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+  return S.checkPathIn(pattern: "/data/a", path: path)
+ end function
+end implement
+function sample(p: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+ return Scope.checkPathIn(pattern: "/x/**", path: p)
+end function
+function main() -> Unit
+ ()
+end function

@@ -1,0 +1,888 @@
+diff --git a/formal/Benitoite.lean b/formal/Benitoite.lean
+index 27f44d15..74e61671 100644
+--- a/formal/Benitoite.lean
++++ b/formal/Benitoite.lean
+@@ -256,6 +256,7 @@ import Benitoite.Scope.Cover
+ import Benitoite.Scope.IPCover
+ import Benitoite.Scope.RangeCover
+ import Benitoite.Release.RangeNormalize
++import Benitoite.Release.EffectCoverDef
+ import Benitoite.Release.EffectCover
+ import Benitoite.Release.RangeWF
+ import Benitoite.Release.Order.Range
+diff --git a/formal/Benitoite/Release/EffectCover.lean b/formal/Benitoite/Release/EffectCover.lean
+index 2a4dd8b2..32e2e144 100644
+--- a/formal/Benitoite/Release/EffectCover.lean
++++ b/formal/Benitoite/Release/EffectCover.lean
+@@ -1,3 +1,4 @@
++import Benitoite.Release.EffectCoverDef
+ import Benitoite.Scope.RangeCover
+ import Benitoite.Release.TypeScopedSubst
+ 
+@@ -24,106 +25,6 @@ import Benitoite.Release.TypeScopedSubst
+ 
+ namespace Benitoite.Release
+ 
+-/-! ## 原子の被覆 -/
+-
+-/-- 原子の被覆（引数は外側が先）。同じ名前の閉じた範囲の原子どうしは範囲の被覆で覆う。範囲の変数の原子と行の
+-原子は同じ原子だけが覆う。名前の違う原子、閉じた範囲と範囲の変数の組、名前と行の組は覆わない（判断 5 の
+-「未確定の行変数を範囲原子で覆わない」。範囲の変数も具体化の前は覆わない）。 -/
+-def Atom.Covers : Atom → Atom → Prop
+-  | .name l (.fixed r), .name m (.fixed s) => l = m ∧ r.Covers s
+-  | .name l (.rvar i), .name m (.rvar j) => l = m ∧ i = j
+-  | .rho i, .rho j => i = j
+-  | _, _ => False
+-
+-/-- 原子の被覆の判定。 -/
+-def Atom.covers? : Atom → Atom → Bool
+-  | .name l (.fixed r), .name m (.fixed s) => l == m && r.covers? s
+-  | .name l (.rvar i), .name m (.rvar j) => l == m && i == j
+-  | .rho i, .rho j => i == j
+-  | _, _ => false
+-
+-theorem Atom.covers?_spec (a b : Atom) : a.covers? b = true ↔ a.Covers b := by
+-  rcases a with ⟨l, r | i⟩ | i <;> rcases b with ⟨m, s | j⟩ | j <;>
+-    simp [Atom.covers?, Atom.Covers, Scope.Domain.Range.covers?_spec]
+-
+-instance (a b : Atom) : Decidable (a.Covers b) := decidable_of_iff _ (Atom.covers?_spec a b)
+-
+-theorem Atom.Covers.refl (a : Atom) : a.Covers a := by
+-  rcases a with ⟨l, r | i⟩ | i <;> simp [Atom.Covers, Scope.Domain.Range.Covers.refl]
+-
+-theorem Atom.Covers.trans {a b c : Atom} (h₁ : a.Covers b) (h₂ : b.Covers c) : a.Covers c := by
+-  rcases a with ⟨l, r | i⟩ | i <;> rcases b with ⟨m, s | j⟩ | j <;> rcases c with ⟨n, u | k⟩ | k <;>
+-    simp only [Atom.Covers] at h₁ h₂ ⊢
+-  · exact ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
+-  · exact ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
+-  · exact h₁.trans h₂
+-
+-/-- 閉じた範囲の名前の原子を覆うのは、同じ名前の閉じた範囲の原子で、範囲が覆うものだけである。 -/
+-theorem Atom.covers_fixed_iff {a : Atom} {l : EffName} {s : Scope.Domain.Range} :
+-    a.Covers (.name l (.fixed s)) ↔ ∃ r, a = .name l (.fixed r) ∧ r.Covers s := by
+-  rcases a with ⟨m, r | i⟩ | i <;> simp only [Atom.Covers]
+-  · constructor
+-    · rintro ⟨rfl, h⟩; exact ⟨r, rfl, h⟩
+-    · rintro ⟨r', h, hc⟩; cases h; exact ⟨rfl, hc⟩
+-  · simp
+-  · simp
+-
+-/-- 範囲の変数の原子を覆うのは、同じ原子だけである。 -/
+-theorem Atom.covers_rvar_iff {a : Atom} {l : EffName} {j : Nat} :
+-    a.Covers (.name l (.rvar j)) ↔ a = .name l (.rvar j) := by
+-  rcases a with ⟨m, r | i⟩ | i <;> simp only [Atom.Covers]
+-  · simp
+-  · constructor
+-    · rintro ⟨rfl, rfl⟩; rfl
+-    · intro h; cases h; exact ⟨rfl, rfl⟩
+-  · simp
+-
+-/-- 行の原子を覆うのは、同じ行の原子だけである（判断 5）。 -/
+-theorem Atom.covers_rho_iff {a : Atom} {j : Nat} : a.Covers (.rho j) ↔ a = .rho j := by
+-  rcases a with ⟨m, r | i⟩ | i <;> simp [Atom.Covers]
+-
+-/-- 名前の原子を覆うのは、同じ名前の原子だけである。 -/
+-theorem Atom.Covers.name_right {a : Atom} {l : EffName} {ix : Scope.Signature.Ix}
+-    (h : a.Covers (.name l ix)) : ∃ jx, a = .name l jx := by
+-  cases ix with
+-  | fixed s => obtain ⟨r, rfl, -⟩ := Atom.covers_fixed_iff.mp h; exact ⟨_, rfl⟩
+-  | rvar j => exact ⟨_, Atom.covers_rvar_iff.mp h⟩
+-
+-/-- Top の名前の原子を覆うのは、同じ名前の Top の原子だけである（L10.4 の `Range.not_covers_top`）。 -/
+-theorem Atom.covers_nameTop_iff {a : Atom} {l : EffName} : a.Covers (.nameTop l) ↔ a = .nameTop l := by
+-  rw [Atom.covers_fixed_iff]
+-  constructor
+-  · rintro ⟨r, rfl, h⟩
+-    rw [(Scope.Domain.Range.covers_top_iff r).mp h]
+-  · intro h; exact ⟨.top, h, Scope.Domain.Range.top_covers _⟩
+-
+-/-- 内側が Top の原子は、非 Top の閉じた範囲の原子に覆われない。 -/
+-theorem Atom.not_covers_nameTop {l m : EffName} {r : Scope.Domain.Range} (hr : r ≠ .top) :
+-    ¬ (Atom.name l (.fixed r)).Covers (.nameTop m) := by
+-  rw [Atom.covers_nameTop_iff]
+-  intro h; cases h; exact hr rfl
+-
+-/-- Top の名前の原子は、同じ名前の閉じた範囲の原子をすべて覆う。 -/
+-theorem Atom.nameTop_covers_iff {l : EffName} {b : Atom} :
+-    (Atom.nameTop l).Covers b ↔ ∃ s, b = .name l (.fixed s) := by
+-  rcases b with ⟨m, s | j⟩ | j <;> simp only [Atom.Covers]
+-  · constructor
+-    · rintro ⟨rfl, -⟩; exact ⟨s, rfl⟩
+-    · rintro ⟨s', h⟩; cases h; exact ⟨rfl, Scope.Domain.Range.top_covers _⟩
+-  · simp
+-  · simp
+-
+-/-- 旧の原子の像（Top の名前の原子と行）では、被覆は等号と同じである。 -/
+-theorem Atom.covers_iff_eq_of_topImage {a b : Atom} (hb : b.TopImage) : a.Covers b ↔ a = b := by
+-  rcases b with ⟨l, ix⟩ | j
+-  · cases hb; exact Atom.covers_nameTop_iff
+-  · exact Atom.covers_rho_iff
+-
+-/-- 覆う原子の名前は、範囲の被覆の健全性を通して、内側の範囲の対象を種類に相対的に含む。 -/
+-theorem Atom.Covers.sound_fixed {r s : Scope.Domain.Range} {l m : EffName}
+-    (h : (Atom.name l (.fixed r)).Covers (.name m (.fixed s))) : l = m ∧ s.Sub r :=
+-  ⟨h.1, Scope.Domain.Range.Covers.sound h.2⟩
+-
+ /-! ## 許可の関係 -/
+ 
+ /-- 効果の上限 ε が、名前 l の操作の対象 t を許す。κ は名前から対象の種類への関数（署名の表の `effKind` の位置）
+@@ -264,25 +165,6 @@ end Allows
+ 
+ /-! ## 効果の被覆 -/
+ 
+-/-- 効果の被覆（引数は外側が先）。ε' の各原子を ε のいずれか一原子が覆い、ε' の Fail の型が ε に属する。
+-Fail の型は構造上の所属で比べる（判断 5 の「Fail の型と行変数の規則は保つ」）。一原子を複数の原子の和で覆う
+-判定はしない。構造上の包含 `Eff.Sub` とは別の関係である（問 13）。 -/
+-def Eff.Covers (ε ε' : Eff) : Prop :=
+-  (∀ a, Eff.mem ε' a → ∃ b, Eff.mem ε b ∧ b.Covers a) ∧ (∀ t, Eff.memFail ε' t → Eff.memFail ε t)
+-
+-theorem Eff.Covers.refl (ε : Eff) : ε.Covers ε :=
+-  ⟨fun a ha => ⟨a, ha, Atom.Covers.refl a⟩, fun _ => id⟩
+-
+-theorem Eff.Covers.trans {ε₁ ε₂ ε₃ : Eff} (h₁ : ε₁.Covers ε₂) (h₂ : ε₂.Covers ε₃) : ε₁.Covers ε₃ := by
+-  refine ⟨fun a ha => ?_, fun t ht => h₁.2 t (h₂.2 t ht)⟩
+-  obtain ⟨b, hb, hba⟩ := h₂.1 a ha
+-  obtain ⟨c, hc, hcb⟩ := h₁.1 b hb
+-  exact ⟨c, hc, hcb.trans hba⟩
+-
+-/-- 構造上の包含は被覆を与える（向きに注意: `Eff.Sub ε' ε` は内側が先）。 -/
+-theorem Eff.Sub.covers {ε ε' : Eff} (h : Eff.Sub ε' ε) : ε.Covers ε' :=
+-  ⟨fun a ha => ⟨a, h.1 a ha, Atom.Covers.refl a⟩, h.2⟩
+-
+ /-- 健全性: 被覆は、どの名前の種類の関数 κ についても許可の包含を与える。 -/
+ theorem Eff.Covers.sound {ε ε' : Eff} (h : ε.Covers ε') {κ : EffName → Option Scope.Domain.Kind}
+     {l : EffName} {t : Scope.Domain.Target} (ha : Eff.Allows κ ε' l t) : Eff.Allows κ ε l t := by
+@@ -291,101 +173,6 @@ theorem Eff.Covers.sound {ε ε' : Eff} (h : ε.Covers ε') {κ : EffName → Op
+   obtain ⟨r, rfl, hrs⟩ := Atom.covers_fixed_iff.mp hbc
+   exact ⟨k, r, hk, hb, hrs.sound_memK ht⟩
+ 
+-/-- 被覆の下で、内側の閉じた範囲の名前の原子には、同じ名前の閉じた範囲の原子で意味の上で含む原子がある。 -/
+-theorem Eff.Covers.name_fixed {ε ε' : Eff} (h : ε.Covers ε') {l : EffName} {s : Scope.Domain.Range}
+-    (hm : Eff.mem ε' (.name l (.fixed s))) : ∃ r, Eff.mem ε (.name l (.fixed r)) ∧ r.Covers s ∧ s.Sub r := by
+-  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
+-  obtain ⟨r, rfl, hrs⟩ := Atom.covers_fixed_iff.mp hbc
+-  exact ⟨r, hb, hrs, hrs.sound⟩
+-
+-/-- 内側の Top の原子は、外側の同じ名前の Top の原子だけが覆う。 -/
+-theorem Eff.Covers.nameTop {ε ε' : Eff} (h : ε.Covers ε') {l : EffName} (hm : Eff.mem ε' (.nameTop l)) :
+-    Eff.mem ε (.nameTop l) := by
+-  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
+-  rwa [Atom.covers_nameTop_iff.mp hbc] at hb
+-
+-/-- 内側の行の原子は、外側の同じ行の原子だけが覆う（判断 5）。 -/
+-theorem Eff.Covers.rho {ε ε' : Eff} (h : ε.Covers ε') {i : Nat} (hm : Eff.mem ε' (.rho i)) :
+-    Eff.mem ε (.rho i) := by
+-  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
+-  rwa [Atom.covers_rho_iff.mp hbc] at hb
+-
+-/-- 内側の範囲の変数の原子は、外側の同じ原子だけが覆う。 -/
+-theorem Eff.Covers.rvar {ε ε' : Eff} (h : ε.Covers ε') {l : EffName} {j : Nat}
+-    (hm : Eff.mem ε' (.name l (.rvar j))) : Eff.mem ε (.name l (.rvar j)) := by
+-  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
+-  rwa [Atom.covers_rvar_iff.mp hbc] at hb
+-
+-theorem Eff.covers_norm_left {ε ε' : Eff} : (Eff.norm ε).Covers ε' ↔ ε.Covers ε' := by
+-  simp only [Eff.Covers, Eff.mem_norm, Eff.norm_memFail]
+-
+-theorem Eff.covers_norm_right {ε ε' : Eff} : ε.Covers (Eff.norm ε') ↔ ε.Covers ε' := by
+-  simp only [Eff.Covers, Eff.mem_norm, Eff.norm_memFail]
+-
+-/-! ### 和と空の被覆 -/
+-
+-/-- 和を覆うことは、両方を覆うことである。 -/
+-theorem Eff.covers_union_iff {ε e f : Eff} : ε.Covers (Eff.union e f) ↔ ε.Covers e ∧ ε.Covers f := by
+-  simp only [Eff.Covers, Eff.mem_union, Eff.memFail_union]
+-  constructor
+-  · rintro ⟨ha, ht⟩
+-    exact ⟨⟨fun a h => ha a (Or.inl h), fun t h => ht t (Or.inl h)⟩,
+-      ⟨fun a h => ha a (Or.inr h), fun t h => ht t (Or.inr h)⟩⟩
+-  · rintro ⟨⟨ha, ht⟩, ⟨hb, hu⟩⟩
+-    exact ⟨fun a h => h.elim (ha a) (hb a), fun t h => h.elim (ht t) (hu t)⟩
+-
+-theorem Eff.Covers.union {ε e f : Eff} (he : ε.Covers e) (hf : ε.Covers f) : ε.Covers (Eff.union e f) :=
+-  Eff.covers_union_iff.mpr ⟨he, hf⟩
+-
+-/-- 和は左右の各項を覆う。 -/
+-theorem Eff.union_covers_left (e f : Eff) : (Eff.union e f).Covers e :=
+-  Eff.Sub.covers ⟨fun a h => (Eff.mem_union e f a).mpr (Or.inl h),
+-    fun t h => (Eff.memFail_union e f t).mpr (Or.inl h)⟩
+-
+-theorem Eff.union_covers_right (e f : Eff) : (Eff.union e f).Covers f :=
+-  Eff.Sub.covers ⟨fun a h => (Eff.mem_union e f a).mpr (Or.inr h),
+-    fun t h => (Eff.memFail_union e f t).mpr (Or.inr h)⟩
+-
+-/-- 和は被覆について単調である。 -/
+-theorem Eff.Covers.union_mono {ε ε' e e' : Eff} (h : ε.Covers ε') (h' : e.Covers e') :
+-    (Eff.union ε e).Covers (Eff.union ε' e') :=
+-  ((Eff.union_covers_left ε e).trans h).union ((Eff.union_covers_right ε e).trans h')
+-
+-/-- どの効果も空の効果を覆う。 -/
+-theorem Eff.covers_empty (ε : Eff) : ε.Covers Eff.empty :=
+-  ⟨fun a h => ((Eff.mem_empty a).mp h).elim, fun t h => ((Eff.memFail_empty t).mp h).elim⟩
+-
+-/-- 空の効果が覆うのは、原子も Fail の型もない効果だけである。 -/
+-theorem Eff.empty_covers_iff {ε : Eff} :
+-    Eff.empty.Covers ε ↔ (∀ a, ¬ Eff.mem ε a) ∧ ∀ t, ¬ Eff.memFail ε t := by
+-  constructor
+-  · rintro ⟨ha, ht⟩
+-    refine ⟨fun a h => ?_, fun t h => (Eff.memFail_empty t).mp (ht t h)⟩
+-    obtain ⟨b, hb, -⟩ := ha a h
+-    exact (Eff.mem_empty b).mp hb
+-  · rintro ⟨ha, ht⟩
+-    exact ⟨fun a h => (ha a h).elim, fun t h => (ht t h).elim⟩
+-
+-/-! ### 被覆は代入で保たれる -/
+-
+-/-- 代入は被覆を保つ。名前の原子は同じ名前と範囲のまま残り、行の原子は同じ行の原子に覆われるので、内側の
+-行の像は外側の行の像に含まれる。 -/
+-theorem Eff.Covers.bind {ε ε' : Eff} (h : ε.Covers ε') (θ : SubstEnv) :
+-    (Eff.bind θ ε).Covers (Eff.bind θ ε') := by
+-  refine ⟨fun a ha => ?_, fun t ht => ?_⟩
+-  · rcases (Eff.mem_bind θ ε' a).mp ha with ⟨l, r, rfl, hm⟩ | ⟨i, hi, hia⟩
+-    · obtain ⟨b, hb, hbc⟩ := h.1 _ hm
+-      obtain ⟨jx, rfl⟩ := hbc.name_right
+-      exact ⟨_, (Eff.mem_bind_name θ ε l jx).mpr (Or.inl hb), hbc⟩
+-    · exact ⟨a, (Eff.mem_bind θ ε a).mpr (Or.inr ⟨i, h.rho hi, hia⟩), Atom.Covers.refl a⟩
+-  · rcases (Eff.memFail_bind θ ε' t).mp ht with ⟨x, hx, hxt⟩ | ⟨i, hi, hit⟩
+-    · exact (Eff.memFail_bind θ ε t).mpr (Or.inl ⟨x, h.2 x hx, hxt⟩)
+-    · exact (Eff.memFail_bind θ ε t).mpr (Or.inr ⟨i, h.rho hi, hit⟩)
+-
+-theorem Eff.Covers.substAt {ε ε' : Eff} (h : ε.Covers ε') (c : Nat) (ts : List Ty) (es : List Eff) :
+-    (Eff.substAt c ts es ε).Covers (Eff.substAt c ts es ε') :=
+-  h.bind (SubstEnv.at c ts es)
+-
+ theorem Eff.Covers.substRho {ε ε' : Eff} (h : ε.Covers ε') (es : List Eff) :
+     (Eff.substRho es ε).Covers (Eff.substRho es ε') := by
+   rw [Eff.substRho_eq_bind, Eff.substRho_eq_bind]
+diff --git a/formal/Benitoite/Release/Lemmas/Basic.lean b/formal/Benitoite/Release/Lemmas/Basic.lean
+index cca2a288..8687052c 100644
+--- a/formal/Benitoite/Release/Lemmas/Basic.lean
++++ b/formal/Benitoite/Release/Lemmas/Basic.lean
+@@ -68,20 +68,20 @@ theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c :=
+   · rcases h₂ with rfl | ⟨names', ps', r', ε₁, ε₂, h, rfl, hs'⟩
+     · exact Or.inr ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
+     · cases h
+-      exact Or.inr ⟨names, ps, r, ε, ε₂, rfl, rfl, hs.trans hs'⟩
++      exact Or.inr ⟨names, ps, r, ε, ε₂, rfl, rfl, hs'.trans hs⟩
+ 
+ /-- 関数の型から広げた型は、契約名・引数・結果が同じで、エフェクトだけが広い関数の型である。 -/
+ theorem fn_left {names ps r ε t} (h : Ty.Le (.fn names ps r ε) t) :
+-    ∃ ε', t = .fn names ps r ε' ∧ Eff.Sub ε ε' := by
++    ∃ ε', t = .fn names ps r ε' ∧ Eff.Covers ε' ε := by
+   rcases h with rfl | ⟨names', ps', r', ε₁, ε₂, h, rfl, hs⟩
+-  · exact ⟨ε, rfl, Eff.Sub.refl ε⟩
++  · exact ⟨ε, rfl, Eff.Covers.refl ε⟩
+   · cases h; exact ⟨ε₂, rfl, hs⟩
+ 
+ /-- 関数の型に広げた元の型は、契約名・引数・結果が同じで、エフェクトだけが狭い関数の型である。 -/
+ theorem fn_right {a names ps r ε} (h : Ty.Le a (.fn names ps r ε)) :
+-    ∃ ε', a = .fn names ps r ε' ∧ Eff.Sub ε' ε := by
++    ∃ ε', a = .fn names ps r ε' ∧ Eff.Covers ε ε' := by
+   rcases h with rfl | ⟨names', ps', r', ε₁, ε₂, rfl, h, hs⟩
+-  · exact ⟨ε, rfl, Eff.Sub.refl ε⟩
++  · exact ⟨ε, rfl, Eff.Covers.refl ε⟩
+   · cases h; exact ⟨ε₁, rfl, hs⟩
+ 
+ /-- 関数の型でない型への包含は、等しさである。 -/
+@@ -101,7 +101,7 @@ theorem substAt {a b : Ty} (c : Nat) (ts : List Ty) (es : List Eff) (h : Ty.Le a
+   rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
+   · exact refl _
+   · simp only [Ty.substAt, Eff.substAt]
+-    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, Eff.substAt_mono c ts es hs⟩
++    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, hs.substAt c ts es⟩
+ 
+ theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
+     Ty.Le (a.subst ts es) (b.subst ts es) := substAt 0 ts es h
+@@ -110,7 +110,7 @@ theorem shift {a b : Ty} (k c : Nat) (h : Ty.Le a b) : Ty.Le (a.shift k c) (b.sh
+   rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
+   · exact refl _
+   · simp only [Ty.shift]
+-    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, Eff.shift_mono k c hs⟩
++    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, hs.shift k c⟩
+ 
+ end Ty.Le
+ 
+diff --git a/formal/Benitoite/Release/Lemmas/FailureCont.lean b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+index 2502efa5..a6f9d676 100644
+--- a/formal/Benitoite/Release/Lemmas/FailureCont.lean
++++ b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+@@ -257,17 +257,17 @@ theorem HasTypeCQ.inv_handle_failure {Δl : LocalCtx} {Ψ Q C Γ R m' a ε m h}
+     (ho : handles h .fail = true) :
+     ∃ t eb E Rest ec, HasTypeCQ P B Ψ Q C Γ R m t eb Δl ∧
+       Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) ∧ NoFail Q Rest ∧
+-      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Sub (Eff.union Rest ec) ε := by
++      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Covers ε (Eff.union Rest ec) := by
+   match hh with
+   | .C_Handle _ _ hc => cases hm; rw [hc.no_failure] at ho; cases ho
+   | .C_Handle_Fail ht hs hn hc =>
+-      cases hm; exact ⟨_, _, _, _, _, ht, hs, hn, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
++      cases hm; exact ⟨_, _, _, _, _, ht, hs, hn, hc, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub ht hl hs _ =>
+       obtain ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl', hs'⟩ := ht.inv_handle_failure hm ho
+-      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl'.trans hl, hs'.trans hs⟩
++      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl'.trans hl, hs.trans hs'⟩
+   | .C_Eff ht hs =>
+       obtain ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs'⟩ := ht.inv_handle_failure hm ho
+-      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs'.trans hs⟩
++      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs.trans hs'⟩
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+ 
+ /-- raise の適用で必要な Fail は C_Sub/C_Eff/V_Sub を通っても残る。 -/
+@@ -280,7 +280,7 @@ theorem HasTypeCQ.inv_raise_app {Δl : LocalCtx} {Ψ Q C Γ R T E v a em}
+   obtain ⟨e', hfn', hsub⟩ := hfn.fn_left
+   cases hfn'
+   cases ha with
+-  | cons hv ht' => exact ⟨ht, he, hl, hsub.trans hs, hv⟩
++  | cons hv ht' => exact ⟨ht, he, hl, (hs.trans hsub).sub_of_singleFail, hv⟩
+ 
+ /-- 継続の上限から捕捉先の生のエラー型の一致と引数の型を導く。 -/
+ theorem failure_clause_selected_typed {Ψ R T E' v a b ein em Eb k k1 E body k2}
+diff --git a/formal/Benitoite/Release/Lemmas/Inversion.lean b/formal/Benitoite/Release/Lemmas/Inversion.lean
+index 26c7cb7b..47ea0a6d 100644
+--- a/formal/Benitoite/Release/Lemmas/Inversion.lean
++++ b/formal/Benitoite/Release/Lemmas/Inversion.lean
+@@ -242,15 +242,15 @@ theorem HasTypeCQ.inv_ret {Δl : LocalCtx} {C Γ R m T ε v} (h : HasTypeCQ P B
+ 
+ theorem HasTypeCQ.inv_let {Δl : LocalCtx} {C Γ R m' T ε m n} (h : HasTypeCQ P B Ψ Q C Γ R m' T ε Δl) (hm : m' = .letIn m n) :
+     ∃ a b ε', HasTypeCQ P B Ψ Q C Γ R m a ε' Δl ∧ HasTypeCQ P B Ψ Q C (some a :: Γ) R n b ε' (LocalCtx.extend 1 Δl) ∧
+-      Ty.Le b T ∧ Eff.Sub ε' ε := by
++      Ty.Le b T ∧ Eff.Covers ε ε' := by
+   match h with
+-  | .C_Let hm' hn => cases hm; exact ⟨_, _, _, hm', hn, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_Let hm' hn => cases hm; exact ⟨_, _, _, hm', hn, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨a, b, ε', h1, h2, hle', hs'⟩ := inv_let h hm
+-      exact ⟨a, b, ε', h1, h2, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨a, b, ε', h1, h2, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨a, b, ε', h1, h2, hle', hs'⟩ := inv_let h hm
+-      exact ⟨a, b, ε', h1, h2, hle', hs'.trans hs⟩
++      exact ⟨a, b, ε', h1, h2, hle', hs.trans hs'⟩
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+   | .C_App _ _ => cases hm
+@@ -265,15 +265,15 @@ theorem HasTypeCQ.inv_let {Δl : LocalCtx} {C Γ R m' T ε m n} (h : HasTypeCQ P
+ 
+ theorem HasTypeCQ.inv_app {Δl : LocalCtx} {C Γ R m T ε f args} (h : HasTypeCQ P B Ψ Q C Γ R m T ε Δl) (hm : m = .app f args) :
+     ∃ names as b ε', HasTypeVQ P B Ψ Q C Γ f (.fn names as b ε') ∧ HasTypeVsQ P B Ψ Q C Γ args as ∧ Ty.Le b T ∧
+-      Eff.Sub ε' ε := by
++      Eff.Covers ε ε' := by
+   match h with
+-  | .C_App hf hargs => cases hm; exact ⟨_, _, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_App hf hargs => cases hm; exact ⟨_, _, _, _, hf, hargs, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨names, as, b, ε', h1, h2, hle', hs'⟩ := inv_app h hm
+-      exact ⟨names, as, b, ε', h1, h2, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨names, as, b, ε', h1, h2, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨names, as, b, ε', h1, h2, hle', hs'⟩ := inv_app h hm
+-      exact ⟨names, as, b, ε', h1, h2, hle', hs'.trans hs⟩
++      exact ⟨names, as, b, ε', h1, h2, hle', hs.trans hs'⟩
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+   | .C_Let _ _ => cases hm
+@@ -288,15 +288,15 @@ theorem HasTypeCQ.inv_app {Δl : LocalCtx} {C Γ R m T ε f args} (h : HasTypeCQ
+ 
+ theorem HasTypeCQ.inv_ite {Δl : LocalCtx} {C Γ R m' T ε v m n} (h : HasTypeCQ P B Ψ Q C Γ R m' T ε Δl) (hm : m' = .ite v m n) :
+     ∃ a ε', HasTypeVQ P B Ψ Q C Γ v (.base .boolean) ∧ HasTypeCQ P B Ψ Q C Γ R m a ε' Δl ∧
+-      HasTypeCQ P B Ψ Q C Γ R n a ε' Δl ∧ Ty.Le a T ∧ Eff.Sub ε' ε := by
++      HasTypeCQ P B Ψ Q C Γ R n a ε' Δl ∧ Ty.Le a T ∧ Eff.Covers ε ε' := by
+   match h with
+-  | .C_If hv h1 h2 => cases hm; exact ⟨_, _, hv, h1, h2, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_If hv h1 h2 => cases hm; exact ⟨_, _, hv, h1, h2, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨a, ε', hv, h1, h2, hle', hs'⟩ := inv_ite h hm
+-      exact ⟨a, ε', hv, h1, h2, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨a, ε', hv, h1, h2, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨a, ε', hv, h1, h2, hle', hs'⟩ := inv_ite h hm
+-      exact ⟨a, ε', hv, h1, h2, hle', hs'.trans hs⟩
++      exact ⟨a, ε', hv, h1, h2, hle', hs.trans hs'⟩
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+   | .C_Let _ _ => cases hm
+@@ -312,15 +312,15 @@ theorem HasTypeCQ.inv_ite {Δl : LocalCtx} {C Γ R m' T ε v m n} (h : HasTypeCQ
+ theorem HasTypeCQ.inv_match {Δl : LocalCtx} {C Γ R m T ε v arms} (h : HasTypeCQ P B Ψ Q C Γ R m T ε Δl)
+     (hm : m = .match v arms) :
+     ∃ a b ε', HasTypeVQ P B Ψ Q C Γ v a ∧ HasTypeArmsQ P B Ψ Q C Γ R arms a b ε' Δl ∧
+-      Exhaustive P a (unguardedPats arms) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
++      Exhaustive P a (unguardedPats arms) ∧ Ty.Le b T ∧ Eff.Covers ε ε' := by
+   match h with
+-  | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨a, b, ε', hv, harms, hex, hle', hs'⟩ := inv_match h hm
+-      exact ⟨a, b, ε', hv, harms, hex, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨a, b, ε', hv, harms, hex, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨a, b, ε', hv, harms, hex, hle', hs'⟩ := inv_match h hm
+-      exact ⟨a, b, ε', hv, harms, hex, hle', hs'.trans hs⟩
++      exact ⟨a, b, ε', hv, harms, hex, hle', hs.trans hs'⟩
+   | .C_Return _ | .C_Let _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _
+   | .C_Escape _ _ | .C_Use _ _ _ _ | .C_Handle _ _ _ | .C_Resume _ _ | .C_ResumeL _ _
+   | .C_Meth .. | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+@@ -365,15 +365,15 @@ theorem HasTypeCQ.inv_escape {Δl : LocalCtx} {C Γ R m T ε v} (h : HasTypeCQ P
+ 
+ theorem HasTypeCQ.inv_use {Δl : LocalCtx} {C Γ R m' T ε v m} (h : HasTypeCQ P B Ψ Q C Γ R m' T ε Δl) (hm : m' = .use v m) :
+     ∃ o b ε', HasTypeVQ P B Ψ Q C Γ v (.opaqueTop o) ∧ B.isResource o = true ∧
+-      HasTypeCQ P B Ψ Q C Γ R m b ε' Δl ∧ Eff.mem ε' (.nameTop stateEff) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
++      HasTypeCQ P B Ψ Q C Γ R m b ε' Δl ∧ Eff.mem ε' (.nameTop stateEff) ∧ Ty.Le b T ∧ Eff.Covers ε ε' := by
+   match h with
+-  | .C_Use hv hr hm' hs => cases hm; exact ⟨_, _, _, hv, hr, hm', hs, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_Use hv hr hm' hs => cases hm; exact ⟨_, _, _, hv, hr, hm', hs, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨o, b, ε', hv, hr, h1, hst, hle', hs'⟩ := inv_use h hm
+-      exact ⟨o, b, ε', hv, hr, h1, hst, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨o, b, ε', hv, hr, h1, hst, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨o, b, ε', hv, hr, h1, hst, hle', hs'⟩ := inv_use h hm
+-      exact ⟨o, b, ε', hv, hr, h1, hst, hle', hs'.trans hs⟩
++      exact ⟨o, b, ε', hv, hr, h1, hst, hle', hs.trans hs'⟩
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+   | .C_Let _ _ => cases hm
+@@ -389,19 +389,19 @@ theorem HasTypeCQ.inv_use {Δl : LocalCtx} {C Γ R m' T ε v m} (h : HasTypeCQ P
+ theorem HasTypeCQ.inv_handle {Δl : LocalCtx} {C Γ R m' T ε m h} (hh : HasTypeCQ P B Ψ Q C Γ R m' T ε Δl)
+     (hm : m' = .handle m h) (ho : handles h .fail = false) :
+     ∃ t εm ε', HasTypeCQ P B Ψ Q C Γ R m t εm Δl ∧ Eff.Sub εm (Eff.union ε' (handled P B h)) ∧
+-      HasTypeClausesQ P B Ψ Q C Γ R εm h t ε' Δl ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
++      HasTypeClausesQ P B Ψ Q C Γ R εm h t ε' Δl ∧ Ty.Le t T ∧ Eff.Covers ε ε' := by
+   match hh with
+-  | .C_Handle h1 hs hc => cases hm; exact ⟨_, _, _, h1, hs, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_Handle h1 hs hc => cases hm; exact ⟨_, _, _, h1, hs, hc, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Handle_Fail _ _ _ hc =>
+       cases hm
+       cases hc
+       simp [handles, Clause.op] at ho
+   | .C_Sub h' hle hs _ =>
+       obtain ⟨t, εm, ε', h1, hs1, hc, hle', hs'⟩ := inv_handle h' hm ho
+-      exact ⟨t, εm, ε', h1, hs1, hc, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨t, εm, ε', h1, hs1, hc, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h' hs =>
+       obtain ⟨t, εm, ε', h1, hs1, hc, hle', hs'⟩ := inv_handle h' hm ho
+-      exact ⟨t, εm, ε', h1, hs1, hc, hle', hs'.trans hs⟩
++      exact ⟨t, εm, ε', h1, hs1, hc, hle', hs.trans hs'⟩
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+   | .C_Let _ _ => cases hm
+@@ -416,15 +416,15 @@ theorem HasTypeCQ.inv_handle {Δl : LocalCtx} {C Γ R m' T ε m h} (hh : HasType
+ 
+ theorem HasTypeCQ.inv_resumeL {Δl : LocalCtx} {C Γ R m T ε l v} (h : HasTypeCQ P B Ψ Q C Γ R m T ε Δl)
+     (hm : m = .resume (.loc l) v) :
+-    ∃ b t ε', Ψ l = some (.cont b t ε' R) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
++    ∃ b t ε', Ψ l = some (.cont b t ε' R) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧ Eff.Covers ε ε' := by
+   match h with
+-  | .C_ResumeL hl hv => cases hm; exact ⟨_, _, _, hl, hv, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_ResumeL hl hv => cases hm; exact ⟨_, _, _, hl, hv, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨b, t, ε', hl, hv, hle', hs'⟩ := inv_resumeL h hm
+-      exact ⟨b, t, ε', hl, hv, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨b, t, ε', hl, hv, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨b, t, ε', hl, hv, hle', hs'⟩ := inv_resumeL h hm
+-      exact ⟨b, t, ε', hl, hv, hle', hs'.trans hs⟩
++      exact ⟨b, t, ε', hl, hv, hle', hs.trans hs'⟩
+   | .C_Resume _ _ => cases hm
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+@@ -440,15 +440,15 @@ theorem HasTypeCQ.inv_resumeL {Δl : LocalCtx} {C Γ R m T ε l v} (h : HasTypeC
+ theorem HasTypeCQ.inv_resumeVar {Δl : LocalCtx} {C Γ R m T ε i v} (h : HasTypeCQ P B Ψ Q C Γ R m T ε Δl)
+     (hm : m = .resume (.var i) v) :
+     ∃ b t ε', Γ[i]? = some (some (.cont b t ε')) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧
+-      Eff.Sub ε' ε := by
++      Eff.Covers ε ε' := by
+   match h with
+-  | .C_Resume hi hv => cases hm; exact ⟨_, _, _, hi, hv, Ty.Le.refl _, Eff.Sub.refl _⟩
++  | .C_Resume hi hv => cases hm; exact ⟨_, _, _, hi, hv, Ty.Le.refl _, Eff.Covers.refl _⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨b, t, ε', hi, hv, hle', hs'⟩ := inv_resumeVar h hm
+-      exact ⟨b, t, ε', hi, hv, hle'.trans hle, hs'.trans hs⟩
++      exact ⟨b, t, ε', hi, hv, hle'.trans hle, hs.trans hs'⟩
+   | .C_Eff h hs =>
+       obtain ⟨b, t, ε', hi, hv, hle', hs'⟩ := inv_resumeVar h hm
+-      exact ⟨b, t, ε', hi, hv, hle', hs'.trans hs⟩
++      exact ⟨b, t, ε', hi, hv, hle', hs.trans hs'⟩
+   | .C_ResumeL _ _ => cases hm
+   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+   | .C_Return _ => cases hm
+@@ -547,17 +547,17 @@ theorem HasTypeCQ.inv_meth {Δl : LocalCtx} {C Γ R m' T ε v m ss es ws} (h : H
+     ∃ cl τ cd ms, HasTypeVQ P B Ψ Q C Γ v (.dict cl τ) ∧ P.classes cl = some cd ∧ cd.methods m = some ms ∧
+       SatAll B C ss ms.tparams ∧ es.length = ms.neffs ∧ NamesWF ms.names ms.params ∧
+       HasTypeVsQ P B Ψ Q C Γ ws (ms.params.map (Ty.subst (ss ++ [τ]) es)) ∧
+-      Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε ∧ MethodRowsAdmissible C Q ms es ∧
++      Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Covers ε (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ∧ MethodRowsAdmissible C Q ms es ∧
+       (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) := by
+   match h with
+   | .C_Meth hv hc hms hnames hsat hscope hes hws =>
+-      cases hm; exact ⟨_, _, _, _, hv, hc, hms, hsat, hes.1, hnames, hws, Ty.Le.refl _, Eff.Sub.refl _, hes, hscope⟩
++      cases hm; exact ⟨_, _, _, _, hv, hc, hms, hsat, hes.1, hnames, hws, Ty.Le.refl _, Eff.Covers.refl _, hes, hscope⟩
+   | .C_Sub h hle hs _ =>
+       obtain ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle', hs', hrows, hscope⟩ := inv_meth h hm
+-      exact ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle'.trans hle, hs'.trans hs, hrows, hscope⟩
++      exact ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle'.trans hle, hs.trans hs', hrows, hscope⟩
+   | .C_Eff h hs =>
+       obtain ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle', hs', hrows, hscope⟩ := inv_meth h hm
+-      exact ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle', hs'.trans hs, hrows, hscope⟩
++      exact ⟨cl, τ, cd, ms, hv, hc, hms, hsat, hes, hnames, hws, hle', hs.trans hs', hrows, hscope⟩
+   | .C_Return .. | .C_Let .. | .C_App .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeL .. | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+ 
+ /-- returnの型付けから、その値自身の型付けを得る。型の包含で得た整形式の証拠を保つ。 -/
+@@ -576,15 +576,15 @@ theorem HasTypeCQ.inv_builderLet {P B Ψ Q C Δl Γ R m T ε kind body}
+     (h : HasTypeCQ P B Ψ Q C Γ R m T ε Δl) (hm : m = .builderLet kind body) :
+     ∃ a e, Ty.WF 0 C.length kind.contents ∧
+       HasTypeCQ P B Ψ Q C (none :: Γ) R body a e (some kind :: Δl) ∧
+-      Ty.Le a T ∧ Eff.Sub e ε := by
++      Ty.Le a T ∧ Eff.Covers ε e := by
+   match h with
+   | .C_BuilderLet hw hb => cases hm; exact ⟨_, _, hw, hb, .refl _, .refl _⟩
+   | .C_Sub h hl he _ =>
+       obtain ⟨a, e, hw, hb, hl', he'⟩ := h.inv_builderLet hm
+-      exact ⟨a, e, hw, hb, hl'.trans hl, he'.trans he⟩
++      exact ⟨a, e, hw, hb, hl'.trans hl, he.trans he'⟩
+   | .C_Eff h he =>
+       obtain ⟨a, e, hw, hb, hl, he'⟩ := h.inv_builderLet hm
+-      exact ⟨a, e, hw, hb, hl, he'.trans he⟩
++      exact ⟨a, e, hw, hb, hl, he.trans he'⟩
+   | .C_Return .. | .C_Let .. | .C_App .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeL .. | .C_Meth .. | .C_BuilderOp .. => cases hm
+ 
+ /-- 専用操作の逆転。局所参照は通常値に変換せず分類を保つ。 -/
+diff --git a/formal/Benitoite/Release/Lemmas/TySubstMain.lean b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+index bb8be68b..d9e3d99f 100644
+--- a/formal/Benitoite/Release/Lemmas/TySubstMain.lean
++++ b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+@@ -765,9 +765,9 @@ mutual
+         exact .C_Return (HasTypeVQ.substTy hwf hb hv hc hts hes' hsat hΨ hrow)
+     | .C_Sub h hle hs hw =>
+         exact .C_Sub (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hle.substAt _ _ _)
+-          (Eff.substAt_mono c ts' es' hs) (transportWF hw)
++          (hs.substAt c ts' es') (transportWF hw)
+     | .C_Eff h hs =>
+-        exact .C_Eff (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (Eff.substAt_mono c ts' es' hs)
++        exact .C_Eff (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hs.substAt c ts' es')
+     | .C_Let hm hn =>
+         simp only [Comp.substTyAt]
+         have h2 := HasTypeCQ.substTy hwf hb hn hc hts hes' hsat hΨ hrow
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 8331dd3b..bc1d189e 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -1,6 +1,7 @@
+ import Benitoite.Release.Subst
+ import Benitoite.Release.NoFail
+ import Benitoite.Release.RangeInstDef
++import Benitoite.Release.EffectCoverDef
+ 
+ /-!
+ # 型付け規則（段階 B）
+@@ -327,7 +328,7 @@ def MethodRowsAdmissible (C : List TParam) (Q : NoFailCtx) (ms : MethSig)
+ /-! ## 型の包含 -/
+ 
+ def Ty.Le (a a' : Ty) : Prop :=
+-  a = a' ∨ ∃ names ps r ε ε', a = .fn names ps r ε ∧ a' = .fn names ps r ε' ∧ Eff.Sub ε ε'
++  a = a' ∨ ∃ names ps r ε ε', a = .fn names ps r ε ∧ a' = .fn names ps r ε' ∧ Eff.Covers ε' ε
+ 
+ /-! ## ストアの型付けと環境 -/
+ 
+@@ -610,10 +611,10 @@ mutual
+         HasTypeCQ P B Ψ Q C Γ R (.builderOp kind op ref args) (op.result kind) Eff.empty Δ
+     | C_Return {Δ Γ R v a} : HasTypeVQ P B Ψ Q C Γ v a → HasTypeCQ P B Ψ Q C Γ R (.ret v) a Eff.empty Δ
+     | C_Sub {Δ Γ R m a a' ε ε'} :
+-        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF 0 C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
++        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Covers ε' ε → Ty.WF 0 C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
+     /-- 結果の型を変えず、計算の許容エフェクトだけを広げる。型の整形式は元の導出から引き継ぐ。 -/
+     | C_Eff {Δ Γ R m a ε ε'} :
+-        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Eff.Sub ε ε' → HasTypeCQ P B Ψ Q C Γ R m a ε' Δ
++        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Eff.Covers ε' ε → HasTypeCQ P B Ψ Q C Γ R m a ε' Δ
+     | C_Let {Δ Γ R m n a b ε} :
+         HasTypeCQ P B Ψ Q C Γ R m a ε Δ → HasTypeCQ P B Ψ Q C (some a :: Γ) R n b ε (LocalCtx.extend 1 Δ) →
+         HasTypeCQ P B Ψ Q C Γ R (.letIn m n) b ε Δ
+diff --git a/formal/Benitoite/Surface/FiniteTools.lean b/formal/Benitoite/Surface/FiniteTools.lean
+index 3ea49ee6..929c3bba 100644
+--- a/formal/Benitoite/Surface/FiniteTools.lean
++++ b/formal/Benitoite/Surface/FiniteTools.lean
+@@ -197,7 +197,7 @@ theorem tyLe_sound {s a b} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (· 
+   have hp := (tysEq_spec ha.1 hb.1).mp hp
+   have hr := tyEq_sound ha.2.1 hb.2.1 hr
+   subst ms; subst qs; subst t
+-  exact Or.inr ⟨ns, ps, r, e, f, rfl, rfl, effSub_sound ha.2.2 hb.2.2 he⟩
++  exact Or.inr ⟨ns, ps, r, e, f, rfl, rfl, (effSub_sound ha.2.2 hb.2.2 he).covers⟩
+ 
+ def tyJoin (s : List Atom) (a b : Ty) : Option Ty :=
+   match a, b with
+@@ -220,12 +220,8 @@ theorem tyJoin_sound {s a b j} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (
+   subst ms; subst qs; subst t; subst j
+   rw [unionEff_eq ha.2.2 hb.2.2]
+   constructor
+-  · exact Or.inr ⟨ns, ps, r, e, Eff.union e f, rfl, rfl,
+-      ⟨fun a h => (Eff.mem_union _ _ a).mpr (Or.inl h),
+-        fun t h => (Eff.memFail_union _ _ t).mpr (Or.inl h)⟩⟩
+-  · exact Or.inr ⟨ns, ps, r, f, Eff.union e f, rfl, rfl,
+-      ⟨fun a h => (Eff.mem_union _ _ a).mpr (Or.inr h),
+-        fun t h => (Eff.memFail_union _ _ t).mpr (Or.inr h)⟩⟩
++  · exact Or.inr ⟨ns, ps, r, e, Eff.union e f, rfl, rfl, Eff.union_covers_left e f⟩
++  · exact Or.inr ⟨ns, ps, r, f, Eff.union e f, rfl, rfl, Eff.union_covers_right e f⟩
+ 
+ theorem tyJoin_support {s a b j} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (· ∈ s) b)
+     (h : tyJoin s a b = some j) : Ty.Support (· ∈ s) j := by
+diff --git a/Benitoite/Release/EffectCoverDef.lean b/Benitoite/Release/EffectCoverDef.lean
+new file mode 100644
+index 00000000..25511656
+--- /dev/null
++++ b/Benitoite/Release/EffectCoverDef.lean
+@@ -0,0 +1,256 @@
++import Benitoite.Scope.RangeCover
++import Benitoite.Release.TypeComposition
++
++/-!
++# 原子と効果の被覆の定義
++
++原子の被覆 `Atom.Covers` と効果の被覆 `Eff.Covers`（判断 5 の一原子の被覆）の定義と、型付けの規則が使う基本の
++補題（反射・推移・構造上の包含からの被覆・正規化・和・空・代入）を置く。型付けの包含の規則（C-Sub・C-Eff と
++関数の型の効果の包含 `Ty.Le`）がこの関係を使うので、型付けの規則（`Release/Typing.lean`）より前に置く。
++許可の関係・健全性・旧の効果の系・例は `Release/EffectCover.lean` にある（設計書 01-12「エフェクトの名前と開始状態」）。
++-/
++
++namespace Benitoite.Release
++
++/-! ## 原子の被覆 -/
++
++/-- 原子の被覆（引数は外側が先）。同じ名前の閉じた範囲の原子どうしは範囲の被覆で覆う。範囲の変数の原子と行の
++原子は同じ原子だけが覆う。名前の違う原子、閉じた範囲と範囲の変数の組、名前と行の組は覆わない（判断 5 の
++「未確定の行変数を範囲原子で覆わない」。範囲の変数も具体化の前は覆わない）。 -/
++def Atom.Covers : Atom → Atom → Prop
++  | .name l (.fixed r), .name m (.fixed s) => l = m ∧ r.Covers s
++  | .name l (.rvar i), .name m (.rvar j) => l = m ∧ i = j
++  | .rho i, .rho j => i = j
++  | _, _ => False
++
++/-- 原子の被覆の判定。 -/
++def Atom.covers? : Atom → Atom → Bool
++  | .name l (.fixed r), .name m (.fixed s) => l == m && r.covers? s
++  | .name l (.rvar i), .name m (.rvar j) => l == m && i == j
++  | .rho i, .rho j => i == j
++  | _, _ => false
++
++theorem Atom.covers?_spec (a b : Atom) : a.covers? b = true ↔ a.Covers b := by
++  rcases a with ⟨l, r | i⟩ | i <;> rcases b with ⟨m, s | j⟩ | j <;>
++    simp [Atom.covers?, Atom.Covers, Scope.Domain.Range.covers?_spec]
++
++instance (a b : Atom) : Decidable (a.Covers b) := decidable_of_iff _ (Atom.covers?_spec a b)
++
++theorem Atom.Covers.refl (a : Atom) : a.Covers a := by
++  rcases a with ⟨l, r | i⟩ | i <;> simp [Atom.Covers, Scope.Domain.Range.Covers.refl]
++
++theorem Atom.Covers.trans {a b c : Atom} (h₁ : a.Covers b) (h₂ : b.Covers c) : a.Covers c := by
++  rcases a with ⟨l, r | i⟩ | i <;> rcases b with ⟨m, s | j⟩ | j <;> rcases c with ⟨n, u | k⟩ | k <;>
++    simp only [Atom.Covers] at h₁ h₂ ⊢
++  · exact ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
++  · exact ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
++  · exact h₁.trans h₂
++
++/-- 閉じた範囲の名前の原子を覆うのは、同じ名前の閉じた範囲の原子で、範囲が覆うものだけである。 -/
++theorem Atom.covers_fixed_iff {a : Atom} {l : EffName} {s : Scope.Domain.Range} :
++    a.Covers (.name l (.fixed s)) ↔ ∃ r, a = .name l (.fixed r) ∧ r.Covers s := by
++  rcases a with ⟨m, r | i⟩ | i <;> simp only [Atom.Covers]
++  · constructor
++    · rintro ⟨rfl, h⟩; exact ⟨r, rfl, h⟩
++    · rintro ⟨r', h, hc⟩; cases h; exact ⟨rfl, hc⟩
++  · simp
++  · simp
++
++/-- 範囲の変数の原子を覆うのは、同じ原子だけである。 -/
++theorem Atom.covers_rvar_iff {a : Atom} {l : EffName} {j : Nat} :
++    a.Covers (.name l (.rvar j)) ↔ a = .name l (.rvar j) := by
++  rcases a with ⟨m, r | i⟩ | i <;> simp only [Atom.Covers]
++  · simp
++  · constructor
++    · rintro ⟨rfl, rfl⟩; rfl
++    · intro h; cases h; exact ⟨rfl, rfl⟩
++  · simp
++
++/-- 行の原子を覆うのは、同じ行の原子だけである（判断 5）。 -/
++theorem Atom.covers_rho_iff {a : Atom} {j : Nat} : a.Covers (.rho j) ↔ a = .rho j := by
++  rcases a with ⟨m, r | i⟩ | i <;> simp [Atom.Covers]
++
++/-- 名前の原子を覆うのは、同じ名前の原子だけである。 -/
++theorem Atom.Covers.name_right {a : Atom} {l : EffName} {ix : Scope.Signature.Ix}
++    (h : a.Covers (.name l ix)) : ∃ jx, a = .name l jx := by
++  cases ix with
++  | fixed s => obtain ⟨r, rfl, -⟩ := Atom.covers_fixed_iff.mp h; exact ⟨_, rfl⟩
++  | rvar j => exact ⟨_, Atom.covers_rvar_iff.mp h⟩
++
++/-- Top の名前の原子を覆うのは、同じ名前の Top の原子だけである（L10.4 の `Range.not_covers_top`）。 -/
++theorem Atom.covers_nameTop_iff {a : Atom} {l : EffName} : a.Covers (.nameTop l) ↔ a = .nameTop l := by
++  rw [Atom.covers_fixed_iff]
++  constructor
++  · rintro ⟨r, rfl, h⟩
++    rw [(Scope.Domain.Range.covers_top_iff r).mp h]
++  · intro h; exact ⟨.top, h, Scope.Domain.Range.top_covers _⟩
++
++/-- 内側が Top の原子は、非 Top の閉じた範囲の原子に覆われない。 -/
++theorem Atom.not_covers_nameTop {l m : EffName} {r : Scope.Domain.Range} (hr : r ≠ .top) :
++    ¬ (Atom.name l (.fixed r)).Covers (.nameTop m) := by
++  rw [Atom.covers_nameTop_iff]
++  intro h; cases h; exact hr rfl
++
++/-- Top の名前の原子は、同じ名前の閉じた範囲の原子をすべて覆う。 -/
++theorem Atom.nameTop_covers_iff {l : EffName} {b : Atom} :
++    (Atom.nameTop l).Covers b ↔ ∃ s, b = .name l (.fixed s) := by
++  rcases b with ⟨m, s | j⟩ | j <;> simp only [Atom.Covers]
++  · constructor
++    · rintro ⟨rfl, -⟩; exact ⟨s, rfl⟩
++    · rintro ⟨s', h⟩; cases h; exact ⟨rfl, Scope.Domain.Range.top_covers _⟩
++  · simp
++  · simp
++
++/-- 旧の原子の像（Top の名前の原子と行）では、被覆は等号と同じである。 -/
++theorem Atom.covers_iff_eq_of_topImage {a b : Atom} (hb : b.TopImage) : a.Covers b ↔ a = b := by
++  rcases b with ⟨l, ix⟩ | j
++  · cases hb; exact Atom.covers_nameTop_iff
++  · exact Atom.covers_rho_iff
++
++/-- 覆う原子の名前は、範囲の被覆の健全性を通して、内側の範囲の対象を種類に相対的に含む。 -/
++theorem Atom.Covers.sound_fixed {r s : Scope.Domain.Range} {l m : EffName}
++    (h : (Atom.name l (.fixed r)).Covers (.name m (.fixed s))) : l = m ∧ s.Sub r :=
++  ⟨h.1, Scope.Domain.Range.Covers.sound h.2⟩
++
++/-! ## 効果の被覆 -/
++
++/-- 効果の被覆（引数は外側が先）。ε' の各原子を ε のいずれか一原子が覆い、ε' の Fail の型が ε に属する。
++Fail の型は構造上の所属で比べる（判断 5 の「Fail の型と行変数の規則は保つ」）。一原子を複数の原子の和で覆う
++判定はしない。構造上の包含 `Eff.Sub` とは別の関係である（問 13）。 -/
++def Eff.Covers (ε ε' : Eff) : Prop :=
++  (∀ a, Eff.mem ε' a → ∃ b, Eff.mem ε b ∧ b.Covers a) ∧ (∀ t, Eff.memFail ε' t → Eff.memFail ε t)
++
++theorem Eff.Covers.refl (ε : Eff) : ε.Covers ε :=
++  ⟨fun a ha => ⟨a, ha, Atom.Covers.refl a⟩, fun _ => id⟩
++
++theorem Eff.Covers.trans {ε₁ ε₂ ε₃ : Eff} (h₁ : ε₁.Covers ε₂) (h₂ : ε₂.Covers ε₃) : ε₁.Covers ε₃ := by
++  refine ⟨fun a ha => ?_, fun t ht => h₁.2 t (h₂.2 t ht)⟩
++  obtain ⟨b, hb, hba⟩ := h₂.1 a ha
++  obtain ⟨c, hc, hcb⟩ := h₁.1 b hb
++  exact ⟨c, hc, hcb.trans hba⟩
++
++/-- 構造上の包含は被覆を与える（向きに注意: `Eff.Sub ε' ε` は内側が先）。 -/
++theorem Eff.Sub.covers {ε ε' : Eff} (h : Eff.Sub ε' ε) : ε.Covers ε' :=
++  ⟨fun a ha => ⟨a, h.1 a ha, Atom.Covers.refl a⟩, h.2⟩
++
++/-- 被覆の下で、内側の閉じた範囲の名前の原子には、同じ名前の閉じた範囲の原子で意味の上で含む原子がある。 -/
++theorem Eff.Covers.name_fixed {ε ε' : Eff} (h : ε.Covers ε') {l : EffName} {s : Scope.Domain.Range}
++    (hm : Eff.mem ε' (.name l (.fixed s))) : ∃ r, Eff.mem ε (.name l (.fixed r)) ∧ r.Covers s ∧ s.Sub r := by
++  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
++  obtain ⟨r, rfl, hrs⟩ := Atom.covers_fixed_iff.mp hbc
++  exact ⟨r, hb, hrs, hrs.sound⟩
++
++/-- 内側の Top の原子は、外側の同じ名前の Top の原子だけが覆う。 -/
++theorem Eff.Covers.nameTop {ε ε' : Eff} (h : ε.Covers ε') {l : EffName} (hm : Eff.mem ε' (.nameTop l)) :
++    Eff.mem ε (.nameTop l) := by
++  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
++  rwa [Atom.covers_nameTop_iff.mp hbc] at hb
++
++/-- 内側の行の原子は、外側の同じ行の原子だけが覆う（判断 5）。 -/
++theorem Eff.Covers.rho {ε ε' : Eff} (h : ε.Covers ε') {i : Nat} (hm : Eff.mem ε' (.rho i)) :
++    Eff.mem ε (.rho i) := by
++  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
++  rwa [Atom.covers_rho_iff.mp hbc] at hb
++
++/-- 内側の範囲の変数の原子は、外側の同じ原子だけが覆う。 -/
++theorem Eff.Covers.rvar {ε ε' : Eff} (h : ε.Covers ε') {l : EffName} {j : Nat}
++    (hm : Eff.mem ε' (.name l (.rvar j))) : Eff.mem ε (.name l (.rvar j)) := by
++  obtain ⟨b, hb, hbc⟩ := h.1 _ hm
++  rwa [Atom.covers_rvar_iff.mp hbc] at hb
++
++theorem Eff.covers_norm_left {ε ε' : Eff} : (Eff.norm ε).Covers ε' ↔ ε.Covers ε' := by
++  simp only [Eff.Covers, Eff.mem_norm, Eff.norm_memFail]
++
++theorem Eff.covers_norm_right {ε ε' : Eff} : ε.Covers (Eff.norm ε') ↔ ε.Covers ε' := by
++  simp only [Eff.Covers, Eff.mem_norm, Eff.norm_memFail]
++
++/-! ### 和と空の被覆 -/
++
++/-- 和を覆うことは、両方を覆うことである。 -/
++theorem Eff.covers_union_iff {ε e f : Eff} : ε.Covers (Eff.union e f) ↔ ε.Covers e ∧ ε.Covers f := by
++  simp only [Eff.Covers, Eff.mem_union, Eff.memFail_union]
++  constructor
++  · rintro ⟨ha, ht⟩
++    exact ⟨⟨fun a h => ha a (Or.inl h), fun t h => ht t (Or.inl h)⟩,
++      ⟨fun a h => ha a (Or.inr h), fun t h => ht t (Or.inr h)⟩⟩
++  · rintro ⟨⟨ha, ht⟩, ⟨hb, hu⟩⟩
++    exact ⟨fun a h => h.elim (ha a) (hb a), fun t h => h.elim (ht t) (hu t)⟩
++
++theorem Eff.Covers.union {ε e f : Eff} (he : ε.Covers e) (hf : ε.Covers f) : ε.Covers (Eff.union e f) :=
++  Eff.covers_union_iff.mpr ⟨he, hf⟩
++
++/-- 和は左右の各項を覆う。 -/
++theorem Eff.union_covers_left (e f : Eff) : (Eff.union e f).Covers e :=
++  Eff.Sub.covers ⟨fun a h => (Eff.mem_union e f a).mpr (Or.inl h),
++    fun t h => (Eff.memFail_union e f t).mpr (Or.inl h)⟩
++
++theorem Eff.union_covers_right (e f : Eff) : (Eff.union e f).Covers f :=
++  Eff.Sub.covers ⟨fun a h => (Eff.mem_union e f a).mpr (Or.inr h),
++    fun t h => (Eff.memFail_union e f t).mpr (Or.inr h)⟩
++
++/-- 和は被覆について単調である。 -/
++theorem Eff.Covers.union_mono {ε ε' e e' : Eff} (h : ε.Covers ε') (h' : e.Covers e') :
++    (Eff.union ε e).Covers (Eff.union ε' e') :=
++  ((Eff.union_covers_left ε e).trans h).union ((Eff.union_covers_right ε e).trans h')
++
++/-- どの効果も空の効果を覆う。 -/
++theorem Eff.covers_empty (ε : Eff) : ε.Covers Eff.empty :=
++  ⟨fun a h => ((Eff.mem_empty a).mp h).elim, fun t h => ((Eff.memFail_empty t).mp h).elim⟩
++
++/-- 空の効果が覆うのは、原子も Fail の型もない効果だけである。 -/
++theorem Eff.empty_covers_iff {ε : Eff} :
++    Eff.empty.Covers ε ↔ (∀ a, ¬ Eff.mem ε a) ∧ ∀ t, ¬ Eff.memFail ε t := by
++  constructor
++  · rintro ⟨ha, ht⟩
++    refine ⟨fun a h => ?_, fun t h => (Eff.memFail_empty t).mp (ht t h)⟩
++    obtain ⟨b, hb, -⟩ := ha a h
++    exact (Eff.mem_empty b).mp hb
++  · rintro ⟨ha, ht⟩
++    exact ⟨fun a h => (ha a h).elim, fun t h => (ht t h).elim⟩
++
++/-! ### 被覆は代入で保たれる -/
++
++/-- 代入は被覆を保つ。名前の原子は同じ名前と範囲のまま残り、行の原子は同じ行の原子に覆われるので、内側の
++行の像は外側の行の像に含まれる。 -/
++theorem Eff.Covers.bind {ε ε' : Eff} (h : ε.Covers ε') (θ : SubstEnv) :
++    (Eff.bind θ ε).Covers (Eff.bind θ ε') := by
++  refine ⟨fun a ha => ?_, fun t ht => ?_⟩
++  · rcases (Eff.mem_bind θ ε' a).mp ha with ⟨l, r, rfl, hm⟩ | ⟨i, hi, hia⟩
++    · obtain ⟨b, hb, hbc⟩ := h.1 _ hm
++      obtain ⟨jx, rfl⟩ := hbc.name_right
++      exact ⟨_, (Eff.mem_bind_name θ ε l jx).mpr (Or.inl hb), hbc⟩
++    · exact ⟨a, (Eff.mem_bind θ ε a).mpr (Or.inr ⟨i, h.rho hi, hia⟩), Atom.Covers.refl a⟩
++  · rcases (Eff.memFail_bind θ ε' t).mp ht with ⟨x, hx, hxt⟩ | ⟨i, hi, hit⟩
++    · exact (Eff.memFail_bind θ ε t).mpr (Or.inl ⟨x, h.2 x hx, hxt⟩)
++    · exact (Eff.memFail_bind θ ε t).mpr (Or.inr ⟨i, h.rho hi, hit⟩)
++
++theorem Eff.Covers.substAt {ε ε' : Eff} (h : ε.Covers ε') (c : Nat) (ts : List Ty) (es : List Eff) :
++    (Eff.substAt c ts es ε).Covers (Eff.substAt c ts es ε') :=
++  h.bind (SubstEnv.at c ts es)
++
++/-- 型の変数の移動は被覆を保つ。移動は名前と行の原子を変えず、Fail の型だけを移す。 -/
++theorem Eff.Covers.shift (k c : Nat) {ε ε' : Eff} (h : ε.Covers ε') :
++    (Eff.shift k c ε).Covers (Eff.shift k c ε') := by
++  cases ε with
++  | mk a fs =>
++    cases ε' with
++    | mk b gs =>
++      refine ⟨fun x hx => h.1 x hx, fun t ht => ?_⟩
++      rw [Eff.shift, Eff.norm_memFail] at ht ⊢
++      simp only [Eff.memFail, Eff.rawShift, Eff.fails, Ty.rawShiftTys_eq_map, List.mem_map] at ht ⊢
++      obtain ⟨x, ⟨y, hy, rfl⟩, hyt⟩ := ht
++      obtain ⟨z, hz, hzy⟩ := h.2 y ⟨y, hy, rfl⟩
++      refine ⟨z.rawShift k c, ⟨z, hz, rfl⟩, ?_⟩
++      rw [Ty.norm_rawShift] at hyt ⊢
++      exact (congrArg (Ty.rawShift k c) hzy).trans hyt
++
++/-- 原子を持たない効果（Fail の型だけの効果）を覆うことは、構造上の包含と同じである。被覆の Fail の部分は構造上の
++所属の包含だからである。 -/
++theorem Eff.Covers.sub_of_noAtoms {ε ε' : Eff} (h : ε.Covers ε') (ha : ∀ a, ¬ Eff.mem ε' a) : Eff.Sub ε' ε :=
++  ⟨fun a h' => (ha a h').elim, h.2⟩
++
++theorem Eff.Covers.sub_of_singleFail {ε : Eff} {E : Ty} (h : ε.Covers (Eff.singleFail E)) :
++    Eff.Sub (Eff.singleFail E) ε :=
++  h.sub_of_noAtoms (fun a ha => by simp [Eff.mem, Eff.test, Eff.singleFail, Eff.atoms] at ha)
++
++end Benitoite.Release

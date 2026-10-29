@@ -405,7 +405,7 @@ def exercise(runner, directory):
     observations = unique(read(directory/'interval-observations.json')['inputs'], 'name')
     succeeded = [m for m in manifests if m['checker'] == 'succeeded']
     assert succeeded and all(m['enumerationComplete'] for m in succeeded), 'incomplete enumeration'
-    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=14, traversalVersion=1,
+    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=15, traversalVersion=1,
                   profile='domain', inputs=[])
     for m in succeeded:
         inp = copy.deepcopy(materials[m['input']])

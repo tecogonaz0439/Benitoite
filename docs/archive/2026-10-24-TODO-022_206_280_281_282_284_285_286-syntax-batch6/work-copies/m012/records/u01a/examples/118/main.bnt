@@ -1,0 +1,21 @@
+import Benitoite.Unofficial.IO.Console
+
+effect Log
+  function write(message: String) -> Unit
+end effect
+
+function sumPrices(items: List[Integer]) -> Integer uses Log
+  write("items: ${List.length(items)}")
+  return List.fold(xs: items, initial: 0, f: lambda(acc, value) return acc + value)
+end function
+
+function main() -> Unit uses Console.Write
+  bind total <- handle
+    sumPrices([120, 300, 80])
+  with
+    case write(message) ->
+      Console.writeLine("log: ${message}")
+      resume(())
+  end handle
+  Console.writeLine("total: ${total}")
+end function

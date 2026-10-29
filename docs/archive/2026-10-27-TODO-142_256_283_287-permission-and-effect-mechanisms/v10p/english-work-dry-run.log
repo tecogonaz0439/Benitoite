@@ -1,0 +1,9 @@
+== plan: level work against 174a8540fbde08464908a772992685f1d8068811 (changed files not classified) (partial selection: --only tests_related,skill_generated,spec_tally)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test reference_examples --test skill_docs --test skill_examples --test stdlib_doc_examples --test spec_examples
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate

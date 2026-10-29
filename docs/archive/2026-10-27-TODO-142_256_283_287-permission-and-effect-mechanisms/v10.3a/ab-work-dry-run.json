@@ -1,0 +1,41 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "92f9ac80f81d2299978d2051ddcdfdeea1843e6d",
+    "--test",
+    "spec_examples",
+    "--test",
+    "reference_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples",
+    "--test",
+    "build_info",
+    "--test",
+    "cli_process",
+    "--test",
+    "package_command",
+    "--test",
+    "test_command",
+    "--test",
+    "declarations",
+    "--test",
+    "golden",
+    "--test",
+    "desugar_export",
+    "--dry-run"
+  ],
+  "environment": {
+    "BENITOITE_DESUGAR_DIFF_DIR": "<wt>/target/v10.3a/export2"
+  },
+  "started": "2026-10-29T19:37:39.623069+00:00",
+  "finished": "2026-10-29T19:37:39.758460+00:00",
+  "exit": 0,
+  "wallSeconds": 0.134920917
+}

@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope
+function sample(value: Scope.PathIn["/data/a"]) -> Scope.PathIn["/data/**"]
+ bind extracted: Scope.PathIn["/data/**"] <- Scope.widenPathIn(path: value)
+ return extracted
+end function
+function main() -> Unit
+end function

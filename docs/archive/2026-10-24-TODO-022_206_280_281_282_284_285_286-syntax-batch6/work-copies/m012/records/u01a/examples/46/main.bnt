@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.IO.Console
+
+function countDown(n: Integer, acc: List[String]) -> List[String]
+  if n = 0 then return List.reverse(acc) end if
+  return countDown(n: n - 1, acc: List.prepend(xs: acc, x: Integer.toString(n)))
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(String.join(xs: countDown(n: 5, acc: []), separator: " "))
+end function

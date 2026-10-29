@@ -1,0 +1,17 @@
+{
+  "sdk_version": "27.0",
+  "source": "macOS-sdk:System/Library/Frameworks/Security.framework/Headers/SecTrust.h",
+  "sha256": "2596ae0621bf36c7e5fa4468a4c5a70b29140048ed778f68d0a3d88828d14500",
+  "bytes": 42824,
+  "matches_sectrust_aia_sources": true,
+  "sections": [
+    {
+      "lines": "260-289",
+      "text": "    @function SecTrustSetNetworkFetchAllowed\n    @abstract Specifies whether a trust evaluation is permitted to fetch missing\n    intermediate certificates from the network.\n    @param trust A trust reference.\n    @param allowFetch If true, and a certificate's issuer is not present in the\n    trust reference but its network location is known, the evaluation is permitted\n    to attempt to download it automatically. Pass false to disable network fetch\n    for this trust evaluation.\n    @result A result code. See \"Security Error Codes\" (SecBase.h).\n    @discussion By default, network fetch of missing certificates is enabled if\n    the trust evaluation includes the SSL policy, otherwise it is disabled.\n */\nOSStatus SecTrustSetNetworkFetchAllowed(SecTrustRef trust,\n    Boolean allowFetch)\n    __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_7_0);\n\n/*!\n    @function SecTrustGetNetworkFetchAllowed\n    @abstract Returns whether a trust evaluation is permitted to fetch missing\n    intermediate certificates from the network.\n    @param trust A trust reference.\n    @param allowFetch On return, the boolean pointed to by this parameter is\n    set to true if the evaluation is permitted to download missing certificates.\n    @result A result code. See \"Security Error Codes\" (SecBase.h).\n    @discussion By default, network fetch of missing certificates is enabled if\n    the trust evaluation includes the SSL policy, otherwise it is disabled.\n */\nOSStatus SecTrustGetNetworkFetchAllowed(SecTrustRef trust,\n    Boolean *allowFetch)\n    __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_7_0);"
+    },
+    {
+      "lines": "405-425",
+      "text": "     @function SecTrustEvaluateWithError\n     @abstract Evaluates a trust reference synchronously.\n     @param trust A reference to the trust object to evaluate.\n     @param error A pointer to an error object\n     @result A boolean value indicating whether the certificate is trusted\n     @discussion This function will completely evaluate trust before returning,\n     possibly including network access to fetch intermediate certificates or to\n     perform revocation checking. Since this function can block during those\n     operations, you should call it from within a function that is placed on a\n     dispatch queue, or in a separate thread from your application's main\n     run loop.\n     If the certificate is trusted and the result is true, the error will be set to NULL.\n     If the certificate is not trusted or the evaluation was unable to complete, the result\n     will be false and the error will be set with a description of the failure.\n     The error contains a code for the most serious error encountered (if multiple trust\n     failures occurred). The localized description indicates the certificate with the most\n     serious problem and the type of error. The underlying error contains a localized\n     description of each certificate in the chain that had an error and all errors found\n     with that certificate.\n */\n__attribute__((warn_unused_result)) bool"
+    }
+  ]
+}

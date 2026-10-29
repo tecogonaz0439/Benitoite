@@ -1,0 +1,4741 @@
+{
+  "annotations": {
+    "tailMatch": [
+      0,
+      0
+    ]
+  },
+  "inputs": [
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "letIn": {
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    },
+                    "bound": {
+                      "letIn": {
+                        "body": {
+                          "letIn": {
+                            "body": {
+                              "app": {
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ],
+                                "callee": {
+                                  "prim": {
+                                    "effs": [],
+                                    "name": "Scope.checkPathIn",
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "exact": [
+                                            "data",
+                                            "a"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "tys": []
+                                  }
+                                }
+                              }
+                            },
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "/data/**"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "bind": {
+                    "expr": {
+                      "call": {
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "/data/**"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "primName": {
+                            "effs": [],
+                            "name": "Scope.checkPathIn",
+                            "ranges": [
+                              {
+                                "path": {
+                                  "exact": [
+                                    "data",
+                                    "a"
+                                  ]
+                                }
+                              }
+                            ],
+                            "tys": []
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    },
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "args": [
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "exact": [
+                                      "data",
+                                      "a"
+                                    ]
+                                  }
+                                }
+                              },
+                              "name": "101:[]"
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": "top"
+                              },
+                              "name": "102:[]"
+                            }
+                          }
+                        ],
+                        "name": "Result"
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "required-not-covered",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "letIn": {
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    },
+                    "bound": {
+                      "letIn": {
+                        "body": {
+                          "letIn": {
+                            "body": {
+                              "app": {
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ],
+                                "callee": {
+                                  "prim": {
+                                    "effs": [],
+                                    "name": "Scope.checkPathIn",
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "tys": []
+                                  }
+                                }
+                              }
+                            },
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "bind": {
+                    "expr": {
+                      "call": {
+                        "args": [
+                          {
+                            "local": {
+                              "index": 1
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "primName": {
+                            "effs": [],
+                            "name": "Scope.checkPathIn",
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data"
+                                  ]
+                                }
+                              }
+                            ],
+                            "tys": []
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    },
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "args": [
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data"
+                                    ]
+                                  }
+                                }
+                              },
+                              "name": "101:[]"
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": "top"
+                              },
+                              "name": "102:[]"
+                            }
+                          }
+                        ],
+                        "name": "Result"
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "required-unknown",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "letIn": {
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    },
+                    "bound": {
+                      "letIn": {
+                        "body": {
+                          "app": {
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "callee": {
+                              "prim": {
+                                "effs": [],
+                                "name": "Http.widenRequestIn",
+                                "ranges": [
+                                  {
+                                    "endpoint": {
+                                      "host": {
+                                        "name": {
+                                          "exact": [
+                                            "api",
+                                            "example",
+                                            "com"
+                                          ]
+                                        }
+                                      },
+                                      "ports": {
+                                        "hi": 443,
+                                        "lo": 443
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "endpoint": {
+                                      "host": {
+                                        "name": {
+                                          "many": [
+                                            "example",
+                                            "com"
+                                          ]
+                                        }
+                                      },
+                                      "ports": {
+                                        "hi": 443,
+                                        "lo": 80
+                                      }
+                                    }
+                                  }
+                                ],
+                                "tys": []
+                              }
+                            }
+                          }
+                        },
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "value"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "opaque": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 443,
+                                "lo": 443
+                              }
+                            }
+                          }
+                        },
+                        "name": "105:[]"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "bind": {
+                    "expr": {
+                      "call": {
+                        "args": [
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "primName": {
+                            "effs": [],
+                            "name": "Http.widenRequestIn",
+                            "ranges": [
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "name": {
+                                      "exact": [
+                                        "api",
+                                        "example",
+                                        "com"
+                                      ]
+                                    }
+                                  },
+                                  "ports": {
+                                    "hi": 443,
+                                    "lo": 443
+                                  }
+                                }
+                              },
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "name": {
+                                      "many": [
+                                        "example",
+                                        "com"
+                                      ]
+                                    }
+                                  },
+                                  "ports": {
+                                    "hi": 443,
+                                    "lo": 80
+                                  }
+                                }
+                              }
+                            ],
+                            "tys": []
+                          }
+                        },
+                        "labels": [
+                          "request"
+                        ],
+                        "positions": [
+                          0
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    },
+                    "shadow": false,
+                    "ty": {
+                      "opaque": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "many": [
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 443,
+                                "lo": 80
+                              }
+                            }
+                          }
+                        },
+                        "name": "105:[]"
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "value"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "opaque": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 443,
+                                "lo": 443
+                              }
+                            }
+                          }
+                        },
+                        "name": "105:[]"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "request-widen-rejected",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data"
+                              ]
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data"
+                              ]
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "effect-not-covered",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "backup"
+                              ]
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data"
+                              ]
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "backup"
+                              ]
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data"
+                              ]
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "effect-atomic",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "effect-top",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "letIn": {
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    },
+                    "bound": {
+                      "letIn": {
+                        "body": {
+                          "letIn": {
+                            "body": {
+                              "app": {
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ],
+                                "callee": {
+                                  "prim": {
+                                    "effs": [],
+                                    "name": "Scope.checkPathIn",
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "tys": []
+                                  }
+                                }
+                              }
+                            },
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "/data/**"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "bind": {
+                    "expr": {
+                      "call": {
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "/data/**"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "primName": {
+                            "effs": [],
+                            "name": "Scope.checkPathIn",
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data"
+                                  ]
+                                }
+                              }
+                            ],
+                            "tys": []
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    },
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "args": [
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data"
+                                    ]
+                                  }
+                                }
+                              },
+                              "name": "101:[]"
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": "top"
+                              },
+                              "name": "102:[]"
+                            }
+                          }
+                        ],
+                        "name": "Result"
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "required-not-covered-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "letIn": {
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    },
+                    "bound": {
+                      "letIn": {
+                        "body": {
+                          "letIn": {
+                            "body": {
+                              "app": {
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ],
+                                "callee": {
+                                  "prim": {
+                                    "effs": [],
+                                    "name": "Scope.checkPathIn",
+                                    "ranges": [
+                                      "top"
+                                    ],
+                                    "tys": []
+                                  }
+                                }
+                              }
+                            },
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "bind": {
+                    "expr": {
+                      "call": {
+                        "args": [
+                          {
+                            "local": {
+                              "index": 1
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "primName": {
+                            "effs": [],
+                            "name": "Scope.checkPathIn",
+                            "ranges": [
+                              "top"
+                            ],
+                            "tys": []
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    },
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "args": [
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": "top"
+                              },
+                              "name": "101:[]"
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "ix": {
+                                "fixed": "top"
+                              },
+                              "name": "102:[]"
+                            }
+                          }
+                        ],
+                        "name": "Result"
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "required-unknown-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "letIn": {
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    },
+                    "bound": {
+                      "letIn": {
+                        "body": {
+                          "app": {
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ],
+                            "callee": {
+                              "prim": {
+                                "effs": [],
+                                "name": "Http.widenRequestIn",
+                                "ranges": [
+                                  "top",
+                                  "top"
+                                ],
+                                "tys": []
+                              }
+                            }
+                          }
+                        },
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "value"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "opaque": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "name": "105:[]"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "bind": {
+                    "expr": {
+                      "call": {
+                        "args": [
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "primName": {
+                            "effs": [],
+                            "name": "Http.widenRequestIn",
+                            "ranges": [
+                              "top",
+                              "top"
+                            ],
+                            "tys": []
+                          }
+                        },
+                        "labels": [
+                          "request"
+                        ],
+                        "positions": [
+                          0
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    },
+                    "shadow": false,
+                    "ty": {
+                      "opaque": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "name": "105:[]"
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [],
+                  "effParams": [],
+                  "names": [
+                    "value"
+                  ],
+                  "neffs": 0,
+                  "params": [
+                    {
+                      "opaque": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "name": "105:[]"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "request-widen-rejected-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "effect-not-covered-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": []
+                            }
+                          }
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "effect-atomic-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": "top"
+                        },
+                        "value": "File.Read"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "effect-top-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "atomic-union-rejected",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "atomic-left-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [
+        {
+          "builtin": "result",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "900Def (fn:900)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "ret": {
+                    "value": {
+                      "const": {
+                        "value": "unit"
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": "unit"
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "901Def (fn:901)",
+          "scope": {
+            "inScope": {
+              "core": {
+                "body": {
+                  "app": {
+                    "args": [],
+                    "callee": {
+                      "fnRef": {
+                        "effs": [],
+                        "name": "fn:900",
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "lambdaEffects": [],
+                "supers": []
+              },
+              "surface": {
+                "body": {
+                  "last": {
+                    "expr": {
+                      "call": {
+                        "args": [],
+                        "callee": {
+                          "funName": {
+                            "effs": [],
+                            "name": "fn:900",
+                            "tys": []
+                          }
+                        },
+                        "labels": [],
+                        "positions": []
+                      }
+                    }
+                  }
+                },
+                "coverageView": [],
+                "dictParams": [],
+                "header": {
+                  "eff": [
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 4,
+                                "lo": 0
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    },
+                    {
+                      "name": {
+                        "ix": {
+                          "fixed": {
+                            "endpoint": {
+                              "host": {
+                                "name": {
+                                  "exact": [
+                                    "api",
+                                    "example",
+                                    "com"
+                                  ]
+                                }
+                              },
+                              "ports": {
+                                "hi": 9,
+                                "lo": 5
+                              }
+                            }
+                          }
+                        },
+                        "value": "Http.Connect"
+                      }
+                    }
+                  ],
+                  "effParams": [],
+                  "names": [],
+                  "neffs": 0,
+                  "params": [],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "tparams": []
+                },
+                "implementation": null,
+                "method": null,
+                "package": "author",
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "effects": [],
+      "excluded": [],
+      "group": "golden",
+      "impls": [],
+      "name": "atomic-right-accepted",
+      "ops": [],
+      "primOps": [],
+      "scopeAcceptance": {
+        "hosts": [
+          {
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            },
+            "text": "api.example.com"
+          },
+          {
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            },
+            "text": "192.168.1.0/24"
+          }
+        ],
+        "limits": {
+          "body": {
+            "items": 1000,
+            "operations": 1000
+          },
+          "whole": {
+            "items": 10000,
+            "operations": 10000
+          }
+        },
+        "patterns": [
+          {
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            },
+            "text": "/data/**"
+          }
+        ]
+      }
+    }
+  ],
+  "operators": [],
+  "version": 15
+}

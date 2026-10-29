@@ -1,0 +1,15 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 25.11s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 7 tests
+test builtins::funcs::http_client::tests::body_limit_reads_at_most_one_extra_byte_and_stops ... ok
+test builtins::funcs::http_client::tests::wrapped_certificate_failure_is_other_not_invalid_http_data ... ok
+test builtins::funcs::http_client::tests::resolver_io_becomes_host_not_found_and_timeout_is_preserved ... ok
+test builtins::funcs::http_client::tests::missing_cpu_features_return_other_with_names ... ok
+test builtins::funcs::http_client::tests::request_headers_check_argument_zero_and_allow_utf8_and_tab ... ok
+test builtins::funcs::http_client::tests::invalid_urls_and_timeout_finish_before_worker_submission ... ok
+test builtins::funcs::http_client::tests::configured_network_faults_return_without_worker ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1407 filtered out; finished in 0.01s
+

@@ -1,0 +1,20 @@
+初回のツール出力の転記（rtk が要約した出力）。
+command: cargo test -p benitoite --lib typeck::scope --no-run
+exit: 101
+cargo test: 3 errors, 1 warnings (1 crates)
+error[E0583]: file not found for module `tests`
+ --> crates/benitoite/src/typeck/scope/mod.rs:7:1
+  |
+7 | mod tests;
+  | ^^^^^^^^^^
+  |
+  = help: to create the module `tests`, create file "crates/benitoite/src/typeck/scope/tests.rs" or "crates/benitoite/src/typeck/scope/tests/mod.rs"
+warning: unused import: `ModuleId`
+ --> crates/benitoite/src/typeck/scope/input.rs:5:31
+  |
+5 | use crate::base::{BindingMap, ModuleId};
+  |                               ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+error: `benitoite` (lib test) generated 1 warning
+error: warnings are denied by `build.warnings` configuration

@@ -1,0 +1,36 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function countWords(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
+end function
+
+function gitBranch() -> Result[String, String] uses Process.Run
+  bind output <- try Process.run(Process.command(program: "git", arguments: ["branch", "--show-current"])) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  return Result.Ok(String.trim(Process.Output.standardOutput(output)))
+end function
+
+@test("countWords reads the file through File.readText")
+function countWordsReadsFile() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    countWords("notes.txt")
+  with
+    case File.readText(path) ->
+      Assert.equal(actual: path, expected: "notes.txt")
+      resume(Result.Ok("one two  three"))
+  end handle
+  Assert.equal(actual: result, expected: Result.Ok(3))
+end function
+
+@test("gitBranch runs git without starting it")
+function gitBranchRunsGit() -> Unit uses Assert.Check, Process.Run
+  bind result <- handle
+    gitBranch()
+  with
+    case Process.run(command) ->
+      Assert.equal(actual: Process.Command.program(command), expected: "git")
+      resume(Result.Ok(Process.Output(exitCode: 0, standardOutput: "main\n", standardError: "")))
+  end handle
+  Assert.equal(actual: result, expected: Result.Ok("main"))
+end function

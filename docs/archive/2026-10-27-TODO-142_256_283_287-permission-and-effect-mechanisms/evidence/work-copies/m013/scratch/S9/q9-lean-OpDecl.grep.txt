@@ -1,0 +1,24 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Regularity.lean:170:        unfold OpDecl.Scoped at hsc
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:549:        unfold OpDecl.Scoped at hsc
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:344:structure OpDecl where
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:354:def OpDecl.dictTys (d : OpDecl) : List Ty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:358:def OpDecl.valueParams (d : OpDecl) : List Ty := d.params.drop d.dictParams.length
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:361:def OpDecl.valueNames (d : OpDecl) : List String := d.names.drop d.dictParams.length
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:402:  ops : OpName → Option OpDecl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/WellFormed.lean:91:def OpDecl.Scoped (od : OpDecl) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckComputeCalls.lean:26:  exact computes_pure ⟨fnTyCheck_atoms (OpDecl.valueParams_atoms ha.1) ha.2
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:281:private def renderDecl : OpDecl :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:428:private def pairDecl : OpDecl :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:557:private def fancyDecl : OpDecl :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSoundBasicExpr.lean:219:  have hv := OpDecl.valueParams_atoms ha.1
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSoundBasicExpr.lean:220:  have hda := OpDecl.dictTys_atoms od q.atoms
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:99:theorem OpDecl.dictTys_atoms (d : OpDecl) (atoms : List Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:106:theorem OpDecl.valueParams_atoms {d : OpDecl} {atoms : List Atom}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:145:  ops : List (OpName × OpDecl)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:29:private def readOp : OpDecl :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:134:      simp [OpDecl.Scoped, OpDecl.DictionaryScoped, OpDecl.dictTys, OpDecl.valueParams, OpDecl.valueNames, internalNames, readOp, NamesWF, intTy,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:298:private def fixedOp : OpDecl :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Syntax.lean:543:  ops : OpName → Option OpDecl := fun _ => none
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Syntax.lean:624:  ops : OpName → Option OpDecl := fun _ => none
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1087:private def askDecl : OpDecl :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/WellFormed.lean:137:def _root_.Benitoite.Release.OpDecl.DictionaryScoped (d : OpDecl) : Prop :=

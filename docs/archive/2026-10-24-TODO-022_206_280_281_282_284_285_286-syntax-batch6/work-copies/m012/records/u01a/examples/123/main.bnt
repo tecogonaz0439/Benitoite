@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write, State
+  bind counter <- Reference.new(0)
+  bind squares <- with group = TaskGroup.open() do
+    bind tasks <- List.map(xs: [1, 2, 3], f: lambda(value)
+      return TaskGroup.spawn(group: group, action: lambda()
+        Reference.set(reference: counter, value: Reference.get(counter) + 1)
+        return value * value
+      end lambda)
+    end lambda)
+    List.map(xs: tasks, f: lambda(value) return Task.await(value))
+  end with
+  Console.writeLine("${String.join(xs: List.map(xs: squares, f: lambda(value) return Integer.toString(value)), separator: " ")} after ${Reference.get(counter)} tasks")
+  Console.writeLine(String.join(xs: List.map(xs: Task.all([lambda() return "a", lambda() return "b"]), f: lambda(value) return value), separator: ""))
+end function

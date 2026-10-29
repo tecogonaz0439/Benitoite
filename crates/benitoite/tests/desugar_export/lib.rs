@@ -28,6 +28,32 @@ fn rename(value: &mut Value, names: &BTreeMap<String, String>) {
     }
 }
 
+// corpus 10 の名前の原子は Top、組み込みの呼び出しは範囲変数なしの空列とする。
+// 固定入力は変更せず、現在の出力との比較に必要な表現だけを合わせる。
+fn legacy_scope_defaults(value: &mut Value) {
+    match value {
+        Value::Object(fields) => {
+            if let Some(Value::Object(atom)) = fields.get_mut("name")
+                && atom.len() == 1
+                && atom.get("value").is_some_and(Value::is_string)
+            {
+                atom.insert("ix".into(), json!({"fixed":"top"}));
+            }
+            for tag in ["prim", "primName"] {
+                if let Some(Value::Object(call)) = fields.get_mut(tag)
+                    && call.contains_key("tys")
+                {
+                    assert!(!call.contains_key("ranges"), "corpus 10 has no call ranges");
+                    call.insert("ranges".into(), json!([]));
+                }
+            }
+            fields.values_mut().for_each(legacy_scope_defaults);
+        }
+        Value::Array(values) => values.iter_mut().for_each(legacy_scope_defaults),
+        Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
+    }
+}
+
 // 関門: Die の辞書・標準参照・説明と独立した期待コアへの投影を守る。
 // 本番 parser は拒否を保つため、統合入力にはこの分岐へ達する入力がない。
 // 既存の cfg(test) の解析入口を使い、本番の API やフラグは加えない。
@@ -127,7 +153,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         let path = directory.join("corpus.json");
         stream.finish(
             &path,
-            json!({"version":13,"operators":exchange::operators()}),
+            json!({"version":15,"operators":exchange::operators()}),
         );
         let written: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         std::fs::remove_file(path).unwrap();
@@ -166,7 +192,10 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
                 ["con:some", "con:none"]
             };
             for (tag, name) in tags.iter().enumerate() {
-                names.insert(format!("con:{}:{tag}", id.0), (*name).into());
+                names.insert(
+                    exchange::con_name(&p, id, u32::try_from(tag).unwrap()),
+                    (*name).into(),
+                );
             }
         }
         if index == 9 {
@@ -181,6 +210,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
                                     crate::types::builtin::BuiltinTypeId::STRING,
                                 ),
                                 vec![],
+                                crate::types::builtin::RangeIndex::TOP,
                             ))
                 })
                 .unwrap();
@@ -197,6 +227,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         let mut actual = actual.clone();
         rename(&mut actual, &names);
         let mut expected = fixture["inputs"][0]["definitions"][index]["scope"]["inScope"].clone();
+        legacy_scope_defaults(&mut expected);
         // 旧版の独立入力の意味を保ち、新版の必須の空の行条件だけを補う。
         for layer in ["surface", "core"] {
             assert_eq!(expected[layer]["header"]["neffs"], 0);
@@ -228,7 +259,8 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
                 &p,
                 &crate::types::Ty::Con(
                     crate::types::TyCon::Builtin(crate::types::builtin::BuiltinTypeId::INTEGER),
-                    vec![]
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP
                 )
             ),
             json!({"base":{"name":"Integer"}})
@@ -272,7 +304,7 @@ end function
     let definitions = exchange::named_definitions(&p, &core);
     assert_eq!(definitions.len(), 1);
     let scope = &definitions[0]["scope"]["inScope"];
-    let expected = json!([[{"name":{"value":"State"}}], [{"name":{"value":"Process.Exit"}}]]);
+    let expected = json!([[{"name":{"value":"State","ix":{"fixed":"top"}}}], [{"name":{"value":"Process.Exit","ix":{"fixed":"top"}}}]]);
     assert_eq!(scope["core"]["lambdaEffects"], expected);
     let expression = &scope["surface"]["body"]["last"]["expr"]["returnE"]["inner"]["tryOptionDie"];
     for (part, effect) in [("inner", &expected[0]), ("message", &expected[1])] {

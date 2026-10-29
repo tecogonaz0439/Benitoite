@@ -1,0 +1,23 @@
+$ env PYTHONPYCACHEPREFIX=target/bench/pycache python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.8/r10.8b-check-probe.py
+build default/before: 612477578857 (cached)
+build default/after: f5821c672d22 (cached)
+{
+  "base": "f5821c672d22b32e097ca5980a6f20fa44583722",
+  "probe_built": true,
+  "passed": [
+    "before/codegen-irenv-empty",
+    "after/codegen-irenv-empty",
+    "before/codegen-irenv-4",
+    "after/codegen-irenv-4",
+    "before/bridge-empty",
+    "after/bridge-empty",
+    "before/bridge-shared-4",
+    "after/bridge-shared-4",
+    "before/bridge-nodes-4",
+    "after/bridge-nodes-4",
+    "before/bridge-nodes-8",
+    "after/bridge-nodes-8",
+    "before/bridge-shared-8",
+    "after/bridge-shared-8"
+  ]
+}

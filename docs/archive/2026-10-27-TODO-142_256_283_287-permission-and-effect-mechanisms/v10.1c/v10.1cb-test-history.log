@@ -1,0 +1,293 @@
+e7595984de8c72a5df34fc0fed15bc72297bf824 Classify E0519 like Lean and let the timing probe build on old and new types (R10.8)
+
+diff --git a/crates/benitoite/tests/scope_annotations.rs b/crates/benitoite/tests/scope_annotations.rs
+index b6ccbcb7..2229b2c6 100644
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -652,116 +652,142 @@ fn malformed_type_arguments_keep_the_original_syntax_diagnostic() {
+ fn effect_coverage_uses_one_same_named_atom() {
+     for (required, allowed, rejection) in [
+         ("File.Read[\"/data/a\"]", "File.Read[\"/data/**\"]", None),
+         ("File.Read[\"/data/**\"]", "File.Read", None),
+         ("File.Read[\"/data\"]", "File.Read[\"/data/**\"]", None),
+         (
+             "File.Read[\"/data/**\"]",
+             "File.Read[\"/data/a\"]",
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
+         ),
+         (
+             r#"File.Read["/data/**"]"#,
+             r#"File.Read["/data/a"], File.Write["/other/**"]"#,
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
++        ),
++        (
++            "File.Read",
++            "File.Read[\"/**\"]",
++            Some(("E0519", "unknownSource")),
+         ),
+-        ("File.Read", "File.Read[\"/**\"]", Some("E0519")),
+         (
+             "File.Read[\"/data/a\"]",
+             "File.Write[\"/data/**\"]",
+-            Some("E0501"),
++            Some(("E0501", "")),
+         ),
+         (
+             "Http.Connect[\"a.example\", 443]",
+             "Http.Connect[\"*.example\", 400..500]",
+             None,
+         ),
+         (
+             "Http.Connect[\"example\", 443]",
+             "Http.Connect[\"**.example\", 443]",
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
+         ),
+         (
+             "Http.Connect[\"a.b.example\", 443]",
+             "Http.Connect[\"*.example\", 443]",
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
+         ),
+         (
+             "Http.Connect[\"a.b.example\", 443]",
+             "Http.Connect[\"**.example\", 443]",
+             None,
+         ),
+         (
+             "Http.Connect[\"a.example\", 0..9]",
+             "Http.Connect[\"a.example\", 0..4, \"a.example\", 5..9]",
+-            Some("E0519"),
++            Some(("E0519", "atomicCoverOnly")),
+         ),
+         (
+             "Http.Connect[\"192.0.2.1\", 443]",
+             "Http.Connect[\"192.0.2.0/24\", 443]",
+             None,
+         ),
+         (
+             "Http.Connect[\"192.0.2.1\", 443]",
+             "Http.Connect[\"::/0\", 443]",
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
+         ),
+         (
+             "Http.Connect[\"::ffff:192.0.2.1\", 443]",
+             "Http.Connect[\"0.0.0.0/0\", 443]",
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
+         ),
+         (
+             "Http.Connect[\"a.example\", 443]",
+             "Http.Connect[\"0.0.0.0/0\", 0..65535]",
+-            Some("E0519"),
++            Some(("E0519", "notCovered")),
++        ),
++        (
++            r#"File.Read["/**"]"#,
++            r#"File.Read["/a/**", "/b/**"]"#,
++            Some(("E0519", "atomicCoverOnly")),
++        ),
++        (
++            "File.Read",
++            r#"File.Read["/a/**", "/b/**"]"#,
++            Some(("E0519", "unknownSource")),
++        ),
++        (
++            r#"File.Read["/a/x"]"#,
++            r#"File.Read["/a/**", "/b/**"]"#,
++            None,
+         ),
+     ] {
+         let source = format!(
+             "{IMPORTS}function target() -> Unit uses {required}\n ()\nend function\nfunction caller() -> Unit uses {allowed}\n target()\nend function\n"
+         );
+         let checked = check(&source);
+-        if let Some(code) = rejection {
++        if let Some((code, reason)) = rejection {
+             let ds = errors(&checked);
+             assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
+             assert_eq!(ds[0].code.unwrap().info().id, code, "{source}\n{ds:?}");
+             if code == "E0501" {
+                 continue;
+             }
+             assert_eq!(
+                 slice(&source, ds[0].primary.as_ref().unwrap().span),
+                 "target()"
+             );
+             assert_eq!(slice(&source, ds[0].secondary[0].span), "caller");
+             assert_eq!(ds[0].secondary[0].text, "declared here");
+             if allowed == r#"File.Read["/data/a"], File.Write["/other/**"]"# {
+                 assert_eq!(
+                     ds[0].primary.as_ref().unwrap().text,
+                     r#"`File.Read["/data/**"]` is not covered by `File.Read["/data/a"]`"#
+                 );
+             }
+             assert_eq!(ds[0].helps.len(), 1);
+-            assert_eq!(
+-                ds[0].helps[0].message,
+-                "widen the surrounding atom scopes, or narrow the callee scopes"
+-            );
+-            let reason = if required == "File.Read" {
+-                "unknownSource"
+-            } else {
+-                "notCovered"
++            let (note, help) = match reason {
++                "unknownSource" => (
++                    "the required scope is Top (all targets); only a surrounding Top atom of the same name covers it",
++                    "declare the same effect without scope arguments to allow Top, or use a callee whose declared scope is covered by the surrounding effects",
++                ),
++                "atomicCoverOnly" => (
++                    "two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked",
++                    "declare a surrounding scope that covers the required scope in one atom, or use a callee with a narrower scope",
++                ),
++                "notCovered" => (
++                    "no one surrounding atom of the same name covers the required scope",
++                    "declare a surrounding scope that covers the required scope in one atom, or use a callee with a narrower scope",
++                ),
++                _ => panic!("unexpected coverage reason: {reason}"),
+             };
+-            assert!(ds[0].message.contains(reason), "{ds:?}");
+-            assert!(ds[0].notes.iter().any(|n| n.contains("one atom")), "{ds:?}");
++            assert_eq!(ds[0].helps[0].message, help, "{source}");
++            assert!(ds[0].message.ends_with(&format!("({reason})")), "{ds:?}");
++            assert_eq!(ds[0].notes, [note], "{source}");
+         } else {
+             assert!(
+                 errors(&checked).is_empty(),
+                 "{source}\n{:?}",
+                 checked.diagnostics
+             );
+         }
+     }
+ }
+ 
+ // 関門: 範囲付き原子の存在だけで、効果名の宣言漏れの位置と修正案を変えない。
+ // Topだけの既存の診断例では、無関係な範囲がE0519へ分岐させる退行を捕まえない。
+ // 通常のcheck入口で診断を観測し、差し込み口は追加しない。
+ #[test]
+f200ec42a91f65f39c0d341fbeec46563f308ba4 Use single-atom cover for effect inclusion where the rules call for it (R10.4)
+
+diff --git a/crates/benitoite/tests/scope_annotations.rs b/crates/benitoite/tests/scope_annotations.rs
+index 82ffd3d6..e34664fa 100644
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -643,0 +648,116 @@ fn unclosed_scopes_stop_at_the_next_unexpected_token() {
++fn effect_coverage_uses_one_same_named_atom() {
++    for (required, allowed, rejection) in [
++        ("File.Read[\"/data/a\"]", "File.Read[\"/data/**\"]", None),
++        ("File.Read[\"/data/**\"]", "File.Read", None),
++        ("File.Read[\"/data\"]", "File.Read[\"/data/**\"]", None),
++        (
++            "File.Read[\"/data/**\"]",
++            "File.Read[\"/data/a\"]",
++            Some("E0519"),
++        ),
++        (
++            r#"File.Read["/data/**"]"#,
++            r#"File.Read["/data/a"], File.Write["/other/**"]"#,
++            Some("E0519"),
++        ),
++        ("File.Read", "File.Read[\"/**\"]", Some("E0519")),
++        (
++            "File.Read[\"/data/a\"]",
++            "File.Write[\"/data/**\"]",
++            Some("E0501"),
++        ),
++        (
++            "Http.Connect[\"a.example\", 443]",
++            "Http.Connect[\"*.example\", 400..500]",
++            None,
++        ),
++        (
++            "Http.Connect[\"example\", 443]",
++            "Http.Connect[\"**.example\", 443]",
++            Some("E0519"),
++        ),
++        (
++            "Http.Connect[\"a.b.example\", 443]",
++            "Http.Connect[\"*.example\", 443]",
++            Some("E0519"),
++        ),
++        (
++            "Http.Connect[\"a.b.example\", 443]",
++            "Http.Connect[\"**.example\", 443]",
++            None,
++        ),
++        (
++            "Http.Connect[\"a.example\", 0..9]",
++            "Http.Connect[\"a.example\", 0..4, \"a.example\", 5..9]",
++            Some("E0519"),
++        ),
++        (
++            "Http.Connect[\"192.0.2.1\", 443]",
++            "Http.Connect[\"192.0.2.0/24\", 443]",
++            None,
++        ),
++        (
++            "Http.Connect[\"192.0.2.1\", 443]",
++            "Http.Connect[\"::/0\", 443]",
++            Some("E0519"),
++        ),
++        (
++            "Http.Connect[\"::ffff:192.0.2.1\", 443]",
++            "Http.Connect[\"0.0.0.0/0\", 443]",
++            Some("E0519"),
++        ),
++        (
++            "Http.Connect[\"a.example\", 443]",
++            "Http.Connect[\"0.0.0.0/0\", 0..65535]",
++            Some("E0519"),
++        ),
++    ] {
++        let source = format!(
++            "{IMPORTS}function target() -> Unit uses {required}\n ()\nend function\nfunction caller() -> Unit uses {allowed}\n target()\nend function\n"
++        );
++        let checked = check(&source);
++        if let Some(code) = rejection {
++            let ds = errors(&checked);
++            assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
++            assert_eq!(ds[0].code.unwrap().info().id, code, "{source}\n{ds:?}");
++            if code == "E0501" {
++                continue;
++            }
++            assert_eq!(
++                slice(&source, ds[0].primary.as_ref().unwrap().span),
++                "target()"
++            );
++            assert_eq!(slice(&source, ds[0].secondary[0].span), "caller");
++            assert_eq!(ds[0].secondary[0].text, "declared here");
++            if allowed == r#"File.Read["/data/a"], File.Write["/other/**"]"# {
++                assert_eq!(
++                    ds[0].primary.as_ref().unwrap().text,
++                    r#"`File.Read["/data/**"]` is not covered by `File.Read["/data/a"]`"#
++                );
++            }
++            assert_eq!(ds[0].helps.len(), 1);
++            assert_eq!(
++                ds[0].helps[0].message,
++                "widen the surrounding atom scopes, or narrow the callee scopes"
++            );
++            let reason = if required == "File.Read" {
++                "unknownSource"
++            } else {
++                "notCovered"
++            };
++            assert!(ds[0].message.contains(reason), "{ds:?}");
++            assert!(ds[0].notes.iter().any(|n| n.contains("one atom")), "{ds:?}");
++        } else {
++            assert!(
++                errors(&checked).is_empty(),
++                "{source}\n{:?}",
++                checked.diagnostics
++            );
++        }
++    }
++}
++
++// 関門: 範囲付き原子の存在だけで、効果名の宣言漏れの位置と修正案を変えない。
++// Topだけの既存の診断例では、無関係な範囲がE0519へ分岐させる退行を捕まえない。
++// 通常のcheck入口で診断を観測し、差し込み口は追加しない。
++#[test]

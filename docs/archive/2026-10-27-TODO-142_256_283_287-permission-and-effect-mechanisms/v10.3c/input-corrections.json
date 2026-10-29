@@ -1,0 +1,32 @@
+{
+  "changes": [
+    {
+      "id": "range-required-not-covered",
+      "original": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/required-not-covered.bnt",
+      "originalSha256": "82af33c459203742a6a149a25ee64d4f7b56264bdbfaa2ae1a5f6bb89d033d82",
+      "derived": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3c/inputs/required-not-covered.bnt",
+      "derivedSha256": "76196d99bf8dfebe51505c74ca28e9d614819cc99119095b482d73f9127f8b1d",
+      "change": "固定入力の sample 本体と契約を保持し、CLI が要求する空の main を末尾に追加。外部操作なし",
+      "reason": "元の固定入力は main の要件を持たない全比較の pipeline 用である。公開 CLI では E0519 の前に E0414 で止まるため、CLI の入力へ補完した。期待する拒否コードと理由は変えていない"
+    },
+    {
+      "id": "range-required-unknown",
+      "original": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/required-unknown.bnt",
+      "originalSha256": "6434b8cf70988c1f81f8ef9c08b8fde7461ba409048bc81e93c93ce1756e8ab4",
+      "derived": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3c/inputs/required-unknown.bnt",
+      "derivedSha256": "052032e4161501ebef549f33e37c76febfe54fe10ad6d1c2558a6d3a377f0309",
+      "change": "固定入力の sample 本体と契約を保持し、CLI が要求する空の main を末尾に追加。外部操作なし",
+      "reason": "元の固定入力は main の要件を持たない全比較の pipeline 用である。公開 CLI では E0519 の前に E0414 で止まるため、CLI の入力へ補完した。期待する拒否コードと理由は変えていない"
+    },
+    {
+      "id": "range-request-widen-rejected",
+      "original": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/request-widen-rejected.bnt",
+      "originalSha256": "2435c5d851a90e886ec7c667af34b42465d2fddae85b62c55800b23dfb9f2b19",
+      "derived": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3c/inputs/request-widen-rejected.bnt",
+      "derivedSha256": "20a15afcdc2e9c232462a3cc18191e66bfa3d8bcd165f8c197ab45bad0449c14",
+      "change": "固定入力の sample 本体と契約を保持し、CLI が要求する空の main を末尾に追加。外部操作なし",
+      "reason": "元の固定入力は main の要件を持たない全比較の pipeline 用である。公開 CLI では E0519 の前に E0414 で止まるため、CLI の入力へ補完した。期待する拒否コードと理由は変えていない"
+    }
+  ],
+  "checkerCorrection": "projection-repaired と show-match は @test を持たないため、test --check の tests は空でよい。元の独立期待値にない「1件以上」を照合器が追加した誤りを除く。exit/complete/executed/effects は元の独立期待値と一致していた"
+}

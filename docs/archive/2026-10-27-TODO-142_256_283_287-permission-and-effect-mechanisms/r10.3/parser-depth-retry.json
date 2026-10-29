@@ -1,0 +1,29 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "nesting_and_sequence_limits_use_the_default_test_thread_stack",
+    "--",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "nesting_and_sequence_limits_use_the_default_test_thread_stack",
+    "--",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T09:54:44.288734+00:00",
+  "ended_at": "2026-10-28T09:54:54.470450+00:00",
+  "exit_code": 101,
+  "elapsed_seconds": 10.181640625,
+  "auxiliary_max_rss_bytes": 2600583168,
+  "auxiliary_max_rss_mib": 2480.109375,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

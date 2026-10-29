@@ -1,0 +1,54 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+
+const pattern: String = "/data/a"
+
+trait Check[T]
+ function check(value: T) -> Result[S.PathIn["/data/a"], S.ScopeError]
+end trait
+
+implement Check[String]
+ function check(value: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+  return S.checkPathIn(path: value, pattern: pattern)
+ end function
+end implement
+
+function ignore(path: S.PathIn) -> Unit
+ ()
+end function
+
+function paths(path: String) -> Unit
+ bind first: Result[S.PathIn["/data/a"], S.ScopeError] <- S.checkPathIn(pattern: pattern, path: path)
+ match first with
+ case Result.Ok(value) ->
+  bind _ <- S.pathInValue(path: value)
+  bind wide: S.PathIn["/data/**"] <- S.widenPathIn(path: value)
+  bind _ <- wide
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind second <- S.checkPathIn(pattern: "/data/a", path: path)
+ match second with
+ case Result.Ok(value) ->
+  bind alias <- value
+  bind _ <- S.pathInValue(path: alias)
+  ignore(alias)
+ case Result.Error(_) -> ()
+ end match
+ bind indirect <- S.checkPathIn
+ bind _ <- indirect(pattern: "/data/a", path: path)
+ ()
+end function
+
+function requests(request: Http.ClientRequest) -> Unit
+ bind checked: Result[Http.RequestIn["api.example.com", 443], Http.RequestCheckError] <- Http.checkRequestIn(request: request, maximumPort: 443, hostPattern: "api.example.com", minimumPort: 443)
+ match checked with
+ case Result.Ok(value) ->
+  bind _ <- Http.requestInValue(request: value)
+  bind wide: Http.RequestIn["*.example.com", 443] <- Http.widenRequestIn(request: value)
+  bind _ <- wide
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+end function

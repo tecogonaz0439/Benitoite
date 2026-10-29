@@ -1,0 +1,35 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "cli_process",
+    "scoped_diagnostics"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 5.852782375,
+  "maxrss_raw": 457949184,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 436.734375,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 5.880187667,
+  "recorded_at": "2026-10-29T09:41:25.345880+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r40.1/run-record.py",
+    "--child",
+    "r40.1b-cli-retry",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "cli_process",
+    "scoped_diagnostics"
+  ]
+}

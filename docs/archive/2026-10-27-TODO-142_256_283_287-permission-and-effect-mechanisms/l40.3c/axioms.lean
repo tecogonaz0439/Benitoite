@@ -1,0 +1,90 @@
+import Benitoite
+
+-- L40.3c: 主定理と、追加・変更した定理の公理の依存。
+section
+-- 主定理（言明は B_WORK と同じ）
+#print axioms Benitoite.Release.progress
+#print axioms Benitoite.Release.preservation
+#print axioms Benitoite.Release.effect_soundness
+#print axioms Benitoite.Release.effect_soundness_noLamNames
+#print axioms Benitoite.Release.step_sound
+#print axioms Benitoite.Surface.desugar_typed
+#print axioms Benitoite.Surface.surface_effect_soundness
+#print axioms Benitoite.Release.step_target_sound
+#print axioms Benitoite.Release.reachable_target_sound
+-- 規則の変更に追随した補題
+#print axioms Benitoite.Release.hideBuilders_strengthen_val
+#print axioms Benitoite.Release.HasTypeVQ.store
+#print axioms Benitoite.Release.HasTypeVQ.q_mono
+#print axioms Benitoite.Release.HasTypeVQ.rename
+#print axioms Benitoite.Release.HasTypeVQ.subst
+#print axioms Benitoite.Release.HasTypeVQ.substTy
+#print axioms Benitoite.Release.HasTypeVQ.inv_checkedRequest
+#print axioms Benitoite.Release.HasTypeVQ.checkedRequest_iff
+#print axioms Benitoite.Release.HasTypeVQ.checkedRequest_widen
+#print axioms Benitoite.Release.HasTypeVQ.canonical_opaque
+#print axioms Benitoite.Release.HasTypeVQ.widen_opaque
+#print axioms Benitoite.Release.HasTypeVQ.widen_opaque_top
+-- 旧の像
+#print axioms Benitoite.Release.HasTypeVQ.not_checkedRequest_of_noValKind
+#print axioms Benitoite.Release.HasTypeVQ.not_checkedRequest_of_noValContent
+#print axioms Benitoite.Release.HasTypeVQ.canonical_opaque_of_noValKind
+#print axioms Benitoite.Release.Exhaustive.opaque_iff_noRequest
+#print axioms Benitoite.Release.ModelHttp.model_noValContent
+#print axioms Benitoite.Release.ModelHttp.modelTargets_noValContent
+-- Http の実例（L40.3c で書き直した定義と定理）
+#print axioms Benitoite.Release.ModelHttp.groundTy_varsIn
+#print axioms Benitoite.Release.ModelHttp.groundVal_varsIn
+#print axioms Benitoite.Release.ModelHttp.pairTy_wf
+#print axioms Benitoite.Release.ModelHttp.defaultRequest_typed
+#print axioms Benitoite.Release.ModelHttp.defaultRequest_closed
+#print axioms Benitoite.Release.ModelHttp.requestInValue_ret
+#print axioms Benitoite.Release.ModelHttp.checkRequestIn_params
+#print axioms Benitoite.Release.ModelHttp.checkRun_typed
+#print axioms Benitoite.Release.ModelHttp.checkRun_contract
+#print axioms Benitoite.Release.ModelHttp.valueRun_typed
+#print axioms Benitoite.Release.ModelHttp.assumptions
+#print axioms Benitoite.Release.ModelHttp.check_send_preserves
+#print axioms Benitoite.Release.ModelHttp.Examples.reqTarget_req
+#print axioms Benitoite.Release.ModelHttp.Examples.mkReq_closed
+#print axioms Benitoite.Release.ModelHttp.Examples.check_ok
+#print axioms Benitoite.Release.ModelHttp.Examples.check_range_rejects
+#print axioms Benitoite.Release.ModelHttp.Examples.check_invalid_url
+#print axioms Benitoite.Release.ModelHttp.Examples.value_ok
+#print axioms Benitoite.Release.ModelHttp.Examples.check_then_send
+#print axioms Benitoite.Release.ModelHttp.Examples.httpProg_wellFormed
+#print axioms Benitoite.Release.ModelHttp.Examples.httpProg_assumptions
+#print axioms Benitoite.Release.ModelHttp.Examples.acceptHeader_typed
+#print axioms Benitoite.Release.ModelHttp.Examples.mkReq_typed
+#print axioms Benitoite.Release.ModelHttp.Examples.checkedReq_typed
+#print axioms Benitoite.Release.ModelHttp.Examples.checkedReq_not_typed_empty
+#print axioms Benitoite.Release.ModelHttp.Examples.checkedReq_not_other
+#print axioms Benitoite.Release.ModelHttp.Examples.sendCall_typed
+#print axioms Benitoite.Release.ModelHttp.Examples.sendState_typedE
+#print axioms Benitoite.Release.ModelHttp.Examples.check_step
+#print axioms Benitoite.Release.ModelHttp.Examples.value_step
+#print axioms Benitoite.Release.ModelHttp.Examples.url_match
+#print axioms Benitoite.Release.ModelHttp.Examples.read_url_steps
+#print axioms Benitoite.Release.ModelHttp.Examples.projected_url_typed
+#print axioms Benitoite.Release.ModelHttp.Examples.send_io_target
+#print axioms Benitoite.Release.ModelHttp.Examples.sendState_target_sound
+#print axioms Benitoite.Release.ModelHttp.Examples.sendState_reachable_target_sound
+-- Scope の接続
+#print axioms Benitoite.Surface.ScopeState.target_hasTypeV
+#print axioms Benitoite.Surface.ScopeState.checkedModels_hasTypeV
+#print axioms Benitoite.Surface.ScopeState.requiredIndex_hasTypeV
+#print axioms Benitoite.Surface.ScopeSound.scope_local_typed
+#print axioms Benitoite.Surface.ScopeSound.scope_local_typed_of_typed
+#print axioms Benitoite.Surface.ScopeSound.scope_local_typed_at
+#print axioms Benitoite.Surface.ScopeSound.scope_check_connection
+#print axioms Benitoite.Surface.ScopeSound.scope_local_connection
+#print axioms Benitoite.Surface.ScopeSound.modelHttp_contract
+#print axioms Benitoite.Surface.ScopeSound.modelHttp_ok_request
+#print axioms Benitoite.Surface.ScopeSound.modelHttp_checkRun_requestOk
+#print axioms Benitoite.Surface.ScopeSound.productionRules_sound
+#print axioms Benitoite.Surface.ScopeSound.http_check_connection
+#print axioms Benitoite.Surface.ScopeSound.makeEndpoint_checkRun
+#print axioms Benitoite.Surface.ScopeSoundExamples.reqTarget_one
+#print axioms Benitoite.Surface.ScopeSoundExamples.new_ip_inside
+#print axioms Benitoite.Surface.ScopeSoundExamples.new_ip_outside
+end

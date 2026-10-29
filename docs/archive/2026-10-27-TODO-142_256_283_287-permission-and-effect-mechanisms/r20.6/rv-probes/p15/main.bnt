@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope
+function sample() -> Result[Scope.PathIn, Scope.ScopeError]
+ return Scope.checkPathIn(pattern: "/bad//path", path: "x")
+end function
+function main() -> Unit
+ ()
+end function

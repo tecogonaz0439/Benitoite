@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function go(r: Http.RequestIn) -> Unit uses Http.Connect["127.0.0.1", 18411]
+ bind ignored <- r |> Http.sendIn(request: _)
+ ()
+end function
+function main() -> Unit
+ ()
+end function

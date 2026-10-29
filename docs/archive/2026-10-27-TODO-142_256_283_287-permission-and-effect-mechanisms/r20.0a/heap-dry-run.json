@@ -1,0 +1,29 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "538090391ea48a833ddd824f4b732e599616d48c",
+    "--only",
+    "doc_default,heap_local,stress_local",
+    "--test",
+    "runtime_builtins",
+    "--test",
+    "vm_handlers",
+    "--test",
+    "io_modes",
+    "--test",
+    "l32_http_client",
+    "--dry-run"
+  ],
+  "started_utc": "2026-10-28T15:28:01.752473+00:00",
+  "finished_utc": "2026-10-28T15:28:01.783358+00:00",
+  "exit": 0,
+  "outer_seconds": 0.030845167000000003,
+  "max_rss_raw": 11419648,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 10.890625,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+  "platform": "darwin"
+}

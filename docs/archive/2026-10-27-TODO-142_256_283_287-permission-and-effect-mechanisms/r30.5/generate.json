@@ -1,0 +1,29 @@
+{
+  "command": [
+    "cargo",
+    "run",
+    "-p",
+    "benitoite",
+    "--example",
+    "gen_skill"
+  ],
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "run",
+    "-p",
+    "benitoite",
+    "--example",
+    "gen_skill"
+  ],
+  "check_exit_code": 0,
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 0.796859167,
+  "started_at": "2026-10-29T08:27:22.247944+00:00",
+  "finished_at": "2026-10-29T08:27:23.045092+00:00",
+  "maxrss_raw": 10846208,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 10.34375,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値の補助値。同時常駐量の合計ではない"
+}

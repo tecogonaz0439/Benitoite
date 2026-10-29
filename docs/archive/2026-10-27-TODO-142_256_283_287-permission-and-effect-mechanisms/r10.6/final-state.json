@@ -1,0 +1,593 @@
+{
+  "checked_at": "2026-10-28T13:02:47.053657+00:00",
+  "head": "3fc9b3f88c039e61bf797b1da574e5275028253d",
+  "branch": "m013/r10.6",
+  "tracked_changed": [
+    "crates/benitoite/src/resolve/scope.rs",
+    "crates/benitoite/src/resolve/text.rs",
+    "crates/benitoite/src/typeck/context.rs",
+    "crates/benitoite/src/typeck/decls.rs",
+    "crates/benitoite/src/typeck/text.rs",
+    "crates/benitoite/src/types/builtin.rs",
+    "crates/benitoite/src/types/mod.rs",
+    "crates/benitoite/src/types/signature.rs",
+    "docs/design/00-overview/00-04-glossary.md",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/02-impl/02-03-frontend.md",
+    "docs/design/02-impl/02-05-typechecker.md"
+  ],
+  "allowed_scope": true,
+  "implementation_hashes_match": true,
+  "generated_diff": [],
+  "diff_check_exit": 0,
+  "relative_links": [
+    {
+      "document": "results.md",
+      "target": "code-notes.md",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "design-notes.md",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "inputs/",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "cli-b0.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "cli-bwork.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "cli-after.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "extra-b0.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "extra-bwork.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "extra-after.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "capture_top.py",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "capture_extra.py",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "compare_cli.py",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "cli-comparison.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "../r10.5/results.md#top-比較の確定値と証拠",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "audit-notes.md",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "audit-notes.md#lr-u8-の対応表",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "design-notes.md#l504-の包含位置表との対応",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "design-checks.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "implementation.patch",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "changed-files.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "line-counts.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "work-dry-run.log",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "signature-local.log",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "baseline-b0-build.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "baseline-work-build.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "current-build.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "generation.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "generation.log",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "comparison-final.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "cli-comparison.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "work-dry-run.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "work.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "work.log",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "work-check-exit.txt",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "environment-and-inputs.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "test-counts.json",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "../r10.1/getrusage-units.txt",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "final-validation-initial.log",
+      "exists": true
+    },
+    {
+      "document": "results.md",
+      "target": "final-state.json",
+      "exists": true
+    },
+    {
+      "document": "code-notes.md",
+      "target": "signature-local.log",
+      "exists": true
+    },
+    {
+      "document": "design-notes.md",
+      "target": "../l50.4/results.md#1-効果の包含-被覆を使う位置と構造上に残す位置",
+      "exists": true
+    },
+    {
+      "document": "design-notes.md",
+      "target": "../r10.4/results.md#効果の包含の位置表",
+      "exists": true
+    }
+  ],
+  "local_absolute_path_matches": [],
+  "record_files": [
+    {
+      "path": "audit-notes.md",
+      "bytes": 12777,
+      "sha256": "b0f88b56143765fa34113bb60aa07000026aeb2d233087e62d0a7b82e688f9af"
+    },
+    {
+      "path": "baseline-b0-build.json",
+      "bytes": 932,
+      "sha256": "41acc93916c14581fd9ca159ab28f3150cfa936831f88bab72285bd9998cbec7"
+    },
+    {
+      "path": "baseline-b0-build.log",
+      "bytes": 4934,
+      "sha256": "4cf5993c2e0cccf59ddddfaa7215cbdafb0cf39054c605de601d99c7542aa4f1"
+    },
+    {
+      "path": "baseline-work-build.json",
+      "bytes": 938,
+      "sha256": "6a8cbdfd1562d64be9ccac5eddad10813c683c3b70b27b9f48806daacfdde46d"
+    },
+    {
+      "path": "baseline-work-build.log",
+      "bytes": 4944,
+      "sha256": "04019246dec8e35257a31bebc62539eb580ab039f97798148bdf58ffd140a9a5"
+    },
+    {
+      "path": "capture-current.json",
+      "bytes": 708,
+      "sha256": "81e245eccdcbbd1fc18fa4151645acd505e1033a0edc43707eb436f8efc6729d"
+    },
+    {
+      "path": "capture-current.log",
+      "bytes": 154,
+      "sha256": "46e2a04994dba12a4babf09464c40eb42661d9766a5531d0c16807ed10bf67ee"
+    },
+    {
+      "path": "capture-work.json",
+      "bytes": 743,
+      "sha256": "ea98cb4c382099b4cb33f75899ae900c6b5c17b6a41d7d42844e01fad89ac469"
+    },
+    {
+      "path": "capture-work.log",
+      "bytes": 170,
+      "sha256": "3b60a05d16d059266152a3c16f30c7faaf93cff9535bd5d782157d828b5ace53"
+    },
+    {
+      "path": "capture_extra.py",
+      "bytes": 1785,
+      "sha256": "f21e553661ee8d6a4ff580a0f298e61a4197342d24a5f19ace6263544d91be97"
+    },
+    {
+      "path": "capture_top.py",
+      "bytes": 1304,
+      "sha256": "a2fa6ef3d3b0502053b13d29c8ef21fd85813aace4ca1f18f9d0e591fc14f38c"
+    },
+    {
+      "path": "changed-files.json",
+      "bytes": 1953,
+      "sha256": "59ba44d8010a66b006c9884290116a2fda99ce0cb22eeab59f19c04387833e5b"
+    },
+    {
+      "path": "cli-after.json",
+      "bytes": 1190093,
+      "sha256": "0448e00bdec052414b3e6af6e912a854a1ec8c3a58a6addc05a13b002ba7e28f"
+    },
+    {
+      "path": "cli-b0.json",
+      "bytes": 1190099,
+      "sha256": "b76ed82a349478d1a92c907d92e6f777647f1f3ca9ad669605a344c0d573ffb1"
+    },
+    {
+      "path": "cli-bwork.json",
+      "bytes": 1190093,
+      "sha256": "558f9dd0d7f8f1d53d5bfb487ad404f1e7d6a3172f1252563b79c55f4fcb7d21"
+    },
+    {
+      "path": "cli-comparison.json",
+      "bytes": 20652,
+      "sha256": "5512e0d144537b3272d3920660c160564cdd4c71b6fb49a957f211ab0338f504"
+    },
+    {
+      "path": "code-notes.md",
+      "bytes": 2892,
+      "sha256": "6ce769f154032ed76dff59c399963fe077d272a1481ded8cc21278ae588346e1"
+    },
+    {
+      "path": "compare_cli.py",
+      "bytes": 3587,
+      "sha256": "3325dec0f29790fed49c15d09764c1347c261dd8e43fb0248a4a6c1b803a0a2c"
+    },
+    {
+      "path": "comparison-final.json",
+      "bytes": 623,
+      "sha256": "ffc3b995e6465c7dfd08d3977ed662335195093bce3c27e1ea95be4e681c9ec8"
+    },
+    {
+      "path": "comparison-final.log",
+      "bytes": 206,
+      "sha256": "5bed4818a4256745d0541a967e95952aa6df20f812b4a7db338721263bc04c2d"
+    },
+    {
+      "path": "comparison.json",
+      "bytes": 614,
+      "sha256": "6e510d83c9c2797469fdb9ce08ada1a48f2a64753d3f887386b7cd0837027f50"
+    },
+    {
+      "path": "comparison.log",
+      "bytes": 206,
+      "sha256": "5bed4818a4256745d0541a967e95952aa6df20f812b4a7db338721263bc04c2d"
+    },
+    {
+      "path": "current-build.json",
+      "bytes": 824,
+      "sha256": "7d071de039962a6504283b1a7101db53be68d4cfcc02f77ecf73c6d0d5690df1"
+    },
+    {
+      "path": "current-build.log",
+      "bytes": 278,
+      "sha256": "57ab657b1bb83fb828e930d0586a552ac44c512ec030c7dece2747d237b2cbc1"
+    },
+    {
+      "path": "design-checks.json",
+      "bytes": 2995,
+      "sha256": "96edd5ff28c7d79f9624daca66a1d356272e5b571732d22ced33728278c90797"
+    },
+    {
+      "path": "design-notes.md",
+      "bytes": 8877,
+      "sha256": "76b6c9afd56f067d4a5b421ce2eecc4bfcc36accba12550da0667da6a777f521"
+    },
+    {
+      "path": "environment-and-inputs.json",
+      "bytes": 4131,
+      "sha256": "1756b8fa0f96f4eb640e661d852aea1953d154552090e9873d43f0622e160ccc"
+    },
+    {
+      "path": "extra-after.json",
+      "bytes": 197767,
+      "sha256": "35fa95577c08a20497890693aaf7cfa94d894491e0fe4270ec632b84bca9c3a6"
+    },
+    {
+      "path": "extra-b0-final.json",
+      "bytes": 732,
+      "sha256": "baa9e080a95797692566a1c2ea158a4dfe87b6df95b850b7eeb669ab4d3988c9"
+    },
+    {
+      "path": "extra-b0-final.log",
+      "bytes": 185,
+      "sha256": "676904c9ba95ebe5caa9fb3a9fb88c4198a1ab2577033c1747c983513e07a691"
+    },
+    {
+      "path": "extra-b0.json",
+      "bytes": 196704,
+      "sha256": "451cd9b45dffbe108a22b390e46c8eb1243da2b01eb9dbc6c25659769b11117a"
+    },
+    {
+      "path": "extra-bwork.json",
+      "bytes": 197767,
+      "sha256": "6e7b44b6fd10c7a34a95556fdb15e1831509ca83ef33ca2dd1a8c642731fff05"
+    },
+    {
+      "path": "extra-current-final.json",
+      "bytes": 718,
+      "sha256": "d753bcc324a86d81ac897f0e76d0765611cea85353902d9ebe4d10a1ec5ff64e"
+    },
+    {
+      "path": "extra-current-final.log",
+      "bytes": 177,
+      "sha256": "ea77edfe7bd204b43e6f1c4d62f14cb321a8f4bea94082f1ffce4789a68ec97d"
+    },
+    {
+      "path": "extra-current.log",
+      "bytes": 177,
+      "sha256": "ea77edfe7bd204b43e6f1c4d62f14cb321a8f4bea94082f1ffce4789a68ec97d"
+    },
+    {
+      "path": "extra-initial-after.json",
+      "bytes": 201473,
+      "sha256": "6e9e453354ded4ab9a12a36e716c02dc68d0e246d8917420cc7b18d8e0a5bd36"
+    },
+    {
+      "path": "extra-initial-b0.json",
+      "bytes": 200390,
+      "sha256": "2d903e48947a5f355649334cefbfb332d1d72ad05e4548d60bc0ca28764bca9b"
+    },
+    {
+      "path": "extra-initial-bwork.json",
+      "bytes": 201473,
+      "sha256": "10e9b4f2e0d0eb5dcbafdfbdeaf49161a38bb35243d5758b4db67a1823c94629"
+    },
+    {
+      "path": "extra-initial-current.json",
+      "bytes": 713,
+      "sha256": "7041aa0a6a4bb1b3c8a9bbcbfc85b7c49ec3a3381dff7d4ed72dce5219c70329"
+    },
+    {
+      "path": "extra-initial-work.json",
+      "bytes": 750,
+      "sha256": "5eb824cbd09575798fb769e124cd36920c95d869684529785144d0268caacdef"
+    },
+    {
+      "path": "extra-work-final.json",
+      "bytes": 757,
+      "sha256": "6751be16116ccf2812f1d818a5110e2174eaa2817b5ee8eccd0f2e0e53ab5d2c"
+    },
+    {
+      "path": "extra-work-final.log",
+      "bytes": 193,
+      "sha256": "41dafbdb27fcba721e9155794f539a6496a36fa9db3afdaec7edcb925375eb95"
+    },
+    {
+      "path": "extra-work.log",
+      "bytes": 193,
+      "sha256": "41dafbdb27fcba721e9155794f539a6496a36fa9db3afdaec7edcb925375eb95"
+    },
+    {
+      "path": "final-validation-initial.log",
+      "bytes": 253,
+      "sha256": "c10b234644f49b872200f4c2a4a6be5c8dd062a338e7776d5a24c7696fc96e12"
+    },
+    {
+      "path": "generation.json",
+      "bytes": 558,
+      "sha256": "20fa118d8cd241a24f4e5d0db1ab58d9e296053c559896fc0648f1c00a55f8b8"
+    },
+    {
+      "path": "generation.log",
+      "bytes": 4494,
+      "sha256": "2c00505dfd157732601115e1069383809eb58050cc58e617df62a192cb2b2664"
+    },
+    {
+      "path": "implementation.patch",
+      "bytes": 38024,
+      "sha256": "2843ccedb6e5e88df6d5bdd0721e9a1a4c09df47d03e7f2ee13f6ab2f213551d"
+    },
+    {
+      "path": "inputs/Support/Contracts.bnt",
+      "bytes": 200,
+      "sha256": "e1e16c78261d9a3dfaf7c327928890bd1ce955a94fdcb42e869d70583d5691b7"
+    },
+    {
+      "path": "inputs/cli-upper.bnt",
+      "bytes": 92,
+      "sha256": "dea37b0f6d9d540f38dd1a8eb92118dc93814d0708130e8cd799c1f67d2b0156"
+    },
+    {
+      "path": "inputs/file-fail-row.bnt",
+      "bytes": 66,
+      "sha256": "5c6304881f26c7c7ca2da21b9c1926b7dac04b0ee8bc03a21d76c781c2a67482"
+    },
+    {
+      "path": "inputs/file-io-all.bnt",
+      "bytes": 199,
+      "sha256": "332dcb27fac1d077be5a7b5f215b3a808abd56e829b0eac6fe12c191416a59fd"
+    },
+    {
+      "path": "inputs/http-full-handler.bnt",
+      "bytes": 244,
+      "sha256": "d0ae9102f336e282969a6774a5f067e2b6f70bfb96a19b39c277ef590b55c8d7"
+    },
+    {
+      "path": "inputs/near-path-in.bnt",
+      "bytes": 135,
+      "sha256": "2c838f6717eb2e4054c54054b7487abdd7bc5a215a3f2c4f205c221720e1eace"
+    },
+    {
+      "path": "inputs/near-path.bnt",
+      "bytes": 132,
+      "sha256": "ab56af940fcf240f029e482a34e7e173cb35f0324704b33949f09e1f7c54225b"
+    },
+    {
+      "path": "inputs/scope-cidr.bnt",
+      "bytes": 146,
+      "sha256": "01d161ad975fc3ff73037656cdb5dbdda78aaccd3f8b89e0896103f0d4b99d99"
+    },
+    {
+      "path": "inputs/scope-ipv4.bnt",
+      "bytes": 143,
+      "sha256": "13f5218880439c45c3c5595088b1b45c82dafabde0d7dc4d15a093be090db1b4"
+    },
+    {
+      "path": "inputs/scope-old.bnt",
+      "bytes": 302,
+      "sha256": "ed1c4f76fe60de9f25d937dba5e908cebea59b18f80dfdf78759789d1f6047e0"
+    },
+    {
+      "path": "inputs/unknown-http.bnt",
+      "bytes": 140,
+      "sha256": "9b1f166eb08aafa7a348c1da9a05c5f9ebeca4b89223b666b5ca6b2f7810829b"
+    },
+    {
+      "path": "inputs/unknown-scope.bnt",
+      "bytes": 134,
+      "sha256": "76c23c3b10be13089dacf65c0e55780ddb72bf2ab0884aaafbba758814e41697"
+    },
+    {
+      "path": "inputs/user-handled.bnt",
+      "bytes": 154,
+      "sha256": "0d5509b452e7ae94e67bf2adb70cd4bcefc616a533b6a76d75fdb4727d146ddf"
+    },
+    {
+      "path": "inputs/user-unhandled.bnt",
+      "bytes": 112,
+      "sha256": "7cda349641ebae1346b0fbe87fc5b3a4308b3e2e3ecc4c060a3f1c82170e61e3"
+    },
+    {
+      "path": "line-counts.json",
+      "bytes": 601,
+      "sha256": "1e87deae59422a9cc9f8315c98335cb00f767df5ccb4cfc9f95f9223a8b71c54"
+    },
+    {
+      "path": "results.md",
+      "bytes": 27585,
+      "sha256": "198006fadbca59dcb8cc19eb3ea7bca5186ef77d6ad8e76bd229e6048d2b8718"
+    },
+    {
+      "path": "run_logged.py",
+      "bytes": 2213,
+      "sha256": "3f728eccacdab2a7c8bfc5b8d8934322b44d1ddc76de018b298dbb5f9cf20743"
+    },
+    {
+      "path": "signature-local.log",
+      "bytes": 612,
+      "sha256": "50160c839beda8f22bd1eb1b1e4afa025ba35ee457b13b0de951b3ff91f0d0ff"
+    },
+    {
+      "path": "test-counts.json",
+      "bytes": 10104,
+      "sha256": "292fdf16e71325d97cabcb49530ca05c053cf585eea39f46c8a2fd90c66b8c4f"
+    },
+    {
+      "path": "work-check-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "work-dry-run.json",
+      "bytes": 655,
+      "sha256": "948fb58a926b5eab0903eac73b226dee00478cd932336caff20d99aa96c4e0d2"
+    },
+    {
+      "path": "work-dry-run.log",
+      "bytes": 1651,
+      "sha256": "dd750b7382c96c7009ef01a1fa5e2e821675ff10767e4cc3bebc842f455b9fbc"
+    },
+    {
+      "path": "work.json",
+      "bytes": 836,
+      "sha256": "f18d3216d53950327ac7dbe58fc867f6f4af84d50659be647d15c4ec60317d84"
+    },
+    {
+      "path": "work.log",
+      "bytes": 175776,
+      "sha256": "c9b060ef753bce0d6ba2a217d2d10b1fa3ce6505d50c8fa1bcf0dcaeafb4a531"
+    }
+  ]
+}

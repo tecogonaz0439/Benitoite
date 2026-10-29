@@ -1,0 +1,5187 @@
+{
+  "quick": false,
+  "evidence": {
+    "commits": {
+      "before": "6124775788579e60530f55fb85570f26ef7fa900",
+      "after": "41b4bda37b3cf2a8c3f6a3ef7232955e41d90431"
+    },
+    "cargo_locks": {
+      "before": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "after": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+    },
+    "dependency_lock_sha256": {
+      "before": "1be3e8c9b5a5f2d639d8180fc4c97dab1a4feeae717ef7b1f4b2b8b6b11ff8e6",
+      "after": "1be3e8c9b5a5f2d639d8180fc4c97dab1a4feeae717ef7b1f4b2b8b6b11ff8e6"
+    },
+    "lock_self_version_only": true
+  },
+  "state_order": [
+    "before",
+    "after"
+  ],
+  "targets": {
+    "targets": []
+  },
+  "name": "m013-r10-8",
+  "samples": 5,
+  "timeout": 600,
+  "repeats": 1,
+  "alloc": false,
+  "tier": "short",
+  "resources": "none",
+  "generator_sha256": {
+    "analysis.py": "43a61a0f693600891160fcd8b0438725da6235abd240f2895cd482cb7dd70162",
+    "bridge_probe.py": "02c85438fce6e3206a7b4e3cb68ad08c5ed1706d0258cba7395a7c6782230f7e",
+    "build.py": "f77d52ae27da9610a67fbf810320f30bf9b9b5bb3c6eca8455428563c3371c26",
+    "features.py": "d58ad113acf6c3337182464585cbd44cceba923daae0f0fa4ade98bb67f0e35c",
+    "model.py": "f72aef5f0f8702eac681ffcd0045c5a49d8ada3c5ae2549963dfc1d0bba5c29b",
+    "observations.py": "66d30dbf7798e28d86dd9e44cf2651af17012a6b021b63214eff1a2cd7a4cb04",
+    "run.py": "566102c59a74857803857935f31fffe40b3be68e918f623915fe0b4f6b6f0208",
+    "scenarios/__init__.py": "403207a657f89d1aaaa1867ec9c0b044506fbc3bc5747ac377345fe33140bab7",
+    "scenarios/bridge.py": "f8f99cc143053c1e2154f3ad4236d43e07da86dccbfb5ff75e5c00ecf9cb3839",
+    "scenarios/builders.py": "eab84db4e288d2189433c00109401bd2ab36935892864e0dcbf8077b98ae8997",
+    "scenarios/codegen.py": "fb569258bb551c787f5e40b25906c4c2af92a8148ccfaa62449c936982f59df6",
+    "scenarios/constraints.py": "b453bb47d7bb63be8829586cf4e1058d7fa94cea7eee6f2b8cff0b5a998c7666",
+    "scenarios/external_tests.py": "d82bd2b3646f3148370cc9cd0981ba505d66248c71af915b6bd4ff507ae82679",
+    "scenarios/functions.py": "2f9f858dc29761d144227ac6bd2f7391171952693488ec10663eac40399a4eaa",
+    "scenarios/patterns.py": "1f938843d9dbefe2c613e7a1c99ef7838c8dc837cab6db8608942bacaef0f66a",
+    "scenarios/runtime.py": "e46a65ac64089523e37e761b37c00126b9618ebc85047aa4a1f842e2b20366e0",
+    "scenarios/shrinking.py": "27f3c59bbed134e9265f7242771373dbae0a31e1d6326276f730911b075a9081",
+    "test_compare.py": "fd8717d0adeb797975b849caf530b52a61790083186be6a83c2db3c2a25fe065",
+    "test_scenarios.py": "04b633ed5e97ed0e3df42da2d8e718352dc26de94146ec0b8a1d43830cd47e80",
+    "validation.py": "c2f1dff323124336b684e8b1ca86add2119ec263c29a2cc9c7edf4e81e6abd0e"
+  },
+  "probe_source_sha256": "818ecef20033eba3802e046dfb3c7ca5d046594a55742a56af1a77069e7c1e7f",
+  "builds": {
+    "before": {
+      "key": {
+        "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+        "mode": "default",
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+        "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+      },
+      "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+      "binary": "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+      "sha256": "cf4ef7a4a1d183997f1e9320e635a655caf5caaecb988e687a6f53c6a6b3c943",
+      "archive": "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/source",
+      "features": [
+        "default"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "-p",
+        "benitoite",
+        "--manifest-path",
+        "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/source/Cargo.toml",
+        "--target-dir",
+        "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default"
+      ],
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+      "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "log": "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/build.log",
+      "reused": true,
+      "seconds": 80.432329208,
+      "build_invocation_seconds": 0.011707917000000012,
+      "probe_api": {
+        "parser_pending": true,
+        "parser_sha256": "d2df47e23ecae22342f4a3b76cd7c55a1e0f847d89c46735b952dbab7c2118c2",
+        "range_index": false,
+        "types_sha256": "a8d25a6452521157508223529c218d242e5bc5ed9601fa7f36ecf008d0510bf3"
+      },
+      "probe_key": "818ecef20033eba3802e046dfb3c7ca5d046594a55742a56af1a77069e7c1e7f2b0d9088ae350ca8723bec3ae82a6be3a9fadff7da3e33c0ae8e66ae4660598d",
+      "probe_command": [
+        "rustc",
+        "--edition=2024",
+        "-O",
+        "<repo>/tools/bench/compare/timing_probe.rs",
+        "--extern",
+        "benitoite=<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+        "-L",
+        "dependency=<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+        "-o",
+        "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+        "--extern",
+        "serde_json=<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+        "--cfg",
+        "benitoite_parser_pending"
+      ],
+      "bridge_sources": {
+        "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+        "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+        "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+        "wrapper": "28cb6cf63ce92bcdd0dfd95688a06a8948d1d4fa051108ba71aebb53345fb8e7",
+        "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+      },
+      "probe": "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+      "probe_sha256": "5fb3fa2409b97af320dc2bd8bee11ce07505b4eff6b37776d135ee6041c99d36"
+    },
+    "after": {
+      "key": {
+        "commit": "41b4bda37b3cf2a8c3f6a3ef7232955e41d90431",
+        "mode": "default",
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+        "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+      },
+      "commit": "41b4bda37b3cf2a8c3f6a3ef7232955e41d90431",
+      "binary": "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+      "sha256": "cc39564526937eb525776ec31064faca4441b9740198c08d25e54c2233ecc248",
+      "archive": "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/source",
+      "features": [
+        "default"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "-p",
+        "benitoite",
+        "--manifest-path",
+        "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/source/Cargo.toml",
+        "--target-dir",
+        "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default"
+      ],
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+      "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "log": "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/build.log",
+      "reused": false,
+      "seconds": 74.40872704099999,
+      "build_invocation_seconds": 74.408727916,
+      "probe_api": {
+        "parser_pending": true,
+        "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+        "range_index": true,
+        "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb"
+      },
+      "probe_key": "818ecef20033eba3802e046dfb3c7ca5d046594a55742a56af1a77069e7c1e7fc7e5a51307b56faf188b0db55e33442a209eb7652be4cf48b5a067dd29564f79",
+      "probe_command": [
+        "rustc",
+        "--edition=2024",
+        "-O",
+        "<repo>/tools/bench/compare/timing_probe.rs",
+        "--extern",
+        "benitoite=<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/libbenitoite.rlib",
+        "-L",
+        "dependency=<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/deps",
+        "-o",
+        "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/timing-probe",
+        "--extern",
+        "serde_json=<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+        "--cfg",
+        "benitoite_parser_pending",
+        "--cfg",
+        "benitoite_range_index"
+      ],
+      "bridge_sources": {
+        "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+        "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+        "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+        "wrapper": "a97ccb29535e2aea6ba4ac015c860a48049df9878f1e19ba8562f16d3eccbc15",
+        "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+      },
+      "probe": "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/timing-probe",
+      "probe_sha256": "f0cb778c378ec4c7417ba03907f7449739663298306942f3e45a02c8b3116f4f"
+    }
+  },
+  "alloc_builds": {},
+  "environment": {
+    "os": "macOS-27.0.1-arm64-arm-64bit",
+    "cpu": "Apple M4",
+    "rust": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "python": "3.9.6",
+    "io": "BENITOITE_DEV_IO_MODE=direct",
+    "cargo_rust_environment": {},
+    "inherited_cargo_config": "Cargo also reads user configuration; inspect before the full run"
+  },
+  "fixture_archive": "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/source",
+  "working_head": "4de09635cb3d4ac4ae5fabd4bc7de9e65a456a0a",
+  "metric_units": {
+    "load_parse": "seconds",
+    "reparse": "seconds",
+    "resolve": "seconds",
+    "typeck": "seconds",
+    "desugar": "seconds",
+    "ir_check": "seconds",
+    "lower": "seconds",
+    "codegen": "seconds",
+    "vm_run": "seconds",
+    "bridge_to_heap": "seconds",
+    "bridge_from_heap": "seconds",
+    "bridge_time": "seconds",
+    "errors": "count",
+    "hole_lets": "count",
+    "runtime_compilations": "count",
+    "component_keys": "count",
+    "unique_nodes": "count",
+    "edges": "count",
+    "heap_nodes": "count",
+    "observation": "count",
+    "ir_errors": "count",
+    "sibling_rejected": "count",
+    "allocations": "count",
+    "allocated_bytes": "bytes",
+    "peak_heap_bytes": "bytes",
+    "cli": "seconds",
+    "rss_bytes": "bytes"
+  },
+  "working_diff": "",
+  "capabilities": {
+    "before": {
+      "shrink_steps": {
+        "supported": true,
+        "command": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/features/before/shrink_steps.bnt"
+        ],
+        "source": "import Benitoite.Unofficial.Test.Property\nfunction main() -> Unit\n bind config <- Property.Config(seed: 1, trials: 1, size: 1, maxShrinks: 1, maxShrinkWork: 1)\n bind steps: Property.ShrinkStep[Integer] <- Property.ShrinkStep.Done\nend function\n",
+        "sha256": "851567fd22119d2673ce4b3d665524ea5fcdf8801213684b1d3ff320b4789e9d",
+        "result": {
+          "seconds": 0.03371787500000778,
+          "status": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "builders": {
+        "supported": true,
+        "command": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/features/before/builders.bnt"
+        ],
+        "source": "import Benitoite.StringBuilder\nimport Benitoite.ListBuilder\nimport Benitoite.BytesBuilder\nfunction main() -> Unit uses State\n bind s: StringBuilder <- StringBuilder.new()\n bind l: ListBuilder[Integer] <- ListBuilder.new()\n bind b: BytesBuilder <- BytesBuilder.new()\nend function\n",
+        "sha256": "2eaba725ecd7b7e50c5785e2b5ba176be0daa769391f2d123eaf139a2cbcacb8",
+        "result": {
+          "seconds": 0.040233125000000314,
+          "status": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "timing_probe": {
+        "supported": true,
+        "command": [
+          "rustc",
+          "--edition=2024",
+          "-O",
+          "<repo>/tools/bench/compare/timing_probe.rs",
+          "--extern",
+          "benitoite=<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+          "-L",
+          "dependency=<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+          "-o",
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+          "--extern",
+          "serde_json=<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+          "--cfg",
+          "benitoite_parser_pending"
+        ],
+        "reason": null
+      }
+    },
+    "after": {
+      "shrink_steps": {
+        "supported": true,
+        "command": [
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/features/after/shrink_steps.bnt"
+        ],
+        "source": "import Benitoite.Unofficial.Test.Property\nfunction main() -> Unit\n bind config <- Property.Config(seed: 1, trials: 1, size: 1, maxShrinks: 1, maxShrinkWork: 1)\n bind steps: Property.ShrinkStep[Integer] <- Property.ShrinkStep.Done\nend function\n",
+        "sha256": "851567fd22119d2673ce4b3d665524ea5fcdf8801213684b1d3ff320b4789e9d",
+        "result": {
+          "seconds": 0.4624921670000077,
+          "status": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "builders": {
+        "supported": true,
+        "command": [
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/features/after/builders.bnt"
+        ],
+        "source": "import Benitoite.StringBuilder\nimport Benitoite.ListBuilder\nimport Benitoite.BytesBuilder\nfunction main() -> Unit uses State\n bind s: StringBuilder <- StringBuilder.new()\n bind l: ListBuilder[Integer] <- ListBuilder.new()\n bind b: BytesBuilder <- BytesBuilder.new()\nend function\n",
+        "sha256": "2eaba725ecd7b7e50c5785e2b5ba176be0daa769391f2d123eaf139a2cbcacb8",
+        "result": {
+          "seconds": 0.017285334000007424,
+          "status": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "timing_probe": {
+        "supported": true,
+        "command": [
+          "rustc",
+          "--edition=2024",
+          "-O",
+          "<repo>/tools/bench/compare/timing_probe.rs",
+          "--extern",
+          "benitoite=<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/libbenitoite.rlib",
+          "-L",
+          "dependency=<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/deps",
+          "-o",
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/timing-probe",
+          "--extern",
+          "serde_json=<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+          "--cfg",
+          "benitoite_parser_pending",
+          "--cfg",
+          "benitoite_range_index"
+        ],
+        "reason": null
+      }
+    }
+  },
+  "features": {
+    "before": {
+      "shrink_steps": true,
+      "builders": true,
+      "timing_probe": true
+    },
+    "after": {
+      "shrink_steps": true,
+      "builders": true,
+      "timing_probe": true
+    }
+  },
+  "skipped": [],
+  "cases": [
+    {
+      "id": "functions-main-0-0",
+      "section": "16.2",
+      "family": "main",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 37
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/functions-main-0-0/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/functions-main-0-0/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-main-0-1",
+      "section": "16.2",
+      "family": "main",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0401"
+      ],
+      "params": {
+        "bad": true,
+        "input_unit": "function declarations",
+        "source_bytes": 67
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "75cb3a07e7feaa8a4ba2a41e8495d3f91d4354ed9796f51e79cc54cbc4a83064"
+          },
+          "entry": "inputs/functions-main-0-1/shared-90603c0786f58d6a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "75cb3a07e7feaa8a4ba2a41e8495d3f91d4354ed9796f51e79cc54cbc4a83064"
+          },
+          "entry": "inputs/functions-main-0-1/shared-90603c0786f58d6a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-main-64-0",
+      "section": "16.2",
+      "family": "main",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 3217
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "a4dc6564c3af0e2544833d997e779cde48e85701fc7894a7dd798f1a4e09de6a"
+          },
+          "entry": "inputs/functions-main-64-0/shared-e4719ad7e35a65a9/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "a4dc6564c3af0e2544833d997e779cde48e85701fc7894a7dd798f1a4e09de6a"
+          },
+          "entry": "inputs/functions-main-64-0/shared-e4719ad7e35a65a9/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-main-256-0",
+      "section": "16.2",
+      "family": "main",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 13129
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e70665e864b832ab0ecd2c59f34702eef300064176b448c315a1609bbefa505f"
+          },
+          "entry": "inputs/functions-main-256-0/shared-38f85c17fa44a99e/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e70665e864b832ab0ecd2c59f34702eef300064176b448c315a1609bbefa505f"
+          },
+          "entry": "inputs/functions-main-256-0/shared-38f85c17fa44a99e/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-main-1000-0",
+      "section": "16.2",
+      "family": "main",
+      "n": 1000,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 51817
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "6a0cb15728480a6bdea82cf2a7628500b94770794199cc689cc7e1718d4ba0aa"
+          },
+          "entry": "inputs/functions-main-1000-0/shared-016863f7a7928dbe/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "6a0cb15728480a6bdea82cf2a7628500b94770794199cc689cc7e1718d4ba0aa"
+          },
+          "entry": "inputs/functions-main-1000-0/shared-016863f7a7928dbe/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-main-1000-1",
+      "section": "16.2",
+      "family": "main",
+      "n": 1000,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0401"
+      ],
+      "params": {
+        "bad": true,
+        "input_unit": "function declarations",
+        "source_bytes": 51821
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "cd8930c58865df0dc8a7dbee2b30c522e9e121b7ab0aad8dc87e436df488c9cb"
+          },
+          "entry": "inputs/functions-main-1000-1/shared-88e462a325e809ba/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "cd8930c58865df0dc8a7dbee2b30c522e9e121b7ab0aad8dc87e436df488c9cb"
+          },
+          "entry": "inputs/functions-main-1000-1/shared-88e462a325e809ba/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-args-0-0",
+      "section": "16.2",
+      "family": "args",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 37
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/functions-args-0-0/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/functions-args-0-0/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-args-0-1",
+      "section": "16.2",
+      "family": "args",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0401"
+      ],
+      "params": {
+        "bad": true,
+        "input_unit": "function declarations",
+        "source_bytes": 67
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "75cb3a07e7feaa8a4ba2a41e8495d3f91d4354ed9796f51e79cc54cbc4a83064"
+          },
+          "entry": "inputs/functions-args-0-1/shared-90603c0786f58d6a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "75cb3a07e7feaa8a4ba2a41e8495d3f91d4354ed9796f51e79cc54cbc4a83064"
+          },
+          "entry": "inputs/functions-args-0-1/shared-90603c0786f58d6a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-args-1000-0",
+      "section": "16.2",
+      "family": "args",
+      "n": 1000,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 78817
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "958efba8d73b73ee8eef7caa8f93dda2c1f33282416345ebcea11a4a3654b060"
+          },
+          "entry": "inputs/functions-args-1000-0/shared-f4444ab0d83c3f9f/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "958efba8d73b73ee8eef7caa8f93dda2c1f33282416345ebcea11a4a3654b060"
+          },
+          "entry": "inputs/functions-args-1000-0/shared-f4444ab0d83c3f9f/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-args-1000-1",
+      "section": "16.2",
+      "family": "args",
+      "n": 1000,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0401"
+      ],
+      "params": {
+        "bad": true,
+        "input_unit": "function declarations",
+        "source_bytes": 78804
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e6134e5fa90e87bd95ef9450694fca36dbd8ad488460d4d0e55e01df66016832"
+          },
+          "entry": "inputs/functions-args-1000-1/shared-730276b4063425a2/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e6134e5fa90e87bd95ef9450694fca36dbd8ad488460d4d0e55e01df66016832"
+          },
+          "entry": "inputs/functions-args-1000-1/shared-730276b4063425a2/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-modules-0-0",
+      "section": "16.2",
+      "family": "modules",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 37
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/functions-modules-0-0/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/functions-modules-0-0/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-modules-0-1",
+      "section": "16.2",
+      "family": "modules",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0401"
+      ],
+      "params": {
+        "bad": true,
+        "input_unit": "function declarations",
+        "source_bytes": 67
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "75cb3a07e7feaa8a4ba2a41e8495d3f91d4354ed9796f51e79cc54cbc4a83064"
+          },
+          "entry": "inputs/functions-modules-0-1/shared-90603c0786f58d6a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "75cb3a07e7feaa8a4ba2a41e8495d3f91d4354ed9796f51e79cc54cbc4a83064"
+          },
+          "entry": "inputs/functions-modules-0-1/shared-90603c0786f58d6a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-modules-1000-0",
+      "section": "16.2",
+      "family": "modules",
+      "n": 1000,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "bad": false,
+        "input_unit": "function declarations",
+        "source_bytes": 58947
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "d9a107c4669a89433ee26cf449bddcd801e81d45007f9ee22623f589fc02cd6c",
+            "Part0.bnt": "3f23c733f5f3337e4811162d05cde175d835c756af1c89a6b52ac0b11f5ed8d9",
+            "Part1.bnt": "6ec0a4b45988607bd8b8eec35435126dd6d313d07278d0015297a030e4528408",
+            "Part2.bnt": "d5e66927b9e00a419cded20b05d6aa2ddffd39155068933f41b63ca856752bcc",
+            "Part3.bnt": "8b229cd13fc2f39408875064f8eceead09dee9bf942b801560be462741308744",
+            "Part4.bnt": "0b3c06728b9566e26f8e45faf02ed44a7c0289c1a79ca4ad9566761c09561c56",
+            "Part5.bnt": "0102b476efed9edaa126e406d6a094947213734dd8ed69e1096c5f52bb2c4e32",
+            "Part6.bnt": "6ad1526ab4f20775644aaf7dfb06513920c5dfb7de7c47f295e86f0a279b3d37",
+            "Part7.bnt": "1973ccf0ed664e11414d956930a710d8baa8cd15ef9f090d6b2e2dcd9afca4f8",
+            "Part8.bnt": "5483fddc688c103249825e9439a27ba420b51a525121670b20a2378c6fd9f273",
+            "Part9.bnt": "cadde86de0bed439fc0584891606271287f68f0cfa900a9563cff08c4888021c"
+          },
+          "entry": "inputs/functions-modules-1000-0/shared-d0a849f3f6abd072/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "d9a107c4669a89433ee26cf449bddcd801e81d45007f9ee22623f589fc02cd6c",
+            "Part0.bnt": "3f23c733f5f3337e4811162d05cde175d835c756af1c89a6b52ac0b11f5ed8d9",
+            "Part1.bnt": "6ec0a4b45988607bd8b8eec35435126dd6d313d07278d0015297a030e4528408",
+            "Part2.bnt": "d5e66927b9e00a419cded20b05d6aa2ddffd39155068933f41b63ca856752bcc",
+            "Part3.bnt": "8b229cd13fc2f39408875064f8eceead09dee9bf942b801560be462741308744",
+            "Part4.bnt": "0b3c06728b9566e26f8e45faf02ed44a7c0289c1a79ca4ad9566761c09561c56",
+            "Part5.bnt": "0102b476efed9edaa126e406d6a094947213734dd8ed69e1096c5f52bb2c4e32",
+            "Part6.bnt": "6ad1526ab4f20775644aaf7dfb06513920c5dfb7de7c47f295e86f0a279b3d37",
+            "Part7.bnt": "1973ccf0ed664e11414d956930a710d8baa8cd15ef9f090d6b2e2dcd9afca4f8",
+            "Part8.bnt": "5483fddc688c103249825e9439a27ba420b51a525121670b20a2378c6fd9f273",
+            "Part9.bnt": "cadde86de0bed439fc0584891606271287f68f0cfa900a9563cff08c4888021c"
+          },
+          "entry": "inputs/functions-modules-1000-0/shared-d0a849f3f6abd072/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "functions-modules-1000-1",
+      "section": "16.2",
+      "family": "modules",
+      "n": 1000,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0401"
+      ],
+      "params": {
+        "bad": true,
+        "input_unit": "function declarations",
+        "source_bytes": 58951
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "d9a107c4669a89433ee26cf449bddcd801e81d45007f9ee22623f589fc02cd6c",
+            "Part0.bnt": "3f23c733f5f3337e4811162d05cde175d835c756af1c89a6b52ac0b11f5ed8d9",
+            "Part1.bnt": "6ec0a4b45988607bd8b8eec35435126dd6d313d07278d0015297a030e4528408",
+            "Part2.bnt": "d5e66927b9e00a419cded20b05d6aa2ddffd39155068933f41b63ca856752bcc",
+            "Part3.bnt": "8b229cd13fc2f39408875064f8eceead09dee9bf942b801560be462741308744",
+            "Part4.bnt": "0b3c06728b9566e26f8e45faf02ed44a7c0289c1a79ca4ad9566761c09561c56",
+            "Part5.bnt": "0102b476efed9edaa126e406d6a094947213734dd8ed69e1096c5f52bb2c4e32",
+            "Part6.bnt": "6ad1526ab4f20775644aaf7dfb06513920c5dfb7de7c47f295e86f0a279b3d37",
+            "Part7.bnt": "1973ccf0ed664e11414d956930a710d8baa8cd15ef9f090d6b2e2dcd9afca4f8",
+            "Part8.bnt": "5483fddc688c103249825e9439a27ba420b51a525121670b20a2378c6fd9f273",
+            "Part9.bnt": "f92b7271cb72a9edb7438cc2f30050a0ef4cfbe98d54ff4f6d89fe2eb4476ef0"
+          },
+          "entry": "inputs/functions-modules-1000-1/shared-db89b167e3c0a405/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "d9a107c4669a89433ee26cf449bddcd801e81d45007f9ee22623f589fc02cd6c",
+            "Part0.bnt": "3f23c733f5f3337e4811162d05cde175d835c756af1c89a6b52ac0b11f5ed8d9",
+            "Part1.bnt": "6ec0a4b45988607bd8b8eec35435126dd6d313d07278d0015297a030e4528408",
+            "Part2.bnt": "d5e66927b9e00a419cded20b05d6aa2ddffd39155068933f41b63ca856752bcc",
+            "Part3.bnt": "8b229cd13fc2f39408875064f8eceead09dee9bf942b801560be462741308744",
+            "Part4.bnt": "0b3c06728b9566e26f8e45faf02ed44a7c0289c1a79ca4ad9566761c09561c56",
+            "Part5.bnt": "0102b476efed9edaa126e406d6a094947213734dd8ed69e1096c5f52bb2c4e32",
+            "Part6.bnt": "6ad1526ab4f20775644aaf7dfb06513920c5dfb7de7c47f295e86f0a279b3d37",
+            "Part7.bnt": "1973ccf0ed664e11414d956930a710d8baa8cd15ef9f090d6b2e2dcd9afca4f8",
+            "Part8.bnt": "5483fddc688c103249825e9439a27ba420b51a525121670b20a2378c6fd9f273",
+            "Part9.bnt": "f92b7271cb72a9edb7438cc2f30050a0ef4cfbe98d54ff4f6d89fe2eb4476ef0"
+          },
+          "entry": "inputs/functions-modules-1000-1/shared-db89b167e3c0a405/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "existing-fib",
+      "section": "16.2",
+      "family": "existing",
+      "n": 1,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c"
+          },
+          "entry": "inputs/existing-fib/shared-523cfb034e81cbc2/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c"
+          },
+          "entry": "inputs/existing-fib/shared-523cfb034e81cbc2/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "existing-loop",
+      "section": "16.2",
+      "family": "existing",
+      "n": 1,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "a7cd1dc714feb25889dfed33eb88a36b2f6f732e72e11dac3e843f644dc3f3a5"
+          },
+          "entry": "inputs/existing-loop/shared-59e0e7fdf3bc172b/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "a7cd1dc714feb25889dfed33eb88a36b2f6f732e72e11dac3e843f644dc3f3a5"
+          },
+          "entry": "inputs/existing-loop/shared-59e0e7fdf3bc172b/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "existing-string",
+      "section": "16.2",
+      "family": "existing",
+      "n": 1,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "0826574035e12ba27ca3b9aaa8835f4d2503011c6d3c196bcfbc31a0f740c845"
+          },
+          "entry": "inputs/existing-string/shared-dc1945a23e551c7a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "0826574035e12ba27ca3b9aaa8835f4d2503011c6d3c196bcfbc31a0f740c845"
+          },
+          "entry": "inputs/existing-string/shared-dc1945a23e551c7a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "higher-0-0",
+      "section": "16.3",
+      "family": "higher-0",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "3d0bf7aa90205f8fe5b913bab79dfc15d5f90f250d9ecee10f9be133c8e0432c"
+          },
+          "entry": "inputs/higher-0-0/shared-db78bc3f4220765a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "3d0bf7aa90205f8fe5b913bab79dfc15d5f90f250d9ecee10f9be133c8e0432c"
+          },
+          "entry": "inputs/higher-0-0/shared-db78bc3f4220765a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "higher-1-0",
+      "section": "16.3",
+      "family": "higher-1",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e89554dcedf24690a5d70c37d78609bc1e8665615ee56c43e44e5d1931ea8875"
+          },
+          "entry": "inputs/higher-1-0/shared-b500f1c1f16e0ca3/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e89554dcedf24690a5d70c37d78609bc1e8665615ee56c43e44e5d1931ea8875"
+          },
+          "entry": "inputs/higher-1-0/shared-b500f1c1f16e0ca3/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "classes-0",
+      "section": "16.3",
+      "family": "classes",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "817129e184c4e3a06f7d454047d9c7e4e5d2b89c572edd498122b8114720ae2a"
+          },
+          "entry": "inputs/classes-0/shared-94ffb7c1141866fa/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "817129e184c4e3a06f7d454047d9c7e4e5d2b89c572edd498122b8114720ae2a"
+          },
+          "entry": "inputs/classes-0/shared-94ffb7c1141866fa/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "higher-0-300",
+      "section": "16.3",
+      "family": "higher-0",
+      "n": 300,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "687cdb723237bb12672abb6379b7f3fb7b701ff9b26186c2c520d5885987e0d9"
+          },
+          "entry": "inputs/higher-0-300/shared-42b85f8fd9c14cf4/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "687cdb723237bb12672abb6379b7f3fb7b701ff9b26186c2c520d5885987e0d9"
+          },
+          "entry": "inputs/higher-0-300/shared-42b85f8fd9c14cf4/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "higher-1-300",
+      "section": "16.3",
+      "family": "higher-1",
+      "n": 300,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "22aa35f11e9351d5b158e9311a05e94278e4adbc09231c5911b4bb390aec3077"
+          },
+          "entry": "inputs/higher-1-300/shared-3222f0cc4abd50c2/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "22aa35f11e9351d5b158e9311a05e94278e4adbc09231c5911b4bb390aec3077"
+          },
+          "entry": "inputs/higher-1-300/shared-3222f0cc4abd50c2/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "classes-300",
+      "section": "16.3",
+      "family": "classes",
+      "n": 300,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "34289c37c68bd1a610a60b5e7447ae92d621a672ba6ac0fc19b6ebceab92d355"
+          },
+          "entry": "inputs/classes-300/shared-f0984801a3f71e10/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "34289c37c68bd1a610a60b5e7447ae92d621a672ba6ac0fc19b6ebceab92d355"
+          },
+          "entry": "inputs/classes-300/shared-f0984801a3f71e10/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "depth-0-8",
+      "section": "16.3",
+      "family": "depth-0",
+      "n": 8,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "allow_depth_limit": true
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "497af7a323334459dcbc89aace89d77648f2f8389d7086e58dee4333f461a752"
+          },
+          "entry": "inputs/depth-0-8/shared-c3eb817f76be3dd2/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "497af7a323334459dcbc89aace89d77648f2f8389d7086e58dee4333f461a752"
+          },
+          "entry": "inputs/depth-0-8/shared-c3eb817f76be3dd2/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "depth-1-8",
+      "section": "16.3",
+      "family": "depth-1",
+      "n": 8,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "allow_depth_limit": true
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ac02344daff3a25624522b3610405606070079e9a8c30622c04e406adb5685da"
+          },
+          "entry": "inputs/depth-1-8/shared-536a211e64c4e3d8/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ac02344daff3a25624522b3610405606070079e9a8c30622c04e406adb5685da"
+          },
+          "entry": "inputs/depth-1-8/shared-536a211e64c4e3d8/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "f1-nofail-call",
+      "section": "16.3",
+      "family": "reject",
+      "n": 1,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0515"
+      ],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "4093fa0953ca1c7f624704adfc7c501014885a9745a3a60a6813de20383ce0f8"
+          },
+          "entry": "inputs/f1-nofail-call/shared-08c3a971718fd73d/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "4093fa0953ca1c7f624704adfc7c501014885a9745a3a60a6813de20383ce0f8"
+          },
+          "entry": "inputs/f1-nofail-call/shared-08c3a971718fd73d/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "f1-join-effects",
+      "section": "16.3",
+      "family": "reject",
+      "n": 1,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [
+        "E0514"
+      ],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "6f5e1c56496a92d4d06c7618b78c0fe75375ec4e1366bbfc2d458cf04adbbe8c"
+          },
+          "entry": "inputs/f1-join-effects/shared-78490a96392a57de/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "6f5e1c56496a92d4d06c7618b78c0fe75375ec4e1366bbfc2d458cf04adbbe8c"
+          },
+          "entry": "inputs/f1-join-effects/shared-78490a96392a57de/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "control-16.3",
+      "section": "16.3",
+      "family": "control",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/control-16.3/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f"
+          },
+          "entry": "inputs/control-16.3/shared-b16fdef01b57bd77/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-bind-64",
+      "section": "16.3",
+      "family": "interval-bind",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "bind",
+        "input_unit": "alias bindings",
+        "control_case": "control-16.3",
+        "source_bytes": 1120
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "91bde61d35e2ed9d70a2be2912c96c10bb052f761fda6a8c117198eff6d84a11"
+          },
+          "entry": "inputs/interval-bind-64/shared-ad7cdc293dd425db/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "91bde61d35e2ed9d70a2be2912c96c10bb052f761fda6a8c117198eff6d84a11"
+          },
+          "entry": "inputs/interval-bind-64/shared-ad7cdc293dd425db/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-bind-256",
+      "section": "16.3",
+      "family": "interval-bind",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "bind",
+        "input_unit": "alias bindings",
+        "control_case": "control-16.3",
+        "source_bytes": 4697
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "5a0b8cafae4abdf9defc1f3963cad2c09f117906b68608e458452a97b6397541"
+          },
+          "entry": "inputs/interval-bind-256/shared-4d8e333ee2c0a240/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "5a0b8cafae4abdf9defc1f3963cad2c09f117906b68608e458452a97b6397541"
+          },
+          "entry": "inputs/interval-bind-256/shared-4d8e333ee2c0a240/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-add-64",
+      "section": "16.3",
+      "family": "interval-add",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "add",
+        "input_unit": "additions",
+        "control_case": "control-16.3",
+        "source_bytes": 310
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "f4c94c487ab65653ede678e14634b2be1fb8de820906889da82a1918420ac98a"
+          },
+          "entry": "inputs/interval-add-64/shared-7b9aac7a203b4f0e/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "f4c94c487ab65653ede678e14634b2be1fb8de820906889da82a1918420ac98a"
+          },
+          "entry": "inputs/interval-add-64/shared-7b9aac7a203b4f0e/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-add-256",
+      "section": "16.3",
+      "family": "interval-add",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "add",
+        "input_unit": "additions",
+        "control_case": "control-16.3",
+        "source_bytes": 1078
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "f30ad9e399d0e7b2ff933892bd7e4497e3bfb7bba00a4f6447986f66285d2b31"
+          },
+          "entry": "inputs/interval-add-256/shared-230c5c3ede4c293b/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "f30ad9e399d0e7b2ff933892bd7e4497e3bfb7bba00a4f6447986f66285d2b31"
+          },
+          "entry": "inputs/interval-add-256/shared-230c5c3ede4c293b/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-flow-64",
+      "section": "16.3",
+      "family": "interval-flow",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "flow",
+        "input_unit": "comparison/join bindings",
+        "control_case": "control-16.3",
+        "source_bytes": 3724
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "c2e8fa5807514bcb69d536e8e04a019a609140f55197a7ba8bee27a937699ce0"
+          },
+          "entry": "inputs/interval-flow-64/shared-79beea7efbc3b9ed/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "c2e8fa5807514bcb69d536e8e04a019a609140f55197a7ba8bee27a937699ce0"
+          },
+          "entry": "inputs/interval-flow-64/shared-79beea7efbc3b9ed/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-flow-256",
+      "section": "16.3",
+      "family": "interval-flow",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "flow",
+        "input_unit": "comparison/join bindings",
+        "control_case": "control-16.3",
+        "source_bytes": 15485
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "96794840f36412a8905937464d1027372db7a7b7a49c73727de4054ed528d5ae"
+          },
+          "entry": "inputs/interval-flow-256/shared-510c93f64387f81f/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "96794840f36412a8905937464d1027372db7a7b7a49c73727de4054ed528d5ae"
+          },
+          "entry": "inputs/interval-flow-256/shared-510c93f64387f81f/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-range-0",
+      "section": "16.3",
+      "family": "interval-range",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "range",
+        "input_unit": "successful Range matches",
+        "control_case": "interval-range-0",
+        "source_bytes": 71
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "497f8be84bd562dcac92c25d09cbbfbc71aa3ec6acd3d7fe47872df913dfb3f0"
+          },
+          "entry": "inputs/interval-range-0/shared-95cf9391e17c0102/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "497f8be84bd562dcac92c25d09cbbfbc71aa3ec6acd3d7fe47872df913dfb3f0"
+          },
+          "entry": "inputs/interval-range-0/shared-95cf9391e17c0102/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-range-64",
+      "section": "16.3",
+      "family": "interval-range",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "range",
+        "input_unit": "successful Range matches",
+        "control_case": "interval-range-0",
+        "source_bytes": 12713
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "13ed3b42b2ce34cee3af6ad0f06d184f6193faa68587be5d4293921fc8053cbb"
+          },
+          "entry": "inputs/interval-range-64/shared-a31f57d77a634fff/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "13ed3b42b2ce34cee3af6ad0f06d184f6193faa68587be5d4293921fc8053cbb"
+          },
+          "entry": "inputs/interval-range-64/shared-a31f57d77a634fff/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-range-256",
+      "section": "16.3",
+      "family": "interval-range",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "range",
+        "input_unit": "successful Range matches",
+        "control_case": "interval-range-0",
+        "source_bytes": 51197
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e3563b1d4a41ef4576e03be8a9ef507f7445a4eefc3417db50f8bf09448d2611"
+          },
+          "entry": "inputs/interval-range-256/shared-a53ae0b3aef46ecf/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e3563b1d4a41ef4576e03be8a9ef507f7445a4eefc3417db50f8bf09448d2611"
+          },
+          "entry": "inputs/interval-range-256/shared-a53ae0b3aef46ecf/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-http-0",
+      "section": "16.3",
+      "family": "interval-http",
+      "n": 0,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "http",
+        "input_unit": "Response/ClientRequest pairs",
+        "control_case": "interval-http-0",
+        "source_bytes": 78
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "00b6c4c4d071678cbcf274385c71411a218e8fd0680ff6837f0163235a779f4f"
+          },
+          "entry": "inputs/interval-http-0/shared-b763d3d0d965c9e8/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "00b6c4c4d071678cbcf274385c71411a218e8fd0680ff6837f0163235a779f4f"
+          },
+          "entry": "inputs/interval-http-0/shared-b763d3d0d965c9e8/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-http-64",
+      "section": "16.3",
+      "family": "interval-http",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "http",
+        "input_unit": "Response/ClientRequest pairs",
+        "control_case": "interval-http-0",
+        "source_bytes": 14202
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "c0725210ba727b1f26747cbb019280f973a162f24a3c9d21dded7d61ec798050"
+          },
+          "entry": "inputs/interval-http-64/shared-d030dbfc8bae861a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "c0725210ba727b1f26747cbb019280f973a162f24a3c9d21dded7d61ec798050"
+          },
+          "entry": "inputs/interval-http-64/shared-d030dbfc8bae861a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-http-256",
+      "section": "16.3",
+      "family": "interval-http",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "http",
+        "input_unit": "Response/ClientRequest pairs",
+        "control_case": "interval-http-0",
+        "source_bytes": 56946
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ca11bf64634998a99954d967de7ea655b22ea89bcc449a9f29ed4122e139f294"
+          },
+          "entry": "inputs/interval-http-256/shared-20b72703f9fffd54/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ca11bf64634998a99954d967de7ea655b22ea89bcc449a9f29ed4122e139f294"
+          },
+          "entry": "inputs/interval-http-256/shared-20b72703f9fffd54/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer8-64",
+      "section": "16.3",
+      "family": "interval-width-Integer8",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer8",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 2843
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "70b0dc280e7c67916e122113ac2dbe00d14efda9f31644362a3838ec743a9cf5"
+          },
+          "entry": "inputs/interval-width-Integer8-64/shared-c102f0c65d02689c/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "70b0dc280e7c67916e122113ac2dbe00d14efda9f31644362a3838ec743a9cf5"
+          },
+          "entry": "inputs/interval-width-Integer8-64/shared-c102f0c65d02689c/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer8-256",
+      "section": "16.3",
+      "family": "interval-width-Integer8",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer8",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 11447
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ccd10da45ff833c3b72b385edc80be78d742be85fb96051b16a2633eb67af3ea"
+          },
+          "entry": "inputs/interval-width-Integer8-256/shared-42152b261e3178dd/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ccd10da45ff833c3b72b385edc80be78d742be85fb96051b16a2633eb67af3ea"
+          },
+          "entry": "inputs/interval-width-Integer8-256/shared-42152b261e3178dd/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer16-64",
+      "section": "16.3",
+      "family": "interval-width-Integer16",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer16",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 3163
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "7a146485731abaef58ac49e117e4562790a08d21ea0424483d93e375973aadee"
+          },
+          "entry": "inputs/interval-width-Integer16-64/shared-a6b7a2df10acadc4/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "7a146485731abaef58ac49e117e4562790a08d21ea0424483d93e375973aadee"
+          },
+          "entry": "inputs/interval-width-Integer16-64/shared-a6b7a2df10acadc4/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer16-256",
+      "section": "16.3",
+      "family": "interval-width-Integer16",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer16",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 12727
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "67573f6475f1fc9e94dde992d213f22c0fb7a46531ec115c519650ea8392a3b0"
+          },
+          "entry": "inputs/interval-width-Integer16-256/shared-9b96ea481705cd28/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "67573f6475f1fc9e94dde992d213f22c0fb7a46531ec115c519650ea8392a3b0"
+          },
+          "entry": "inputs/interval-width-Integer16-256/shared-9b96ea481705cd28/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer32-64",
+      "section": "16.3",
+      "family": "interval-width-Integer32",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer32",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 3163
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "621da1a0a96c6c4cfe8c6f54e313ccd016b396502431e30b5674089416b0af31"
+          },
+          "entry": "inputs/interval-width-Integer32-64/shared-ea9c769ef29114d8/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "621da1a0a96c6c4cfe8c6f54e313ccd016b396502431e30b5674089416b0af31"
+          },
+          "entry": "inputs/interval-width-Integer32-64/shared-ea9c769ef29114d8/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer32-256",
+      "section": "16.3",
+      "family": "interval-width-Integer32",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer32",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 12727
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "9a6c8306ab19c0412d1918687cbc73a6683cc3715b875412c43b17c5a247e325"
+          },
+          "entry": "inputs/interval-width-Integer32-256/shared-33929637eddaca44/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "9a6c8306ab19c0412d1918687cbc73a6683cc3715b875412c43b17c5a247e325"
+          },
+          "entry": "inputs/interval-width-Integer32-256/shared-33929637eddaca44/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer64-64",
+      "section": "16.3",
+      "family": "interval-width-Integer64",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer64",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 2203
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "6fbf1da6a16479afd2ddfef42c0500f09758ac511bfa2097947adcb3fbb83836"
+          },
+          "entry": "inputs/interval-width-Integer64-64/shared-9398dcd090306e7e/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "6fbf1da6a16479afd2ddfef42c0500f09758ac511bfa2097947adcb3fbb83836"
+          },
+          "entry": "inputs/interval-width-Integer64-64/shared-9398dcd090306e7e/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-Integer64-256",
+      "section": "16.3",
+      "family": "interval-width-Integer64",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "Integer64",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 8887
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "73c01c9cc42f0a95c7800f493f1bfe8d41f2ef57f4b0e53fc317a5b87f1b0a64"
+          },
+          "entry": "inputs/interval-width-Integer64-256/shared-964eba5ade5ba722/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "73c01c9cc42f0a95c7800f493f1bfe8d41f2ef57f4b0e53fc317a5b87f1b0a64"
+          },
+          "entry": "inputs/interval-width-Integer64-256/shared-964eba5ade5ba722/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-UnsignedInteger16-64",
+      "section": "16.3",
+      "family": "interval-width-UnsignedInteger16",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "UnsignedInteger16",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 3099
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "607cc769f0bdb054de6836897ce7925e312ad59806eab1d9d4cb103f52b5b198"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger16-64/shared-28e49db823965fc7/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "607cc769f0bdb054de6836897ce7925e312ad59806eab1d9d4cb103f52b5b198"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger16-64/shared-28e49db823965fc7/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-UnsignedInteger16-256",
+      "section": "16.3",
+      "family": "interval-width-UnsignedInteger16",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "UnsignedInteger16",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 12471
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e3db507261c90fb6289edb245ab978c679c2bb1bc2ecae752ae2ba051ccd334a"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger16-256/shared-3f1d95bc88d7d904/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e3db507261c90fb6289edb245ab978c679c2bb1bc2ecae752ae2ba051ccd334a"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger16-256/shared-3f1d95bc88d7d904/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-UnsignedInteger32-64",
+      "section": "16.3",
+      "family": "interval-width-UnsignedInteger32",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "UnsignedInteger32",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 3099
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "976148e4bd907dd8cdd4b91a11d14adba3a444b710216ece2b5ca8400007ba9c"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger32-64/shared-d7e4405c8f3e0d73/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "976148e4bd907dd8cdd4b91a11d14adba3a444b710216ece2b5ca8400007ba9c"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger32-64/shared-d7e4405c8f3e0d73/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-UnsignedInteger32-256",
+      "section": "16.3",
+      "family": "interval-width-UnsignedInteger32",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "UnsignedInteger32",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 12471
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "5e8eba0df656b5a6499fd5f3eb5872d459a917315d6dd2d7d1e9327286b3c28c"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger32-256/shared-1511ad63a0bf7396/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "5e8eba0df656b5a6499fd5f3eb5872d459a917315d6dd2d7d1e9327286b3c28c"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger32-256/shared-1511ad63a0bf7396/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-UnsignedInteger64-64",
+      "section": "16.3",
+      "family": "interval-width-UnsignedInteger64",
+      "n": 64,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "UnsignedInteger64",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 3099
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "8bfb94e208209dcc4be75fdeb32992b55d1d4a4504a0d89b31ab060f198e619e"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger64-64/shared-016d69edaf7aed86/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "8bfb94e208209dcc4be75fdeb32992b55d1d4a4504a0d89b31ab060f198e619e"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger64-64/shared-016d69edaf7aed86/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "interval-width-UnsignedInteger64-256",
+      "section": "16.3",
+      "family": "interval-width-UnsignedInteger64",
+      "n": 256,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "width",
+        "integer_type": "UnsignedInteger64",
+        "input_unit": "arithmetic groups",
+        "control_case": "control-16.3",
+        "source_bytes": 12471
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "326cad50ae509b4f2d5eb776db7d524a64017e8077beeeb18d4992f2553bf6db"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger64-256/shared-fcb97121d4ce689b/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "326cad50ae509b4f2d5eb776db7d524a64017e8077beeeb18d4992f2553bf6db"
+          },
+          "entry": "inputs/interval-width-UnsignedInteger64-256/shared-fcb97121d4ce689b/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "property-seven-24-20-1000-all-ok",
+      "section": "16.4",
+      "family": "property-seven-all-ok",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "all-ok",
+        "shape": "list",
+        "distribution": "seven"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "32f219a3ce2857aa873a8e07ad0bac99c1968cd22f9d5fea72cf0b1bc2e1fc46"
+          },
+          "entry": "inputs/property-seven-24-20-1000-all-ok/modern-83ba16a0d79f23e5/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "32f219a3ce2857aa873a8e07ad0bac99c1968cd22f9d5fea72cf0b1bc2e1fc46"
+          },
+          "entry": "inputs/property-seven-24-20-1000-all-ok/modern-83ba16a0d79f23e5/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-seven-24-20-1000-always-error",
+      "section": "16.4",
+      "family": "property-seven-always-error",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "always-error",
+        "shape": "list",
+        "distribution": "seven"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "660ceda47318ad6793515d3d7775bf5217c83c04e12072d3caa14a750d0f9d8a"
+          },
+          "entry": "inputs/property-seven-24-20-1000-always-error/modern-614b102a1e52febe/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "660ceda47318ad6793515d3d7775bf5217c83c04e12072d3caa14a750d0f9d8a"
+          },
+          "entry": "inputs/property-seven-24-20-1000-always-error/modern-614b102a1e52febe/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-distinct-24-20-1000-all-ok",
+      "section": "16.4",
+      "family": "property-distinct-all-ok",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "all-ok",
+        "shape": "list",
+        "distribution": "distinct"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e31a3ce864bb4f8c994ed465253589dc6dd8df44fb230d5caf54879b21b16257"
+          },
+          "entry": "inputs/property-distinct-24-20-1000-all-ok/modern-d980f404485f94c0/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e31a3ce864bb4f8c994ed465253589dc6dd8df44fb230d5caf54879b21b16257"
+          },
+          "entry": "inputs/property-distinct-24-20-1000-all-ok/modern-d980f404485f94c0/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-distinct-24-20-1000-always-error",
+      "section": "16.4",
+      "family": "property-distinct-always-error",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "always-error",
+        "shape": "list",
+        "distribution": "distinct"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "d9bf4ee15d944c8dc8f09597a3bbc92336841df403401b4db694b467b9183a38"
+          },
+          "entry": "inputs/property-distinct-24-20-1000-always-error/modern-9e950571b52e7427/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "d9bf4ee15d944c8dc8f09597a3bbc92336841df403401b4db694b467b9183a38"
+          },
+          "entry": "inputs/property-distinct-24-20-1000-always-error/modern-9e950571b52e7427/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-zero-24-20-1000-all-ok",
+      "section": "16.4",
+      "family": "property-zero-all-ok",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "all-ok",
+        "shape": "list",
+        "distribution": "zero"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "724a7282e35243b591f134bc60399c437a1d4213b12e6684583706674ce2520a"
+          },
+          "entry": "inputs/property-zero-24-20-1000-all-ok/modern-58ad3ac5ee51baf2/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "724a7282e35243b591f134bc60399c437a1d4213b12e6684583706674ce2520a"
+          },
+          "entry": "inputs/property-zero-24-20-1000-all-ok/modern-58ad3ac5ee51baf2/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-zero-24-20-1000-always-error",
+      "section": "16.4",
+      "family": "property-zero-always-error",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "always-error",
+        "shape": "list",
+        "distribution": "zero"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "a786953609fbecb0d2735e81b8ec93be003bc277b35961f47a0d9118d1f99ecb"
+          },
+          "entry": "inputs/property-zero-24-20-1000-always-error/modern-07bdf187c11c3abd/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "a786953609fbecb0d2735e81b8ec93be003bc277b35961f47a0d9118d1f99ecb"
+          },
+          "entry": "inputs/property-zero-24-20-1000-always-error/modern-07bdf187c11c3abd/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-max-24-20-1000-all-ok",
+      "section": "16.4",
+      "family": "property-max-all-ok",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "all-ok",
+        "shape": "list",
+        "distribution": "max"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "5b6de332f828db56ba9a8f8a944cf6bb4ed7d9e0454bf46ba0da5b1fe2900416"
+          },
+          "entry": "inputs/property-max-24-20-1000-all-ok/modern-c00a9d9dad369cd0/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "5b6de332f828db56ba9a8f8a944cf6bb4ed7d9e0454bf46ba0da5b1fe2900416"
+          },
+          "entry": "inputs/property-max-24-20-1000-all-ok/modern-c00a9d9dad369cd0/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "property-max-24-20-1000-always-error",
+      "section": "16.4",
+      "family": "property-max-always-error",
+      "n": 24,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1,
+        "mode": "always-error",
+        "shape": "list",
+        "distribution": "max"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "d12a56922e98e19d14d65f8676c93b963cfee01023df8488ffcde5f971cf331e"
+          },
+          "entry": "inputs/property-max-24-20-1000-always-error/modern-704dbcd07ccc253e/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "d12a56922e98e19d14d65f8676c93b963cfee01023df8488ffcde5f971cf331e"
+          },
+          "entry": "inputs/property-max-24-20-1000-always-error/modern-704dbcd07ccc253e/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-string-candidates",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "candidates",
+        "shape": "string",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "8ed490d0db010eece86eff6326d71aed7956d2138c9a2f19939c83a6e7cb1193"
+          },
+          "entry": "inputs/order-string-candidates/modern-d156b9d2c3a34b7b/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "8ed490d0db010eece86eff6326d71aed7956d2138c9a2f19939c83a6e7cb1193"
+          },
+          "entry": "inputs/order-string-candidates/modern-d156b9d2c3a34b7b/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-string-all-ok",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "all-ok",
+        "shape": "string",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "8594ff760d2a0902b1e0457f5280a812b06794f342f4d1e34bb7db3167df16dc"
+          },
+          "entry": "inputs/order-string-all-ok/modern-c2c3892e380f350c/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "8594ff760d2a0902b1e0457f5280a812b06794f342f4d1e34bb7db3167df16dc"
+          },
+          "entry": "inputs/order-string-all-ok/modern-c2c3892e380f350c/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-string-always-error",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "always-error",
+        "shape": "string",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "d0e1d8b08b3dfa96c749ba510900488260193c3f20224fc9008d2d6b716f946d"
+          },
+          "entry": "inputs/order-string-always-error/modern-4dcf140471685e3c/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "d0e1d8b08b3dfa96c749ba510900488260193c3f20224fc9008d2d6b716f946d"
+          },
+          "entry": "inputs/order-string-always-error/modern-4dcf140471685e3c/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-map-candidates",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "candidates",
+        "shape": "map",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "bea6639107eb3794d477208642279d5fdb547bb452c32b4f2fddcae0a87cdfa8"
+          },
+          "entry": "inputs/order-map-candidates/modern-7ccf021ade40e7e4/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "bea6639107eb3794d477208642279d5fdb547bb452c32b4f2fddcae0a87cdfa8"
+          },
+          "entry": "inputs/order-map-candidates/modern-7ccf021ade40e7e4/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-map-all-ok",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "all-ok",
+        "shape": "map",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "0ac650e9497db7fe86db8ef5cdcf65ffe410458a2a0d237beb1bd7d13f339fef"
+          },
+          "entry": "inputs/order-map-all-ok/modern-e0569228ca32f294/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "0ac650e9497db7fe86db8ef5cdcf65ffe410458a2a0d237beb1bd7d13f339fef"
+          },
+          "entry": "inputs/order-map-all-ok/modern-e0569228ca32f294/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-map-always-error",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "always-error",
+        "shape": "map",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "638fe5660b4c89297509137e9a78f5a82f3801721cb2e138b91ce97a612a2b69"
+          },
+          "entry": "inputs/order-map-always-error/modern-94bd65e9e855032a/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "638fe5660b4c89297509137e9a78f5a82f3801721cb2e138b91ce97a612a2b69"
+          },
+          "entry": "inputs/order-map-always-error/modern-94bd65e9e855032a/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-record-candidates",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "candidates",
+        "shape": "record",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "f3110e5c94febec42221754e92878f9ed5b9dc7cd54526bdb1cd36160f82942c"
+          },
+          "entry": "inputs/order-record-candidates/modern-867e23d9c1958846/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "f3110e5c94febec42221754e92878f9ed5b9dc7cd54526bdb1cd36160f82942c"
+          },
+          "entry": "inputs/order-record-candidates/modern-867e23d9c1958846/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-record-all-ok",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "all-ok",
+        "shape": "record",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "d15920acbd421f503e9cd9edf55c3859b4d8ad40c14ec94afe477fbe4960420e"
+          },
+          "entry": "inputs/order-record-all-ok/modern-8321b3ad45f64045/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "d15920acbd421f503e9cd9edf55c3859b4d8ad40c14ec94afe477fbe4960420e"
+          },
+          "entry": "inputs/order-record-all-ok/modern-8321b3ad45f64045/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "order-record-always-error",
+      "section": "16.4",
+      "family": "order",
+      "n": 4,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "mode": "always-error",
+        "shape": "record",
+        "ms": 20,
+        "mw": 1000,
+        "repeats": 1
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "shrinking",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "shrink_steps",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "174254bae710889b9bca2b94d33f7bda1eeaa8dcaaea517be8f4850c593dbc71"
+          },
+          "entry": "inputs/order-record-always-error/modern-01d20e1bead0393c/main.bnt",
+          "variant": "modern"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "174254bae710889b9bca2b94d33f7bda1eeaa8dcaaea517be8f4850c593dbc71"
+          },
+          "entry": "inputs/order-record-always-error/modern-01d20e1bead0393c/main.bnt",
+          "variant": "modern"
+        }
+      }
+    },
+    {
+      "id": "build-string-builder-8-0",
+      "section": "16.5",
+      "family": "string",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "builder",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [
+        "builders"
+      ],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "dddd0fd2e5bc9cfa80fc7bc555a46f3f84ba9bee6ecdbbfb9cd162dd0fba8f5e"
+          },
+          "entry": "inputs/build-string-builder-8-0/shared-aedc574c623fd305/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "dddd0fd2e5bc9cfa80fc7bc555a46f3f84ba9bee6ecdbbfb9cd162dd0fba8f5e"
+          },
+          "entry": "inputs/build-string-builder-8-0/shared-aedc574c623fd305/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-string-builder-all-8-0",
+      "section": "16.5",
+      "family": "string",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "builder-all",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [
+        "builders"
+      ],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "b678994ac19811bb4537cd1337a2596203ce31dcbbf6314f6db42f28221c2244"
+          },
+          "entry": "inputs/build-string-builder-all-8-0/shared-db7ab45f9c12a070/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "b678994ac19811bb4537cd1337a2596203ce31dcbbf6314f6db42f28221c2244"
+          },
+          "entry": "inputs/build-string-builder-all-8-0/shared-db7ab45f9c12a070/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-string-concatenate-8-0",
+      "section": "16.5",
+      "family": "string",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "concatenate",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "e566b14879c5671357be4c56ae9620241cc4e337c2bc09255e7ae3e6052e3521"
+          },
+          "entry": "inputs/build-string-concatenate-8-0/shared-18417871e5179779/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "e566b14879c5671357be4c56ae9620241cc4e337c2bc09255e7ae3e6052e3521"
+          },
+          "entry": "inputs/build-string-concatenate-8-0/shared-18417871e5179779/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-string-join-8-0",
+      "section": "16.5",
+      "family": "string",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "join",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "0e412986fd0cc165e220aa7244d952319b61af0a54dcefefd25bd1650619703e"
+          },
+          "entry": "inputs/build-string-join-8-0/shared-38036235b4287bd3/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "0e412986fd0cc165e220aa7244d952319b61af0a54dcefefd25bd1650619703e"
+          },
+          "entry": "inputs/build-string-join-8-0/shared-38036235b4287bd3/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-list-builder-8-0",
+      "section": "16.5",
+      "family": "list",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "builder",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [
+        "builders"
+      ],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "4c094493f05ddcdac0231da43af9c33209f22ef89409f26c23607c0beca050df"
+          },
+          "entry": "inputs/build-list-builder-8-0/shared-827f5946b590049b/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "4c094493f05ddcdac0231da43af9c33209f22ef89409f26c23607c0beca050df"
+          },
+          "entry": "inputs/build-list-builder-8-0/shared-827f5946b590049b/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-list-builder-all-8-0",
+      "section": "16.5",
+      "family": "list",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "builder-all",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [
+        "builders"
+      ],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ba75a8144ccf2474e9ba87647f58b0219e8ee7570b987a9fb6d4b7950c5ac4d2"
+          },
+          "entry": "inputs/build-list-builder-all-8-0/shared-72d8cdf451b1f65d/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ba75a8144ccf2474e9ba87647f58b0219e8ee7570b987a9fb6d4b7950c5ac4d2"
+          },
+          "entry": "inputs/build-list-builder-all-8-0/shared-72d8cdf451b1f65d/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-list-concatenate-8-0",
+      "section": "16.5",
+      "family": "list",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "concatenate",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "073504bee7193144be65f42df67a1758bbca5165d6891ac01dd307c732aa12bc"
+          },
+          "entry": "inputs/build-list-concatenate-8-0/shared-9fa05c4c609e39f2/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "073504bee7193144be65f42df67a1758bbca5165d6891ac01dd307c732aa12bc"
+          },
+          "entry": "inputs/build-list-concatenate-8-0/shared-9fa05c4c609e39f2/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-list-fold-8-0",
+      "section": "16.5",
+      "family": "list",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "fold",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "11355940ac800f5840ae4d7ababdb1f68bb32b0d25cf122617c79d585b5523d3"
+          },
+          "entry": "inputs/build-list-fold-8-0/shared-0ffd6b07a29089f9/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "11355940ac800f5840ae4d7ababdb1f68bb32b0d25cf122617c79d585b5523d3"
+          },
+          "entry": "inputs/build-list-fold-8-0/shared-0ffd6b07a29089f9/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-bytes-builder-8-0",
+      "section": "16.5",
+      "family": "bytes",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "builder",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [
+        "builders"
+      ],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "1ace25dad999aab3a26cbd1b88adda4387472180d80f220ee102ef57eecd5846"
+          },
+          "entry": "inputs/build-bytes-builder-8-0/shared-91eb43b922a3d3e9/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "1ace25dad999aab3a26cbd1b88adda4387472180d80f220ee102ef57eecd5846"
+          },
+          "entry": "inputs/build-bytes-builder-8-0/shared-91eb43b922a3d3e9/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-bytes-builder-all-8-0",
+      "section": "16.5",
+      "family": "bytes",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "builder-all",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [
+        "builders"
+      ],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "9d76169c5111fca07661a3d50086289960c7e3aef09a1d57180f276a68902096"
+          },
+          "entry": "inputs/build-bytes-builder-all-8-0/shared-9abbbf1dc5da2622/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "9d76169c5111fca07661a3d50086289960c7e3aef09a1d57180f276a68902096"
+          },
+          "entry": "inputs/build-bytes-builder-all-8-0/shared-9abbbf1dc5da2622/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "build-bytes-concatenate-8-0",
+      "section": "16.5",
+      "family": "bytes",
+      "n": 8,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "method": "concatenate",
+        "copies": 0,
+        "snapshots": 0
+      },
+      "expected_stdout": "16\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "585886a049e974bbce64d11344368d3f1ce1d5d839e60e6ae8a5a54246b70346"
+          },
+          "entry": "inputs/build-bytes-concatenate-8-0/shared-79cbeddd0bf316ac/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "585886a049e974bbce64d11344368d3f1ce1d5d839e60e6ae8a5a54246b70346"
+          },
+          "entry": "inputs/build-bytes-concatenate-8-0/shared-79cbeddd0bf316ac/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-fib-short",
+      "section": "runtime",
+      "family": "fib",
+      "n": 20,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "6765\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "20"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c"
+          },
+          "entry": "inputs/runtime-fib-short/shared-523cfb034e81cbc2/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "f2926e736c27a924989257274ccc281d2ff58e48e562e1235bbc553ecd78089c"
+          },
+          "entry": "inputs/runtime-fib-short/shared-523cfb034e81cbc2/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-loop-short",
+      "section": "runtime",
+      "family": "loop",
+      "n": 100000,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "4999950000\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "100000"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "a7cd1dc714feb25889dfed33eb88a36b2f6f732e72e11dac3e843f644dc3f3a5"
+          },
+          "entry": "inputs/runtime-loop-short/shared-59e0e7fdf3bc172b/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "a7cd1dc714feb25889dfed33eb88a36b2f6f732e72e11dac3e843f644dc3f3a5"
+          },
+          "entry": "inputs/runtime-loop-short/shared-59e0e7fdf3bc172b/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-list-short",
+      "section": "runtime",
+      "family": "list",
+      "n": 10000,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "74985000\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "10000"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "f84a237340f469bee95272237ee5b7233c7f7ae8de02ac59f1f5c149191b14f5"
+          },
+          "entry": "inputs/runtime-list-short/shared-ae918f635718b437/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "f84a237340f469bee95272237ee5b7233c7f7ae8de02ac59f1f5c149191b14f5"
+          },
+          "entry": "inputs/runtime-list-short/shared-ae918f635718b437/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-tree-short",
+      "section": "runtime",
+      "family": "tree",
+      "n": 12,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "4096\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "12"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27"
+          },
+          "entry": "inputs/runtime-tree-short/shared-375206c323c3f8ac/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "332ce8521ad9bc39bbb98a4d2751756762b0605df659993b91877a5a4eaefa27"
+          },
+          "entry": "inputs/runtime-tree-short/shared-375206c323c3f8ac/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-eval-short",
+      "section": "runtime",
+      "family": "eval",
+      "n": 100,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "4175100\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "100"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "6c7ca5e22bf7f3620aa3f4ee2e06335eaef941f1439d7cadd9425b0088e96e09"
+          },
+          "entry": "inputs/runtime-eval-short/shared-d1d8c8c1624ea8d4/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "6c7ca5e22bf7f3620aa3f4ee2e06335eaef941f1439d7cadd9425b0088e96e09"
+          },
+          "entry": "inputs/runtime-eval-short/shared-d1d8c8c1624ea8d4/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-string-short",
+      "section": "runtime",
+      "family": "string",
+      "n": 10000,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "10002\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "10000"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "0826574035e12ba27ca3b9aaa8835f4d2503011c6d3c196bcfbc31a0f740c845"
+          },
+          "entry": "inputs/runtime-string-short/shared-dc1945a23e551c7a/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "0826574035e12ba27ca3b9aaa8835f4d2503011c6d3c196bcfbc31a0f740c845"
+          },
+          "entry": "inputs/runtime-string-short/shared-dc1945a23e551c7a/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-println-short",
+      "section": "runtime",
+      "family": "println",
+      "n": 1000,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "line 0\nline 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30\nline 31\nline 32\nline 33\nline 34\nline 35\nline 36\nline 37\nline 38\nline 39\nline 40\nline 41\nline 42\nline 43\nline 44\nline 45\nline 46\nline 47\nline 48\nline 49\nline 50\nline 51\nline 52\nline 53\nline 54\nline 55\nline 56\nline 57\nline 58\nline 59\nline 60\nline 61\nline 62\nline 63\nline 64\nline 65\nline 66\nline 67\nline 68\nline 69\nline 70\nline 71\nline 72\nline 73\nline 74\nline 75\nline 76\nline 77\nline 78\nline 79\nline 80\nline 81\nline 82\nline 83\nline 84\nline 85\nline 86\nline 87\nline 88\nline 89\nline 90\nline 91\nline 92\nline 93\nline 94\nline 95\nline 96\nline 97\nline 98\nline 99\nline 100\nline 101\nline 102\nline 103\nline 104\nline 105\nline 106\nline 107\nline 108\nline 109\nline 110\nline 111\nline 112\nline 113\nline 114\nline 115\nline 116\nline 117\nline 118\nline 119\nline 120\nline 121\nline 122\nline 123\nline 124\nline 125\nline 126\nline 127\nline 128\nline 129\nline 130\nline 131\nline 132\nline 133\nline 134\nline 135\nline 136\nline 137\nline 138\nline 139\nline 140\nline 141\nline 142\nline 143\nline 144\nline 145\nline 146\nline 147\nline 148\nline 149\nline 150\nline 151\nline 152\nline 153\nline 154\nline 155\nline 156\nline 157\nline 158\nline 159\nline 160\nline 161\nline 162\nline 163\nline 164\nline 165\nline 166\nline 167\nline 168\nline 169\nline 170\nline 171\nline 172\nline 173\nline 174\nline 175\nline 176\nline 177\nline 178\nline 179\nline 180\nline 181\nline 182\nline 183\nline 184\nline 185\nline 186\nline 187\nline 188\nline 189\nline 190\nline 191\nline 192\nline 193\nline 194\nline 195\nline 196\nline 197\nline 198\nline 199\nline 200\nline 201\nline 202\nline 203\nline 204\nline 205\nline 206\nline 207\nline 208\nline 209\nline 210\nline 211\nline 212\nline 213\nline 214\nline 215\nline 216\nline 217\nline 218\nline 219\nline 220\nline 221\nline 222\nline 223\nline 224\nline 225\nline 226\nline 227\nline 228\nline 229\nline 230\nline 231\nline 232\nline 233\nline 234\nline 235\nline 236\nline 237\nline 238\nline 239\nline 240\nline 241\nline 242\nline 243\nline 244\nline 245\nline 246\nline 247\nline 248\nline 249\nline 250\nline 251\nline 252\nline 253\nline 254\nline 255\nline 256\nline 257\nline 258\nline 259\nline 260\nline 261\nline 262\nline 263\nline 264\nline 265\nline 266\nline 267\nline 268\nline 269\nline 270\nline 271\nline 272\nline 273\nline 274\nline 275\nline 276\nline 277\nline 278\nline 279\nline 280\nline 281\nline 282\nline 283\nline 284\nline 285\nline 286\nline 287\nline 288\nline 289\nline 290\nline 291\nline 292\nline 293\nline 294\nline 295\nline 296\nline 297\nline 298\nline 299\nline 300\nline 301\nline 302\nline 303\nline 304\nline 305\nline 306\nline 307\nline 308\nline 309\nline 310\nline 311\nline 312\nline 313\nline 314\nline 315\nline 316\nline 317\nline 318\nline 319\nline 320\nline 321\nline 322\nline 323\nline 324\nline 325\nline 326\nline 327\nline 328\nline 329\nline 330\nline 331\nline 332\nline 333\nline 334\nline 335\nline 336\nline 337\nline 338\nline 339\nline 340\nline 341\nline 342\nline 343\nline 344\nline 345\nline 346\nline 347\nline 348\nline 349\nline 350\nline 351\nline 352\nline 353\nline 354\nline 355\nline 356\nline 357\nline 358\nline 359\nline 360\nline 361\nline 362\nline 363\nline 364\nline 365\nline 366\nline 367\nline 368\nline 369\nline 370\nline 371\nline 372\nline 373\nline 374\nline 375\nline 376\nline 377\nline 378\nline 379\nline 380\nline 381\nline 382\nline 383\nline 384\nline 385\nline 386\nline 387\nline 388\nline 389\nline 390\nline 391\nline 392\nline 393\nline 394\nline 395\nline 396\nline 397\nline 398\nline 399\nline 400\nline 401\nline 402\nline 403\nline 404\nline 405\nline 406\nline 407\nline 408\nline 409\nline 410\nline 411\nline 412\nline 413\nline 414\nline 415\nline 416\nline 417\nline 418\nline 419\nline 420\nline 421\nline 422\nline 423\nline 424\nline 425\nline 426\nline 427\nline 428\nline 429\nline 430\nline 431\nline 432\nline 433\nline 434\nline 435\nline 436\nline 437\nline 438\nline 439\nline 440\nline 441\nline 442\nline 443\nline 444\nline 445\nline 446\nline 447\nline 448\nline 449\nline 450\nline 451\nline 452\nline 453\nline 454\nline 455\nline 456\nline 457\nline 458\nline 459\nline 460\nline 461\nline 462\nline 463\nline 464\nline 465\nline 466\nline 467\nline 468\nline 469\nline 470\nline 471\nline 472\nline 473\nline 474\nline 475\nline 476\nline 477\nline 478\nline 479\nline 480\nline 481\nline 482\nline 483\nline 484\nline 485\nline 486\nline 487\nline 488\nline 489\nline 490\nline 491\nline 492\nline 493\nline 494\nline 495\nline 496\nline 497\nline 498\nline 499\nline 500\nline 501\nline 502\nline 503\nline 504\nline 505\nline 506\nline 507\nline 508\nline 509\nline 510\nline 511\nline 512\nline 513\nline 514\nline 515\nline 516\nline 517\nline 518\nline 519\nline 520\nline 521\nline 522\nline 523\nline 524\nline 525\nline 526\nline 527\nline 528\nline 529\nline 530\nline 531\nline 532\nline 533\nline 534\nline 535\nline 536\nline 537\nline 538\nline 539\nline 540\nline 541\nline 542\nline 543\nline 544\nline 545\nline 546\nline 547\nline 548\nline 549\nline 550\nline 551\nline 552\nline 553\nline 554\nline 555\nline 556\nline 557\nline 558\nline 559\nline 560\nline 561\nline 562\nline 563\nline 564\nline 565\nline 566\nline 567\nline 568\nline 569\nline 570\nline 571\nline 572\nline 573\nline 574\nline 575\nline 576\nline 577\nline 578\nline 579\nline 580\nline 581\nline 582\nline 583\nline 584\nline 585\nline 586\nline 587\nline 588\nline 589\nline 590\nline 591\nline 592\nline 593\nline 594\nline 595\nline 596\nline 597\nline 598\nline 599\nline 600\nline 601\nline 602\nline 603\nline 604\nline 605\nline 606\nline 607\nline 608\nline 609\nline 610\nline 611\nline 612\nline 613\nline 614\nline 615\nline 616\nline 617\nline 618\nline 619\nline 620\nline 621\nline 622\nline 623\nline 624\nline 625\nline 626\nline 627\nline 628\nline 629\nline 630\nline 631\nline 632\nline 633\nline 634\nline 635\nline 636\nline 637\nline 638\nline 639\nline 640\nline 641\nline 642\nline 643\nline 644\nline 645\nline 646\nline 647\nline 648\nline 649\nline 650\nline 651\nline 652\nline 653\nline 654\nline 655\nline 656\nline 657\nline 658\nline 659\nline 660\nline 661\nline 662\nline 663\nline 664\nline 665\nline 666\nline 667\nline 668\nline 669\nline 670\nline 671\nline 672\nline 673\nline 674\nline 675\nline 676\nline 677\nline 678\nline 679\nline 680\nline 681\nline 682\nline 683\nline 684\nline 685\nline 686\nline 687\nline 688\nline 689\nline 690\nline 691\nline 692\nline 693\nline 694\nline 695\nline 696\nline 697\nline 698\nline 699\nline 700\nline 701\nline 702\nline 703\nline 704\nline 705\nline 706\nline 707\nline 708\nline 709\nline 710\nline 711\nline 712\nline 713\nline 714\nline 715\nline 716\nline 717\nline 718\nline 719\nline 720\nline 721\nline 722\nline 723\nline 724\nline 725\nline 726\nline 727\nline 728\nline 729\nline 730\nline 731\nline 732\nline 733\nline 734\nline 735\nline 736\nline 737\nline 738\nline 739\nline 740\nline 741\nline 742\nline 743\nline 744\nline 745\nline 746\nline 747\nline 748\nline 749\nline 750\nline 751\nline 752\nline 753\nline 754\nline 755\nline 756\nline 757\nline 758\nline 759\nline 760\nline 761\nline 762\nline 763\nline 764\nline 765\nline 766\nline 767\nline 768\nline 769\nline 770\nline 771\nline 772\nline 773\nline 774\nline 775\nline 776\nline 777\nline 778\nline 779\nline 780\nline 781\nline 782\nline 783\nline 784\nline 785\nline 786\nline 787\nline 788\nline 789\nline 790\nline 791\nline 792\nline 793\nline 794\nline 795\nline 796\nline 797\nline 798\nline 799\nline 800\nline 801\nline 802\nline 803\nline 804\nline 805\nline 806\nline 807\nline 808\nline 809\nline 810\nline 811\nline 812\nline 813\nline 814\nline 815\nline 816\nline 817\nline 818\nline 819\nline 820\nline 821\nline 822\nline 823\nline 824\nline 825\nline 826\nline 827\nline 828\nline 829\nline 830\nline 831\nline 832\nline 833\nline 834\nline 835\nline 836\nline 837\nline 838\nline 839\nline 840\nline 841\nline 842\nline 843\nline 844\nline 845\nline 846\nline 847\nline 848\nline 849\nline 850\nline 851\nline 852\nline 853\nline 854\nline 855\nline 856\nline 857\nline 858\nline 859\nline 860\nline 861\nline 862\nline 863\nline 864\nline 865\nline 866\nline 867\nline 868\nline 869\nline 870\nline 871\nline 872\nline 873\nline 874\nline 875\nline 876\nline 877\nline 878\nline 879\nline 880\nline 881\nline 882\nline 883\nline 884\nline 885\nline 886\nline 887\nline 888\nline 889\nline 890\nline 891\nline 892\nline 893\nline 894\nline 895\nline 896\nline 897\nline 898\nline 899\nline 900\nline 901\nline 902\nline 903\nline 904\nline 905\nline 906\nline 907\nline 908\nline 909\nline 910\nline 911\nline 912\nline 913\nline 914\nline 915\nline 916\nline 917\nline 918\nline 919\nline 920\nline 921\nline 922\nline 923\nline 924\nline 925\nline 926\nline 927\nline 928\nline 929\nline 930\nline 931\nline 932\nline 933\nline 934\nline 935\nline 936\nline 937\nline 938\nline 939\nline 940\nline 941\nline 942\nline 943\nline 944\nline 945\nline 946\nline 947\nline 948\nline 949\nline 950\nline 951\nline 952\nline 953\nline 954\nline 955\nline 956\nline 957\nline 958\nline 959\nline 960\nline 961\nline 962\nline 963\nline 964\nline 965\nline 966\nline 967\nline 968\nline 969\nline 970\nline 971\nline 972\nline 973\nline 974\nline 975\nline 976\nline 977\nline 978\nline 979\nline 980\nline 981\nline 982\nline 983\nline 984\nline 985\nline 986\nline 987\nline 988\nline 989\nline 990\nline 991\nline 992\nline 993\nline 994\nline 995\nline 996\nline 997\nline 998\nline 999\ndone 1000\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "1000"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "bf35910498d5868f80f1b6bbba8a7a784b29dab22dce0099de6d583f99e1b6ec"
+          },
+          "entry": "inputs/runtime-println-short/shared-16e30c804ccd983e/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "bf35910498d5868f80f1b6bbba8a7a784b29dab22dce0099de6d583f99e1b6ec"
+          },
+          "entry": "inputs/runtime-println-short/shared-16e30c804ccd983e/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "runtime-lines-short",
+      "section": "runtime",
+      "family": "lines",
+      "n": 1000,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "short": true
+      },
+      "expected_stdout": "1000\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [
+        "{input}/lines.txt"
+      ],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+            "lines.txt": "f3c9da2e41be8c7677f0f64d1d8e8c73b43b35b27983c0463f0cc2609bd44fe6"
+          },
+          "entry": "inputs/runtime-lines-short/shared-3e66dbbdeb024653/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "995fdf9120e686cf118db453c84a1028b7fb89e84e0f1d38b792e3a9c7eb92c7",
+            "lines.txt": "f3c9da2e41be8c7677f0f64d1d8e8c73b43b35b27983c0463f0cc2609bd44fe6"
+          },
+          "entry": "inputs/runtime-lines-short/shared-3e66dbbdeb024653/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "patterns-integer-100",
+      "section": "16.6",
+      "family": "integer",
+      "n": 100,
+      "command": "check",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "verify_run_stdout": "0\n99\n-1\n"
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [
+        "typeck"
+      ],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "69a59d05e20d3700b206e657ec26c663cb59c98973ca7c8e7dfdb6401837c65c"
+          },
+          "entry": "inputs/patterns-integer-100/shared-45ece08c24196a82/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "69a59d05e20d3700b206e657ec26c663cb59c98973ca7c8e7dfdb6401837c65c"
+          },
+          "entry": "inputs/patterns-integer-100/shared-45ece08c24196a82/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "codegen-let-100",
+      "section": "16.7",
+      "family": "let",
+      "n": 100,
+      "command": "run",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {},
+      "expected_stdout": "107\n",
+      "expected_status": 0,
+      "validator": "stdout",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "51ab9296c703797bfdf429924333890d2d57e7b077bf0ad03bfa429b276b5a63"
+          },
+          "entry": "inputs/codegen-let-100/shared-1a4cfb0a60f28681/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "51ab9296c703797bfdf429924333890d2d57e7b077bf0ad03bfa429b276b5a63"
+          },
+          "entry": "inputs/codegen-let-100/shared-1a4cfb0a60f28681/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "bridge-shared-8",
+      "section": "16.8",
+      "family": "shared",
+      "n": 8,
+      "command": "probe",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "shape": "shared",
+        "unique_nodes": 9,
+        "edges": 16,
+        "observation": 7
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "probe",
+      "cross_equal": true,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "bridge",
+      "probe_arguments": [
+        "shared",
+        "8"
+      ],
+      "metrics": [
+        "bridge_to_heap",
+        "bridge_from_heap",
+        "bridge_time",
+        "allocated_bytes",
+        "unique_nodes"
+      ],
+      "binary_files": {},
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f",
+            "graph.json": "e6c348fc5ffb26872a5a89c0d8af0f6ffaf6e3eb8f8312ce749c36be3ba67c04"
+          },
+          "entry": "inputs/bridge-shared-8/shared-951eb203fa390444/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "ffabb71ea7b0966ea745713a207a811a6afcdf587e6fa597579e1bd4df338c7f",
+            "graph.json": "e6c348fc5ffb26872a5a89c0d8af0f6ffaf6e3eb8f8312ce749c36be3ba67c04"
+          },
+          "entry": "inputs/bridge-shared-8/shared-951eb203fa390444/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    },
+    {
+      "id": "external-tests-normal-1",
+      "section": "16.9",
+      "family": "normal",
+      "n": 1,
+      "command": "test",
+      "states": [
+        "before",
+        "after"
+      ],
+      "codes": [],
+      "params": {
+        "component_keys": 1,
+        "routes": {
+          "normal": 1,
+          "adapter": 0
+        },
+        "passed": 1,
+        "tests_total": 1,
+        "stateful_instances": 0
+      },
+      "expected_stdout": "",
+      "expected_status": 0,
+      "validator": "external",
+      "cross_equal": false,
+      "arguments": [],
+      "requires": [],
+      "variant_feature": "",
+      "tags": [
+        "full",
+        "short"
+      ],
+      "state_expectations": {},
+      "state_requires": [],
+      "probe": "",
+      "probe_arguments": [],
+      "metrics": [
+        "runtime_compilations",
+        "component_keys"
+      ],
+      "binary_files": {
+        "pure.wasm": "0061736d0d00010001a1010061736d01000000011d0560047f7f7f7f017f60017f017f6000017e60000060047e7f7f7c017f03060500010203040503010001072e06066d656d6f72790200077265616c6c6f63000001660001057479706564000204766f69640003047461696c00040a300505004180080b0700200041076a0b040042070b02000b18004100200141086a3602004104200241016b36020041000b0009046e616d650002016d020401000000070c037078707540010178790079060701000001000166080601000000000207050140000078060b0100000100057479706564080601000001000307050140000100060a010000010004766f696408060100000200040713014003016e780278730005657874726175000006210300000100047461696c00020100066d656d6f727900000100077265616c6c6f63080a010000030203000404050713014003016e780278730105657874726175000106210300000100047461696c00020100066d656d6f727900000100077265616c6c6f63080a010000050203010406060b3805000166010000000574797065640101000004766f696401020000097461696c2d696e7473010300000b7461696c2d666c6f61747301040000310e636f6d706f6e656e742d6e616d65010600110100016d0106001201000169011003020004696e74730106666c6f617473"
+      },
+      "inputs": {
+        "before": {
+          "files": {
+            "main.bnt": "58c1dffefaba042d373b48e642d4129cc54d05a6142ed4d824c864cd5caebe0c",
+            "pure.wasm": "5c7bbd458479f78039300adc151d6ec8b62f98924c224c17889711f8f13047e2"
+          },
+          "entry": "inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt",
+          "variant": "legacy"
+        },
+        "after": {
+          "files": {
+            "main.bnt": "58c1dffefaba042d373b48e642d4129cc54d05a6142ed4d824c864cd5caebe0c",
+            "pure.wasm": "5c7bbd458479f78039300adc151d6ec8b62f98924c224c17889711f8f13047e2"
+          },
+          "entry": "inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt",
+          "variant": "legacy"
+        }
+      }
+    }
+  ]
+}

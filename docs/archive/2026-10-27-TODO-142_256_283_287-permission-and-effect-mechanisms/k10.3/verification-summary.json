@@ -1,0 +1,1172 @@
+{
+  "desugar": {
+    "golden": {
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 373,
+        "excluded": 419
+      },
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1075,
+        "excluded": 0
+      }
+    },
+    "random": {
+      "programs": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 1000,
+        "excluded": 0
+      },
+      "definitions": {
+        "outside": 0,
+        "mismatched": 0,
+        "matched": 72778,
+        "excluded": 0
+      }
+    }
+  },
+  "desugarNonTopRanges": 0,
+  "desugarMismatches": 0,
+  "builtin": {
+    "checkedInputs": 1373,
+    "summaryComparisons": 144932,
+    "summaryMismatchCount": 0,
+    "nonconvergedCount": 0,
+    "errors": []
+  },
+  "surfaceCounts": {
+    "q11": 1,
+    "preparationFailure": 0,
+    "outOfScope": 19,
+    "mismatched": 0,
+    "matched": 51742,
+    "lazyRestriction": 0
+  },
+  "surfaceNonTopRanges": 0,
+  "coverage": {
+    "matched": 22483,
+    "mismatched": 0,
+    "outOfScope": 0,
+    "fuelExhausted": 0
+  },
+  "manifestArtifacts": 12872,
+  "manifestCounts": {
+    "sourceDirectories": [
+      "programs",
+      "identity",
+      "manifest/manifest-interval",
+      "range/interval",
+      "vm/original",
+      "vm/instrumented",
+      "vm/range/original",
+      "vm/range/instrumented",
+      "vm/shifts/original",
+      "vm/shifts/instrumented"
+    ],
+    "sourceEvidence": [
+      {
+        "nonBottomInformativeBodies": 4035,
+        "informativeBottomBodies": 74947,
+        "nonTopIndependentInputs": 102323,
+        "userWarnings": 41
+      },
+      {
+        "nonBottomInformativeBodies": 3,
+        "informativeBottomBodies": 192,
+        "nonTopIndependentInputs": 9,
+        "userWarnings": 68
+      },
+      {
+        "nonBottomInformativeBodies": 11,
+        "informativeBottomBodies": 238,
+        "nonTopIndependentInputs": 3018,
+        "userWarnings": 8
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 65,
+        "nonTopIndependentInputs": 7,
+        "userWarnings": 6
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 39,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 20
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 39,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 14
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 46,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 4
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 46,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 2
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 108,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 54
+      },
+      {
+        "nonBottomInformativeBodies": 0,
+        "informativeBottomBodies": 108,
+        "nonTopIndependentInputs": 0,
+        "userWarnings": 54
+      }
+    ],
+    "vm": {
+      "arithmetic": 39,
+      "range": 37,
+      "rangeSelectedOut": [
+        {
+          "definition": ".unrelated",
+          "reason": "parameterOrGeneralCall"
+        },
+        {
+          "definition": ".unrelatedCaller",
+          "reason": "parameterOrGeneralCall"
+        },
+        {
+          "definition": ".threeFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".lowerFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".upperFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".singletonFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".integerMinFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".integerMaxFields",
+          "reason": "observationOnly"
+        },
+        {
+          "definition": ".unrelatedOnlyOk",
+          "reason": "parameterOrGeneralCall"
+        }
+      ],
+      "shifts": 46,
+      "shiftsIndependentOnly": 62,
+      "shiftsExcluded": {
+        "unknownFailure": 46,
+        "notClosedOrFuel": 16
+      }
+    }
+  },
+  "realSources": [
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 100009,
+        "analyzedBodies": 100009,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 74947,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1404,
+        "constantDefinitions": 12153,
+        "depthBodies": 0,
+        "excludedBodies": 16,
+        "excludedDefinitions": 12,
+        "functionDefinitions": 51875,
+        "informativeBodies": 78982,
+        "inputDefinitions": 64028,
+        "methodDefinitions": 10018,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 12,
+        "phaseDepth": 0,
+        "sourceModules": 1503,
+        "topBodies": 21011,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 71223,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1404,
+      "checkerFailed": 389,
+      "comparedBodies": "99993",
+      "informativeBodies": "78982",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [
+        {
+          "input": "golden:testdata/external/resource",
+          "bodies": [
+            ".createMany"
+          ],
+          "definition": ".createMany",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "bodies": [
+            ".main"
+          ],
+          "definition": ".main",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/external/wit-docs-declarations",
+          "bodies": [
+            ".main"
+          ],
+          "definition": ".main",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "bodies": [
+            ".compare",
+            ".compare%body:59:0"
+          ],
+          "definition": ".compare",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "bodies": [
+            ".pointers",
+            ".pointers%body:14:0",
+            ".pointers%body:128:0"
+          ],
+          "definition": ".pointers",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            ".compare",
+            ".compare%body:158:0"
+          ],
+          "definition": ".compare",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.compile"
+          ],
+          "definition": "WasmRegex.Pattern.compile",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.isMatch"
+          ],
+          "definition": "WasmRegex.Pattern.isMatch",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.find"
+          ],
+          "definition": "WasmRegex.Pattern.find",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.findAll"
+          ],
+          "definition": "WasmRegex.Pattern.findAll",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.replaceAll"
+          ],
+          "definition": "WasmRegex.Pattern.replaceAll",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.count"
+          ],
+          "definition": "WasmRegex.Pattern.count",
+          "reason": "externalType"
+        }
+      ],
+      "incompleteDiscovery": [],
+      "independentInputs": 636215,
+      "userWarnings": 41,
+      "parentCandidates": 22,
+      "independentCandidates": 5,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 4035,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "independent",
+        "userWarnings",
+        "externalType-candidates",
+        "externalType-integer",
+        "externalType-width",
+        "externalType-independent"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 198,
+        "analyzedBodies": 198,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 192,
+        "checkerFailed": 0,
+        "checkerSucceeded": 24,
+        "constantDefinitions": 3,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 192,
+        "informativeBodies": 195,
+        "inputDefinitions": 195,
+        "methodDefinitions": 2,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 24,
+        "topBodies": 3,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 16,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 24,
+      "checkerFailed": 0,
+      "comparedBodies": "198",
+      "informativeBodies": "195",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 72,
+      "userWarnings": 68,
+      "parentCandidates": 65,
+      "independentCandidates": 2,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 3,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "independent",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 347,
+        "analyzedBodies": 341,
+        "bodyBudgetExceeded": 10,
+        "bottomBodies": 238,
+        "checkerFailed": 0,
+        "checkerSucceeded": 15,
+        "constantDefinitions": 48,
+        "depthBodies": 0,
+        "excludedBodies": 16,
+        "excludedDefinitions": 12,
+        "functionDefinitions": 215,
+        "informativeBodies": 249,
+        "inputDefinitions": 263,
+        "methodDefinitions": 20,
+        "notAnalyzedBodies": 6,
+        "outsideDefinitions": 12,
+        "phaseDepth": 0,
+        "sourceModules": 32,
+        "topBodies": 76,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 255,
+        "wholeBudgetSkipped": 7
+      },
+      "inputs": 15,
+      "checkerFailed": 1,
+      "comparedBodies": "325",
+      "informativeBodies": "249",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [
+        {
+          "input": "golden:testdata/external/resource",
+          "bodies": [
+            ".createMany"
+          ],
+          "definition": ".createMany",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/external/resource",
+          "bodies": [
+            ".main"
+          ],
+          "definition": ".main",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/external/wit-docs-declarations",
+          "bodies": [
+            ".main"
+          ],
+          "definition": ".main",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "bodies": [
+            ".compare",
+            ".compare%body:59:0"
+          ],
+          "definition": ".compare",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/json-wasm-same",
+          "bodies": [
+            ".pointers",
+            ".pointers%body:14:0",
+            ".pointers%body:128:0"
+          ],
+          "definition": ".pointers",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            ".compare",
+            ".compare%body:158:0"
+          ],
+          "definition": ".compare",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.compile"
+          ],
+          "definition": "WasmRegex.Pattern.compile",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.isMatch"
+          ],
+          "definition": "WasmRegex.Pattern.isMatch",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.find"
+          ],
+          "definition": "WasmRegex.Pattern.find",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.findAll"
+          ],
+          "definition": "WasmRegex.Pattern.findAll",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.replaceAll"
+          ],
+          "definition": "WasmRegex.Pattern.replaceAll",
+          "reason": "externalType"
+        },
+        {
+          "input": "golden:testdata/packages/wasm-regex-same",
+          "bodies": [
+            "WasmRegex.Pattern.count"
+          ],
+          "definition": "WasmRegex.Pattern.count",
+          "reason": "externalType"
+        }
+      ],
+      "incompleteDiscovery": [
+        {
+          "input": "interval-budget:bodyBudget",
+          "definition": ".many0",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many0",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many1",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many2",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many3",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many4",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many5",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many6",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many7",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many8",
+          "discoveryStarted": true,
+          "discoveryComplete": false,
+          "pending": []
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many9",
+          "discoveryStarted": false,
+          "discoveryComplete": false,
+          "pending": []
+        }
+      ],
+      "independentInputs": 5590,
+      "userWarnings": 8,
+      "parentCandidates": 8,
+      "independentCandidates": 0,
+      "phaseStops": [
+        {
+          "phase": "discovery",
+          "reason": {
+            "kind": "exceeded",
+            "resource": "operations",
+            "scope": "body"
+          },
+          "count": 10
+        },
+        {
+          "phase": "queue",
+          "reason": {
+            "kind": "exceeded",
+            "resource": "operations",
+            "scope": "body"
+          },
+          "count": 10
+        },
+        {
+          "phase": "whole",
+          "reason": {
+            "kind": "exceeded",
+            "resource": "operations",
+            "scope": "whole"
+          },
+          "count": 1
+        },
+        {
+          "phase": "embedded",
+          "reason": {
+            "kind": "exceeded",
+            "resource": "operations",
+            "scope": "whole"
+          },
+          "count": 1
+        }
+      ],
+      "notStartedDefinitions": [
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many10"
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many11"
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many12"
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many13"
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many14"
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "definition": ".many15"
+        }
+      ],
+      "unproducedBodies": [
+        {
+          "input": "interval-budget:wholeBudget",
+          "stop": {
+            "scope": "whole",
+            "resource": "operations",
+            "kind": "exceeded"
+          },
+          "reason": "notAnalyzed",
+          "mismatches": [],
+          "definition": ".many10",
+          "comparisonEligible": false
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "stop": {
+            "scope": "whole",
+            "resource": "operations",
+            "kind": "exceeded"
+          },
+          "reason": "notAnalyzed",
+          "mismatches": [],
+          "definition": ".many11",
+          "comparisonEligible": false
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "stop": {
+            "scope": "whole",
+            "resource": "operations",
+            "kind": "exceeded"
+          },
+          "reason": "notAnalyzed",
+          "mismatches": [],
+          "definition": ".many12",
+          "comparisonEligible": false
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "stop": {
+            "scope": "whole",
+            "resource": "operations",
+            "kind": "exceeded"
+          },
+          "reason": "notAnalyzed",
+          "mismatches": [],
+          "definition": ".many13",
+          "comparisonEligible": false
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "stop": {
+            "scope": "whole",
+            "resource": "operations",
+            "kind": "exceeded"
+          },
+          "reason": "notAnalyzed",
+          "mismatches": [],
+          "definition": ".many14",
+          "comparisonEligible": false
+        },
+        {
+          "input": "interval-budget:wholeBudget",
+          "stop": {
+            "scope": "whole",
+            "resource": "operations",
+            "kind": "exceeded"
+          },
+          "reason": "notAnalyzed",
+          "mismatches": [],
+          "definition": ".many15",
+          "comparisonEligible": false
+        }
+      ],
+      "nonintegerMatchInputs": 1,
+      "nonBottomInformativeBodies": 11,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "phasePosition",
+        "userWarnings",
+        "externalType-candidates",
+        "externalType-integer",
+        "externalType-width",
+        "externalType-independent"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 65,
+        "analyzedBodies": 65,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 65,
+        "checkerFailed": 0,
+        "checkerSucceeded": 11,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 65,
+        "informativeBodies": 65,
+        "inputDefinitions": 65,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 11,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 13,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 11,
+      "checkerFailed": 0,
+      "comparedBodies": "65",
+      "informativeBodies": "65",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 60,
+      "userWarnings": 6,
+      "parentCandidates": 5,
+      "independentCandidates": 1,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "independent",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 39,
+        "analyzedBodies": 39,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 39,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 39,
+        "informativeBodies": 39,
+        "inputDefinitions": 39,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 0,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1,
+      "checkerFailed": 0,
+      "comparedBodies": "39",
+      "informativeBodies": "39",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 0,
+      "userWarnings": 20,
+      "parentCandidates": 14,
+      "independentCandidates": 0,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 39,
+        "analyzedBodies": 39,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 39,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 39,
+        "informativeBodies": 39,
+        "inputDefinitions": 39,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 37,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1,
+      "checkerFailed": 0,
+      "comparedBodies": "39",
+      "informativeBodies": "39",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 146,
+      "userWarnings": 14,
+      "parentCandidates": 14,
+      "independentCandidates": 0,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 46,
+        "analyzedBodies": 46,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 46,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 46,
+        "informativeBodies": 46,
+        "inputDefinitions": 46,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 7,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1,
+      "checkerFailed": 0,
+      "comparedBodies": "46",
+      "informativeBodies": "46",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 44,
+      "userWarnings": 4,
+      "parentCandidates": 4,
+      "independentCandidates": 0,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 46,
+        "analyzedBodies": 46,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 46,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 46,
+        "informativeBodies": 46,
+        "inputDefinitions": 46,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 45,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1,
+      "checkerFailed": 0,
+      "comparedBodies": "46",
+      "informativeBodies": "46",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 115,
+      "userWarnings": 2,
+      "parentCandidates": 2,
+      "independentCandidates": 0,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 108,
+        "analyzedBodies": 108,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 108,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 108,
+        "informativeBodies": 108,
+        "inputDefinitions": 108,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 16,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1,
+      "checkerFailed": 0,
+      "comparedBodies": "108",
+      "informativeBodies": "108",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 0,
+      "userWarnings": 54,
+      "parentCandidates": 54,
+      "independentCandidates": 0,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    },
+    {
+      "kind": "real-source-analysis",
+      "counts": {
+        "allBodies": 108,
+        "analyzedBodies": 108,
+        "bodyBudgetExceeded": 0,
+        "bottomBodies": 108,
+        "checkerFailed": 0,
+        "checkerSucceeded": 1,
+        "constantDefinitions": 0,
+        "depthBodies": 0,
+        "excludedBodies": 0,
+        "excludedDefinitions": 0,
+        "functionDefinitions": 108,
+        "informativeBodies": 108,
+        "inputDefinitions": 108,
+        "methodDefinitions": 0,
+        "notAnalyzedBodies": 0,
+        "outsideDefinitions": 0,
+        "phaseDepth": 0,
+        "sourceModules": 1,
+        "topBodies": 0,
+        "unidentifiedBodies": 0,
+        "unsupportedBodies": 108,
+        "wholeBudgetSkipped": 0
+      },
+      "inputs": 1,
+      "checkerFailed": 0,
+      "comparedBodies": "108",
+      "informativeBodies": "108",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "excluded": [],
+      "incompleteDiscovery": [],
+      "independentInputs": 216,
+      "userWarnings": 54,
+      "parentCandidates": 54,
+      "independentCandidates": 0,
+      "phaseStops": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "nonintegerMatchInputs": 0,
+      "nonBottomInformativeBodies": 0,
+      "negativeCases": [
+        "integer",
+        "after",
+        "context",
+        "next",
+        "warnings",
+        "userWarnings"
+      ],
+      "rustLeanMatched": true,
+      "vmCompared": false
+    }
+  ],
+  "rangeSources": {
+    "status": "passed",
+    "groups": 15,
+    "definitions": 18,
+    "rejections": 8,
+    "excluded": 8,
+    "programCoverageEntries": 3
+  },
+  "rangeBudgets": {
+    "version": 1,
+    "success": true,
+    "rustOnlyCases": 1,
+    "auxiliaryExpectedMismatchCount": 1,
+    "successScope": "Requiredのキー・添字・理由。補助の停止地点は訂正値との一致を要求し、初稿との不一致も保持する",
+    "leanComparedCases": 2,
+    "requiredReasonComparisons": 2,
+    "maxRssBytesAuxiliary": 42106880
+  },
+  "rangeKnownDifferences": {
+    "success": true,
+    "scope": "名指ししたRustの結果と除外理由。Rust/Leanの同じ受理や理由の一致へ算入しない"
+  }
+}

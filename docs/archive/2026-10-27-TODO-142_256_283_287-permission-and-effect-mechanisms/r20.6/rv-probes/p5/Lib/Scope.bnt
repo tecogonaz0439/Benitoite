@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Scope as S
+public function checkPathIn(pattern: String, path: String) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: pattern, path: path)
+end function

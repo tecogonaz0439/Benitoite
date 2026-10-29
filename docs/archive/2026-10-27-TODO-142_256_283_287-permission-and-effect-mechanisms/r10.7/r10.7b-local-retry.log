@@ -1,0 +1,11 @@
+$ cargo test --test desugar_export export_preserves -- --nocapture
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.31s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 2 tests
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_preserves_float64_bits_and_numeric_strings ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.33s
+

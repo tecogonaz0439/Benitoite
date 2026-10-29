@@ -1,0 +1,178 @@
+{
+  "task": "V10.1ab",
+  "judgedBy": "担当",
+  "date": "2026-10-30 JST",
+  "base": "e4843058669262a4bf4bfbea9cfbe368a29a1e7b",
+  "head": "e4843058669262a4bf4bfbea9cfbe368a29a1e7b",
+  "branch": "m013/v10.1a",
+  "startedUtc": "2026-10-29T17:06:13.548Z",
+  "finishedUtc": "2026-10-29T17:19:35.244190+00:00",
+  "elapsedSeconds": 801.69619,
+  "activeTime": "約13分の概算。厳密な分離計時なし",
+  "dryRun": {
+    "argv": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "e4843058669262a4bf4bfbea9cfbe368a29a1e7b",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "startedUtc": "2026-10-29T17:17:02.535636+00:00",
+    "finishedUtc": "2026-10-29T17:17:02.641800+00:00",
+    "exitCode": 0,
+    "elapsedSeconds": 0.10592075000000001,
+    "output": "== plan: level work against e4843058669262a4bf4bfbea9cfbe368a29a1e7b (11 changed file(s))\n   later: stage checks named connections; change covers full regression; release checks the candidate\n   nothing to check: only documents changed\n",
+    "log": "v10.1ab-work-dry-run.log",
+    "invocations": 1,
+    "rss": "未計測（dry-run の直接実行のみ）"
+  },
+  "obligations": {
+    "sourceTableRows": 49,
+    "reviewSourceTableRows": 48,
+    "selectedRows": 37,
+    "sourceOrdinals": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      9,
+      12,
+      13,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      43,
+      44,
+      49
+    ],
+    "states": {
+      "閉じた": 26,
+      "未確認": 10,
+      "未完": 1
+    },
+    "destinations": {
+      "V10.2a": 3,
+      "V10.3c": 6,
+      "V10.1b": 2,
+      "V10.1d": 1
+    },
+    "取りまとめ": 0,
+    "unresolvedDistinctRows": 11,
+    "destinationAssignments": 12
+  },
+  "verification": {
+    "relativeLinksAndHeadings": 285,
+    "linkErrors": 0,
+    "originalLinesPreservedExceptListedFive": true,
+    "originalResultsSha256": "f79fb9ccfc9c8a4427fbe367bb9b35e5c8769864022eb3d3a2eab07cb9785db7",
+    "unchangedExistingArtifacts": 8,
+    "rvProbesUnchanged": true,
+    "headUnchanged": true,
+    "branchUnchanged": true,
+    "indexUnchanged": true,
+    "indexSha256": "92b915be34ede115dad412f6e8ad231711575ad029618abe26279a03499f109e",
+    "trackedDiff": [],
+    "absolutePaths": 0,
+    "forbiddenLinks": 0,
+    "namedActors": 0
+  },
+  "changedExistingFiles": [
+    "results.md"
+  ],
+  "createdFiles": [
+    "obligations.md",
+    "v10.1ab-work-dry-run.log",
+    "v10.1ab-final-state.json"
+  ],
+  "externalStorageConfirmation": {
+    "confirmedBy": "取りまとめ",
+    "date": "2026-10-30",
+    "source": "../reviews/RV-V10.1a.md",
+    "recheckedHere": false,
+    "permanentDestination": "V10.3d の前に設計者が決める"
+  },
+  "files": {
+    "changes-after-k10.3.json": {
+      "bytes": 20916,
+      "sha256": "b28ab06258f6f4df22da6bb49ab8f965ef3b65d7b73003d00a05eef6eb89a8ff"
+    },
+    "evidence-audit.json": {
+      "bytes": 5667,
+      "sha256": "cb227744619fa0159507bdf4ee1db16d9e56cbac8bcf7e19bd82c033b82112b7"
+    },
+    "final-state.json": {
+      "bytes": 2757,
+      "sha256": "751d529c8797c5ab17b088f702550d12925be66b1c804eb07a06237aa81da6e7"
+    },
+    "obligations.md": {
+      "bytes": 23387,
+      "sha256": "387d3916e8e4941bdbdca10786848bc1b414f5431e3ae214aeeb95bb85b124fb"
+    },
+    "relation-state.json": {
+      "bytes": 4198,
+      "sha256": "2b14de58e4bc3a668fa3f0e231eccc1cbec6cb594b7c04de433e0595e1a3dd2e"
+    },
+    "results.md": {
+      "bytes": 60858,
+      "sha256": "129bb93b1afd371cc91e7155c2a34144273e077f2c760f14ab8bc45bc5f2a1e8"
+    },
+    "rv-probes/raw.py": {
+      "bytes": 1726,
+      "sha256": "f2fce5a830a5e2f35c09b91fc180e774625cda237ef4a179dbd5c894a1602095"
+    },
+    "rv-probes/verify.py": {
+      "bytes": 803,
+      "sha256": "cfee1f7b4c191531018d8b0b9d13ed33b2238c19c1f55a9596b0ba5e34e613fc"
+    },
+    "v10.1ab-work-dry-run.log": {
+      "bytes": 236,
+      "sha256": "28a91bdbb76fa64a936e98de0fb44f3e159b0ee82db53259f266fe19cafac6a0"
+    },
+    "work-dry-run.json": {
+      "bytes": 391,
+      "sha256": "cff55b1df703a2d6648aaf63af0d12e6f0d4527bbf8e8522e33849b5b3407271"
+    },
+    "work-dry-run.log": {
+      "bytes": 235,
+      "sha256": "53cef5f91537af70c720d4b9cdf88b72567f78e55a9ebcaae42fb0bbc75ca012"
+    }
+  },
+  "selfHashExcluded": true,
+  "initialRecordAttempt": {
+    "result": "標準入力の文字コード宣言の不足で構文解析中に停止",
+    "writesBeforeFailure": 0,
+    "correction": "UTF-8 を明示",
+    "dryRunRepeated": false
+  },
+  "limitations": [
+    "ビルド・テスト・Lean・全比較・測定は実行していない",
+    "独立確認・取り込み・受け入れは未実施",
+    "初稿の final-state.json と evidence-audit.json は当時の記録として保持"
+  ]
+}

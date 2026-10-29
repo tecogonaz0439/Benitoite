@@ -1,0 +1,4 @@
+== plan: level work against 6124775788579e60530f55fb85570f26ef7fa900 (changed files not classified) (partial selection: --only release_stack)
+   [release_stack] because of --only (estimate: long: ~5 min plus builds)
+      command: python3 -B scripts/check/run_ignored.py --kind release-stack --configuration release
+   later: stage checks named connections; change covers full regression; release checks the candidate

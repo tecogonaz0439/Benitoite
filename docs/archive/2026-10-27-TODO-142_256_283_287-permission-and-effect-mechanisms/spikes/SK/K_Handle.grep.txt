@@ -1,0 +1,20 @@
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:27:  | K_Handle _ hs hc hw ih => exact .K_Handle ih hs (hc.store (hideBuilders_mono hΨ)) hw
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:45:  | @K_Handle R ε εc hs k t b ε0 Re _ hsub _ _ ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:137:  | K_Handle hrest hsub hc hw _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, rfl, hrest, hsub, hc.store (hideBuilders_sub _), hw⟩
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:153:  | K_Handle ht _ _ hw _ | K_Handle_Fail ht _ _ _ _ hw _ =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:216:  | @K_Handle R' ε' εc hs k0 t0 b0 ε0' Re' hrest hsc hc hw ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:222:        exact .K_Handle (.K_Sub hk (hle0.trans hle)) (hsc.trans (hs0.trans hsub)) hc hw
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:223:      · exact .K_Handle (ih (hend.tail hn') hle hk hsub) hsc hc hw
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:299:  | K_Handle ht hsub hc hw ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:304:          exact ⟨_, _, _, _, .K_Handle (.K_Empty (Eff.Sub.refl _) hw) (Eff.Sub.refl _) hc hw,
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:310:          exact ⟨t, εb, εc, Rh, .K_Handle h1 hsub hc hw, h2, h3, h4, h5⟩
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/ContLemmas.lean:355:  | K_Handle _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:22:  | K_Handle _ _ hc _ ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:54:  | K_Handle _ hs _ _ ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:114:  | K_Handle _ hs hc _ ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:203:  | K_Handle ht hs hc hw ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:214:          exact ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, .K_Handle hsave hs hc hw⟩
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/LocalInvariant.lean:60:  | K_Handle _ _ hc _ ih =>
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/PresHelpers.lean:103:  | K_Handle _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih => exact ih hRe
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/PresMain.lean:516:        exact ⟨Ψ, R, t, b, _, εm, hσ, hm1, hsubm, .K_Handle (.K_Sub hk hle) (hs'.trans hε) hcl.hideBuilders htw, hmc.1,
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:560:  | K_Handle {R ε εc h k t b ε0 Re} :

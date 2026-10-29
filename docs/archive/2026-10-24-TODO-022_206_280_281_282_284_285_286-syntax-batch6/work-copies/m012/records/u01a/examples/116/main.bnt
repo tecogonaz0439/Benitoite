@@ -1,0 +1,22 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.log", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Log.formatRecord(record: record)) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event")], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "n", value: 42)], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.log") or die)
+end function

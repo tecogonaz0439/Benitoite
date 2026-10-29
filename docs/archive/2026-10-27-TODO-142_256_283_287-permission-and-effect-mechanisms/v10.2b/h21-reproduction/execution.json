@@ -1,0 +1,129 @@
+{
+  "started_at": "2026-10-29T18:59:02.129568+00:00",
+  "old_cli_sha256": "69b9ee4be97a883c8c2e0a7d8e289bd2ae1160b75179d7b12fd5a434a2acacf7",
+  "current_cli_sha256": "1b6687d92810a71cdb4f176c2404f831d16008d7c368f5bc0358072a75956fe6",
+  "build_command": [
+    "cargo",
+    "build",
+    "-p",
+    "benitoite",
+    "--bin",
+    "benitoite"
+  ],
+  "build_exit": 0,
+  "build_reported_seconds": 5.08,
+  "versions": {
+    "0012": {
+      "exit": 0,
+      "stdout": "benitoite 0.0.12\nUnicode 17.0.0\n",
+      "stderr": ""
+    },
+    "current": {
+      "exit": 0,
+      "stdout": "benitoite 0.0.12\nUnicode 17.0.0\n",
+      "stderr": ""
+    }
+  },
+  "runs": [
+    {
+      "command": [
+        "target/v10.2b/benitoite-0012",
+        "check",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/h21-reproduction/handlers-50-0012.bnt"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.13557816700000003,
+      "diagnostic_codes": [],
+      "stdout_log": "50-0012.stdout.log",
+      "stderr_log": "50-0012.stderr.log",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "input_sha256": "493ac0f4c1dc96fbce043f40818974bec0a0a2325599496c882824400f099cf1"
+    },
+    {
+      "command": [
+        "target/debug/benitoite",
+        "check",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/h21-reproduction/handlers-50-current.bnt"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.24128283399999995,
+      "diagnostic_codes": [],
+      "stdout_log": "50-current.stdout.log",
+      "stderr_log": "50-current.stderr.log",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "input_sha256": "ce4926e849ff0de740c7ed49bf4475a16e49d44d2b0536479b76ad2cd0abf57d"
+    },
+    {
+      "command": [
+        "target/debug/benitoite",
+        "check",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/h21-reproduction/handlers-50-0012.bnt"
+      ],
+      "exit": 2,
+      "expected_exit": 2,
+      "elapsed_seconds": 0.2609134580000001,
+      "diagnostic_codes": [
+        "E0501"
+      ],
+      "stdout_log": "50-current-old-clauses.stdout.log",
+      "stderr_log": "50-current-old-clauses.stderr.log",
+      "stdout_bytes": 0,
+      "stderr_bytes": 814,
+      "input_sha256": "493ac0f4c1dc96fbce043f40818974bec0a0a2325599496c882824400f099cf1"
+    },
+    {
+      "command": [
+        "target/v10.2b/benitoite-0012",
+        "check",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/h21-reproduction/handlers-200-0012.bnt"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 0.2230942920000003,
+      "diagnostic_codes": [],
+      "stdout_log": "200-0012.stdout.log",
+      "stderr_log": "200-0012.stderr.log",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "input_sha256": "8486d7ffba47570b88cc0ebb26def137a58da03df1a7a72cf2c383add5ead72f"
+    },
+    {
+      "command": [
+        "target/debug/benitoite",
+        "check",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/h21-reproduction/handlers-200-current.bnt"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "elapsed_seconds": 2.1003139579999996,
+      "diagnostic_codes": [],
+      "stdout_log": "200-current.stdout.log",
+      "stderr_log": "200-current.stderr.log",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "input_sha256": "e77cc33fa67874637021ebe9e3be8a94a08fd89b09cce123f6b5b97726c1871c"
+    },
+    {
+      "command": [
+        "target/debug/benitoite",
+        "check",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/h21-reproduction/handlers-200-0012.bnt"
+      ],
+      "exit": 2,
+      "expected_exit": 2,
+      "elapsed_seconds": 2.7253046670000005,
+      "diagnostic_codes": [
+        "E0501"
+      ],
+      "stdout_log": "200-current-old-clauses.stdout.log",
+      "stderr_log": "200-current-old-clauses.stderr.log",
+      "stdout_bytes": 0,
+      "stderr_bytes": 829,
+      "input_sha256": "8486d7ffba47570b88cc0ebb26def137a58da03df1a7a72cf2c383add5ead72f"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+"4.34.1"
+'SD.noninterference' depends on axioms: [propext, Quot.sound]
+'SD.receiver_noninterference' depends on axioms: [propext, Quot.sound]
+'SD.Readers.destination_noninterference' depends on axioms: [propext, Quot.sound]
+'SD.Readers.covers_iff' depends on axioms: [propext, Quot.sound]
+'SD.Examples.rejects_uncovered_range' depends on axioms: [propext, Quot.sound]
+'SD.Examples.rejects_secret_destination' depends on axioms: [propext, Quot.sound]
+'SD.Examples.rejects_secret_validation' depends on axioms: [propext, Quot.sound]
+'SD.Examples.rejects_secret_nonresumption' depends on axioms: [propext, Quot.sound]
+'SD.Examples.forged_checked_value_counterexample' depends on axioms: [propext, Quot.sound]
+'SD.Examples.authorized_secret_destination_NI' depends on axioms: [propext, Quot.sound]
+'SD.Examples.nonresumption_leaks_trace' depends on axioms: [propext, Quot.sound]
+        1.16 real         1.89 user         0.31 sys
+           759480320  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               49053  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   3  voluntary context switches
+               12624  involuntary context switches
+         14171789945  instructions retired
+          6357910430  cycles elapsed
+           208559584  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

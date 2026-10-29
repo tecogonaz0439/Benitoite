@@ -1,0 +1,67 @@
+== python3 -I formal/tests/test_width_exchange.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 4.338s
+
+OK
+exit 0
+== python3 -I formal/tests/test_named_exchange.py
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 5.295s
+
+OK
+exit 0
+== python3 -I formal/tests/test_extensible_exchange.py
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.605s
+
+OK
+exit 0
+== python3 -I formal/tests/test_try_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.311s
+
+OK
+exit 0
+== python3 -B formal/tests/test_batch2_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.251s
+
+OK
+exit 0
+== python3 -B formal/tests/test_batch3_exchange.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 3.309s
+
+OK
+exit 0
+== python3 -B formal/tests/test_batch4_exchange.py
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 5.884s
+
+OK
+exit 0
+== python3 -B formal/tests/test_batch5_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 2.039s
+
+OK
+exit 0
+== python3 -B formal/tests/test_range_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.956s
+
+OK
+exit 0
+== python3 -B formal/tests/test_interval_exchange.py
+{"calls": 144, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow", "initial": "292", "selected": "292", "attempts": [{"fuel": "292", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "width", "initial": "580", "selected": "580", "attempts": [{"fuel": "580", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "range", "initial": "200", "selected": "200", "attempts": [{"fuel": "200", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "domain", "initial": "2192", "selected": "2192", "attempts": [{"fuel": "2192", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow-containers", "initial": "40", "selected": "80", "attempts": [{"fuel": "40", "exit": 1, "excluded": "1"}, {"fuel": "80", "exit": 0, "excluded": "0"}]}]}
+exit 0
+total 37 s

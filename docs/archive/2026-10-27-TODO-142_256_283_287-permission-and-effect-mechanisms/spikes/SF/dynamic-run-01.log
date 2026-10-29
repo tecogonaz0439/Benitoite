@@ -1,0 +1,223 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Model.lean:761:96: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:761:107: warning: This simp argument is unused:
+  context
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, secretSig]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:762:96: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:762:107: warning: This simp argument is unused:
+  context
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, secretSig]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:782:85: warning: This simp argument is unused:
+  publicSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, secretSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:782:96: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:805:73: warning: This simp argument is unused:
+  push
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, publicSig, secretSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:805:90: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:805:101: warning: This simp argument is unused:
+  context
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, secretSig]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:981:19: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Model.lean:982:42: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Model.lean:983:19: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Model.lean:984:43: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Model.lean:987:66: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Model.lean:999:73: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Model.lean:999:81: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Model.lean:999:73: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Model.lean:999:81: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Model.lean:998:37: error: unsolved goals
+case neg
+L D : Type
+S : System L D
+inst✝ : DecidableRel S.flows
+tags✝ : Tags L
+pc✝ : L
+c : Cmd D
+ρ✝ : Env
+tr✝ : Trace D
+tags : Tags L
+pc : L
+e : Expr
+yes no : Cmd D
+ρ : Env
+tr : Trace D
+hb : Accepted S tags (S.join pc (levels S tags e)) (if False then yes else no) ρ tr
+ih : monitor S tags (S.join pc (levels S tags e)) (if False then yes else no) ρ = Result.done tr
+hc : ¬eval e ρ = Value.boolean true
+⊢ (if False then monitor S tags (S.join pc (levels S tags e)) yes ρ
+    else monitor S tags (S.join pc (levels S tags e)) no ρ) =
+    Result.done tr
+Model.lean:1000:35: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Model.lean:999:81: warning: This simp argument is unused:
+  if_neg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [monitor, if_pos]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:1029:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1029:61: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.blocked` could not be determined
+
+Hint: Using `Result.blocked would be unambiguous:
+  [apply] `Result.blocked`
+Model.lean:1030:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1030:62: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.blocked` could not be determined
+
+Hint: Using `Result.blocked would be unambiguous:
+  [apply] `Result.blocked`
+Model.lean:1031:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1031:61: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.blocked` could not be determined
+
+Hint: Using `Result.blocked would be unambiguous:
+  [apply] `Result.blocked`
+Model.lean:1032:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1032:71: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.blocked` could not be determined
+
+Hint: Using `Result.blocked would be unambiguous:
+  [apply] `Result.blocked`
+Model.lean:1033:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1034:2: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.done` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ForInStep.done`
+  [apply] `Std.CancellationContext.done`
+  [apply] `Std.IterStep.done`
+  [apply] `Std.PlausibleIterStep.done`
+  [apply] `ByteArray.utf8DecodeChar?.FirstByte.done`
+  [apply] `Lean.Parser.Tactic.done`
+  [apply] `Result.done`
+  [apply] `Std.IterM.IsPlausibleNthOutputStep.done`
+  [apply] `Lean.Parser.Tactic.Grind.done`
+  [apply] `Std.DTreeMap.Internal.Zipper.done`
+  [apply] `Std.IterM.IsPlausibleNthOutputStep.below.done`
+  [apply] `Std.Http.Protocol.H1.RedirectOutcome.done`
+  [apply] `Std.Iterators.Types.Drop.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.DropWhile.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.FilterMap.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.Take.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.TakeWhile.PlausibleStep.done`
+Model.lean:1037:28: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1038:28: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1052:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:1053:2: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.done` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ForInStep.done`
+  [apply] `Std.CancellationContext.done`
+  [apply] `Std.IterStep.done`
+  [apply] `Std.PlausibleIterStep.done`
+  [apply] `ByteArray.utf8DecodeChar?.FirstByte.done`
+  [apply] `Lean.Parser.Tactic.done`
+  [apply] `Result.done`
+  [apply] `Std.IterM.IsPlausibleNthOutputStep.done`
+  [apply] `Lean.Parser.Tactic.Grind.done`
+  [apply] `Std.DTreeMap.Internal.Zipper.done`
+  [apply] `Std.IterM.IsPlausibleNthOutputStep.below.done`
+  [apply] `Std.Http.Protocol.H1.RedirectOutcome.done`
+  [apply] `Std.Iterators.Types.Drop.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.DropWhile.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.FilterMap.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.Take.PlausibleStep.done`
+  [apply] `Std.Iterators.Types.TakeWhile.PlausibleStep.done`
+'SF.noninterference' depends on axioms: [propext]
+'SF.TwoPoint.reject_explicit' depends on axioms: [propext]
+'SF.TwoPoint.reject_implicit' depends on axioms: [propext]
+'SF.Readers.destination_noninterference' depends on axioms: [propext]
+'SF.Readers.pattern_inclusion_gives_flow' depends on axioms: [propext, Quot.sound]
+'SF.Readers.intersection_not_single_pattern' depends on axioms: [propext, Quot.sound]
+'SF.Handlers.handled_noninterference' depends on axioms: [propext]
+'SF.Handlers.handled_ask_removed' depends on axioms: [propext]
+'SF.Handlers.Examples.no_public_reply_contract' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_argument_leak' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_secret_call' depends on axioms: [propext]
+'SF.Dynamic.monitor_noninterference' depends on axioms: [propext]
+'SF.Dynamic.Examples.unconditional_trace_equality_fails' depends on axioms: [propext, sorryAx]
+        1.35 real         1.83 user         0.31 sys
+           749699072  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               48526  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               14075  involuntary context switches
+         14712282619  instructions retired
+          6450289443  cycles elapsed
+           199253568  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

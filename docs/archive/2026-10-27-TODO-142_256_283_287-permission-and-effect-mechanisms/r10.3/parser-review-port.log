@@ -1,0 +1,41 @@
+port 443 exit 2
+error[E0321]: `Benitoite.Network.Http` is not a standard library module
+  --> <tmp>/main.bnt:1:8
+   |
+ 1 | import Benitoite.Network.Http
+   |        ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: this module is unofficial in this version and is imported as `Benitoite.Unofficial.Network.Http`
+   |
+ 1 | import Benitoite.Unofficial.Network.Http
+   |        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+error: could not check <tmp>/main.bnt due to 1 previous error
+
+port 443s64 exit 2
+error[E0321]: `Benitoite.Network.Http` is not a standard library module
+  --> <tmp>/main.bnt:1:8
+   |
+ 1 | import Benitoite.Network.Http
+   |        ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: this module is unofficial in this version and is imported as `Benitoite.Unofficial.Network.Http`
+   |
+ 1 | import Benitoite.Unofficial.Network.Http
+   |        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+error: could not check <tmp>/main.bnt due to 1 previous error
+
+port 443u16 exit 2
+error[E0321]: `Benitoite.Network.Http` is not a standard library module
+  --> <tmp>/main.bnt:1:8
+   |
+ 1 | import Benitoite.Network.Http
+   |        ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: this module is unofficial in this version and is imported as `Benitoite.Unofficial.Network.Http`
+   |
+ 1 | import Benitoite.Unofficial.Network.Http
+   |        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+error: could not check <tmp>/main.bnt due to 1 previous error

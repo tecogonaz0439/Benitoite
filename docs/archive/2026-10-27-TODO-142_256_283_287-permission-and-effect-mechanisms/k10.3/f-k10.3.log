@@ -1,0 +1,1527 @@
+== formal: lake build
+⚠ [246/573] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:969:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1246:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [252/573] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:782:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:792:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1243:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1758:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1765:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2044:30: This simp argument is unused:
+  targetOperationAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AbstractEnv.standardAt, standards, apiAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2253:75: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [arithmeticOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3755:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3755:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3755:117: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [259/573] Replayed Benitoite.Interval.RangeBorrowed
+warning: Benitoite/Interval/RangeBorrowed.lean:204:27: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [noArgs, hl, hp, ne_eq, not_true_eq_false, false_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:207:24: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:208:62: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rule, ha]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [262/573] Replayed Benitoite.Interval.BudgetRange
+warning: Benitoite/Interval/BudgetRange.lean:367:27: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:367:34: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:19: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:26: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:373:51: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:29: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:36: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:42: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:21: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:28: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:34: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:419:53: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:35: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:45: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:51: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:27: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:37: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:43: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:427:72: This simp argument is unused:
+  hMaximum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:530:23: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:532:15: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:35: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:42: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:48: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:27: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:34: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:40: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:596:23: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:599:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:25: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:33: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:39: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:17: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:25: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:31: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:614:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:621:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:664:35: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:666:27: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [264/573] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:23: This simp argument is unused:
+  binarySupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:40: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [binarySupported]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:182:19: Variable name `labels` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _labels
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [268/573] Replayed Benitoite.Interval.SyntacticReach
+warning: Benitoite/Interval/SyntacticReach.lean:83:28: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:85:30: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:156:154: This simp argument is unused:
+  List.append_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [syntacticReachChildren, List.map_append, syntacticReachExpr_sources, syntacticReachBlock_sources,
+    syntacticReachArms_sources, syntacticReachExprs_sources, outsideSyntacticReach_sources, surfacePreorder,
+    List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [269/573] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:472:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Benitoite/Interval/BudgetNormal.lean:493:57: This simp argument is unused:
+  exprsChildren
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fieldAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:1328:0: unused `termination_by`, function is not recursive
+⚠ [271/573] Replayed Benitoite.Interval.BudgetSound
+warning: Benitoite/Interval/BudgetSound.lean:425:31: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:425:60: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_assoc, Nat.add_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:639:105: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:727:27: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [275/573] Replayed Benitoite.Interval.BudgetCallReach
+warning: Benitoite/Interval/BudgetCallReach.lean:384:26: This simp argument is unused:
+  exprsTables_sources
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [CallReach.children, childrenTables, append_sources, exprTables_sources, blockTables_sources,
+    armListTables_sources, outside, surfacePreorder, List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (573 jobs).
+lake build: 0s
+== formal: lake build desugarDiff
+Build completed successfully (362 jobs).
+lake build desugarDiff: 0s
+== formal: lake build builtinCheck
+Build completed successfully (364 jobs).
+lake build builtinCheck: 0s
+== formal: lake build coverageDiff
+Build completed successfully (364 jobs).
+lake build coverageDiff: 0s
+== formal: Rust coverage export
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.48s
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-be47fe0bf2506abf)
+
+running 4 tests
+test export_named_coverage ... ok
+test export_batch4_integer ... ok
+test scalar_source_arms_preserve_selection ... ok
+coverage export: 10020 cases (20 boundary, 10000 random), 11.552s, budget stopped: 0, max work per check: 2714
+test export_coverage ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.37s
+
+Rust coverage export (including cargo): 17s
+== formal: coverageDiff
+coverageDiff: cases=10020 matched=10020 mismatched=0 fuelExhausted=0
+coverageDiff: 3s; report: <wt>/target/coverage-diff/k10.3/report.json
+== formal: coverageDiff with views
+coverageDiff: cases=10028 matched=10028 mismatched=0 fuelExhausted=0
+coverage stages: 23s
+== formal: lake build coverageProgramDiff
+Build completed successfully (366 jobs).
+lake build coverageProgramDiff: 0s
+== formal: lake build surfaceCheck
+Build completed successfully (366 jobs).
+== formal: lake build surfaceCheckAll
+Build completed successfully (372 jobs).
+lake build surfaceCheckAll: 0s
+== formal: lake build intervalDiff
+⚠ [186/452] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:969:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1246:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [195/452] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:782:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:792:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1243:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1758:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1765:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2044:30: This simp argument is unused:
+  targetOperationAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AbstractEnv.standardAt, standards, apiAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2253:75: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [arithmeticOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3755:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3755:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3755:117: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [200/452] Replayed Benitoite.Interval.RangeBorrowed
+warning: Benitoite/Interval/RangeBorrowed.lean:204:27: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [noArgs, hl, hp, ne_eq, not_true_eq_false, false_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:207:24: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:208:62: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rule, ha]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [203/452] Replayed Benitoite.Interval.BudgetRange
+warning: Benitoite/Interval/BudgetRange.lean:367:27: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:367:34: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:19: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:26: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:373:51: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:29: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:36: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:42: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:21: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:28: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:34: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:419:53: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:35: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:45: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:51: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:27: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:37: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:43: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:427:72: This simp argument is unused:
+  hMaximum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:530:23: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:532:15: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:35: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:42: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:48: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:27: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:34: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:40: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:596:23: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:599:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:25: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:33: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:39: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:17: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:25: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:31: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:614:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:621:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:664:35: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:666:27: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [205/452] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:23: This simp argument is unused:
+  binarySupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:40: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [binarySupported]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:182:19: Variable name `labels` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _labels
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [210/452] Replayed Benitoite.Interval.SyntacticReach
+warning: Benitoite/Interval/SyntacticReach.lean:83:28: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:85:30: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:156:154: This simp argument is unused:
+  List.append_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [syntacticReachChildren, List.map_append, syntacticReachExpr_sources, syntacticReachBlock_sources,
+    syntacticReachArms_sources, syntacticReachExprs_sources, outsideSyntacticReach_sources, surfacePreorder,
+    List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [211/452] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:472:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Benitoite/Interval/BudgetNormal.lean:493:57: This simp argument is unused:
+  exprsChildren
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fieldAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:1328:0: unused `termination_by`, function is not recursive
+⚠ [213/452] Replayed Benitoite.Interval.BudgetSound
+warning: Benitoite/Interval/BudgetSound.lean:425:31: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:425:60: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_assoc, Nat.add_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:639:105: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:727:27: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [217/452] Replayed Benitoite.Interval.BudgetCallReach
+warning: Benitoite/Interval/BudgetCallReach.lean:384:26: This simp argument is unused:
+  exprsTables_sources
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [CallReach.children, childrenTables, append_sources, exprTables_sources, blockTables_sources,
+    armListTables_sources, outside, surfacePreorder, List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Build completed successfully (452 jobs).
+lake build intervalDiff: 0s
+== formal: width exchange
+....
+----------------------------------------------------------------------
+Ran 4 tests in 1.076s
+
+OK
+width exchange: 2s; reports: target/p3a-gate/width-exchange/
+== formal: named exchange
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 2.293s
+
+OK
+named exchange: 2s
+== formal: extensible exchange
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.941s
+
+OK
+extensible exchange: 6s
+== formal: try exchange
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.558s
+
+OK
+try exchange: 4s
+== formal: batch2 independent exchange
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.345s
+
+OK
+batch2 exchange: 1s
+== formal: batch3 independent exchange
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 3.493s
+
+OK
+batch3 independent exchange: 4s
+== formal: batch4 independent exchange
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 6.142s
+
+OK
+batch4 independent exchange: 6s
+== formal: range independent exchange
+test_surface15_same_analysis (__main__.IntervalSurfaceVersionTests) ... ok
+test_surface_version_boundaries (__main__.IntervalSurfaceVersionTests) ... ok
+test_all_top_input_reports_no_ranges (__main__.RangeExchangeTests) ... ok
+test_cover_only_effect_bound (__main__.RangeExchangeTests) ... ok
+test_fixture_is_not_all_top (__main__.RangeExchangeTests) ... ok
+test_groups_are_non_top_at_both_entries (__main__.RangeExchangeTests) ... ok
+test_input_validation (__main__.RangeExchangeTests) ... ok
+test_six_entries (__main__.RangeExchangeTests) ... ok
+test_surface_check_reasons (__main__.RangeExchangeTests) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.182s
+
+OK
+range independent exchange: 1s
+== formal: Rust export
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.85s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 45 tests
+
+thread 'exchange::scope_export::rejects_range_index_equal_to_signature_bound' (7927739) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test exchange::scope_export::rejects_range_index_equal_to_signature_bound - should panic ... ok
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch5::export_batch5_formats ... ok
+test batch3::export_batch3_solve ... ok
+test batch3::export_batch4_log_standard ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_batch2_character ... ok
+test export_independent_program_exchange ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_batch2_failure ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_scope_tables_smoke ... ok
+test export_named_declarations_smoke ... ok
+test export_preserves_float64_bits_and_numeric_strings ... ok
+test export_named_types_smoke ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::export_extensible_package ... ok
+width export: 3 inputs; 0.798s; <wt>/target/desugar-diff/k10.3/width-smoke
+test export_width_smoke ... ok
+test named::export_extensible_source ... ok
+test export_known_scope_failures_as_excluded ... ok
+test export_batch2_op ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test scope_tables::atom_order_tests::exports_effect_atoms_in_lean_code_order ... ok
+test scope_tables::exports_closed_candidate_atoms_from_signatures_and_calls ... ok
+test scope_tables::exports_closed_type_and_atom_indices_without_losing_ip_precision ... ok
+test named::export_named_calls_smoke ... ok
+test named::export_named_static_calls_smoke ... ok
+test scope_tables::exports_the_same_non_top_call_ranges_before_and_after_desugaring ... ok
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (7928208) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (7928208) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (7928208) panicked at crates/benitoite/tests/desugar_export/builtins.rs:500:5:
+invalid table signature: out-of-bounds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (7928208) panicked at crates/benitoite/tests/desugar_export/builtins.rs:500:5:
+invalid table signature: wrong-kind
+test scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices ... ok
+test scope_tables::exports_all_unused_operations_from_complete_stdlib ... ok
+test named::export_generated_record_property ... ok
+test range_budget::export_range_budget_sources ... ok
+test scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures ... ok
+test named::export_general_named_programs ... ok
+test scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures ... ok
+test batch3::export_batch3_builders ... ok
+test range_sources::export_range_sources ... ok
+test export_desugar_corpus has been running for over 60 seconds
+desugar annotations [positions, different from R]: {"resultMatch": [487, 487], "resultReturn": [2025, 2025], "tailMatch": [7137, 1]}
+desugar export: 1373 exported, 0 out of scope, 419 excluded (check error); 1792 inputs; 1346.501s; <wt>/target/desugar-diff/k10.3
+test export_desugar_corpus ... ok
+
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1347.40s
+
+Rust export (including cargo): 1349s
+== formal: Rust interval exports
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.26s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+test export_interval_identity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 4.59s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+test export_interval_manifest ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 8.75s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+Range interval export: 11 inputs; <wt>/target/interval-diff/k10.3/range
+test interval::export_interval_range ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 2.77s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+VM interval export: 80 operations
+VM interval export: 96 operations
+VM interval export: 108 operations
+test interval::vm::export_interval_vm ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 3.46s
+
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.13s
+== formal: independent range sources and rejection comparison
+{"reportSubset": {"inputs": 26, "commands": 50, "status": "passed"}, "status": "passed", "groups": 15, "definitions": 18, "rejections": 8, "excluded": 8, "nonTopRanges": {"host-one": 3, "host-many": 3, "ipv4-exact": 3, "ipv4-cidr": 3, "ipv6-exact": 3, "ipv6-cidr": 3, "port-range": 3, "path-tree": 3, "request-retained": 12, "path-widen": 10, "shorthand-location": 8, "request-errors": 3}, "topCompatibility": {"old-ip": 0, "user-spelling": 0, "all-top": 0}, "sixEntries": ["desugarDiff", "builtinCheck", "surfaceCheck", "surfaceCheckAll", "coverageDiff", "coverageProgramDiff"], "successes": [{"name": "host-one", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "host-many", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "ipv4-exact", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "ipv4-cidr", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "ipv6-exact", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "ipv6-cidr", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "port-range", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2065", "data:2066", "data:2067", "data:2068", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "path-tree", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Scope.checkPathIn", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:573", "data:575", "data:1477", "data:1478", "data:1479", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Scope.checkPathIn", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:573", "data:575", "data:1477", "data:1478", "data:1479", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "request-retained", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Http.requestInValue", "Http.widenRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086", "data:2087", "data:2088", "data:2089", "data:2090", "data:2091"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Http.requestInValue", "Http.widenRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:530", "data:536", "data:540", "data:546", "data:579", "data:587", "data:604", "data:607", "data:610", "data:616", "data:642", "data:644", "data:664", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086", "data:2087", "data:2088", "data:2089", "data:2090", "data:2091"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 12, "coverageEntries": 1, "allDefinitionsChecked": true}, {"name": "path-widen", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Scope.checkPathIn", "Scope.pathInValue", "Scope.widenPathIn", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:573", "data:575", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505", "data:1506", "data:1507", "data:1508"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Scope.checkPathIn", "Scope.pathInValue", "Scope.widenPathIn", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:573", "data:575", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505", "data:1506", "data:1507", "data:1508"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 10, "coverageEntries": 1, "allDefinitionsChecked": true}, {"name": "shorthand-location", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:594", "data:598", "data:603", "data:621", "data:623", "data:1575", "data:1576", "data:1577", "data:1578", "data:1579", "data:1580", "data:1581", "data:1582", "data:1583", "data:1584", "data:1585", "data:1586", "data:1587", "data:1588", "data:1589", "data:1590", "data:1591", "data:1592", "data:1593", "data:1594", "data:1595", "data:1596", "data:1597", "data:1598", "data:1599", "data:1600"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:594", "data:598", "data:603", "data:621", "data:623", "data:1575", "data:1576", "data:1577", "data:1578", "data:1579", "data:1580", "data:1581", "data:1582", "data:1583", "data:1584", "data:1585", "data:1586", "data:1587", "data:1588", "data:1589", "data:1590", "data:1591", "data:1592", "data:1593", "data:1594", "data:1595", "data:1596", "data:1597", "data:1598", "data:1599", "data:1600"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 8, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "old-ip", "definitions": 2, "definitionKeys": ["sample (fn:43)", "endpoint (fn:44)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:80", "data:198", "data:207", "data:217", "data:221", "data:229", "data:278", "data:284", "data:469", "data:474", "data:479", "data:485", "data:488", "data:521", "data:524", "data:527", "data:533", "data:574", "data:576", "data:1478", "data:1479", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505", "data:1506"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:80", "data:198", "data:207", "data:217", "data:221", "data:229", "data:278", "data:284", "data:469", "data:474", "data:479", "data:485", "data:488", "data:521", "data:524", "data:527", "data:533", "data:574", "data:576", "data:1478", "data:1479", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505", "data:1506"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 0, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "user-spelling", "definitions": 2, "definitionKeys": ["checkPathIn (fn:43)", "sample (fn:44)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:80", "data:198", "data:207", "data:217", "data:221", "data:229", "data:278", "data:284", "data:469", "data:474", "data:479", "data:485", "data:488", "data:535", "data:537", "data:1392", "data:1393", "data:1394", "data:1395", "data:1396", "data:1397", "data:1398", "data:1399", "data:1400", "data:1401", "data:1402", "data:1403", "data:1404", "data:1405", "data:1406", "data:1407", "data:1408", "data:1409", "data:1410", "data:1411", "data:1412", "data:1413", "data:1414", "data:1415", "data:1416", "data:1417", "data:1418", "data:1419", "data:1420", "data:1421", "data:1422", "data:1423", "data:1424"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:80", "data:198", "data:207", "data:217", "data:221", "data:229", "data:278", "data:284", "data:469", "data:474", "data:479", "data:485", "data:488", "data:535", "data:537", "data:1392", "data:1393", "data:1394", "data:1395", "data:1396", "data:1397", "data:1398", "data:1399", "data:1400", "data:1401", "data:1402", "data:1403", "data:1404", "data:1405", "data:1406", "data:1407", "data:1408", "data:1409", "data:1410", "data:1411", "data:1412", "data:1413", "data:1414", "data:1415", "data:1416", "data:1417", "data:1418", "data:1419", "data:1420", "data:1421", "data:1422", "data:1423", "data:1424"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 0, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "all-top", "definitions": 1, "definitionKeys": ["sample (fn:43)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Scope.checkPathIn", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:573", "data:575", "data:1477", "data:1478", "data:1479", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Scope.checkPathIn", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:79", "data:197", "data:206", "data:216", "data:220", "data:228", "data:277", "data:283", "data:468", "data:473", "data:478", "data:484", "data:487", "data:520", "data:523", "data:526", "data:532", "data:573", "data:575", "data:1477", "data:1478", "data:1479", "data:1480", "data:1481", "data:1482", "data:1483", "data:1484", "data:1485", "data:1486", "data:1487", "data:1488", "data:1489", "data:1490", "data:1491", "data:1492", "data:1493", "data:1494", "data:1495", "data:1496", "data:1497", "data:1498", "data:1499", "data:1500", "data:1501", "data:1502", "data:1503", "data:1504", "data:1505"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 0, "coverageEntries": 0, "allDefinitionsChecked": true}, {"name": "request-errors", "definitions": 2, "definitionKeys": ["classify (fn:43)", "main (fn:44)"], "tableEntries": {"admitsR": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "dataDecls": ["data:80", "data:198", "data:207", "data:217", "data:221", "data:229", "data:278", "data:284", "data:469", "data:474", "data:479", "data:485", "data:488", "data:521", "data:524", "data:527", "data:533", "data:570", "data:576", "data:580", "data:586", "data:619", "data:627", "data:643", "data:645", "data:665", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086", "data:2087", "data:2088", "data:2089", "data:2090"], "effKinds": ["IO.File.Read", "IO.File.Write", "Network.Http.Connect"], "effects": ["State", "IO.Console.Write", "IO.Console.Read", "IO.File.Read", "IO.File.Write", "IO.Process.Run", "Process.Exit", "IO.Process.Environment", "IO.Clock.Time", "IO.Random.Generate", "Network.Http.Listen", "Network.Http.Connect", "Assert.Check", "Log.Log"], "prims": ["Benitoite.IO.Console.write", "Benitoite.IO.Console.writeLine", "Benitoite.IO.Console.writeError", "Benitoite.IO.Console.writeErrorLine", "Benitoite.IO.Console.readLine", "Benitoite.IO.Console.readAll", "Benitoite.IO.File.readText", "Benitoite.IO.File.writeText", "Benitoite.IO.File.appendText", "Benitoite.IO.File.openReader", "Benitoite.IO.File.readLine", "Benitoite.IO.Process.arguments", "Benitoite.IO.Process.exit", "Benitoite.IO.Clock.sleep", "Benitoite.IO.Clock.monotonicMilliseconds", "Benitoite.Assert.equal", "Benitoite.Assert.notEqual", "Benitoite.Assert.isTrue", "Benitoite.Assert.fail", "Benitoite.IO.Console.readAllLines", "Benitoite.IO.Console.readAllBytes", "Benitoite.IO.Process.scriptDirectory", "Benitoite.IO.Process.environmentVariable", "Benitoite.IO.Process.workingDirectory", "Benitoite.IO.Clock.now", "Benitoite.IO.Clock.localOffsetMinutes", "Benitoite.IO.File.readBytes", "Benitoite.IO.File.readLines", "Benitoite.IO.File.exists", "Benitoite.IO.File.info", "Benitoite.IO.File.listDirectory", "Benitoite.IO.File.walk", "Benitoite.IO.File.canonicalize", "Benitoite.IO.File.writeBytes", "Benitoite.IO.File.appendBytes", "Benitoite.IO.File.createDirectory", "Benitoite.IO.File.remove", "Benitoite.IO.File.removeTree", "Benitoite.IO.File.rename", "Benitoite.IO.File.readChunk", "Benitoite.IO.File.openWriter", "Benitoite.IO.File.write", "Benitoite.IO.File.writeLine", "Benitoite.IO.File.writeChunk", "Benitoite.IO.Process.run", "Benitoite.IO.Process.runAttached", "Benitoite.IO.Process.shell", "Benitoite.IO.Random.integer", "Benitoite.IO.Random.float", "Benitoite.IO.Random.boolean", "Benitoite.IO.Random.shuffle", "Benitoite.IO.Random.choose", "Benitoite.Network.Http.listen", "Benitoite.Network.Http.listenerPort", "Benitoite.Network.Http.accept", "Benitoite.Network.Http.respond", "Benitoite.Network.Http.send", "Benitoite.Log.emit", "Benitoite.Log.enabled", "Http.checkRequestIn", "Benitoite.IO.File.readTextIn", "Benitoite.IO.File.readBytesIn", "Benitoite.IO.File.writeTextIn", "Benitoite.IO.File.appendTextIn", "Benitoite.IO.File.writeBytesIn", "Benitoite.IO.File.appendBytesIn", "Benitoite.Network.Http.sendIn"], "statePure": [], "summaries": ["data:80", "data:198", "data:207", "data:217", "data:221", "data:229", "data:278", "data:284", "data:469", "data:474", "data:479", "data:485", "data:488", "data:521", "data:524", "data:527", "data:533", "data:570", "data:576", "data:580", "data:586", "data:619", "data:627", "data:643", "data:645", "data:665", "data:2069", "data:2070", "data:2071", "data:2072", "data:2073", "data:2074", "data:2075", "data:2076", "data:2077", "data:2078", "data:2079", "data:2080", "data:2081", "data:2082", "data:2083", "data:2084", "data:2085", "data:2086", "data:2087", "data:2088", "data:2089", "data:2090"], "valContents": ["33:[]"], "valKinds": ["32:[]", "33:[]"]}, "nonTopRanges": 3, "coverageEntries": 1, "allDefinitionsChecked": true}], "exclusions": [{"name": "old-invalid-pattern", "codes": ["E0459"], "excluded": ["Some(E0459)"]}, {"name": "old-invalid-target", "codes": ["E0460"], "excluded": ["Some(E0460)"]}, {"name": "old-invalid-ports", "codes": ["E0461"], "excluded": ["Some(E0461)"]}, {"name": "old-outside", "codes": ["E0462"], "excluded": ["Some(E0462)"]}, {"name": "new-invalid-pattern", "codes": ["E0459"], "excluded": ["Some(E0459)"]}, {"name": "new-invalid-target", "codes": ["E0460"], "excluded": ["Some(E0460)"]}, {"name": "new-invalid-ports", "codes": ["E0461"], "excluded": ["Some(E0461)"]}, {"name": "new-outside", "codes": ["E0462"], "excluded": ["Some(E0462)"]}], "programCoverageEntries": 3, "rejectionReport": {"status": "passed", "contractCounterparts": {"status": "passed", "cases": [{"name": "required-not-covered", "matched": true, "fields": {"surface": ["header", "body", "dictParams", "implementation", "method", "supers"], "core": ["header", "body", "lambdaEffects", "supers"]}, "sourceSha256": "786e6c7dbeef3306eaa22c42170a5c063658826e4ac537e30aa62807b9312dcf", "rustDefinition": "sample (fn:43)", "independentDefinition": "fn:901"}, {"name": "required-unknown", "matched": true, "fields": {"surface": ["header", "body", "dictParams", "implementation", "method", "supers"], "core": ["header", "body", "lambdaEffects", "supers"]}, "sourceSha256": "4932dd85c4fa19f63afcbab14d2d757955626d790dd1d8e2fc78e1c21b7330b0", "rustDefinition": "sample (fn:43)", "independentDefinition": "fn:901"}, {"name": "request-widen-rejected", "matched": true, "fields": {"surface": ["header", "body", "dictParams", "implementation", "method", "supers"], "core": ["header", "body", "lambdaEffects", "supers"]}, "sourceSha256": "f77d2dad5ff9c223e36b722cc4e808e517ee2181d4f7fda22a393c5b80ad0dbd", "rustDefinition": "sample (fn:43)", "independentDefinition": "fn:901"}], "comparisons": 3, "scope": "型と本体の全欄。契約・宣言同一性・lastBindのUnit展開を正規化。package/coverageViewは環境メタデータとして対象外"}, "groups": 16, "sourceRejections": 8, "sourceOnlyRejections": [{"name": "path-widen-projection-rejected", "rustCode": "E0519", "rustReason": "unknownSource", "requiredIndex": "top", "comparison": "Rust実ソースの手書き拒否期待"}], "requiredIndependentExpectationComparisons": 3, "requiredSameInputDirectComparisons": 0, "typingRejectionComparisons": 4, "independentAtomicUnionRejections": 1, "acceptedCounterparts": 8, "definitions": 26, "nonTopRanges": 56, "outcomes": [{"name": "required-not-covered", "comparison": "required", "lean": {"ok": false, "cover": {"reason": "notCovered", "key": {"surfacePreorder": 0, "definition": "fn:901"}}}, "definitions": 1, "nonTopRanges": 3, "seconds": {"desugarDiff": 0.020793624999999594, "surfaceCheckAll": 0.01989183299999997, "surfaceCheck": 0.020074708000000108}, "rustReason": "notCovered", "rustCode": "E0519", "sourceKey": {"definition": "sample", "surfacePreorder": 0}, "requiredIndex": {"path": {"tree": ["data"]}}, "contract": {"path": {"exact": ["data", "a"]}}}, {"name": "required-unknown", "comparison": "required", "lean": {"ok": false, "cover": {"reason": "unknownSource", "key": {"surfacePreorder": 0, "definition": "fn:901"}}}, "definitions": 1, "nonTopRanges": 3, "seconds": {"desugarDiff": 0.019853584000000257, "surfaceCheckAll": 0.019773083999999663, "surfaceCheck": 0.0197974159999994}, "rustReason": "unknownSource", "rustCode": "E0519", "sourceKey": {"definition": "sample", "surfacePreorder": 0}, "requiredIndex": "top", "contract": {"path": {"tree": ["data"]}}}, {"name": "request-widen-rejected", "comparison": "required", "lean": {"ok": false, "cover": {"reason": "unknownSource", "key": {"surfacePreorder": 0, "definition": "fn:901"}}}, "definitions": 1, "nonTopRanges": 7, "seconds": {"desugarDiff": 0.019877125000000717, "surfaceCheckAll": 0.02017250000000015, "surfaceCheck": 0.019705957999999413}, "rustReason": "unknownSource", "rustCode": "E0519", "sourceKey": {"definition": "sample", "surfacePreorder": 0}, "requiredIndex": "top", "contract": {"endpoint": {"host": {"name": {"exact": ["api", "example", "com"]}}, "ports": {"lo": 443, "hi": 443}}}}, {"name": "effect-not-covered", "comparison": "typing", "lean": {"ok": false, "error": {"reason": "effect exceeds the allowed effect", "path": [0]}}, "definitions": 2, "nonTopRanges": 4, "seconds": {"desugarDiff": 0.01997691700000015, "surfaceCheckAll": 0.0198855, "surfaceCheck": 0.019932542000000275}, "rustReason": "notCovered", "rustCode": "E0519", "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない"}, {"name": "effect-atomic", "comparison": "typing", "lean": {"ok": false, "error": {"reason": "effect exceeds the allowed effect", "path": [0]}}, "definitions": 2, "nonTopRanges": 6, "seconds": {"desugarDiff": 0.01994862499999961, "surfaceCheckAll": 0.02001025000000034, "surfaceCheck": 0.01985887499999972}, "rustReason": "atomicCoverOnly", "rustCode": "E0519", "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない"}, {"name": "effect-top", "comparison": "typing", "lean": {"ok": false, "error": {"reason": "effect exceeds the allowed effect", "path": [0]}}, "definitions": 2, "nonTopRanges": 2, "seconds": {"desugarDiff": 0.01990604199999968, "surfaceCheckAll": 0.019806540999999456, "surfaceCheck": 0.019546624999999374}, "rustReason": "unknownSource", "rustCode": "E0519", "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない", "leanAtomReasonExpected": "unknownSource", "leanAtomReasonObserved": null, "reasonNote": "入口はtypingだけを報告する。原子の理由をcoverへ変換しない"}, {"name": "effect-top-exceeded", "comparison": "typing", "lean": {"ok": false, "error": {"reason": "effect exceeds the allowed effect", "path": [0]}}, "definitions": 2, "nonTopRanges": 2, "seconds": {"desugarDiff": 0.019786542000000296, "surfaceCheckAll": 0.019594000000000555, "surfaceCheck": 0.01977633399999945}, "rustReason": "unknownSource", "rustCode": "E0519", "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない", "leanAtomReasonExpected": "budgetExceeded", "leanAtomReasonObserved": null, "reasonNote": "入口はtypingだけを報告する。原子の理由をcoverへ変換しない", "rustProvenance": {"lastRunExceeded": true, "numberingComplete": true, "operations": 1536, "stop": "Some(BudgetExceeded { scope: Body, resource: Items })"}, "leanProvenance": {"bodyOperationsLimit": 0, "lastRunExceededByDefinition": true, "atomFailureByDefinition": "budgetExceeded", "atomFailureObserved": null}}, {"name": "required-not-covered-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 1, "nonTopRanges": 3, "seconds": {"desugarDiff": 0.019607333000000615, "surfaceCheckAll": 0.020093208999999668, "surfaceCheck": 0.01974012500000022}}, {"name": "required-unknown-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 1, "nonTopRanges": 0, "seconds": {"desugarDiff": 0.019813207999999527, "surfaceCheckAll": 0.019819125000000604, "surfaceCheck": 0.02002749999999942}}, {"name": "request-widen-rejected-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 1, "nonTopRanges": 0, "seconds": {"desugarDiff": 0.01974020799999998, "surfaceCheckAll": 0.019925250000000005, "surfaceCheck": 0.019681291000000378}}, {"name": "effect-not-covered-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 2, "nonTopRanges": 4, "seconds": {"desugarDiff": 0.019850708000000772, "surfaceCheckAll": 0.019917500000000032, "surfaceCheck": 0.019717625000000183}}, {"name": "effect-atomic-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 2, "nonTopRanges": 4, "seconds": {"desugarDiff": 0.02000254200000029, "surfaceCheckAll": 0.019834750000000234, "surfaceCheck": 0.02011962500000042}}, {"name": "effect-top-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 2, "nonTopRanges": 0, "seconds": {"desugarDiff": 0.019811541000000155, "surfaceCheckAll": 0.02022466699999992, "surfaceCheck": 0.019534916999999652}}, {"name": "atomic-union-rejected", "comparison": "typing", "lean": {"ok": false, "error": {"reason": "effect exceeds the allowed effect", "path": [0]}}, "definitions": 2, "nonTopRanges": 6, "seconds": {"desugarDiff": 0.020490750000000446, "surfaceCheckAll": 0.02016449999999992, "surfaceCheck": 0.019998333999999396}}, {"name": "atomic-left-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 2, "nonTopRanges": 6, "seconds": {"desugarDiff": 0.020024417000000128, "surfaceCheckAll": 0.019913499999999473, "surfaceCheck": 0.020062916999999736}}, {"name": "atomic-right-accepted", "comparison": "accepted", "lean": {"ok": true}, "definitions": 2, "nonTopRanges": 6, "seconds": {"desugarDiff": 0.01991874999999954, "surfaceCheckAll": 0.019787291000000096, "surfaceCheck": 0.01991954100000015}}]}}
+range source comparison: 10s
+== formal: range numbering and analysis budgets
+{"version": 1, "success": true, "cases": [{"name": "numbering-stop", "rustRules": 6, "lean": "notApplicable-numbering-limit"}, {"name": "last-run-exceeded", "rustRules": 2, "key": {"definition": "fn:43", "surfacePreorder": 6}, "reason": "budgetExceeded", "nonTopRangesWithoutCandidates": 5, "definitions": 1, "reports": [{"tool": "surfaceCheck", "returncode": 1, "outerSeconds": 0.025467792}, {"tool": "surfaceCheckAll", "returncode": 1, "outerSeconds": 0.024120291999999995}, {"tool": "desugarDiff", "returncode": 0, "outerSeconds": 0.020551292000000013}, {"tool": "builtinCheck", "returncode": 0, "outerSeconds": 0.021991416}]}, {"name": "inner-exceeded-outer-recovered", "rustRules": 6, "key": {"definition": "fn:43", "surfacePreorder": 19}, "reason": "unknownSource", "nonTopRangesWithoutCandidates": 16, "definitions": 1, "reports": [{"tool": "surfaceCheck", "returncode": 1, "outerSeconds": 0.026032125000000003}, {"tool": "surfaceCheckAll", "returncode": 1, "outerSeconds": 0.02488375000000001}, {"tool": "desugarDiff", "returncode": 0, "outerSeconds": 0.02098649999999999}, {"tool": "builtinCheck", "returncode": 0, "outerSeconds": 0.022450250000000005}]}], "rustOnlyCases": 1, "auxiliaryExpectedMismatches": [{"name": "last-run-exceeded", "expected": 6, "actual": 4}], "auxiliaryFirstStops": {"numbering-stop": null, "last-run-exceeded": 4, "inner-exceeded-outer-recovered": 13}, "auxiliaryExpectedMismatchCount": 1, "successScope": "Requiredのキー・添字・理由。補助の停止地点は訂正値との一致を要求し、初稿との不一致も保持する", "leanComparedCases": 2, "requiredReasonComparisons": 2, "maxRssBytesAuxiliary": 42106880}
+range budget comparison: 0s
+== formal: named range exclusions and accepted controls
+{"success": true, "scope": "名指ししたRustの結果と除外理由。Rust/Leanの同じ受理や理由の一致へ算入しない", "cases": [{"name": "class-structural", "returncode": 2, "codes": ["E0711"], "outerSeconds": 0.070209542, "exclusion": "E0711", "target": "trait versus implementation effect declaration of class-structural", "reason": "Rust compares implementation and trait effect declarations structurally; Lean checks method body coverage under the trait declaration"}, {"name": "nul-direct", "returncode": 2, "codes": ["E0459"], "outerSeconds": 0.110306667, "exclusion": "leanStringPrecision", "target": "the direct hostPattern literal of nul-direct only", "reason": "Only the condition literal beginning U+0000 and followed by integer spelling; Rust retains a String argument and rejects its host spelling, while Lean absArg forgets that literal"}, {"name": "nul-dynamic", "returncode": 0, "codes": [], "outerSeconds": 0.11137, "exclusion": null, "target": null, "reason": "Local string condition is statically unknown and accepted at Top; runtime spelling check remains"}], "exclusions": {"E0711": 1, "leanStringPrecision": 1}, "outsideExclusions": ["ordinary integer ports", "ordinary string conditions", "whole Http.ClientRequest records", "all dynamic host patterns"]}
+range known differences: 0s
+== formal: interval independent/Rust/eval/VM comparison
+{"readerInputs": 195, "readerOccurrences": 1381, "sourceTargets": 227, "arithmeticKinds": 81, "shiftDeclarations": 27, "shiftHeads": {"primName": 40, "funName": 14}, "syntheticRoots": 195, "analyzedProbeBodies": 0, "acceptedPointBodies": 1}
+{"calls": 1852, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow", "initial": "292", "selected": "292", "attempts": [{"fuel": "292", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "width", "initial": "580", "selected": "580", "attempts": [{"fuel": "580", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "range", "initial": "200", "selected": "200", "attempts": [{"fuel": "200", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "domain", "initial": "2192", "selected": "2192", "attempts": [{"fuel": "2192", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow-containers", "initial": "40", "selected": "80", "attempts": [{"fuel": "40", "exit": 1, "excluded": "1"}, {"fuel": "80", "exit": 0, "excluded": "0"}]}]}
+interval comparison: 918s; reports: <wt>/target/interval-diff/k10.3/comparison/
+== formal: batch3/batch4 Rust exchange
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 4.104s
+
+OK
+batch3: 9 inputs, 52 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/b3-exchange-results.json
+batch3: 2 inputs, 10 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/blocks-exchange-results.json
+batch3: 1 inputs, 11 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/g2-exchange-results.json
+batch3: 1 inputs, 8 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/g3-exchange-results.json
+batch3/batch4 Rust exchange: 7s
+== formal: batch5 independent/Rust exchange
+........
+----------------------------------------------------------------------
+Ran 8 tests in 2.083s
+
+OK
+batch5: 32 definitions, 28 formatted, 3 formatted String, 0 fallback; six entries agree: <wt>/target/desugar-diff/k10.3/batch5/exchange-results.json
+batch5 independent/Rust exchange: 2s
+== formal: desugarDiff
+desugarDiff: property not found: scopeAcceptance
+desugarDiff: 9s; report: <wt>/target/desugar-diff/k10.3/report.json
+== formal: builtinCheck
+builtinCheck: property not found: scopeAcceptance
+builtinCheck: 8s; report: <wt>/target/desugar-diff/k10.3/builtin-report.json
+== formal: coverageProgramDiff
+coverageProgramDiff: inputs=1373 matches=16444 bindings=6039 matched=22483 mismatched=0 outOfScope=0 fuelExhausted=0
+coverageProgramDiff: 4s; report: <wt>/target/desugar-diff/k10.3/coverage/report.json
+== formal: surfaceCheckAll
+surfaceCheckAll: property not found: scopeAcceptance
+surfaceCheckAll: 8s; report: <wt>/target/desugar-diff/k10.3/surface-check/report.json
+== formal: per-program final Rust exports
+batch3: 1 inputs, 5 definitions, six entries checked (empty comparisons: ['coverageProgramDiff']): <wt>/target/desugar-diff/k10.3/batch3/k3-exchange-results.json
+batch3: 1 inputs, 7 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/k4-exchange-results.json
+batch3: 3 inputs, 31 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/m1-exchange-results.json
+batch3: 3 inputs, 9 definitions, six entries checked (empty comparisons: []): <wt>/target/desugar-diff/k10.3/batch3/t3-exchange-results.json
+final input routing: 1792 inputs, identifiers, exclusions, scopes and coverage agree
+width export: three inputs and all 30 definitions agree
+single surface checks: 0/1792 inputs
+single surface checks: 100/1792 inputs
+single surface checks: 200/1792 inputs
+single surface checks: 300/1792 inputs
+Traceback (most recent call last):
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 601, in <module>
+    main()
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 575, in main
+    check_programs(directory, manifest)
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 306, in check_programs
+    require(item["excluded"] == entry.get("excluded", []), item["name"])
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 24, in require
+    raise AssertionError(message)
+AssertionError: testdata/modules/c11-no-main
+     2403.15 real      1903.80 user       506.00 sys
+         14372323328  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+           229951776  page reclaims
+              582310  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                  15  signals received
+               15802  voluntary context switches
+             1147407  involuntary context switches
+           149989249  instructions retired
+            86308607  cycles elapsed
+             2032024  peak memory footprint
+exit=1

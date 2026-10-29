@@ -1,0 +1,54 @@
+== wait-for-lock start 17:57:45
+== lock acquired 17:57:45 after 0s
+✔ [44/410] Built Benitoite.Release.TypeShift (1.5s)
+✔ [45/410] Built Benitoite.Release.Effect (279ms)
+✔ [46/410] Built Benitoite.Release.TypeShift:c.o (352ms)
+✔ [47/410] Built Benitoite.Release.Effect:c.o (56ms)
+✖ [48/410] Building Benitoite.Release.TypeSubst (301ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeSubst.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeSubst.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeSubst.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeSubst.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeSubst.setup.json --json
+error: Benitoite/Release/TypeSubst.lean:46:14: Missing cases:
+(Atom.name _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeSubst.lean:62:102: unsolved goals
+case name
+es : List Eff
+l✝ : EffName
+r✝ : ScopeRange
+⊢ (match Atom.name l✝ r✝ with
+    | Atom.name l => false
+    | Atom.rho i => false) =
+    false
+error: Benitoite/Release/TypeSubst.lean:73:82: unsolved goals
+case name
+a : Atom → Bool
+l✝ : EffName
+r✝ : ScopeRange
+⊢ (match Atom.name l✝ r✝ with
+    | Atom.name l => a (Atom.name l)
+    | Atom.rho i => a (Atom.rho i)) =
+    a (Atom.name l✝ r✝)
+error: Benitoite/Release/TypeSubst.lean:82:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeSubst.lean:134:4: Missing cases:
+(«opaque» _ (ScopeRange.pathExact _))
+Some required targets logged failures:
+- Benitoite.Release.TypeSubst
+error: build failed
+        2.14 real         2.49 user         0.50 sys
+           781860864  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              154702  page reclaims
+                   4  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  14  voluntary context switches
+               10552  involuntary context switches
+          1211144105  instructions retired
+           433914563  cycles elapsed
+            24298696  peak memory footprint
+== exit 1

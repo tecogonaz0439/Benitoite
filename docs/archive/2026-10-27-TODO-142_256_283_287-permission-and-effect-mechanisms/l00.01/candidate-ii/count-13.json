@@ -1,0 +1,50 @@
+{
+ "log": "build-13-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.StepSound"
+ ],
+ "unchecked_modules_count": 10,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems"
+ ],
+ "error_diagnostics": 3,
+ "error_files": [
+  "Benitoite/Release/Lemmas/EffectSound.lean",
+  "Benitoite/Release/Lemmas/StepSound.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+   "decl": "theorem no_event",
+   "line": 39,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/StepSound.lean",
+   "decl": "theorem step_soundE",
+   "line": 102,
+   "errors": 2
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ],
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

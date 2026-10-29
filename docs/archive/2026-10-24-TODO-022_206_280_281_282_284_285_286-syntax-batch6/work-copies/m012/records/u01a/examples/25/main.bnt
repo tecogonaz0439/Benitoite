@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  List.forEach(xs: [1, 2, 3], f: lambda(value)
+    Console.writeLine(Integer.toString(value))
+  end lambda)
+  return ()
+end function

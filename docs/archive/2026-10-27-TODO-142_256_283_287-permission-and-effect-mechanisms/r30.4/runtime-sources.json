@@ -1,0 +1,53 @@
+{
+  "recorded_at": "2026-10-29T07:13:28.510869+00:00",
+  "network_access": false,
+  "sources": [
+    {
+      "source": "cargo-registry:ureq-3.4.2/src/config.rs",
+      "bytes": 34320,
+      "sha256": "1938630afae3733675253ae0f77b19e823d54fb27733fe64b286d8484694d881",
+      "observed": [
+        "Config::max_redirects_do_error",
+        "ConfigBuilder::proxy",
+        "ConfigBuilder::max_redirects"
+      ]
+    },
+    {
+      "source": "cargo-registry:ureq-3.4.2/src/run.rs",
+      "bytes": 25183,
+      "sha256": "00e32150908f4cc02dab017c6b31643b2afcf2a37aa9eaf6ca9a54c65e318c51",
+      "observed": [
+        "run",
+        "is_following_redirects",
+        "connect_to_host"
+      ]
+    },
+    {
+      "source": "cargo-registry:ureq-3.4.2/src/unversioned/resolver.rs",
+      "bytes": 6264,
+      "sha256": "1f123ff6f7815b91bd505a285df0e792e7adf6711da800ca9cfa5d846bd1bc1e",
+      "observed": [
+        "DefaultResolver::host_and_port",
+        "DefaultResolver::resolve"
+      ]
+    },
+    {
+      "source": "cargo-registry:ureq-3.4.2/src/unversioned/transport/tcp.rs",
+      "bytes": 15917,
+      "sha256": "bc85d9deec3c7b0fea5344ea374db72a08dac633d0b3dd6f5058819ab7e328f7",
+      "observed": [
+        "try_connect_with"
+      ]
+    },
+    {
+      "source": "cargo-registry:http-1.5.0/src/uri/authority.rs",
+      "bytes": 22217,
+      "sha256": "5f4214714bcfe8db10f6806f02f7cdde673323a797ca7d31814e761f8d1ee646",
+      "observed": [
+        "Authority::from_str",
+        "create_authority",
+        "parse_non_empty"
+      ]
+    }
+  ]
+}

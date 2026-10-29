@@ -36,15 +36,15 @@ def builtins : Builtins where
     | "force" => some (sig [{}] ["value"] [.lazy (.tvar 0)] (.tvar 0) Eff.empty .force)
     | _ => none
   delta
-    | "add", _, _, [.const (.integer a), .const (.integer b)] =>
+    | "add", _, _, _, [.const (.integer a), .const (.integer b)] =>
         let n := a.toInt + b.toInt
         if h : min64 ≤ n ∧ n ≤ max64 then some (.val (.const (.integer ⟨n, h⟩)))
         else some (.err "IntegerOverflow")
-    | _, _, _, _ => none
+    | _, _, _, _, _ => none
   ioResponse
-    | "print", _, _, [_], o => o = .val (.const .unit)
-    | "exit", _, _, [.const (.integer n)], o => o = .exit n.toInt
-    | _, _, _, _, _ => False
+    | "print", _, _, [_], o, obs => o = .val (.const .unit) ∧ obs = []
+    | "exit", _, _, [.const (.integer n)], o, obs => o = .exit n.toInt ∧ obs = []
+    | _, _, _, _, _, _ => False
   releaseResponse _ r := r = none
   isResource o := o == "File"
   effects
@@ -57,8 +57,8 @@ def builtins : Builtins where
   refSet := "set"
 
 def oracle : Oracle
-  | "exit", _, _, [.const (.integer n)] => .exit n.toInt
-  | _, _, _, _ => .val (.const .unit)
+  | "exit", _, _, [.const (.integer n)] => (.exit n.toInt, [])
+  | _, _, _, _ => (.val (.const .unit), [])
 
 def rel : Val → Option ErrKind := fun _ => none
 
@@ -78,7 +78,7 @@ def monoidMeths : MethName → Option MethSig
 def noSupers : ClassName → Option Val := fun _ => none
 
 def semigroupIntMeths : MethName → Option Comp
-  | "combine" => some (.app (.prim "add" [] []) [.var 1, .var 0])
+  | "combine" => some (.app (.prim "add" [] [] []) [.var 1, .var 0])
   | _ => none
 
 def monoidIntSupers : ClassName → Option Val
@@ -180,7 +180,7 @@ def summarize : State × List Event → Result × Nat
 noncomputable def exec (m : Comp) : Result × Nat :=
   summarize (run program builtins oracle rel fresh 1000 (.run m [] Store.empty) [])
 
-def add (a b : Val) : Comp := .app (.prim "add" [] []) [a, b]
+def add (a b : Val) : Comp := .app (.prim "add" [] [] []) [a, b]
 
 /-! ## 例 -/
 
@@ -195,11 +195,11 @@ example : exec (.handle (.letIn (.app (.op "ask" []) []) (add (.var 0) (int ⟨1
     [.mk (.user "ask") 0 0 (.resume (.var 0) (int ⟨41, by decide⟩))]) = (.returned 42, 0) := by decide
 
 /-- 組み込みの操作 `print` を処理するハンドラの中の `print(3)` は、IO の事象を起こさない（E-OpPrim）。 -/
-example : exec (.handle (.app (.prim "print" [] []) [int ⟨3, by decide⟩])
+example : exec (.handle (.app (.prim "print" [] [] []) [int ⟨3, by decide⟩])
     [.mk (.prim "print") 1 0 (.resume (.var 0) (.const .unit))]) = (.returnedUnit, 0) := by decide
 
 /-- ハンドラがなければ、`print(3)` は IO の事象を一つ起こす（E-IO）。 -/
-example : exec (.app (.prim "print" [] []) [int ⟨3, by decide⟩]) = (.returnedUnit, 1) := by decide
+example : exec (.app (.prim "print" [] [] []) [int ⟨3, by decide⟩]) = (.returnedUnit, 1) := by decide
 
 /-- 同じ継続を二度再開すると、実行時エラー `ResumeTwice` で止まる（E-ResumeErr）。 -/
 example : exec (.handle (.app (.op "ask" []) [])
@@ -208,20 +208,20 @@ example : exec (.handle (.app (.op "ask" []) [])
 
 /-- `let r ⇐ new[Integer](1) in let _ ⇐ set[Integer](r, 5) in get[Integer](r)` は 5 を返す
 （E-RefNew、E-RefSet、E-RefGet）。 -/
-example : exec (.letIn (.app (.prim "new" [intTy] []) [int ⟨1, by decide⟩])
-    (.letIn (.app (.prim "set" [intTy] []) [.var 0, int ⟨5, by decide⟩])
-      (.app (.prim "get" [intTy] []) [.var 1]))) = (.returned 5, 0) := by decide
+example : exec (.letIn (.app (.prim "new" [intTy] [] []) [int ⟨1, by decide⟩])
+    (.letIn (.app (.prim "set" [intTy] [] []) [.var 0, int ⟨5, by decide⟩])
+      (.app (.prim "get" [intTy] [] []) [.var 1]))) = (.returned 5, 0) := by decide
 
 /-- `Reference.update` は、読んだ値に関数を適用して書き戻す（E-RefUpdate）。 -/
-example : exec (.letIn (.app (.prim "new" [intTy] []) [int ⟨1, by decide⟩])
-    (.letIn (.app (.prim "update" [intTy] []) [.var 0, .lam ["value"] [intTy] (add (.var 0) (int ⟨10, by decide⟩))])
-      (.app (.prim "get" [intTy] []) [.var 1]))) = (.returned 11, 0) := by decide
+example : exec (.letIn (.app (.prim "new" [intTy] [] []) [int ⟨1, by decide⟩])
+    (.letIn (.app (.prim "update" [intTy] [] []) [.var 0, .lam ["value"] [intTy] (add (.var 0) (int ⟨10, by decide⟩))])
+      (.app (.prim "get" [intTy] [] []) [.var 1]))) = (.returned 11, 0) := by decide
 
 /-- `let l ⇐ lazy add(1, 2) in let _ ⇐ force(l) in force(l)` は 3 を返す。二度目の `force` は、一度目に
 保存した値を使う（E-Lazy、E-Force、E-Update、E-ForceDone）。 -/
 example : exec (.letIn (.lazyC (add (int ⟨1, by decide⟩) (int ⟨2, by decide⟩)))
-    (.letIn (.app (.prim "force" [intTy] []) [.var 0])
-      (.app (.prim "force" [intTy] []) [.var 1]))) = (.returned 3, 0) := by decide
+    (.letIn (.app (.prim "force" [intTy] [] []) [.var 0])
+      (.app (.prim "force" [intTy] [] []) [.var 1]))) = (.returned 3, 0) := by decide
 
 /-- `f()` の本体の `escape 7` は、`f` の呼び出しの結果として 7 を返す（E-Fun の `mark`、E-EscLet、
 E-EscMark）。 -/
@@ -232,7 +232,7 @@ example : exec (.letIn (.app (.fnRef "f" [] []) []) (add (.var 0) (int ⟨100, b
 example : exec (.use (.const (.opaque "File" 1)) (.ret (int ⟨1, by decide⟩))) = (.returned 1, 1) := by decide
 
 /-- 終了の状態は、継続に残る解放の枠を実行してから終わる（E-Exit、E-ExitRel）。 -/
-example : exec (.use (.const (.opaque "File" 1)) (.app (.prim "exit" [] []) [int ⟨3, by decide⟩])) =
+example : exec (.use (.const (.opaque "File" 1)) (.app (.prim "exit" [] [] []) [int ⟨3, by decide⟩])) =
     (.exited 3, 2) := by decide
 
 /-- `(MonoidInt[]()↑Semigroup).combine[;](1, 2)` は、上位の型クラスの辞書を取り出してから `combine` を呼び、

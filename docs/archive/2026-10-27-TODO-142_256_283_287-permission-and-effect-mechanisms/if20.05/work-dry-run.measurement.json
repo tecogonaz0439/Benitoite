@@ -1,0 +1,19 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "37784a8c5ac62cb3efa0f972727765931d3ad5db",
+    "--dry-run"
+  ],
+  "start_utc": "2026-10-27T10:07:13.579586+00:00",
+  "end_utc": "2026-10-27T10:07:13.655521+00:00",
+  "returncode": 0,
+  "elapsed_seconds": 0.075877042,
+  "maxrss_raw": 10141696,
+  "maxrss_unit": "bytes (macOS resource.getrusage RUSAGE_CHILDREN)",
+  "maxrss_mib": 9.671875,
+  "maxrss_gib": 0.0094451904296875,
+  "method": "subprocess.run + time.monotonic + resource.getrusage(resource.RUSAGE_CHILDREN); one dry-run; not a sum of concurrent process RSS"
+}

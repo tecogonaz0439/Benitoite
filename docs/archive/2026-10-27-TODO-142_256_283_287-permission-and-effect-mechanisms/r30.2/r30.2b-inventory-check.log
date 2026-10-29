@@ -1,0 +1,76 @@
+現行文書・道具（保管文書・改造の記録を除く）
+["git", "grep", "-n", "-E", "case[[:space:]]+File\\.", "--", ".", ":!crates/benitoite/**", ":!docs/archive/**", ":!docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/**", ":!private/**", ":!docs/todo/**"]
+終了: 0
+docs/design/01-spec/01-07-effects.md:359:    case File.readText(path) ->
+docs/design/01-spec/01-11-concurrency.md:118:  case File.readText(path) ->
+docs/design/06-tooling/06-04-test-runner.md:79:    case File.readText(path) ->
+docs/ja/reference/benitoite.md:1496:    case File.readText(path) ->
+docs/ja/skill/SKILL.md:206:    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+docs/ja/skill/references/idioms.md:721:    case File.readText(path) ->
+docs/reference/benitoite.md:1516:    case File.readText(path) ->
+tools/skill-eval/tasks/write_tests/reference.bnt:43:    case File.readLines(path) ->
+tools/skill-eval/tasks/write_tests/task.json:1:{"kind": "test", "script": "settings_test.bnt", "attempt_limit": 10, "min_tests": 4, "require_text": ["case File.readLines(", "resume("]}
+tools/skill-eval/tasks/write_tests/task.md:11:- at least 1 test of `loadSettings` that replaces `File.readLines` with a handler (`handle ... with case File.readLines(path) -> ...`), so that the test does not read a real file.
+
+改造の記録・再現入力を含むファイル一覧
+["git", "grep", "-l", "-E", "case[[:space:]]+File\\.", "--", ".", ":!crates/benitoite/**", ":!docs/archive/**", ":!private/**", ":!docs/todo/**"]
+終了: 0
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.4/r20.4b-regression-before-integration.log
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.4/rv-probes/scoped_calls.rs.txt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.4/rv-probes/scoped_calls_tests.rs.txt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-1.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-10.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-2.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-3.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-40.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-5.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-annotated-1.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-annotated-10.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-annotated-2.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-annotated-3.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-annotated-40.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-annotated-5.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-reverse-1.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-reverse-10.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-reverse-2.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-reverse-3.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-reverse-40.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-chain-reverse-5.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-explore.py
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-initial-late-2.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-late-1.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-late-10.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-late-2.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-late-3.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-late-40.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-late-5.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-nested-1.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-nested-10.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-nested-2.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-nested-3.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-nested-40.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.6/e0521-nested-5.bnt
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/reviews/RV-R20.4.md
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/reviews/RV-R20.md
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/higher-order-effects.md
+docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/language-rules.md
+docs/design/01-spec/01-07-effects.md
+docs/design/01-spec/01-11-concurrency.md
+docs/design/06-tooling/06-04-test-runner.md
+docs/ja/reference/benitoite.md
+docs/ja/skill/SKILL.md
+docs/ja/skill/references/idioms.md
+docs/reference/benitoite.md
+tools/skill-eval/tasks/write_tests/reference.bnt
+tools/skill-eval/tasks/write_tests/task.json
+tools/skill-eval/tasks/write_tests/task.md
+
+別名・修飾名の補助検索
+["git", "grep", "-n", "-E", "import[[:space:]].*IO\\.File[[:space:]]+as[[:space:]]", "--", ".", ":!crates/benitoite/**", ":!docs/archive/**", ":!docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/**", ":!private/**", ":!docs/todo/**"]
+終了: 0
+CHANGELOG.md:302:| `as` on an import of a module that declares built-in effects (`IO.Console`, `IO.File`, `IO.Process`, `IO.Clock`, `IO.Random`, `Network.Http`, `IO`, `Assert`), such as `import Benitoite.Unofficial.IO.File as Console`, also when the new name is the original one | `E0339` | Remove `as` and refer to the module by its own name, such as `File.readText` and `uses File.Read`. If the name collides with another import, rename the other import. The alias could make `uses` show an effect name that does not match the operation, such as `uses Console.Write` for writing files. |
+docs/design/01-spec/01-03-names-modules.md:213:- 組み込みのエフェクトを宣言するモジュール（`Benitoite.IO`・`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`・`Benitoite.Network.Http`・`Benitoite.Assert`。[エフェクト](01-07-effects.md)の「組み込みのエフェクト」）に `as` を書いた場合。本来の名前と同じ名前を付けた場合（`import Benitoite.Unofficial.IO.Console as Console`）も誤りとする。理由: 別名を許すと、`import Benitoite.Unofficial.IO.File as Console` の後の `uses Console.Write` のように、`uses` に書いたエフェクトの名前と実際に行う操作を食い違わせられるので、`uses` を読めば行う操作が分かるという前提が崩れる。本来の名前と同じ別名は意味を持たず、例外を設けないほうが規則が短い。
+
+別名・修飾名の補助検索
+["git", "grep", "-n", "-E", "case[[:space:]]+([[:alnum:]_]+\\.)+File\\.", "--", ".", ":!crates/benitoite/**", ":!docs/archive/**", ":!docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/**", ":!private/**", ":!docs/todo/**"]
+終了: 1

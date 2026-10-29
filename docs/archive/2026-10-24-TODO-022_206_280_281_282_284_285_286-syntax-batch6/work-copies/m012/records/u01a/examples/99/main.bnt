@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind small <- Option.unwrapOr(o: Integer8.fromInteger(42), fallback: 0s8)
+  bind maximum <- 18446744073709551615u64
+  bind narrowed <- Option.unwrapOr(o: Float32.fromFloat(0.1), fallback: 0.0f32)
+  bind same: Integer64 <- Integer8.toInteger(small)
+  Console.writeLine("${small + 1s8} ${same} ${Integer8.fromInteger(128) = Option.None}")
+  Console.writeLine("${UnsignedInteger64.toInteger(maximum) = Option.None} ${UnsignedInteger64.toDecimal(maximum)}")
+  Console.writeLine("${narrowed} ${Float32.toFloat(narrowed) = 0.1}")
+end function

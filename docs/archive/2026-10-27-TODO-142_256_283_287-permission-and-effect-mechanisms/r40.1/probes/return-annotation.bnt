@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Scope
+function sample(pattern: String, path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ return Scope.checkPathIn(pattern: pattern, path: path)
+end function
+function main() -> Unit
+end function

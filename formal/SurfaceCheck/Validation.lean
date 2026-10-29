@@ -6,7 +6,7 @@ namespace SurfaceCheck.Validation
 open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surface.CheckTools
 open SurfaceCheck.Batch
 private def q : Input := {
-  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.name "A"] }
+  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.nameTop "A"] }
 -- 継続が隠された誤りも、プレースホルダ引数の誤りも、不一致として扱う。
 #guard category q {} [] (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "mismatched"
 #guard category q { prims := ["unsupported"] } ["unsupported"] (.ok ()) == "outOfScope"
@@ -45,7 +45,9 @@ private def material : Materials := {
   defs := [], conFields := [], accessors := [], data := [], ops := [], effects := [], classes := [("K",⟨[],[("pick",{ tparams := [], neffs := 0, names := [], params := [], ret := .tvar 0, eff := emptyEff })]⟩)], impls := [("I",{ signature := { tparams := [], dictParams := [], cls := "K", target := .base .string }, supers := [], methods := [("pick",{ names := [], body := .last (.matchE (.base .unit) .unit
       (.single .wild (.last (.returnE (.base .unit) (.literal (.string "x")))) .nil)) })] })], trustedFuns := [], trustedImpls := [] }
 private def prepared : Prepared :=
-  ⟨material,{ q with D := material.declarations },true,true,true,[]⟩
+  ⟨material,{ q with D := material.declarations },true,true,true,[],
+    q.atoms.map Benitoite.Exchange.fromAtom, (Benitoite.Exchange.filterMap_toRelease_fromAtom _).symm,
+    Benitoite.Surface.CheckAccept.AcceptInput.noRules⟩
 #guard match ((lookup (normalize prepared).1.impls "I").bind
     (fun i => lookup i.methods "pick")) with
   | some { body := .last (.matchE t _ _), .. } => tyEq q.atoms t (.base .string)

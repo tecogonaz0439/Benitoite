@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Scope as S
+public function widenPathIn(path: S.PathIn["/data/a"]) -> S.PathIn["/data/**"]
+ return S.widenPathIn(path: path)
+end function

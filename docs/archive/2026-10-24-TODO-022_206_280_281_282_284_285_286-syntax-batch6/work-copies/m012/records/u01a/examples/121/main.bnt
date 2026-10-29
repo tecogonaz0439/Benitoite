@@ -1,0 +1,11 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function twice[F[_, _]: Trait.Monad2, X](x: F[Integer, X]) -> F[Integer, X]
+  return Trait.Functor2.map(x: x, f: lambda(value) return value * 2 end lambda)
+end function
+
+function main() -> Unit uses Console.Write
+  bind result: Result[Integer, String] <- twice(Result.Ok(3))
+  Console.writeLine(Integer.toString(Result.unwrapOr(r: result, fallback: 0)))
+end function

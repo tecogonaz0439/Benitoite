@@ -1,0 +1,562 @@
+{
+  "work": [
+    {
+      "section": "lib_default",
+      "target": "unittests src/lib.rs",
+      "status": "FAILED",
+      "passed": 1391,
+      "failed": 1,
+      "ignored": 22,
+      "measured": 0,
+      "filtered": 0
+    }
+  ],
+  "registry-fixed": [
+    {
+      "section": "",
+      "target": "unittests src/lib.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 1413
+    }
+  ],
+  "work-remaining": [
+    {
+      "section": "tests_related",
+      "target": "tests/build_info.rs",
+      "status": "ok",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 5,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/call_allocations.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/checked_args.rs",
+      "status": "ok",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/cli_process.rs",
+      "status": "ok",
+      "passed": 38,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/coverage_export.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/declarations.rs",
+      "status": "ok",
+      "passed": 33,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/desugar_export.rs",
+      "status": "ok",
+      "passed": 44,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/external_signals.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/fmt_command.rs",
+      "status": "ok",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/golden.rs",
+      "status": "ok",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/http_descriptor_exhaustion.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/http_exchange_release.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/interrupt_process.rs",
+      "status": "ok",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/io_modes.rs",
+      "status": "ok",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l10_console_clock_process.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l13_external_commands.rs",
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l21_json.rs",
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l23_csv.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l24_time.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l30_http_server.rs",
+      "status": "ok",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l31_http_serve_and_helpers.rs",
+      "status": "ok",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/l32_http_client.rs",
+      "status": "ok",
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/named_arguments.rs",
+      "status": "ok",
+      "passed": 22,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/network_faults.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/open_062.rs",
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/open_062_http.rs",
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/package_command.rs",
+      "status": "ok",
+      "passed": 16,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/property_library.rs",
+      "status": "ok",
+      "passed": 15,
+      "failed": 0,
+      "ignored": 2,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/random_programs.rs",
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/reference_examples.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/runtime_builtins.rs",
+      "status": "ok",
+      "passed": 29,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/scope_annotations.rs",
+      "status": "ok",
+      "passed": 18,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/scoped_calls.rs",
+      "status": "ok",
+      "passed": 34,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/skill_docs.rs",
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/skill_examples.rs",
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/spec_examples.rs",
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/stdlib_doc_examples.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/test_command.rs",
+      "status": "ok",
+      "passed": 52,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/verify.rs",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/vm_handlers.rs",
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/vm_lazy.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "tests_related",
+      "target": "tests/vm_reference_cells.rs",
+      "status": "ok",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  ],
+  "ports": [
+    {
+      "section": "",
+      "target": "tests/network_faults.rs",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 2
+    }
+  ],
+  "heap": [
+    {
+      "section": "doc_default",
+      "target": "Doc-tests benitoite",
+      "status": "ok",
+      "passed": 17,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "doc_default",
+      "target": "Doc-tests benitoite",
+      "status": "ok",
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "heap_local",
+      "target": "tests/io_modes.rs",
+      "status": "ok",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "heap_local",
+      "target": "tests/l32_http_client.rs",
+      "status": "ok",
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "heap_local",
+      "target": "tests/runtime_builtins.rs",
+      "status": "ok",
+      "passed": 29,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "heap_local",
+      "target": "tests/vm_handlers.rs",
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "stress_local",
+      "target": "tests/io_modes.rs",
+      "status": "ok",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "stress_local",
+      "target": "tests/l32_http_client.rs",
+      "status": "ok",
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "stress_local",
+      "target": "tests/runtime_builtins.rs",
+      "status": "ok",
+      "passed": 29,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "section": "stress_local",
+      "target": "tests/vm_handlers.rs",
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  ]
+}

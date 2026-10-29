@@ -12,16 +12,16 @@ namespace Benitoite.Release
 /-- 有限の置換列の外も含めた、代入後の原子の所属。 -/
 theorem Eff.mem_rawBind_rowImage (θ : SubstEnv) (e : Eff) (a : Atom) :
     Eff.mem (Eff.rawBind θ e) a ↔
-      (∃ l, a = .name l ∧ Eff.mem e (.name l)) ∨
+      (∃ l r, a = .name l r ∧ Eff.mem e (.name l r)) ∨
       ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage θ.rows i) a := by
   rw [Eff.mem_rawBind, Eff.mem_substAtoms]
   constructor
   · rintro (h | ⟨i, f, hf, hi, ha⟩)
     · cases a with
-      | name l => exact Or.inl ⟨l, rfl, h⟩
+      | name l r => exact Or.inl ⟨l, r, rfl, h⟩
       | rho i => exact Or.inr ⟨i, h.2, by simp [rowImage, List.getElem?_eq_none h.1, mem_row]⟩
     · exact Or.inr ⟨i, hi, by simpa [rowImage, hf] using ha⟩
-  · rintro (⟨l, rfl, hl⟩ | ⟨i, hi, ha⟩)
+  · rintro (⟨l, r, rfl, hl⟩ | ⟨i, hi, ha⟩)
     · exact Or.inl hl
     · cases hf : θ.rows[i]? with
       | none =>
@@ -132,9 +132,23 @@ theorem Eff.substRho_congr_rows (es fs : List Eff) (e : Eff)
 /-- 最上位の正規化は原子の所属を変えない。 -/
 theorem Eff.mem_bind (θ : SubstEnv) (e : Eff) (a : Atom) :
     Eff.mem (Eff.bind θ e) a ↔
-      (∃ l, a = .name l ∧ Eff.mem e (.name l)) ∨
+      (∃ l r, a = .name l r ∧ Eff.mem e (.name l r)) ∨
       ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage θ.rows i) a := by
   exact (Eff.mem_norm _ _).trans (Eff.mem_rawBind_rowImage θ e a)
+
+/-- 代入は名前の原子の範囲の位置を変えない。代入の後の名前の原子は、同じ名前と同じ範囲の位置で元の効果に
+あるか、行の像から来る（判断 5。範囲を Top に置き換えず、範囲の包含を使わない）。 -/
+theorem Eff.mem_bind_name (θ : SubstEnv) (e : Eff) (l : EffName) (r : Scope.Signature.Ix) :
+    Eff.mem (Eff.bind θ e) (.name l r) ↔
+      Eff.mem e (.name l r) ∨ ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage θ.rows i) (.name l r) := by
+  rw [Eff.mem_bind]
+  apply or_congr_left
+  constructor
+  · rintro ⟨l', r', he, h⟩
+    cases he
+    exact h
+  · intro h
+    exact ⟨l, r, rfl, h⟩
 
 /-- Fail の所属で入力を観察すれば、途中の正規化にも依存しない。 -/
 theorem Eff.memFail_bind (θ : SubstEnv) (e : Eff) (t : Ty) :
@@ -223,11 +237,11 @@ theorem Eff.bind_comp_of_types (θ φ : SubstEnv) (e : Eff)
   all_goals constructor
   · intro a ha
     rw [Eff.mem_bind] at ha ⊢
-    rcases ha with ⟨l, rfl, hl⟩ | ⟨j, hj, ha⟩
-    · rcases (Eff.mem_bind θ e (.name l)).mp hl with ⟨l', he, hl'⟩ | ⟨i, hi, hia⟩
-      · cases he; exact Or.inl ⟨l, rfl, hl'⟩
-      · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.mem_bind]; exact Or.inl ⟨l, rfl, hia⟩⟩
-    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, he, _⟩ | ⟨i, hi, hij⟩
+    rcases ha with ⟨l, r, rfl, hl⟩ | ⟨j, hj, ha⟩
+    · rcases (Eff.mem_bind θ e (.name l r)).mp hl with ⟨l', r', he, hl'⟩ | ⟨i, hi, hia⟩
+      · cases he; exact Or.inl ⟨l, r, rfl, hl'⟩
+      · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.mem_bind]; exact Or.inl ⟨l, r, rfl, hia⟩⟩
+    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, r, he, _⟩ | ⟨i, hi, hij⟩
       · cases he
       · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.mem_bind]; exact Or.inr ⟨j, hij, ha⟩⟩
   · intro t ha
@@ -237,16 +251,16 @@ theorem Eff.bind_comp_of_types (θ φ : SubstEnv) (e : Eff)
       · exact Or.inl ⟨y, hy, (ht y hy).symm.trans ((congrArg (Ty.bind φ) hyx).trans
           ((Ty.bind_norm φ x).trans hxt))⟩
       · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.memFail_bind]; exact Or.inl ⟨x, hix, hxt⟩⟩
-    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, he, _⟩ | ⟨i, hi, hij⟩
+    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, r, he, _⟩ | ⟨i, hi, hij⟩
       · cases he
       · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.memFail_bind]; exact Or.inr ⟨j, hij, htj⟩⟩
   · intro a ha
     rw [Eff.mem_bind] at ha ⊢
-    rcases ha with ⟨l, rfl, hl⟩ | ⟨i, hi, ha⟩
-    · exact Or.inl ⟨l, rfl, (Eff.mem_bind θ e (.name l)).mpr (Or.inl ⟨l, rfl, hl⟩)⟩
+    rcases ha with ⟨l, r, rfl, hl⟩ | ⟨i, hi, ha⟩
+    · exact Or.inl ⟨l, r, rfl, (Eff.mem_bind θ e (.name l r)).mpr (Or.inl ⟨l, r, rfl, hl⟩)⟩
     · rw [Eff.rowImage_compose, Eff.mem_bind] at ha
-      rcases ha with ⟨l, rfl, hl⟩ | ⟨j, hij, hja⟩
-      · exact Or.inl ⟨l, rfl, (Eff.mem_bind θ e (.name l)).mpr (Or.inr ⟨i, hi, hl⟩)⟩
+      rcases ha with ⟨l, r, rfl, hl⟩ | ⟨j, hij, hja⟩
+      · exact Or.inl ⟨l, r, rfl, (Eff.mem_bind θ e (.name l r)).mpr (Or.inr ⟨i, hi, hl⟩)⟩
       · exact Or.inr ⟨j, (Eff.mem_bind θ e (.rho j)).mpr (Or.inr ⟨i, hi, hij⟩), hja⟩
   · intro t ha
     rw [Eff.memFail_bind] at ha ⊢
@@ -355,7 +369,9 @@ theorem Eff.bind_ofAtoms_noRhos (θ : SubstEnv) (a : Atom → Bool) (h : ∀ i, 
   · intro x
     rw [Eff.mem_bind]
     cases x with
-    | name l => simp [Eff.mem, Eff.test, Eff.atoms, h]
+    | name l r =>
+      simp [Eff.mem, Eff.test, Eff.atoms, h]
+      exact ⟨fun ⟨_, _, ⟨he, hr⟩, hm⟩ => he ▸ hr ▸ hm, fun hm => ⟨l, r, ⟨rfl, rfl⟩, hm⟩⟩
     | rho i => simp [Eff.mem, Eff.test, Eff.atoms, h]
   · have hf : List.filter (fun i => a (.rho i)) (List.range θ.rows.length) = [] := by
       apply List.filter_eq_nil_iff.mpr

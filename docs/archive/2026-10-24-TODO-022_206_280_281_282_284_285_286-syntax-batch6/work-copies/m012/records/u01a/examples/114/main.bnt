@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.Console
+
+function greet(name: String) -> Unit
+  Console.writeLine("Hello, ${name}")
+end function
+
+function main() -> Unit uses Console.Write
+  greet("Ada")
+end function

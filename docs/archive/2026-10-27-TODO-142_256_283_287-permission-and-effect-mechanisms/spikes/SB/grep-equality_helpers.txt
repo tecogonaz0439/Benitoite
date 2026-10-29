@@ -1,0 +1,83 @@
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:84:theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ ps r ε, t ≠ .fn ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:90:theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ ps r ε, a ≠ .fn ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Canonical.lean:54:      have := (h.inv_const rfl).eq_of_not_fn hnf
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Canonical.lean:59:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Canonical.lean:62:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Canonical.lean:65:      have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:98:      exact ⟨cd, hc, hts, hargs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:112:      exact ⟨a, he, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:56:theorem Ty.Le.fn_fn {ps r ε as b ε'} (h : Ty.Le (.fn ps r ε) (.fn as b ε')) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:58:  obtain ⟨ε'', he, hs⟩ := h.fn_left
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:59:  simp only [Ty.fn.injEq] at he
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:83:      obtain ⟨rfl, rfl, hsub₂⟩ := hle₂.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:93:      obtain ⟨hps, hr, hsub₂⟩ := hle₂.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:119:      obtain ⟨hps, hr, _⟩ := hle₂.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:131:      obtain ⟨hps, hr, _⟩ := hle₂.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Theorems.lean:161:          obtain ⟨_, he, _⟩ := (hf.inv_const rfl).fn_right
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Theorems.lean:166:          obtain ⟨hps, _, _⟩ := hle.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Theorems.lean:171:          obtain ⟨hps, _, _⟩ := hle.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Theorems.lean:187:          obtain ⟨hps, _, _⟩ := hle.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Theorems.lean:265:            obtain ⟨_, _, hsub₂⟩ := hle.fn_fn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:88:theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ names ps r ε, t ≠ .fn names ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:94:theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ names ps r ε, a ≠ .fn names ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:31:  | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:34:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:37:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:40:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:43:      have := hl.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:46:      have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:67:      have := (h.inv_const rfl).eq_of_not_fn hnf
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:72:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:75:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:78:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:81:      have := hl.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:84:      have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:100:  | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:103:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:106:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:109:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:112:      have := hl.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:115:      have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:134:  | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:137:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:140:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:143:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:146:      have := hl.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:149:      have := hle.eq_of_not_fn hnf; simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Canonical.lean:225:      exact ⟨a, he, hw, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/EffectSound.lean:101:              obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/FailureCont.lean:276:  obtain ⟨e', hfn', hsub⟩ := hfn.fn_left
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:161:      exact ⟨cd, hc, hts, hargs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:178:      exact ⟨a, he, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:196:      · exact Or.inl ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:197:      · exact Or.inr ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:322:      exact ⟨a, h1, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:461:      exact ⟨a, b, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:470:      exact ⟨a, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:480:      exact (hle.eq_of_not_fn_left (by intros; simp)).symm
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:490:      exact ⟨id, hi, hts, hvs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:500:      exact ⟨cl, τ, cd, hw, hc, hs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:85:      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:106:      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:17:theorem Ty.Le.fn_fn' {names ps r ε names' as b ε'} (h : Ty.Le (.fn names ps r ε) (.fn names' as b ε')) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:19:  obtain ⟨ε'', he, hs⟩ := h.fn_left
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:20:  simp only [Ty.fn.injEq] at he
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:32:  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:44:  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:23:      obtain ⟨_, e, _⟩ := (h.inv_const rfl).fn_right
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:73:      have := (h.inv_const rfl).eq_of_not_fn (by intros; simp)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:77:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:80:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:83:      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:86:      have := hl.eq_of_not_fn (by intros; simp); simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:89:      have := hle.eq_of_not_fn (by intros; simp); simp at this
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:424:    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:428:    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:443:    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hfn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/StepSound.lean:300:            obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:417:  have hps := (Ty.Le.fn_fn' hle).2.1
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:423:      have hn := (Ty.Le.fn_fn' hle).1
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Examples.lean:275:  have hn := (Ty.Le.fn_fn' (hle.trans hl)).1
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:199:    obtain ⟨hn, hp, hr, hε⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:212:    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:221:    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle

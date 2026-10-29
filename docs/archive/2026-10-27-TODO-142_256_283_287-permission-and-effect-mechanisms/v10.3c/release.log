@@ -1,0 +1,182 @@
+== plan: level release against 6124775788579e60530f55fb85570f26ef7fa900 (changed files not classified)
+   [release_stack] because of release candidate (regardless of changed files) (estimate: long: ~5 min plus builds)
+      command: python3 -B scripts/check/run_ignored.py --kind release-stack --configuration release
+   [advisories] because of release candidate (regardless of changed files) (estimate: ~1-3 min; initial DB fetch unknown)
+      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)
+        cargo deny --version
+        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+   manual verification required: identify the actual candidate (version, commit, dirty state, build configuration, bundled/generated files); match regression evidence, CLI examples, migration guidance and distribution steps.
+   release_stack success alone does not complete release acceptance; record the manual verification separately.
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== release_stack
++ cargo test --release -p benitoite --lib -- pipeline::tests::stages_fit_the_measured_stack_ --include-ignored
+
+running 10 tests
+test pipeline::tests::stages_fit_the_measured_stack_for_statement_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_guard_fallbacks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_operators ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_recursive_types ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_branches ... ok
+test pipeline::tests::stages_fit_the_measured_stack_for_flat_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_blocks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_records ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_patterns ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_lists ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1404 filtered out; finished in 32.31s
+
+completed 10 release-stack tests
+== advisories
+advisories evidence: <repo>/target/check-advisories/20261029T225629Z-kzpyl0f6
+command: cargo deny --version
+cargo-deny 0.20.2
+command: cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+{"fields":{"level":"INFO","message":"using config from <repo>/deny.toml","timestamp":"2026-10-29T22:56:29.679129Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetching crates for Cargo.toml","timestamp":"2026-10-29T22:56:29.679972Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetched crates in 69.740416ms","timestamp":"2026-10-29T22:56:29.749713Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathering crates for Cargo.toml","timestamp":"2026-10-29T22:56:29.749749Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathering crate metadata","timestamp":"2026-10-29T22:56:29.749759Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathered crate metadata in 59ms","timestamp":"2026-10-29T22:56:29.809409Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered addr2line 0.26.1","timestamp":"2026-10-29T22:56:29.873241Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered bitflags 1.3.2","timestamp":"2026-10-29T22:56:29.880714Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered combine 4.6.8","timestamp":"2026-10-29T22:56:29.880738Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered cpp_demangle 0.5.1","timestamp":"2026-10-29T22:56:29.880764Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt 1.1.1","timestamp":"2026-10-29T22:56:29.880799Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt-macros 1.1.1","timestamp":"2026-10-29T22:56:29.880815Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt-parser 1.0.0","timestamp":"2026-10-29T22:56:29.880826Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered embedded-io 0.4.0","timestamp":"2026-10-29T22:56:29.880844Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered embedded-io 0.6.1","timestamp":"2026-10-29T22:56:29.880856Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures 0.3.34","timestamp":"2026-10-29T22:56:29.880873Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-channel 0.3.34","timestamp":"2026-10-29T22:56:29.880887Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-core 0.3.34","timestamp":"2026-10-29T22:56:29.880902Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-io 0.3.34","timestamp":"2026-10-29T22:56:29.880918Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-sink 0.3.34","timestamp":"2026-10-29T22:56:29.880929Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-task 0.3.34","timestamp":"2026-10-29T22:56:29.88094Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-util 0.3.34","timestamp":"2026-10-29T22:56:29.880955Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered getrandom 0.2.17","timestamp":"2026-10-29T22:56:29.880969Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jiff-static 0.2.37","timestamp":"2026-10-29T22:56:29.880999Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni 0.22.4","timestamp":"2026-10-29T22:56:29.881011Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-macros 0.22.4","timestamp":"2026-10-29T22:56:29.881023Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-sys 0.4.1","timestamp":"2026-10-29T22:56:29.881034Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-sys-macros 0.4.1","timestamp":"2026-10-29T22:56:29.881051Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered pin-project-lite 0.2.17","timestamp":"2026-10-29T22:56:29.881082Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered portable-atomic 1.15.0","timestamp":"2026-10-29T22:56:29.881096Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered portable-atomic-util 0.2.8","timestamp":"2026-10-29T22:56:29.88111Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered r-efi 5.3.0","timestamp":"2026-10-29T22:56:29.881133Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered r-efi 6.0.0","timestamp":"2026-10-29T22:56:29.881147Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered ring 0.17.14","timestamp":"2026-10-29T22:56:29.88117Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustc-demangle 0.1.28","timestamp":"2026-10-29T22:56:29.881185Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustc_version 0.4.1","timestamp":"2026-10-29T22:56:29.881199Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustls-platform-verifier-android 0.2.0","timestamp":"2026-10-29T22:56:29.881218Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered same-file 1.0.6","timestamp":"2026-10-29T22:56:29.881235Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered schannel 0.1.29","timestamp":"2026-10-29T22:56:29.88125Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered simd_cesu8 1.2.0","timestamp":"2026-10-29T22:56:29.881277Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered slab 0.4.12","timestamp":"2026-10-29T22:56:29.881295Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered stable_deref_trait 1.2.1","timestamp":"2026-10-29T22:56:29.881307Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered walkdir 2.5.0","timestamp":"2026-10-29T22:56:29.881342Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasi 0.11.1+wasi-snapshot-preview1","timestamp":"2026-10-29T22:56:29.881355Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasip2 1.0.4+wasi-0.2.12","timestamp":"2026-10-29T22:56:29.881369Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmparser 0.261.0","timestamp":"2026-10-29T22:56:29.881388Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmtime-internal-fiber 49.0.4","timestamp":"2026-10-29T22:56:29.881413Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmtime-internal-jit-debug 49.0.4","timestamp":"2026-10-29T22:56:29.881427Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered webpki-root-certs 1.0.10","timestamp":"2026-10-29T22:56:29.881444Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered winapi-util 0.1.11","timestamp":"2026-10-29T22:56:29.881457Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-link 0.2.1","timestamp":"2026-10-29T22:56:29.88147Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-sys 0.52.0","timestamp":"2026-10-29T22:56:29.88148Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-sys 0.61.2","timestamp":"2026-10-29T22:56:29.881499Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-targets 0.52.6","timestamp":"2026-10-29T22:56:29.88152Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_aarch64_gnullvm 0.52.6","timestamp":"2026-10-29T22:56:29.881533Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_aarch64_msvc 0.52.6","timestamp":"2026-10-29T22:56:29.881545Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_gnu 0.52.6","timestamp":"2026-10-29T22:56:29.881555Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_gnullvm 0.52.6","timestamp":"2026-10-29T22:56:29.881568Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_msvc 0.52.6","timestamp":"2026-10-29T22:56:29.881579Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_gnu 0.52.6","timestamp":"2026-10-29T22:56:29.881592Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_gnullvm 0.52.6","timestamp":"2026-10-29T22:56:29.881603Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_msvc 0.52.6","timestamp":"2026-10-29T22:56:29.881614Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wit-bindgen 0.57.1","timestamp":"2026-10-29T22:56:29.881625Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathered 147 crates in 133ms","timestamp":"2026-10-29T22:56:29.882777Z"},"type":"log"}
+{"fields":{"level":"ERROR","message":"failed to acquire advisory database lock: failed to obtain lock file '<home>/.cargo/advisory-dbs/db.lock': attempted to take an exclusive lock on a read-only path","timestamp":"2026-10-29T22:56:29.883852Z"},"type":"log"}
+=== workspace: UNVERIFIED: fetch/check unavailable ===
+reason: failed to acquire advisory database lock: failed to obtain lock file '<home>/.cargo/advisory-dbs/db.lock': attempted to take an exclusive lock on a read-only path; missing or ambiguous completion summary
+raw exit: 1
+observed advisory occurrences: 0; IDs: none observed
+command: cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+{"fields":{"level":"INFO","message":"using config from <repo>/deny.toml","timestamp":"2026-10-29T22:56:29.909195Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetching crates for fuzz/Cargo.toml","timestamp":"2026-10-29T22:56:29.909313Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetched crates in 112.160083ms","timestamp":"2026-10-29T22:56:30.021474Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathering crates for fuzz/Cargo.toml","timestamp":"2026-10-29T22:56:30.021495Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathering crate metadata","timestamp":"2026-10-29T22:56:30.021505Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathered crate metadata in 134ms","timestamp":"2026-10-29T22:56:30.156078Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered addr2line 0.26.1","timestamp":"2026-10-29T22:56:30.218296Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered bitflags 1.3.2","timestamp":"2026-10-29T22:56:30.22543Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered combine 4.6.8","timestamp":"2026-10-29T22:56:30.225455Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered cpp_demangle 0.5.1","timestamp":"2026-10-29T22:56:30.225473Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt 1.1.1","timestamp":"2026-10-29T22:56:30.22551Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt-macros 1.1.1","timestamp":"2026-10-29T22:56:30.225524Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt-parser 1.0.0","timestamp":"2026-10-29T22:56:30.225536Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered embedded-io 0.4.0","timestamp":"2026-10-29T22:56:30.225551Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered embedded-io 0.6.1","timestamp":"2026-10-29T22:56:30.225562Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures 0.3.34","timestamp":"2026-10-29T22:56:30.225583Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-channel 0.3.34","timestamp":"2026-10-29T22:56:30.225604Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-core 0.3.34","timestamp":"2026-10-29T22:56:30.225617Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-io 0.3.34","timestamp":"2026-10-29T22:56:30.22563Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-sink 0.3.34","timestamp":"2026-10-29T22:56:30.225642Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-task 0.3.34","timestamp":"2026-10-29T22:56:30.225653Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-util 0.3.34","timestamp":"2026-10-29T22:56:30.225669Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered getrandom 0.2.17","timestamp":"2026-10-29T22:56:30.225687Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jiff-static 0.2.37","timestamp":"2026-10-29T22:56:30.225717Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni 0.22.4","timestamp":"2026-10-29T22:56:30.225734Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-macros 0.22.4","timestamp":"2026-10-29T22:56:30.225746Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-sys 0.4.1","timestamp":"2026-10-29T22:56:30.225757Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-sys-macros 0.4.1","timestamp":"2026-10-29T22:56:30.225768Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered pin-project-lite 0.2.17","timestamp":"2026-10-29T22:56:30.225799Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered portable-atomic 1.15.0","timestamp":"2026-10-29T22:56:30.225815Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered portable-atomic-util 0.2.8","timestamp":"2026-10-29T22:56:30.225827Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered r-efi 5.3.0","timestamp":"2026-10-29T22:56:30.225845Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered r-efi 6.0.0","timestamp":"2026-10-29T22:56:30.225858Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered ring 0.17.14","timestamp":"2026-10-29T22:56:30.225879Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustc-demangle 0.1.28","timestamp":"2026-10-29T22:56:30.225893Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustc_version 0.4.1","timestamp":"2026-10-29T22:56:30.225909Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustls-platform-verifier-android 0.2.0","timestamp":"2026-10-29T22:56:30.225928Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered same-file 1.0.6","timestamp":"2026-10-29T22:56:30.225942Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered schannel 0.1.29","timestamp":"2026-10-29T22:56:30.225953Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered simd_cesu8 1.2.0","timestamp":"2026-10-29T22:56:30.225976Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered slab 0.4.12","timestamp":"2026-10-29T22:56:30.22599Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered stable_deref_trait 1.2.1","timestamp":"2026-10-29T22:56:30.226003Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered walkdir 2.5.0","timestamp":"2026-10-29T22:56:30.226035Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasi 0.11.1+wasi-snapshot-preview1","timestamp":"2026-10-29T22:56:30.226047Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasip2 1.0.4+wasi-0.2.12","timestamp":"2026-10-29T22:56:30.22606Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmtime-internal-fiber 49.0.4","timestamp":"2026-10-29T22:56:30.226089Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmtime-internal-jit-debug 49.0.4","timestamp":"2026-10-29T22:56:30.226103Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered webpki-root-certs 1.0.10","timestamp":"2026-10-29T22:56:30.226119Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered winapi-util 0.1.11","timestamp":"2026-10-29T22:56:30.226133Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-link 0.2.1","timestamp":"2026-10-29T22:56:30.226146Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-sys 0.52.0","timestamp":"2026-10-29T22:56:30.226157Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-sys 0.61.2","timestamp":"2026-10-29T22:56:30.226176Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-targets 0.52.6","timestamp":"2026-10-29T22:56:30.2262Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_aarch64_gnullvm 0.52.6","timestamp":"2026-10-29T22:56:30.226213Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_aarch64_msvc 0.52.6","timestamp":"2026-10-29T22:56:30.226224Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_gnu 0.52.6","timestamp":"2026-10-29T22:56:30.226236Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_gnullvm 0.52.6","timestamp":"2026-10-29T22:56:30.226247Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_msvc 0.52.6","timestamp":"2026-10-29T22:56:30.226258Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_gnu 0.52.6","timestamp":"2026-10-29T22:56:30.226271Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_gnullvm 0.52.6","timestamp":"2026-10-29T22:56:30.226282Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_msvc 0.52.6","timestamp":"2026-10-29T22:56:30.226293Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wit-bindgen 0.57.1","timestamp":"2026-10-29T22:56:30.226305Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathered 147 crates in 205ms","timestamp":"2026-10-29T22:56:30.227394Z"},"type":"log"}
+{"fields":{"level":"ERROR","message":"failed to acquire advisory database lock: failed to obtain lock file '<home>/.cargo/advisory-dbs/db.lock': attempted to take an exclusive lock on a read-only path","timestamp":"2026-10-29T22:56:30.227558Z"},"type":"log"}
+=== fuzz: UNVERIFIED: fetch/check unavailable ===
+reason: failed to acquire advisory database lock: failed to obtain lock file '<home>/.cargo/advisory-dbs/db.lock': attempted to take an exclusive lock on a read-only path; missing or ambiguous completion summary
+raw exit: 1
+observed advisory occurrences: 0; IDs: none observed
+=== ADVISORIES REPORT: see each target; no all-target zero claim ===
+advisories unit exit: 0; evidence: <repo>/target/check-advisories/20261029T225629Z-kzpyl0f6/report.json
+selected checks passed
+Release acceptance remains pending until candidate and evidence are manually verified.
+   Compiling benitoite v0.0.13 (<repo>/crates/benitoite)
+    Finished `release` profile [optimized] target(s) in 54.92s
+     Running unittests src/lib.rs (target/release/deps/benitoite-99b4c76687d97ca5)
+real 88.47
+user 338.60
+sys 3.61

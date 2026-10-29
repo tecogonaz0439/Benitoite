@@ -1,0 +1,159 @@
+{
+  "accepted_selected_calls": 10,
+  "bodies": [
+    {
+      "calls": 10,
+      "definition": ".sample0",
+      "metrics": {
+        "body_operations": 35,
+        "max_body_items": 4,
+        "max_whole_items": 4,
+        "stops": [],
+        "whole_operations": 35
+      },
+      "numbering_and_local_seconds": 0.000017125,
+      "numbering_candidates": [
+        {
+          "events": 146,
+          "limit": 100000,
+          "numbering_seconds_median": 1.625e-6,
+          "samples_seconds": [
+            1.583e-6,
+            1.625e-6,
+            1.625e-6,
+            1.667e-6,
+            1.834e-6
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 146,
+          "limit": 200000,
+          "numbering_seconds_median": 1.625e-6,
+          "samples_seconds": [
+            1.583e-6,
+            1.584e-6,
+            1.625e-6,
+            1.625e-6,
+            1.666e-6
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 146,
+          "limit": 300000,
+          "numbering_seconds_median": 1.584e-6,
+          "samples_seconds": [
+            1.5e-6,
+            1.583e-6,
+            1.584e-6,
+            1.625e-6,
+            1.625e-6
+          ],
+          "stopped": "None"
+        }
+      ],
+      "numbering_operations": 146,
+      "occurrences": 55,
+      "stopped": "None"
+    }
+  ],
+  "body_items_max": 4,
+  "body_operations_max": 35,
+  "candidates": [
+    {
+      "definition": ".sample0",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "small",
+      "numbering_operations": 146,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample0",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 146,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample0",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 146,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "six-1",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 0,
+  "limits": {
+    "body": {
+      "items": 100000,
+      "operations": 1000000
+    },
+    "whole": {
+      "items": 10000000,
+      "operations": 100000000
+    }
+  },
+  "narrow_rejections": [
+    "PathValue:17:UnknownSource",
+    "CheckPath:20:UnknownSource",
+    "CheckRequest:26:NotCovered",
+    "RequestValue:34:NotCovered",
+    "WidenRequest:37:NotCovered",
+    "RequestValue:43:UnknownSource",
+    "CheckRequest:46:NotCovered"
+  ],
+  "occurrences": 55,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.00018225,
+  "sha256": "95a303751bb3ba3d2c251536ef6241818d7c9b1d2df6c7d8c52b17edfb65e4c7",
+  "source_bytes": 1178,
+  "typecheck_seconds": 0.036993958,
+  "whole_items_max": 4,
+  "whole_operations_total": 35
+}

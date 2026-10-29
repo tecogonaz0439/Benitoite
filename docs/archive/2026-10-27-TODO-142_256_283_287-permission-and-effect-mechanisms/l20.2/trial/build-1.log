@@ -1,0 +1,101 @@
+== wait-for-lock start 23:36:19
+== lock acquired 23:36:19 after 0s
+✔ [42/431] Built Benitoite.Release.Atom (283ms)
+✔ [44/431] Built Benitoite.Release.Types (362ms)
+✔ [45/431] Built Benitoite.Release.Order.Atoms (358ms)
+✔ [48/431] Built Benitoite.Release.Order.FiniteAtoms (337ms)
+✔ [50/431] Built Benitoite.Release.Order.Labels (622ms)
+✔ [52/431] Built Benitoite.Release.Order.Types (1.4s)
+✔ [54/431] Built Benitoite.Release.Normalize (547ms)
+✔ [56/431] Built Benitoite.Release.TypeShift (1.3s)
+✔ [58/431] Built Benitoite.Release.Effect (258ms)
+✔ [60/431] Built Benitoite.Release.TypeSubst (443ms)
+✔ [61/431] Built Benitoite.Scope.TopCompat (424ms)
+✔ [62/431] Built Benitoite.Release.RangeNormalize (421ms)
+✔ [64/431] Built Benitoite.Scope.RepresentationExamplesI (600ms)
+✔ [65/431] Built Benitoite.Release.Syntax (621ms)
+✔ [67/431] Built Benitoite.Release.TypeSubstLemmas (808ms)
+✔ [69/431] Built Benitoite.Surface.BuilderSyntax (370ms)
+✔ [71/431] Built Benitoite.Release.Subst (628ms)
+✔ [73/431] Built Benitoite.Interval.Domain (651ms)
+✔ [75/431] Built Benitoite.Release.TypeRows (624ms)
+✔ [77/431] Built Benitoite.Release.SubstExamples (530ms)
+✔ [78/431] Built Benitoite.Release.Order.Shift (529ms)
+✔ [79/431] Built Benitoite.Release.LocalRef (529ms)
+✔ [80/431] Built Benitoite.Surface.BuilderLower (460ms)
+✔ [83/431] Built Benitoite.Release.TypeComposition (665ms)
+✔ [84/431] Built Benitoite.Surface.FormatSpec (1.5s)
+✔ [87/431] Built Benitoite.Interval.Budget (994ms)
+✔ [89/431] Built Benitoite.Interval.BudgetExamples (291ms)
+✔ [90/431] Built Benitoite.Release.NoFail (548ms)
+✔ [91/431] Built Benitoite.Release.TypeSupport (608ms)
+✔ [94/431] Built Benitoite.Release.Finite (919ms)
+✔ [96/431] Built Benitoite.Release.Typing (1.4s)
+✔ [98/431] Built Benitoite.Release.BuilderContents (456ms)
+✔ [99/431] Built Benitoite.Release.LocalTyping (441ms)
+✖ [102/431] Building Benitoite.Release.TypeRegularity (642ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeRegularity.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeRegularity.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeRegularity.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeRegularity.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeRegularity.setup.json --json
+error: Benitoite/Release/TypeRegularity.lean:51:4: Tactic `apply` failed: could not unify the conclusion of `Ty.WFList.iff.mpr`
+  Ty.WFList 0 ?m.26 ?m.27
+with the goal
+  Ty.WFList 0 n (sortUnique tyCompare (Ty.normTys fs)) ∧ ∀ (x : Atom), a x = true → Atom.WF 0 x
+
+Note: The full type of `Ty.WFList.iff.mpr` is
+  (∀ (a : Ty), a ∈ ?m.27 → Ty.WF 0 ?m.26 a) → Ty.WFList 0 ?m.26 ?m.27
+
+case mk
+n : Nat
+a : Atom → Bool
+fs : List Ty
+h : WF 0 n (EffR.mk a fs)
+⊢ Ty.WFList 0 n (sortUnique tyCompare (Ty.normTys fs)) ∧ ∀ (x : Atom), a x = true → Atom.WF 0 x
+error: Benitoite/Release/TypeRegularity.lean:97:44: Application type mismatch: The argument
+  h
+has type
+  Eff.WF 0 n (EffR.mk a fs)
+but is expected to have type
+  Ty.WFList 0 n fs
+in the application
+  Ty.WFList.mono hn fs h
+error: Benitoite/Release/TypeRegularity.lean:125:68: Application type mismatch: The argument
+  h
+has type
+  Eff.WF 0 c (EffR.mk a fs)
+but is expected to have type
+  Ty.WFList 0 ?m.413 fs
+in the application
+  Ty.rawShiftTys_of_wf k fs h
+error: Benitoite/Release/TypeRegularity.lean:125:14: unsolved goals
+case mk
+c k : Nat
+a : Atom → Bool
+fs : List Ty
+h : Eff.WF 0 c (EffR.mk a fs)
+⊢ EffR.mk a (Ty.rawShiftTys k c fs) = EffR.mk a fs
+✔ [137/431] Built Benitoite.Release.BuiltinTable (784ms)
+✔ [139/431] Built Benitoite.Release.BuilderExec (463ms)
+✔ [300/431] Built Benitoite.Release.FiniteSupport (2.0s)
+✔ [302/431] Built Benitoite.Surface.SingleFail (252ms)
+✔ [427/431] Built Benitoite.Release.LocalScope (1.9s)
+Some required targets logged failures:
+- Benitoite.Release.TypeRegularity
+error: build failed
+       11.77 real        25.94 user         7.60 sys
+           843710464  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1814253  page reclaims
+                 351  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 367  voluntary context switches
+               99005  involuntary context switches
+          1909907453  instructions retired
+           858253052  cycles elapsed
+            36930952  peak memory footprint
+== exit 1

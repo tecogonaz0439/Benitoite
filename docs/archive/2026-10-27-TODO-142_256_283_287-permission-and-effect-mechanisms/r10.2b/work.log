@@ -1,0 +1,93 @@
+== plan: level work against a26ed29afaeb444325da1daf362d9fe7ad12b18b (112 changed file(s))
+   [fmt] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/examples/derive_inventory/mod.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+warning: large size difference between variants
+  --> crates/benitoite/src/ir/desugar/exprs.rs:16:1
+   |
+16 | / enum ArgPlan<C> {
+17 | |     Direct(Val<C>),
+   | |     -------------- the largest variant contains at least 208 bytes
+18 | |     Evaluate(C),
+   | |     ----------- the second-largest variant contains at least 0 bytes
+19 | | }
+   | |_^ the entire enum is at least 208 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#large_enum_variant
+   = note: `#[warn(clippy::large_enum_variant)]` on by default
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+17 -     Direct(Val<C>),
+17 +     Direct(Box<Val<C>>),
+   |
+
+warning: large size difference between variants
+  --> crates/benitoite/src/ir/desugar/exprs.rs:29:1
+   |
+29 | /  enum StatementWrap {
+30 | |      Builder(BuilderId, BuilderKind, Span),
+31 | |      Eval(Vec<(Var, Comp)>, Span),
+32 | |      Let(Var, Comp, Span),
+   | |      -------------------- the largest variant contains at least 652 bytes
+33 | |/     Match {
+34 | ||         pending: Vec<(Var, Comp)>,
+35 | ||         scrutinee: CoreVal,
+36 | ||         vars: Vec<Var>,
+37 | ||         pattern: CorePat,
+38 | ||         span: Span,
+39 | ||     },
+   | ||_____- the second-largest variant contains at least 364 bytes
+40 | |  }
+   | |__^ the entire enum is at least 656 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+32 -     Let(Var, Comp, Span),
+32 +     Let(Var, Box<Comp>, Span),
+   |
+
+warning: large size difference between variants
+   --> crates/benitoite/src/typeck/patterns.rs:818:1
+    |
+818 | / enum Step {
+819 | |     Done(Option<Vec<Witness>>),
+    | |     -------------------------- the second-largest variant contains at least 24 bytes
+820 | |     Descend(SearchInput, Continue),
+    | |     ------------------------------ the largest variant contains at least 232 bytes
+821 | | }
+    | |_^ the entire enum is at least 240 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+820 -     Descend(SearchInput, Continue),
+820 +     Descend(SearchInput, Box<Continue>),
+    |
+
+error: `benitoite` (lib) generated 3 warnings
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+error: `benitoite` (lib test) generated 3 warnings (3 duplicates)
+error: warnings are denied by `build.warnings` configuration
+FAILED: lint_default
+real 13.05
+user 16.71
+sys 1.05

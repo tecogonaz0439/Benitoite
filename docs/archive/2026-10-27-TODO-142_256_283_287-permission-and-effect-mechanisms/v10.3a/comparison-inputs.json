@@ -1,0 +1,704 @@
+[
+  {
+    "path": "Cargo.lock",
+    "oldSha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "newSha256": "075ddfa31b648a04030efcbfb30365910dff6d8de62b0e903b57d28dc5e6324d",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true
+  },
+  {
+    "path": "crates/benitoite/Cargo.toml",
+    "oldSha256": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+    "newSha256": "5df2c0436b2b6862ff4a581820ef875717021ad93492bb62c2be11189bb11376",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true
+  },
+  {
+    "path": "crates/benitoite/src/modules/package.rs",
+    "oldSha256": "989e87d41ab6b6079b792e9ab7d159d2668b4e4b61f8ee975bd102722e65778d",
+    "newSha256": "bd1a34490de71672fe71b707a110861e945b587dabedb42f396eb496a57891fc",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true,
+    "beforeSupplementSha256": "8452cc6a9ca5e61c0599e4f33d8c1a5e380ee691539d4e92bae0df2e7104db03",
+    "supplement": "三エフェクトの事実へ案内と期待値を同期。登録境界・受理規則は不変"
+  },
+  {
+    "path": "crates/benitoite/src/modules/text.rs",
+    "oldSha256": "2bc895f1dbdca4507460949e6c7e7fed8ecd5cc5710c91281486ea1d6616efa7",
+    "newSha256": "875ba0bb75dee769bc1159146c5808a8f3ae7b5ee6c00a7c761bf18814ad6fd1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true,
+    "beforeSupplementSha256": "125370f065d1396365e25e517a4fa963dafe61d1fa7682da4a9f7b1bb89e880a",
+    "supplement": "三エフェクトの事実へ案内と期待値を同期。登録境界・受理規則は不変"
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+    "oldSha256": "7510ea3c13ee0d9a9ca3660a79987206c8150c3c69af4d9673e625f39971f996",
+    "newSha256": "2787f67e2bd1bb2d7e75bc5a4d024677f3c959cbf30fe844e8d3904e7f3e159e",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/external/self-package-outside"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+    "oldSha256": "7510ea3c13ee0d9a9ca3660a79987206c8150c3c69af4d9673e625f39971f996",
+    "newSha256": "2787f67e2bd1bb2d7e75bc5a4d024677f3c959cbf30fe844e8d3904e7f3e159e",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/external/self-package"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/alias-only"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+    "oldSha256": "a376d798efe50191d414c95edba35aa7eff71a380ae94e972c25ee764fba5143",
+    "newSha256": "31dc30b1c60f55347c7b16b80d4fac108d63181880e665bd3ff522684cd083aa",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/config-declaration"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/config-textkit"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/copied-textkit"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+    "oldSha256": "cc8c6f52d9710a7bc0b26b5a669b9cb9a6e4eb8a8c5f0aaef9aca3f2606bbcf3",
+    "newSha256": "c380d8967f0d970b3e4bd7a147544f824404c6debc29c9e5f243bf4a8a0e8298",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [
+      "named.rs の固定パッケージと区間 manifest の依存 header"
+    ],
+    "consumers": [
+      "crates/benitoite/testdata/packages/d6c-extensible-external"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+    "oldSha256": "cc8c6f52d9710a7bc0b26b5a669b9cb9a6e4eb8a8c5f0aaef9aca3f2606bbcf3",
+    "newSha256": "c380d8967f0d970b3e4bd7a147544f824404c6debc29c9e5f243bf4a8a0e8298",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [
+      "named.rs の固定パッケージと区間 manifest の依存 header"
+    ],
+    "consumers": [
+      "crates/benitoite/testdata/packages/d6c-extensible-missing"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+    "oldSha256": "1869f46ef58b6bc2f69d17c0a3219a68acc8f454ba96d5dd699e9b5364aa3e19",
+    "newSha256": "363c044de72860b8d030e06359bcd1e92cad309b84379c3a2bc7b5011a7f3e5f",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/d8-extensible-run"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+    "oldSha256": "433e12151c52e25ee14ef136ca4862ea50a792a600f81e11306a55b8ad08f797",
+    "newSha256": "04de25b089c227c68d6713eceb0f16fdfa186c0adfc5ce264c4082bac78c1921",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/d8-extensible-run"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/dependency-collision"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+    "oldSha256": "ebf0c1c1d667b682cbcf8eb2bd0a3b64428f7c18cb4f772b948798b15c5bb7bb",
+    "newSha256": "abdce616cdd467bf2991b5a7dea27a3e7e001e365ab98c2bad795ab13be82b53",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/dependency-config-declaration"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+    "oldSha256": "d3ec19472ea941de877fd4ec6a3d952be9257171dc9c3217e9afd2625557b11c",
+    "newSha256": "4a5f7a9f24bcf56aecf6213e2896755acf30b28db4de9c4b36ed9afe92b80043",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/dependency-no-block"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/dependency-root-import"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+    "oldSha256": "d37a3225cd82a4447da50f52f9fe32ca6df884c7ed1279c0767a5a66c4452718",
+    "newSha256": "58c398b6df2db0b4788267c3b6cfdbd00d7b58a2eaa57377ba6e742634cd46aa",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/dependency-root-overlap"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+    "oldSha256": "abc5f59eee632f06ed253a421cd5f07c77b3d220cd9a038a476ce085e45d1bba",
+    "newSha256": "5823aaffb5446e46d5abbb03e267aa65ec81d0f9fca4242d7221eb2ded08d937",
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "alsoImpactRows": [],
+    "consumers": [],
+    "exchangeInput": false
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+    "oldSha256": "90eda0d05359503193f508a12776616b5d801d0c34caea589810043d6fd6a9f2",
+    "newSha256": "a9be3d11261c6502200c51476d024dc33bc726fcecb7954a234f3644eec1f14e",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/dependency-settings"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/distinct-modules"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+    "oldSha256": "433e12151c52e25ee14ef136ca4862ea50a792a600f81e11306a55b8ad08f797",
+    "newSha256": "04de25b089c227c68d6713eceb0f16fdfa186c0adfc5ce264c4082bac78c1921",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [
+      "named.rs の固定パッケージと区間 manifest の依存 header"
+    ],
+    "consumers": [
+      "crates/benitoite/testdata/packages/d6c-extensible-external",
+      "crates/benitoite/testdata/packages/d6c-extensible-missing"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+    "oldSha256": "c782d04d726282ff93386ec6a3e67946714510a40f22b890e2ff0dab26f0b63d",
+    "newSha256": "241c48d038a579b01fbe845a49d3b24b825816eb77d4b6f5a70bf1a5fd0df141",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/hash-match",
+      "crates/benitoite/testdata/packages/hash-mismatch"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/hash-match/package.bnt",
+    "oldSha256": "d105127ef7b3a5fd5ed087b4e0ecd129bea47533da933d95c83b4ce6376a5925",
+    "newSha256": "e093ae15051d1d1cd07225e22bfb2b0fccc2a78a5ee4c4924bdc45869f514753",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/hash-mismatch.diag.json",
+    "oldSha256": "ba53a6d0542f54d5af1e53f9e4d88e28a2ccdcced838682865f4317e187474d5",
+    "newSha256": "45ce7ab8a17e051b09d3bf6c12fe6167df6938fb60ff6dc9b9ab522524c244ae",
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "alsoImpactRows": [],
+    "consumers": [],
+    "exchangeInput": false
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+    "oldSha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+    "newSha256": "80164f16f3669997f9e7b3942221c9ea109153de0252d75053fde8e2754ac1b5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/header-overlap"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+    "oldSha256": "a02bbf1dcd5b81cdad796cb978ec4faefe61fe3a596d294c5f2de75a8a9e33f3",
+    "newSha256": "1b9d03520d835361a39c898f4e8b102331b5caad4777a23cbd5a62c32436621e",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/header-overlap"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+    "oldSha256": "1b3d0a367d54ed555e408eb5dc6495568ad84b75ad05a9053e5cd1568739bce2",
+    "newSha256": "fc93ecc1a285b3d856eb64213d47f263eed04d5e2d02213566201f5d9b475e64",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/header-overlap"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+    "oldSha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+    "newSha256": "80164f16f3669997f9e7b3942221c9ea109153de0252d75053fde8e2754ac1b5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/header"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/header/main.bnt",
+    "oldSha256": "a02bbf1dcd5b81cdad796cb978ec4faefe61fe3a596d294c5f2de75a8a9e33f3",
+    "newSha256": "1b9d03520d835361a39c898f4e8b102331b5caad4777a23cbd5a62c32436621e",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/header"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+    "oldSha256": "acda47bec8459462502abf8e852a012623c4c308cb39a2db2a38bc38f105ab28",
+    "newSha256": "3adaefd62521c3badcb42c50ad18b71ecd37be4c815e71c5a50ff584fccde776",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/imported-header"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+    "oldSha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+    "newSha256": "80164f16f3669997f9e7b3942221c9ea109153de0252d75053fde8e2754ac1b5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/imported-header"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+    "oldSha256": "a763bc87d98aff7155f8cc6319c8d7a2a44831cd4f2794d33779a92514898c01",
+    "newSha256": "e1d95a4ee58c691124ab2f566ab16503208ebea7101c5ad05b1bf24c514a75af",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/fuzzy-check",
+      "crates/benitoite/testdata/packages/fuzzy-run"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+    "oldSha256": "6404c979cdcb6c323130ca5a9de41b80f68fb3d51ead1b35dd42ce19b493f4bf",
+    "newSha256": "89cbfb2a556235a4893adb695d2c5c267d83ef643bc72698cab95e4abead471f",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/json-pure-depth-array",
+      "crates/benitoite/testdata/packages/json-pure-depth-object",
+      "crates/benitoite/testdata/packages/json-pure-same"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+    "oldSha256": "c2c4b8ad718300833b07a59516b938c760bd7dd2125c9e8df3c7e83e9e6c39d2",
+    "newSha256": "e7e78b39fe4703eeb093a1fc3865d880614f47af52f3b425c112b89f3444ebe5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [
+      "named.rs の固定パッケージと区間 manifest の依存 header"
+    ],
+    "consumers": [
+      "crates/benitoite/testdata/packages/json-pure-depth-array",
+      "crates/benitoite/testdata/packages/json-pure-depth-object",
+      "crates/benitoite/testdata/packages/json-pure-same",
+      "crates/benitoite/testdata/packages/json-wasm-same"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/outside-textkit"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+    "oldSha256": "7bff859a53bab29ee397618a075c83ad274fcd3d86f6d44ff8977baa50596dc1",
+    "newSha256": "c14efd0b5c9ad55f028b3fc97f629bb25ccb30cd78871ad52a2522200571605c",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/wasm-hash-same"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+    "oldSha256": "d7220a9790af6ce8261c4c9a52d9ad566207a85981c1d9fad01fd69c32b52333",
+    "newSha256": "aef467ddd503541a2ddf3bf62f3c5a2b0d1fe5034f6ba6fe51b7000e1bcb7d46",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [
+      "named.rs の固定パッケージと区間 manifest の依存 header"
+    ],
+    "consumers": [
+      "crates/benitoite/testdata/packages/json-wasm-same"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+    "oldSha256": "09664d6c5f6aca3f12f45660c14735daaf1266878bff37cd97e8b7294ac17e04",
+    "newSha256": "9994a3ac98be439cef4ea66263a542489f3363482e343b0dd1119b99f94be629",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [
+      "named.rs の固定パッケージと区間 manifest の依存 header"
+    ],
+    "consumers": [
+      "crates/benitoite/testdata/packages/wasm-regex-same"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/local-textkit"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/newer-config.diag.json",
+    "oldSha256": "abf31bd8b8bf2085e38474ee8adb12a9c2104e12366af07a887270f359c5e158",
+    "newSha256": "eace6a40f74626b883910bad816ac8fb75072018b6962afe6221089e769da5ee",
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "alsoImpactRows": [],
+    "consumers": [],
+    "exchangeInput": false
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/newer-language.diag.json",
+    "oldSha256": "0fdaba4563802a0a6dcb6214d6e86c74e26f0c2442671379e2e6d0872d73404b",
+    "newSha256": "f98facbe9d934301952bd5e7caa369f6848961614444c2bf6f40cc667ea2317c",
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "alsoImpactRows": [],
+    "consumers": [],
+    "exchangeInput": false
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+    "oldSha256": "5c4289971288efc0a6e7fdb520189f72dc9e8d03a5570e021b0bbc674677a0dc",
+    "newSha256": "8487718219873ee838b7e362651ad58e327347e60840132359037194dccf59ca",
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "alsoImpactRows": [],
+    "consumers": [],
+    "exchangeInput": false,
+    "beforeSupplementSha256": "3c4afcf7e113d077c015a718bebfd49eb3f50399a05387a3f806e6be0b9f422b",
+    "supplement": "三エフェクトの事実へ案内と期待値を同期。登録境界・受理規則は不変"
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+    "oldSha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+    "newSha256": "80164f16f3669997f9e7b3942221c9ea109153de0252d75053fde8e2754ac1b5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-as-root"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+    "oldSha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+    "newSha256": "80164f16f3669997f9e7b3942221c9ea109153de0252d75053fde8e2754ac1b5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-dependencies"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+    "oldSha256": "5d5ae602084be441c15f02dd0827dfde69ffca9d29c960fce00e06615b91985d",
+    "newSha256": "9b8fe61202accaee28af0b79d9720cc1de70cd606d6b388fdde29c2f55ebc1dd",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-dependencies"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-error"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+    "oldSha256": "6f1f480b9a3ab6e15ef9a5acf43bc123dc4bd11fe38824045ab131b9e14cd905",
+    "newSha256": "f4049fd7a890ed2a7518d8e588e611a298c5bab08e2dd638ce71bf326086a54e",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-header"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-header"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+    "oldSha256": "576ce55243721267b4c7cccb96478d9bf789fbf5c4d14ccab37a1e2341c07f22",
+    "newSha256": "1c8aae526849a20d4b64b84fd522691817110489ab4b03b9f11b3e7f77a376df",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-isolation"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-isolation"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-private-name"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-visibility-hidden"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-visibility-run"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/package-warning"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+    "oldSha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+    "newSha256": "80164f16f3669997f9e7b3942221c9ea109153de0252d75053fde8e2754ac1b5",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/root-config"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+    "oldSha256": "c74456e472f1f93fd6d9ddf95c83f76ef5ab9db44279168e1ffc02880bc70774",
+    "newSha256": "1b272c0232ae10ab20e0f1f22118a30ab4e7ad02d217a901df7e4e1c2b5e049f",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/root-config"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+    "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+    "newSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/root-fallback"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+    "oldSha256": "680907f92cb39c3b3bee44299ebc709d41127c19365f64b2c114145653a29e20",
+    "newSha256": "c1054939e15a6b51ea77413ffb0e0e75eab399f0548db147675b15227e994c08",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "alsoImpactRows": [],
+    "consumers": [
+      "crates/benitoite/testdata/packages/todo-handler"
+    ],
+    "exchangeInput": true
+  },
+  {
+    "path": "crates/benitoite/tests/desugar_export/named.rs",
+    "oldSha256": "1d2b321ff7547a83bb897145670c68811aedba84b2f5e145071c178f2fd3d6b9",
+    "newSha256": "0aea7a5ee88e74b893ac51bb6524c31b024b603cd8c99bf3087a68469729b543",
+    "impactRow": "named.rs の固定パッケージと区間 manifest の依存 header",
+    "exchangeInput": true,
+    "loaderOrBuildInput": false
+  },
+  {
+    "path": "fuzz/Cargo.lock",
+    "oldSha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+    "newSha256": "d38cf1d0837d41512c9bd5137cfe25fcd923d82fecb600bcef2c8e26c346330b",
+    "impactRow": "testdata の header・依存ハッシュと現在版の loader",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true
+  },
+  {
+    "path": "crates/benitoite/src/diag/codes.rs",
+    "oldSha256": "726fc619507a57baca4e0796d3fac03554883fd530c8c1b6b21b2c48f86cff4d",
+    "newSha256": "d63f3aa9e9abf37ac69940b96cc4575af4845454c9eb793e3474604f28b74aac",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true,
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "consumers": [
+      "候補の実 CLI のビルド"
+    ],
+    "supplement": "E0908 の説明の migration guidance を guidance へ変更。通常の診断主文・位置・受理判定を変えない"
+  },
+  {
+    "path": "crates/benitoite/skill/references/diagnostics.md",
+    "oldSha256": "07fef51edd07d27608f55abeb2e2fab6455881841d2fa81fd96c985042ff21f3",
+    "newSha256": "866e10c9e2ab540c46400c4f799162f0b1b8ea134987e31c09f1fd9fa1d8dc06",
+    "exchangeInput": false,
+    "loaderOrBuildInput": true,
+    "impactRow": ".diag.json の現在版の文と E0908 の note/help",
+    "consumers": [
+      "候補の実 CLI のビルド"
+    ],
+    "supplement": "G が生成する E0908 の説明だけを同期。埋め込む文書であり、corpus へ収集されない"
+  }
+]

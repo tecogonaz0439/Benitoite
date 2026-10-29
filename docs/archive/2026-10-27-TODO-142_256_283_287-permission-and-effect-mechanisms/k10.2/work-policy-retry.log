@@ -1,0 +1,14 @@
+== plan: level work against c3ca4504dae42271df7336aca41d0a6d5447d0e3 (changed files not classified) (partial selection: --only policy_selftest)
+   [policy_selftest] because of --only (estimate: seconds to 1 min)
+      command: python3 -B scripts/check/test_policy.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== policy_selftest
+..............................
+----------------------------------------------------------------------
+Ran 30 tests in 26.522s
+
+OK
+selected checks passed
+real 26.56
+user 15.27
+sys 8.49

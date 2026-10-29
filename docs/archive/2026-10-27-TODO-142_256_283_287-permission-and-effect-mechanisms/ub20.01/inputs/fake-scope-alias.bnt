@@ -1,0 +1,4 @@
+import MockScope as Scope
+function main() -> Unit
+ Scope.checkPath(pattern: "bad", path: "/a")
+end function

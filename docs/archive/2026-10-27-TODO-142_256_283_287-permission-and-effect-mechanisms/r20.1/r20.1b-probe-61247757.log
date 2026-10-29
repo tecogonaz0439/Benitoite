@@ -1,0 +1,17 @@
+error: environment variable `BENITOITE_COMPARE_BRIDGE` not defined at compile time
+  --> <wt>/tools/bench/compare/timing_probe.rs:15:14
+   |
+15 |     include!(env!("BENITOITE_COMPARE_BRIDGE"));
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: use `std::env::var("BENITOITE_COMPARE_BRIDGE")` to read the variable at run time
+
+error[E0425]: cannot find function `observe` in module `refbridge`
+   --> <wt>/tools/bench/compare/timing_probe.rs:334:35
+    |
+334 |             let text = refbridge::observe(&shape, n).map_err(|e| format!("{e:?}"))?;
+    |                                   ^^^^^^^ not found in `refbridge`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0425`.

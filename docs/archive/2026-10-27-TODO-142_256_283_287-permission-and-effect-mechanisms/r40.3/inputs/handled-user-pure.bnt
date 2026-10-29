@@ -1,0 +1,12 @@
+effect Report
+ function save() -> Unit
+end effect
+function main() -> Unit
+ handle save() with
+ case save() -> resume(())
+ end handle
+end function
+@test
+function upper() -> Unit
+ main()
+end function

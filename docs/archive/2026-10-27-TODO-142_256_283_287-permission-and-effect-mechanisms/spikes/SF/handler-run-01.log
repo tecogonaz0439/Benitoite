@@ -1,0 +1,83 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Model.lean:761:45: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  system.3
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `system.3` to use this tactic
+
+⊢ system.3
+    (system.join
+      (system.join Level.low
+        (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context) (Expr.var 0)))
+      (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context)
+        (Expr.lit (Value.integer 1))))
+    (system.join
+      (system.join Level.low
+        (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context) (Expr.var 0)))
+      (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context)
+        (Expr.lit (Value.integer 1))))
+Model.lean:762:45: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  system.3
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `system.3` to use this tactic
+
+⊢ system.3
+    (system.join
+      (system.join Level.low
+        (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context) (Expr.var 0)))
+      (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context)
+        (Expr.lit (Value.integer 0))))
+    (system.join
+      (system.join Level.low
+        (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context) (Expr.var 0)))
+      (label system (push (publicSig.retType, system.join Level.low publicSig.retLabel) context)
+        (Expr.lit (Value.integer 0))))
+Model.lean:782:45: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  system.3
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `system.3` to use this tactic
+
+⊢ system.3
+    (system.join Level.low
+      (label system (push (secretSig.retType, system.join Level.low secretSig.retLabel) context) (Expr.var 2)))
+    (system.join Level.low
+      (label system (push (secretSig.retType, system.join Level.low secretSig.retLabel) context) (Expr.var 2)))
+Model.lean:805:39: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  system.3
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `system.3` to use this tactic
+
+⊢ system.3
+    (system.join (system.join publicSig.callPc publicSig.argLabel)
+      (label system (push (publicSig.argType, publicSig.argLabel) context) (Expr.lit (Value.integer 9))))
+    (system.join (system.join publicSig.callPc publicSig.argLabel)
+      (label system (push (publicSig.argType, publicSig.argLabel) context) (Expr.lit (Value.integer 9))))
+'SF.noninterference' depends on axioms: [propext]
+'SF.TwoPoint.reject_explicit' depends on axioms: [propext]
+'SF.TwoPoint.reject_implicit' depends on axioms: [propext]
+'SF.Readers.destination_noninterference' depends on axioms: [propext]
+'SF.Readers.pattern_inclusion_gives_flow' depends on axioms: [propext, Quot.sound]
+'SF.Readers.intersection_not_single_pattern' depends on axioms: [propext, Quot.sound]
+'SF.Handlers.handled_noninterference' depends on axioms: [propext]
+'SF.Handlers.handled_ask_removed' depends on axioms: [propext]
+'SF.Handlers.Examples.no_public_reply_contract' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_argument_leak' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_secret_call' depends on axioms: [propext]
+        1.03 real         1.39 user         0.29 sys
+           735477760  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47665  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               11191  involuntary context switches
+         11994533443  instructions retired
+          5025054911  cycles elapsed
+           185376176  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

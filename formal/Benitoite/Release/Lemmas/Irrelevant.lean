@@ -90,6 +90,8 @@ mutual
     | .V_Dict _ _ ha => simp only [Val.subst, HasTypeVsQ.subst_congr (ρ := ρ) (η := η) ha hs]
     | .V_Super hv _ _ => simp only [Val.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
     | .V_Sub hv _ _ => exact HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs
+    | .V_Checked _ _ => rfl
+    | .V_CheckedRequest _ _ _ _ => rfl
 
   theorem HasTypeVsQ.subst_congr {ρ η : Nat → LocalRef} {P B Ψ C Γ vs as σ τ}
       (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hs : SubstAgree Γ σ τ) :
@@ -153,8 +155,8 @@ mutual
       simp only [Arm.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hg hs'.hide (by simpa [hp.2.1] using hL.extend δ.length),
         HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hm hs' (by simpa [hp.2.1] using hL.extend δ.length), HasTypeArmsQ.subst_congr (ρ := ρ) (η := η) ht hs hL]
 
-  theorem HasTypeClausesQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R cs t e σ τ}
-      (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) (hs : SubstAgree Γ σ τ)
+  theorem HasTypeClausesQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R εb cs t e σ τ}
+      (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t e Δl) (hs : SubstAgree Γ σ τ)
       (hL : LocalSubstAgree Δl ρ η := by exact LocalSubstAgree.empty _ _) :
       Clause.substList σ cs ρ = Clause.substList τ cs η := by
     match h with

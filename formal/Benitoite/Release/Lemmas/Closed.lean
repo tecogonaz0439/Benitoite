@@ -12,12 +12,12 @@ import Benitoite.Release.LocalRef
 namespace Benitoite.Release
 
 /-- 項の中の型の変数の番号が `n` より小さく、継続の型を含まない。 -/
-abbrev TyOK (n : Nat) (a : Ty) : Prop := Ty.VarsIn n (fun _ => True) a
+abbrev TyOK (n : Nat) (a : Ty) : Prop := Ty.VarsIn 0 n (fun _ => True) a
 
 /-! ## 型 -/
 
-theorem Ty.applyTo_varsIn {n : Nat} {pe : Nat → Prop} {t : Ty} {as : List Ty} (ht : Ty.VarsIn n pe t)
-    (has : Ty.VarsInList n pe as) : Ty.VarsIn n pe (t.applyTo as) := by
+theorem Ty.applyTo_varsIn {n : Nat} {pe : Nat → Prop} {t : Ty} {as : List Ty} (ht : Ty.VarsIn 0 n pe t)
+    (has : Ty.VarsInList 0 n pe as) : Ty.VarsIn 0 n pe (t.applyTo as) := by
   rw [Ty.applyTo_eq_raw_norm]
   apply Ty.norm_VarsIn
   cases t with
@@ -28,10 +28,10 @@ theorem Ty.applyTo_varsIn {n : Nat} {pe : Nat → Prop} {t : Ty} {as : List Ty} 
   | _ => exact ht
 
 mutual
-  theorem Ty.VarsIn.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+  theorem Ty.VarsIn.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
       (a : Ty) → TyOK (c + ts.length) a → TyOK c (a.substAt c ts es)
     | .base _, _ => by simp [Ty.substAt, Ty.VarsIn]
-    | .opaque _, _ => by simp [Ty.substAt, Ty.VarsIn]
+    | .opaque _ _, h => by simpa [Ty.substAt, Ty.VarsIn] using h
     | .data _ args, h => by
         simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.substTysAt_eq_map, Ty.VarsIn]
         exact Ty.VarsInList.substAt es hts hes args h
@@ -79,26 +79,27 @@ mutual
           exact Ty.applyTo_varsIn (Ty.VarsIn.mono (Nat.zero_le _) (fun _ h => h) _ hu) hl
     | .ctor _, _ => by simp [Ty.substAt, Ty.VarsIn]
 
-  theorem Ty.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
-      (as : List Ty) → Ty.VarsInList (c + ts.length) (fun _ => True) as →
-      Ty.VarsInList c (fun _ => True) (as.map (Ty.substAt c ts es))
+  theorem Ty.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
+      (as : List Ty) → Ty.VarsInList 0 (c + ts.length) (fun _ => True) as →
+      Ty.VarsInList 0 c (fun _ => True) (as.map (Ty.substAt c ts es))
     | [], _ => trivial
     | a :: as, h => by
         simp only [Ty.VarsInList] at h; simp only [List.map_cons, Ty.VarsInList]
         exact ⟨Ty.VarsIn.substAt es hts hes a h.1, Ty.VarsInList.substAt es hts hes as h.2⟩
 
   theorem Eff.VarsIn.substAt {c : Nat} {ts : List Ty} (es : List Eff)
-      (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e)
-      (e : Eff) (h : Eff.VarsIn (c + ts.length) (fun _ => True) e) :
-      Eff.VarsIn c (fun _ => True) (Eff.substAt c ts es e) := by
+      (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e)
+      (e : Eff) (h : Eff.VarsIn 0 (c + ts.length) (fun _ => True) e) :
+      Eff.VarsIn 0 c (fun _ => True) (Eff.substAt c ts es e) := by
     cases e with
     | mk a fs =>
-      refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_⟩
+      refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_,
+        Eff.substAt_atoms_wf (e := .mk a fs) h.2.2 (fun f hf => by cases f; exact (hes _ hf).2.2)⟩
       intro t ht
       change t ∈ (Eff.substAt c ts es (EffR.mk a fs)).fails at ht
       rw [Eff.substAt_fails] at ht
       rcases List.mem_append.mp (Order.mem_sortUnique.mp ht) with ht | ht
-      · exact Ty.VarsInList.iff.mp (Ty.VarsInList.substAt es hts hes fs h.2) t (by
+      · exact Ty.VarsInList.iff.mp (Ty.VarsInList.substAt es hts hes fs h.2.1) t (by
           simpa only [Ty.substTysAt_eq_map, Eff.fails] using ht)
       · obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ (Eff.rowFails (es.map (Eff.rawShift c 0)) a).map Ty.norm from by
           simpa only [Ty.normTys_eq_map, Eff.atoms] using ht)
@@ -108,7 +109,7 @@ mutual
         have hw := hes g (List.mem_of_getElem? hg)
         rw [Eff.rawShift_of_wf c g (Eff.VarsIn.wf g hw)] at hfg
         subst f
-        have hfs : Ty.VarsInList 0 (fun _ => True) g.fails := by cases g; exact hw.2
+        have hfs : Ty.VarsInList 0 0 (fun _ => True) g.fails := by cases g; exact hw.2.1
         have hx := Ty.VarsInList.iff.mp hfs x hxf
         exact Ty.VarsIn.mono (Nat.zero_le c) (fun _ h => h) x.norm (Ty.norm_VarsIn x hx)
 
@@ -120,9 +121,9 @@ theorem Eff.RhosInList.true (es : List Eff) : Eff.RhosInList (fun _ => True) es 
   | cons e es ih => exact ⟨Eff.rowsIn_true e, ih⟩
 
 theorem Eff.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff)
-    (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e)
-    (fs : List Eff) (h : Eff.VarsInList (c + ts.length) (fun _ => True) fs) :
-    Eff.VarsInList c (fun _ => True) (fs.map (Eff.substAt c ts es)) := by
+    (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e)
+    (fs : List Eff) (h : Eff.VarsInList 0 (c + ts.length) (fun _ => True) fs) :
+    Eff.VarsInList 0 c (fun _ => True) (fs.map (Eff.substAt c ts es)) := by
   apply Eff.VarsInList.iff.mpr
   rintro f hf
   obtain ⟨e, he, rfl⟩ := List.mem_map.mp hf
@@ -131,7 +132,7 @@ theorem Eff.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff)
 /-! ## 値と計算の型の置き換え -/
 
 mutual
-  theorem Val.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+  theorem Val.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
       (v : Val) → Val.VarsIn (c + ts.length) (fun _ => True) v depth →
       Val.VarsIn c (fun _ => True) (v.substTyAt c ts es) depth
     | .var _, _ => trivial
@@ -139,7 +140,7 @@ mutual
     | .fnRef _ tys _, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Eff.VarsInList.substAt es hts hes _ h.2⟩
-    | .prim _ tys _, h => by
+    | .prim _ tys _ _, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Eff.VarsInList.substAt es hts hes _ h.2⟩
     | .lam names ps body, h => by
@@ -164,6 +165,8 @@ mutual
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact Val.VarsInList.substTyAt es hts hes elems h
     | .bytesV _, _ => by simp [Val.substTyAt, Val.VarsIn]
+    | .checked _, _ => by simp [Val.substTyAt, Val.VarsIn]
+    | .checkedRequest _ _, _ => by simp [Val.substTyAt, Val.VarsIn]
     | .dict _ tys args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Val.VarsInList.substTyAt es hts hes args h.2⟩
@@ -171,7 +174,7 @@ mutual
         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
         exact Val.VarsIn.substTyAt es hts hes v h
 
-  theorem Val.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+  theorem Val.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
       (vs : List Val) → Val.VarsInList (c + ts.length) (fun _ => True) vs depth →
       Val.VarsInList c (fun _ => True) (Val.substTyAtList c ts es vs) depth
     | [], _ => trivial
@@ -179,7 +182,7 @@ mutual
         simp only [Val.VarsInList] at h; simp only [Val.substTyAtList, Val.VarsInList]
         exact ⟨Val.VarsIn.substTyAt es hts hes v h.1, Val.VarsInList.substTyAt es hts hes vs h.2⟩
 
-  theorem Comp.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+  theorem Comp.VarsIn.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
       (m : Comp) → Comp.VarsIn (c + ts.length) (fun _ => True) m depth →
       Comp.VarsIn c (fun _ => True) (m.substTyAt c ts es) depth
     | .builderLet k body, h => by
@@ -229,7 +232,7 @@ mutual
           Eff.VarsInList.substAt es hts hes _ h.2.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2.2⟩
 
   theorem Arm.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff)
-      (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+      (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
       (arms : List Arm) → Arm.VarsInList (c + ts.length) (fun _ => True) arms depth →
       Arm.VarsInList c (fun _ => True) (Arm.substTyAtList c ts es arms) depth
     | [], _ => trivial
@@ -242,7 +245,7 @@ mutual
           Comp.VarsIn.substTyAt es hts hes m h.2.1, Arm.VarsInList.substTyAt es hts hes arms h.2.2⟩
 
   theorem Clause.VarsInList.substTyAt {depth : Nat} {c : Nat} {ts : List Ty} (es : List Eff)
-      (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+      (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 0 (fun _ => True) e) :
       (hs : List Clause) → Clause.VarsInList (c + ts.length) (fun _ => True) hs depth →
       Clause.VarsInList c (fun _ => True) (Clause.substTyAtList c ts es hs) depth
     | [], _ => trivial
@@ -269,7 +272,7 @@ mutual
     | .const _, _ => trivial
     | .fnRef _ tys _, h => by
         simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2⟩
-    | .prim _ tys _, h => by
+    | .prim _ tys _ _, h => by
         simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2⟩
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h ⊢
@@ -285,6 +288,8 @@ mutual
         simp only [Val.VarsIn] at h ⊢; exact ⟨Val.VarsInList.mono hn ks h.1, Val.VarsInList.mono hn vs h.2⟩
     | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.mono hn elems h
     | .bytesV _, _ => by simp [Val.VarsIn]
+    | .checked _, _ => by simp [Val.VarsIn]
+    | .checkedRequest _ _, _ => by simp [Val.VarsIn]
     | .dict _ tys args, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.mono hn args h.2⟩
@@ -359,7 +364,7 @@ mutual
     | .const _, _ => trivial
     | .fnRef _ tys _, h => by
         simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2⟩
-    | .prim _ tys _, h => by
+    | .prim _ tys _ _, h => by
         simp only [Val.VarsIn] at h ⊢; exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Eff.VarsInList.mono hn (fun _ h => h) _ h.2⟩
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h ⊢
@@ -375,6 +380,8 @@ mutual
         simp only [Val.VarsIn] at h ⊢; exact ⟨Val.VarsInList.widen hn hd ks h.1, Val.VarsInList.widen hn hd vs h.2⟩
     | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.widen hn hd elems h
     | .bytesV _, _ => by simp [Val.VarsIn]
+    | .checked _, _ => by simp [Val.VarsIn]
+    | .checkedRequest _ _, _ => by simp [Val.VarsIn]
     | .dict _ tys args, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.widen hn hd args h.2⟩
@@ -448,7 +455,7 @@ mutual
     | .var _, _ => trivial
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
-    | .prim _ _ _, h => h
+    | .prim _ _ _ _, h => h
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
         exact ⟨h.1, h.2.1, Comp.VarsIn.renameLocal _ (by simpa [Nat.add_comm, Nat.add_assoc] using upRen_scoped hξ _) body h.2.2⟩
@@ -466,6 +473,8 @@ mutual
     | .setV elems, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.renameLocal ξ hξ elems h
     | .bytesV _, _ => by simp [Val.rename, Val.VarsIn]
+    | .checked _, _ => by simp [Val.rename, Val.VarsIn]
+    | .checkedRequest _ _, _ => by simp [Val.rename, Val.VarsIn]
     | .dict _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
         exact ⟨h.1, Val.VarsInList.renameLocal ξ hξ args h.2⟩
@@ -578,7 +587,7 @@ mutual
     | .var i, _ => by simp only [Val.subst]; exact Val.VarsIn.widen (Nat.zero_le _) (Nat.zero_le _) _ (hσ i)
     | .const _, _ => trivial
     | .fnRef _ _ _, h => h
-    | .prim _ _ _, h => h
+    | .prim _ _ _ _, h => h
     | .lam names ps body, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
         exact ⟨h.1, h.2.1, Comp.VarsIn.substScoped (hσ.up _) (by simpa [Nat.add_comm, Nat.add_assoc] using upLocalSubst_scoped hρ _) body h.2.2⟩
@@ -596,6 +605,8 @@ mutual
     | .setV elems, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsInList.substScoped hσ hρ elems h
     | .bytesV _, _ => by simp [Val.subst, Val.VarsIn]
+    | .checked _, _ => by simp [Val.subst, Val.VarsIn]
+    | .checkedRequest _ _, _ => by simp [Val.subst, Val.VarsIn]
     | .dict _ _ args, h => by
         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
         exact ⟨h.1, Val.VarsInList.substScoped hσ hρ args h.2⟩

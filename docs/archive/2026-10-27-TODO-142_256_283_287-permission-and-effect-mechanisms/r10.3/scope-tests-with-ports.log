@@ -1,0 +1,14 @@
+$ cargo test -p benitoite --test scope_annotations
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.88s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 5 tests
+test scope_shorthand_preserves_atoms_and_source_elements ... ok
+test scoped_function_types_and_failure_arguments_survive_instantiation ... ok
+test duplicate_atoms_report_both_original_elements ... ok
+test invalid_scopes_are_rejected_by_the_argument_contract ... ok
+test port_arguments_use_integer_literal_values_and_widths ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s
+

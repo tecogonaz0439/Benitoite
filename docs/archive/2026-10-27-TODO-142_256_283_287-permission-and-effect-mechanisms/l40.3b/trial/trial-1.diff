@@ -1,0 +1,67 @@
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index a437dab3..4be47842 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -261,6 +261,10 @@ mutual
+     所属を前提に持つ葉の規則 V-Checked だけで行う（`HasTypeVQ.inv_checked`）。現在の形式化には、この値を作る遷移は
+     ない。 -/
+     | checked (t : Scope.Domain.Target)
++    /-- 検査済みの要求の値（決定の判断 7）。`Http.RequestIn[H,P]` の値に当たり、検査した要求 `req` と、検査で得た実効の
++    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は閉じた不透明型の値であり、不透明型の定数として
++    持つ。型と値の変数を持たないので、代入・改名・shift で変わらない。型付けは葉の規則 V-CheckedRequest だけで行う。 -/
++    | checkedRequest (t : Scope.Domain.Target) (req : Const)
+ 
+   inductive Comp where
+     | builderLet (kind : BuilderKind) (body : Comp)
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index e4607235..2513ba04 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -71,6 +71,7 @@ def PrimSig.ntys (s : PrimSig) : Nat := s.tparams.length
+ /-- 値が保持する検査済みの対象（`Scope.Signature.ShapeTargets` の `target?`）。 -/
+ def Val.target? : Val → Option Scope.Domain.Target
+   | .checked t => some t
++  | .checkedRequest t _ => some t
+   | _ => none
+ 
+ /-- 署名の範囲の変数の個数（`rkinds` の長さ）。範囲の変数の番号はこの個数より小さい（`PrimSig.Scoped`）。 -/
+@@ -106,6 +107,9 @@ structure Builtins where
+   この制約によらず許す（`Builtins.RangeAdmissible`）。表のデータであり、正しさは信頼の対象である。既定は何も
+   許さない（Top の列だけを許す）。 -/
+   admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
++  /-- 範囲付きの値型の名前の値が保持する要求の型の名前（`Http.RequestIn` は `Http.ClientRequest`）。検査済みの要求の
++  値の葉の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
++  valContent : OpaqueName → Option OpaqueName := fun _ => none
+ 
+ /-! ## 署名の具体化と範囲の具体化の許容 -/
+ 
+@@ -443,6 +447,8 @@ mutual
+     パターンは検査済みの対象の値の中を調べないので、網羅性には変数か `_` の選択肢が要る。旧の像（範囲が Top の
+     不透明型）では不透明型の定数が既に属するので、網羅性の判断は変わらない（`Exhaustive.opaqueTop_iff`）。 -/
+     | checked {o R t} : Inhabits P (.opaque o (.fixed R)) (.checked t)
++    /-- 検査済みの要求の値も範囲付きの値型に属する（V-CheckedRequest に対応する）。 -/
++    | checkedRequest {o R t c} : Inhabits P (.opaque o (.fixed R)) (.checkedRequest t c)
+ 
+   inductive InhabitsAll (P : Program) : List Ty → List Val → Prop
+     | nil : InhabitsAll P [] []
+@@ -572,6 +578,12 @@ mutual
+     | V_Checked {Γ o R t} :
+         B.valKind o = some t.kind → R.Mem t →
+         HasTypeVQ P B Ψ Q C Γ (.checked t) (.opaque o (.fixed R))
++    /-- V-CheckedRequest（検査済みの要求の値の葉の規則）。V-Checked の所属に加え、名前 o の値が保持する要求の型の
++    名前（表のデータ `valContent`）が n のとき、保持する要求は型 `n`（範囲が Top の不透明型）の定数である
++    （設計書 01-12「型付け規則」）。 -/
++    | V_CheckedRequest {Γ o R t c n} :
++        B.valKind o = some t.kind → R.Mem t → B.valContent o = some n → c.type = .opaqueTop n →
++        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))
+ 
+   inductive HasTypeVsQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop
+@@ -725,6 +737,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (hideBuilders_strengthen_val hv) hc hs
+     | .V_Sub hv hl hw => exact .V_Sub (hideBuilders_strengthen_val hv) hl hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem hideBuilders_strengthen_vals {P B Ψ Q C Γ vs ts}
+       (h : HasTypeVsQ P B Ψ Q C Γ vs ts) : HasTypeVsQ P B Ψ.hideBuilders Q C Γ vs ts := by

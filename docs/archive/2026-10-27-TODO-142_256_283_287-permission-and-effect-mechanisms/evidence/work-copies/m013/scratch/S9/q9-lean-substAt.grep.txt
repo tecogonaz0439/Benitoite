@@ -1,0 +1,378 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:22:    NoFail Qt (Eff.substAt 0 ts es e) := noFail_substAt ha.noFailRows h 0 ts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Assumptions.lean:46:    s.admits C1 (ts.map (Ty.substAt C1.length ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Assumptions.lean:48:    ClosedSat B C0 C1 ts' → ts'.length = C0.length → B.sat C1 (t.substAt C1.length ts' es') p
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Examples.lean:367:          (by simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Examples.lean:371:          (by simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Examples.lean:376:        simpa [Ty.subst, Ty.substAt, Eff.substAt, intTy, int, Const.type] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureEffects.lean:8:    Eff.substAt c ts es (Eff.singleFail t) = Eff.singleFail (t.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureEffects.lean:9:  simp only [Eff.singleFail, Eff.substAt, Eff.rawSubstAt, Eff.rawBind,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:91:    simpa [okDecl, Ty.subst, Ty.substAt, Ty.shift_zero 0 T (ht.canonical T)] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:95:    simpa [errorDecl, Ty.subst, Ty.substAt, Ty.shift_zero 0 E (he.canonical E)] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:141:    simpa [okDecl, Ty.subst, Ty.substAt, Ty.shift_zero 0 T (ht.canonical T)] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:145:    simpa [errorDecl, Ty.subst, Ty.substAt, Ty.shift_zero 0 E (he.canonical E)] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:40:  simp only [substRho, substAt, rawSubstAt, rawBind, empty, SubstEnv.at,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:45:    substAt c ts es empty = empty := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:46:  simp only [substAt, rawSubstAt, rawBind, empty, SubstEnv.at,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:99:theorem substAt {a b : Ty} (c : Nat) (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:100:    Ty.Le (a.substAt c ts es) (b.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:103:  · simp only [Ty.substAt, Eff.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:107:    Ty.Le (a.subst ts es) (b.subst ts es) := substAt 0 ts es h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:31:  theorem Ty.VarsIn.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:32:      (a : Ty) → TyOK (c + ts.length) a → TyOK c (a.substAt c ts es)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:33:    | .base _, _ => by simp [Ty.substAt, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:34:    | .opaque _, _ => by simp [Ty.substAt, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:36:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.substTysAt_eq_map, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:37:        exact Ty.VarsInList.substAt es hts hes args h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:39:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]; exact Ty.VarsIn.substAt es hts hes a h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:42:        simp only [Ty.substAt, Ty.VarsIn, Ty.substTysAt_eq_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:43:        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts hes ps h.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:44:          Ty.VarsIn.substAt es hts hes r h.2.2.1, Eff.VarsIn.substAt es hts hes e h.2.2.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:48:        simp only [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:57:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]; exact Ty.VarsIn.substAt es hts hes a h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:59:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]; exact Ty.VarsIn.substAt es hts hes a h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:62:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:63:        exact ⟨Ty.VarsIn.substAt es hts hes a h.1, Ty.VarsIn.substAt es hts hes b h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:65:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]; exact Ty.VarsIn.substAt es hts hes a h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:66:    | .bytes, _ => by simp [Ty.substAt, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:68:        simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.VarsIn]; exact Ty.VarsIn.substAt es hts hes τ h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:71:        have hl := Ty.VarsInList.substAt es hts hes args h.2
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:72:        simp only [Ty.substAt, Ty.substTysAt_eq_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:80:    | .ctor _, _ => by simp [Ty.substAt, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:82:  theorem Ty.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:84:      Ty.VarsInList c (fun _ => True) (as.map (Ty.substAt c ts es))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:88:        exact ⟨Ty.VarsIn.substAt es hts hes a h.1, Ty.VarsInList.substAt es hts hes as h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:90:  theorem Eff.VarsIn.substAt {c : Nat} {ts : List Ty} (es : List Eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:93:      Eff.VarsIn c (fun _ => True) (Eff.substAt c ts es e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:98:      change t ∈ (Eff.substAt c ts es (EffR.mk a fs)).fails at ht
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:101:      · exact Ty.VarsInList.iff.mp (Ty.VarsInList.substAt es hts hes fs h.2) t (by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:122:theorem Eff.VarsInList.substAt {c : Nat} {ts : List Ty} (es : List Eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:125:    Eff.VarsInList c (fun _ => True) (fs.map (Eff.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:129:  exact Eff.VarsIn.substAt es hts hes e (Eff.VarsInList.iff.mp h e he)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:141:        exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Eff.VarsInList.substAt es hts hes _ h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:144:        exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Eff.VarsInList.substAt es hts hes _ h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:147:        exact ⟨h.1.map _, Ty.VarsInList.substAt es hts hes ps h.2.1, (by simpa only [List.length_map] using Comp.VarsIn.substTyAt es hts hes body h.2.2)⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:150:        exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Val.VarsInList.substTyAt es hts hes args h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:156:        exact Ty.VarsInList.substAt es hts hes tys h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:158:        exact ⟨Ty.VarsIn.substAt es hts hes t h.1, Ty.VarsIn.substAt es hts hes e h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:169:        exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Val.VarsInList.substTyAt es hts hes args h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:188:        · exact ⟨Ty.VarsIn.substAt es hts hes _ h.1, Comp.VarsIn.substTyAt es hts hes body h.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:193:        · exact ⟨Ty.VarsIn.substAt es hts hes _ h.1, h.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:228:        exact ⟨Val.VarsIn.substTyAt es hts hes d h.1, Ty.VarsInList.substAt es hts hes tys h.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:229:          Eff.VarsInList.substAt es hts hes _ h.2.2.1, Val.VarsInList.substTyAt es hts hes args h.2.2.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:256:        refine ⟨Ty.VarsIn.substAt es hts hes e h.1, ?_, Clause.VarsInList.substTyAt es hts hes cs h.2.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:31:    (u.shift g 0).substAt 0 (ss ++ ts) es = u.substAt 0 ts [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:38:    simp only [Ty.substAt, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero, hidx,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:47:    as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.shift g 0)) = as.map (Ty.substAt 0 ts []) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:53:    (t.substAt g [u] []).substAt 0 (ss ++ ts) es =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:54:      t.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:55:  let v := (u.shift g 0).substAt 0 (ss ++ ts) es
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:59:  change (t.substAt g [u] []).substAt 0 (ss ++ ts) es = t.substAt 0 (ss ++ [v]) es
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:97:    as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.substAt g [u] [])) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:98:      as.map (Ty.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:107:  have ht : (id.target.shift ms.tparams.length 0).substAt 0 (ss ++ ts) es = id.target.subst ts [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:110:  have e : id.methTy ms = Ty.substAt ms.tparams.length [id.target] [] := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:122:    Eff.substAt 0 (ss ++ ts) es (Eff.substAt g [u] [] e) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:123:      Eff.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:127:  simp only [Ty.substAt, Ty.substTysAt] at ht
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:132:    Eff.substAt 0 (ss ++ ts) es (Eff.substAt ms.tparams.length [id.target] [] ms.eff) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:133:      Eff.substAt 0 (ss ++ [id.target.subst ts []]) es ms.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:134:  have ht : (id.target.shift ms.tparams.length 0).substAt 0 (ss ++ ts) es = id.target.subst ts [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:204:  simp only [Ty.substAt] at hθ'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:20:    fnTy names ps r ε ts es = .fn names (ps.map (Ty.subst ts es)) (Ty.subst ts es r) (Eff.substAt 0 ts es ε) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:21:  simp [fnTy, Ty.subst, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:507:      Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε ∧ MethodRowsAdmissible C Q ms es ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresBase.lean:192:  have hid : Eff.substAt 0 [t] [] s.eff = s.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresBase.lean:228:    simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt] at hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresBase.lean:238:    simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt] at hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresFailure.lean:39:      have hRθ : R.map (Ty.substAt 0 [T] []) = R := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:123:      refine ⟨Ψ, some (Ty.subst ts es d.ret), Ty.subst ts es d.ret, b, ε, Eff.substAt 0 ts es d.eff, hσ,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:290:      simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t hcanon] at hle
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:310:      simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t hcanon] at hargs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:326:      simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t hcanon] at hargs hle
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:343:      simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t hcanon, Eff.substAt_empty] at hargs hle
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:380:      simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t hcanon] at hargs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:396:      simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t hcanon] at hargs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:28:      Eff.Sub (Eff.substAt 0 ts es s.eff) ε1 := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:40:      Eff.Sub (Eff.substAt 0 ts [] (Eff.single od.eff)) ε1 := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:49:  simp [Ty.subst, Ty.substAt, Ty.shift_zero 0 t ht]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:145:  simp only [List.take_zero, envSubst, List.map_cons, Option.map_some, Ty.substAt] at hθ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:146:  have htθ : t.substAt 0 ts [] = t := Ty.substAt_nil_of_wf ts t htw
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:147:  have hRθ : Rh.map (Ty.substAt 0 ts []) = Rh := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:181:    rw [show some (Ty.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)) ::
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:182:          binds (sg.params.map (Ty.substAt 0 ts [])) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:183:        binds (sg.params.map (Ty.substAt 0 ts []) ++ [.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)]) by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:378:      simp [Ty.subst, Ty.substAt] at hargs'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:389:      simp [Ty.subst, Ty.substAt] at hargs'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:399:      simp [Ty.subst, Ty.substAt] at hargs'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:409:      simp [Ty.subst, Ty.substAt] at hargs'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:29:theorem Ty.substAt_notHead {c ts es} (t : Ty) (h : ¬ t.IsHead) : ¬ (t.substAt c ts es).IsHead := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:32:    simp only [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:38:  | _ => simp_all [Ty.substAt, Ty.IsHead]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:45:    (t.applyTo as).substAt c ts es = (t.substAt c ts es).applyTo (as.map (Ty.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:87:    Ty.WFList c (as.map (Ty.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:95:    (as.map (Ty.shift k 0)).map (Ty.substAt (c + k) ts es) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:96:      (as.map (Ty.substAt c ts es)).map (Ty.shift k 0) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:40:    (x.substAt c ts es).NotCont := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:44:      simp only [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:55:      simp only [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:64:  | _ => intro b t ε h; simp [Ty.substAt, Eff.substAt] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:81:    hideConts (Γ.map (Option.map (Ty.substAt c ts es))) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:82:      (hideConts Γ).map (Option.map (Ty.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:92:      | cont b t ε => simp [Ty.substAt, Eff.substAt, hideOne]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:99:      | _ => simp [Ty.substAt, Eff.substAt, hideOne]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:106:    (shiftEnv k Γ).map (Option.map (Ty.substAt (c + k) ts es)) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:107:      shiftEnv k (Γ.map (Option.map (Ty.substAt c ts es))) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:132:  · change (Eff.substAt 0 [] es (handled P B h)).fails = (handled P B h).fails
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:146:    Eff.substAt c ts es (handled P B h) = handled P B h :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:154:    (∀ a, Ψ l = some (.ref a) → a.substAt c ts es = a) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:155:    (∀ a, Ψ l = some (.lazy a) → a.substAt c ts es = a) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:157:      b.substAt c ts es = b ∧ t.substAt c ts es = t ∧ Eff.substAt c ts es ε = ε ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:158:      r.map (Ty.substAt c ts es) = r) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:223:    (k.substTyAt c ts es).contents = k.contents.substAt c ts es := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:227:    op.params (k.substTyAt c ts es) = (op.params k).map (Ty.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:231:    op.result (k.substTyAt c ts es) = (op.result k).substAt c ts es := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:19:    k.type.substAt c ts es = k.type := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:20:  cases k <;> simp [Const.type, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:25:    (cd.args.map (Ty.subst ts [])).map (Ty.substAt c ts' es') =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:26:      cd.args.map (Ty.subst (ts.map (Ty.substAt c ts' es')) []) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:37:    (fnTy names ps r ε ts es).substAt c ts' es' =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:38:      fnTy names ps r ε (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:45:  simp only [Ty.subst, Ty.substAt, Ty.substTysAt_eq_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:51:  theorem PatTy.substAt (hwf : P.WellFormed) (c : Nat) (ts' : List Ty) (es' : List Eff) {p a δ} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:52:      PatTy P p a δ → PatTy P p (a.substAt c ts' es') (δ.map (Ty.substAt c ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:56:    | .P_RangeInt => by simpa only [Ty.substAt, List.map_nil] using PatTy.P_RangeInt (P := P)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:57:    | .P_RangeChar => by simpa only [Ty.substAt, List.map_nil] using PatTy.P_RangeChar (P := P)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:59:        have hb' := PatTys.substAt hwf c ts' es' hb
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:60:        have ha' := PatTys.substAt hwf c ts' es' ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:62:        have hr : (restTys rest t).map (Ty.substAt c ts' es') = restTys rest (Ty.substAt c ts' es' t) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:65:          | some r => cases r <;> simp [restTys, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:66:        simpa only [Ty.substAt, List.map_append, hr] using PatTy.P_List (rest := rest) hb' ha' hn
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:68:        simp only [Ty.substAt, Ty.substTysAt_eq_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:71:        exact PatTys.substAt hwf c ts' es' hps
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:73:  theorem PatTys.substAt (hwf : P.WellFormed) (c : Nat) (ts' : List Ty) (es' : List Eff) {ps as δ} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:74:      PatTys P ps as δ → PatTys P ps (as.map (Ty.substAt c ts' es')) (δ.map (Ty.substAt c ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:78:        exact .cons (PatTy.substAt hwf c ts' es' hp) (PatTys.substAt hwf c ts' es' hps)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:81:theorem AltsTy.substAt (hwf : P.WellFormed) (c : Nat) (ts : List Ty) (es : List Eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:83:    AltsTy P alts (a.substAt c ts es) (δ.map (Ty.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:87:  refine ⟨γ.map (Ty.substAt c ts es), PatTy.substAt hwf c ts es hp, by simpa using hperm, ?_⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:94:      Inhabits P u v → ∀ t, u = t.substAt c ts' es' → Inhabits P t v
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:98:        | base ι => simp [Ty.substAt] at hu; rw [← hu]; exact .const
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:99:        | «opaque» o => simp [Ty.substAt] at hu; rw [← hu]; exact .const
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:100:        | data d args => cases k <;> simp [Const.type, Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:101:        | list a => cases k <;> simp [Const.type, Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:116:            simp only [Ty.substAt, Ty.substTysAt_eq_map, Ty.data.injEq] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:132:        | base _ => simp [Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:133:        | «opaque» _ => simp [Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:134:        | list _ => simp [Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:139:            simp only [Ty.substAt, Ty.list.injEq] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:152:        | base _ => simp [Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:153:        | «opaque» _ => simp [Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:154:        | data _ _ => simp [Ty.substAt] at hu
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:168:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:182:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:196:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:210:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:224:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:238:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:252:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:266:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:280:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:294:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:308:        | _ => simp_all [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:311:      InhabitsAll P us vs → ∀ tsx : List Ty, us = tsx.map (Ty.substAt c ts' es') → InhabitsAll P tsx vs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:325:      InhabitsEach P u vs → ∀ t, u = t.substAt c ts' es' → InhabitsEach P t vs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:331:theorem Exhaustive.substAt (hwf : P.WellFormed) (c : Nat) (ts' : List Ty) (es' : List Eff) {a ps}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:332:    (h : Exhaustive P a ps) : Exhaustive P (a.substAt c ts' es') ps :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:339:  Γ.map (Option.map (Ty.substAt c ts es))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:390:theorem SatAll.substAt (hb : B.Assumptions P) {C1 C0 : List TParam} {ts tps ts' es'}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:392:    SatAll B C1 (ts.map (Ty.substAt C1.length ts' es')) tps := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:400:    envSubst c ts es (binds as ++ Γ) = binds (as.map (Ty.substAt c ts es)) ++ envSubst c ts es Γ := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:405:    (envSubst c ts es Γ)[i]? = some (some (x.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:426:    (id.target.subst ts []).substAt c ts' es' = id.target.subst (ts.map (Ty.substAt c ts' es')) [] ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:427:    (id.dictTys.map (Ty.subst ts [])).map (Ty.substAt c ts' es') =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:428:      id.dictTys.map (Ty.subst (ts.map (Ty.substAt c ts' es')) []) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:442:    Ty.WF (C.take c).length (x.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:451:    Eff.WF (C.take c).length (Eff.substAt c ts es e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:462:      (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:466:  have hs' := SatAll.substAt (es' := es') hb hts hsat hs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:485:      (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:508:    MethodRowsAdmissible (C.take c) Q' ms (es.map (Eff.substAt c ts' es')) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:521:      HasTypeVQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (v.substTyAt c ts' es') (a.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:523:    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:557:        have := SatAll.substAt (es' := es') hb hts hsat hsat'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:561:        simp only [Val.substTyAt, Ty.substAt, Ty.substTysAt_eq_map, List.map_cons, List.map_nil,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:565:        simp only [Val.substTyAt, Ty.substAt, Ty.substTysAt_eq_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:566:        refine .V_Lam (hnames.map _) (by simpa only [Ty.substAt, Ty.substTysAt_eq_map] using transportWF hw) ?_
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:573:        simp only [Val.substTyAt, Ty.substAt, Ty.substTysAt_eq_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:578:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:584:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:587:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:590:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:594:        have hwf' : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:602:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:610:    | .V_Bytes => simp only [Val.substTyAt, Ty.substAt]; exact .V_Bytes
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:612:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:619:        have := SatAll.substAt (es' := es') hb hts hsat hsat'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:623:        simp only [Val.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:625:        simp only [Ty.substAt] at this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:628:        exact .V_Sub (HasTypeVQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hle.substAt _ _ _) (transportWF hw)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:634:        (as.map (Ty.substAt c ts' es')) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:645:        (a.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:655:      HasTypeCQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:656:        (m.substTyAt c ts' es') (a.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:658:    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:680:        exact .C_Sub (HasTypeCQ.substTy hwf hb h hc hts hes' hsat hΨ hrow) (hle.substAt _ _ _)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:692:        simp only [Ty.substAt, Ty.substTysAt_eq_map] at this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:697:        simp only [Ty.substAt] at this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:704:        exact hex.substAt hwf _ _ _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:706:        simp only [Comp.substTyAt, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:723:        simp only [Ty.substAt] at this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:741:        simp only [Ty.substAt] at this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:758:        simp only [Ty.subst, Ty.substAt, Ty.substTysAt_eq_map] at hF
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:761:        simp only [Ty.substAt] at hv'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:766:        have hsat'' := SatAll.substAt (es' := es') hb hts hsat hsat'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:768:        have := HasTypeCQ.C_Meth (Δ := Δl.substTyAt c ts' es') (R := R.map (Ty.substAt c ts' es')) (es := es.map (Eff.substAt c ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:771:            have hscope' : ∀ t ∈ (ss ++ [τ]).map (Ty.substAt c ts' es'),
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:787:      HasTypeArmsQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:788:        (Arm.substTyAtList c ts' es' arms) (a.substAt c ts' es')
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:789:        (b.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:791:    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:805:        refine .plain (AltsTy.substAt hwf _ _ _ hp) ?_ (HasTypeArmsQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:811:        refine .guarded (AltsTy.substAt hwf _ _ _ hp) ?_ ?_ (HasTypeArmsQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:813:          simp only [Ty.substAt, Option.map_none, Eff.substAt_empty] at hh
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:827:      HasTypeClausesQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:828:        (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:848:        simp only [envSubst, List.map_cons, Option.map_some, Ty.substAt] at this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:851:        have hbinds : (binds sg.params).map (Option.map (Ty.substAt (c + k) ts' es')) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:856:        have hR : (R.map (Ty.shift k 0)).map (Ty.substAt (c + k) ts' es') =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:857:            (R.map (Ty.substAt c ts' es')).map (Ty.shift k 0) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:868:      HasFailureClause P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (E.substAt c ts' es')
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:869:        (R.map (Ty.substAt c ts' es')) (Clause.substTyAtList c ts' es' h)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:870:        (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:872:    have transportWF : ∀ {x}, Ty.WF C.length x → Ty.WF (C.take c).length (x.substAt c ts' es') := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:891:          have hR : (R.map (Ty.shift 1 0)).map (Ty.substAt (c + 1) ts' es') =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:892:              (R.map (Ty.substAt c ts' es')).map (Ty.shift 1 0) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/VariableBind.lean:86:    Eff.VarsIn n (fun _ => True) (Eff.substAt 0 ts es e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:225:    simp [ImplDecl.methTy, constSig, Ty.substAt, ht, Ty.shift]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:261:      simpa [implC, implD, Ty.subst, Ty.substAt, Eff.substAt] using this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:274:    simpa [implD, Ty.subst, Ty.substAt, Eff.substAt] using this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:284:  simpa [constSig, Ty.subst, Ty.substAt, Eff.substAt_empty, Ty.shift] using hm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:338:  have he : Eff.substAt 0 [.base .integer] [] (Eff.single stateEff) = Eff.single stateEff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:340:  simpa [fnTy_eq, refGetSig, Ty.subst, Ty.substAt, he, Ty.shift] using h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:221:    NoFail Qt (Eff.substAt c ts es e) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:228:    RowTransport Q0 Q2 (es.map (Eff.substAt c ts es')) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:7:（`Syntax.lean` の冒頭）。型の置き換え `Ty.substAt c ts es` は、`c` 個の型の変数を束縛した内側で、
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:48:def Ty.subst (ts : List Ty) (es : List Eff) : Ty → Ty := Ty.substAt 0 ts es
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:54:    | .fnRef f tys effs => .fnRef f (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:55:    | .prim b tys effs => .prim b (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:56:    | .lam names params body => .lam names (params.map (Ty.substAt c ts es)) (Comp.substTyAt c ts es body)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:57:    | .con k tys args => .con k (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:59:    | .op o tys => .op o (tys.map (Ty.substAt c ts es))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:60:    | .raise t e => .raise (t.substAt c ts es) (e.substAt c ts es)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:65:    | .dict i tys args => .dict i (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:86:        .meth (Val.substTyAt c ts es d) m (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Subst.lean:100:    | .fail e m :: cs => .fail (e.substAt c ts es) (Comp.substTyAt (c + 1) ts es m) :: Clause.substTyAtList c ts es cs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/SubstExamples.lean:26:    Ty.substAt 1 [.ctor .list, .tvar 0] []
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:105:  | .list a => .list (a.substAt c ts es)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeBounds.lean:190:    (t : Ty) (h : Ty.WF (c + ts.length) t) : Ty.WF c (t.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeBounds.lean:233:    (e : Eff) (h : Eff.WF ts.length e) : Eff.WF n (Eff.substAt 0 ts es e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeBounds.lean:255:    (t : Eff) (h : Eff.WF (c + ts.length) t) : Eff.WF c (Eff.substAt c ts es t) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:50:    (a : Ty) (h : Ty.VarsIn c (fun _ => False) a) : a.substAt c ts es = a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:62:    as.map (Ty.substAt c ts es) = as := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:71:    Ty.substAt c ts' es' (Ty.subst ts es a) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:72:      Ty.subst (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:93:    (as.map (Ty.subst ts es)).map (Ty.substAt c ts' es') =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:94:      as.map (Ty.subst (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es'))) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:123:  simp only [Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:163:    (a.shift k 0).substAt (c + k) ts es = (a.substAt c ts es).shift k 0 := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:176:    (Eff.substAt c ts es e).fails = Order.sortUnique tyCompare
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:181:    simp only [Eff.substAt, Eff.rawSubstAt, Eff.rawBind, Eff.norm, Eff.fails,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:186:    a.substAt c ts [] = a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:197:    as.map (Ty.substAt c ts []) = as := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:218:    (h : Eff.WF c e) (hc : Eff.Canonical e) : Eff.substAt c ts [] e = e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:231:    Eff.substAt c ts' es' (Eff.substAt 0 ts es a) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:232:      Eff.substAt 0 (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:234:    Eff.bind (SubstEnv.at 0 (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es'))) a
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:254:    Eff.substAt c ts es (Eff.union e f) = Eff.union (Eff.substAt c ts es e) (Eff.substAt c ts es f) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:258:    Eff.substAt c ts es Eff.empty = Eff.empty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:262:    Eff.substAt c ts es (Eff.single l) = Eff.single l :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:267:    Eff.mem (Eff.substAt c ts es e) (.name l) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:273:    Eff.substAt (c + k) ts es (Eff.shift k 0 e) = Eff.shift k 0 (Eff.substAt c ts es e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:288:    Eff.substAt c ts es (Eff.norm e) = Eff.substAt c ts es e :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:128:noncomputable def Eff.substAt (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff) : Eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:133:  noncomputable def Ty.substAt (c : Nat) (ts : List Ty) (es : List Eff) : Ty → Ty
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:137:    | .list a => .list (Ty.substAt c ts es a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:139:        .fn names (Ty.substTysAt c ts es params) (Ty.substAt c ts es ret) (Eff.substAt c ts es eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:144:    | .reference a => .reference (Ty.substAt c ts es a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:145:    | .lazy a => .lazy (Ty.substAt c ts es a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:146:    | .cont b t eff => .cont (Ty.substAt c ts es b) (Ty.substAt c ts es t) (Eff.substAt c ts es eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:147:    | .map a b => .map (Ty.substAt c ts es a) (Ty.substAt c ts es b)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:148:    | .set a => .set (Ty.substAt c ts es a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:150:    | .dict cl τ => .dict cl (Ty.substAt c ts es τ)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:162:    | a :: as => Ty.substAt c ts es a :: Ty.substTysAt c ts es as
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:166:noncomputable def Eff.substRho (es : List Eff) (e : Eff) : Eff := Eff.substAt 0 [] es e
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:183:    Ty.substTysAt c ts es as = as.map (Ty.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:145:    Eff.Sub (Eff.substAt c ts es e) (Eff.substAt c ts es f) := Eff.bind_mono (SubstEnv.at c ts es) h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:270:      t.substAt c ts es = (t.rawBind (SubstEnv.at c ts es)).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:271:    cases t <;> simp only [Ty.substAt, Ty.rawBind, Ty.norm, Ty.substAt_eq_rawBind,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:272:      Ty.substTysAt_eq_rawBindTys, Eff.substAt, Eff.rawSubstAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:298:    t.substAt c ts es = Ty.bind (SubstEnv.at c ts es) t := Ty.substAt_eq_rawBind c ts es t
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:423:    t.substAt c ts es = t.rawSubstAt c ts es := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:430:    Eff.substAt c ts es e = Eff.rawSubstAt c ts es e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:436:    Eff.substAt c ts [] (Eff.ofAtoms a) = Eff.ofAtoms a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:170:    (t.substAt c ts es).Support p := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:177:    Eff.Support p (Eff.substAt c ts es e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:514:        HasTypeCQ P B Ψ Q C Γ R (.meth v m ss es ws) (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff) Δ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:619:  t.substAt ms.tparams.length [id.target] []
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:633:        (Eff.substAt ms.tparams.length [id.target] [] ms.eff)) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:643:  have hempty : Eff.substAt 0 [] [] Eff.empty = Eff.empty := Eff.substAt_ofAtoms 0 [] _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:661:        simp [formatSig, Release.Examples.sig, Ty.subst, Ty.substAt,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:664:    simpa [formatSig, Release.Examples.sig, Ty.subst, Ty.substAt,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:380:    (h : P (substTyAt atoms c ts es a)) : P (a.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:530:    substTyAt atoms c ts es a = Ty.substAt c ts es a := substTyAt_eq c ts es a ht he ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:537:    id.methTy ms = Ty.substAt ms.tparams.length [id.target] [] := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:90:      change PatTys P ps (cd.args.map (Ty.substAt 0 ts [])) δ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:90:    substEffAt atoms c ts es e = Eff.substAt c ts es e := Finite.substEffAt_eq ht he h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:94:    substTyAt atoms c ts es a = a.substAt c ts es := Finite.substTyAt_eq ht he ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:98:    substTysAt atoms c ts es as = as.map (Ty.substAt c ts es) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:129:    Ty.AtomsIn atoms (a.substAt c ts es) := Ty.substAt_support c ts es (Ty.SupportList.iff.mp ht) he a ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckToolsExamples.lean:70:    Ty.substAt 1 [intTy] [ioEff] (.list (.tvar 1)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:67:    simpa [chooseImpl, Ty.subst, Ty.substAt, Eff.substAt, intTy] using h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:74:      (by simp [chooseSig, Ty.subst, Ty.substAt, Ty.shift, intTy])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:82:    simpa [methodValue, chooseSig, Ty.subst, Ty.substAt, Eff.substAt_empty, Ty.shift, intTy] using h (by simp [SingleTy, SingleTys, SingleEff, SingleFail, chooseSig, intTy, Ty.subst, Ty.substAt, Ty.shift, Eff.empty, Eff.fails])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:88:    have he : Eff.substAt 0 [] [] (Eff.single "Read") = Eff.single "Read" :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:92:      simpa [fnTy_eq, readOp, intTy, Ty.subst, Ty.substAt, he] using hop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:223:          simpa [chooseImpl, chooseSig, ImplDecl.methTy, ImplSig.dictTys, Ty.substAt,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:415:  · simp [dieExitSig, fnTy, Ty.subst, Ty.substAt, Ty.shift_zero 0 t ht, intTy]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:65:    substTyAt s c ts es a = a.substAt c ts es := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:72:    substEffAt s c ts es e = Eff.substAt c ts es e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:156:      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) T := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:172:      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Calls.lean:27:      Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Dict.lean:19:  have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Dict.lean:42:  have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/DictSupport.lean:34:  simp only [Function.comp_apply, Ty.subst, Ty.substAt]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:117:    simpa [hao, Ty.subst, Ty.substAt, Eff.substAt, htzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:122:    simpa [hae, Ty.subst, Ty.substAt, Eff.substAt, hetzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:131:    simpa [hae, Ty.subst, Ty.substAt, Eff.substAt, hetzero, binds] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:157:    simpa [has, Ty.subst, Ty.substAt, Eff.substAt, htzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:251:    simpa [hao, Ty.subst, Ty.substAt, Eff.substAt, htzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:256:    simpa [hae, Ty.subst, Ty.substAt, Eff.substAt, hetzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:269:      simpa [hp, Ty.subst, Ty.substAt, Eff.substAt, hetzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:273:    simpa [hr, hε, Ty.subst, Ty.substAt, Eff.substAt_empty] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:318:    simpa [has, Ty.subst, Ty.substAt, Eff.substAt, htzero] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/SubstClean.lean:11:    (a : Ty) (ha : TyOK (c + ts.length) a) : TyOK (c + n) (a.substAt c ts es) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/SubstClean.lean:34:    Ty.VarsInList (c + n) (fun _ => True) (as.map (Ty.substAt c ts es)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:330:      have heff : Eff.substAt 0 [] [] (Eff.single "Fixed") = Eff.single "Fixed" :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:336:        simpa only [fnTy_eq, fixedOp, Ty.subst, Ty.substAt, heff, List.map_nil] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:455:        have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Syntax.lean:607:  t.substAt ms.tparams.length [id.target] []
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:131:        SingleTy Q (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:133:          (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) Eff.empty
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1061:        (some (id.methTy ms ms.ret)) .tail body (id.methTy ms ms.ret) (Eff.substAt ms.tparams.length [id.target] [] ms.eff)) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1163:    simpa only [fnTy, askDecl, List.map_cons, List.map_nil, intTy, boolTy, Ty.subst, Ty.substAt, Ty.substTysAt_eq_map, List.map_map, show Eff.substAt 0 [] [] (Eff.single "Ask") = Eff.single "Ask" from he] using h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1184:        (by simp [combineSig, intTy, boolTy, Ty.subst, Ty.substAt])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1193:    have he : Eff.substAt 0 [intTy] [] Eff.empty = Eff.empty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1197:    exact h (by simp [SingleTy, SingleTys, SingleEff, SingleFail, intTy, boolTy, Ty.substAt, Eff.empty, Eff.fails])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1214:  · simpa only [intTy, boolTy, Ty.subst, Ty.substAt, Eff.substAt, List.map_cons, List.map_nil, Literal.toConst, Const.type, Eff.union, Eff.empty] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1228:  · simp [intTy, boolTy, Ty.subst, Ty.substAt]

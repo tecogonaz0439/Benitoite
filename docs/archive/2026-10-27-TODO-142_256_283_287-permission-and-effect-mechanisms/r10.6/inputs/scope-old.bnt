@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope
+function old(value: Scope.CheckedPath) -> String
+ return Scope.path(value)
+end function
+function main() -> Unit
+ bind _ <- Scope.checkPath(pattern: "/data/**", path: "/data/a")
+ bind _ <- Scope.checkHost(pattern: "*.EXAMPLE.COM", host: "API.EXAMPLE.COM")
+end function

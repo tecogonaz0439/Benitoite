@@ -1,0 +1,9 @@
+== plan: level work against df9a83396e98dc6f04fcf1b9df3e94841a8966b1 (11 changed file(s))
+   [spec_tally] because of docs/design/01-spec/01-12-core-calculus.md (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of docs/design/01-spec/01-12-core-calculus.md (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [formal_build] because of formal/Benitoite.lean (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate

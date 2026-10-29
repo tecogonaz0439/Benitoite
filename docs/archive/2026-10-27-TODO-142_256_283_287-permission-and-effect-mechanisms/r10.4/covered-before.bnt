@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.IO.File
+function target() -> Unit uses File.Read["/data/a"]
+ ()
+end function
+function main() -> Unit uses File.Read["/data/**"]
+ target()
+end function

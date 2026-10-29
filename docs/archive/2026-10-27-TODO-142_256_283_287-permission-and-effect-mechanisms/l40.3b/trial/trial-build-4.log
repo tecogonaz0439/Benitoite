@@ -1,0 +1,50 @@
+== wait-for-lock start 06:53:17
+== lock acquired 06:53:17 after 0s
+✔ [159/461] Built Benitoite.Release.Lemmas.Inversion (19s)
+✔ [161/461] Built Benitoite.Release.Lemmas.Regularity (1.7s)
+✔ [162/461] Built Benitoite.Release.Lemmas.Regularity:c.o (548ms)
+✔ [163/461] Built Benitoite.Release.Lemmas.OuterC (2.0s)
+✔ [165/461] Built Benitoite.Release.Lemmas.SubstTyping (2.5s)
+✔ [166/461] Built Benitoite.Release.Lemmas.TySubst (371ms)
+✔ [167/461] Built Benitoite.Release.Lemmas.SubstTyping:c.o (408ms)
+✔ [169/461] Built Benitoite.Release.Lemmas.StoreLemmas (737ms)
+✖ [170/461] Building Benitoite.Release.CoverageTypes (1.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/CoverageTypes.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/CoverageTypes.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/CoverageTypes.setup.json --json
+error: Benitoite/Release/CoverageTypes.lean:97:4: Alternative `checkedRequest` has not been provided
+✔ [388/461] Built Benitoite.Release.Lemmas.PresHelpers (490ms)
+✔ [389/461] Built Benitoite.Release.Lemmas.BuilderStore (588ms)
+✖ [390/461] Building Benitoite.Release.Lemmas.FailureCont (6.2s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/FailureCont.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.setup.json --json
+error: Benitoite/Release/Lemmas/FailureCont.lean:243:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+✖ [391/461] Building Benitoite.Release.Lemmas.TySubstMain (2.9s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/TySubstMain.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.setup.json --json
+error: Benitoite/Release/Lemmas/TySubstMain.lean:97:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/TySubstMain.lean:353:19: Unknown constant `Benitoite.Release.Inhabits.of_substAt`
+Some required targets logged failures:
+- Benitoite.Release.CoverageTypes
+- Benitoite.Release.Lemmas.FailureCont
+- Benitoite.Release.Lemmas.TySubstMain
+error: build failed
+       29.07 real       145.54 user         3.18 sys
+          3382968320  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              755672  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  56  voluntary context switches
+               77636  involuntary context switches
+          1782827492  instructions retired
+           771552273  cycles elapsed
+            75711640  peak memory footprint
+== exit 1

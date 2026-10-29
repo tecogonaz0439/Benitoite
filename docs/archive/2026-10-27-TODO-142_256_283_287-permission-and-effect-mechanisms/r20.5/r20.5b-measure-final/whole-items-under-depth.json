@@ -1,0 +1,177 @@
+{
+  "accepted_selected_calls": 900,
+  "bodies": [
+    {
+      "calls": 900,
+      "definition": ".sample",
+      "metrics": {
+        "body_operations": 900,
+        "max_body_items": 300,
+        "max_whole_items": 900,
+        "stops": [],
+        "whole_operations": 2700
+      },
+      "numbering_and_local_seconds": 0.002972292,
+      "numbering_candidates": [
+        {
+          "events": 9017,
+          "limit": 100000,
+          "numbering_seconds_median": 0.000050958,
+          "samples_seconds": [
+            0.0000495,
+            0.00005,
+            0.000050958,
+            0.0000515,
+            0.000052084
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 9017,
+          "limit": 200000,
+          "numbering_seconds_median": 0.000049709,
+          "samples_seconds": [
+            0.0000495,
+            0.000049667,
+            0.000049709,
+            0.000050584,
+            0.000050791
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 9017,
+          "limit": 300000,
+          "numbering_seconds_median": 0.00005025,
+          "samples_seconds": [
+            0.000049084,
+            0.000049667,
+            0.00005025,
+            0.00005075,
+            0.000050958
+          ],
+          "stopped": "None"
+        }
+      ],
+      "numbering_operations": 9017,
+      "occurrences": 3605,
+      "stopped": "None"
+    }
+  ],
+  "body_items_max": 300,
+  "body_operations_max": 900,
+  "candidates": [
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Items })",
+      "lost_ranges": 0,
+      "name": "small",
+      "numbering_operations": 9017,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": [
+        {
+          "preorder": 32,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        },
+        {
+          "preorder": 1233,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        },
+        {
+          "preorder": 2434,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        }
+      ]
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Items })",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 9017,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": [
+        {
+          "preorder": 512,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        },
+        {
+          "preorder": 1713,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        },
+        {
+          "preorder": 2914,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        }
+      ]
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 9017,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "whole-items-under-depth",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 0,
+  "limits": {
+    "body": {
+      "items": 100000,
+      "operations": 1000000
+    },
+    "whole": {
+      "items": 10000000,
+      "operations": 100000000
+    }
+  },
+  "narrow_rejections": [],
+  "occurrences": 3605,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.011578292,
+  "sha256": "079244172eae81d002c198f6f39e2e5ebb816aac614474149a889924593cba88",
+  "source_bytes": 62914,
+  "typecheck_seconds": 0.045841084,
+  "whole_items_max": 900,
+  "whole_operations_total": 2700
+}

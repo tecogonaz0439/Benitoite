@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.IO.File
+uses File.Read["/data/**"]
+function main() -> Unit uses File.Write["/out/x.txt"]
+end function

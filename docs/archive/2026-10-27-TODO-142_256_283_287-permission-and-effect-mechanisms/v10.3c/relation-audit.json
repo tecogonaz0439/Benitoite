@@ -1,0 +1,3095 @@
+{
+  "checkedAt": "2026-10-30T08:00:15.337883+09:00",
+  "base": "7179a3026fcf2b463c1ec933aefd23256be6dc93",
+  "head": "5de2594ad523fba4f38fa63f7a1b306e8a23eb0c",
+  "baselineSourceFiles": 4680,
+  "matched": 4678,
+  "changed": [
+    {
+      "path": "crates/benitoite/src/typeck/tests/interpolation_formats.rs",
+      "expected": "e5eb7a4afcecd4e7917ccb4ca2d4d37899d86e7caa5086b56d9928c1db79015f",
+      "actual": "3ff1c64e8580c6d2badde904158a901337dbee3246991abe1a52e61c31a0f675"
+    },
+    {
+      "path": "crates/benitoite/tests/scope_annotations.rs",
+      "expected": "f41cc03945802a13f37907f1766893e869ebddb0086e71b0be0187c9fc9c579c",
+      "actual": "e9e2decb0718557cc2d9fd5cd6841c6fdf2ef5c3f4fcafdd4debce0e9272466a"
+    }
+  ],
+  "missing": [],
+  "formal": [
+    {
+      "path": "formal/.lake/build/bin/builtinCheck",
+      "expected": "be56b7e8ed17f3aad50d0bc7d2040afda6e5d0b571abce441966a558fc1b001b",
+      "actual": "be56b7e8ed17f3aad50d0bc7d2040afda6e5d0b571abce441966a558fc1b001b",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/coverageDiff",
+      "expected": "414952573e6aef85dd141019289cdf618e628534d923d787bc0ce0265aa0f40f",
+      "actual": "414952573e6aef85dd141019289cdf618e628534d923d787bc0ce0265aa0f40f",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/coverageProgramDiff",
+      "expected": "87644040a5cfd2ec5615ae98399a691ba298e4ce01498dc7228856881809e021",
+      "actual": "87644040a5cfd2ec5615ae98399a691ba298e4ce01498dc7228856881809e021",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/desugarDiff",
+      "expected": "3150df168046e6c4a69d63ddde07e3ef558e2e30ffbd7228cfb3f275bad24e7f",
+      "actual": "3150df168046e6c4a69d63ddde07e3ef558e2e30ffbd7228cfb3f275bad24e7f",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/intervalDiff",
+      "expected": "8d136d3ec816c2c46ac9910d32d711c7b7f4100e082ecb989b58aea305fd6b52",
+      "actual": "8d136d3ec816c2c46ac9910d32d711c7b7f4100e082ecb989b58aea305fd6b52",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/surfaceCheck",
+      "expected": "967c8a654ba88a24ef8b52d984c2387d867c8ac81a07ed59da2627aef3e9e18e",
+      "actual": "967c8a654ba88a24ef8b52d984c2387d867c8ac81a07ed59da2627aef3e9e18e",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/surfaceCheckAll",
+      "expected": "adc9328681838baf58053cff432a84a8cd287acda36f0136bc8fb1014030936e",
+      "actual": "adc9328681838baf58053cff432a84a8cd287acda36f0136bc8fb1014030936e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite.lean",
+      "expected": "503c513e3d5b78709e463ef363fef75abb72be5d8c02044b335d5e9f11a7cae7",
+      "actual": "503c513e3d5b78709e463ef363fef75abb72be5d8c02044b335d5e9f11a7cae7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Checked/Access.lean",
+      "expected": "e6a476056d5889fa5e2e38a8169932d58a6e47ea6e1542e62b4b75de6467836f",
+      "actual": "e6a476056d5889fa5e2e38a8169932d58a6e47ea6e1542e62b4b75de6467836f",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Checked/ListIndex.lean",
+      "expected": "f0061e5e869b442de262690bfb31f71290f6e9dadfa7b060ae97fe43521503c9",
+      "actual": "f0061e5e869b442de262690bfb31f71290f6e9dadfa7b060ae97fe43521503c9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Checked/ListLength.lean",
+      "expected": "66d654c5dfcc42b83144db2f31d1669f4f0d4cfee6d9cb2e8423da07c0064cc9",
+      "actual": "66d654c5dfcc42b83144db2f31d1669f4f0d4cfee6d9cb2e8423da07c0064cc9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Checked/NonEmptyList.lean",
+      "expected": "40272b5b730c7522b708ebcc5e5eef5f0e805fe568286e565b44aaaf1b26b371",
+      "actual": "40272b5b730c7522b708ebcc5e5eef5f0e805fe568286e565b44aaaf1b26b371",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Checked/Range.lean",
+      "expected": "1b2078a41019eef398a77592faa948a59de379ede6fd5ad9b7c22cd0b5dfab3b",
+      "actual": "1b2078a41019eef398a77592faa948a59de379ede6fd5ad9b7c22cd0b5dfab3b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Checked/Scope.lean",
+      "expected": "6d5a795317a2029a54c5398e2458aea630c4c2bfd19578189685439e75640e56",
+      "actual": "6d5a795317a2029a54c5398e2458aea630c4c2bfd19578189685439e75640e56",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Assumptions.lean",
+      "expected": "b8ff44048d1441ab6691ae448107e96ea369f8c79cceacd8a3b142ea851aa702",
+      "actual": "b8ff44048d1441ab6691ae448107e96ea369f8c79cceacd8a3b142ea851aa702",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Examples.lean",
+      "expected": "5392e9aa8fbf6aa60e6e7493f05227aa004fb21ca4013f58e1c7bb0f8bdc392d",
+      "actual": "5392e9aa8fbf6aa60e6e7493f05227aa004fb21ca4013f58e1c7bb0f8bdc392d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+      "expected": "976302b6e7688b5c2f4219f3dc2172d5e6dfd0b2f609b0c2a3a5a58727d1e222",
+      "actual": "976302b6e7688b5c2f4219f3dc2172d5e6dfd0b2f609b0c2a3a5a58727d1e222",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+      "expected": "7512ff93871d4f7f97af322bd4877c8bf45d4c02580789b4f2fa9fdc1eaddedc",
+      "actual": "7512ff93871d4f7f97af322bd4877c8bf45d4c02580789b4f2fa9fdc1eaddedc",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/Compose.lean",
+      "expected": "f26894297ae4425f57ac54ad2d37c3f1ee7148fa000c3d6af968f2ae13c7f26e",
+      "actual": "f26894297ae4425f57ac54ad2d37c3f1ee7148fa000c3d6af968f2ae13c7f26e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+      "expected": "04768bcb0f66501abd09f9bafb74b0b3aafe632a392f5a7a8677050aa901e577",
+      "actual": "04768bcb0f66501abd09f9bafb74b0b3aafe632a392f5a7a8677050aa901e577",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+      "expected": "28e11e9d490f339dee4caa9984309f0e3a4c84b323e232a897f4822b38d6f772",
+      "actual": "28e11e9d490f339dee4caa9984309f0e3a4c84b323e232a897f4822b38d6f772",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/Rename.lean",
+      "expected": "b1c99e9c290a4ba74fd57dfd720d5fc3b3ed5a5ee190526932cfaf4402320f0e",
+      "actual": "b1c99e9c290a4ba74fd57dfd720d5fc3b3ed5a5ee190526932cfaf4402320f0e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/SubstTyping.lean",
+      "expected": "0dff2b5cafee5a8c2c44c425f699e1da76288d25613e4303b9560899dc975f32",
+      "actual": "0dff2b5cafee5a8c2c44c425f699e1da76288d25613e4303b9560899dc975f32",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Lemmas/TySubst.lean",
+      "expected": "3ea6c5b279d4819f4a1f87a2700885cb19390f9cae0d8237d2f10840092ee76c",
+      "actual": "3ea6c5b279d4819f4a1f87a2700885cb19390f9cae0d8237d2f10840092ee76c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Semantics.lean",
+      "expected": "56e71e377f6c501e44986b50b89dc36d01717215bb69c6577c0191753f10e545",
+      "actual": "56e71e377f6c501e44986b50b89dc36d01717215bb69c6577c0191753f10e545",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Subst.lean",
+      "expected": "51039410b6ac969d92b3d99e357c5531f121739a1de8332da3b3a93f0d27b156",
+      "actual": "51039410b6ac969d92b3d99e357c5531f121739a1de8332da3b3a93f0d27b156",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Syntax.lean",
+      "expected": "5af519712cf3a502f2faae2dd35941162b0ee1e6977cddbd384fd02abe1255a1",
+      "actual": "5af519712cf3a502f2faae2dd35941162b0ee1e6977cddbd384fd02abe1255a1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Theorems.lean",
+      "expected": "2041e3a25ef737450cedcb43b544125e5bf0215beab00046f0a5f9f8b2e724ce",
+      "actual": "2041e3a25ef737450cedcb43b544125e5bf0215beab00046f0a5f9f8b2e724ce",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/Typing.lean",
+      "expected": "1961dedf7c1c9357d8716bb9a7c72d4766f2a855f5ba125d2e7399c90e7dd590",
+      "actual": "1961dedf7c1c9357d8716bb9a7c72d4766f2a855f5ba125d2e7399c90e7dd590",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Core/WellFormed.lean",
+      "expected": "b50babbe487eda9d33e36a793973f588f5ee9d89796a5250ddab28323aaaabaf",
+      "actual": "b50babbe487eda9d33e36a793973f588f5ee9d89796a5250ddab28323aaaabaf",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/BuilderExamples.lean",
+      "expected": "123604369a7ab504668b453e487f5f38464acabdb9751157796466288a57d62c",
+      "actual": "123604369a7ab504668b453e487f5f38464acabdb9751157796466288a57d62c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Builtins.lean",
+      "expected": "c518a1b2895870a4572b2a24e493faae706d02273c77c953b86b6dce86358571",
+      "actual": "c518a1b2895870a4572b2a24e493faae706d02273c77c953b86b6dce86358571",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/CheckInput.lean",
+      "expected": "691c3c16c530222ab83a75e03f4431cf368626bc9a214ea228e99d9246ec5cd4",
+      "actual": "691c3c16c530222ab83a75e03f4431cf368626bc9a214ea228e99d9246ec5cd4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Convert.lean",
+      "expected": "f4bb98a0fb87833229538a7948b8f2a7747a334c60f096d59f724b0e0f8f7982",
+      "actual": "f4bb98a0fb87833229538a7948b8f2a7747a334c60f096d59f724b0e0f8f7982",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/FormatExamples.lean",
+      "expected": "152582193cea5829c7ada1698ceb67320650c3f295d2ce60ff85458d7bc6dab1",
+      "actual": "152582193cea5829c7ada1698ceb67320650c3f295d2ce60ff85458d7bc6dab1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/IntegerExamples.lean",
+      "expected": "e22156eb7cf451f1e40ac16dc2f73b48e6db4a993383b895e90d4143c3c89cec",
+      "actual": "e22156eb7cf451f1e40ac16dc2f73b48e6db4a993383b895e90d4143c3c89cec",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Observe.lean",
+      "expected": "7913cd5c99b1b0032cf6451533cf0d8e13f03181ed0f62532335de8478cc937e",
+      "actual": "7913cd5c99b1b0032cf6451533cf0d8e13f03181ed0f62532335de8478cc937e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/ObserveExamples.lean",
+      "expected": "e5f5f94aac12f18ab12315893241a01908f0aa370f15d1567c9ea184fda5804c",
+      "actual": "e5f5f94aac12f18ab12315893241a01908f0aa370f15d1567c9ea184fda5804c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Range.lean",
+      "expected": "0be5711329044267078d6e306a4b6520cc16a1e9f018f176daaae93551340c77",
+      "actual": "0be5711329044267078d6e306a4b6520cc16a1e9f018f176daaae93551340c77",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/RangeExamples.lean",
+      "expected": "aaa86173c61fa3060883a9777c2b46f53ec5034c1e5cae98768716acf2ce7e8b",
+      "actual": "aaa86173c61fa3060883a9777c2b46f53ec5034c1e5cae98768716acf2ce7e8b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Syntax.lean",
+      "expected": "18cd8b134a9ae78e471d6c3dd55e02d85817656d3dd5e8c1e3b6b57d0d5fa038",
+      "actual": "18cd8b134a9ae78e471d6c3dd55e02d85817656d3dd5e8c1e3b6b57d0d5fa038",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Version.lean",
+      "expected": "7e186657dde51635bb2daa30dfd53b664a7cdbe39aa8f57be76e3507825b7384",
+      "actual": "7e186657dde51635bb2daa30dfd53b664a7cdbe39aa8f57be76e3507825b7384",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Analyze.lean",
+      "expected": "0e4942159f500d7e7bda01be044e91928963e659934db4552f087c71bb9a86c1",
+      "actual": "0e4942159f500d7e7bda01be044e91928963e659934db4552f087c71bb9a86c1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Arithmetic.lean",
+      "expected": "2ebc5f3e9206d12835f5c1bbbcce2df6df05dd5afbc3ef653ea331ab16ee21d5",
+      "actual": "2ebc5f3e9206d12835f5c1bbbcce2df6df05dd5afbc3ef653ea331ab16ee21d5",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BindingScope.lean",
+      "expected": "157530593bfdf76e904dff1c69b776ca4c037de154a1b81b8d418810197fe80f",
+      "actual": "157530593bfdf76e904dff1c69b776ca4c037de154a1b81b8d418810197fe80f",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Budget.lean",
+      "expected": "f3bc4bae3c2d542d24ea5707dd38793cb936070de6ed7650d2edcc7989c103b7",
+      "actual": "f3bc4bae3c2d542d24ea5707dd38793cb936070de6ed7650d2edcc7989c103b7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetAnalysisExamples.lean",
+      "expected": "b0c813de56711a6d80b25d174623f5062758db9240e05f985b66dc8b8f7cf33d",
+      "actual": "b0c813de56711a6d80b25d174623f5062758db9240e05f985b66dc8b8f7cf33d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetAnalyze.lean",
+      "expected": "e05a3fb0c3ad0388a27d3945cff574a14aef4b5ea5f14e7d62802f42c0687087",
+      "actual": "e05a3fb0c3ad0388a27d3945cff574a14aef4b5ea5f14e7d62802f42c0687087",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetBody.lean",
+      "expected": "520eb9a0b136c54ea12f9a3fa262522bf48ad264df709342d733927a665eafd3",
+      "actual": "520eb9a0b136c54ea12f9a3fa262522bf48ad264df709342d733927a665eafd3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetCallReach.lean",
+      "expected": "4862d7a46b25b00ad1b7fe6080b1a5b969761b1de34313eeced564d4ae6b230c",
+      "actual": "4862d7a46b25b00ad1b7fe6080b1a5b969761b1de34313eeced564d4ae6b230c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetCause.lean",
+      "expected": "e49f1471bcab22559e2e9af2d63b2b5645d1e0a2e5d1350cc137e10651919535",
+      "actual": "e49f1471bcab22559e2e9af2d63b2b5645d1e0a2e5d1350cc137e10651919535",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetChildren.lean",
+      "expected": "d332f148114006f983a8a5cb7d912bb233447c267d26fc67e47d31d55936c837",
+      "actual": "d332f148114006f983a8a5cb7d912bb233447c267d26fc67e47d31d55936c837",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetChildrenExamples.lean",
+      "expected": "3b876915df6693612d9b2b464d1385d9cd1a6e0c0fa5fdbdbdd4033a79b296e8",
+      "actual": "3b876915df6693612d9b2b464d1385d9cd1a6e0c0fa5fdbdbdd4033a79b296e8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetCount.lean",
+      "expected": "26febbc5e862a21c3711f8f4aff51cd9f4821298968a1a54086a7193e8e331af",
+      "actual": "26febbc5e862a21c3711f8f4aff51cd9f4821298968a1a54086a7193e8e331af",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetDiscover.lean",
+      "expected": "1c0ea7ce0bffd70b5100ef01c58ffa7b2f048e18698feb4c08d13f6eef2ebf4a",
+      "actual": "1c0ea7ce0bffd70b5100ef01c58ffa7b2f048e18698feb4c08d13f6eef2ebf4a",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetDiscoverProof.lean",
+      "expected": "b48485c194c436cd2a8a5ae52b85fcea9c0f0dfb0dca1e8e22e6eceb50e1d5df",
+      "actual": "b48485c194c436cd2a8a5ae52b85fcea9c0f0dfb0dca1e8e22e6eceb50e1d5df",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetDiscoveryExamples.lean",
+      "expected": "5d61fe1008497826f82500605aedb88e88b71d43d6af2617cec7cd0f5e7820f3",
+      "actual": "5d61fe1008497826f82500605aedb88e88b71d43d6af2617cec7cd0f5e7820f3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetDomainScan.lean",
+      "expected": "715e071c385cb1701964f9d6e47fc2ea3e124c0727630da8cda0b36a83cd1e68",
+      "actual": "715e071c385cb1701964f9d6e47fc2ea3e124c0727630da8cda0b36a83cd1e68",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetEnvironment.lean",
+      "expected": "04a4608a47210e6fd1d3b8c34cbe1ab5998bb3c25cb78247161f3b33e17be456",
+      "actual": "04a4608a47210e6fd1d3b8c34cbe1ab5998bb3c25cb78247161f3b33e17be456",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetExamples.lean",
+      "expected": "90f320a81097546b02c745ba0d279a12a8e52cef07aabf7f711c3347d76151c0",
+      "actual": "90f320a81097546b02c745ba0d279a12a8e52cef07aabf7f711c3347d76151c0",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetIndependent.lean",
+      "expected": "a0d77a5195083e6e58d58fe33cbb45d53dced5e3ce39e1f24e63f18f37c48d45",
+      "actual": "a0d77a5195083e6e58d58fe33cbb45d53dced5e3ce39e1f24e63f18f37c48d45",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetIndependentExamples.lean",
+      "expected": "6e6bb9432a4882f4abac1519c29baf24d5de68ca6e5836406dad12b6dadbff33",
+      "actual": "6e6bb9432a4882f4abac1519c29baf24d5de68ca6e5836406dad12b6dadbff33",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetIndependentPosition.lean",
+      "expected": "80f8eeaca6fbe4c3a584cf087fe2ea4215e8922a5d6144dbc7ea08bd4ff1b09d",
+      "actual": "80f8eeaca6fbe4c3a584cf087fe2ea4215e8922a5d6144dbc7ea08bd4ff1b09d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetIndependentRun.lean",
+      "expected": "92748822411cf5e9594e339cd933f2a1c3c0432fe8a594bc5ff6a7ec86e68db1",
+      "actual": "92748822411cf5e9594e339cd933f2a1c3c0432fe8a594bc5ff6a7ec86e68db1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetIndependentSound.lean",
+      "expected": "a165b1b4f457649edfbc2a1582ef4c04a74f5d5cb4539eabdecf5ce5c5d75e19",
+      "actual": "a165b1b4f457649edfbc2a1582ef4c04a74f5d5cb4539eabdecf5ce5c5d75e19",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetLocated.lean",
+      "expected": "eb3a2dcc786a110e5d47d1a2a7e23e31c551c98b7020bd05d7003434001e51fc",
+      "actual": "eb3a2dcc786a110e5d47d1a2a7e23e31c551c98b7020bd05d7003434001e51fc",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetNormal.lean",
+      "expected": "37c7eaf6e0a71bef46fa45be517e5127f58834b8257a3ac04281a0754da234aa",
+      "actual": "37c7eaf6e0a71bef46fa45be517e5127f58834b8257a3ac04281a0754da234aa",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetPatterns.lean",
+      "expected": "85cb9ebfb22e5a0be9c5cbc864f434e9ec0f09a7cfa51a6ca1eabadbb8dcd9a3",
+      "actual": "85cb9ebfb22e5a0be9c5cbc864f434e9ec0f09a7cfa51a6ca1eabadbb8dcd9a3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetProof.lean",
+      "expected": "ae37eb14c522ec66a3194700b7c9d7b7a3bb1d38095cae31470b1ad598f72f07",
+      "actual": "ae37eb14c522ec66a3194700b7c9d7b7a3bb1d38095cae31470b1ad598f72f07",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetRange.lean",
+      "expected": "dd46fa879e5619aadd8a84461ac08616f7fc93273c201ab705fb158a2e4d70e3",
+      "actual": "dd46fa879e5619aadd8a84461ac08616f7fc93273c201ab705fb158a2e4d70e3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetRangeBorrow.lean",
+      "expected": "f89846e24c89bcc099b68e360611f705d0d417b749d550b18d51d67007d6ff14",
+      "actual": "f89846e24c89bcc099b68e360611f705d0d417b749d550b18d51d67007d6ff14",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetReach.lean",
+      "expected": "729bfacd7e56db8caed40cd97ff06414a46e117aa3fa3250312093fd99cdceb2",
+      "actual": "729bfacd7e56db8caed40cd97ff06414a46e117aa3fa3250312093fd99cdceb2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetScan.lean",
+      "expected": "dc5e3f145900e89bb94cf7d5e8fb9e3326270a4198395fdcf18f4c9d30badf44",
+      "actual": "dc5e3f145900e89bb94cf7d5e8fb9e3326270a4198395fdcf18f4c9d30badf44",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetScanExamples.lean",
+      "expected": "7fc14d71aeab307df52a0c3f135b88e7a181ace016600b6be67eb3b98e51e492",
+      "actual": "7fc14d71aeab307df52a0c3f135b88e7a181ace016600b6be67eb3b98e51e492",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetSelect.lean",
+      "expected": "b8c73c92c78a339eb98efd973ba8867b27371e35bcfdb6a4b2f39e4420220959",
+      "actual": "b8c73c92c78a339eb98efd973ba8867b27371e35bcfdb6a4b2f39e4420220959",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetSound.lean",
+      "expected": "4760c370182cf47d2a33d640925d19e486ae0038c0935b87f4b3b8eb3dff8953",
+      "actual": "4760c370182cf47d2a33d640925d19e486ae0038c0935b87f4b3b8eb3dff8953",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetTraversal.lean",
+      "expected": "58c4e88aac57fbf0e31e4efd5df2a69b45aa9adc51babdeab1fe4a5ac8cc0b97",
+      "actual": "58c4e88aac57fbf0e31e4efd5df2a69b45aa9adc51babdeab1fe4a5ac8cc0b97",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetWalk.lean",
+      "expected": "0cbaa3ad76b56536e1b7531960d4f1bd05358b6987ada4722d74d1576d98eff0",
+      "actual": "0cbaa3ad76b56536e1b7531960d4f1bd05358b6987ada4722d74d1576d98eff0",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetWhole.lean",
+      "expected": "9b1a514b2086800cd5e5001b5d15c901fe158c4fd089c7177c630c5b17341863",
+      "actual": "9b1a514b2086800cd5e5001b5d15c901fe158c4fd089c7177c630c5b17341863",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/BudgetWholeExamples.lean",
+      "expected": "633cc522c3252598ddb3043d9166f93625f46aa68cbb9ae78d0a6ab809d412fd",
+      "actual": "633cc522c3252598ddb3043d9166f93625f46aa68cbb9ae78d0a6ab809d412fd",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallReach.lean",
+      "expected": "10729ead489c5ed756abcf8ffdfe1df2969c3d3091e2753d137674a5a9e7c1f4",
+      "actual": "10729ead489c5ed756abcf8ffdfe1df2969c3d3091e2753d137674a5a9e7c1f4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallReachIndependent.lean",
+      "expected": "ebb33a0b70860795db943d4c215046c336460a435f2b41016a147208b28017db",
+      "actual": "ebb33a0b70860795db943d4c215046c336460a435f2b41016a147208b28017db",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallReachSound.lean",
+      "expected": "37e355cc12eb96f8a1a1596c09bab75d97b6bb98b3e1c17d2aeaf3a81ec66006",
+      "actual": "37e355cc12eb96f8a1a1596c09bab75d97b6bb98b3e1c17d2aeaf3a81ec66006",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallReachWhole.lean",
+      "expected": "03c36853e1af06bd689297c54844800de6c0ec7aa36e36b0a824195e4774c6dc",
+      "actual": "03c36853e1af06bd689297c54844800de6c0ec7aa36e36b0a824195e4774c6dc",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/CallTables.lean",
+      "expected": "de7a0e5e4e772f0a3ce6399eb5241e2da2204fd061fb709fecedb134670f4988",
+      "actual": "de7a0e5e4e772f0a3ce6399eb5241e2da2204fd061fb709fecedb134670f4988",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Domain.lean",
+      "expected": "ceae764ac0ea18b3cb60d9cf3c000707f647eb03cb1505a06e164baad27cfb35",
+      "actual": "ceae764ac0ea18b3cb60d9cf3c000707f647eb03cb1505a06e164baad27cfb35",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/DomainExamples.lean",
+      "expected": "0288218254ba318ef385b767e777d54f5a2e14a57319c6790dc9c00139f874ef",
+      "actual": "0288218254ba318ef385b767e777d54f5a2e14a57319c6790dc9c00139f874ef",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Environment.lean",
+      "expected": "22812b854ac39d520884b5f073c422029cd947ffaf32dc08f80806045ab63dd7",
+      "actual": "22812b854ac39d520884b5f073c422029cd947ffaf32dc08f80806045ab63dd7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Eval.lean",
+      "expected": "942317cd760d636a2892de63de461b19b3ddfcfb795545c61a87b668b1abd6d1",
+      "actual": "942317cd760d636a2892de63de461b19b3ddfcfb795545c61a87b668b1abd6d1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/EvalClosed.lean",
+      "expected": "609e11b3450a0ccc782ab437e59f679b91e843d448324e954324541fcda0e003",
+      "actual": "609e11b3450a0ccc782ab437e59f679b91e843d448324e954324541fcda0e003",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Examples.lean",
+      "expected": "fa79b6cc863ec8f46a8692754ba2418893938bc7061b92c1a27f98eb46edff9f",
+      "actual": "fa79b6cc863ec8f46a8692754ba2418893938bc7061b92c1a27f98eb46edff9f",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Exchange.lean",
+      "expected": "d4c4133cbe3ec31193eeb480bf522f48020e22ad16a6d0a6481b8a9df3877d44",
+      "actual": "d4c4133cbe3ec31193eeb480bf522f48020e22ad16a6d0a6481b8a9df3877d44",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/ExchangeExamples.lean",
+      "expected": "b18e21747e3f4d17484af7dca500d37923676fd4e0dd5e361bedbf08b11051d4",
+      "actual": "b18e21747e3f4d17484af7dca500d37923676fd4e0dd5e361bedbf08b11051d4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/FixedDomain.lean",
+      "expected": "c8b784c69a46a4fae5d01135689332302f2952fd735e9618b6dd98488378a75e",
+      "actual": "c8b784c69a46a4fae5d01135689332302f2952fd735e9618b6dd98488378a75e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/FixedDomainExamples.lean",
+      "expected": "044165fcf75e6c73d3861bead91d178aefda4a489cc8bc4fe21494be4b95116a",
+      "actual": "044165fcf75e6c73d3861bead91d178aefda4a489cc8bc4fe21494be4b95116a",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Flow.lean",
+      "expected": "78202fdfd5ce689090e81f3fff92165325a556000eb7ece6a5b735bf1080bd44",
+      "actual": "78202fdfd5ce689090e81f3fff92165325a556000eb7ece6a5b735bf1080bd44",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/FlowExamples.lean",
+      "expected": "5dc75e75530f65f4b11099335b71f0aa1d742fc47010aa5feb54ee89fd655727",
+      "actual": "5dc75e75530f65f4b11099335b71f0aa1d742fc47010aa5feb54ee89fd655727",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Identity.lean",
+      "expected": "f122332bc250eb11f6d99d32948489ff968baa5b71dc2964dfd9aa5715558cfe",
+      "actual": "f122332bc250eb11f6d99d32948489ff968baa5b71dc2964dfd9aa5715558cfe",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/IdentityExamples.lean",
+      "expected": "2a1f04ab05c78d0c012375cbd119471c65423398faa21df83ae1ad9f8d196c52",
+      "actual": "2a1f04ab05c78d0c012375cbd119471c65423398faa21df83ae1ad9f8d196c52",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Range.lean",
+      "expected": "41b931f0badcdc6728a8150e67d6fddb8b836d6ac91494059e73693d426b8c00",
+      "actual": "41b931f0badcdc6728a8150e67d6fddb8b836d6ac91494059e73693d426b8c00",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/RangeBorrowed.lean",
+      "expected": "9d8680042f2ee9d381ca2ba0f8284517dab405f230897a5b81fd841c29bb5c55",
+      "actual": "9d8680042f2ee9d381ca2ba0f8284517dab405f230897a5b81fd841c29bb5c55",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/RangeState.lean",
+      "expected": "caea0825940212559735d3ce91e3296252fe1bb2400cd183e6635dd02f993cc6",
+      "actual": "caea0825940212559735d3ce91e3296252fe1bb2400cd183e6635dd02f993cc6",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/Sound.lean",
+      "expected": "5730c33a90ee78c6b632dc10026695005491a321a219b2b70be10c9b66721d49",
+      "actual": "5730c33a90ee78c6b632dc10026695005491a321a219b2b70be10c9b66721d49",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/SyntacticReach.lean",
+      "expected": "da3d469f523ebe1a47a38735a78d3da8796404afe30e309e65bba3f3e6c7438e",
+      "actual": "da3d469f523ebe1a47a38735a78d3da8796404afe30e309e65bba3f3e6c7438e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/SyntacticReachExamples.lean",
+      "expected": "744f414eff2e057160d332605d600585a6c290fe2a9f9aa0844c3ebe11065a47",
+      "actual": "744f414eff2e057160d332605d600585a6c290fe2a9f9aa0844c3ebe11065a47",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Interval/TablePreservation.lean",
+      "expected": "e9a38b99606d5e2f882405a36cc319ab24981fc541dff486ae8993c644d53645",
+      "actual": "e9a38b99606d5e2f882405a36cc319ab24981fc541dff486ae8993c644d53645",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Library/ResultLaws.lean",
+      "expected": "a436b844421e9206af6c499af6579b9694de57e0def04e9e47b449d5977d6fa9",
+      "actual": "a436b844421e9206af6c499af6579b9694de57e0def04e9e47b449d5977d6fa9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Admissible.lean",
+      "expected": "b69b157a654dd18eb8d25989a68fde9e92ae0ab80138630b939a713443327471",
+      "actual": "b69b157a654dd18eb8d25989a68fde9e92ae0ab80138630b939a713443327471",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Assumptions.lean",
+      "expected": "e2eed4915abba8ed2ed3a2e35e2b1596b2a64234cad84b68abd5ea77da6b7bed",
+      "actual": "e2eed4915abba8ed2ed3a2e35e2b1596b2a64234cad84b68abd5ea77da6b7bed",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Atom.lean",
+      "expected": "b05ab8faacb19142c4aa37a8ea96bd3051c9c0f6f1ce33307cdb270374a74df3",
+      "actual": "b05ab8faacb19142c4aa37a8ea96bd3051c9c0f6f1ce33307cdb270374a74df3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/BuilderContents.lean",
+      "expected": "09ba454c09b2b71fbcbeaa236dbc764af74c193546297eea353ceb1b0ca9e3c9",
+      "actual": "09ba454c09b2b71fbcbeaa236dbc764af74c193546297eea353ceb1b0ca9e3c9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/BuilderExamples.lean",
+      "expected": "87837e56823996a7eccab613fb8e2fc669f9a7b3d67dc263621fcce5e10bea52",
+      "actual": "87837e56823996a7eccab613fb8e2fc669f9a7b3d67dc263621fcce5e10bea52",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/BuilderExec.lean",
+      "expected": "c8060c785fe1940b620043be5fe7924e5de8558ada2c833fac09b93dd5a44ef8",
+      "actual": "c8060c785fe1940b620043be5fe7924e5de8558ada2c833fac09b93dd5a44ef8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/BuiltinTable.lean",
+      "expected": "2972c97d3dc96282a688b56767f672e8a62dd35aeb21dee1f6594e3322592e0e",
+      "actual": "2972c97d3dc96282a688b56767f672e8a62dd35aeb21dee1f6594e3322592e0e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverCompat.lean",
+      "expected": "378b7a9672f9fb404ca790cf1201c441265a5998516e9079e5d69eb86a0da5fa",
+      "actual": "378b7a9672f9fb404ca790cf1201c441265a5998516e9079e5d69eb86a0da5fa",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverExamples.lean",
+      "expected": "9ca812b3350ef584765d5e40dded22900636183567f6c4c537d493a642c6d35d",
+      "actual": "9ca812b3350ef584765d5e40dded22900636183567f6c4c537d493a642c6d35d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Coverage.lean",
+      "expected": "3031b26d7622fcdaa3eea23aeeeb7a7a9bff45904b9f36166bd6258e8642b3bf",
+      "actual": "3031b26d7622fcdaa3eea23aeeeb7a7a9bff45904b9f36166bd6258e8642b3bf",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageExtension.lean",
+      "expected": "4ccc7887d0668ad5e87b9b72f6a22673f1609c1ca09919182141faa80f097b39",
+      "actual": "4ccc7887d0668ad5e87b9b72f6a22673f1609c1ca09919182141faa80f097b39",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageIntegerExamples.lean",
+      "expected": "6ddb45e135ecdede2c1e8d31b693a8ad5659a0d03a70a4d5ac1c6e484319a701",
+      "actual": "6ddb45e135ecdede2c1e8d31b693a8ad5659a0d03a70a4d5ac1c6e484319a701",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageShow.lean",
+      "expected": "e7c69c8a5fa4fa2d4083e2d84f6ca2b213757e8b0e2528e3be2ab409dc861219",
+      "actual": "e7c69c8a5fa4fa2d4083e2d84f6ca2b213757e8b0e2528e3be2ab409dc861219",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageTypes.lean",
+      "expected": "7dfc055528c96440be5e025c567024ad5bc8643e9b1ba3cc16b96152c8209925",
+      "actual": "7dfc055528c96440be5e025c567024ad5bc8643e9b1ba3cc16b96152c8209925",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "expected": "0adcdead2f646dac74c2891a0fd921830f116531b1659fe1007b90e05d8efbfe",
+      "actual": "0adcdead2f646dac74c2891a0fd921830f116531b1659fe1007b90e05d8efbfe",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/EffectCover.lean",
+      "expected": "952a0fe5ccdd531fb90caec712e3223c9a371fa401ede41a68312457c6a4cd01",
+      "actual": "952a0fe5ccdd531fb90caec712e3223c9a371fa401ede41a68312457c6a4cd01",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/EffectCoverDef.lean",
+      "expected": "667141d99a9a69a174657e0ad1cfe4c207f9df7e3f5b405e830a9f6ebe8dba54",
+      "actual": "667141d99a9a69a174657e0ad1cfe4c207f9df7e3f5b405e830a9f6ebe8dba54",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Examples.lean",
+      "expected": "a91d3222987f6ddae4b295d80fc81cbcb95352dd2466dd67058db570e1ac7bda",
+      "actual": "a91d3222987f6ddae4b295d80fc81cbcb95352dd2466dd67058db570e1ac7bda",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/FailureEffects.lean",
+      "expected": "dc2deb2ebde5182635585c367cf0f221e36d34541b2a32eb7ade8fcb8267eac0",
+      "actual": "dc2deb2ebde5182635585c367cf0f221e36d34541b2a32eb7ade8fcb8267eac0",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/FailureExamples.lean",
+      "expected": "517a062af58ec27bfa94d00119478b178b2383dc358aa0b9a37dcb5703a80f11",
+      "actual": "517a062af58ec27bfa94d00119478b178b2383dc358aa0b9a37dcb5703a80f11",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "expected": "40757197839a5dd88cb563d09260e6832446f2e881650d051e082fb727204150",
+      "actual": "40757197839a5dd88cb563d09260e6832446f2e881650d051e082fb727204150",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "expected": "3955de7bcca6e0f2e18e17c55e1f8b1a9e5b34609d5e32b6a1b7e2c2621d31a1",
+      "actual": "3955de7bcca6e0f2e18e17c55e1f8b1a9e5b34609d5e32b6a1b7e2c2621d31a1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/HandlerTargetExamples.lean",
+      "expected": "daf9f37d51815bfde2d6718d5dbd60735c1f6f7fbc07d3d7bc685e1721280450",
+      "actual": "daf9f37d51815bfde2d6718d5dbd60735c1f6f7fbc07d3d7bc685e1721280450",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/LegacyCheck.lean",
+      "expected": "ebeaf58e685928fb970eb543dd2a89526669ca74f4b7e09208c979a46779c595",
+      "actual": "ebeaf58e685928fb970eb543dd2a89526669ca74f4b7e09208c979a46779c595",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "expected": "3353ce9b0508ed047969d8cf0070af5b14d5310601486820563878944abd187c",
+      "actual": "3353ce9b0508ed047969d8cf0070af5b14d5310601486820563878944abd187c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/BuilderStore.lean",
+      "expected": "e5470aadc29751f0ea955453791ec38f0a4dfc6538b9239af5afdcfdf08da9ff",
+      "actual": "e5470aadc29751f0ea955453791ec38f0a4dfc6538b9239af5afdcfdf08da9ff",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+      "expected": "1d065c5442169d0aec6aebbb3e1ecbf80cadc011080d55ada8bd819d27ef8039",
+      "actual": "1d065c5442169d0aec6aebbb3e1ecbf80cadc011080d55ada8bd819d27ef8039",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+      "expected": "3b24ea3884a2eadda8aadad0d91f6b910aa8b29fb85f09b951fc0a0797f6f8cb",
+      "actual": "3b24ea3884a2eadda8aadad0d91f6b910aa8b29fb85f09b951fc0a0797f6f8cb",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/ClauseIx.lean",
+      "expected": "798cdcc9d07de7c269223c7ffda55ffad748845beb036561eb866e8fda002a21",
+      "actual": "798cdcc9d07de7c269223c7ffda55ffad748845beb036561eb866e8fda002a21",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Closed.lean",
+      "expected": "ad4d9e83bdd835c2184b76d301848e9ff512d45f84f0ba58e278fe588da682b2",
+      "actual": "ad4d9e83bdd835c2184b76d301848e9ff512d45f84f0ba58e278fe588da682b2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+      "expected": "60d6c6cc21f92576b2772ae8d26ce7e57e2f8c1b673fe136403a5e50940b3da4",
+      "actual": "60d6c6cc21f92576b2772ae8d26ce7e57e2f8c1b673fe136403a5e50940b3da4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/CoverageRuntime.lean",
+      "expected": "cdce18390466a5bf39ecaf15821572bf7aa94dc0ff7b4d654623d322887c1176",
+      "actual": "cdce18390466a5bf39ecaf15821572bf7aa94dc0ff7b4d654623d322887c1176",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "expected": "ec5e1ace4dacad656975ea85535c6e3444c8e6910fb8a541f12b87b18b44ad69",
+      "actual": "ec5e1ace4dacad656975ea85535c6e3444c8e6910fb8a541f12b87b18b44ad69",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+      "expected": "ef059c5f599f6345c9c694756abcb225603c4c502c44420168f1660b15a63aa7",
+      "actual": "ef059c5f599f6345c9c694756abcb225603c4c502c44420168f1660b15a63aa7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/FailureBase.lean",
+      "expected": "44459ad05ba7601382a8741db50e9d641d10c2322b68e1690c122e2eb319f7a7",
+      "actual": "44459ad05ba7601382a8741db50e9d641d10c2322b68e1690c122e2eb319f7a7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+      "expected": "baeb1f35221de74a764c72141a666c227940f069676afd80b24744cda2fa8993",
+      "actual": "baeb1f35221de74a764c72141a666c227940f069676afd80b24744cda2fa8993",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+      "expected": "4b87e12cc4804109a48168f8376ff2843ac8190ca43dddf0326a0eff3a488538",
+      "actual": "4b87e12cc4804109a48168f8376ff2843ac8190ca43dddf0326a0eff3a488538",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Irrelevant.lean",
+      "expected": "708662e6b052adaef29f7c0cf3a6e58b7e60acb899c0c337ddcf45a55a924fb9",
+      "actual": "708662e6b052adaef29f7c0cf3a6e58b7e60acb899c0c337ddcf45a55a924fb9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/LocalInvariant.lean",
+      "expected": "45a3dde819e90ec77d77c3a795e7fa37e3863c6c8356b5615f079e0391ecbe61",
+      "actual": "45a3dde819e90ec77d77c3a795e7fa37e3863c6c8356b5615f079e0391ecbe61",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Membership.lean",
+      "expected": "1bb175739d0e1dbf18e601d9c6f00e5dd7dd9f1e97bf5fd09366a60773897d32",
+      "actual": "1bb175739d0e1dbf18e601d9c6f00e5dd7dd9f1e97bf5fd09366a60773897d32",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/MembershipBase.lean",
+      "expected": "c0e288ab608dee5e75c086d13bca761ef5274bd9b6cef921c4249c2d599b0de8",
+      "actual": "c0e288ab608dee5e75c086d13bca761ef5274bd9b6cef921c4249c2d599b0de8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Names.lean",
+      "expected": "710b450a0b41d68a88819a4a83a7385885105a9754c2afc4c5b37cec44bbdd22",
+      "actual": "710b450a0b41d68a88819a4a83a7385885105a9754c2afc4c5b37cec44bbdd22",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/NoFailContext.lean",
+      "expected": "f4cc2d0c2bd05a0bf16316244359dc9789c9556a419c7622115cd5b421af79a9",
+      "actual": "f4cc2d0c2bd05a0bf16316244359dc9789c9556a419c7622115cd5b421af79a9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Observation.lean",
+      "expected": "a5d7c84531354ae22e2351e40cb559aa2ac29e0c1065c4e45250f6f52aaf969e",
+      "actual": "a5d7c84531354ae22e2351e40cb559aa2ac29e0c1065c4e45250f6f52aaf969e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/OuterC.lean",
+      "expected": "4196c704e1e6235bb62edde498049e37c98a100f1fbe4de4b599646ec3739543",
+      "actual": "4196c704e1e6235bb62edde498049e37c98a100f1fbe4de4b599646ec3739543",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+      "expected": "09d0ceccff44bfd2b328157d75ff1b0bd9a95322d45d75c3b443afb2e1161122",
+      "actual": "09d0ceccff44bfd2b328157d75ff1b0bd9a95322d45d75c3b443afb2e1161122",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresFailure.lean",
+      "expected": "fbb8771d3a5b4275e8f01f4ac34f3cacdcd2c05f4a7e770f0451059308bb8a31",
+      "actual": "fbb8771d3a5b4275e8f01f4ac34f3cacdcd2c05f4a7e770f0451059308bb8a31",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+      "expected": "b2d2a1f14250f41a09f4174a9250e83ed2684ade277e9ad67f8ea40369e08332",
+      "actual": "b2d2a1f14250f41a09f4174a9250e83ed2684ade277e9ad67f8ea40369e08332",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+      "expected": "87f6e70c964844b62b4ae18c6953c6b6f4e5cf5c38aaafd4545c2834161fef69",
+      "actual": "87f6e70c964844b62b4ae18c6953c6b6f4e5cf5c38aaafd4545c2834161fef69",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+      "expected": "f5035f2bc68d373d758f4077cf297e8c6122a2f43c55088564badf2d62573ef7",
+      "actual": "f5035f2bc68d373d758f4077cf297e8c6122a2f43c55088564badf2d62573ef7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PrimRanges.lean",
+      "expected": "ba8cad10f7032474cf17153e1b626a09d57bae82946dbb8c199975a5e79939b8",
+      "actual": "ba8cad10f7032474cf17153e1b626a09d57bae82946dbb8c199975a5e79939b8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+      "expected": "8811aa5650485e2d5d202dd6ed6e5bd6ef021af8f1b185c11266fd471726560b",
+      "actual": "8811aa5650485e2d5d202dd6ed6e5bd6ef021af8f1b185c11266fd471726560b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Regularity.lean",
+      "expected": "e18bd4870df262b2142fa6f2d6e2140fc609a517e69434926b4891cde0da4992",
+      "actual": "e18bd4870df262b2142fa6f2d6e2140fc609a517e69434926b4891cde0da4992",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Rename.lean",
+      "expected": "555c655e9de4929b165e2e62ca67c9fe76d2ad3b9a2d987feaf3ad0dd860704c",
+      "actual": "555c655e9de4929b165e2e62ca67c9fe76d2ad3b9a2d987feaf3ad0dd860704c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+      "expected": "c757d0471e4b6a63ba0b0c7a94b18c88c4bbf29d452520e562a452cb94ff1842",
+      "actual": "c757d0471e4b6a63ba0b0c7a94b18c88c4bbf29d452520e562a452cb94ff1842",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/StoreLemmas.lean",
+      "expected": "0f1b124f31fbd5a5d69e3785ce97e97e1379069808617db57e9123fe0640683c",
+      "actual": "0f1b124f31fbd5a5d69e3785ce97e97e1379069808617db57e9123fe0640683c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/SubstTyping.lean",
+      "expected": "e9e46f3ec7d9a6c36b28f3f48416f262c551b09d5ec50de1050cb75f89410d17",
+      "actual": "e9e46f3ec7d9a6c36b28f3f48416f262c551b09d5ec50de1050cb75f89410d17",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TargetPropagation.lean",
+      "expected": "b840f9b572a1abae7b5f224201cdf62874e7a5103a7a41a7ce30e1e18e893f96",
+      "actual": "b840f9b572a1abae7b5f224201cdf62874e7a5103a7a41a7ce30e1e18e893f96",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TargetSound.lean",
+      "expected": "1e9f8d1f870ef76a0048e674eac57c239d3da42bf18fc8fd81e85a60dc1c71d8",
+      "actual": "1e9f8d1f870ef76a0048e674eac57c239d3da42bf18fc8fd81e85a60dc1c71d8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TargetStep.lean",
+      "expected": "1cbfb2ae7660e9f027162ebd73ee7a976dc2f4044164b197c359cef563da1530",
+      "actual": "1cbfb2ae7660e9f027162ebd73ee7a976dc2f4044164b197c359cef563da1530",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "expected": "d8eb6c83c4051bc545f205e9d2e4fcb66e256d2bc829c3f6d6530f57a0b319c2",
+      "actual": "d8eb6c83c4051bc545f205e9d2e4fcb66e256d2bc829c3f6d6530f57a0b319c2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TySubst.lean",
+      "expected": "2b2fcd08caea95404a11bd1f8774b00ca6d6d4d4aada45083c24efb6eca19d14",
+      "actual": "2b2fcd08caea95404a11bd1f8774b00ca6d6d4d4aada45083c24efb6eca19d14",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TySubstMain.lean",
+      "expected": "28244251580a8890ad67ef2fd0665af10d13c362ddb11448f3597a3652fd3f8c",
+      "actual": "28244251580a8890ad67ef2fd0665af10d13c362ddb11448f3597a3652fd3f8c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/VariableBind.lean",
+      "expected": "4e9b0103a78ddfba06c93dc03ac118ad1989d6cf7a94f81be8bf227595a83c67",
+      "actual": "4e9b0103a78ddfba06c93dc03ac118ad1989d6cf7a94f81be8bf227595a83c67",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/LocalRef.lean",
+      "expected": "03bbabff72b519ab548f24dd284bebf4b7265f266dfc1320021e3d779b75d6a3",
+      "actual": "03bbabff72b519ab548f24dd284bebf4b7265f266dfc1320021e3d779b75d6a3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/LocalScope.lean",
+      "expected": "9b9569d13c89f8e9990a3fc193d55ba9a627b1315c0327c5941b8677b5e96b20",
+      "actual": "9b9569d13c89f8e9990a3fc193d55ba9a627b1315c0327c5941b8677b5e96b20",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/LocalTyping.lean",
+      "expected": "e223ea74281a83698e2575013e3913be4a75b4546db350376e818731a298d697",
+      "actual": "e223ea74281a83698e2575013e3913be4a75b4546db350376e818731a298d697",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Model.lean",
+      "expected": "e7a0963e62fb02dcecaccf57ee00ee5ed3b318307c375084cda9d9c08cb15490",
+      "actual": "e7a0963e62fb02dcecaccf57ee00ee5ed3b318307c375084cda9d9c08cb15490",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/ModelHttp.lean",
+      "expected": "dae10fef4002ae6ef7c832301493c62d991ea26dab942e994f11e841c6276fc0",
+      "actual": "dae10fef4002ae6ef7c832301493c62d991ea26dab942e994f11e841c6276fc0",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/ModelTargets.lean",
+      "expected": "77c793884b86ffd11983942c6419d0147460adc157c10d732d4d457fbf96d133",
+      "actual": "77c793884b86ffd11983942c6419d0147460adc157c10d732d4d457fbf96d133",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "expected": "0f070af9461bf6dff72f8665fae6726e25e45e5a00573b38c1a301d10a80922e",
+      "actual": "0f070af9461bf6dff72f8665fae6726e25e45e5a00573b38c1a301d10a80922e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "expected": "5468243815216e96b0b96f13b1cab5196a445d28435410ecd0e0819e67922703",
+      "actual": "5468243815216e96b0b96f13b1cab5196a445d28435410ecd0e0819e67922703",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Atoms.lean",
+      "expected": "e8f3372fdc94d664e0deda945e8e00a706a40bda66e7d948cdf66b217307cd00",
+      "actual": "e8f3372fdc94d664e0deda945e8e00a706a40bda66e7d948cdf66b217307cd00",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/FiniteAtoms.lean",
+      "expected": "6a57378eb743fd672df5010d34996be6d5468c82f9222f274e308211be13855b",
+      "actual": "6a57378eb743fd672df5010d34996be6d5468c82f9222f274e308211be13855b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Labels.lean",
+      "expected": "f3567a65c8177481934b4d4e4ab824e7ff5346f64802203ef63db5263d54902a",
+      "actual": "f3567a65c8177481934b4d4e4ab824e7ff5346f64802203ef63db5263d54902a",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Range.lean",
+      "expected": "029c81ceaea39376ecf901f7ec6743e06a35f5c74a9c23abc29df0cabb7f348c",
+      "actual": "029c81ceaea39376ecf901f7ec6743e06a35f5c74a9c23abc29df0cabb7f348c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Shift.lean",
+      "expected": "1af11ada7ad453465a7e969ca381024e531d55621c2b2edc5957b42942e6d682",
+      "actual": "1af11ada7ad453465a7e969ca381024e531d55621c2b2edc5957b42942e6d682",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/SortUnique.lean",
+      "expected": "86247aaf4b61a90065e0fe94f0a257be5b0791eaf9e76da0b33b66faebafb3e1",
+      "actual": "86247aaf4b61a90065e0fe94f0a257be5b0791eaf9e76da0b33b66faebafb3e1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Tree.lean",
+      "expected": "44c87e0cb542fb55a7a0d3c754eb851624ab3ca3d3c961fd5318126deaeb0ffd",
+      "actual": "44c87e0cb542fb55a7a0d3c754eb851624ab3ca3d3c961fd5318126deaeb0ffd",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Types.lean",
+      "expected": "425d96631e59b04c2aa9ca640fdeac82da4fe2f2f6030e33cd51c82c48ba4107",
+      "actual": "425d96631e59b04c2aa9ca640fdeac82da4fe2f2f6030e33cd51c82c48ba4107",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/RangeInst.lean",
+      "expected": "ac99d72378145f20455f4dde484677c915a3b7b6316d1112891f8bfb56ea706c",
+      "actual": "ac99d72378145f20455f4dde484677c915a3b7b6316d1112891f8bfb56ea706c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/RangeInstDef.lean",
+      "expected": "0048527ae4f32406bad92068077160e71cc0a1722784c9babb82714d9f3d0cbf",
+      "actual": "0048527ae4f32406bad92068077160e71cc0a1722784c9babb82714d9f3d0cbf",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/RangeIxExamples.lean",
+      "expected": "00152af06caadc5d1521599e407cffd362b24ecc1d476342ec150c143a88742f",
+      "actual": "00152af06caadc5d1521599e407cffd362b24ecc1d476342ec150c143a88742f",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/RangeNormalize.lean",
+      "expected": "9c23b9a234b4408b746a5965367a22888c36f3bfbd48aead29f5dae4a4d95215",
+      "actual": "9c23b9a234b4408b746a5965367a22888c36f3bfbd48aead29f5dae4a4d95215",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/RangeWF.lean",
+      "expected": "db81169a177f2f56b71bbea08ccb3d45d8ed682e3947764b512a1737264e63ac",
+      "actual": "db81169a177f2f56b71bbea08ccb3d45d8ed682e3947764b512a1737264e63ac",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Semantics.lean",
+      "expected": "5d0694574de019becec5a6ede9235bf74c0483c12c8588bf2facc84cddbd79db",
+      "actual": "5d0694574de019becec5a6ede9235bf74c0483c12c8588bf2facc84cddbd79db",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/ShapeOk.lean",
+      "expected": "0eee3fa67b71a8ac36e45d63dcad50989c688e9636e90cb31705037a65fbe689",
+      "actual": "0eee3fa67b71a8ac36e45d63dcad50989c688e9636e90cb31705037a65fbe689",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Subst.lean",
+      "expected": "c754060234c6ed3f710f81cad49860e2af042a3bd28a0cb3ef9f9a1cbae118ce",
+      "actual": "c754060234c6ed3f710f81cad49860e2af042a3bd28a0cb3ef9f9a1cbae118ce",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/SubstEnv.lean",
+      "expected": "a36d72c275678911776fdde311b06f7f43fd4cecce68fac36aac0af83c7e7e3c",
+      "actual": "a36d72c275678911776fdde311b06f7f43fd4cecce68fac36aac0af83c7e7e3c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/SubstExamples.lean",
+      "expected": "73a8d27788c321cb7ef16beb822c9ecc9f81c929708c3d77a8e803a435145c26",
+      "actual": "73a8d27788c321cb7ef16beb822c9ecc9f81c929708c3d77a8e803a435145c26",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Syntax.lean",
+      "expected": "d42e4136ca898dadce8026d9fa0f59aa01f5a3563c5d8d751d741ec00450cc07",
+      "actual": "d42e4136ca898dadce8026d9fa0f59aa01f5a3563c5d8d751d741ec00450cc07",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TargetReachExamples.lean",
+      "expected": "9fbee5e1e601ba66632d0b55a9eb09497eabb5a8d81155f3a92eaf3adb8d9737",
+      "actual": "9fbee5e1e601ba66632d0b55a9eb09497eabb5a8d81155f3a92eaf3adb8d9737",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TargetStepExamples.lean",
+      "expected": "faccae52ae6a3f5e54af1f5c137c1622a84575a2881347c4a34d7683ef50b400",
+      "actual": "faccae52ae6a3f5e54af1f5c137c1622a84575a2881347c4a34d7683ef50b400",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TargetTable.lean",
+      "expected": "df6d17bd99082acbc85302a6dcf1000a3f367d92f8beedb654a5b00aaf2882e8",
+      "actual": "df6d17bd99082acbc85302a6dcf1000a3f367d92f8beedb654a5b00aaf2882e8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Theorems.lean",
+      "expected": "d6046c7ce18b72be9ff749f85db0cac079fa20268bdcb4811cd556a9b60a631f",
+      "actual": "d6046c7ce18b72be9ff749f85db0cac079fa20268bdcb4811cd556a9b60a631f",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "expected": "2b4144638f36f15b443c2c661f23cb7e4fab1f1def4f259c2f91be52cf95a949",
+      "actual": "2b4144638f36f15b443c2c661f23cb7e4fab1f1def4f259c2f91be52cf95a949",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "expected": "f6f755ff0bbb1863f812f951bc93ce8a89f93c653b678feefc29bf53d83d0612",
+      "actual": "f6f755ff0bbb1863f812f951bc93ce8a89f93c653b678feefc29bf53d83d0612",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "expected": "dd3bf0a6eba09649cb26c22973a5706c5d04ff71469750b8ec619e8f5382c84f",
+      "actual": "dd3bf0a6eba09649cb26c22973a5706c5d04ff71469750b8ec619e8f5382c84f",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "expected": "1bd4008999c2aeb8a4e9913690f08db7233b337dd71d6f3eb7cb1ed9c6127923",
+      "actual": "1bd4008999c2aeb8a4e9913690f08db7233b337dd71d6f3eb7cb1ed9c6127923",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRows.lean",
+      "expected": "71cf1e088b10cff94fb0de715844e264e274f3b2c0efba5e956786c267e031ad",
+      "actual": "71cf1e088b10cff94fb0de715844e264e274f3b2c0efba5e956786c267e031ad",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "expected": "936e849271651f9177e06aea024b3c9a8daaa361c2d52b19fa64e75dfb145bf2",
+      "actual": "936e849271651f9177e06aea024b3c9a8daaa361c2d52b19fa64e75dfb145bf2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "expected": "b35837dfd5efc32c16b48157a5392a22096085a2adb498c27fbefac8d7e2fc1e",
+      "actual": "b35837dfd5efc32c16b48157a5392a22096085a2adb498c27fbefac8d7e2fc1e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubst.lean",
+      "expected": "2bf0af91e9fd53e87b62bb87e75ee885f6116f99a5eaf5d07369db7f40ed3bf5",
+      "actual": "2bf0af91e9fd53e87b62bb87e75ee885f6116f99a5eaf5d07369db7f40ed3bf5",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "expected": "558d1dcb7464ea09965d6d72988821d15823de16afc21dcc15beadaaf3fc18cc",
+      "actual": "558d1dcb7464ea09965d6d72988821d15823de16afc21dcc15beadaaf3fc18cc",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "expected": "7bb1e72dfeec2e28402bc9317f735a975475663c78085855f6fad9d286d3dc16",
+      "actual": "7bb1e72dfeec2e28402bc9317f735a975475663c78085855f6fad9d286d3dc16",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeVariables.lean",
+      "expected": "32645c79e1d98b721bdb7b6d2f095b49e544221ea8a91ea52b659d482dcdf1f5",
+      "actual": "32645c79e1d98b721bdb7b6d2f095b49e544221ea8a91ea52b659d482dcdf1f5",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Types.lean",
+      "expected": "b87128151734d754f12aed218795cfd8dc46343e14625ee7d12d1f9e15ccd538",
+      "actual": "b87128151734d754f12aed218795cfd8dc46343e14625ee7d12d1f9e15ccd538",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/Typing.lean",
+      "expected": "f383e4f88bf2df8702d1dda89fbab4284feecc8febabaa9f4431d5550de42ce7",
+      "actual": "f383e4f88bf2df8702d1dda89fbab4284feecc8febabaa9f4431d5550de42ce7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Release/WellFormed.lean",
+      "expected": "44dc8cedd19fed429f95999072e3c80cb4ca52692dbdb1cd46aae8c19e7637a8",
+      "actual": "44dc8cedd19fed429f95999072e3c80cb4ca52692dbdb1cd46aae8c19e7637a8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/CompatExamples.lean",
+      "expected": "d049da1ccabbca7430291101b8d61f8fdd4cd9cc540485f317c6d4e80d758bea",
+      "actual": "d049da1ccabbca7430291101b8d61f8fdd4cd9cc540485f317c6d4e80d758bea",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/Cover.lean",
+      "expected": "7a2708b22f6dbd17223ca05d70f498bf9fe78f0a4de25e2a9eee4bbefbe64689",
+      "actual": "7a2708b22f6dbd17223ca05d70f498bf9fe78f0a4de25e2a9eee4bbefbe64689",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/Domain.lean",
+      "expected": "01a2284129ad7f4c84fb08ae2fed17f000e7ce27e6438027ebc843d84ef923d3",
+      "actual": "01a2284129ad7f4c84fb08ae2fed17f000e7ce27e6438027ebc843d84ef923d3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/IPCover.lean",
+      "expected": "dc35389d51d6c39120bca0bb7e16407f798afea8d41d741c87d9909ff1f67319",
+      "actual": "dc35389d51d6c39120bca0bb7e16407f798afea8d41d741c87d9909ff1f67319",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/Inference.lean",
+      "expected": "bbc880b5d976dd2b55dc63cbff357acbb164a8ba9eba2cab3d5ea72958a92e66",
+      "actual": "bbc880b5d976dd2b55dc63cbff357acbb164a8ba9eba2cab3d5ea72958a92e66",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/InferenceExamples.lean",
+      "expected": "1f6bb48f9a1d13bdc7e1b1f07b3da993063d62e9ae84fb8b0fb781a53258be82",
+      "actual": "1f6bb48f9a1d13bdc7e1b1f07b3da993063d62e9ae84fb8b0fb781a53258be82",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/RangeCover.lean",
+      "expected": "42b77b7b96d525515453e8c6443d7a516f7df92650c6a79818ea841e31b555db",
+      "actual": "42b77b7b96d525515453e8c6443d7a516f7df92650c6a79818ea841e31b555db",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/RepresentationExamplesI.lean",
+      "expected": "60d2b8aa9fb39ce1715459caae06bdfbfe26ca06fa5999bd189dd20886c9d680",
+      "actual": "60d2b8aa9fb39ce1715459caae06bdfbfe26ca06fa5999bd189dd20886c9d680",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/Signature.lean",
+      "expected": "77c40ac10d9bc16e753c80754ef4fc280bb6e5c5824bbae672c47ab34cea1635",
+      "actual": "77c40ac10d9bc16e753c80754ef4fc280bb6e5c5824bbae672c47ab34cea1635",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/SignatureExamples.lean",
+      "expected": "51fada24da15dcb321a8a448601ce2a4f672eb869baf99ce526d0803029a0284",
+      "actual": "51fada24da15dcb321a8a448601ce2a4f672eb869baf99ce526d0803029a0284",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/SwitchExamples.lean",
+      "expected": "d255eab57980d1816b2bbb006196733bbc87dcc84138d58681835924eef9564e",
+      "actual": "d255eab57980d1816b2bbb006196733bbc87dcc84138d58681835924eef9564e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Scope/TopCompat.lean",
+      "expected": "c91c21c08c3b1ea96f12209683b313812dbe1c568709bdf5a9ada638bfc5c417",
+      "actual": "c91c21c08c3b1ea96f12209683b313812dbe1c568709bdf5a9ada638bfc5c417",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/AdmissibleCheck.lean",
+      "expected": "099ee73efdd4399d8037ce5e257ce210c91eab110ef4970c368671ad1a5ed8a3",
+      "actual": "099ee73efdd4399d8037ce5e257ce210c91eab110ef4970c368671ad1a5ed8a3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/BuilderCheck.lean",
+      "expected": "cc930c8d6804772c697d3d75380ce226a61883f98d5a84f2a3008762160d0e8b",
+      "actual": "cc930c8d6804772c697d3d75380ce226a61883f98d5a84f2a3008762160d0e8b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/BuilderExamples.lean",
+      "expected": "038472a56478ad1fd1533d3c7e464b5258f207668e6af9353762d559e878d930",
+      "actual": "038472a56478ad1fd1533d3c7e464b5258f207668e6af9353762d559e878d930",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/BuilderFree.lean",
+      "expected": "c738f303c17dd0b4ace443799cd1da8ce9a6f587995b733220870f0e6ed42cd6",
+      "actual": "c738f303c17dd0b4ace443799cd1da8ce9a6f587995b733220870f0e6ed42cd6",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/BuilderLower.lean",
+      "expected": "d90a04e1b28ec08c7dce734cc6b9a5a705f64ada36f32268353e480d43c292f2",
+      "actual": "d90a04e1b28ec08c7dce734cc6b9a5a705f64ada36f32268353e480d43c292f2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/BuilderSyntax.lean",
+      "expected": "4cdab6fa770fa0a16fa514496f0681b7d5e014b90b46f7823f32336798ccc77e",
+      "actual": "4cdab6fa770fa0a16fa514496f0681b7d5e014b90b46f7823f32336798ccc77e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Builders.lean",
+      "expected": "b591ba471a0b0df5ed93f19b8657a1c28b9a70362f256746a3bd43edee4caeec",
+      "actual": "b591ba471a0b0df5ed93f19b8657a1c28b9a70362f256746a3bd43edee4caeec",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Check.lean",
+      "expected": "fc8246e3c26d5a2885edbf4fe819a7b15f14cdb5d570fbb5decb10b2398024f8",
+      "actual": "fc8246e3c26d5a2885edbf4fe819a7b15f14cdb5d570fbb5decb10b2398024f8",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckAccept.lean",
+      "expected": "95f21c989407325132fbf714f5a1d5bb05f24b3311be059ec51d41a14bb41fb1",
+      "actual": "95f21c989407325132fbf714f5a1d5bb05f24b3311be059ec51d41a14bb41fb1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckAcceptExamples.lean",
+      "expected": "e9fc6344b2880ddf0b1a4f2415494354941c7b207c6efc5a081e81bd11f179fd",
+      "actual": "e9fc6344b2880ddf0b1a4f2415494354941c7b207c6efc5a081e81bd11f179fd",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputeAtoms.lean",
+      "expected": "58eac2029b943a2ed3786d63616af133c670b0b48ebc67e1ed84c1a4804e362e",
+      "actual": "58eac2029b943a2ed3786d63616af133c670b0b48ebc67e1ed84c1a4804e362e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputeCalls.lean",
+      "expected": "9bee964f60ae0127ea85067c066583a0a8e893cdd3375c4ebcfbf939df64fa76",
+      "actual": "9bee964f60ae0127ea85067c066583a0a8e893cdd3375c4ebcfbf939df64fa76",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputeCases.lean",
+      "expected": "4a73c87c393c811e878f92194bf8a59e2f9caf4ab8c7adba5d7b71df2390bc58",
+      "actual": "4a73c87c393c811e878f92194bf8a59e2f9caf4ab8c7adba5d7b71df2390bc58",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputeControl.lean",
+      "expected": "b6aed08a6cf55334412d65b332fa4d7d5cf32369a10b2cd1ef8bcec0343fcbb7",
+      "actual": "b6aed08a6cf55334412d65b332fa4d7d5cf32369a10b2cd1ef8bcec0343fcbb7",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputePipe.lean",
+      "expected": "d1ed64017839c1b2dbc3806dd8f2cc0b2c1c4c6bbc8affc3f4661d5895b3f84b",
+      "actual": "d1ed64017839c1b2dbc3806dd8f2cc0b2c1c4c6bbc8affc3f4661d5895b3f84b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputeSound.lean",
+      "expected": "2369f2ab62cbcd0ceaaa095e90ba285db1004c9349fcb75e661641a87f979b77",
+      "actual": "2369f2ab62cbcd0ceaaa095e90ba285db1004c9349fcb75e661641a87f979b77",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckCounterexamples.lean",
+      "expected": "b360aeff9df14ff1d1e7d1a008b4adc54c47e55b08c37ca2e6f90b972fa36885",
+      "actual": "b360aeff9df14ff1d1e7d1a008b4adc54c47e55b08c37ca2e6f90b972fa36885",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckDictSupport.lean",
+      "expected": "f92068ad0d760a31c515722d7e525c765c61f60532be1f143fd47bd60dc4d8b6",
+      "actual": "f92068ad0d760a31c515722d7e525c765c61f60532be1f143fd47bd60dc4d8b6",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckExamples.lean",
+      "expected": "0acb1ad218d050ddbfa8282f4d9d2dedc4b830b804db1275d7eda0a60f432e29",
+      "actual": "0acb1ad218d050ddbfa8282f4d9d2dedc4b830b804db1275d7eda0a60f432e29",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckInduction.lean",
+      "expected": "cadac207ed3955fe2798d1bef706c940e43fe2fa4ee3c76d4afdb052d4d00f0e",
+      "actual": "cadac207ed3955fe2798d1bef706c940e43fe2fa4ee3c76d4afdb052d4d00f0e",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "expected": "8119c4f1e63b268ef31f03f842443c6f61d8bcc3c17b2142024628fb9b342d36",
+      "actual": "8119c4f1e63b268ef31f03f842443c6f61d8bcc3c17b2142024628fb9b342d36",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPatterns.lean",
+      "expected": "53eb52ccbfd3986cd2cbe3b51b9669b5665eae5e6cd33f5b121b0eab9e011223",
+      "actual": "53eb52ccbfd3986cd2cbe3b51b9669b5665eae5e6cd33f5b121b0eab9e011223",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "expected": "1e8ffc9558fa219bfb855bf6cd8ca467ca9bd1d0053a4d4310c0c7417f4881b4",
+      "actual": "1e8ffc9558fa219bfb855bf6cd8ca467ca9bd1d0053a4d4310c0c7417f4881b4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckProgramSound.lean",
+      "expected": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec",
+      "actual": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckRanges.lean",
+      "expected": "0a43c7a4a82ec2a56bdeebdbffd7aae9711d39b4ffb0f682faacb867bf543f1c",
+      "actual": "0a43c7a4a82ec2a56bdeebdbffd7aae9711d39b4ffb0f682faacb867bf543f1c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSound.lean",
+      "expected": "9c59af9b3cd93ce6dcaa2224d115762a2ad7c7756e91a1525c44b2c2649e0a7d",
+      "actual": "9c59af9b3cd93ce6dcaa2224d115762a2ad7c7756e91a1525c44b2c2649e0a7d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundBasicExpr.lean",
+      "expected": "2a6e8262562191e53e3ea5704b02bd14659b016c1e0b43c4244f75163bc97082",
+      "actual": "2a6e8262562191e53e3ea5704b02bd14659b016c1e0b43c4244f75163bc97082",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundCalls.lean",
+      "expected": "833dd521ea3fd89c8a54e2562cc9fd48435f5a67d33bb97a328e5dbf613f88fc",
+      "actual": "833dd521ea3fd89c8a54e2562cc9fd48435f5a67d33bb97a328e5dbf613f88fc",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundCollections.lean",
+      "expected": "a3e514295bdb8a560a3ecf95daec511ea6914de5a042e93cbdef039a22df9eb5",
+      "actual": "a3e514295bdb8a560a3ecf95daec511ea6914de5a042e93cbdef039a22df9eb5",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundControl.lean",
+      "expected": "a70aafeb7f0272c485adc392dad81b4624ca89694d7da0bef956233f721c815d",
+      "actual": "a70aafeb7f0272c485adc392dad81b4624ca89694d7da0bef956233f721c815d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundDicts.lean",
+      "expected": "f961c084a3ac64a643de766054c89c076e5e9ebea120755187909de5fcaad9cb",
+      "actual": "f961c084a3ac64a643de766054c89c076e5e9ebea120755187909de5fcaad9cb",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundDie.lean",
+      "expected": "1567b82b830f51ea8623a139f8074564064f29964119a31efaa397fc3522b42c",
+      "actual": "1567b82b830f51ea8623a139f8074564064f29964119a31efaa397fc3522b42c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundSequence.lean",
+      "expected": "443b574e8db4d29a37d58b30db5c51f7c168fa45586623d7a218f004593e9d49",
+      "actual": "443b574e8db4d29a37d58b30db5c51f7c168fa45586623d7a218f004593e9d49",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSupport.lean",
+      "expected": "d951f69a2f8522ae4868a3ace0d4a19420a5ee209897e4a8474e59be85715603",
+      "actual": "d951f69a2f8522ae4868a3ace0d4a19420a5ee209897e4a8474e59be85715603",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTables.lean",
+      "expected": "437f701f92c627498f07d612680287e2cdebd080143ea4326aea1221a320b2a3",
+      "actual": "437f701f92c627498f07d612680287e2cdebd080143ea4326aea1221a320b2a3",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTablesSound.lean",
+      "expected": "0cad57b370dee554b0e790f988414d07490887fc9cf4ade741a924a1b7158d53",
+      "actual": "0cad57b370dee554b0e790f988414d07490887fc9cf4ade741a924a1b7158d53",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTools.lean",
+      "expected": "61670e77102fcb9f833b457a6b017dfc6a4653ad8fe23101443bf6b8bc376c71",
+      "actual": "61670e77102fcb9f833b457a6b017dfc6a4653ad8fe23101443bf6b8bc376c71",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckToolsExamples.lean",
+      "expected": "a7b7d224bb7a9e373f62f9b7124e64a96e63e165ce88f89258c2a83bd0f487f6",
+      "actual": "a7b7d224bb7a9e373f62f9b7124e64a96e63e165ce88f89258c2a83bd0f487f6",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ClauseIxExamples.lean",
+      "expected": "9999bcdc18cd728b5817d6a27eaa50047704e8f37a9b976744128ff372242b48",
+      "actual": "9999bcdc18cd728b5817d6a27eaa50047704e8f37a9b976744128ff372242b48",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ClauseIxRule.lean",
+      "expected": "67dd9a87c710b7303ecf2075263fcbe42d83e98042738ec54a870d045251ef3a",
+      "actual": "67dd9a87c710b7303ecf2075263fcbe42d83e98042738ec54a870d045251ef3a",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/CoverExamples.lean",
+      "expected": "d88e0ffbf6a79dce335f4fc2c2f79aefcae83074bdfa1c65adead7141a542594",
+      "actual": "d88e0ffbf6a79dce335f4fc2c2f79aefcae83074bdfa1c65adead7141a542594",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Desugar.lean",
+      "expected": "93e7e5352951cb0c8a561fcd0d658d339f30096835df64b8416eb5e820be51d1",
+      "actual": "93e7e5352951cb0c8a561fcd0d658d339f30096835df64b8416eb5e820be51d1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/DesugarRange.lean",
+      "expected": "dc3cf4c0be79606ff1240cae548e0923b8f3c36202d9f1e653a9a146ea91e7ca",
+      "actual": "dc3cf4c0be79606ff1240cae548e0923b8f3c36202d9f1e653a9a146ea91e7ca",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "expected": "86172acd32a4805041361529729cf932598c327651e4eca1991e4d1dbf6c0e4c",
+      "actual": "86172acd32a4805041361529729cf932598c327651e4eca1991e4d1dbf6c0e4c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/FailureExamples.lean",
+      "expected": "29bc8d1628fd5e125777f43e7a96b539c638a546a34676961b2bb1254b6773c0",
+      "actual": "29bc8d1628fd5e125777f43e7a96b539c638a546a34676961b2bb1254b6773c0",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteExamples.lean",
+      "expected": "68744cebc36f97765e55ac8a307439e420f093724b4835714bd7f998baef9f1d",
+      "actual": "68744cebc36f97765e55ac8a307439e420f093724b4835714bd7f998baef9f1d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/FinitePredicates.lean",
+      "expected": "2b0e48d77f210c2c8925a01dd61dcae01ec57619d7fb74a7b057573245b9965b",
+      "actual": "2b0e48d77f210c2c8925a01dd61dcae01ec57619d7fb74a7b057573245b9965b",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "expected": "0aa3ed4fefd8aed64d080f64a7079834f0da837140da0e12c142967a4f2a923c",
+      "actual": "0aa3ed4fefd8aed64d080f64a7079834f0da837140da0e12c142967a4f2a923c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/FormatSpec.lean",
+      "expected": "62d0ac57e076242e5614751471664c8eec58a5e1fe5bc988e0aca6243df5d025",
+      "actual": "62d0ac57e076242e5614751471664c8eec58a5e1fe5bc988e0aca6243df5d025",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BlockSequence.lean",
+      "expected": "b41614a3960170a37f44f7056a6bcf19e334b7efb0eda370ae97836de95f7eaa",
+      "actual": "b41614a3960170a37f44f7056a6bcf19e334b7efb0eda370ae97836de95f7eaa",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BuilderCapture.lean",
+      "expected": "93b0999c5573a5db47c180660afc6783f7200eba86926a48ca1657715647a81c",
+      "actual": "93b0999c5573a5db47c180660afc6783f7200eba86926a48ca1657715647a81c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean",
+      "expected": "e4c32aa8652f207585f198241933b37b784995a468b9de77b424275fc3f2e475",
+      "actual": "e4c32aa8652f207585f198241933b37b784995a468b9de77b424275fc3f2e475",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BuilderCaptureCompose.lean",
+      "expected": "16da4ba46dc57c62517bb128732d91651f3e1b63eb9dd6ef308ec1da461663d4",
+      "actual": "16da4ba46dc57c62517bb128732d91651f3e1b63eb9dd6ef308ec1da461663d4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BuilderLower.lean",
+      "expected": "91f6fbaddbdd6bf059ad7d583b6e3177122772afb3c7d48adc14fdf96038daef",
+      "actual": "91f6fbaddbdd6bf059ad7d583b6e3177122772afb3c7d48adc14fdf96038daef",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean",
+      "expected": "10580dc7959864546441b96d2856b5ee279380208f9b48a3e16b3bad33668cb2",
+      "actual": "10580dc7959864546441b96d2856b5ee279380208f9b48a3e16b3bad33668cb2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Builders.lean",
+      "expected": "4954bc7bcd5deb84444ecdc1a2be0ba16baa9ce46e368367466eb348cd97a4bc",
+      "actual": "4954bc7bcd5deb84444ecdc1a2be0ba16baa9ce46e368367466eb348cd97a4bc",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+      "expected": "2587fe8cd3da8d316bcd7bcc85ea7f1e5b578cee4cba2c51aa6621b430798c80",
+      "actual": "2587fe8cd3da8d316bcd7bcc85ea7f1e5b578cee4cba2c51aa6621b430798c80",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Calls.lean",
+      "expected": "043b8859605469b522e2338e622e7801c9a6490069aa83679095e5105c1fa923",
+      "actual": "043b8859605469b522e2338e622e7801c9a6490069aa83679095e5105c1fa923",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Dict.lean",
+      "expected": "c4efdd82417c4c810185df8917f1f3802c568a6cc24a73ef7538f16796912431",
+      "actual": "c4efdd82417c4c810185df8917f1f3802c568a6cc24a73ef7538f16796912431",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/DictSupport.lean",
+      "expected": "795b19036fc1d20f1b38c5a652b33c1a003ee796046ab690ca2451cbcac55276",
+      "actual": "795b19036fc1d20f1b38c5a652b33c1a003ee796046ab690ca2451cbcac55276",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Extensions.lean",
+      "expected": "8c549012224860a3a1fbbe6475cb8f957d2599af0f32e64c194f24ad52dfa45a",
+      "actual": "8c549012224860a3a1fbbe6475cb8f957d2599af0f32e64c194f24ad52dfa45a",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ExtensionsScoped.lean",
+      "expected": "83c6f2e4d67d56f9866d2421f0037aadde9d37f19e7cfb8ca920a304f1c2995d",
+      "actual": "83c6f2e4d67d56f9866d2421f0037aadde9d37f19e7cfb8ca920a304f1c2995d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+      "expected": "30e8c76806a1a11e3fc160a70db90af333fdcfbf0acc4d51c2d63bbb63823ba9",
+      "actual": "30e8c76806a1a11e3fc160a70db90af333fdcfbf0acc4d51c2d63bbb63823ba9",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/NoFailSignature.lean",
+      "expected": "44b0f36307d1e4f2ddff4d1b3ebf11cd46b25a5b432dcdf80eba0f8d480c08e0",
+      "actual": "44b0f36307d1e4f2ddff4d1b3ebf11cd46b25a5b432dcdf80eba0f8d480c08e0",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/PatternSupport.lean",
+      "expected": "79ae185124b15c38d9c0027107af4ce2b22a0f8528dc592efa47a86e8911682c",
+      "actual": "79ae185124b15c38d9c0027107af4ce2b22a0f8528dc592efa47a86e8911682c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Patterns.lean",
+      "expected": "0c3f76b3880747f6ceba7fe085c3dd83d136a03da90b63ea9708e61d9b7402cf",
+      "actual": "0c3f76b3880747f6ceba7fe085c3dd83d136a03da90b63ea9708e61d9b7402cf",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Program.lean",
+      "expected": "af7a306b50a69381a3b6e43b92755d10e778763182037d103022226754d80662",
+      "actual": "af7a306b50a69381a3b6e43b92755d10e778763182037d103022226754d80662",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Records.lean",
+      "expected": "a9377946f65ed517ffaf0b3d2ff5ce1fdd42386bade2fb805bfc3fc8c134d0bd",
+      "actual": "a9377946f65ed517ffaf0b3d2ff5ce1fdd42386bade2fb805bfc3fc8c134d0bd",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ReturnTry.lean",
+      "expected": "3b41b0e72e5d89ec99a74b9a9ddfa67f70d2a713ac0d2b84e9ec59f2cb28bebd",
+      "actual": "3b41b0e72e5d89ec99a74b9a9ddfa67f70d2a713ac0d2b84e9ec59f2cb28bebd",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Scoped.lean",
+      "expected": "6fcafdefd4619edd1b2b095a9588f4ce25b52db65862f90c9e5d9e66259d2fdb",
+      "actual": "6fcafdefd4619edd1b2b095a9588f4ce25b52db65862f90c9e5d9e66259d2fdb",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ScopedRename.lean",
+      "expected": "9b438324aadb174f845ffc6126cacb18712cb6bdb140a6d1407f20267268624c",
+      "actual": "9b438324aadb174f845ffc6126cacb18712cb6bdb140a6d1407f20267268624c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ScopedSupport.lean",
+      "expected": "795519ed7337e0b7db632be638b7a8e30271c74b35af75ba60ffec69068c1984",
+      "actual": "795519ed7337e0b7db632be638b7a8e30271c74b35af75ba60ffec69068c1984",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "expected": "a23f266b16b9361ed7e1092523d0948dbd96eba5a523ce3249002c53d8223dfb",
+      "actual": "a23f266b16b9361ed7e1092523d0948dbd96eba5a523ce3249002c53d8223dfb",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ShiftClean.lean",
+      "expected": "43801b9dc5afe09ac14b9731c9fa4778366f3b4f79068dc575fa7ccc513ecf93",
+      "actual": "43801b9dc5afe09ac14b9731c9fa4778366f3b4f79068dc575fa7ccc513ecf93",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/SubstClean.lean",
+      "expected": "0dbda30347439d7af1e5ecfc1ddfd727984c560b5366ed66673f1ac629ba22df",
+      "actual": "0dbda30347439d7af1e5ecfc1ddfd727984c560b5366ed66673f1ac629ba22df",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+      "expected": "1cea491e276a00767840c5d1f41e6adbd4993695dc866f057cab505dbb143f62",
+      "actual": "1cea491e276a00767840c5d1f41e6adbd4993695dc866f057cab505dbb143f62",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/LogExamples.lean",
+      "expected": "cc9e0e32552730e24f9de761d334737ae720a4e165bb918176dcfcee606fcc33",
+      "actual": "cc9e0e32552730e24f9de761d334737ae720a4e165bb918176dcfcee606fcc33",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Monad2Examples.lean",
+      "expected": "9d58b68c59852379f58ebdb883c06fcbce85c3cac8641a94acd7b0f56e8c15bd",
+      "actual": "9d58b68c59852379f58ebdb883c06fcbce85c3cac8641a94acd7b0f56e8c15bd",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/NoFailCheck.lean",
+      "expected": "8575a01f1ca8b940b83db8c4c87e8b14b1f08ffa8bd206b3fc02bc7ae35917b1",
+      "actual": "8575a01f1ca8b940b83db8c4c87e8b14b1f08ffa8bd206b3fc02bc7ae35917b1",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/NoFailCheckExamples.lean",
+      "expected": "f37bc24a2a98b1bda12b1004075d745863c85f6c266455998573fd8304c69710",
+      "actual": "f37bc24a2a98b1bda12b1004075d745863c85f6c266455998573fd8304c69710",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/PrimRange.lean",
+      "expected": "cb68a2e42056114761318136cc71c09488b2f2606367c2d8670ee729f8535224",
+      "actual": "cb68a2e42056114761318136cc71c09488b2f2606367c2d8670ee729f8535224",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/RangeFree.lean",
+      "expected": "499782dbd0183437665ed9a59730dd699e934dcde54f3b15da3ded253d8faa4c",
+      "actual": "499782dbd0183437665ed9a59730dd699e934dcde54f3b15da3ded253d8faa4c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeAccept.lean",
+      "expected": "f87e008eb503ed081423b224a6c4983bd980dc76f02031307e27dbfae9d346ab",
+      "actual": "f87e008eb503ed081423b224a6c4983bd980dc76f02031307e27dbfae9d346ab",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeAcceptExamples.lean",
+      "expected": "6e7b90eb5d302ce1f9fae7f9caf7a8a0e55c38f813d185b9db24f5c9db1341bb",
+      "actual": "6e7b90eb5d302ce1f9fae7f9caf7a8a0e55c38f813d185b9db24f5c9db1341bb",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeLower.lean",
+      "expected": "170f6d03112744fe3bad7dcf586b14f902ad64eca5a1b0eb7c93ffb91a68e39c",
+      "actual": "170f6d03112744fe3bad7dcf586b14f902ad64eca5a1b0eb7c93ffb91a68e39c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeLowerExamples.lean",
+      "expected": "5b00023a5985e898bd2af3e472afb30386aad414463f1a4cbd7dbd16ae49fcc4",
+      "actual": "5b00023a5985e898bd2af3e472afb30386aad414463f1a4cbd7dbd16ae49fcc4",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeOccurrence.lean",
+      "expected": "d7e4c693d1b263fbce13cb71c84a7d168592bf2a442d86166afb083a0413aa36",
+      "actual": "d7e4c693d1b263fbce13cb71c84a7d168592bf2a442d86166afb083a0413aa36",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeSound.lean",
+      "expected": "627459ef4b5b129688e34fc59f592fc695f47f0bd05680533e7f6d1b6c871fe2",
+      "actual": "627459ef4b5b129688e34fc59f592fc695f47f0bd05680533e7f6d1b6c871fe2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeSoundExamples.lean",
+      "expected": "288b0e9b12e686400ff09863bb579550552fc68dd5889cde2cd7d4cc20120c65",
+      "actual": "288b0e9b12e686400ff09863bb579550552fc68dd5889cde2cd7d4cc20120c65",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeState.lean",
+      "expected": "69401ab02c9fdc804f52b353e93a663bb94453416fa1c5e09d3db489183a5754",
+      "actual": "69401ab02c9fdc804f52b353e93a663bb94453416fa1c5e09d3db489183a5754",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/ScopeStateExamples.lean",
+      "expected": "ffa65573354f3b3176aeb37cb20e1821d1ef7efeb2c394f4dcc354a34e1e001c",
+      "actual": "ffa65573354f3b3176aeb37cb20e1821d1ef7efeb2c394f4dcc354a34e1e001c",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/SingleFail.lean",
+      "expected": "b57ca666f2d1b337f2908d532d96bab6041cb2107c3d3695186f0204a2de0ae2",
+      "actual": "b57ca666f2d1b337f2908d532d96bab6041cb2107c3d3695186f0204a2de0ae2",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/SingleFailCheck.lean",
+      "expected": "42e555a2e25996d47c2117be8ca494a71bc2b181976c54fc9d961bfd670335c6",
+      "actual": "42e555a2e25996d47c2117be8ca494a71bc2b181976c54fc9d961bfd670335c6",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Syntax.lean",
+      "expected": "6b34b2886298a780ea4128840c6102265787d9660891d02aae823999f79ec872",
+      "actual": "6b34b2886298a780ea4128840c6102265787d9660891d02aae823999f79ec872",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Theorems.lean",
+      "expected": "53028dde141fefd594cc2b89454ae75196254d5996e50468096d5c7d19195c8d",
+      "actual": "53028dde141fefd594cc2b89454ae75196254d5996e50468096d5c7d19195c8d",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/Typing.lean",
+      "expected": "9df31b7955fccc0511505630b998ecff9d7169841b616f3c96b2f671b1a7bc40",
+      "actual": "9df31b7955fccc0511505630b998ecff9d7169841b616f3c96b2f671b1a7bc40",
+      "matches": true
+    },
+    {
+      "path": "formal/Benitoite/Surface/WellFormed.lean",
+      "expected": "cbcfe54d9e42929d9c2fd45f137ae65a3bdf24b232f1acfd7f10ca9db5a084da",
+      "actual": "cbcfe54d9e42929d9c2fd45f137ae65a3bdf24b232f1acfd7f10ca9db5a084da",
+      "matches": true
+    },
+    {
+      "path": "formal/BuiltinCheck/Main.lean",
+      "expected": "18a171241afcb977d4afe380c7830331dc0bbe242b927fb1f5d6ce45cc33fb6c",
+      "actual": "18a171241afcb977d4afe380c7830331dc0bbe242b927fb1f5d6ce45cc33fb6c",
+      "matches": true
+    },
+    {
+      "path": "formal/CoverageDiff/Main.lean",
+      "expected": "0c218ada126b6d727ad7365d93e9c59785e53be0020f8afbe23e28f222516518",
+      "actual": "0c218ada126b6d727ad7365d93e9c59785e53be0020f8afbe23e28f222516518",
+      "matches": true
+    },
+    {
+      "path": "formal/CoverageProgramDiff/Main.lean",
+      "expected": "2deaaa8b447747df3cbc9ec97ee9ae25f8bf064b0c2c77694545567853643b26",
+      "actual": "2deaaa8b447747df3cbc9ec97ee9ae25f8bf064b0c2c77694545567853643b26",
+      "matches": true
+    },
+    {
+      "path": "formal/DesugarDiff/Main.lean",
+      "expected": "e25d3bb243c9965da4a0a31ecb50d4478b8312d26ecca36aabf20913c14e00a8",
+      "actual": "e25d3bb243c9965da4a0a31ecb50d4478b8312d26ecca36aabf20913c14e00a8",
+      "matches": true
+    },
+    {
+      "path": "formal/IntervalDiff/Main.lean",
+      "expected": "ff18fc76ace85183e39ca2b845bed2ba9946ab730cbec8f59fc2e1fb8bcbf1a8",
+      "actual": "ff18fc76ace85183e39ca2b845bed2ba9946ab730cbec8f59fc2e1fb8bcbf1a8",
+      "matches": true
+    },
+    {
+      "path": "formal/README.md",
+      "expected": "7969946169a04f580650702a26b444a2d963bfaf3e7f1471f5c13c4b30fd7422",
+      "actual": "7969946169a04f580650702a26b444a2d963bfaf3e7f1471f5c13c4b30fd7422",
+      "matches": true
+    },
+    {
+      "path": "formal/SurfaceCheck/All.lean",
+      "expected": "c9040d09339c160bfa1f673cf10735a22f34e8e1c12d2e0eb8a3f87b4b5ad286",
+      "actual": "c9040d09339c160bfa1f673cf10735a22f34e8e1c12d2e0eb8a3f87b4b5ad286",
+      "matches": true
+    },
+    {
+      "path": "formal/SurfaceCheck/Batch.lean",
+      "expected": "d6232104263406b6e1c09ccb0250777e7e6b0a0d3ccda77319140c6247757bcc",
+      "actual": "d6232104263406b6e1c09ccb0250777e7e6b0a0d3ccda77319140c6247757bcc",
+      "matches": true
+    },
+    {
+      "path": "formal/SurfaceCheck/Main.lean",
+      "expected": "c6c37446e72d63658a898478ce66d72a2690b2738b5bb22cb6c2171de6db2d2e",
+      "actual": "c6c37446e72d63658a898478ce66d72a2690b2738b5bb22cb6c2171de6db2d2e",
+      "matches": true
+    },
+    {
+      "path": "formal/SurfaceCheck/Validation.lean",
+      "expected": "59166ece078b813f5d20dd09d7bc8954d315337dfff84e9e43bfbb09f8ad163a",
+      "actual": "59166ece078b813f5d20dd09d7bc8954d315337dfff84e9e43bfbb09f8ad163a",
+      "matches": true
+    },
+    {
+      "path": "formal/SurfaceCheck/Walk.lean",
+      "expected": "14147693241fe11639c3a6df9eabc7bb9c65c4625f5eec5a3c61def893aec274",
+      "actual": "14147693241fe11639c3a6df9eabc7bb9c65c4625f5eec5a3c61def893aec274",
+      "matches": true
+    },
+    {
+      "path": "formal/lake-manifest.json",
+      "expected": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32",
+      "actual": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32",
+      "matches": true
+    },
+    {
+      "path": "formal/lakefile.toml",
+      "expected": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+      "actual": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+      "matches": true
+    },
+    {
+      "path": "formal/lean-toolchain",
+      "expected": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+      "actual": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch2-exchange/README.md",
+      "expected": "826bf99d3ad71c725b9423fd88256c920188f100a8c21ec20f1cabc1f5f7ace3",
+      "actual": "826bf99d3ad71c725b9423fd88256c920188f100a8c21ec20f1cabc1f5f7ace3",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch2-exchange/builtins.json",
+      "expected": "dbcbf000b062216bebe0f8a66090e79acf17c477099710d504a5c62969717325",
+      "actual": "dbcbf000b062216bebe0f8a66090e79acf17c477099710d504a5c62969717325",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch2-exchange/corpus.json",
+      "expected": "92eecd922fa84538f5e130c13e4ec608272fcdf452682408f38fc21b8ffc1116",
+      "actual": "92eecd922fa84538f5e130c13e4ec608272fcdf452682408f38fc21b8ffc1116",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch2-exchange/coverage-program.json",
+      "expected": "2dd5905194219b4d7964f63f114d06d314e62684b197bf28dad94d40336d2bb3",
+      "actual": "2dd5905194219b4d7964f63f114d06d314e62684b197bf28dad94d40336d2bb3",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch2-exchange/coverage.json",
+      "expected": "12c330696a6bbd34e1503c6be3cf000f80603d3a9dc5ec8774469aa2d6a574b6",
+      "actual": "12c330696a6bbd34e1503c6be3cf000f80603d3a9dc5ec8774469aa2d6a574b6",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch2-exchange/stdlib.json",
+      "expected": "27f30a9b3fec4c733432a3e89ea791115d904c56647e54bf72c9712ab29afe9d",
+      "actual": "27f30a9b3fec4c733432a3e89ea791115d904c56647e54bf72c9712ab29afe9d",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/README.md",
+      "expected": "0ad86ad6e3a1250b1429723ec2f8cf599fea49fefa5492d82e913335c905937a",
+      "actual": "0ad86ad6e3a1250b1429723ec2f8cf599fea49fefa5492d82e913335c905937a",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/builtins.json",
+      "expected": "8117fffacaee9cf4d8f144dbcf5865160b78030de3e97bee6d94851cb498adba",
+      "actual": "8117fffacaee9cf4d8f144dbcf5865160b78030de3e97bee6d94851cb498adba",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/corpus.json",
+      "expected": "7084710e552c5f8f3947067804c0002c5918c41c233804d9d59b13b5bd5b1ca4",
+      "actual": "7084710e552c5f8f3947067804c0002c5918c41c233804d9d59b13b5bd5b1ca4",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/coverage-program.json",
+      "expected": "e057032b983590cb16ae71c005c3e0b3178eccbfdc857286d4675978a24d9a2d",
+      "actual": "e057032b983590cb16ae71c005c3e0b3178eccbfdc857286d4675978a24d9a2d",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/coverage.json",
+      "expected": "60d89398502d2f6647dc5230a686427c9fe342f240f4208e0c58c905e56cba61",
+      "actual": "60d89398502d2f6647dc5230a686427c9fe342f240f4208e0c58c905e56cba61",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/manifest.json",
+      "expected": "827cc008ebdd5d81011c07f0956c79bbf44d470a303c7918efd00927367950f9",
+      "actual": "827cc008ebdd5d81011c07f0956c79bbf44d470a303c7918efd00927367950f9",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch3-exchange/stdlib.json",
+      "expected": "047d7807a6d2fbf054977bb0a5740940afd7db54ce915ed5577cdc9118afa651",
+      "actual": "047d7807a6d2fbf054977bb0a5740940afd7db54ce915ed5577cdc9118afa651",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/README.md",
+      "expected": "40d766793b36c297181f19f4d16aad8bed4edef849ab8aa4778e1ba21843c4d2",
+      "actual": "40d766793b36c297181f19f4d16aad8bed4edef849ab8aa4778e1ba21843c4d2",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/builtins.json",
+      "expected": "095631779e9880677ecbf40f9c99e19752b966add10ff27b6e920827c3dff35f",
+      "actual": "095631779e9880677ecbf40f9c99e19752b966add10ff27b6e920827c3dff35f",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/corpus.json",
+      "expected": "16e27fca4abb622691612180b1f58c5f020fe13cc82cbe182d85be59aa3fb215",
+      "actual": "16e27fca4abb622691612180b1f58c5f020fe13cc82cbe182d85be59aa3fb215",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/coverage-program.json",
+      "expected": "5c92a9d4759f8e797c8fcab9b46770326ecf47b2dc89363e92b918920c968d1f",
+      "actual": "5c92a9d4759f8e797c8fcab9b46770326ecf47b2dc89363e92b918920c968d1f",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/coverage.json",
+      "expected": "9477aacec12b40c03b18a730e8b90c644a19f3ed30a60b1c254a3544e919e570",
+      "actual": "9477aacec12b40c03b18a730e8b90c644a19f3ed30a60b1c254a3544e919e570",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/manifest.json",
+      "expected": "d474521932b72f3c57330bc6c1099f5156007febb735f562df4ddbc5c1671e16",
+      "actual": "d474521932b72f3c57330bc6c1099f5156007febb735f562df4ddbc5c1671e16",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch4-exchange/stdlib.json",
+      "expected": "1ab591acf75a72ec7724ea33cad419bdb720e41a7899505adc632ee6629638fd",
+      "actual": "1ab591acf75a72ec7724ea33cad419bdb720e41a7899505adc632ee6629638fd",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/README.md",
+      "expected": "35429c94b9611f43489ee95c2e01b9d17c4f9a8744d9431991db278b172adfd7",
+      "actual": "35429c94b9611f43489ee95c2e01b9d17c4f9a8744d9431991db278b172adfd7",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/builtins.json",
+      "expected": "14ea9f44880ddd3a394423610fad06c051f8f3ba64085f9a8d5b1715ac79e2f7",
+      "actual": "14ea9f44880ddd3a394423610fad06c051f8f3ba64085f9a8d5b1715ac79e2f7",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/corpus.json",
+      "expected": "1b480f88916f334d5910d351b0b7386a8418df864962523a7f87229f11135288",
+      "actual": "1b480f88916f334d5910d351b0b7386a8418df864962523a7f87229f11135288",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/coverage-program.json",
+      "expected": "f26cac83d3699955e50d3a06b3e7118cecef57a7d0107c7497b43992bef259e5",
+      "actual": "f26cac83d3699955e50d3a06b3e7118cecef57a7d0107c7497b43992bef259e5",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/coverage.json",
+      "expected": "288a01c335f7d811249a7dd4802ad3a220618587b633833e08d77b267ed1cc25",
+      "actual": "288a01c335f7d811249a7dd4802ad3a220618587b633833e08d77b267ed1cc25",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/rust-manifest.json",
+      "expected": "0c9935a6e7555dd089a1a6773c48495cfbbb000ea444115f47aeb26f28c438aa",
+      "actual": "0c9935a6e7555dd089a1a6773c48495cfbbb000ea444115f47aeb26f28c438aa",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/batch5-exchange/stdlib.json",
+      "expected": "16d4d81f3dabc1fd6179c11e4c4fca72bc6a28a5095e800c88f4235491e6a5ce",
+      "actual": "16d4d81f3dabc1fd6179c11e4c4fca72bc6a28a5095e800c88f4235491e6a5ce",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/extensible-exchange/README.md",
+      "expected": "dd3351595f029cf832a6a9d9df0bcab09d85d5ab8d54356d850ab069573fd56f",
+      "actual": "dd3351595f029cf832a6a9d9df0bcab09d85d5ab8d54356d850ab069573fd56f",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/extensible-exchange/builtins.json",
+      "expected": "0bcc138ad85a55dd97ed2e2ed3824753245c542a2e8bf47b5b5065d67562f495",
+      "actual": "0bcc138ad85a55dd97ed2e2ed3824753245c542a2e8bf47b5b5065d67562f495",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/extensible-exchange/corpus.json",
+      "expected": "0735a5422cbb980aab1dc99ad4decf18c79f4e251790c4aa8d5421fa2677380d",
+      "actual": "0735a5422cbb980aab1dc99ad4decf18c79f4e251790c4aa8d5421fa2677380d",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/extensible-exchange/coverage-program.json",
+      "expected": "cefcef31b6fa17a3e9d499993a8f20d56c3131cd72951effb73e2bbee86cf749",
+      "actual": "cefcef31b6fa17a3e9d499993a8f20d56c3131cd72951effb73e2bbee86cf749",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/extensible-exchange/coverage.json",
+      "expected": "1314810e756408b1c82e9f555134c786e27167cd4a28fdcb9052178c23586fbd",
+      "actual": "1314810e756408b1c82e9f555134c786e27167cd4a28fdcb9052178c23586fbd",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/extensible-exchange/stdlib.json",
+      "expected": "735648a0f14e48f2dfda27eaaae4db21db6ac4b9d8b965616376e18e8b2bf0dc",
+      "actual": "735648a0f14e48f2dfda27eaaae4db21db6ac4b9d8b965616376e18e8b2bf0dc",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/interval_range_vm.py",
+      "expected": "354e59e126c58f745e6722da8b99e52681d1a752c389622d59b0b12e5a7f956b",
+      "actual": "354e59e126c58f745e6722da8b99e52681d1a752c389622d59b0b12e5a7f956b",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/interval_shift_vm.py",
+      "expected": "703d76c822e4e6f2d86256617d0e73a858def08545ad676ed9b3656d5a2a3211",
+      "actual": "703d76c822e4e6f2d86256617d0e73a858def08545ad676ed9b3656d5a2a3211",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/interval_source_compare.py",
+      "expected": "9241fa268ba343ec15725dd28f706bd705c1957db4293cf9bfd020e9b36fa9e3",
+      "actual": "9241fa268ba343ec15725dd28f706bd705c1957db4293cf9bfd020e9b36fa9e3",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/interval_vm_compare.py",
+      "expected": "913fa7944a5f55d59ae42940cdaf28fde30df083444133ac7335dfd065cbce52",
+      "actual": "913fa7944a5f55d59ae42940cdaf28fde30df083444133ac7335dfd065cbce52",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/named-exchange/README.md",
+      "expected": "c0e3529ce8862870d6d0e0e4fc29603b2f926963710439e1c757bd9293d36232",
+      "actual": "c0e3529ce8862870d6d0e0e4fc29603b2f926963710439e1c757bd9293d36232",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/named-exchange/builtins.json",
+      "expected": "a4a0cc2f16c75db1e328e343f5ce41c27012996469483a75124cddffc161fb87",
+      "actual": "a4a0cc2f16c75db1e328e343f5ce41c27012996469483a75124cddffc161fb87",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/named-exchange/corpus.json",
+      "expected": "ce381417dc2febf3b1b360952c90405a2e8325a3abd1826df6c81fa51dc6f1d7",
+      "actual": "ce381417dc2febf3b1b360952c90405a2e8325a3abd1826df6c81fa51dc6f1d7",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/named-exchange/coverage-program.json",
+      "expected": "11b52a94ca9e269a5e803f19c7a8ae0765723f4e6d436fc607580b63e2a7168c",
+      "actual": "11b52a94ca9e269a5e803f19c7a8ae0765723f4e6d436fc607580b63e2a7168c",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/named-exchange/coverage.json",
+      "expected": "ae1106cd74363b4b66607ff8dceeec7dbf20ccf2b68884d2ba55535bb3554a61",
+      "actual": "ae1106cd74363b4b66607ff8dceeec7dbf20ccf2b68884d2ba55535bb3554a61",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/named-exchange/stdlib.json",
+      "expected": "aeff461ebc062cc46d57e2ebe47f2db111c6a8ee8e37393774e582864409ca38",
+      "actual": "aeff461ebc062cc46d57e2ebe47f2db111c6a8ee8e37393774e582864409ca38",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/range-known-differences/class-structural.bnt",
+      "expected": "2bac6c224ba9c89e18511d227e5418f3c342f38c81df7c3afa4e9c570bc40190",
+      "actual": "2bac6c224ba9c89e18511d227e5418f3c342f38c81df7c3afa4e9c570bc40190",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/range-known-differences/expected.json",
+      "expected": "1390b494bd17413eb5345a30771c7f58dafb4cb7f9e14a70bc34a1db2f560652",
+      "actual": "1390b494bd17413eb5345a30771c7f58dafb4cb7f9e14a70bc34a1db2f560652",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/range-known-differences/manifest.json",
+      "expected": "4a5aae425e29b96dc9a0109d810a035adeec3166342bfc06c283b2e9906c9a2a",
+      "actual": "4a5aae425e29b96dc9a0109d810a035adeec3166342bfc06c283b2e9906c9a2a",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/range-known-differences/nul-direct.bnt",
+      "expected": "d06921573ee3be4360f9bc70e6d6c6b6ad24fbe74541fb263402df34a266083c",
+      "actual": "d06921573ee3be4360f9bc70e6d6c6b6ad24fbe74541fb263402df34a266083c",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/range-known-differences/nul-dynamic.bnt",
+      "expected": "07bb716f5e740f2eb1ea5157b082a7c99fd72c164b9ed226d4a248d8bdee86d0",
+      "actual": "07bb716f5e740f2eb1ea5157b082a7c99fd72c164b9ed226d4a248d8bdee86d0",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_batch2_exchange.py",
+      "expected": "295fdd8e895e6b1f2a14b02b7db73077bedcf2ca347e7c1b26c4f0f1f35cb85b",
+      "actual": "295fdd8e895e6b1f2a14b02b7db73077bedcf2ca347e7c1b26c4f0f1f35cb85b",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_batch3_exchange.py",
+      "expected": "aa7a21ccc005d0fb42cc30a2bed16e14c2e618eda6f7d9df8d2326931d12661a",
+      "actual": "aa7a21ccc005d0fb42cc30a2bed16e14c2e618eda6f7d9df8d2326931d12661a",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_batch4_exchange.py",
+      "expected": "1f75f3916bf0074d576a6e77db617c268c741611916475a46cdf387d5cef09ed",
+      "actual": "1f75f3916bf0074d576a6e77db617c268c741611916475a46cdf387d5cef09ed",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_batch5_exchange.py",
+      "expected": "2293c6075163c43070ce9e515ed8e16d6649b65def0c8b5aba4b62bda2c9998c",
+      "actual": "2293c6075163c43070ce9e515ed8e16d6649b65def0c8b5aba4b62bda2c9998c",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_extensible_exchange.py",
+      "expected": "6901f5fb8c58391748955353aa7a54e17865a72f6ee15862cfb20e1b1033292f",
+      "actual": "6901f5fb8c58391748955353aa7a54e17865a72f6ee15862cfb20e1b1033292f",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_interval_exchange.py",
+      "expected": "57d51aefc0d9f84700d26808709d2cd24da17dfe78aeca4bdf8752c8e8909502",
+      "actual": "57d51aefc0d9f84700d26808709d2cd24da17dfe78aeca4bdf8752c8e8909502",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_named_exchange.py",
+      "expected": "b552e3197a4114974f489a3d34ac237980ab2b9b6a9f56b43880a371bf8c35fa",
+      "actual": "b552e3197a4114974f489a3d34ac237980ab2b9b6a9f56b43880a371bf8c35fa",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_range_budget_sources.py",
+      "expected": "dc62c6306f038521a09803148156093515d77ce90fb348d7b250399223483dd0",
+      "actual": "dc62c6306f038521a09803148156093515d77ce90fb348d7b250399223483dd0",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_range_exchange.py",
+      "expected": "d2c4ec7a0cd70d9da1239c23a5b8a680863911452cbf995d08a5a8e558e2cef2",
+      "actual": "d2c4ec7a0cd70d9da1239c23a5b8a680863911452cbf995d08a5a8e558e2cef2",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_range_known_differences.py",
+      "expected": "ee4bd6b85c2ba5c5ed6a2d8d087c86b175d6f071b93a68ec2bee415a3e688ed6",
+      "actual": "ee4bd6b85c2ba5c5ed6a2d8d087c86b175d6f071b93a68ec2bee415a3e688ed6",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_range_rejections.py",
+      "expected": "48ea478d794b879635eacfbbf01fd2c555bde30b8ce66df8bb773760c094d7a6",
+      "actual": "48ea478d794b879635eacfbbf01fd2c555bde30b8ce66df8bb773760c094d7a6",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_range_sources.py",
+      "expected": "68178531622820318f53ba3c76967b5597dcff8be67cce1ccd03814e7dcbd48a",
+      "actual": "68178531622820318f53ba3c76967b5597dcff8be67cce1ccd03814e7dcbd48a",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_try_exchange.py",
+      "expected": "dfc829eff2de224c4700d40dd315e235a1bf090b8d1f0458b03e67c41c8552ce",
+      "actual": "dfc829eff2de224c4700d40dd315e235a1bf090b8d1f0458b03e67c41c8552ce",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/test_width_exchange.py",
+      "expected": "7972b3a8d033f93b7ec0f14f3e08a190625d3f5c2b778a16923f84da34e370b0",
+      "actual": "7972b3a8d033f93b7ec0f14f3e08a190625d3f5c2b778a16923f84da34e370b0",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/try-exchange/README.md",
+      "expected": "5259da52d14b942d46107fd69b7013bd71c1da93b590d122fad713130705063e",
+      "actual": "5259da52d14b942d46107fd69b7013bd71c1da93b590d122fad713130705063e",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/try-exchange/builtins.json",
+      "expected": "b9b2e85ab4137e1358eff678d49d36b0485019cd3bec44ce3cdc355fb670d923",
+      "actual": "b9b2e85ab4137e1358eff678d49d36b0485019cd3bec44ce3cdc355fb670d923",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/try-exchange/corpus.json",
+      "expected": "4cf04f48194f827910b8e7a02fec5abc98ee56b5a3e6de1b2bcc3ef2f5a595f3",
+      "actual": "4cf04f48194f827910b8e7a02fec5abc98ee56b5a3e6de1b2bcc3ef2f5a595f3",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/try-exchange/coverage-program.json",
+      "expected": "9ce6431555a5879eb903cf9dc5bb1d5581f5a0ff1ae8c6104444dc2143455514",
+      "actual": "9ce6431555a5879eb903cf9dc5bb1d5581f5a0ff1ae8c6104444dc2143455514",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/try-exchange/coverage.json",
+      "expected": "234ef20934f9cb8bdc04e060e8a3ab8a9d76920591bb0796da70fdb60bb631af",
+      "actual": "234ef20934f9cb8bdc04e060e8a3ab8a9d76920591bb0796da70fdb60bb631af",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/try-exchange/stdlib.json",
+      "expected": "89b46ba74f173cf3c9bb34f6949479b5c570814ca68a33c8045ea9680653394d",
+      "actual": "89b46ba74f173cf3c9bb34f6949479b5c570814ca68a33c8045ea9680653394d",
+      "matches": true
+    },
+    {
+      "path": "formal/tests/width-exchange.json",
+      "expected": "38de3204070534fa47c85b8133c0a85f17065a612c893fcd45fb1d01994a749c",
+      "actual": "38de3204070534fa47c85b8133c0a85f17065a612c893fcd45fb1d01994a749c",
+      "matches": true
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "expected": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "actual": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "matches": true
+    }
+  ],
+  "formalAllMatch": true,
+  "changesAfterV101d": [
+    {
+      "status": "M",
+      "path": "crates/benitoite/src/typeck/tests/interpolation_formats.rs",
+      "sha256": "3ff1c64e8580c6d2badde904158a901337dbee3246991abe1a52e61c31a0f675"
+    },
+    {
+      "status": "M",
+      "path": "crates/benitoite/tests/scope_annotations.rs",
+      "sha256": "e9e2decb0718557cc2d9fd5cd6841c6fdf2ef5c3f4fcafdd4debce0e9272466a"
+    },
+    {
+      "status": "M",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/README.md",
+      "sha256": "c63d44986f23d98e0c4e2a958d5e869c2e05423509debbecfd77b8ec7b43a046"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/reviews/RV-V10.1d.md",
+      "sha256": "7e001bd3737977c028d0f201624caca0dc077e5338cc22b1f6da8f3dca4ca5c9"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/LARGE-FILES.md",
+      "sha256": "b4a35fe13c33b993e3b6b44e01ffdf640a1cb7e6056956a782f9e388c8a7704b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/change-failure-source.json",
+      "sha256": "9d3e0e4a573b84a826170cda3fa657c3881937250f32e50d27b609325b89a06d"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/change-failure.log",
+      "sha256": "8ced2fb8c8ca44ca65cc545fbd7935aff42bc6349928208d60bfcdb268a9a228"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/clippy-all-targets-exit-confirmed.log",
+      "sha256": "a41051563a4cb5fc1b1bcdd9aa0ba28ca80f7736d629d90cc138218756e8e3a9"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/clippy-all-targets.log",
+      "sha256": "0695c2926d320ffec9a9c4266957c752e59a6618671a64b386ab1bd36ac8cb98"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/example-no-run-exit-confirmed.log",
+      "sha256": "f444f5aecf532b1f8159ff5c654ee707c111976520a2b0b216440bb4a8cb2f9a"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/example-no-run.log",
+      "sha256": "0fd2896641ba8f7529bfbbc1ee734e60b18c5e1ac61a3a14782a8e2971fbc9ca"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/fmt-check-exit-confirmed.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/fmt-check.log",
+      "sha256": "28effb23b9b133837266cf0da8720d823d5aabffbad7f9d9c4a9d46833076efd"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/lib-interpolation-formats-exit-confirmed.log",
+      "sha256": "c45aced7e287e6bf7e1364ea21aa724360d8f6005d89c4aa8df262ad2cb4ce0e"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/lib-interpolation-formats.log",
+      "sha256": "f3b42e162d4d2789b260fe0aa24f43994a2ef989481f5761049840141e1c0631"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/local-checks.json",
+      "sha256": "09cd3240b4762ec9970333f77f7b43aaf90058f9b4f7044f3fdeb195921c8478"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/logs/t-c.log",
+      "sha256": "5cc11d2fb3e8041eb6b457478cae71b623e157e3398c3987173f95afa4c0ea75"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/logs/t-d.log",
+      "sha256": "096a2147cb3077f4ca0b9c75065d0f8d0764a1f5c76b0639d6374ce2557b4063"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/results.md",
+      "sha256": "b7b378d1e027f248fd137e7a7b59184a73e7075d2b9908eeaccd6754da98cae8"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/source-diff.patch",
+      "sha256": "bccb371b4b183fef405dde6052b8518ad7d69281f7941cb38c423696f2fccbcb"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/source-state.json",
+      "sha256": "9535000f8a53ff6134586af7aeef8acc3c94ec31378164454ff69d8655d3d56d"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/timed-checks.json",
+      "sha256": "1cae5912e75b3d6ed63bf5af7b6828f7b4c2c84c5772d3d36a7321d456c7fd93"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-change-1.log",
+      "sha256": "8ced2fb8c8ca44ca65cc545fbd7935aff42bc6349928208d60bfcdb268a9a228"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-change-2.log",
+      "sha256": "0ccb128e81c912f11fcc7663d9c55a056a7b6d0c3d766230992fa07bed3337f9"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-change-sources.json",
+      "sha256": "44681761a2267fb1d999c19a378e3932e25e9bff8434dfa9b9bbede982ba62fc"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-default-after-counts.json",
+      "sha256": "175580492dfbf87f99b6ef7a5de0391abead8dd1782705913b78cf0d887bfb2e"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-default-after.json",
+      "sha256": "de76c3b12f3c2d1cdf29e1a24bd2369dcf74dd708dda9bc538d3807f4f45d2af"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-default-before.json",
+      "sha256": "4c6b7f2870ce95e9e78353b52fe7ca12555eb16b10f0a32f07846523332f8f79"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-default-comparison.json",
+      "sha256": "8f604254eaf13f3f38b17f0a5b62b11a6e81b24ed156946453ef3f44636301e9"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-diagnostic-change.log",
+      "sha256": "c10174fdde226788117d2a29b385427c093b3ef39443efb0b36fae936ce11e96"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-final-state.json",
+      "sha256": "21292a30850cccc4b3e3431ce0d2a1296c22a7cb294ad04ce0b39f22da53e0ac"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-fmt-final.log",
+      "sha256": "d2993bc68ad9a63f711c8f5473155e2ba00fdcd461220cc3849185f2f9ad93e6"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-fmt.log",
+      "sha256": "8e357138c6f579191a2a5014d73b29d20f59a744ca88a4459dcf5155e581e194"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-heap-counts.json",
+      "sha256": "94b59c1a3bf23ad0025598318de3ad49b790e03fb7bec06826348809ddaaabf6"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-heap.json",
+      "sha256": "ecd81bafd01845ef3696ab35cb610c149879b3a47de8c649d165c48a2e7b7511"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-initial-state.json",
+      "sha256": "2b3a6201499fd97ba96852b049953deade9479fbc9e5d5e4af64e8c983f07466"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-run.py",
+      "sha256": "f252f293b89cabe2f9a3cca243f41a71269afa6621b89ba97d270af7d8827d20"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-scope-annotations.json",
+      "sha256": "7d021dfc6fa58550adb7c4fc1f7f6727911eadfab5ed317389d2e82fd76484d7"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-scope-annotations.log",
+      "sha256": "25b01707175e60c06ed7cc7e96106ce72af9c60a7888df48d4ecbd5f68224840"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-scope-before.rs.txt",
+      "sha256": "f41cc03945802a13f37907f1766893e869ebddb0086e71b0be0187c9fc9c579c"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-source-diff.patch",
+      "sha256": "a7d824ae8c3621d99be9a3c6095912a0b1f89274bf636e7800b8a9bc4264f800"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1c/v10.1cb-test-history.log",
+      "sha256": "1f715ea7e3112fbf5fcf0ca5b719864161ad82fc827d2ebf1cd554fb529fe3bd"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/LARGE-FILES.md",
+      "sha256": "951e5ce83ff306c17ae667a48925daa8d47074eb2da8754d1fb6218fe8f308cd"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/changes-after-k10.3.json",
+      "sha256": "9fcb1dbf4a560cba03b8154251cedde6fa667b94f3a76fd401809a6baad9c21e"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/check-named.log",
+      "sha256": "d2acdb4bf0b20d495c04f37d9f07b6c198f18dbbd720f60196c8bf8176226a21"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/cite.log",
+      "sha256": "1516483c6294eda765a0e0c98b8b178880ef013c9b5ec066bb597b85f228dd9e"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/cite.py",
+      "sha256": "711a436f02605165cdf49d1c08afe30ef04f0751075d2935d4374360222a2006"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/cited-summary.json",
+      "sha256": "5d9605ed5ee3a70b2b6c3232329c944c196b032238c0b5ce00fe57a3f51fbf7b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/cli-and-producers.json",
+      "sha256": "999498bdfab99e96b5dee7ad6a8782e5cd1b49db024bedc9c3b327e999cfbb4c"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/cli-build.log",
+      "sha256": "3d9a846e53fe30b204530c3a03aed5fece35e97b4ce56cd7b1e989390890c2d2"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/collect.log",
+      "sha256": "b696bd202c08a4dbacde7c35ca3ad043279f471a943a1d827dbaa6da324eda7b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/compare-summary.json",
+      "sha256": "0eab06e21b243a4fb321ab932ba55dd2aeffe9c0c0eee243c36632966a48ac31"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/compare.py",
+      "sha256": "ff1f157d3217bcaa87131b2e7dd0805ac0344eb5ff15806d68ca89f626e32ad6"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/count-comparison.json",
+      "sha256": "f5db7b7acf2390b60508db78b84833a841c5a17386e41c0bd782d1cfd3bb067d"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/coverage-export.log",
+      "sha256": "637a6d5f13d78f642b44b4778b732fe5d460abb311bad9e2fbfeb380379e12e7"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/extensible-header.diff",
+      "sha256": "cd5b7e002b9cb4f974ca7c7d6a40eea2b5fe02cef471685a1afded4acb9a6f4b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/f-q.md",
+      "sha256": "29d800a794ba0aaa62ad9c5fd3240ddab7856af5b428f22d44cd02329c4860e5"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/final-output-audit.json",
+      "sha256": "7626090049aed42ee37774c63fdc0222ee13328a0b53c420d0f8cf6f567b7c24"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/final-state.json",
+      "sha256": "8113baa5ff3ce26db319d301750def9ce4e1f19c6fec6eadf97ba8d5501bee12"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/formal-hashes.json",
+      "sha256": "d40d1ec429957c5d70b6e151f974b1877708f4002fb49d9e0d9e25100993b6c6"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-final-verify.py",
+      "sha256": "7b7b02e23afa74da0ff281aaf87aaf16b8558277f99c83572173d272e729fc48"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-final.json",
+      "sha256": "31cceffa4f3b9792a820e0fcc1634fd2a5b168aa98320ff9682b7884651d22b9"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-forward.bnt",
+      "sha256": "6640fa0a0a626c936aa3d2e18e57636be1aec749f61e6f20983635ce5a225553"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-forward/named-programs-builtins.json",
+      "sha256": "2087780c73c8562346d3e96b1f0263b10635d1ecc78d97e706869cf363b78bf1"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-forward/named-programs-corpus.json",
+      "sha256": "3136c3394803884ef5b6c5fe69672e3b24f6f03c0d6487d6c53875a4c6ac71ce"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-forward/named-programs-coverage.json",
+      "sha256": "ea5b6d5f219be85277b422bd5072d4138323114a3e6c4899e3e858567d5af447"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-forward/named-programs-stdlib.json",
+      "sha256": "287dc0a703f5973a601514f0144b10bf29552cbb90738a6ba01a4530981e7d4a"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-signature.bnt",
+      "sha256": "51d7211235222582286aca68fe404ec8dfdeb05be2d4e5c6a50f0deab4959af3"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-signature/named-programs-builtins.json",
+      "sha256": "d339360b5f345d629c8075a6b98cbe5d8dd2bd94e24cd0dcbbf3f333858ddbdc"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-signature/named-programs-corpus.json",
+      "sha256": "6b4922d890000b936a506e4fba522083ce27ee5cfde4d622554791ccc78c3a79"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-signature/named-programs-coverage.json",
+      "sha256": "2316a733ddd39dd457e43771e1e2cb887661305d233bf7fd0f8574b0b1e980f0"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-output/range-sources/h31-user-signature/named-programs-stdlib.json",
+      "sha256": "91d0e30c692c49fd4ee5cc712af6d201460d56fb47bf95c3bb6242503698d996"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/h31-verify.log",
+      "sha256": "f0de7efe13340cda3c3c0dd731c3a818f5b95bdc7d5cfb7fd720cba47450a135"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/initial-state.json",
+      "sha256": "13acf914f5188d12f89bde022b7e7227a5ee04b37904a47b0a60b45acab9f0ad"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/interval-comparison.log",
+      "sha256": "661b44685f28095d28742d3dbf8ed6a164a52ac4fdb155b716ca78f0efe192e2"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/interval-identity.log",
+      "sha256": "6f5185bfa3bb888892e3140b4da6cac5cfbb568278f0c16060e2546646b5eb2a"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/interval-manifest.log",
+      "sha256": "8a48610c8a28bc351c209750655cc03024542fb3da762cfdb752dd3ad26bcf05"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/interval-range.log",
+      "sha256": "97ecce17ea51259c0bb526aefd2ab64f0ffa8bd56bbb5444a19f3298736c0c2d"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/interval-vm.log",
+      "sha256": "1a73c57c2fc7d58cb9d959fc218375b8d7ae0b5d93b78ae9df6fb6779c875f9b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/large-files.json",
+      "sha256": "bc4b693d0186c04b8f24b0d2efb7b543c86a998474e53391f16197ff02389d19"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/manifest.log",
+      "sha256": "8eec61b1273cb718d45c5f0f3d8a52f6ad29de4307fab82b109f88009b294302"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-a-hash-audit.json",
+      "sha256": "a1b12781a50ab0b670b0516c271f1266ba861637799af11fbb9e18a010d7554d"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-a.end",
+      "sha256": "be6c652ed76e0299647fcc871d457d19aebb6116dd54e45427c1e814d05424cc"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-a.out",
+      "sha256": "b535d68dfbbd856419507bd4abebb50a169377f8797870d4df6f17c863974411"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-a.sh",
+      "sha256": "c2b5db45a7193507345fa2d803064e2b24f0d63acbcc9277a13c53425fdd6489"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-a.start",
+      "sha256": "aa89c35e188c295667c2716c935300ba6c80b031edb41969a3148a0607669eaa"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-b1.sh",
+      "sha256": "f076804ad45c6eecdcf016f36685d6c9c392412ad0134ba14fac24b13ccd20c4"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-b2.end",
+      "sha256": "be06183d0ee693feca968d71dd2907bdc9c36af3f428f4b637d273addf52b2bd"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-b2.out",
+      "sha256": "3600438220af13c6322559fe605bade9e9d2bbbb1b1141a78b538a5ca4ef925c"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-b2.sh",
+      "sha256": "e369da7d1b934793c578c9b5744099bf893e676e0f0d0fd16911c3ccf93c9728"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/phase-b2.start",
+      "sha256": "2982e2f772871c2bc09b8c609e309e8e2f291322ed5dcedd63e9ca7100671799"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/range-known-differences.log",
+      "sha256": "1795e1bebed8bf909443fa72904b256d620cc6daed8e06849753d412ea690f84"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/range-sources.log",
+      "sha256": "da733d58398ec4fcc7e408660aff542178a138bfa63050a326211013d0f1ec7e"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reader-input-hashes.json",
+      "sha256": "7e58ab1ab22058cd90c369af8871a453d02f6124978d4a0b527564fb86516bbe"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/relation-state.json",
+      "sha256": "833dae89cd16d39e56b37acda1c45033e8a11d675b0422ef7adbff953a72014a"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/coverage-diff/named-all-report.json",
+      "sha256": "7b27add8efea79f9cbcc1f0fa29997fd18074483c7fbd197c9842e3ac70a5732"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/coverage-diff/named-report.json",
+      "sha256": "73d7d3b27d168c306490926748bc125d97b260f2a925d06a3be41476a314b3a7"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/coverage-diff/report.json",
+      "sha256": "7b27add8efea79f9cbcc1f0fa29997fd18074483c7fbd197c9842e3ac70a5732"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/coverage/report.json",
+      "sha256": "5f139e2ee8d766a9dd1a42c81b3dffdacafabea873102baad50d5c9d9ff9d090"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/range-budget-comparison/summary.json",
+      "sha256": "04ba4b55daff57ae1c09cb4d487ed4563075d69770a74385ad1e94929cea0a3b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/range-known-differences/summary.json",
+      "sha256": "9adc607161abe63e5fa2da32f6558c41a6cfed7ac862b08ed7609a795fa57158"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/range-source-comparison/source-manifest.json",
+      "sha256": "1217bcd44562580dc0dc7848bba027b37631deda6cecdc74427fefab3d3210d4"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/range-source-comparison/summary.json",
+      "sha256": "a3225a8102cac8bbf7ca258b9cb4ae6b71262de3fb3a2578c1c88f537069079a"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/range-sources/rust-observed.json",
+      "sha256": "48959d1925724e84bbc3222f39c95a5d6880a8cfd526756d5d019fa0888f3b35"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/desugar-diff/report.json",
+      "sha256": "b59416af5802872ccc61753dcdb59d6ee0d95b066486112f69484b7316b94dce"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/reports/interval-diff/manifest-comparison.json",
+      "sha256": "beddcdda094ed8b989d0fe04ba521b83d6e755179a0bf8832397770a5fd68e21"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/results.md",
+      "sha256": "0913e7261a9e9fd7782f13ca1a26506688e902fe357f984ff5f2ac9687778882"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/rust-export.log",
+      "sha256": "81f5197f4d58d840cdb73cddf7d9db00982b90c8ac51ab4ce44b758669a6cc5b"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/rust-observed-delta.json",
+      "sha256": "c6acc04572951685b4dd6028d302e4d58e0c718df4d7dc3928c0ddec5215a6e1"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/saved-files.json",
+      "sha256": "f4c3f2b7a0dc649353f61a982c64399720ce732dd08a6e3f2fa002cdfded8e66"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/stages.json",
+      "sha256": "492e945acaf7e46928f5f10c153d1e8421b066fbf29fa3cfab80d3325c865f07"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/v10.1db-evidence.json",
+      "sha256": "794114dca767e994be20c1f7c58227c673057c86e3bade52001507f2dff27ce7"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/v10.1db-state.json",
+      "sha256": "4908b208ca08b077e173f12b63f5539dbda5f4770df5669dd0c3362033e32eff"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/v10.1db-work-dry-run.json",
+      "sha256": "54bfa446927b890f898a1c17c1bcc572f8bba14c7e9482e8bbfbe06df6085495"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/v10.1db-work-dry-run.log",
+      "sha256": "aac1d5f20ba2b0130f84f3759508603b13dec522932801ebd5f5558208932e52"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/verify.log",
+      "sha256": "831181a3283b58da6c1951d15e16137e0a2703dfdd493a1e6991bc251f1e1ab6"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/work-dry-run.json",
+      "sha256": "5b3fb64a94227f016a6f8190b92e5d21bf92e9ae15b51c6f7dbb79297c7e8104"
+    },
+    {
+      "status": "A",
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1d/work-dry-run.log",
+      "sha256": "064a8883239a579468ec0708608fc033ccab9a21be1a53f9f08849073184cd15"
+    }
+  ],
+  "sourceDiffSha256": "80e4d8078556eb34123f34f6be52bfea31eb1bec7eae546bdd0a24e4d515c65c",
+  "v101cFixes": [
+    {
+      "path": "crates/benitoite/src/typeck/tests/interpolation_formats.rs",
+      "expected": "3ff1c64e8580c6d2badde904158a901337dbee3246991abe1a52e61c31a0f675",
+      "actual": "3ff1c64e8580c6d2badde904158a901337dbee3246991abe1a52e61c31a0f675",
+      "matches": true
+    },
+    {
+      "path": "crates/benitoite/tests/scope_annotations.rs",
+      "expected": "e9e2decb0718557cc2d9fd5cd6841c6fdf2ef5c3f4fcafdd4debce0e9272466a",
+      "actual": "e9e2decb0718557cc2d9fd5cd6841c6fdf2ef5c3f4fcafdd4debce0e9272466a",
+      "matches": true
+    }
+  ],
+  "trackedWorkingDiffSha256": "c6fd7d898d1777b87cd8d4fabf1d05b55a7272b14bd1dce0216849e0b11844ea",
+  "inputManifests": {
+    "target/interval-diff/v10.1d/input-manifest.json": {
+      "bytes": 276948,
+      "sha256": "106815c6322d0abbc8de0a6c26fc0d0d91b6f88b0f6eeae8c4b9003b01154dfc"
+    },
+    "target/interval-diff/v10.1d/manifest.json": {
+      "bytes": 2243167,
+      "sha256": "7d46994a68d7c514e7f3d55a1e4b63e2a1e02ebb7936c85058de0ee5ff83ef56"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "checkedAtUtc": "2026-10-29T20:47:00.378758+00:00",
+  "operation": "保存済みファイルの読み取りとSHA-256照合だけ。比較器・verifyの再実行ではない",
+  "artifacts": 12904,
+  "bytes": 3476222140,
+  "mismatches": [],
+  "h31FrozenInputs": [
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/expected.json",
+      "sha256": "2e240f8fc90bfd34fca382432b1cff63cacee31c6a32cf66995187d119d9ee42",
+      "matches": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/h31-user-signature.bnt",
+      "sha256": "51d7211235222582286aca68fe404ec8dfdeb05be2d4e5c6a50f0deab4959af3",
+      "matches": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/h31-user-forward.bnt",
+      "sha256": "6640fa0a0a626c936aa3d2e18e57636be1aec749f61e6f20983635ce5a225553",
+      "matches": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.1b/h31-expectations.json",
+      "sha256": "29b0cf83997ffd88c394c733a4956abaf12734dd6af42a5816de8a8f78397144",
+      "matches": true
+    }
+  ]
+}

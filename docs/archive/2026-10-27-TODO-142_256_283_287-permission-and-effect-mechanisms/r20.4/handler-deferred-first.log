@@ -1,0 +1,38 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0364]: `finish_next` is private, and cannot be re-exported
+ --> crates/benitoite/src/typeck/effects/mod.rs:6:16
+  |
+6 | pub(super) use handle::finish_next as finish_next_handler;
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+note: consider marking `finish_next` as `pub` in the imported module
+ --> crates/benitoite/src/typeck/effects/mod.rs:6:16
+  |
+6 | pub(super) use handle::finish_next as finish_next_handler;
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0603]: function import `finish_next_handler` is private
+    --> crates/benitoite/src/typeck/solve.rs:1533:49
+     |
+1533 |                 let generated = super::effects::finish_next_handler(ctx);
+     |                                                 ^^^^^^^^^^^^^^^^^^^ private function import
+     |
+note: the function import `finish_next_handler` is defined here...
+    --> crates/benitoite/src/typeck/effects/mod.rs:6:16
+     |
+   6 | pub(super) use handle::finish_next as finish_next_handler;
+     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+note: ...and refers to the function `finish_next` which is defined here
+    --> crates/benitoite/src/typeck/effects/handle.rs:78:1
+     |
+  78 | pub(super) fn finish_next(ctx: &mut Body<'_, '_>) -> bool {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: import `finish_next_handler` directly
+     |
+1533 -                 let generated = super::effects::finish_next_handler(ctx);
+1533 +                 let generated = handle::finish_next_handler(ctx);
+     |
+
+Some errors have detailed explanations: E0364, E0603.
+For more information about an error, try `rustc --explain E0364`.
+error: could not compile `benitoite` (lib test) due to 2 previous errors

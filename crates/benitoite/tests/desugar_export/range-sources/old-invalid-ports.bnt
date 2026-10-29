@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function sample(raw: String, req: Http.ClientRequest) -> Result[S.CheckedEndpoint, S.ScopeError]
+ return S.checkEndpoint(hostPattern: "api.example.com", host: raw, minimumPort: 443, maximumPort: 80, port: 80)
+end function

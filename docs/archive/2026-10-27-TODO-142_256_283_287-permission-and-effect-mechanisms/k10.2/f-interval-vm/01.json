@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/f-interval-vm/identity",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_interval_identity",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "start_utc": "2026-10-29T12:11:27.319965+00:00",
+  "end_utc": "2026-10-29T12:11:39.545549+00:00",
+  "elapsed_seconds": 12.225256125,
+  "max_rss_bytes": 1458683904,
+  "max_rss_note": "macOS getrusage(RUSAGE_CHILDREN), 子プロセス単体の最大値、同時使用の総和ではない"
+}

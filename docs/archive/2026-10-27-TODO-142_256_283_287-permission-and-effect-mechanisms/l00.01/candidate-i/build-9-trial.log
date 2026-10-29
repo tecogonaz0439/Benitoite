@@ -1,0 +1,54 @@
+== wait-for-lock start 17:58:35
+== lock acquired 17:58:35 after 0s
+✔ [71/410] Built Benitoite.Release.TypeRows (414ms)
+✔ [72/410] Built Benitoite.Release.TypeRows:c.o (194ms)
+✖ [73/410] Building Benitoite.Release.TypeComposition (434ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeComposition.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeComposition.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeComposition.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeComposition.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeComposition.setup.json --json
+error: Benitoite/Release/TypeComposition.lean:21:40: Application type mismatch: The argument
+  h
+has type
+  match Atom.name l r✝ with
+  | Atom.name l r => e.mem (Atom.name l r)
+  | Atom.rho i => θ.rows.length ≤ i ∧ e.mem (Atom.rho i)
+but is expected to have type
+  e.mem (Atom.name l)
+in the application
+  ⟨?m.91, h⟩
+error: Benitoite/Release/TypeComposition.lean:21:35: Application type mismatch: The argument
+  rfl
+has type
+  ?m.90 = ?m.90
+but is expected to have type
+  Atom.name l r✝ = Atom.name l
+in the application
+  And.intro rfl
+error: Benitoite/Release/TypeComposition.lean:358:13: unsolved goals
+case ha.name
+θ : SubstEnv
+a : Atom → Bool
+h : ∀ (i : Nat), a (Atom.rho i) = false
+l : EffName
+r✝ : ScopeRange
+⊢ (∃ l_1, (l = l_1 ∧ r✝ = ScopeRange.top) ∧ a (Atom.name l_1) = true) ↔ a (Atom.name l r✝) = true
+Some required targets logged failures:
+- Benitoite.Release.TypeComposition
+error: build failed
+        0.97 real         1.09 user         0.30 sys
+           705986560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              101076  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  10  voluntary context switches
+                6367  involuntary context switches
+          1195454410  instructions retired
+           433002587  cycles elapsed
+            21791872  peak memory footprint
+== exit 1

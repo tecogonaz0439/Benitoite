@@ -82,7 +82,7 @@ theorem toResult_raise (P : Program) (B : Builtins) (T E : Ty) (v : Val)
 
 /-- Result の二構成子は同じ宣言を使い、成功値とエラー値を取り違えない。 -/
 theorem result_values_typed {B Ψ C Γ T E v}
-    (ht : Ty.WF C.length T) (he : Ty.WF C.length E) :
+    (ht : Ty.WF 0 C.length T) (he : Ty.WF 0 C.length E) :
     (HasTypeV program B Ψ C Γ v T → HasTypeV program B Ψ C Γ (okValue T E v) (resultTy T E)) ∧
     (HasTypeV program B Ψ C Γ v E → HasTypeV program B Ψ C Γ (errorValue T E v) (resultTy T E)) := by
   constructor
@@ -103,10 +103,10 @@ theorem toResult_typed {B Ψ R T E body} (hc : ClosedArgs [T, E])
   have he := (hc E (by simp)).1
   have htc := (hc T (by simp)).2
   have hec := (hc E (by simp)).2
-  have hout : Ty.WF 0 (resultTy T E) := ⟨ht, he, trivial⟩
+  have hout : Ty.WF 0 0 (resultTy T E) := ⟨ht, he, trivial⟩
   have hret : HasTypeC program B Ψ [] [some T] R (.ret (okValue T E (.var 0)))
       (resultTy T E) (Eff.singleFail E) :=
-    .C_Eff (.C_Return ((result_values_typed (C := []) ht he).1 (.V_Var rfl htc))) (Eff.empty_sub _)
+    .C_Eff (.C_Return ((result_values_typed (C := []) ht he).1 (.V_Var rfl htc))) (Eff.covers_empty _)
   have hbody := HasTypeCQ.C_Let hb hret
   have hcl : HasFailureClause program B Ψ Qempty [] [] E R
       [.fail E (.ret (errorValue (T.shift 1 0) (E.shift 1 0) (.var 1)))]
@@ -150,7 +150,7 @@ theorem fromResult_typed {B Ψ R T E v} (hc : ClosedArgs [T, E])
     · intro a ha; simp at ha; subst a; simp [hn]
     · intro a ha; simp at ha; subst a; exact ⟨[x], hp, .refl _, rfl⟩
   refine .C_Match hv
-    (.plain (alt hpatOk rfl) (.C_Eff (.C_Return (.V_Var rfl htc)) (Eff.empty_sub _))
+    (.plain (alt hpatOk rfl) (.C_Eff (.C_Return (.V_Var rfl htc)) (Eff.covers_empty _))
       (.plain (alt hpatError rfl) (.C_App (.V_Raise ht he) (.cons (.V_Var rfl hec) .nil))
         (.nil ht))) ?_
   intro w hw

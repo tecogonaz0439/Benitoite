@@ -1,0 +1,207 @@
+[
+  {
+    "number": 1,
+    "rows": [
+      "L01",
+      "L02",
+      "L03",
+      "L04",
+      "L05",
+      "L06",
+      "L07a",
+      "L07b",
+      "L08",
+      "L09",
+      "L10a",
+      "L10b",
+      "L11",
+      "L12a",
+      "L12b",
+      "L13",
+      "L14",
+      "L15",
+      "L16",
+      "L17",
+      "L18",
+      "L19",
+      "L20",
+      "L21",
+      "L22",
+      "L23",
+      "L24",
+      "L25",
+      "L26",
+      "L27a",
+      "L27b",
+      "L28",
+      "L29"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only formal_build,spec_examples,spec_tally --dry-run",
+    "exit": 0,
+    "seconds": 0.016,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only formal_build,spec_examples,spec_tally)\n   [spec_tally] because of --only (estimate: seconds to a few min)\n      command: python3 tools/spec-coverage/spec_coverage.py --self-test\n      command: python3 tools/spec-coverage/spec_coverage.py\n   [spec_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test spec_examples\n   [formal_build] because of --only (estimate: several min (cache dependent))\n      command: (cd formal && lake build); reject declarations using sorry\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 2,
+    "rows": [
+      "M01",
+      "R02",
+      "R03"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only python_syntax --dry-run",
+    "exit": 0,
+    "seconds": 0.009,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only python_syntax)\n   [python_syntax] because of --only (estimate: seconds)\n      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,source-migrate,try-actions-migrate,derive}/*.py)\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 3,
+    "rows": [
+      "R01"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only policy_selftest --dry-run",
+    "exit": 0,
+    "seconds": 0.008,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only policy_selftest)\n   [policy_selftest] because of --only (estimate: seconds to 1 min)\n      command: python3 -B scripts/check/test_policy.py\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 4,
+    "rows": [
+      "R04",
+      "R06"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only reference_examples,skill_docs,skill_generated,tests_related --test skill_examples --dry-run",
+    "exit": 0,
+    "seconds": 0.009,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only reference_examples,skill_docs,skill_generated,tests_related)\n   [tests_related] because of --only (estimate: target dependent)\n      command: cargo test -p benitoite --test skill_examples\n   [skill_generated] because of --only (estimate: seconds to a few min)\n      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)\n   [reference_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test reference_examples\n   [skill_docs] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test skill_docs\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 5,
+    "rows": [
+      "R05",
+      "R08",
+      "R08",
+      "A01a",
+      "A01b",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12a",
+      "A13a",
+      "A13b",
+      "A14a",
+      "A14b",
+      "A15a",
+      "A16a",
+      "A16b",
+      "A17a",
+      "A17b",
+      "A18a",
+      "A19a",
+      "A19b",
+      "A19c",
+      "A20a",
+      "A20b",
+      "A20c",
+      "A21a",
+      "A21b",
+      "X01a",
+      "X01a",
+      "X01b",
+      "X01b",
+      "X02a",
+      "X02a",
+      "X02b",
+      "X02b",
+      "X03a",
+      "X03a",
+      "X03b",
+      "X03b",
+      "X03c",
+      "X03c",
+      "X04a",
+      "X04b",
+      "X05a",
+      "X05b",
+      "U01a",
+      "U01b",
+      "G01",
+      "Z01b"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --dry-run",
+    "exit": 0,
+    "seconds": 0.067,
+    "output": "== plan: level work against 706d7ca3 (6 changed file(s))\n   later: stage checks named connections; change covers full regression; release checks the candidate\n   nothing to check: only documents changed\n"
+  },
+  {
+    "number": 6,
+    "rows": [
+      "R07"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only spec_examples,spec_tally --dry-run",
+    "exit": 0,
+    "seconds": 0.008,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only spec_examples,spec_tally)\n   [spec_tally] because of --only (estimate: seconds to a few min)\n      command: python3 tools/spec-coverage/spec_coverage.py --self-test\n      command: python3 tools/spec-coverage/spec_coverage.py\n   [spec_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test spec_examples\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 7,
+    "rows": [
+      "R08",
+      "A12b",
+      "A15b",
+      "A18b",
+      "A21c",
+      "U02a",
+      "U02b",
+      "U03a",
+      "U03b",
+      "Z01a"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related --test skill_examples --test stdlib_doc_examples --dry-run",
+    "exit": 0,
+    "seconds": 0.011,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only spec_examples,spec_tally,reference_examples,skill_docs,skill_generated,tests_related)\n   [tests_related] because of --only (estimate: target dependent)\n      command: cargo test -p benitoite --test skill_examples --test stdlib_doc_examples\n   [skill_generated] because of --only (estimate: seconds to a few min)\n      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)\n   [spec_tally] because of --only (estimate: seconds to a few min)\n      command: python3 tools/spec-coverage/spec_coverage.py --self-test\n      command: python3 tools/spec-coverage/spec_coverage.py\n   [spec_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test spec_examples\n   [reference_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test reference_examples\n   [skill_docs] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test skill_docs\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 8,
+    "rows": [
+      "X01a",
+      "X01b",
+      "X02a",
+      "X02b",
+      "X03a",
+      "X03b",
+      "X03c"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only formal_build,python_syntax --dry-run",
+    "exit": 0,
+    "seconds": 0.008,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only formal_build,python_syntax)\n   [python_syntax] because of --only (estimate: seconds)\n      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,source-migrate,try-actions-migrate,derive}/*.py)\n   [formal_build] because of --only (estimate: several min (cache dependent))\n      command: (cd formal && lake build); reject declarations using sorry\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 9,
+    "rows": [
+      "R06（Log.bntのdocを変える場合）"
+    ],
+    "command": "scripts/check.sh --level work --base 706d7ca3 --only reference_examples,skill_docs,skill_generated,tests_related --test skill_examples --test stdlib_doc_examples --dry-run",
+    "exit": 0,
+    "seconds": 0.009,
+    "output": "== plan: level work against 706d7ca3 (changed files not classified) (partial selection: --only reference_examples,skill_docs,skill_generated,tests_related)\n   [tests_related] because of --only (estimate: target dependent)\n      command: cargo test -p benitoite --test skill_examples --test stdlib_doc_examples\n   [skill_generated] because of --only (estimate: seconds to a few min)\n      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)\n   [reference_examples] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test reference_examples\n   [skill_docs] because of --only (estimate: target dependent)\n      command: cargo test -q -p benitoite --test skill_docs\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  },
+  {
+    "number": 10,
+    "rows": [
+      "S-R2"
+    ],
+    "command": "scripts/check.sh --level stage --base 706d7ca3 --only tests_related --test property_library --test reference_examples --test skill_docs --test skill_examples --test spec_examples --dry-run",
+    "exit": 0,
+    "seconds": 0.007,
+    "output": "== plan: level stage against 706d7ca3 (changed files not classified) (partial selection: --only tests_related)\n   [tests_related] because of --only (estimate: target dependent)\n      command: cargo test -p benitoite --test property_library --test reference_examples --test skill_docs --test skill_examples --test spec_examples\n   later: stage checks named connections; change covers full regression; release checks the candidate\n"
+  }
+]

@@ -1,0 +1,35 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.15s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 27 tests
+test typeck::effects::tests::declared_operation_bounds_are_available_in_clauses ... ok
+test typeck::effects::tests::failure_row_contract_survives_modules_and_higher_order_values ... ok
+test typeck::effects::tests::clause_parameters_include_wildcards_and_rigid_types ... ok
+test typeck::effects::tests::all_standard_library_sources_are_checked_without_diagnostics ... ok
+test typeck::effects::tests::die_production_loading_keeps_imports_and_effect_help_explicit ... ok
+test typeck::effects::tests::io_all_warning_uses_the_canonical_log_name ... ok
+test typeck::effects::tests::die_keeps_const_rejection_and_hides_only_the_outer_continuation ... ok
+test typeck::effects::tests::nested_clauses_distinguish_same_named_operation_parameters ... ok
+test typeck::effects::tests::io_all_warning_edits_and_full_effect_body ... ok
+test typeck::effects::tests::die_uses_standard_show_and_exit_despite_local_names_and_aliases ... ok
+test typeck::effects::tests::operation_type_parameters_are_qualified_when_outer_names_collide ... ok
+test typeck::effects::tests::die_message_and_input_diagnostics_keep_their_owners ... ok
+test typeck::effects::tests::rigid_constraint_help_targets_the_operation_declaration ... ok
+test typeck::effects::tests::die_types_and_dictionaries_do_not_constrain_the_enclosing_return ... ok
+test typeck::effects::tests::io_all_warnings_preserve_shared_file_contracts ... ok
+test typeck::effects::tests::entry_effects_and_uses_duplicates ... ok
+test typeck::effects::tests::try_error_type_escape_does_not_annotate_a_deferred_return_mismatch ... ok
+test typeck::effects::tests::log_effect_fixes_resolve_when_a_user_module_shadows_log ... ok
+test typeck::effects::tests::invalid_clauses_and_effects_have_precise_diagnostics ... ok
+test typeck::effects::tests::user_failure_spelling_keeps_ordinary_operation_semantics ... ok
+test typeck::effects::tests::type_escape_note_is_not_reused_for_other_failures ... ok
+test typeck::effects::tests::lazy_resources_and_taskgroup_placement ... ok
+test typeck::effects::tests::try_notes_follow_lambda_and_placeholder_return_boundaries ... ok
+test typeck::effects::tests::specification_examples_and_output_tables ... ok
+test typeck::effects::tests::tail_resumption_checks_every_path_and_excludes_inner_lambda_escapes ... ok
+test typeck::effects::tests::rigid_types_keep_operation_names_in_body_diagnostics ... ok
+test typeck::effects::tests::try_infers_return_types_and_reports_incompatible_types ... ok
+
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 1381 filtered out; finished in 2.26s
+

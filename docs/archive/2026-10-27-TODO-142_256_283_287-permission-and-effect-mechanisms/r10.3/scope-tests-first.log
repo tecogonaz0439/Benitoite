@@ -1,0 +1,45 @@
+
+running 4 tests
+test duplicate_atoms_report_both_original_elements ... FAILED
+test invalid_scopes_are_rejected_by_the_argument_contract ... FAILED
+test scope_shorthand_preserves_atoms_and_source_elements ... FAILED
+test scoped_function_types_and_failure_arguments_survive_instantiation ... FAILED
+
+failures:
+
+---- duplicate_atoms_report_both_original_elements stdout ----
+
+thread 'duplicate_atoms_report_both_original_elements' (2625071) panicked at crates/benitoite/tests/scope_annotations.rs:277:9:
+assertion `left == right` failed: F.Write["/data", "/data"]: Diagnostic { kind: Check, severity: Error, code: Some(E0339), message: "the module `Benitoite.Unofficial.IO.File` declares built-in effects and cannot be renamed with `as`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(39), end: BytePos(40) }, text: "renamed here" }), secondary: [], notes: [], helps: [Help { message: "remove `as F` and replace references to `F.` with `File.`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(35), end: BytePos(40) }, replacement: "" }, Edit { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(150) }, replacement: "File" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }
+  left: "E0339"
+ right: "E0419"
+
+---- invalid_scopes_are_rejected_by_the_argument_contract stdout ----
+
+thread 'invalid_scopes_are_rejected_by_the_argument_contract' (2625072) panicked at crates/benitoite/tests/scope_annotations.rs:235:9:
+F.Write[Integer]: [Diagnostic { kind: Check, severity: Error, code: Some(E0339), message: "the module `Benitoite.Unofficial.IO.File` declares built-in effects and cannot be renamed with `as`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(39), end: BytePos(40) }, text: "renamed here" }), secondary: [], notes: [], helps: [Help { message: "remove `as F` and replace references to `F.` with `File.`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(35), end: BytePos(40) }, replacement: "" }, Edit { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(150) }, replacement: "File" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0520), message: "invalid scope arguments for `F.Write` (expected path string literal)", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(165) }, text: "invalid scope argument" }), secondary: [], notes: ["found: PathPattern"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- scope_shorthand_preserves_atoms_and_source_elements stdout ----
+
+thread 'scope_shorthand_preserves_atoms_and_source_elements' (2625073) panicked at crates/benitoite/tests/scope_annotations.rs:65:5:
+[Diagnostic { kind: Check, severity: Error, code: Some(E0339), message: "the module `Benitoite.Unofficial.IO.File` declares built-in effects and cannot be renamed with `as`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(39), end: BytePos(40) }, text: "renamed here" }), secondary: [], notes: [], helps: [Help { message: "remove `as F` and replace references to `F.` with `File.`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(35), end: BytePos(40) }, replacement: "" }, Edit { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(150) }, replacement: "File" }, Edit { span: Span { file: FileId(0), start: BytePos(190), end: BytePos(191) }, replacement: "File" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+
+---- scoped_function_types_and_failure_arguments_survive_instantiation stdout ----
+
+thread 'scoped_function_types_and_failure_arguments_survive_instantiation' (2625074) panicked at crates/benitoite/tests/scope_annotations.rs:137:5:
+[Diagnostic { kind: Check, severity: Error, code: Some(E0339), message: "the module `Benitoite.Unofficial.IO.File` declares built-in effects and cannot be renamed with `as`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(39), end: BytePos(40) }, text: "renamed here" }), secondary: [], notes: [], helps: [Help { message: "remove `as F` and replace references to `F.` with `File.`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(35), end: BytePos(40) }, replacement: "" }, Edit { span: Span { file: FileId(0), start: BytePos(255), end: BytePos(256) }, replacement: "File" }, Edit { span: Span { file: FileId(0), start: BytePos(295), end: BytePos(296) }, replacement: "File" }, Edit { span: Span { file: FileId(0), start: BytePos(402), end: BytePos(403) }, replacement: "File" }, Edit { span: Span { file: FileId(0), start: BytePos(482), end: BytePos(483) }, replacement: "File" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+
+
+failures:
+    duplicate_atoms_report_both_original_elements
+    invalid_scopes_are_rejected_by_the_argument_contract
+    scope_shorthand_preserves_atoms_and_source_elements
+    scoped_function_types_and_failure_arguments_survive_instantiation
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.10s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

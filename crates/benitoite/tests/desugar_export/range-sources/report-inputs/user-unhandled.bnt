@@ -1,0 +1,6 @@
+effect Report
+ function save() -> Unit
+end effect
+function main() -> Unit uses Report
+ save()
+end function

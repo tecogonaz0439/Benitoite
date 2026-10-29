@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+effect Audit
+ function log(path: Scope.PathIn["/srv/audit/**"], line: String) -> Unit
+ function flush() -> Unit
+end effect
+
+function sample(path: Scope.PathIn["/srv/audit/**"]) -> Unit uses File.Write["/srv/audit/**"]
+ handle log(path: path, line: "a") with
+ case log(q, line) ->
+  bind _ <- File.writeTextIn(path: q, text: line)
+  resume(())
+ case flush() -> resume(())
+ end handle
+end function

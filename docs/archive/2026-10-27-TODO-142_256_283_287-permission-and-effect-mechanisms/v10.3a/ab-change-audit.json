@@ -1,0 +1,159 @@
+{
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "beforeSha256": "90f4e7d67c4eb462d4be3d7adf6815d1c4db881090a0815f6a95a449f98f9ff4",
+      "afterSha256": "ea4879a9f881631b867c259c5ab6824a987d29547947ed4b305b934efab1afeb"
+    },
+    {
+      "path": "crates/benitoite/src/modules/text.rs",
+      "beforeSha256": "125370f065d1396365e25e517a4fa963dafe61d1fa7682da4a9f7b1bb89e880a",
+      "afterSha256": "875ba0bb75dee769bc1159146c5808a8f3ae7b5ee6c00a7c761bf18814ad6fd1"
+    },
+    {
+      "path": "crates/benitoite/src/modules/package.rs",
+      "beforeSha256": "8452cc6a9ca5e61c0599e4f33d8c1a5e380ee691539d4e92bae0df2e7104db03",
+      "afterSha256": "bd1a34490de71672fe71b707a110861e945b587dabedb42f396eb496a57891fc"
+    },
+    {
+      "path": "crates/benitoite/src/modules/tests.rs",
+      "beforeSha256": "107727d106d64c085c8ce72141ef9789a7c3978db857bf49cc414fd9b151461c",
+      "afterSha256": "2828c505fcf3974efb9d062987f67921504aa41508a8b1803d46f933e2620954"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+      "beforeSha256": "3c4afcf7e113d077c015a718bebfd49eb3f50399a05387a3f806e6be0b9f422b",
+      "afterSha256": "8487718219873ee838b7e362651ad58e327347e60840132359037194dccf59ca"
+    },
+    {
+      "path": "docs/design/06-tooling/06-09-packages.md",
+      "beforeSha256": "fffc3efd97676cb644f2d27b6bdc5bb6b1e1cd2961758cc6a7d853d8566123fc",
+      "afterSha256": "4b81cda296cf0901a8704e2ad3a1e92de6e3f4336cc79903dfc9a5a23f0a6248"
+    },
+    {
+      "path": "docs/design/02-impl/02-10-diagnostics.md",
+      "beforeSha256": "13780ed80b8bed9f548e684e6572b1df89967d515bb53f54032ef69afd37861f",
+      "afterSha256": "d831b65cc4d71b110a2cc822c577a4a4763f582ddc2c6d4b717f6f9d2434b461"
+    },
+    {
+      "path": "crates/benitoite/src/diag/codes.rs",
+      "beforeSha256": "726fc619507a57baca4e0796d3fac03554883fd530c8c1b6b21b2c48f86cff4d",
+      "afterSha256": "d63f3aa9e9abf37ac69940b96cc4575af4845454c9eb793e3474604f28b74aac"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "beforeSha256": "07fef51edd07d27608f55abeb2e2fab6455881841d2fa81fd96c985042ff21f3",
+      "afterSha256": "866e10c9e2ab540c46400c4f799162f0b1b8ea134987e31c09f1fd9fa1d8dc06"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/decisions.md",
+      "beforeSha256": "7b2e2ed37e3a2cc0d59355528296f769b32b6b303d70780f15daf4233c53b3a6",
+      "afterSha256": "894867f9603ac85f018b60129ce62a0c634e54f55ac16663eef1888f6ae698a4"
+    }
+  ],
+  "preservedEarlierFiles": [
+    "Cargo.lock",
+    "README.md",
+    "crates/benitoite/Cargo.toml",
+    "crates/benitoite/src/external/tests.rs",
+    "crates/benitoite/src/modules/hash.rs",
+    "crates/benitoite/src/typeck/pattern_ext.rs",
+    "crates/benitoite/src/typeck/tests/diagnostics_batch4.rs",
+    "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+    "crates/benitoite/testdata/external/self-package/package.bnt",
+    "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+    "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+    "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+    "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+    "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+    "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+    "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+    "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+    "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+    "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+    "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+    "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+    "crates/benitoite/testdata/packages/hash-match/package.bnt",
+    "crates/benitoite/testdata/packages/hash-mismatch.diag.json",
+    "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+    "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+    "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/header/main.bnt",
+    "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+    "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+    "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+    "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/newer-config.diag.json",
+    "crates/benitoite/testdata/packages/newer-language.diag.json",
+    "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+    "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+    "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+    "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+    "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/root-config/package.bnt",
+    "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+    "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+    "crates/benitoite/tests/cli_process.rs",
+    "crates/benitoite/tests/desugar_export/named.rs",
+    "crates/benitoite/tests/package_command.rs",
+    "crates/benitoite/tests/spec_examples.rs",
+    "crates/benitoite/tests/test_command.rs",
+    "docs/design/01-spec/01-02-syntax.md",
+    "docs/ja/reference/benitoite.md",
+    "docs/ja/reference/install.md",
+    "docs/ja/skill/SKILL.md",
+    "docs/ja/skill/references/common-mistakes.md",
+    "docs/ja/skill/references/idioms.md",
+    "docs/ja/skill/references/inspection.md",
+    "docs/ja/skill/references/language-comparison.md",
+    "docs/reference/benitoite.md",
+    "docs/reference/install.md",
+    "fuzz/Cargo.lock"
+  ],
+  "earlierTestdataHeadersPreserved": 50,
+  "oldChangelogSectionsPreserved": true,
+  "headAndIndexUnchanged": true,
+  "comparisonInputs": 64,
+  "comparisonInputsUpdated": [
+    "crates/benitoite/src/modules/package.rs",
+    "crates/benitoite/src/modules/text.rs",
+    "crates/benitoite/testdata/packages/older-language.diag.json"
+  ],
+  "comparisonInputsAdded": [
+    "crates/benitoite/src/diag/codes.rs",
+    "crates/benitoite/skill/references/diagnostics.md"
+  ],
+  "benchmarkInputsUnchanged": 32,
+  "rustLineChangesFromSupplementStart": {
+    "production": {
+      "added": 5,
+      "removed": 6
+    },
+    "tests": {
+      "added": 4,
+      "removed": 4
+    }
+  },
+  "unchangedEnvironmentInputsPreserved": true
+}

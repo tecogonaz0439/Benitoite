@@ -65,27 +65,28 @@ def wfEff := Finite.wfEff
 def cleanTy := Finite.cleanTy
 def cleanTys := Finite.cleanTys
 def cleanEff := Finite.cleanEff
+def cleanTopEff := Finite.cleanTopEff
 
 theorem canonicalEff_spec {atoms e} (he : Eff.AtomsIn atoms e) :
     canonicalEff atoms e = true ↔ Eff.Canonical e := Finite.canonicalEff_spec he
 
 theorem wfTy_spec {atoms} (n : Nat) (t : Ty) (ha : t.AtomsIn atoms) :
-    wfTy atoms n t = true ↔ Ty.WF n t := Finite.wfTy_spec n t ha
+    wfTy atoms n t = true ↔ Ty.WF 0 n t := Finite.wfTy_spec n t ha
 
 theorem wfTys_spec {atoms} (n : Nat) (ts : List Ty) (ha : Tys.AtomsIn atoms ts) :
-    wfTys atoms n ts = true ↔ Ty.WFList n ts := Finite.wfTys_spec n ts ha
+    wfTys atoms n ts = true ↔ Ty.WFList 0 n ts := Finite.wfTys_spec n ts ha
 
 theorem wfEff_spec {atoms} (n : Nat) (e : Eff) (ha : e.AtomsIn atoms) :
-    wfEff atoms n e = true ↔ Eff.WF n e ∧ Eff.Canonical e := Finite.wfEff_spec n e ha
+    wfEff atoms n e = true ↔ Eff.WF 0 n e ∧ Eff.Canonical e := Finite.wfEff_spec n e ha
 
 theorem cleanTy_spec {atoms} (n : Nat) (t : Ty) (ha : t.AtomsIn atoms) :
-    cleanTy atoms n t = true ↔ Ty.VarsIn n (fun _ => True) t := Finite.cleanTy_spec n t ha
+    cleanTy atoms n t = true ↔ Ty.VarsIn 0 n (fun _ => True) t := Finite.cleanTy_spec n t ha
 
 theorem cleanTys_spec {atoms} (n : Nat) (ts : List Ty) (ha : Tys.AtomsIn atoms ts) :
-    cleanTys atoms n ts = true ↔ Ty.VarsInList n (fun _ => True) ts := Finite.cleanTys_spec n ts ha
+    cleanTys atoms n ts = true ↔ Ty.VarsInList 0 n (fun _ => True) ts := Finite.cleanTys_spec n ts ha
 
 theorem cleanEff_spec {atoms} (n : Nat) (e : Eff) (ha : e.AtomsIn atoms) :
-    cleanEff atoms n e = true ↔ Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e :=
+    cleanEff atoms n e = true ↔ Eff.VarsIn 0 n (fun _ => True) e ∧ Eff.Canonical e :=
   Finite.cleanEff_spec n e ha
 
 mutual
@@ -125,7 +126,7 @@ mutual
     | .funDicts _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .opDicts _ _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .methName _ _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
-    | .primName _ _ _ => by simp [exprExits, Expr.Exits]
+    | .primName _ _ _ _ => by simp [exprExits, Expr.Exits]
     | .opName _ _ => by simp [exprExits, Expr.Exits]
     | .raise _ _ => by simp [exprExits, Expr.Exits]
     | .handleFail _ _ _ _ => by simp [exprExits, Expr.Exits]
@@ -241,7 +242,7 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
   | .funDicts _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .opDicts _ _ _ _ _ => by constructor <;> intro h <;> cases h
   | .methName _ _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
-  | .primName _ _ _ => by constructor <;> intro h <;> cases h
+  | .primName _ _ _ _ => by constructor <;> intro h <;> cases h
   | .opName _ _ => by constructor <;> intro h <;> cases h
   | .nullCon _ _ => by constructor <;> intro h <;> cases h
   | .conValue _ _ _ _ => by constructor <;> intro h <;> cases h
@@ -403,7 +404,7 @@ def stringAddOk (atoms : List Atom) (B : Builtins) (op : OpPrim)
   | none => false
   | some (b, ts) => match B.sig b with
       | none => false
-      | some s => ts.isEmpty && decide (ts.length = s.ntys) && decide (s.neffs = 0) &&
+      | some s => ts.isEmpty && decide (ts.length = s.ntys) && decide (s.neffs = 0 ∧ s.nranges = 0) &&
           admitsDec b C ts && tyEq atoms (fnTyCheck atoms s.names s.params s.ret s.eff ts [])
             (.fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty)
 

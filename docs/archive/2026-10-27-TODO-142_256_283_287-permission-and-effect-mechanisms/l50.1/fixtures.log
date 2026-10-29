@@ -1,0 +1,171 @@
+== -I formal/tests/test_width_exchange.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 3.486s
+
+OK
+exit 0
+== -I formal/tests/test_named_exchange.py
+............
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=8, order=[{'rho': {'index': 0}}, {'rho': {'index': 1}}, {'name': {'value': 'Ask'}}, {'name': {'value': 'Console'}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'rh[61 chars]'Ask', 'ix': {'fixed': 'top'}}}, {'name': {'va[37 chars]'}}}] != [{'rh[61 chars]'Ask'}}, {'name': {'value': 'Console'}}]
+
+First differing element 2:
+{'name': {'value': 'Ask', 'ix': {'fixed': 'top'}}}
+{'name': {'value': 'Ask'}}
+
+  [{'rho': {'index': 0}},
+   {'rho': {'index': 1}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Ask'}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Console'}}]
++  {'name': {'value': 'Ask'}},
++  {'name': {'value': 'Console'}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=8, order=[{'name': {'value': 'Console'}}, {'name': {'value': 'Ask'}}, {'rho': {'index': 1}}, {'rho': {'index': 0}}, {'rho': {'index': 0}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'rh[61 chars]'Ask', 'ix': {'fixed': 'top'}}}, {'name': {'va[37 chars]'}}}] != [{'rh[61 chars]'Ask'}}, {'name': {'value': 'Console'}}]
+
+First differing element 2:
+{'name': {'value': 'Ask', 'ix': {'fixed': 'top'}}}
+{'name': {'value': 'Ask'}}
+
+  [{'rho': {'index': 0}},
+   {'rho': {'index': 1}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Ask'}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Console'}}]
++  {'name': {'value': 'Ask'}},
++  {'name': {'value': 'Console'}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=9, order=[{'rho': {'index': 0}}, {'rho': {'index': 1}}, {'name': {'value': 'Ask'}}, {'name': {'value': 'Console'}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'rh[61 chars]'Ask', 'ix': {'fixed': 'top'}}}, {'name': {'va[37 chars]'}}}] != [{'rh[61 chars]'Ask'}}, {'name': {'value': 'Console'}}]
+
+First differing element 2:
+{'name': {'value': 'Ask', 'ix': {'fixed': 'top'}}}
+{'name': {'value': 'Ask'}}
+
+  [{'rho': {'index': 0}},
+   {'rho': {'index': 1}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Ask'}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Console'}}]
++  {'name': {'value': 'Ask'}},
++  {'name': {'value': 'Console'}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=9, order=[{'name': {'value': 'Console'}}, {'name': {'value': 'Ask'}}, {'rho': {'index': 1}}, {'rho': {'index': 0}}, {'rho': {'index': 0}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'rh[61 chars]'Ask', 'ix': {'fixed': 'top'}}}, {'name': {'va[37 chars]'}}}] != [{'rh[61 chars]'Ask'}}, {'name': {'value': 'Console'}}]
+
+First differing element 2:
+{'name': {'value': 'Ask', 'ix': {'fixed': 'top'}}}
+{'name': {'value': 'Ask'}}
+
+  [{'rho': {'index': 0}},
+   {'rho': {'index': 1}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Ask'}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Console'}}]
++  {'name': {'value': 'Ask'}},
++  {'name': {'value': 'Console'}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=10, order=[{'rho': {'index': 0}}, {'rho': {'index': 1}}, {'name': {'value': 'Ask'}}, {'name': {'value': 'Console'}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'rh[61 chars]'Ask', 'ix': {'fixed': 'top'}}}, {'name': {'va[37 chars]'}}}] != [{'rh[61 chars]'Ask'}}, {'name': {'value': 'Console'}}]
+
+First differing element 2:
+{'name': {'value': 'Ask', 'ix': {'fixed': 'top'}}}
+{'name': {'value': 'Ask'}}
+
+  [{'rho': {'index': 0}},
+   {'rho': {'index': 1}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Ask'}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Console'}}]
++  {'name': {'value': 'Ask'}},
++  {'name': {'value': 'Console'}}]
+
+======================================================================
+FAIL: test_legacy_effect_order_and_membership (__main__.ExchangeTests) (version=10, order=[{'name': {'value': 'Console'}}, {'name': {'value': 'Ask'}}, {'rho': {'index': 1}}, {'rho': {'index': 0}}, {'rho': {'index': 0}}], missing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_named_exchange.py", line 164, in test_legacy_effect_order_and_membership
+    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+AssertionError: Lists differ: [{'rh[61 chars]'Ask', 'ix': {'fixed': 'top'}}}, {'name': {'va[37 chars]'}}}] != [{'rh[61 chars]'Ask'}}, {'name': {'value': 'Console'}}]
+
+First differing element 2:
+{'name': {'value': 'Ask', 'ix': {'fixed': 'top'}}}
+{'name': {'value': 'Ask'}}
+
+  [{'rho': {'index': 0}},
+   {'rho': {'index': 1}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Ask'}},
+-  {'name': {'ix': {'fixed': 'top'}, 'value': 'Console'}}]
++  {'name': {'value': 'Ask'}},
++  {'name': {'value': 'Console'}}]
+
+----------------------------------------------------------------------
+Ran 13 tests in 4.509s
+
+FAILED (failures=6)
+exit 1
+== -I formal/tests/test_extensible_exchange.py
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.517s
+
+OK
+exit 0
+== -I formal/tests/test_try_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.270s
+
+OK
+exit 0
+== -B formal/tests/test_batch2_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.236s
+
+OK
+exit 0
+== -B formal/tests/test_batch3_exchange.py
+F......
+======================================================================
+FAIL: test_corpus11_batch2_and_sidecar_versions (__main__.Batch3ExchangeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_batch3_exchange.py", line 103, in test_corpus11_batch2_and_sidecar_versions
+    self.assertIn('version', result.stderr)
+AssertionError: 'version' not found in 'desugarDiff: Benitoite.Exchange.Corpus.inputs: Benitoite.Exchange.Input.definitions: Benitoite.Exchange.Definition.scope: Benitoite.Exchange.SurfaceDef.header: Benitoite.Exchange.Header.eff: property not found: ix\n'
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.914s
+
+FAILED (failures=1)
+exit 1
+== -B formal/tests/test_batch4_exchange.py
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 5.761s
+
+OK
+exit 0

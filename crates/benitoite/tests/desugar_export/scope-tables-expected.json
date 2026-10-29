@@ -1,0 +1,1070 @@
+{
+  "prims": [
+    {
+      "name": "Scope.checkPathIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "pattern",
+        "path"
+      ],
+      "params": [
+        {
+          "base": {
+            "name": "String"
+          }
+        },
+        {
+          "base": {
+            "name": "String"
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "opaque": {
+                "name": "32:[]",
+                "ix": {
+                  "rvar": 0
+                }
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [],
+      "kind": "pure",
+      "opEff": null,
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": "untargeted"
+    },
+    {
+      "name": "File.writeTextIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path",
+        "text"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        },
+        {
+          "base": {
+            "name": "String"
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "base": {
+                "name": "Unit"
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "IO.File.Write",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "IO.File.Write",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": {
+        "single": {
+          "kind": "path",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "Http.checkRequestIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "hostPattern",
+        "minimumPort",
+        "maximumPort",
+        "request"
+      ],
+      "params": [
+        {
+          "base": {
+            "name": "String"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "base": {
+            "name": "Integer"
+          }
+        },
+        {
+          "data": {
+            "name": "data:1003",
+            "args": []
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "opaque": {
+                "name": "33:[]",
+                "ix": {
+                  "rvar": 0
+                }
+              }
+            },
+            {
+              "data": {
+                "name": "data:1002",
+                "args": []
+              }
+            }
+          ]
+        }
+      },
+      "eff": [],
+      "kind": "pure",
+      "opEff": null,
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "endpoint"
+      ],
+      "shape": "untargeted"
+    },
+    {
+      "name": "File.readTextIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "IO.File.Read",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "IO.File.Read",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": {
+        "single": {
+          "kind": "path",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "File.readBytesIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            "bytes",
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "IO.File.Read",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "IO.File.Read",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": {
+        "single": {
+          "kind": "path",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "File.appendTextIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path",
+        "text"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        },
+        {
+          "base": {
+            "name": "String"
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "base": {
+                "name": "Unit"
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "IO.File.Write",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "IO.File.Write",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": {
+        "single": {
+          "kind": "path",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "File.writeBytesIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path",
+        "content"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        },
+        "bytes"
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "base": {
+                "name": "Unit"
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "IO.File.Write",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "IO.File.Write",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": {
+        "single": {
+          "kind": "path",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "File.appendBytesIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path",
+        "content"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        },
+        "bytes"
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "base": {
+                "name": "Unit"
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "IO.File.Write",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "IO.File.Write",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": {
+        "single": {
+          "kind": "path",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "Http.sendIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "request"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "33:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1001",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "eff": [
+        {
+          "name": {
+            "value": "Network.Http.Connect",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "kind": "io",
+      "opEff": "Network.Http.Connect",
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "endpoint"
+      ],
+      "shape": {
+        "single": {
+          "kind": "endpoint",
+          "position": 0
+        }
+      }
+    },
+    {
+      "name": "Scope.pathInValue",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "base": {
+          "name": "String"
+        }
+      },
+      "eff": [],
+      "kind": "pure",
+      "opEff": null,
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path"
+      ],
+      "shape": "untargeted"
+    },
+    {
+      "name": "Http.requestInValue",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "request"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "33:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "data": {
+          "name": "data:1003",
+          "args": []
+        }
+      },
+      "eff": [],
+      "kind": "pure",
+      "opEff": null,
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "endpoint"
+      ],
+      "shape": "untargeted"
+    },
+    {
+      "name": "Scope.widenPathIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "path"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "32:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "opaque": {
+          "name": "32:[]",
+          "ix": {
+            "rvar": 1
+          }
+        }
+      },
+      "eff": [],
+      "kind": "pure",
+      "opEff": null,
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "path",
+        "path"
+      ],
+      "shape": "untargeted"
+    },
+    {
+      "name": "Http.widenRequestIn",
+      "tparams": [],
+      "neffs": 0,
+      "effParams": [],
+      "names": [
+        "request"
+      ],
+      "params": [
+        {
+          "opaque": {
+            "name": "33:[]",
+            "ix": {
+              "rvar": 0
+            }
+          }
+        }
+      ],
+      "ret": {
+        "opaque": {
+          "name": "33:[]",
+          "ix": {
+            "rvar": 1
+          }
+        }
+      },
+      "eff": [],
+      "kind": "pure",
+      "opEff": null,
+      "classConstraints": [],
+      "unconvertibleTypes": [],
+      "rkinds": [
+        "endpoint",
+        "endpoint"
+      ],
+      "shape": "untargeted"
+    }
+  ],
+  "dataDecls": [
+    {
+      "name": "data:1001",
+      "typeName": "data:1001",
+      "isRecord": false,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "result",
+      "ntys": 2,
+      "ctors": [
+        {
+          "name": "Ok",
+          "constructorName": "Ok",
+          "args": [
+            {
+              "tvar": {
+                "index": 0
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Error",
+          "constructorName": "Error",
+          "args": [
+            {
+              "tvar": {
+                "index": 1
+              }
+            }
+          ],
+          "fields": null
+        }
+      ]
+    },
+    {
+      "name": "data:1002",
+      "typeName": "data:1002",
+      "isRecord": false,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary",
+      "ntys": 0,
+      "ctors": [
+        {
+          "name": "Http.RequestCheckError.InvalidUrl",
+          "constructorName": "InvalidUrl",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Http.RequestCheckError.Scope",
+          "constructorName": "Scope",
+          "args": [
+            {
+              "opaque": {
+                "name": "16:[]",
+                "ix": {
+                  "fixed": "top"
+                }
+              }
+            }
+          ],
+          "fields": null
+        }
+      ]
+    },
+    {
+      "name": "data:1003",
+      "typeName": "ClientRequest",
+      "isRecord": true,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary",
+      "ntys": 0,
+      "ctors": [
+        {
+          "name": "ClientRequest",
+          "constructorName": "ClientRequest",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "list": {
+                "elem": {
+                  "data": {
+                    "name": "data:1004",
+                    "args": [
+                      {
+                        "base": {
+                          "name": "String"
+                        }
+                      },
+                      {
+                        "base": {
+                          "name": "String"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "bytes",
+            {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          ],
+          "fields": [
+            "method",
+            "url",
+            "headers",
+            "body",
+            "timeoutMilliseconds"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data:1004",
+      "typeName": "Pair",
+      "isRecord": true,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary",
+      "ntys": 2,
+      "ctors": [
+        {
+          "name": "Pair",
+          "constructorName": "Pair",
+          "args": [
+            {
+              "tvar": {
+                "index": 0
+              }
+            },
+            {
+              "tvar": {
+                "index": 1
+              }
+            }
+          ],
+          "fields": [
+            "first",
+            "second"
+          ]
+        }
+      ]
+    }
+  ],
+  "dataTypes": [
+    {
+      "name": "data:1001",
+      "typeName": "data:1001",
+      "isRecord": false,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "result"
+    },
+    {
+      "name": "data:1002",
+      "typeName": "data:1002",
+      "isRecord": false,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary"
+    },
+    {
+      "name": "data:1003",
+      "typeName": "ClientRequest",
+      "isRecord": true,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary"
+    },
+    {
+      "name": "data:1004",
+      "typeName": "Pair",
+      "isRecord": true,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary"
+    }
+  ],
+  "summaries": [
+    {
+      "name": "data:1001",
+      "eq": {
+        "always": false,
+        "dependsOn": [
+          0,
+          1
+        ]
+      },
+      "key": {
+        "always": false,
+        "dependsOn": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "name": "data:1002",
+      "eq": {
+        "always": true,
+        "dependsOn": []
+      },
+      "key": {
+        "always": false,
+        "dependsOn": []
+      }
+    },
+    {
+      "name": "data:1003",
+      "eq": {
+        "always": false,
+        "dependsOn": []
+      },
+      "key": {
+        "always": false,
+        "dependsOn": []
+      }
+    },
+    {
+      "name": "data:1004",
+      "eq": {
+        "always": false,
+        "dependsOn": [
+          0,
+          1
+        ]
+      },
+      "key": {
+        "always": false,
+        "dependsOn": [
+          0,
+          1
+        ]
+      }
+    }
+  ],
+  "tables": {
+    "effKinds": [
+      {
+        "name": "IO.File.Read",
+        "kind": "path"
+      },
+      {
+        "name": "IO.File.Write",
+        "kind": "path"
+      },
+      {
+        "name": "Network.Http.Connect",
+        "kind": "endpoint"
+      }
+    ],
+    "valKinds": [
+      {
+        "name": "32:[]",
+        "kind": "path"
+      },
+      {
+        "name": "33:[]",
+        "kind": "endpoint"
+      }
+    ],
+    "admitsR": [
+      {
+        "name": "Scope.checkPathIn",
+        "rule": "any"
+      },
+      {
+        "name": "File.writeTextIn",
+        "rule": "any"
+      },
+      {
+        "name": "Http.checkRequestIn",
+        "rule": "any"
+      },
+      {
+        "name": "File.readTextIn",
+        "rule": "any"
+      },
+      {
+        "name": "File.readBytesIn",
+        "rule": "any"
+      },
+      {
+        "name": "File.appendTextIn",
+        "rule": "any"
+      },
+      {
+        "name": "File.writeBytesIn",
+        "rule": "any"
+      },
+      {
+        "name": "File.appendBytesIn",
+        "rule": "any"
+      },
+      {
+        "name": "Http.sendIn",
+        "rule": "any"
+      },
+      {
+        "name": "Scope.pathInValue",
+        "rule": "any"
+      },
+      {
+        "name": "Http.requestInValue",
+        "rule": "any"
+      },
+      {
+        "name": "Scope.widenPathIn",
+        "rule": {
+          "covers": {
+            "inner": 0,
+            "outer": 1
+          }
+        }
+      },
+      {
+        "name": "Http.widenRequestIn",
+        "rule": {
+          "covers": {
+            "inner": 0,
+            "outer": 1
+          }
+        }
+      }
+    ],
+    "valContents": [
+      {
+        "name": "33:[]",
+        "content": {
+          "data": {
+            "name": "data:1003",
+            "args": []
+          }
+        }
+      }
+    ]
+  }
+}

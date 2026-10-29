@@ -28,7 +28,7 @@ theorem Eff.substRho_eq_bind (es : List Eff) (e : Eff) :
 /-- 有限の置換列の外も含む行の像による、代入後の所属の特徴付け。 -/
 theorem Eff.mem_substRho_rowImage (es : List Eff) (e : Eff) (a : Atom) :
     Eff.mem (Eff.substRho es e) a ↔
-      (∃ l, a = .name l ∧ Eff.mem e (.name l)) ∨
+      (∃ l r, a = .name l r ∧ Eff.mem e (.name l r)) ∨
       ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage es i) a := by
   rw [Eff.substRho_eq_bind]
   exact Eff.mem_bind (SubstEnv.rowsOnly es) e a

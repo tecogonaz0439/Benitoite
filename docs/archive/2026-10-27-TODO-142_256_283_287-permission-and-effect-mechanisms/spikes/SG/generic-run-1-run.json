@@ -1,0 +1,27 @@
+{
+  "command": [
+    "zsh",
+    "work/m013/remote-lean.sh",
+    "SG",
+    "Model.lean",
+    "6144",
+    "180"
+  ],
+  "started_utc": "2026-10-26T15:14:19.947406+00:00",
+  "finished_utc": "2026-10-26T15:14:25.601282+00:00",
+  "wall_seconds_including_sync_and_queue": 5.653,
+  "wrapper_process_exit": 0,
+  "remote_summary": "== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB ",
+  "remote_exit": 1,
+  "remote_elapsed_seconds": 5,
+  "sampled_peak_mb": 0,
+  "sampled_peak_note": "0 は5秒ごとの標本で捕捉しなかった意味。使用量0とはしない。",
+  "time_maximum_resident_bytes": 696451072,
+  "lean_version": "4.34.1",
+  "source_sha256_before": "df9578e35330bcb0caedb95c0d9389dc75f9f148341cc2b74d23730811625fd7",
+  "source_sha256_after": "df9578e35330bcb0caedb95c0d9389dc75f9f148341cc2b74d23730811625fd7",
+  "diagnostics": [
+    "Model.lean:63:42: error: unexpected token '/--'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'axiom', 'binder_predicate', 'builtin_cbv_simproc', 'builtin_cbv_simproc_decl', 'builtin_dsimproc', 'builtin_dsimproc_decl', 'builtin_grind_propagator', 'builtin_initialize', 'builtin_simproc', 'builtin_simproc_decl', 'cbv_simproc', 'cbv_simproc_decl', 'class', 'coinductive', 'declare_simp_like_tactic', 'declare_syntax_cat', 'def', 'dsimproc', 'dsimproc_decl', 'elab', 'elab_rules', 'example', 'grind_propagator', 'inductive', 'infix', 'infixl', 'infixr', 'initialize', 'instance', 'macro', 'macro_rules', 'notation', 'opaque', 'postfix', 'prefix', 'recommended_spelling', 'register_error_explanation', 'register_tactic_tag', 'register_try?_tactic', 'simproc', 'simproc_decl', 'structure', 'syntax', 'tactic_extension', 'theorem' or 'unif_hint'"
+  ],
+  "passed": false
+}

@@ -1,0 +1,181 @@
+
+/- Copied scope decision procedures above: TODO-142 Scope.lean,
+   Word/Pattern/Matches/patLe/Interval/portLe/Scope/scopeLe and their proofs.
+   The following finite normalization is new for SA. -/
+namespace SA
+open Scope142
+
+theorem patLe_antisymm {a b : Pattern} (h : patLe a b = true)
+    (g : patLe b a = true) : a = b := by
+  cases a with
+  | exact a =>
+    cases b with
+    | exact b => exact congrArg Pattern.exact (show b = a from of_decide_eq_true h).symm
+    | tree b l => simp [patLe] at g
+  | tree a k =>
+    cases b with
+    | exact b => simp [patLe] at h
+    | tree b l =>
+      have h : b.IsPrefix a ∧ b.length + l ≤ a.length + k := of_decide_eq_true h
+      have g : a.IsPrefix b ∧ a.length + k ≤ b.length + l := of_decide_eq_true g
+      have hab : a = b := List.IsPrefix.eq_of_length g.1 (Nat.le_antisymm g.1.length_le h.1.length_le)
+      subst b
+      have : k = l := by omega
+      subst l
+      rfl
+
+theorem portLe_antisymm {a b : Interval} (ha : a.lo ≤ a.hi) (hb : b.lo ≤ b.hi)
+    (h : portLe a b = true) (g : portLe b a = true) : a = b := by
+  have h : a.hi < a.lo ∨ (b.lo ≤ a.lo ∧ a.hi ≤ b.hi) := of_decide_eq_true h
+  have g : b.hi < b.lo ∨ (a.lo ≤ b.lo ∧ b.hi ≤ a.hi) := of_decide_eq_true g
+  have hl : a.lo = b.lo := by omega
+  have hh : a.hi = b.hi := by omega
+  cases a; cases b; simp_all
+
+theorem scopeLe_antisymm {a b : Scope} (ha : a.ports.lo ≤ a.ports.hi)
+    (hb : b.ports.lo ≤ b.ports.hi)
+    (h : scopeLe a b = true) (g : scopeLe b a = true) : a = b := by
+  simp only [scopeLe, Bool.and_eq_true, decide_eq_true_eq] at h g
+  have hp := patLe_antisymm h.1.2 g.1.2
+  have hr := portLe_antisymm ha hb h.2 g.2
+  cases a; cases b; simp_all
+
+-- The original port syntax is a preorder, not a partial order.
+-- Small arithmetic only; no large kernel computation.
+theorem empty_ports_not_antisymm :
+    ∃ a b : Interval, a ≠ b ∧ portLe a b = true ∧ portLe b a = true := by
+  exact ⟨⟨1, 0⟩, ⟨2, 0⟩, by decide, by decide, by decide⟩
+
+-- Generic finite antichain normalization. No assumptions are added as axioms:
+-- reflexivity/transitivity/antisymmetry are parameters proved for our atoms below.
+namespace Finite
+variable {α : Type} (le : α → α → Bool)
+
+def Cover (xs ys : List α) : Prop := ∀ a ∈ xs, ∃ b ∈ ys, le a b = true
+def Irredundant (xs : List α) : Prop :=
+  ∀ a ∈ xs, ∀ b ∈ xs, le a b = true → a = b
+
+def insert (a : α) (xs : List α) : List α :=
+  if xs.any (le a) then xs else a :: xs.filter (fun b => !(le b a))
+
+def norm : List α → List α
+  | [] => []
+  | a :: xs => insert le a (norm xs)
+
+variable (refl : ∀ a, le a a = true)
+variable (trans : ∀ {a b c}, le a b = true → le b c = true → le a c = true)
+
+include refl in
+theorem cover_refl (xs : List α) : Cover le xs xs := fun a ha => ⟨a, ha, refl a⟩
+
+include trans in
+theorem cover_trans {xs ys zs : List α} (h : Cover le xs ys) (g : Cover le ys zs) :
+    Cover le xs zs := by
+  intro a ha
+  obtain ⟨b, hb, hab⟩ := h a ha
+  obtain ⟨c, hc, hbc⟩ := g b hb
+  exact ⟨c, hc, trans hab hbc⟩
+
+include refl in
+theorem insert_cover (a : α) (xs : List α) : Cover le (a :: xs) (insert le a xs) := by
+  unfold insert
+  split
+  · rename_i h
+    obtain ⟨b, hb, hab⟩ := List.any_eq_true.mp h
+    intro c hc
+    rcases List.mem_cons.mp hc with rfl | hc
+    · exact ⟨b, hb, hab⟩
+    · exact ⟨c, hc, refl c⟩
+  · intro c hc
+    rcases List.mem_cons.mp hc with rfl | hc
+    · exact ⟨c, by simp, refl c⟩
+    · by_cases hca : le c a = true
+      · exact ⟨a, by simp, hca⟩
+      · exact ⟨c, by simp [hc, hca], refl c⟩
+
+theorem insert_subset (a : α) (xs : List α) :
+    ∀ c ∈ insert le a xs, c ∈ a :: xs := by
+  unfold insert
+  split
+  · intro c hc; exact List.mem_cons_of_mem _ hc
+  · intro c hc
+    rcases List.mem_cons.mp hc with rfl | hc
+    · simp
+    · exact List.mem_cons_of_mem _ (List.mem_filter.mp hc).1
+
+include refl trans in
+theorem norm_cover (xs : List α) : Cover le xs (norm le xs) := by
+  induction xs with
+  | nil => intro a ha; cases ha
+  | cons a xs ih =>
+    apply cover_trans le trans (ys := a :: norm le xs) _ (insert_cover le refl a _)
+    intro c hc
+    rcases List.mem_cons.mp hc with rfl | hc
+    · exact ⟨c, by simp, refl c⟩
+    · obtain ⟨b, hb, hcb⟩ := ih c hc
+      exact ⟨b, List.mem_cons_of_mem _ hb, hcb⟩
+
+theorem norm_subset (xs : List α) : ∀ a ∈ norm le xs, a ∈ xs := by
+  induction xs with
+  | nil => simp [norm]
+  | cons a xs ih =>
+    intro c hc
+    rcases List.mem_cons.mp (insert_subset le a _ c hc) with rfl | hc
+    · simp
+    · exact List.mem_cons_of_mem _ (ih c hc)
+
+include refl in
+theorem norm_sub (xs : List α) : Cover le (norm le xs) xs :=
+  fun a ha => ⟨a, norm_subset le xs a ha, refl a⟩
+
+theorem insert_irredundant (a : α) {xs : List α} (h : Irredundant le xs) :
+    Irredundant le (insert le a xs) := by
+  unfold insert
+  split
+  · exact h
+  · rename_i hn
+    intro b hb c hc hbc
+    rcases List.mem_cons.mp hb with rfl | hb
+    · rcases List.mem_cons.mp hc with rfl | hc
+      · rfl
+      · have hc := List.mem_filter.mp hc
+        have : xs.any (le b) = true := List.any_eq_true.mpr ⟨c, hc.1, hbc⟩
+        contradiction
+    · have hb := List.mem_filter.mp hb
+      rcases List.mem_cons.mp hc with rfl | hc
+      · simp [hbc] at hb
+      · exact h b hb.1 c (List.mem_filter.mp hc).1 hbc
+
+theorem norm_irredundant (xs : List α) : Irredundant le (norm le xs) := by
+  induction xs with
+  | nil => simp [norm, Irredundant]
+  | cons a xs ih => exact insert_irredundant le a ih
+
+variable (antisymm : ∀ {a b}, le a b = true → le b a = true → a = b)
+
+include trans antisymm in
+theorem ext_irredundant {xs ys : List α} (hx : Irredundant le xs)
+    (hy : Irredundant le ys) (h : Cover le xs ys) (g : Cover le ys xs) :
+    ∀ a, a ∈ xs ↔ a ∈ ys := by
+  have one : ∀ {xs ys : List α}, Irredundant le xs → Cover le xs ys → Cover le ys xs →
+      ∀ a ∈ xs, a ∈ ys := by
+    intro xs ys hx h g a ha
+    obtain ⟨b, hb, hab⟩ := h a ha
+    obtain ⟨c, hc, hbc⟩ := g b hb
+    have hac : a = c := hx a ha c hc (trans hab hbc)
+    subst c
+    have hab' : a = b := antisymm hab hbc
+    simpa [hab'] using hb
+  exact fun a => ⟨one hx h g a, one hy g h a⟩
+
+include refl trans antisymm in
+theorem norm_ext {xs ys : List α} (h : Cover le xs ys) (g : Cover le ys xs) :
+    ∀ a, a ∈ norm le xs ↔ a ∈ norm le ys := by
+  apply ext_irredundant le trans antisymm (norm_irredundant le xs) (norm_irredundant le ys)
+  · exact cover_trans le trans (cover_trans le trans (norm_sub le refl xs) h)
+      (norm_cover le refl trans ys)
+  · exact cover_trans le trans (cover_trans le trans (norm_sub le refl ys) g)
+      (norm_cover le refl trans xs)
+
+end Finite
+end SA

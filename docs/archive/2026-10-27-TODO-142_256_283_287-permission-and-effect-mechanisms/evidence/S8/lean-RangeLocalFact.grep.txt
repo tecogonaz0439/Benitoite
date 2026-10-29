@@ -1,0 +1,13 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:252:def reserveRangeFact (fact : Option RangeLocalFact) : Scan Unit :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:264:  let fact := origin.map RangeLocalFact.result
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:619:        ranges := env.ranges.extend ((rangeCallOrigin env input).map RangeLocalFact.result) } : AbstractEnv)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:626:        ranges := env.ranges.extend ((rangeCallOrigin env input).map RangeLocalFact.result) } : AbstractEnv)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:424:  state.extend ((rangeCallOrigin env input).map RangeLocalFact.result)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:704:theorem range_checked_shift (state : RangeState) (fact : Option RangeLocalFact) (index : Nat) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:68:RangeLocalFact に保持し、値そのものには入れない。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:75:inductive RangeLocalFact where
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:80:def RangeLocalFact.Models (fact : RangeLocalFact) (bindingId : Nat)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:89:  facts : List (Option RangeLocalFact)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:107:def RangeState.extend (state : RangeState) (fact : Option RangeLocalFact) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:125:theorem range_extend_valid {state : RangeState} (valid : state.Valid) (fact : Option RangeLocalFact) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:131:    {fact : Option RangeLocalFact}

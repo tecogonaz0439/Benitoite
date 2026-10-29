@@ -16,7 +16,11 @@ use crate::types::builtin::BuiltinTypeId as B;
 use crate::types::{EffectSet, Ty, TyCon, TypeArgs};
 
 fn ty(id: B) -> Ty {
-    Ty::Con(TyCon::Builtin(id), vec![])
+    Ty::Con(
+        TyCon::Builtin(id),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 fn comp(kind: CompKind, ty: Ty, origin: crate::base::Span) -> Comp {
     Comp {
@@ -194,10 +198,18 @@ fn dedicated_builders_survive_handle_resume_drop_and_nested_bodies() {
                 BuilderKind::String | BuilderKind::List(_) => comp(
                     CompKind::Return(Val {
                         kind: ValKind::List(vec![second.clone()]),
-                        ty: Ty::Con(TyCon::Builtin(B::LIST), vec![elem]),
+                        ty: Ty::Con(
+                            TyCon::Builtin(B::LIST),
+                            vec![elem],
+                            crate::types::builtin::RangeIndex::TOP,
+                        ),
                         origin,
                     }),
-                    Ty::Con(TyCon::Builtin(B::LIST), vec![second.ty.clone()]),
+                    Ty::Con(
+                        TyCon::Builtin(B::LIST),
+                        vec![second.ty.clone()],
+                        crate::types::builtin::RangeIndex::TOP,
+                    ),
                     origin,
                 ),
                 BuilderKind::Bytes => comp(

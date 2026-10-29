@@ -1,6 +1,6 @@
 # 相乗りの四項目の調べと判断の案
 
-2026-10-24、S2（RV-S2 を受けた S2R の修正を含む）。判断は案であり、設計者の決定は [README](../README.md) を正とする。作業条件は `work/m012/common.md`、調査した開始版は `6ecc9996747db03801004ebee6c38a5283b590a7`（v0.0.11）である。設計原則の番号は 00-01「設計原則」による。
+2026-10-24、S2（RV-S2 を受けた S2R の修正を含む）。判断は案であり、設計者の決定は [README](../README.md) を正とする。作業条件は [common.md の保管方針](../work-copies/README.md#f297)、調査した開始版は `6ecc9996747db03801004ebee6c38a5283b590a7`（v0.0.11）である。設計原則の番号は 00-01「設計原則」による。 依頼文・実行の運用記録は git の外に置き、保管していない。結果とレビューはこのアーカイブ内の記録を正とする。
 
 ## 判断案の一覧と調査の限界
 
@@ -36,14 +36,14 @@
 
 ### 実際の check／run
 
-作業ディレクトリをリポジトリの根として、S2 は `work/m012/scratch/s2/` に次の例と出力を保存した。S2R では git で除外されない [riders-probes/](riders-probes/README.md) に入力・出力・確認記録を写した。実行ファイルの表示は `benitoite 0.0.11`／`Unicode 17.0.0` である。入力・実行ファイル・出力の SHA-256 は [output-verification.json](riders-probes/output-verification.json) にある。
+S2 が git の外の作業用領域に保存した次の例と出力は、S2R で [riders-probes/](riders-probes/README.md) に入力・出力・確認記録を写した。元の実行の作業ディレクトリはリポジトリの根であり、実行ファイルの表示は `benitoite 0.0.11`／`Unicode 17.0.0` である。入力・実行ファイル・出力の SHA-256 は [output-verification.json](riders-probes/output-verification.json) にある。
 
 | 例 | check | run | 観察した出力 |
 |---|---:|---:|---|
 | [file-sink.bnt](riders-probes/file-sink.bnt) | 終了0、0.127秒 | 終了0、0.156秒 | `file-sink.txt` は `first` と `second` の二行。Debug は出さない。既定書式の再現を確認したものではない |
 | [json-sink.bnt](riders-probes/json-sink.bnt) | 終了0、0.145秒 | 終了0、0.175秒 | `json-sink.jsonl` は独立して JSON として読める二行。stdout／stderr は空 |
 
-コマンドはそれぞれ `target/debug/benitoite check work/m012/scratch/s2/<例>.bnt` と、同じ入力への `run` である。生の stdout／stderr は `<例>.<check|run>.stdout`／`.stderr`、引数・終了状態・外側の時間は `observations.json`、当時の実行補助は `run-probes.py` に保存した。これらも `riders-probes/` に写した。時間は小例の実行記録であり、性能評価ではない。
+当時のコマンドは、それぞれ `target/debug/benitoite check <当時の入力>` と、同じ入力への `run` である。元の入力のパスと全引数は [observations.json](riders-probes/observations.json) に残した。生の stdout／stderr は `<例>.<check|run>.stdout`／`.stderr`、引数・終了状態・外側の時間は `observations.json`、当時の実行補助は [run-probes.py](riders-probes/run-probes.py) に保存した。これらも [riders-probes/](riders-probes/README.md) に写した。時間は小例の実行記録であり、性能評価ではない。
 
 ファイルの例は、次の順で動く。
 

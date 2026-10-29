@@ -1,0 +1,33 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+'SK.checked_invariant' does not depend on any axioms
+'SK.argument_bound' depends on axioms: [propext, Quot.sound]
+'SK.io_bound' depends on axioms: [propext, Quot.sound]
+'SK.preservation' depends on axioms: [propext, Quot.sound]
+'SK.progress' depends on axioms: [propext, Quot.sound]
+'SK.trace_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.reachable_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.checked_alone_insufficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.good_assumptions' depends on axioms: [propext, Quot.sound]
+'SK.Examples.wrong_rule_unsound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.original_target_budget_rejected' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.96 real         1.46 user         0.33 sys
+           743260160  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47818  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               14673  involuntary context switches
+         11289674551  instructions retired
+          5239777776  cycles elapsed
+           192470472  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

@@ -1,0 +1,241 @@
+{
+  "section": "16.9",
+  "phase_seconds": {
+    "verify": 0.04554491700000085,
+    "cli": 0.3517415000000028,
+    "warmup": 0.036317874999994615,
+    "probe_warmup": 0,
+    "rss": 0,
+    "stages": 0,
+    "alloc": 0,
+    "external_observer": 0.19095545900000843
+  },
+  "measurements": {
+    "external-tests-normal-1": {
+      "before": {
+        "verify": [
+          0.022565541999995276
+        ],
+        "warmup": [
+          0.017766374999993673
+        ],
+        "cli": [
+          0.01810025000000337,
+          0.019035666999997147,
+          0.018929291999995712,
+          0.01818325000000698,
+          0.01802425000001051
+        ],
+        "control_cli": [
+          0.016140457999995306,
+          0.016039082999995458,
+          0.015920291000000475,
+          0.016123333999999545,
+          0.015800874999996495
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": [],
+        "runtime_compilations": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "component_keys": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "external_results": [
+          {
+            "seconds": 0.01903970899999763,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.019045625000003952,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.019044542000003162,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.019328000000001566,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.018919124999996484,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          }
+        ],
+        "external_observer": [
+          0.01903970899999763,
+          0.019045625000003952,
+          0.019044542000003162,
+          0.019328000000001566,
+          0.018919124999996484
+        ]
+      },
+      "after": {
+        "verify": [
+          0.02271245800000088
+        ],
+        "warmup": [
+          0.018551500000000942
+        ],
+        "cli": [
+          0.01832537500000342,
+          0.020283250000005637,
+          0.018268915999996693,
+          0.018568874999999707,
+          0.019554333999991513
+        ],
+        "control_cli": [
+          0.016091041999999334,
+          0.018225790999991887,
+          0.01627762500000074,
+          0.015845083999991516,
+          0.016786625000008826
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": [],
+        "runtime_compilations": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "component_keys": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "external_results": [
+          {
+            "seconds": 0.01912995800000772,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.02003729199999782,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.019308124999994902,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.018400333000002433,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          },
+          {
+            "seconds": 0.018702750000002766,
+            "status": 0,
+            "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+            "stderr": "{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"functions\":{\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/pure.wasm#typed\":{\"adapter_failures\":[],\"arguments_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"calls\":1,\"construction_bytes\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"fallback_reasons\":{},\"fuel\":{\"incomplete_calls\":0,\"maximum\":2,\"total\":2},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1}}},\"limits\":{\"fuel\":10000000000,\"memory\":67108864,\"transfer\":268435456},\"memory\":{\"incomplete_calls\":0,\"maximum\":65536,\"total\":65536},\"overrides\":{\"fuel\":false,\"memory\":false,\"transfer\":false},\"reached_limits\":{},\"results_transfer\":{\"incomplete_calls\":0,\"maximum\":0,\"total\":0},\"routes\":{\"typed\":1},\"runtime_compilations\":{\"adapter\":0,\"normal\":1},\"stateful_instances\":[],\"test_declaration_compilations\":1,\"wasm_stats\":true}\n"
+          }
+        ],
+        "external_observer": [
+          0.01912995800000772,
+          0.02003729199999782,
+          0.019308124999994902,
+          0.018400333000002433,
+          0.018702750000002766
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "external-tests-normal-1": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "test",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+          "test",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.022565541999995276,
+          "status": 0,
+          "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+          "stderr": "",
+          "validation": "verified",
+          "observations": {
+            "runtime_compilations": 1,
+            "component_keys": 1
+          }
+        },
+        "after": {
+          "seconds": 0.02271245800000088,
+          "status": 0,
+          "stdout": "{\"kind\":\"test\",\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"name\":\"case0\",\"function\":\"case0\",\"location\":{\"file\":\"<repo>/target/bench/compare/inputs/external-tests-normal-1/shared-8a2bd15171b2e0cf/main.bnt\",\"start\":{\"line\":4,\"column\":10,\"offset\":83},\"end\":{\"line\":4,\"column\":15,\"offset\":88},\"label\":\"\"},\"outcome\":\"passed\",\"failure\":null,\"stdout\":\"\",\"stderr\":\"\"}\n{\"kind\":\"testSummary\",\"passed\":1,\"failed\":0,\"filesNotRun\":0,\"interrupted\":false}\n",
+          "stderr": "",
+          "validation": "verified",
+          "observations": {
+            "runtime_compilations": 1,
+            "component_keys": 1
+          }
+        }
+      }
+    }
+  }
+}

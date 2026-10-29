@@ -1,0 +1,95 @@
+import Benitoite.Unofficial.IO.File
+effect Tick
+ function tick() -> Integer
+end effect
+function protected() -> Integer uses File.Read["/data/a"]
+ return 1
+end function
+function sample() -> Integer uses File.Read["/data/a"]
+ bind run0 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run1 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run2 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run3 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run4 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ return handle tick() with
+ case tick() ->
+ bind _ <- run0(protected)
+ bind _ <- run1(protected)
+ bind _ <- run2(protected)
+ bind _ <- run3(protected)
+ resume(run4(protected))
+ end handle
+end function
+function main() -> Unit uses File.Read["/data/a"]
+ bind _ <- sample()
+end function

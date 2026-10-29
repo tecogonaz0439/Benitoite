@@ -1,0 +1,49 @@
+{
+  "command": [
+    "rustc",
+    "--edition=2024",
+    "-O",
+    "<wt>/tools/bench/compare/timing_probe.rs",
+    "--extern",
+    "benitoite=<wt>/target/debug/deps/libbenitoite-9bf96b90b06c0512.rlib",
+    "--extern",
+    "serde_json=<wt>/target/debug/deps/libserde_json-025fd2838c13a08a.rlib",
+    "-L",
+    "dependency=<wt>/target/debug/deps",
+    "-o",
+    "<wt>/target/r20.1-probe/timing-probe",
+    "--cfg",
+    "benitoite_parser_pending",
+    "--cfg",
+    "benitoite_range_index",
+    "--cfg",
+    "benitoite_range_signatures"
+  ],
+  "exit": 0,
+  "wall_seconds": 1.555,
+  "probe_api": {
+    "parser_pending": true,
+    "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+    "range_index": true,
+    "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+    "range_signatures": true,
+    "core_ir_sha256": "ded49d8c12f3a171cd9f9b6b339adaeb8d72900391bc91a203ff0a4f5f289b93"
+  },
+  "probe_sha256": "68df47b3a5f45ebe4a056324c9e070ee9c0edb98fb1b6b4d43471b20c64bf8ec",
+  "library_sha256": "e22eb9c4ffb19717e3cfa07fbcb691899c5bc2b1b2f4d5fe418bfcee91ec7b94",
+  "bridge_sources": {
+    "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+    "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+    "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+    "wrapper": "221c84c311359c351405b469a7181ab8ad930cc4399b0174cf090ab6c53d80f2",
+    "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+  },
+  "source_sha256": {
+    "crates/benitoite/src/typeck/mod.rs": "dfbae7ed9a58fe59e7d18af8b756198831c88a0e8a15e02aa862bcb41e3d0ce1",
+    "crates/benitoite/src/typeck/scope/mod.rs": "a6ea8982af19cd2ef40d4224ef07439209b5a276162cba89b2b9c5fbb05ce430",
+    "crates/benitoite/src/typeck/scope/tests.rs": "5acf28d414159619e53d1e1f1001b294618d66afa01b0c7aa4de8e4b50121eae",
+    "crates/benitoite/src/typeck/scope/input.rs": "bacec83b75b6f507e3dccdee72022f504ac2ac934e6380c9c07f4b694eac9297"
+  },
+  "new_CARGO_TARGET_DIR": false,
+  "note": "入口の逆順対応を含む最終作業版の既存 debug rlib に共通探査を直接リンク。性能比較は未実行。"
+}

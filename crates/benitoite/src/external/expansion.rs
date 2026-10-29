@@ -95,7 +95,7 @@ pub(crate) fn walk<'a, E>(
         visit(concrete.ty, Visit::Enter).map_err(WalkError::Visitor)?;
         let mut result = None;
         let children = match concrete.ty {
-            Ty::Con(TyCon::Adt(id), args) => {
+            Ty::Con(TyCon::Adt(id), args, _) => {
                 // パラメータを葉とする宣言の依存を先に検査するため、有限の同型の入れ子を拒まない。
                 check_dependencies(*id, adts, &mut checked, total).map_err(|error| {
                     WalkError::Expansion(match error {
@@ -137,7 +137,7 @@ pub(crate) fn walk<'a, E>(
                     Vec::new()
                 }
             }
-            Ty::Con(_, args) | Ty::App(_, args) => {
+            Ty::Con(_, args, _) | Ty::App(_, args) => {
                 args.iter().map(|ty| concrete.child(ty)).collect()
             }
             Ty::Fn(f) => f
@@ -216,7 +216,7 @@ fn check_dependencies(
             }
             Work::Type(ty) => {
                 let args = match ty {
-                    Ty::Con(con, args) => {
+                    Ty::Con(con, args, _) => {
                         if let TyCon::Adt(id) = con {
                             work.push(Work::Declaration(*id));
                         }

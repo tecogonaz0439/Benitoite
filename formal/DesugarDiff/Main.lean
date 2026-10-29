@@ -420,7 +420,8 @@ def run (args : List String) : IO UInt32 := do
   let raw ← IO.FS.readFile file
   let json ← IO.ofExcept (Json.parse raw)
   let corpus ← IO.ofExcept (readCorpus json)
-  let atoms := (collectAtoms json).eraseDups
+  -- 原子は版の変換の後の形から集める（旧版の原子は明示の Top を持つ）。
+  let atoms := (collectAtoms (← IO.ofExcept (exchangeJson "corpus" json))).eraseDups
   let initial : Summary := {
     constructions := extensionNames.map (fun n => (n, 0))
     constructionUnits := extensionNames.map (fun n => (n, 0)) }
@@ -437,8 +438,10 @@ def run (args : List String) : IO UInt32 := do
   printSummary "random" random
   for m in mismatches do
     IO.println s!"mismatch: {m.group}/{m.input}: {m.definition}: {m.path}"
+  -- Top でない範囲の数。全て Top だけの入力の一致を範囲の比較の成功に数えないための件数である（L50.2）。
+  let nonTop := countNonTopRanges (← IO.ofExcept (exchangeJson "corpus" json))
   IO.FS.writeFile report ((Json.mkObj [("golden", toJson golden), ("random", toJson random),
-    ("mismatches", toJson mismatches)]).pretty ++ "\n")
+    ("mismatches", toJson mismatches), ("nonTopRanges", toJson nonTop)]).pretty ++ "\n")
   return if mismatches.isEmpty then 0 else 1
 
 def main (args : List String) : IO UInt32 := do

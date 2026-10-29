@@ -1,0 +1,19 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 14s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'modules::tests::file_and_scope_do_not_load_standard_traits' (6438531) panicked at crates/benitoite/src/modules/tests.rs:33:9:
+Benitoite.Unofficial.IO.File loaded Trait
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test modules::tests::file_and_scope_do_not_load_standard_traits ... FAILED
+
+failures:
+
+failures:
+    modules::tests::file_and_scope_do_not_load_standard_traits
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1413 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p benitoite --lib`

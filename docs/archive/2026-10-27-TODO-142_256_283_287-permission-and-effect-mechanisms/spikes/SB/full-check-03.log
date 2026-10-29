@@ -1,0 +1,82 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+FullTypes.lean:332:83: error(lean.invalidField): Invalid field `ScopeWF`: The environment does not contain `SBFull.EffR.ScopeWF`, so it is not possible to project the field `ScopeWF` from an expression
+  e
+of type `EffR`
+FullTypes.lean:333:51: error(lean.invalidField): Invalid field `ScopeWF`: The environment does not contain `SBFull.EffR.ScopeWF`, so it is not possible to project the field `ScopeWF` from an expression
+  e
+of type `EffR`
+FullTypes.lean:344:21: error(lean.invalidField): Invalid field `ScopeWF`: The environment does not contain `SBFull.EffR.ScopeWF`, so it is not possible to project the field `ScopeWF` from an expression
+  e
+of type `EffR`
+FullTypes.lean:357:74: error: unsolved goals
+case refine_1
+⊢ sorry ()
+
+case refine_2
+⊢ sorry ()
+
+case refine_3
+⊢ ¬sorry ()
+FullTypes.lean:361:18: warning: declaration uses `sorry`
+FullTypes.lean:361:18: warning: declaration uses `sorry`
+FullTypes.lean:361:18: warning: declaration uses `sorry`
+FullTypes.lean:361:59: warning: declaration uses `sorry`
+FullTypes.lean:361:59: warning: declaration uses `sorry`
+FullTypes.lean:361:46: warning: This simp argument is unused:
+  Eff.ScopeWF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.ScopeWF, Ty.ScopeWFList, Ty.LatentScopeWF, NamesWF, pureInner, badInner, emptyEff, openFailure]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+FullTypes.lean:365:74: error: unsolved goals
+case refine_1
+⊢ sorry ()
+
+case refine_2
+⊢ sorry ()
+
+case refine_3
+⊢ ¬sorry ()
+FullTypes.lean:369:18: warning: declaration uses `sorry`
+FullTypes.lean:369:18: warning: declaration uses `sorry`
+FullTypes.lean:369:18: warning: declaration uses `sorry`
+FullTypes.lean:369:59: warning: declaration uses `sorry`
+FullTypes.lean:369:59: warning: declaration uses `sorry`
+FullTypes.lean:369:46: warning: This simp argument is unused:
+  Eff.ScopeWF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.ScopeWF, Ty.ScopeWFList, Ty.LatentScopeWF, NamesWF, pureInner, badInner, emptyEff, openFailure]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'SBFull.Ty.Le.fn_left' does not depend on any axioms
+'SBFull.Ty.Le.fn_right' does not depend on any axioms
+'SBFull.Ty.Le.fn_fn' does not depend on any axioms
+'SBFull.Ty.Le.eq_of_rigid_left' depends on axioms: [propext]
+'SBFull.Ty.Le.eq_of_rigid_right' depends on axioms: [propext]
+'SBFull.fn_arity_preserved' does not depend on any axioms
+'SBFull.call_with_subtypes' does not depend on any axioms
+'SBFull.arguments_for_native_contract' does not depend on any axioms
+'SBFull.reference_stays_invariant' depends on axioms: [propext]
+'SBFull.outer_latent_scope_is_insufficient' depends on axioms: [propext, sorryAx, Quot.sound]
+'SBFull.outer_latent_scope_rev_is_insufficient' depends on axioms: [propext, sorryAx, Quot.sound]
+        0.82 real         0.97 user         0.25 sys
+           715259904  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46046  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                6494  involuntary context switches
+          9668601421  instructions retired
+          3685574751  cycles elapsed
+           167189912  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

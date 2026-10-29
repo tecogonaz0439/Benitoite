@@ -1,0 +1,43 @@
+[
+  {
+    "name": "batch2",
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_batch2_exchange.py",
+      "--rust-dir",
+      "target/formal-batch2-op"
+    ],
+    "status": 0,
+    "seconds": 2.584079542,
+    "max_rss_bytes": 51871744
+  },
+  {
+    "name": "batch3",
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_batch3_exchange.py",
+      "--rust-dir",
+      "target/formal-batch3/b3"
+    ],
+    "status": 0,
+    "seconds": 4.791725,
+    "max_rss_bytes": 51871744
+  },
+  {
+    "name": "batch5",
+    "command": [
+      "python3",
+      "-B",
+      "formal/tests/test_batch5_exchange.py",
+      "--rust-dir",
+      "target/formal-batch5",
+      "--report",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/readers-batch5-report.json"
+    ],
+    "status": 0,
+    "seconds": 2.50393225,
+    "max_rss_bytes": 51871744
+  }
+]

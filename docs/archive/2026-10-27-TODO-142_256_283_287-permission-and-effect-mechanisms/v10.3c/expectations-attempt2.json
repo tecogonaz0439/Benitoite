@@ -1,0 +1,1639 @@
+{
+  "frozenAt": "2026-10-30T07:56:28.501270+09:00",
+  "basis": "R40.3 と K10.2 の事前固定の独立期待値、および README の J2 訂正と公開 CLI の契約。候補の出力は期待値に使用していない",
+  "candidate": "5de2594ad523fba4f38fa63f7a1b306e8a23eb0c",
+  "producer": {
+    "name": "benitoite",
+    "version": "0.0.13",
+    "commit": "5de2594ad523fba4f38fa63f7a1b306e8a23eb0c",
+    "dirty": false,
+    "target": "aarch64-apple-darwin"
+  },
+  "manifests": {
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.json": "c8bfe176ea31e0098f29063424f722845f3193b7c7106b11a033d88cef1254bc",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/expected.json": "c9b7d6800971818dd0865ee8c1321dce05b31c1658a63545b7c4c20c07782e53"
+  },
+  "cases": [
+    {
+      "id": "report-pure-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt",
+      "sha256": "fba7175f66172925e88653ea4f560a154fbe98f575d3de8fe40179f31824f3f1",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-pure-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt",
+      "sha256": "fba7175f66172925e88653ea4f560a154fbe98f575d3de8fe40179f31824f3f1",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-top-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt",
+      "sha256": "bba7188e9219fbfcb9dbe4370ba48b75a6ed4258702f8c3b74cd990410b3a298",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "all"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-top-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt",
+      "sha256": "bba7188e9219fbfcb9dbe4370ba48b75a6ed4258702f8c3b74cd990410b3a298",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "all"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-non-top-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-non-top-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-redundant-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt",
+      "sha256": "a73d2bcbc0f3517d51625bd3d3c2877fcd851b79f336bdb2416459f15ef01382",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "all"
+              }
+            },
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathExact",
+                "path": "/data/a"
+              }
+            },
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-redundant-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt",
+      "sha256": "a73d2bcbc0f3517d51625bd3d3c2877fcd851b79f336bdb2416459f15ef01382",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "all"
+              }
+            },
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathExact",
+                "path": "/data/a"
+              }
+            },
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-handled-user-pure-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt",
+      "sha256": "d32b4806d3bf646a59675f8eb8a415f50c43a9617b8dffbc1d1034a35227570d",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-handled-user-pure-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt",
+      "sha256": "d32b4806d3bf646a59675f8eb8a415f50c43a9617b8dffbc1d1034a35227570d",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-handled-scoped-write-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt",
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data/reports"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-handled-scoped-write-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt",
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data/reports"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-not-covered-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt",
+      "sha256": "8c26a0c13384ee7c6458ac5ffe2c4d97fa70ea7caf0c77cd52cd48969e3abf82",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "notCovered",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-not-covered-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt",
+      "sha256": "8c26a0c13384ee7c6458ac5ffe2c4d97fa70ea7caf0c77cd52cd48969e3abf82",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "notCovered",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-atomic-cover-only-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt",
+      "sha256": "1d6a7ee2041b6df0c3bc3b33100220076804cd70189f3bde89e21324b0000e18",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "atomicCoverOnly",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-atomic-cover-only-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt",
+      "sha256": "1d6a7ee2041b6df0c3bc3b33100220076804cd70189f3bde89e21324b0000e18",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "atomicCoverOnly",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-unknown-source-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt",
+      "sha256": "255d418c35c77f668316dfe691f4a2700a35ec1dd3b8ef09268c392b5df39a56",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "unknownSource",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-unknown-source-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt",
+      "sha256": "255d418c35c77f668316dfe691f4a2700a35ec1dd3b8ef09268c392b5df39a56",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "unknownSource",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-budget-exceeded-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt",
+      "sha256": "df179321213e83537d23dbcfbe527d506afb3727cdc57dcd26ac3af9dd441b6d",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "budgetExceeded",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-budget-exceeded-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt",
+      "sha256": "df179321213e83537d23dbcfbe527d506afb3727cdc57dcd26ac3af9dd441b6d",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "budgetExceeded",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-show-rejected-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt",
+      "sha256": "28ea2c356b673ff4a36207b760810ccc5425416847336ad77a835518bde177f2",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0705",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-show-rejected-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt",
+      "sha256": "28ea2c356b673ff4a36207b760810ccc5425416847336ad77a835518bde177f2",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0705",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-projection-repaired-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt",
+      "sha256": "07843877ccb33e11dfa2996233efd9d579c41830b9504e91f284b05e0c090dc4",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-projection-repaired-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt",
+      "sha256": "07843877ccb33e11dfa2996233efd9d579c41830b9504e91f284b05e0c090dc4",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-show-match-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt",
+      "sha256": "563e1c4d0a383985a4b864eba5ccadb276b128e3e9408abe51c44b7f69993c75",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-show-match-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt",
+      "sha256": "563e1c4d0a383985a4b864eba5ccadb276b128e3e9408abe51c44b7f69993c75",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-user-unhandled-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt",
+      "sha256": "70823dee85360a5d7b5c3dbc56cdb8a93f52d4be5081904c6faaf3fe2d928304",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0506",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-user-unhandled-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt",
+      "sha256": "70823dee85360a5d7b5c3dbc56cdb8a93f52d4be5081904c6faaf3fe2d928304",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0506",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-user-scope-rejected-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt",
+      "sha256": "435de74f27370ddb13c23e69433b6cb9c99d116cc031b2b2dd88a765a9af2d4a",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0513",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-user-scope-rejected-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt",
+      "sha256": "435de74f27370ddb13c23e69433b6cb9c99d116cc031b2b2dd88a765a9af2d4a",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0513",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-read-complete-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt",
+      "sha256": "367811c7bf54d02a74011fa0366b9b3388153883f141acd0f4544386d76aded3",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-read-complete-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt",
+      "sha256": "367811c7bf54d02a74011fa0366b9b3388153883f141acd0f4544386d76aded3",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-read-partial-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt",
+      "sha256": "297d096b4174401f069cfb804c0c9adf1207824b60f020742716670573dfae71",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-read-partial-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt",
+      "sha256": "297d096b4174401f069cfb804c0c9adf1207824b60f020742716670573dfae71",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-read-missing-upper-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt",
+      "sha256": "5101647cc7b4d2d76a62000ea5bd39a7b47ea0ebc78a0eb3f4df72350f21402e",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-read-missing-upper-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt",
+      "sha256": "5101647cc7b4d2d76a62000ea5bd39a7b47ea0ebc78a0eb3f4df72350f21402e",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-write-complete-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt",
+      "sha256": "ce90e9d7905f50a2be301e43e0f183cfafb8bb6dfb51c771defeda746c4feb45",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-write-complete-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt",
+      "sha256": "ce90e9d7905f50a2be301e43e0f183cfafb8bb6dfb51c771defeda746c4feb45",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-write-partial-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt",
+      "sha256": "ff0a9bbf9e32dcfbd839ebc4aa2d039809830901295c26314f0b79bd97e87df9",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-write-partial-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt",
+      "sha256": "ff0a9bbf9e32dcfbd839ebc4aa2d039809830901295c26314f0b79bd97e87df9",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-write-missing-upper-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt",
+      "sha256": "f1b61e51b3480ca7af98c60208ed759e1e03dca30736083cfcd277f8cd92a2bf",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-write-missing-upper-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt",
+      "sha256": "f1b61e51b3480ca7af98c60208ed759e1e03dca30736083cfcd277f8cd92a2bf",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-connect-complete-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt",
+      "sha256": "2f01a8a351b76b2f804dcb4f244ce5eb790eb86996b715301cf9b88345c194f8",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-connect-complete-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt",
+      "sha256": "2f01a8a351b76b2f804dcb4f244ce5eb790eb86996b715301cf9b88345c194f8",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-connect-partial-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt",
+      "sha256": "4b6d9c5b5378e85f95289d020c204623d3ad4b8fee16b7fdd6295bb602fef3e3",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "Http.Connect"
+          ],
+          "bounds": [
+            {
+              "name": "Http.Connect",
+              "scope": {
+                "kind": "endpoint",
+                "host": {
+                  "kind": "exact",
+                  "name": "api.example"
+                },
+                "ports": {
+                  "minimum": 443,
+                  "maximum": 443
+                }
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-connect-partial-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt",
+      "sha256": "4b6d9c5b5378e85f95289d020c204623d3ad4b8fee16b7fdd6295bb602fef3e3",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "Http.Connect"
+          ],
+          "bounds": [
+            {
+              "name": "Http.Connect",
+              "scope": {
+                "kind": "endpoint",
+                "host": {
+                  "kind": "exact",
+                  "name": "api.example"
+                },
+                "ports": {
+                  "minimum": 443,
+                  "maximum": 443
+                }
+              }
+            }
+          ]
+        },
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-connect-missing-upper-check",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt",
+      "sha256": "f7806e1a8b236c967c004ec375fcd9383f6c50792009ff3421564c0a6e4bbac7",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-connect-missing-upper-test",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt",
+      "sha256": "f7806e1a8b236c967c004ec375fcd9383f6c50792009ff3421564c0a6e4bbac7",
+      "args": [
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-doc-error-doc",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-error.bnt",
+      "sha256": "9f7b2393783c281e346db87f25f0722a1e31e2066ed42bc5cefe0b6c7b77daca",
+      "args": [
+        "test",
+        "--doc",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-error.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "doc": true,
+        "diagnosticCode": "E0401",
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "report-doc-check-doc",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-check.bnt",
+      "sha256": "07044f3856fb4a29cc03e87a323ce94b9add869b00c2e2497393a1b49825c982",
+      "args": [
+        "test",
+        "--doc",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-check.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "doc": true,
+        "docExampleTests": [],
+        "executed": false,
+        "singleReport": true
+      }
+    },
+    {
+      "id": "range-required-not-covered",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/required-not-covered.bnt",
+      "sha256": "82af33c459203742a6a149a25ee64d4f7b56264bdbfaa2ae1a5f6bb89d033d82",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/required-not-covered.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "notCovered",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "range-required-unknown",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/required-unknown.bnt",
+      "sha256": "6434b8cf70988c1f81f8ef9c08b8fde7461ba409048bc81e93c93ce1756e8ab4",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/required-unknown.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "unknownSource",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "range-request-widen-rejected",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/request-widen-rejected.bnt",
+      "sha256": "2435c5d851a90e886ec7c667af34b42465d2fddae85b62c55800b23dfb9f2b19",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/request-widen-rejected.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "unknownSource",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "range-effect-not-covered",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/effect-not-covered.bnt",
+      "sha256": "f097ffa789d439f38daeb8f4ecce515f1402f4efa571ac3c42a195487b3a7d7d",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/effect-not-covered.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "notCovered",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "range-effect-atomic",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/effect-atomic.bnt",
+      "sha256": "ef86737285fe3d809dd4428d7c47136cecd870687e25d04163818b02c26370ad",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/effect-atomic.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "atomicCoverOnly",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "old-file-old-complete-none",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/file-old-complete-none.bnt",
+      "sha256": "831cdaf0e49583b47b05d3bb01cacf41a1cb2eae2f3abfe6d75f9421674162de",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/file-old-complete-none.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0501",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "old-file-old-complete-0012",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/file-old-complete-0012.bnt",
+      "sha256": "6ad9fffea5d3d3a52f368af93e6f802377e8c69df78c2b6154e5d81c0fd0d421",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/file-old-complete-0012.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0908",
+        "singleReport": true,
+        "notes": [
+          "0.0.13: scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled"
+        ],
+        "helpMessages": [
+          "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract"
+        ]
+      }
+    },
+    {
+      "id": "old-write-old-complete-none",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/write-old-complete-none.bnt",
+      "sha256": "d94ece253b0d3fd6fd24104c67ea72c5043420e91fd583bc06c440fbb4da00db",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/write-old-complete-none.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0501",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "old-write-old-complete-0012",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/write-old-complete-0012.bnt",
+      "sha256": "f7a2d356c4a963c16ef02f75a18f9e46f0cd79938cce963787e750040e024437",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/write-old-complete-0012.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0908",
+        "singleReport": true,
+        "notes": [
+          "0.0.13: scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled"
+        ],
+        "helpMessages": [
+          "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract"
+        ]
+      }
+    },
+    {
+      "id": "old-send-plain-none",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/send-plain-none.bnt",
+      "sha256": "2cc0a9ee578e5179a05f775e9403a416abcc068e73a035c209703425e13b5744",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/send-plain-none.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0501",
+        "singleReport": true
+      }
+    },
+    {
+      "id": "old-send-plain-0012",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/send-plain-0012.bnt",
+      "sha256": "77d0a14d739f5317a7a3c8a49fcd1e066ec9446a168d5473cee513ab8152e63c",
+      "args": [
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/send-plain-0012.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "executed": false,
+        "effects": null,
+        "code": "E0908",
+        "singleReport": true,
+        "notes": [
+          "0.0.13: scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled"
+        ],
+        "helpMessages": [
+          "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract"
+        ]
+      }
+    },
+    {
+      "id": "allow-run-name",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=File.Write",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "outputKind": "accepted",
+        "stdout": ""
+      }
+    },
+    {
+      "id": "allow-run-empty",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "outputKind": "diagnostic",
+        "stdout": "",
+        "code": "E0512"
+      }
+    },
+    {
+      "id": "allow-run-user",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=Report",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "outputKind": "usage",
+        "stdout": "",
+        "stderrContains": "invalid effect name"
+      }
+    },
+    {
+      "id": "allow-run-scope",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=File.Write[\"/data/**\"]",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "outputKind": "usage",
+        "stdout": "",
+        "stderrContains": "invalid effect name"
+      }
+    },
+    {
+      "id": "allow-run-empty-pure",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt",
+      "sha256": "fba7175f66172925e88653ea4f560a154fbe98f575d3de8fe40179f31824f3f1",
+      "args": [
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "outputKind": "accepted",
+        "stdout": ""
+      }
+    },
+    {
+      "id": "allow-run-empty-handled-user-pure",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt",
+      "sha256": "d32b4806d3bf646a59675f8eb8a415f50c43a9617b8dffbc1d1034a35227570d",
+      "args": [
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "outputKind": "accepted",
+        "stdout": ""
+      }
+    },
+    {
+      "id": "allow-test-name",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=File.Write",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "outputKind": "accepted"
+      }
+    },
+    {
+      "id": "allow-test-empty",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "outputKind": "diagnostic",
+        "code": "E0512"
+      }
+    },
+    {
+      "id": "allow-test-user",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=Report",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "outputKind": "usage",
+        "stderrContains": "invalid effect name"
+      }
+    },
+    {
+      "id": "allow-test-scope",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "args": [
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=File.Write[\"/data/**\"]",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "expected": {
+        "exit": 2,
+        "outputKind": "usage",
+        "stderrContains": "invalid effect name"
+      }
+    },
+    {
+      "id": "allow-test-empty-pure",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt",
+      "sha256": "fba7175f66172925e88653ea4f560a154fbe98f575d3de8fe40179f31824f3f1",
+      "args": [
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "outputKind": "accepted"
+      }
+    },
+    {
+      "id": "allow-test-empty-handled-user-pure",
+      "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt",
+      "sha256": "d32b4806d3bf646a59675f8eb8a415f50c43a9617b8dffbc1d1034a35227570d",
+      "args": [
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "expected": {
+        "exit": 0,
+        "outputKind": "accepted"
+      }
+    }
+  ]
+}

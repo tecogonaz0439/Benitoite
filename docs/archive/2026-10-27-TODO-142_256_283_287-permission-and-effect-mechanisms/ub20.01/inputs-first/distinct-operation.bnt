@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.IO.File
+effect Local
+ function readText(path: String) -> Result[String, IOError]
+end effect
+function main() -> Unit uses File.Read
+ handle File.readText("/data/a") with
+ case readText(path) -> resume(Result.Ok("local"))
+ end handle
+ ()
+end function

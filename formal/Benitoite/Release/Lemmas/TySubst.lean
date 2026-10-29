@@ -20,7 +20,7 @@ variable {P : Program} {B : Builtins}
 def Ty.NotCont (x : Ty) : Prop := ∀ b t ε, x ≠ .cont b t ε
 
 /-- 置き換える型の並びが、項の中に書ける閉じた型である。 -/
-def ClosedArgs (ts : List Ty) : Prop := ∀ t ∈ ts, Ty.WF 0 t ∧ Ty.NotCont t
+def ClosedArgs (ts : List Ty) : Prop := ∀ t ∈ ts, Ty.WF 0 0 t ∧ Ty.NotCont t
 
 theorem Ty.applyTo_notCont {t : Ty} (ht : t.NotCont) (as : List Ty) : (t.applyTo as).NotCont := by
   cases t with
@@ -102,7 +102,7 @@ theorem binds_map (f : Ty → Ty) (as : List Ty) :
     binds (as.map f) = (binds as).map (Option.map f) := by
   simp [binds, List.map_reverse, List.map_map]
 
-theorem shiftEnv_substAt {c k ts es} (hts : ClosedArgs ts) (hes : ∀ e ∈ es, Eff.WF 0 e) (Γ : List (Option Ty)) :
+theorem shiftEnv_substAt {c k ts es} (hts : ClosedArgs ts) (hes : ∀ e ∈ es, Eff.WF 0 0 e) (Γ : List (Option Ty)) :
     (shiftEnv k Γ).map (Option.map (Ty.substAt (c + k) ts es)) =
       shiftEnv k (Γ.map (Option.map (Ty.substAt c ts es))) := by
   simp only [shiftEnv, List.map_map]

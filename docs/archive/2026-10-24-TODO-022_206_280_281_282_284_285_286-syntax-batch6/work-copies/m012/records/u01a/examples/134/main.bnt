@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Json.Codec
+
+function main() -> Result[Unit, String]
+  bind encoded <- try Codec.encodeList(value: [1, 2, 3], encode: Codec.encodeInteger)
+    |> Result.mapError(r: _, f: lambda(error) return Codec.ConversionError.reason(error) end lambda)
+  bind decoded <- try Codec.decodeList(value: encoded, decode: Codec.decodeInteger)
+    |> Result.mapError(r: _, f: lambda(error) return Codec.ConversionError.reason(error) end lambda)
+  if decoded <> [1, 2, 3] then
+    return Result.Error("JSON conversion roundtrip failed")
+  end if
+  return Result.Ok(())
+end function

@@ -1,0 +1,18 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0603]: function `candidate_atoms` is private
+  --> crates/benitoite/tests/desugar_export/scope_tables.rs:44:38
+   |
+44 |     let candidates = builtin_export::candidate_atoms(&input, &table);
+   |                                      ^^^^^^^^^^^^^^^ private function
+   |
+note: the function `candidate_atoms` is defined here
+  --> crates/benitoite/tests/desugar_export/builtins.rs:28:1
+   |
+28 | pub(super) fn candidate_atoms(input: &Value, table: &Value) -> Value {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `benitoite` (test "desugar_export") due to 1 previous error
+real 1.22
+user 2.56
+sys 0.59

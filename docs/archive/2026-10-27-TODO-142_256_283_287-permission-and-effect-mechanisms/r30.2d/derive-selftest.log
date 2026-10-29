@@ -1,0 +1,17 @@
+...................................E..............
+======================================================================
+ERROR: test_json_and_property_two_modules_all_basic_types_and_containers (__main__.PropertyGeneration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/tools/derive/test_derive.py", line 1364, in test_json_and_property_two_modules_all_basic_types_and_containers
+    self.manager.check()
+  File "<wt>/tools/derive/derive.py", line 1345, in check
+    invalid('derive.migration_required: preview, review, and apply a version 3 record')
+  File "<wt>/tools/derive/derive.py", line 57, in invalid
+    raise DeriveError(message)
+derive.DeriveError: derive.migration_required: preview, review, and apply a version 3 record
+
+----------------------------------------------------------------------
+Ran 50 tests in 87.416s
+
+FAILED (errors=1)

@@ -12,7 +12,7 @@ namespace Benitoite.Release
 
 mutual
   /-- 型の像を保ち、再帰的に現れる行の像が一致すれば、型の代入結果も一致する。 -/
-  theorem Ty.bind_congr_scoped (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (t : Ty) (hw : t.RawWF n)
+  theorem Ty.bind_congr_scoped {nr : Nat} (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (t : Ty) (hw : t.RawWF nr n)
       (h : t.RowsIn (fun i => Eff.rowImage θ.rows i = Eff.rowImage φ.rows i)) :
       Ty.bind θ t = Ty.bind φ t := by
     cases t <;> simp only [Ty.RowsIn] at h <;> simp only [Ty.RawWF] at hw <;>
@@ -40,7 +40,7 @@ mutual
         show (b.rawBind θ).norm = (b.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht b hw.2 h.2]
 
 
-  theorem Ty.bindTys_congr_scoped (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (ts : List Ty) (hw : Ty.RawWFList n ts)
+  theorem Ty.bindTys_congr_scoped {nr : Nat} (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (ts : List Ty) (hw : Ty.RawWFList nr n ts)
       (h : Ty.RowsInList (fun i => Eff.rowImage θ.rows i = Eff.rowImage φ.rows i) ts) :
       Ty.normTys (Ty.rawBindTys θ ts) = Ty.normTys (Ty.rawBindTys φ ts) := by
     cases ts with
@@ -50,7 +50,7 @@ mutual
       rw [show (t.rawBind θ).norm = (t.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht t hw.1 h.1,
         Ty.bindTys_congr_scoped θ φ ht ts hw.2 h.2]
 
-  theorem Eff.bind_congr_scoped (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (e : Eff) (hw : Eff.RawWF n e)
+  theorem Eff.bind_congr_scoped {nr : Nat} (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (e : Eff) (hw : Eff.RawWF nr n e)
       (h : Eff.RowsIn (fun i => Eff.rowImage θ.rows i = Eff.rowImage φ.rows i) e) :
       Eff.bind θ e = Eff.bind φ e := by
     cases e with
@@ -116,8 +116,8 @@ theorem Ty.bind_normEnv (θ : SubstEnv) (t : Ty) : Ty.bind θ.norm t = Ty.bind �
   Ty.norm_rawBind_normEnv θ t
 
 /-- 置換像自体の順序・重複を問わず、像の正規形が一致すれば代入結果が一致する。 -/
-theorem Ty.bind_congr_scoped_norm (θ φ : SubstEnv) {n : Nat}
-    (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (t : Ty) (hw : t.RawWF n)
+theorem Ty.bind_congr_scoped_norm {nr : Nat} (θ φ : SubstEnv) {n : Nat}
+    (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (t : Ty) (hw : t.RawWF nr n)
     (hr : t.RowsIn (fun i => Eff.norm (Eff.rowImage θ.rows i) = Eff.norm (Eff.rowImage φ.rows i))) :
     Ty.bind θ t = Ty.bind φ t := by
   rw [← Ty.bind_normEnv θ, ← Ty.bind_normEnv φ]

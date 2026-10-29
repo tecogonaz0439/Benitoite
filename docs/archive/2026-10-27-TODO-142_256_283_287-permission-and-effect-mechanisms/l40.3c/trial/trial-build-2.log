@@ -1,0 +1,43 @@
+== wait-for-lock start 00:56:10
+== lock acquired 00:56:10 after 0s
+✖ [168/573] Building Benitoite.Release.Lemmas.Rename (6.6s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Rename.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Rename.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Rename.setup.json --json
+error: Benitoite/Release/Lemmas/Rename.lean:361:72: Application type mismatch: The argument
+  HasTypeVQ.store ?m.2153 hΨ
+has type
+  HasTypeVQ P B Ψ' Q ?m.2149 ?m.2150 ?m.2151 ?m.2152
+but is expected to have type
+  HasTypeVQ P B Ψ' Qempty [] [] req✝ T✝
+in the application
+  HasTypeVQ.V_CheckedRequest hk hm hc (HasTypeVQ.store ?m.2153 hΨ)
+error: Benitoite/Release/Lemmas/Rename.lean:361:89: Application type mismatch: The argument
+  ht
+has type
+  HasTypeVQ P B Ψ Qempty [] [] req✝ T✝
+but is expected to have type
+  HasTypeVQ P B Ψ Q ?m.2149 ?m.2150 ?m.2151 ?m.2152
+in the application
+  HasTypeVQ.store ht
+✔ [178/573] Built Benitoite.Release.Lemmas.Inversion (21s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Rename
+error: build failed
+       21.51 real       133.40 user         1.76 sys
+          3377971200  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              273463  page reclaims
+                   3  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  28  voluntary context switches
+               85252  involuntary context switches
+          1636802984  instructions retired
+           736036717  cycles elapsed
+            77300864  peak memory footprint
+== exit 1

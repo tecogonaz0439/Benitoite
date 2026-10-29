@@ -53,14 +53,14 @@ theorem checkArms_sound {q C Γ R p path arms a b ε}
     (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) ha hΓ hR hin hout h
 
 /-- 節の判断は許容 ε を使う。返した実際の和はその部分集合である。 -/
-theorem checkClauses_sound {q C Γ R path cs t ε actual}
+theorem checkClauses_sound {q C Γ R path εb cs t ε actual}
     (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
-    (hR : ReturnAtoms q.atoms R) (ht : t.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms)
-    (h : checkClauses q .strict C Γ R path cs t ε = .ok actual) :
-    HasClauses q.D q.B q.opPrim C Γ R cs t ε ∧
+    (hR : ReturnAtoms q.atoms R) (hεb : εb.AtomsIn q.atoms) (ht : t.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms)
+    (h : checkClauses q .strict C Γ R path εb cs t ε = .ok actual) :
+    HasClauses q.D q.B q.opPrim C Γ R εb cs t ε ∧
       Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
   simpa only [NoFailCtxOf_nil] using checkClauses_of_mutual
-    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) hc hΓ hR ht hε h
+    (mutualSoundness ({ q with noFailRows := [] } : Input)) (BuilderInvariant.empty _ _ _) (hq.withNoFailRows []) hc hΓ hR hεb ht hε h
 
 theorem checkTypes_sound {q C Γ R path es ts ε}
     (hq : q.Sound) (he : es.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)

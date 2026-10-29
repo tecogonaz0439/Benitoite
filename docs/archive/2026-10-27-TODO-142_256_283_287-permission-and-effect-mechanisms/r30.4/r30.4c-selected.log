@@ -1,0 +1,14 @@
+== plan: level work against 98b420af9bf9e6de4eea81bab140efb835529bd9 (changed files not classified) (partial selection: --only skill_generated,skill_docs)
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [skill_docs] because of --only (estimate: target dependent)
+      command: cargo test -q -p benitoite --test skill_docs
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== skill_generated
+== skill_docs
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+selected checks passed

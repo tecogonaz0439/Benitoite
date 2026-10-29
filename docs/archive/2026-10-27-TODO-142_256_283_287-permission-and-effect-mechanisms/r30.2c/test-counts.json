@@ -1,0 +1,111 @@
+{
+  "work": {
+    "targets": [
+      {
+        "target": "lib",
+        "status": "FAILED",
+        "passed": 1391,
+        "failed": 1,
+        "ignored": 22
+      }
+    ],
+    "passed": 1391,
+    "failed": 1,
+    "ignored": 22
+  },
+  "work-recheck": {
+    "targets": [
+      {
+        "target": "lib",
+        "status": "ok",
+        "passed": 1392,
+        "failed": 0,
+        "ignored": 22
+      },
+      {
+        "target": "build_info",
+        "status": "ok",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 5
+      },
+      {
+        "target": "call_allocations",
+        "status": "ok",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "checked_args",
+        "status": "ok",
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "cli_process",
+        "status": "ok",
+        "passed": 38,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "coverage_export",
+        "status": "ok",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 1
+      },
+      {
+        "target": "declarations",
+        "status": "FAILED",
+        "passed": 29,
+        "failed": 2,
+        "ignored": 1
+      }
+    ],
+    "passed": 1476,
+    "failed": 2,
+    "ignored": 29
+  },
+  "remaining_integration_targets": [
+    "desugar_export",
+    "external_signals",
+    "fmt_command",
+    "golden",
+    "http_descriptor_exhaustion",
+    "http_exchange_release",
+    "interrupt_process",
+    "io_modes",
+    "l10_console_clock_process",
+    "l13_external_commands",
+    "l21_json",
+    "l23_csv",
+    "l24_time",
+    "l30_http_server",
+    "l31_http_serve_and_helpers",
+    "l32_http_client",
+    "named_arguments",
+    "network_faults",
+    "open_062",
+    "open_062_http",
+    "package_command",
+    "property_library",
+    "random_programs",
+    "reference_examples",
+    "runtime_builtins",
+    "scope_annotations",
+    "scoped_calls",
+    "skill_docs",
+    "skill_examples",
+    "spec_examples",
+    "stdlib_doc_examples",
+    "test_command",
+    "verify",
+    "vm_handlers",
+    "vm_lazy",
+    "vm_reference_cells"
+  ],
+  "integration_targets_total": 42
+}

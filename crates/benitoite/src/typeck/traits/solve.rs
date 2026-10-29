@@ -21,7 +21,7 @@ pub(in crate::typeck) fn shared_table(d: &Decls<'_>) -> std::rc::Rc<ImplTable> {
 }
 pub(super) fn target_con(i: &ImplDef) -> Option<TyCon> {
     match &i.target {
-        TypeArg::Ty(Ty::Con(c, _)) | TypeArg::Head(TyHead::Con(c)) => Some(*c),
+        TypeArg::Ty(Ty::Con(c, _, _)) | TypeArg::Head(TyHead::Con(c)) => Some(*c),
         TypeArg::Ty(_) | TypeArg::Head(TyHead::Param(_)) => None,
     }
 }
@@ -103,7 +103,7 @@ pub(super) fn resolve(
             }
             // 空の適用で頭だけを置き換える。finalize_head の既定値を解決前に選ばない。
             match solver.zonk(&ITy::App(*h, vec![])) {
-                ITy::Con(c, _) => IClassArg::Con(c),
+                ITy::Con(c, _, _) => IClassArg::Con(c),
                 ITy::App(h, _) => IClassArg::Head(h),
                 ITy::Var(_) | ITy::Fn(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {
                     return Err(Failure::Suppressed);
@@ -186,9 +186,9 @@ fn resolve_normalized(
     ) {
         return Err(Failure::Unknown(normalized.clone()));
     }
-    let (con, args) = match normalized {
-        IClassArg::Ty(ITy::Con(c, args)) => (*c, args.as_slice()),
-        IClassArg::Con(c) => (*c, &[][..]),
+    let (con, args, ix) = match normalized {
+        IClassArg::Ty(ITy::Con(c, args, ix)) => (*c, args.as_slice(), ix),
+        IClassArg::Con(c) => (*c, &[][..], &crate::types::builtin::RangeIndex::TOP),
         IClassArg::Ty(_) | IClassArg::Head(_) => {
             if d.invalid_impl_targets.contains(&class) {
                 return Err(Failure::Suppressed);
@@ -208,9 +208,20 @@ fn resolve_normalized(
     let Some(i) = d.out.impls.get(*id) else {
         return Err(Failure::Suppressed);
     };
+    let target_ix = match &i.target {
+        TypeArg::Ty(Ty::Con(_, _, ix)) => ix,
+        TypeArg::Head(_) => &crate::types::builtin::RangeIndex::TOP,
+        TypeArg::Ty(_) => return Err(Failure::Suppressed),
+    };
+    if ix != target_ix {
+        return Err(Failure::Missing {
+            class,
+            arg: normalized.clone(),
+        });
+    }
     // 型の数えは TypeBudget と同じく Con/App と Fn の引数・戻り値を一節ずつ数える。
     // 写す前に予算を検査し、大きな型を持つ辞書も止める。
-    if let TypeArg::Ty(Ty::Con(_, params)) = &i.target {
+    if let TypeArg::Ty(Ty::Con(_, params, _)) = &i.target {
         for (_, ty) in params.iter().zip(args) {
             charge_type(parts, ty)?;
         }
@@ -221,7 +232,7 @@ fn resolve_normalized(
     let mut type_args = vec![TypeArg::Ty(crate::typeck::decls::unit()); i.type_params.len()];
     let mut infer_args = vec![ITy::Error; i.type_params.len()];
     // 対象は引数の順が宣言の順とは限らない（Pair[B, A]）。対象の Param の番号で置き換える。
-    if let TypeArg::Ty(Ty::Con(_, params)) = &i.target {
+    if let TypeArg::Ty(Ty::Con(_, params, _)) = &i.target {
         for (p, t) in params.iter().zip(args) {
             if let Ty::Param(index) = p
                 && let Ok(index) = usize::try_from(*index)
@@ -286,7 +297,7 @@ fn charge_type(parts: &mut usize, ty: &ITy) -> Result<(), Failure> {
     while let Some(ty) = pending.pop() {
         charge(parts, 1)?;
         match ty {
-            ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+            ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
             ITy::Fn(f) => {
                 pending.extend(&f.effect.failures);
                 pending.extend(&f.params);
@@ -303,11 +314,12 @@ fn charge_type(parts: &mut usize, ty: &ITy) -> Result<(), Failure> {
 fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOutput) -> Ty {
     match ty {
         ITy::Var(_) | ITy::Error => crate::typeck::decls::unit(),
-        ITy::Con(c, args) => Ty::Con(
+        ITy::Con(c, args, ix) => Ty::Con(
             *c,
             args.iter()
                 .map(|t| finalize_normalized(solver, t, r))
                 .collect(),
+            ix.clone(),
         ),
         ITy::App(h, args) => {
             let args = args
@@ -315,7 +327,7 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
                 .map(|t| finalize_normalized(solver, t, r))
                 .collect();
             match solver.finalize_head(*h, r) {
-                TyHead::Con(c) => Ty::Con(c, args),
+                TyHead::Con(c) => Ty::Con(c, args, crate::types::builtin::RangeIndex::TOP),
                 TyHead::Param(i) => Ty::App(i, args),
             }
         }
@@ -405,7 +417,7 @@ fn unresolved_argument(solver: &Solver, arg: &IClassArg) -> bool {
                 pending.extend(f.params);
                 pending.push(f.ret);
             }
-            ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+            ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
             ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
         }
     }
@@ -521,7 +533,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
         let expected = ctx
             .decls
             .reference(node)
-            .and_then(|id| ctx.decls.out.decl_types.get(id))
+            .and_then(|id| ctx.signature_at_top(id))
             .map_or(0, |s| s.class_constraints.len());
         // 失敗した制約を詰めると辞書の番号がずれる。成功した使用だけを表に載せる。
         if dicts.len() == expected {
@@ -535,7 +547,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
 fn argument_ty(ctx: &Body<'_, '_>, arg: &IClassArg) -> Ty {
     match arg {
         IClassArg::Ty(t) => ctx.solver.finalize(t, ctx.decls.resolved),
-        IClassArg::Con(c) => Ty::Con(*c, vec![]),
+        IClassArg::Con(c) => Ty::Con(*c, vec![], crate::types::builtin::RangeIndex::TOP),
         IClassArg::Head(h) => Ty::App(
             match ctx.solver.finalize_head(*h, ctx.decls.resolved) {
                 TyHead::Param(i) => i,
@@ -560,7 +572,7 @@ fn report(ctx: &mut Body<'_, '_>, failure: Failure, class: BindingId, arg: &ICla
                 IClassArg::Ty(t) => t,
                 IClassArg::Head(IHead::Var(v)) => ITy::Var(v),
                 IClassArg::Head(IHead::Param(i)) => ITy::Param(i),
-                IClassArg::Con(c) => ITy::Con(c, vec![]),
+                IClassArg::Con(c) => ITy::Con(c, vec![], crate::types::builtin::RangeIndex::TOP),
             };
             // 型変数の同じ失敗を重ねず、後の表でも未確定と誤りを区別する（設計書 02-05「誤りの報告と検査の継続」）。
             let result = ctx.solver.equal(&ty, &ITy::Error, r);

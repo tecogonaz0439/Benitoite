@@ -1,0 +1,40 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.File
+function sample(path: String, request: Http.ClientRequest) -> Unit uses File.Read, File.Write, Http.Connect
+ bind block0 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ ()
+end function

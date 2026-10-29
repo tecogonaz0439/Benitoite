@@ -1,0 +1,166 @@
+[
+  {
+    "case": "work-auto",
+    "command": "bash scripts/check.sh --level work --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0796,
+    "stdout": "work-auto.stdout.txt",
+    "stderr": "work-auto.stderr.txt",
+    "selected": []
+  },
+  {
+    "case": "change-auto",
+    "command": "bash scripts/check.sh --level change --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0701,
+    "stdout": "change-auto.stdout.txt",
+    "stderr": "change-auto.stderr.txt",
+    "selected": [
+      "[advisories] because of change (regardless of changed files) (estimate: ~1-3 min; initial DB fetch unknown)"
+    ]
+  },
+  {
+    "case": "release-auto",
+    "command": "bash scripts/check.sh --level release --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0078,
+    "stdout": "release-auto.stdout.txt",
+    "stderr": "release-auto.stderr.txt",
+    "selected": [
+      "[release_stack] because of release candidate (regardless of changed files) (estimate: long: ~5 min plus builds)",
+      "[advisories] because of release candidate (regardless of changed files) (estimate: ~1-3 min; initial DB fetch unknown)"
+    ]
+  },
+  {
+    "case": "work-lean",
+    "command": "bash scripts/check.sh --level work --only formal_build --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0066,
+    "stdout": "work-lean.stdout.txt",
+    "stderr": "work-lean.stderr.txt",
+    "selected": [
+      "[formal_build] because of --only (estimate: several min (cache dependent))"
+    ]
+  },
+  {
+    "case": "work-lean-spec",
+    "command": "bash scripts/check.sh --level work --only formal_build,spec_examples,spec_tally --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0083,
+    "stdout": "work-lean-spec.stdout.txt",
+    "stderr": "work-lean-spec.stderr.txt",
+    "selected": [
+      "[spec_tally] because of --only (estimate: seconds to a few min)",
+      "[spec_examples] because of --only (estimate: target dependent)",
+      "[formal_build] because of --only (estimate: several min (cache dependent))"
+    ]
+  },
+  {
+    "case": "work-rust-contract",
+    "command": "bash scripts/check.sh --level work --only fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally --test '*' --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0111,
+    "stdout": "work-rust-contract.stdout.txt",
+    "stderr": "work-rust-contract.stderr.txt",
+    "selected": [
+      "[fmt] because of --only (estimate: seconds)",
+      "[lint_default] because of --only (estimate: ~1-3 min (cache dependent))",
+      "[lib_default] because of --only (estimate: ~1 min)",
+      "[tests_related] because of --only (estimate: target dependent)",
+      "[source_rules] because of --only (estimate: seconds)",
+      "[skill_generated] because of --only (estimate: seconds to a few min)",
+      "[spec_tally] because of --only (estimate: seconds to a few min)"
+    ]
+  },
+  {
+    "case": "stage-r10",
+    "command": "bash scripts/check.sh --level stage --only tests_related --test golden --test verify --test random_programs --test desugar_export --test checked_args --test fmt_command --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0068,
+    "stdout": "stage-r10.stdout.txt",
+    "stderr": "stage-r10.stderr.txt",
+    "selected": [
+      "[tests_related] because of --only (estimate: target dependent)"
+    ]
+  },
+  {
+    "case": "stage-r30",
+    "command": "bash scripts/check.sh --level stage --only tests_related --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client --test network_faults --test cli_process --test test_command --test golden --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0073,
+    "stdout": "stage-r30.stdout.txt",
+    "stderr": "stage-r30.stderr.txt",
+    "selected": [
+      "[tests_related] because of --only (estimate: target dependent)"
+    ]
+  },
+  {
+    "case": "work-heap-local",
+    "command": "bash scripts/check.sh --level work --only doc_default,heap_local,stress_local --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0081,
+    "stdout": "work-heap-local.stdout.txt",
+    "stderr": "work-heap-local.stderr.txt",
+    "selected": [
+      "[doc_default] because of --only (estimate: seconds to a few min)",
+      "[heap_local] because of --only (estimate: target dependent)",
+      "[stress_local] because of --only (estimate: target dependent)"
+    ]
+  },
+  {
+    "case": "work-heap-checks",
+    "command": "bash scripts/check.sh --level work --only heap_checks --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0068,
+    "stdout": "work-heap-checks.stdout.txt",
+    "stderr": "work-heap-checks.stderr.txt",
+    "selected": [
+      "[heap_checks] because of --only (estimate: long: nightly Miri, ~10 min)"
+    ]
+  },
+  {
+    "case": "work-release-stack",
+    "command": "bash scripts/check.sh --level work --only release_stack --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.007,
+    "stdout": "work-release-stack.stdout.txt",
+    "stderr": "work-release-stack.stderr.txt",
+    "selected": [
+      "[release_stack] because of --only (estimate: long: ~5 min plus builds)"
+    ]
+  },
+  {
+    "case": "change-contract",
+    "command": "bash scripts/check.sh --level change --only fmt,lint_default,lint_heap,test_default_all,test_heap_all,test_stress,doc_default,source_rules,skill_generated,spec_tally,long_only,formal_build,advisories --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.016,
+    "stdout": "change-contract.stdout.txt",
+    "stderr": "change-contract.stderr.txt",
+    "selected": [
+      "[fmt] because of --only (estimate: seconds)",
+      "[lint_default] because of --only (estimate: ~1-3 min (cache dependent))",
+      "[lint_heap] because of --only (estimate: ~1-3 min (cache dependent))",
+      "[test_default_all] because of --only (estimate: several min (cache dependent))",
+      "[test_heap_all] because of --only (estimate: several min (cache dependent))",
+      "[test_stress] because of --only (estimate: long: several min)",
+      "[doc_default] because of --only (estimate: seconds to a few min)",
+      "[source_rules] because of --only (estimate: seconds)",
+      "[skill_generated] because of --only (estimate: seconds to a few min)",
+      "[spec_tally] because of --only (estimate: seconds to a few min)",
+      "[long_only] because of --only (estimate: long: ~15 min plus builds)",
+      "[formal_build] because of --only (estimate: several min (cache dependent))",
+      "[advisories] because of --only (estimate: ~1-3 min; initial DB fetch unknown)"
+    ]
+  },
+  {
+    "case": "work-policy-selftest",
+    "command": "bash scripts/check.sh --level work --only policy_selftest --base 6124775788579e60530f55fb85570f26ef7fa900 --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.0068,
+    "stdout": "work-policy-selftest.stdout.txt",
+    "stderr": "work-policy-selftest.stderr.txt",
+    "selected": [
+      "[policy_selftest] because of --only (estimate: seconds to 1 min)"
+    ]
+  }
+]

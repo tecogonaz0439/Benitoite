@@ -1,0 +1,151 @@
+{
+  "section": "16.6",
+  "phase_seconds": {
+    "verify": 0.10211325000000215,
+    "cli": 0.2856615419999997,
+    "warmup": 0.030052292000007697,
+    "probe_warmup": 0,
+    "rss": 0,
+    "stages": 0,
+    "alloc": 0,
+    "external_observer": 0
+  },
+  "measurements": {
+    "patterns-integer-100": {
+      "before": {
+        "verify": [
+          0.014990582999999447
+        ],
+        "warmup": [
+          0.015031084000000305
+        ],
+        "cli": [
+          0.014680041000005417,
+          0.01666720800000121,
+          0.014547084000000154,
+          0.014782249999996111,
+          0.014390250000005267
+        ],
+        "control_cli": [
+          0.012894791999997324,
+          0.01416600000000301,
+          0.013766540999995414,
+          0.013163417000001232,
+          0.013115584000004787
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.015111708000006274
+        ],
+        "warmup": [
+          0.015021208000007391
+        ],
+        "cli": [
+          0.014907250000007366,
+          0.014788124999995489,
+          0.015115499999993176,
+          0.01520800000000122,
+          0.014996499999995194
+        ],
+        "control_cli": [
+          0.013431792000005771,
+          0.013623125000009395,
+          0.013876791000001276,
+          0.01352416699999992,
+          0.013329333000001498
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    }
+  },
+  "outputs": {
+    "patterns-integer-100": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/patterns-integer-100/shared-45ece08c24196a82/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/patterns-integer-100/shared-45ece08c24196a82/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/41b4bda37b3cf2a8c3f6a3ef7232955e41d90431-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.014990582999999447,
+          "status": 0,
+          "stdout": "",
+          "stderr": "",
+          "validation": "verified",
+          "probe_verified": {
+            "seconds": 0.0160917080000047,
+            "status": 0,
+            "stdout": "{\"errors\":0,\"load_parse\":0.001999,\"reparse\":0.001549792,\"resolve\":0.000964167,\"typeck\":0.006460834}\n",
+            "stderr": ""
+          },
+          "run_verified": {
+            "seconds": 0.017894667000007303,
+            "status": 0,
+            "stdout": "0\n99\n-1\n",
+            "stderr": ""
+          }
+        },
+        "after": {
+          "seconds": 0.015111708000006274,
+          "status": 0,
+          "stdout": "",
+          "stderr": "",
+          "validation": "verified",
+          "probe_verified": {
+            "seconds": 0.017403375000000665,
+            "status": 0,
+            "stdout": "{\"errors\":0,\"load_parse\":0.001989875,\"reparse\":0.0016155,\"resolve\":0.000946375,\"typeck\":0.007391209}\n",
+            "stderr": ""
+          },
+          "run_verified": {
+            "seconds": 0.020168249999997556,
+            "status": 0,
+            "stdout": "0\n99\n-1\n",
+            "stderr": ""
+          }
+        }
+      }
+    }
+  }
+}

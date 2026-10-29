@@ -1,0 +1,41 @@
+fn rv_probe_later_clause_feeds_body() {
+    let cases = [
+        ("later clause call", r#"effect Ask
+ function ask() -> Integer
+end effect
+function sample(path: Scope.PathIn["/data/a"], other: Scope.PathIn["/data/b"]) -> Integer uses IO.All
+ bind run <- lambda(f)
+  return handle
+   bind _ <- File.readText(path: path)
+   f()
+  with
+   case File.readText(captured) -> resume(Result.Ok(""))
+  end handle
+ end lambda
+ return handle ask() with
+  case ask() -> resume(run(lambda()
+   bind _ <- File.readText(path: other)
+   return 1
+  end lambda))
+ end handle
+end function"#),
+        ("plain later call", r#"function sample(path: Scope.PathIn["/data/a"], other: Scope.PathIn["/data/b"]) -> Integer uses IO.All
+ bind run <- lambda(f)
+  return handle
+   bind _ <- File.readText(path: path)
+   f()
+  with
+   case File.readText(captured) -> resume(Result.Ok(""))
+  end handle
+ end lambda
+ return run(lambda()
+   bind _ <- File.readText(path: other)
+   return 1
+  end lambda)
+end function"#),
+    ];
+    for (label, source) in cases {
+        let (_, diagnostics, _, captured) = fixture(source, false);
+        eprintln!("RVPROBE {label}: errors={:?} captured={captured:?}", diagnostics.iter().filter(|d| d.is_error()).collect::<Vec<_>>());
+    }
+}

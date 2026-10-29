@@ -1,0 +1,52 @@
+{
+  "versions": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "python": "Python 3.9.6"
+  },
+  "unchangedInputs": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+      "unchanged": true
+    },
+    {
+      "path": "fuzz/Cargo.toml",
+      "sha256": "d8045b5ce1533133739c8b3e53c09c7d88fb0f7ce8252f5640028a73d14a16e2",
+      "unchanged": true
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "unchanged": true
+    },
+    {
+      "path": "formal/lean-toolchain",
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+      "unchanged": true
+    },
+    {
+      "path": "formal/lakefile.toml",
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+      "unchanged": true
+    },
+    {
+      "path": "crates/benitoite/src/cli/tools/skill/bundle.rs",
+      "sha256": "c0f7bb1aaa810ed900721ffca81e1399eaa94695334f1fef9d7bd1c45318cd0e",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/check.sh",
+      "sha256": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/check-formal.sh",
+      "sha256": "09aa4eb572ef3a9a9368400fe4e0d84df5aee3b7563e247c5b027c99803c2cb1",
+      "unchanged": true
+    }
+  ],
+  "head": "92f9ac80f81d2299978d2051ddcdfdeea1843e6d",
+  "branch": "m013/v10.3a",
+  "indexDiff": ""
+}

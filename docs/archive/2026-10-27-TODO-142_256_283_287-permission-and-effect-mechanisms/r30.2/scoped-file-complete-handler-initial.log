@@ -1,0 +1,47 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 5 tests
+
+thread 'file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle' (6229089) panicked at crates/benitoite/tests/scoped_calls/file_io.rs:14:5:
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(path: Scope.PathIn["/data/a"], other: Scope.PathIn["/logs/a"]) -> Result[Unit, IOError] uses File.Write["/logs/a"]
+ return handle File.writeTextIn(path: path, text: "x") with
+ case File.writeTextIn(captured, text) ->
+  bind result <- File.writeTextIn(path: other, text: text)
+  resume(result)
+ case File.writeText(path, text) -> Result.Ok(())
+ case File.appendText(path, text) -> Result.Ok(())
+ case File.writeBytes(path, content) -> Result.Ok(())
+ case File.appendBytes(path, content) -> Result.Ok(())
+ case File.appendTextIn(path, text) -> Result.Ok(())
+ case File.writeBytesIn(path, content) -> Result.Ok(())
+ case File.appendBytesIn(path, content) -> Result.Ok(())
+ case File.createDirectory(path) -> Result.Ok(())
+ case File.remove(path) -> Result.Ok(())
+ case File.removeTree(path) -> Result.Ok(())
+ case File.rename(from, to) -> Result.Ok(())
+ case File.openWriter(path, mode) -> Result.Ok(())
+ case File.write(writer, text) -> Result.Ok(())
+ case File.writeLine(writer, text) -> Result.Ok(())
+ case File.writeChunk(writer, content) -> Result.Ok(())
+ end handle
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(400), end: BytePos(404) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(451), end: BytePos(455) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(502), end: BytePos(506) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(557), end: BytePos(561) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(613), end: BytePos(617) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(666), end: BytePos(670) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(723), end: BytePos(727) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(782), end: BytePos(786) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(823), end: BytePos(827) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(868), end: BytePos(872) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0338), message: "handler clause parameter `path` hides a local name", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(958), end: BytePos(962) }, text: "" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(86), end: BytePos(90) }, text: "`path` is bound here" }], notes: [], helps: [Help { message: "choose another name", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle ... FAILED
+test file_io::file_single_target_operations_work_in_implementation_methods_with_dictionaries ... ok
+test file_io::file_handler_unhandled_write_is_accepted_but_captured_index_is_invariant ... ok
+test file_io::file_handler_clause_projection_and_widen_require_local_facts_for_non_top ... ok
+test file_io::file_single_target_signatures_follow_inputs_and_expected_function_inputs ... ok
+
+failures:
+
+failures:
+    file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 23 filtered out; finished in 2.41s
+
+error: test failed, to rerun pass `--test scoped_calls`

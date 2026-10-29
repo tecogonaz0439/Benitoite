@@ -1,0 +1,29 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "d35557f93ca65e73a841a17d6f19f1b79cf04464",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally,python_syntax,policy_selftest",
+    "--test",
+    "desugar_export",
+    "--test",
+    "coverage_export",
+    "--test",
+    "golden",
+    "--test",
+    "verify",
+    "--test",
+    "random_programs"
+  ],
+  "startedAt": "2026-10-29T15:16:12.800316+00:00",
+  "exit": 1,
+  "outerSeconds": 2.6859769169999996,
+  "maxRssBytesAuxiliary": 231915520,
+  "maxRssMiB": 221.171875,
+  "maxRssGiB": 0.2159881591796875,
+  "environment": {},
+  "rssMethod": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; bytes; 子プロセス一つの最大値であり同時使用量の合計ではない"
+}

@@ -1,0 +1,41 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "l32_http_client",
+    "checked_requests_reject_mapped_ipv6_before_loopback_send",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 0.692166583,
+  "maxrss_raw": 78184448,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 74.5625,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 0.720673,
+  "recorded_at": "2026-10-29T07:15:28.628819+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.4/run-record.py",
+    "--child",
+    "wire-mapped",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "l32_http_client",
+    "checked_requests_reject_mapped_ipv6_before_loopback_send",
+    "--",
+    "--exact",
+    "--nocapture"
+  ]
+}

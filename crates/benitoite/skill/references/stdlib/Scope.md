@@ -6,6 +6,7 @@ Refer to its declarations as `Scope.<name>`, for example `Scope.CheckedHost`.
 
 Checks host and absolute-path spelling against an explicit scope. Success preserves the condition and target; it does not grant permission or guarantee DNS resolution, filesystem identity, isolation, or IO success.
 
+`PathIn` is a built-in opaque type. Its optional path scope is an invariant index; the bare type has the unrestricted scope.
 Use the public checks and projections. These checks do not authorize IO.
 
 ```benitoite test
@@ -57,7 +58,7 @@ public record CheckedHost
 end record
 ```
 
-A lowercase host and the lowercase pattern it satisfies.
+A host name or IP address and the host or CIDR pattern it satisfies, stored in normalized form.
 
 ```benitoite
 @opaque
@@ -99,13 +100,31 @@ Failures retain original inputs. Forms are checked before membership.
 public function checkHost(pattern: String, host: String) -> Result[CheckedHost, ScopeError]
 ```
 
-Checks an exact host, *.host (one label), or **.host (one or more labels). Wildcards exclude the stem itself. Known invalid direct arguments are rejected before execution.
+Checks an exact host name or IP address, a CIDR network, *.host (one label), or **.host (one or more labels). Wildcards exclude the stem itself. Known invalid direct arguments are rejected before execution.
 
 ```benitoite
 public function checkPath(pattern: String, path: String) -> Result[CheckedPath, ScopeError]
 ```
 
 Checks an exact absolute path or a trailing /** tree, which includes its stem. This does not resolve links or access the filesystem.
+
+```benitoite
+public function checkPathIn(pattern: String, path: String) -> Result[PathIn, ScopeError]
+```
+
+Checks an exact absolute path or a trailing /** tree and retains the same path. A known direct pattern determines the static scope; otherwise the static scope is unrestricted. Known invalid direct arguments are rejected before execution. Dynamic spelling and membership are always checked. This does not access the filesystem or authorize IO.
+
+```benitoite
+public function pathInValue(path: PathIn) -> String
+```
+
+Returns the same path retained by checkPathIn, preserving its static scope in the argument.
+
+```benitoite
+public function widenPathIn(path: PathIn) -> PathIn
+```
+
+Explicitly widens the static scope to the annotated return scope when it covers the input scope. Returns the same checked value.
 
 ```benitoite
 public function checkEndpoint(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[CheckedEndpoint, ScopeError]

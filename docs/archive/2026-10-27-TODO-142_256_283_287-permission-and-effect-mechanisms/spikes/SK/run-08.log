@@ -1,0 +1,40 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+SK.lean:1115:2: error: unsolved goals
+case hv
+⊢ ((∃ t, "com" :: "example" :: t = Value.target ?m.9) ∧ 3 ≤ List.length (Value.target ?m.9)) ∧
+    443 ≤ Value.port ?m.9 ∧ Value.port ?m.9 ≤ 443
+SK.lean:1123:2: error: unsolved goals
+case hv
+⊢ ["com", "example", "api"] = Value.target ?m.9 ∧ 443 ≤ Value.port ?m.9 ∧ Value.port ?m.9 ≤ 443
+'SK.checked_invariant' does not depend on any axioms
+'SK.argument_bound' depends on axioms: [propext, Quot.sound]
+'SK.io_bound' depends on axioms: [propext, Quot.sound]
+'SK.preservation' depends on axioms: [propext, Quot.sound]
+'SK.progress' depends on axioms: [propext, Quot.sound]
+'SK.trace_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.reachable_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.checked_alone_insufficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.good_assumptions' depends on axioms: [propext, Quot.sound]
+'SK.Examples.wrong_rule_unsound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.original_target_budget_rejected' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.95 real         1.49 user         0.33 sys
+           744308736  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47874  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+               16163  involuntary context switches
+         11521378219  instructions retired
+          5339503755  cycles elapsed
+           193191416  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

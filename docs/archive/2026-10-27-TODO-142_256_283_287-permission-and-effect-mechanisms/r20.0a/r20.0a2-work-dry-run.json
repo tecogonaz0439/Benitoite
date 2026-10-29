@@ -1,0 +1,21 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "538090391ea48a833ddd824f4b732e599616d48c",
+    "--only",
+    "fmt,lint_default,lib_default,source_rules",
+    "--dry-run"
+  ],
+  "started_utc": "2026-10-28T16:00:59.624083+00:00",
+  "finished_utc": "2026-10-28T16:00:59.658080+00:00",
+  "exit": 0,
+  "outer_seconds": 0.033952792,
+  "max_rss_raw": 11354112,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 10.828125,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+  "platform": "darwin"
+}

@@ -1,0 +1,26 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 76a92f11..1f4eb0fc 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -57,7 +57,7 @@ checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
+ 
+ [[package]]
+ name = "benitoite"
+-version = "0.0.12"
++version = "0.0.13"
+ dependencies = [
+  "base64",
+  "csv-core",
+diff --git a/fuzz/Cargo.lock b/fuzz/Cargo.lock
+index 824d2d5d..9893e55b 100644
+--- a/fuzz/Cargo.lock
++++ b/fuzz/Cargo.lock
+@@ -57,7 +57,7 @@ checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
+ 
+ [[package]]
+ name = "benitoite"
+-version = "0.0.12"
++version = "0.0.13"
+ dependencies = [
+  "base64",
+  "csv-core",

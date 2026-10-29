@@ -1,0 +1,36 @@
+import Benitoite.Scope.InferenceExamples
+open Benitoite.Scope.InferenceExamples
+#print axioms Benitoite.Scope.InferenceExamples.evalScope_unidentified
+#print axioms Benitoite.Scope.InferenceExamples.apply_sound
+#print axioms Benitoite.Scope.InferenceExamples.patternBound_sound
+#print axioms Benitoite.Scope.InferenceExamples.checkRun_some
+#print axioms Benitoite.Scope.InferenceExamples.checkRule_sound
+#print axioms Benitoite.Scope.InferenceExamples.checkRule_index_agrees
+#print axioms Benitoite.Scope.InferenceExamples.patternRule_sound
+#print axioms Benitoite.Scope.InferenceExamples.valueRule_sound
+#print axioms Benitoite.Scope.InferenceExamples.ScopeState.empty_models
+#print axioms Benitoite.Scope.InferenceExamples.ScopeState.forgetAll_models
+#print axioms Benitoite.Scope.InferenceExamples.readLocal_models
+#print axioms Benitoite.Scope.InferenceExamples.absArgs_models
+#print axioms Benitoite.Scope.InferenceExamples.extend_models
+#print axioms Benitoite.Scope.InferenceExamples.step_sound
+#print axioms Benitoite.Scope.InferenceExamples.steps_sound
+#print axioms Benitoite.Scope.InferenceExamples.requiredIndex_sound
+#print axioms Benitoite.Scope.InferenceExamples.checked_hasTypeV
+#print axioms Benitoite.Scope.InferenceExamples.requiredIndex_range_independent
+#print axioms Benitoite.Scope.InferenceExamples.localState_same_scope
+#print axioms Benitoite.Scope.InferenceExamples.checkRun_known_redundant
+#print axioms Benitoite.Scope.InferenceExamples.checkRun_ok_mem
+#print axioms Benitoite.Scope.InferenceExamples.checkPathDelta_known_redundant
+#print axioms Benitoite.Scope.InferenceExamples.toyTable_sound
+#print axioms Benitoite.Scope.InferenceExamples.minimal_sound
+#print axioms Benitoite.Scope.InferenceExamples.minimal_checked
+#print axioms Benitoite.Scope.InferenceExamples.absApply
+#print axioms Benitoite.Scope.InferenceExamples.absStep
+#print axioms Benitoite.Scope.InferenceExamples.absSteps
+#print axioms Benitoite.Scope.InferenceExamples.ScopeState.requiredIndex
+#print axioms Benitoite.Scope.InferenceExamples.checkRun
+#print axioms Benitoite.Scope.InferenceExamples.patternBound
+#print axioms Benitoite.Scope.InferenceExamples.checkRule
+#print axioms Benitoite.Scope.InferenceExamples.patternRule
+#print axioms Benitoite.Scope.InferenceExamples.toyTable

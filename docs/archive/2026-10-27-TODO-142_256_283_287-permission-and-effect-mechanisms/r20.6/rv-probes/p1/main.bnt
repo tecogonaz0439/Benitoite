@@ -1,0 +1,11 @@
+import Lib.Scope
+function sample() -> String
+ return handle
+  Scope.checkPathIn(pattern: "/bad//path", path: "x")
+ with
+ case Scope.checkPathIn(pattern, path) -> resume(path)
+ end handle
+end function
+function main() -> Unit
+ ()
+end function

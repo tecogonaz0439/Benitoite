@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.67s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-e79e06fbc41075ec)
+
+running 1 test
+test scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli ... FAILED
+
+failures:
+
+---- scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli stdout ----
+
+thread 'scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli' (7365971) panicked at crates/benitoite/tests/cli_process/scoped_diagnostics.rs:131:9:
+{"code":"E0407","helps":[{"edits":[],"message":"annotate the widening result with the matching checked type, `Scope.PathIn` or `Http.RequestIn`, and the intended destination scope; an existing annotation must also use that checked type; use the corresponding type without scope arguments to cover all targets"}],"kind":"check","message":"the type of this expression cannot be determined","notes":[],"primary":{"end":{"column":41,"line":3,"offset":117},"file":"<tmp>/benitoite-cli-process-99951-1793269254903737000-0/path-widen-wrong-result.bnt","label":"","start":{"column":24,"line":3,"offset":100}},"secondary":[],"severity":"error"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 44 filtered out; finished in 1.28s
+
+error: test failed, to rerun pass `-p benitoite --test cli_process`

@@ -1175,18 +1175,21 @@ mod tests {
         );
         p.builtins = vec![
             BuiltinRef {
+                ranges: vec![],
                 id: BuiltinId(0),
                 arity: 2,
                 capability: Capability::Io,
                 op: None,
             },
             BuiltinRef {
+                ranges: vec![],
                 id: BuiltinId(1),
                 arity: 2,
                 capability: Capability::State,
                 op: None,
             },
             BuiltinRef {
+                ranges: vec![],
                 id: BuiltinId(2),
                 arity: 1,
                 capability: Capability::Pure,
@@ -1386,6 +1389,7 @@ mod tests {
             });
             for capability in [Capability::Io, Capability::State, Capability::Pure] {
                 p.builtins.push(BuiltinRef {
+                    ranges: vec![],
                     id: BuiltinId(0),
                     arity: 2,
                     capability,

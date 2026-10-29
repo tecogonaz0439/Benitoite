@@ -878,7 +878,11 @@ pub(super) fn over_limit_program(items: usize, two: bool) -> (LowerProgram, Arc<
                 (0..items)
                     .map(|i| LowVal {
                         kind: ValKind::Const(Const::Int(i64::try_from(i).unwrap())),
-                        ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]),
+                        ty: Ty::Con(
+                            TyCon::Builtin(BuiltinTypeId::INTEGER),
+                            vec![],
+                            crate::types::builtin::RangeIndex::TOP,
+                        ),
                         origin: def.span,
                     })
                     .collect(),
@@ -983,9 +987,14 @@ fn builtin_value_prototypes_respect_type_dependent_instructions() {
             };
             bound.kind = LCompKind::Return(LowVal {
                 kind: ValKind::Builtin {
+                    ranges: vec![],
                     id,
                     targs: TypeArgs {
-                        tys: vec![TypeArg::Ty(Ty::Con(TyCon::Builtin(ty), vec![]))],
+                        tys: vec![TypeArg::Ty(Ty::Con(
+                            TyCon::Builtin(ty),
+                            vec![],
+                            crate::types::builtin::RangeIndex::TOP,
+                        ))],
                         effects: vec![],
                     },
                     info: BuiltinInfo {
@@ -1030,7 +1039,11 @@ fn nested_prototype_limits_are_reported_once_per_definition() {
                 *items = (0..70000)
                     .map(|i| LowVal {
                         kind: ValKind::Const(Const::Int(i)),
-                        ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]),
+                        ty: Ty::Con(
+                            TyCon::Builtin(BuiltinTypeId::INTEGER),
+                            vec![],
+                            crate::types::builtin::RangeIndex::TOP,
+                        ),
                         origin: value.origin,
                     })
                     .collect();
@@ -1112,7 +1125,12 @@ fn malformed_length_cases_are_internal_errors() {
                 kind: ValKind::List(vec![]),
                 ty: Ty::Con(
                     TyCon::Builtin(BuiltinTypeId::LIST),
-                    vec![Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![])],
+                    vec![Ty::Con(
+                        TyCon::Builtin(BuiltinTypeId::INTEGER),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP,
+                    )],
+                    crate::types::builtin::RangeIndex::TOP,
                 ),
                 origin: def.span,
             },
@@ -1333,4 +1351,47 @@ fn exit_report_values_survive_lowering_captures_and_liveness() {
         );
     }
     assert!(crate::bytecode::disasm::disassemble(&compiled).contains("exit report"));
+}
+
+// 関門: 同じ組み込み番号でも異なる範囲の呼び出しを共有せず、関数値の Top も保つ。
+// 型検査の試験だけでは、コード生成の表と原型のキャッシュで列が失われる退行を捕まえられない。
+#[test]
+fn builtin_references_keep_each_accepted_range_and_verify_its_shape() {
+    use crate::types::scope::{HostPattern, PathPattern, Range};
+    let mut program = compile(
+        r#"import Benitoite.Unofficial.Scope
+function paths(pattern: String) -> Unit
+  bind first <- Scope.checkPathIn(pattern: "/data/**", path: "/data/a")
+  bind second <- Scope.checkPathIn(pattern: "/other/**", path: "/other/b")
+  bind checker <- Scope.checkPathIn
+  bind indirect <- checker(pattern: pattern, path: "/data/a")
+  ()
+end function
+"#,
+    );
+    let id = crate::builtins::lookup_builtin("Scope.checkPathIn").unwrap();
+    let columns: Vec<_> = program
+        .builtins
+        .iter()
+        .filter(|b| b.id == id)
+        .map(|b| b.ranges.clone())
+        .collect();
+    assert_eq!(
+        columns,
+        vec![
+            vec![Range::Path(PathPattern::parse("/data/**").unwrap())],
+            vec![Range::Path(PathPattern::parse("/other/**").unwrap())],
+            vec![Range::Top],
+        ]
+    );
+    crate::bytecode::verify::verify(&program).unwrap();
+    let index = program.builtins.iter().position(|b| b.id == id).unwrap();
+    for broken in [
+        vec![],
+        vec![Range::Host(HostPattern::parse("example.com").unwrap())],
+    ] {
+        program.builtins[index].ranges = broken;
+        let error = crate::bytecode::verify::verify(&program).unwrap_err();
+        assert_eq!(error.message, "builtin ranges are invalid");
+    }
 }

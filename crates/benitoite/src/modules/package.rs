@@ -201,6 +201,11 @@ const BREAKING_CHANGES: &[BreakingChange] = &[
         summary: text::SYNTAX_BATCH6_CHANGE,
         help: text::SYNTAX_BATCH6_MIGRATION,
     },
+    BreakingChange {
+        version: Version(0, 0, 13),
+        summary: text::SCOPED_EFFECT_OPERATIONS_CHANGE,
+        help: text::SCOPED_EFFECT_OPERATIONS_HELP,
+    },
 ];
 
 pub(crate) use crate::syntax::header::keyword;
@@ -518,6 +523,7 @@ mod tests {
             "0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable",
             "0.0.11: derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations",
             "0.0.12: each WASM Store limits live component handles to 100,000; excess allocation stops with R0906",
+            "0.0.13: scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled",
         ];
         let helps = [
             helps[0],
@@ -528,9 +534,10 @@ mod tests {
             "rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md",
             "recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md",
             "review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md",
+            "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract",
         ];
         let change_versions = [
-            "0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.0.10", "0.0.11", "0.0.12",
+            "0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.0.10", "0.0.11", "0.0.12", "0.0.13",
         ];
         for (current_text, current, end) in [
             ("0.0.6", Version(0, 0, 6), 2),
@@ -540,6 +547,7 @@ mod tests {
             ("0.0.10", Version(0, 0, 10), 6),
             ("0.0.11", Version(0, 0, 11), 7),
             ("0.0.12", Version(0, 0, 12), 8),
+            ("0.0.13", Version(0, 0, 13), 9),
         ] {
             for (version, first) in [
                 ("0.0.0", 0),
@@ -553,6 +561,7 @@ mod tests {
                 ("0.0.10", 6),
                 ("0.0.11", 7),
                 ("0.0.12", 8),
+                ("0.0.13", 9),
             ] {
                 let (out, _) = parse_source(&format!("language \"{version}\""), SourceKind::User);
                 let HeaderItem::Language(decl) = &out.module.header[0] else {

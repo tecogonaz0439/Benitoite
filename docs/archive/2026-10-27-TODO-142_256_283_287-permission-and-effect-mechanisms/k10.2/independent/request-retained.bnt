@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.Network.Http
+function sample(raw: Http.ClientRequest) -> Http.ClientRequest
+ bind checked: Result[Http.RequestIn["api.example.com", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: 443, maximumPort: 443, request: raw)
+ return match checked with
+ case Result.Ok(value) ->
+  bind wide: Http.RequestIn["**.example.com", 80..443] <- Http.widenRequestIn(request: value)
+  bind projected <- Http.requestInValue(request: wide)
+  bind changed <- Http.ClientRequest(..projected, method: "DELETE", timeoutMilliseconds: 12)
+  bind original <- Http.requestInValue(request: value)
+  original
+ case Result.Error(_) -> raw
+ end match
+end function

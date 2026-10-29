@@ -1,6 +1,6 @@
 # RS1: 埋め込みの書式と表示の幅の調べ（S1）のレビュー
 
-2026-10-23。対象は `study/format-and-width.md`（以下「本文」）と `study/format-and-width-questions.md`（以下「問い」）である。前提は改造の README、依頼文は `work/m011/S1-prompt.md` と `work/m011/common.md`、関係する項目は docs/todo の TODO-273・272 である。開始版は `san_benito` の `a0d652c0`。リポジトリのファイルはこの記録のほかに変えていない。ビルド・テスト・処理系の実行はしていない。
+2026-10-23。対象は `study/format-and-width.md`（以下「本文」）と `study/format-and-width-questions.md`（以下「問い」）である。前提は改造の README、依頼文は [S1-prompt.md の保管方針](../work-copies/README.md#f002) と [common.md の保管方針](../work-copies/README.md#f007)、関係する項目は docs/todo の TODO-273・272 である。開始版は `san_benito` の `a0d652c0`。リポジトリのファイルはこの記録のほかに変えていない。ビルド・テスト・処理系の実行はしていない。 依頼文・実行の運用記録は git の外に置き、保管していない。結果とレビューはこのアーカイブ内の記録を正とする。
 
 ## 1. 結論
 

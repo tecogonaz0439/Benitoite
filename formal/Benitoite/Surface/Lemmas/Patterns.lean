@@ -27,7 +27,7 @@ theorem AltsTy.consCongr {P Q : Release.Program} (hc : P.cons = Q.cons)
 theorem AltsTy.clean {P : Release.Program}
     (hw : ∀ c cd, P.cons c = some cd → cd.Scoped)
     {alts a δ n} (h : AltsTy P alts a δ) (ha : TyOK n a) :
-    Ty.VarsInList n (fun _ => True) δ := by
+    Ty.VarsInList 0 n (fun _ => True) δ := by
   obtain ⟨pat, γ, slots, hp, hs⟩ := h.witness
   have hc := PatTy.clean hw hp ha
   exact Ty.varsInList_of_forall (fun t ht => varsInList_mem hc (selectSlots_mem hs t ht))

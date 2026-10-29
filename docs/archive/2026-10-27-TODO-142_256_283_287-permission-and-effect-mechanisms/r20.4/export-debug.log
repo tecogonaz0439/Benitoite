@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.49s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+DEBUG unresolved Span { file: FileId(0), start: BytePos(328), end: BytePos(332) } callee Fn(IFnTy { contract: Known([]), params: [], ret: Con(Builtin(BuiltinTypeId(2)), [], RangeIndex(None)), effect: IEffect { failures: [], fixed: EffectSet { failures: [], names: [], vars: [] }, var: Some(EffInfer(9)) } })
+
+thread 'export_batch2_op' (5169068) panicked at crates/benitoite/tests/desugar_export.rs:918:9:
+assertion `left == right` failed: outer and clause dictionary zero: [Diagnostic { kind: Check, severity: Error, code: Some(E0455), message: "the parameter names and order of this function cannot be determined", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(328), end: BytePos(332) }, text: "" }), secondary: [], notes: [], helps: [Help { message: "add a function-type annotation with parameter names", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_batch2_op ... FAILED
+
+failures:
+
+failures:
+    export_batch2_op
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 43 filtered out; finished in 0.93s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

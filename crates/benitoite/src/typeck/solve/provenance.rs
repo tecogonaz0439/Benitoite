@@ -174,7 +174,7 @@ impl Solver {
                             .entry(source.0)
                             .or_default()
                             .push((target.0, path, Vec::new())),
-                        ITy::Con(_, args) | ITy::App(_, args) => {
+                        ITy::Con(_, args, _) | ITy::App(_, args) => {
                             for (i, part) in args.iter().enumerate() {
                                 let mut child = path.clone();
                                 child.push(i);
@@ -200,7 +200,7 @@ impl Solver {
                 }
             }
             match (target, shape) {
-                (ITy::Con(c, a), ITy::Con(d, b)) if c == d => {
+                (ITy::Con(c, a, ix), ITy::Con(d, b, iy)) if c == d && ix == iy => {
                     for (a, b) in a.iter().zip(b) {
                         self.build_value(a, b, b);
                     }
@@ -240,7 +240,7 @@ impl Solver {
                     .entry(source.0)
                     .or_default()
                     .push((v.0, Vec::new(), path)),
-                ITy::Con(_, args) | ITy::App(_, args) => {
+                ITy::Con(_, args, _) | ITy::App(_, args) => {
                     for (i, ty) in args.iter().enumerate() {
                         let mut child = path.clone();
                         child.push(i);
@@ -312,7 +312,7 @@ impl Solver {
                         return true;
                     }
                     let children = match ty {
-                        ITy::Con(_, args) | ITy::App(_, args) => args,
+                        ITy::Con(_, args, _) | ITy::App(_, args) => args,
                         ITy::Fn(f) => f
                             .params
                             .into_iter()
@@ -499,7 +499,7 @@ impl Solver {
                         return true;
                     }
                 }
-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
                 ITy::Fn(f) => {
                     pending.extend(&f.params);
                     pending.push(&f.ret);
@@ -531,7 +531,9 @@ impl Solver {
             match (a, b) {
                 (ITy::Error | ITy::Var(_), _) | (_, ITy::Error | ITy::Var(_)) => {}
                 (ITy::App(h, _), _) | (_, ITy::App(h, _)) if self.head(h).is_none() => {}
-                (ITy::Con(c, a), ITy::Con(d, b)) if c == d && a.len() == b.len() => {
+                (ITy::Con(c, a, ix), ITy::Con(d, b, iy))
+                    if c == d && ix == iy && a.len() == b.len() =>
+                {
                     pending.extend(a.into_iter().zip(b))
                 }
                 (ITy::App(c, a), ITy::App(d, b)) if c == d && a.len() == b.len() => {
@@ -667,7 +669,9 @@ impl Solver {
                 }
             }
             match (self.origin_shape(&a), self.origin_shape(&b)) {
-                (ITy::Con(c, a), ITy::Con(d, b)) if c == d => pending.extend(a.into_iter().zip(b)),
+                (ITy::Con(c, a, ix), ITy::Con(d, b, iy)) if c == d && ix == iy => {
+                    pending.extend(a.into_iter().zip(b))
+                }
                 (ITy::App(c, a), ITy::App(d, b)) if c == d => pending.extend(a.into_iter().zip(b)),
                 (ITy::Fn(a), ITy::Fn(b)) => {
                     pending.extend(a.params.into_iter().zip(b.params));
@@ -689,7 +693,7 @@ impl Solver {
     fn intrinsic_type(&self, ty: &ITy) -> bool {
         match ty {
             ITy::Var(v) => self.origin_confirmed(v.0),
-            ITy::Con(_, args) | ITy::App(_, args) => args.iter().all(|t| self.intrinsic_type(t)),
+            ITy::Con(_, args, _) | ITy::App(_, args) => args.iter().all(|t| self.intrinsic_type(t)),
             ITy::Fn(f) => {
                 f.params.iter().all(|t| self.intrinsic_type(t)) && self.intrinsic_type(&f.ret)
             }
@@ -704,6 +708,31 @@ impl Solver {
             .components
             .get(&self.provenance.root(v.0))
             .and_then(|c| c.declaration.clone())
+    }
+
+    /// Scope の契約を要求した明示注釈の位置を読む。所属の事実や型制約の生成には使わない。
+    pub(in crate::typeck) fn scope_annotation(&self, ty: &ITy) -> Option<Span> {
+        if let Some(reason) = self.origin_declaration(ty) {
+            return Some(reason.related.unwrap_or(reason.span));
+        }
+        let ITy::Var(variable) = ty else { return None };
+        // 戻り型の中の PathIn 等は、外側の Result から分解された型との
+        // 比較である。型変数どうしの宣言成分だけには残らないため、
+        // 実際にこの変数へ流れた明示注釈の関連位置も使う。
+        [variable.0, self.root(*variable).0]
+            .into_iter()
+            .find_map(|id| {
+                let (_, reason) = self.provenance.shapes.get(&id)?;
+                matches!(
+                    reason.kind,
+                    ReasonKind::Return
+                        | ReasonKind::LambdaReturn
+                        | ReasonKind::BindAnnotation
+                        | ReasonKind::ConstValue
+                )
+                .then_some(reason.related)
+                .flatten()
+            })
     }
 
     fn origin_recovery(&self, v: u32) -> Option<ITy> {
@@ -731,9 +760,12 @@ impl Solver {
             return self.zonk(&t);
         }
         match self.origin_shape(ty) {
-            ITy::Con(c, args) => ITy::Con(c, args.iter().map(|t| self.recovered_type(t)).collect()),
+            ITy::Con(c, args, ix) => {
+                ITy::Con(c, args.iter().map(|t| self.recovered_type(t)).collect(), ix)
+            }
             ITy::App(h, args) => ITy::App(h, args.iter().map(|t| self.recovered_type(t)).collect()),
             ITy::Fn(mut f) => {
+                // fixedの原子の範囲は複写したまま、型を含む部分だけを回復する。
                 f.params = f.params.iter().map(|t| self.recovered_type(t)).collect();
                 f.ret = self.recovered_type(&f.ret);
                 f.effect.failures = f
@@ -760,7 +792,7 @@ impl Solver {
                 return true;
             }
             match self.origin_shape(&t) {
-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
                 ITy::Fn(f) => {
                     pending.extend(f.params);
                     pending.push(f.ret);
@@ -788,7 +820,7 @@ impl Solver {
                 return true;
             }
             match self.origin_shape(&t) {
-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
                 ITy::Fn(f) => {
                     pending.extend(f.params);
                     pending.push(f.ret);
@@ -839,7 +871,7 @@ impl Solver {
                     continue;
                 }
                 match (self.origin_shape(&value), self.origin_shape(&imposed)) {
-                    (ITy::Con(c, a), ITy::Con(d, b)) if c == d => {
+                    (ITy::Con(c, a, ix), ITy::Con(d, b, iy)) if c == d && ix == iy => {
                         pending.extend(a.into_iter().zip(b))
                     }
                     (ITy::Fn(a), ITy::Fn(b)) if a.params.len() == b.params.len() => {

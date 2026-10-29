@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "started_utc": "2026-10-26T15:12:29+00:00",
+  "verified_utc": "2026-10-26T15:33:18.571195+00:00",
+  "elapsed_seconds": 1250,
+  "elapsed_japanese": "20分50秒",
+  "within_120_minutes": true,
+  "remote_summary": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB ",
+  "remote_maximum_resident_bytes": 735789056,
+  "model_sha256": "2113c4f42598b1aef5999b5017e5a63a43a3da065bc43f915ee7834b168c1eb2",
+  "files_sha256": {
+    "Model.lean": "2113c4f42598b1aef5999b5017e5a63a43a3da065bc43f915ee7834b168c1eb2",
+    "findings.md": "35415441528bbdf5047e5432548151d348347a023494745c01ac47fea176daf3",
+    "run.py": "69185848b9d1846d4451b5566b63ffb2d6c71c2baf0bacc8b51d71d6feb212c5",
+    "inventory.py": "6eaee6165e7af904dc68d02845c52d41cf474a7f4289f7ffc5db951b0487796e",
+    "inventory.json": "ab158da5ce2359f4d035b9a5f0bbafce955fcc0abb2a99d7de0ceeb7fd5d3e44",
+    "verify.py": "d78d170af96e8680c85718452aa311a8e1862031e0a0a7e4dcf71726aad8290a",
+    "final.log": "b06d4668aeb7d19f45ea521cedf9d7c5a5fc18af0232b361791ebaadc49f927e",
+    "final-run.json": "32fe00a0ae3c3d19ed41743d54fe3a0ff90881cc7ee3e395f6913ae06a9eb34a"
+  },
+  "relative_links_checked": [
+    "../../spike-common.md",
+    "../SF/findings.md",
+    "../SF/Model.lean",
+    "../../TODO-283_287-permission-and-effect-mechanisms/reviews/RV-S5.md",
+    "../../TODO-283_287-permission-and-effect-mechanisms/study/information-flow.md",
+    "Model.lean",
+    "final.log",
+    "final-run.json",
+    "run.py",
+    "inventory.py",
+    "inventory.json",
+    "verify.py",
+    "artifact-check.json",
+    "inventory.py",
+    "artifact-check.json"
+  ],
+  "sf_proof_bodies_unchanged": {
+    "expr_low_eq": true,
+    "lowEq_push": true,
+    "high_pc": true,
+    "noninterference": true
+  },
+  "checks": [
+    "最終別機検査の終了0・警告なし",
+    "検査前後と現ソースのハッシュ一致",
+    "独立ファイルのimport制限",
+    "禁止した宣言なし・公理依存表示の件数",
+    "findingsの相対リンク",
+    "記録に手元のリポジトリの絶対パスなし"
+  ]
+}

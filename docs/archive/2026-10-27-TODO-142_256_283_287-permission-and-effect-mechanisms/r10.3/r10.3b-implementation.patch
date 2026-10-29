@@ -1,0 +1,607 @@
+--- a/crates/benitoite/src/cli/tools/formatter/print.rs
++++ b/crates/benitoite/src/cli/tools/formatter/print.rs
+@@ -34,6 +34,8 @@
+         groups,
+         tables,
+         out: Vec::with_capacity(text.len()),
++        verbatim_index: 0,
++        verbatim_end: 0,
+     };
+     if text.starts_with(BOM) {
+         // 先頭の U+FEFF は残す（06-03「行末と文字」）。
+@@ -42,11 +44,18 @@
+     let mut previous: Option<usize> = None;
+     let mut pending_blanks = 0usize;
+     for (index, line) in lines.iter().enumerate() {
++        if printer.line_end(line) < printer.verbatim_end {
++            continue;
++        }
+         if line.kind == LineKind::Blank {
+             pending_blanks = pending_blanks.saturating_add(1);
+             continue;
+         }
+-        let blanks = match printer.blank_rule(previous, index) {
++        let blanks = match if line.start < printer.verbatim_end {
++            BlankRule::Zero
++        } else {
++            printer.blank_rule(previous, index)
++        } {
+             BlankRule::Zero => 0,
+             BlankRule::KeepOne => pending_blanks.min(1),
+             BlankRule::ExactlyOne => 1,
+@@ -117,6 +126,9 @@
+     groups: Groups,
+     tables: Tables,
+     out: Vec<u8>,
++    /// 元のまま写す次の要素と、既に写した範囲の終端。複数行を二重に出力しない。
++    verbatim_index: usize,
++    verbatim_end: usize,
+ }
+ 
+ /// 行と宣言を引く表。行ごと・字句ごとに前もって作り、行の数×宣言の数の線形探索を避ける。
+@@ -389,6 +401,14 @@
+             }
+             LineKind::Code => {
+                 for token_index in line.first..line.end {
++                    if self
++                        .input
++                        .tokens
++                        .get(token_index)
++                        .is_some_and(|t| span_start(t) < self.verbatim_end)
++                    {
++                        continue;
++                    }
+                     let role = self.role(token_index);
+                     if token_index == line.first {
+                         self.indent(role.level);
+@@ -398,6 +418,9 @@
+                     }
+                     self.write_token(token_index);
+                 }
++                if self.line_end(&line) < self.verbatim_end {
++                    return;
++                }
+                 if line.comment.is_some() {
+                     // 行末のコメントの前は空白一つ（06-03「コメント」）。
+                     self.out.push(b' ');
+@@ -408,6 +431,13 @@
+         self.out.push(b'\n');
+     }
+ 
++    fn line_end(&self, line: &Line) -> usize {
++        self.input
++            .tokens
++            .get(line.end)
++            .map_or(self.input.text.len(), span_start)
++    }
++
+     fn indent(&mut self, level: u32) {
+         let width = usize::try_from(level).map_or(0, |level| level.saturating_mul(INDENT_WIDTH));
+         self.out.resize(self.out.len().saturating_add(width), b' ');
+@@ -432,6 +462,18 @@
+         };
+         let text = self.input.text;
+         let start = span_start(token);
++        if let Some(span) = self.input.roles.verbatim.get(self.verbatim_index)
++            && usize::try_from(span.start.0).ok() == Some(start)
++            && let Ok(end) = usize::try_from(span.end.0)
++            && let Some(raw) = text.get(start..end)
++        {
++            // 拒否する要素の内部には構文上の役割を付けない。コメントや改行も含めて
++            // 元の範囲を一度だけ写す（設計書 06-03「字句の間の空白」）。
++            self.out.extend_from_slice(raw);
++            self.verbatim_end = end;
++            self.verbatim_index = self.verbatim_index.saturating_add(1);
++            return;
++        }
+         let raw = text.get(start..span_end(token)).unwrap_or(&[]);
+         let group = self.groups.of_token.get(index).copied().flatten();
+         if let Some(id) = group {
+--- a/crates/benitoite/src/cli/tools/formatter/roles.rs
++++ b/crates/benitoite/src/cli/tools/formatter/roles.rs
+@@ -51,6 +51,8 @@
+     pub roles: Vec<TokenRole>,
+     /// トップレベルの宣言（import の宣言を含む）の範囲。ソースの順
+     pub top: Vec<TopRange>,
++    /// 内部の空白も元のまま写す、不正な範囲引数の要素。ソース順で重複を含まない。
++    pub verbatim: Vec<Span>,
+ }
+ 
+ use crate::base::Span;
+--- a/crates/benitoite/src/cli/tools/formatter/roles/walk.rs
++++ b/crates/benitoite/src/cli/tools/formatter/roles/walk.rs
+@@ -11,8 +11,8 @@
+ use crate::syntax::ast::{
+     Arg, Attribute, Block, DataDecl, EffectDecl, ElseBranch, Expr, FnDecl, FnType, HandleExpr,
+     HeaderItem, IfExpr, ImplDecl, Item, LambdaEnding, LambdaExpr, ListElem, MatchExpr, MethodSig,
+-    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, ScopeArgs, Stmt, TopDecl,
+-    TraitDecl, TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
++    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, ScopeArgKind, ScopeArgs, Stmt,
++    TopDecl, TraitDecl, TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
+ };
+ use crate::syntax::token::{Token, TokenKind};
+ 
+@@ -63,6 +63,7 @@
+     top: Vec<TopRange>,
+     lambdas: Vec<LambdaSpans>,
+     formats: Vec<Span>,
++    verbatim: Vec<Span>,
+ }
+ 
+ impl<'a> Walker<'a> {
+@@ -115,6 +116,7 @@
+             top: Vec::new(),
+             lambdas: Vec::new(),
+             formats: Vec::new(),
++            verbatim: Vec::new(),
+         }
+     }
+ 
+@@ -522,6 +524,9 @@
+         {
+             for arg in scope.items.iter() {
+                 self.element(arg.span, Place::Deeper(open));
++                if matches!(arg.kind, ScopeArgKind::Invalid) {
++                    self.verbatim.push(arg.span);
++                }
+             }
+         }
+     }
+@@ -1235,9 +1240,13 @@
+                 role.space_before = false;
+             }
+         }
++        let mut verbatim = self.verbatim;
++        verbatim.sort_by_key(|span| span.start);
++        verbatim.dedup();
+         RoleTable {
+             roles,
+             top: self.top,
++            verbatim,
+         }
+     }
+ 
+--- a/crates/benitoite/src/resolve/lookup.rs
++++ b/crates/benitoite/src/resolve/lookup.rs
+@@ -1282,7 +1282,18 @@
+ 
+     pub(super) fn uses(&mut self, ctx: &mut Ctx, uses: &UsesList, fn_span: Option<Span>) {
+         let mut prefix_valid = true;
++        // 略記は同じ名前の原子を連続して持つ。群の最初だけで名前と種類を検査し、
++        // 診断と修正編集を重ねず、成功した束縛を各原子へ記録する（設計書 02-04「範囲引数の解決」）。
++        let mut group_binding = None;
+         for (index, effect) in uses.effects.iter().enumerate() {
++            if effect.scope.as_deref().is_some_and(|s| s.element.start > 0) {
++                if let Some(id) = group_binding {
++                    self.record_ref(ctx, effect.id, id, effect.span);
++                    self.effect_arguments(ctx, effect, id);
++                }
++                continue;
++            }
++            group_binding = None;
+             let Some(id) = self.raw_name(ctx, effect.id, &effect.path, Position::Effect) else {
+                 prefix_valid = false;
+                 continue;
+@@ -1291,6 +1302,7 @@
+                 continue;
+             };
+             if Position::Effect.accepts(binding.kind) {
++                group_binding = Some(id);
+                 self.record_ref(ctx, effect.id, id, effect.span);
+                 self.effect_arguments(ctx, effect, id);
+                 continue;
+--- a/crates/benitoite/src/resolve/scope.rs
++++ b/crates/benitoite/src/resolve/scope.rs
+@@ -98,8 +98,8 @@
+                 DiagBuilder::new(DiagCode::E0520)
+                     .primary(scope.span)
+                     .arg("name", dotted(&t.path))
+-                    .arg("expectedScopeKind", super::text::NO_SCOPE)
+-                    .arg("found", super::text::SCOPE_ARGUMENTS)
++                    .arg("expectedScopeKind", super::text::TYPE_ARGUMENTS)
++                    .arg("found", self.scope_source(scope.span))
+                     .note("found")
+                     .build(),
+             );
+--- a/crates/benitoite/src/resolve/text.rs
++++ b/crates/benitoite/src/resolve/text.rs
+@@ -43,9 +43,9 @@
+ pub(super) const BUILDER_CLAUSE: &str = "handler clause";
+ 
+ // 範囲引数の診断で使う種類と内部の誤り。
+-pub const PATH_SCOPE: &str = "path string literal";
+-pub const ENDPOINT_SCOPE: &str = "host string and port literal pairs";
+-pub const HOST_SCOPE: &str = "host string literal";
+-pub const NO_SCOPE: &str = "no scope arguments";
+-pub const SCOPE_ARGUMENTS: &str = "scope arguments";
+-pub const SCOPE_INTERNAL: &str = "scope normalization invariant failed";
++pub(super) const PATH_SCOPE: &str = "path string literal";
++pub(super) const ENDPOINT_SCOPE: &str = "host string and port literal pairs";
++pub(super) const HOST_SCOPE: &str = "host string literal";
++pub(super) const TYPE_ARGUMENTS: &str = "type arguments";
++pub(super) const SCOPE_ARGUMENTS: &str = "scope arguments";
++pub(super) const SCOPE_INTERNAL: &str = "scope normalization invariant failed";
+--- a/crates/benitoite/src/syntax/ast.rs
++++ b/crates/benitoite/src/syntax/ast.rs
+@@ -412,6 +412,7 @@
+ /// 範囲引数の字句。元の字句そのものはソースと token に保持する。
+ #[derive(Clone, PartialEq, Debug)]
+ pub enum ScopeArgKind {
++    /// エスケープを解いた文字列。元の表記は要素の位置から取得する。
+     String(String),
+     /// 整数リテラルの解読済みの十進表記。閉区間の上端がなければ一点。
+     Port(String, Option<String>),
+@@ -419,9 +420,12 @@
+     Invalid,
+ }
+ 
++/// 範囲引数の一要素。拒否する式も一要素として位置を保持する。
+ #[derive(Clone, PartialEq, Debug)]
+ pub struct ScopeArg {
+-    pub span: Span,
++    /// 元の要素の位置。区切りのコンマと外側の角括弧を含まない。
++    pub span: Span,
++    /// 解読済みのリテラルか、不正な要素の印。
+     pub kind: ScopeArgKind,
+ }
+ 
+@@ -432,13 +436,16 @@
+     pub span: Span,
+     /// 群の全要素。展開後も同じ群と要素数を保持する。
+     pub items: std::sync::Arc<[ScopeArg]>,
++    /// この原子が使う要素の半開区間。値型と未展開の群では全要素。
+     pub element: std::ops::Range<usize>,
+ }
+ 
+ impl ScopeArgs {
++    /// この原子に対応する元の要素を返す。区間が不正なら空の列を返す。
+     pub fn selected(&self) -> &[ScopeArg] {
+         self.items.get(self.element.clone()).unwrap_or(&[])
+     }
++    /// 対応する最初から最後の要素までの位置。要素がなければ群全体を返す。
+     pub fn element_span(&self) -> Span {
+         match (self.selected().first(), self.selected().last()) {
+             (Some(first), Some(last)) => first.span.to(last.span),
+--- a/crates/benitoite/src/syntax/parser/scope.rs
++++ b/crates/benitoite/src/syntax/parser/scope.rs
+@@ -20,22 +20,43 @@
+             {
+                 break;
+             }
++            // 閉じ忘れで後続の宣言・本体まで読み込まない。式として拒否する候補だけを
++            // 要素内に残し、構文の境界はその場で報告する（設計書 02-03「型の解析」）。
++            if !element_token(kind) {
++                return Err(p.unexpected(text::COMMA_OR_RBRACKET));
++            }
++            if kind == TokenKind::LParen && p.pos > from {
++                let previous = p.tokens.get(p.pos.saturating_sub(1)).map(|t| t.kind);
++                if previous.is_some_and(|k| {
++                    matches!(
++                        k,
++                        TokenKind::StringLit
++                            | TokenKind::StrEnd
++                            | TokenKind::IntLit
++                            | TokenKind::FloatLit
++                            | TokenKind::DecimalLit
++                            | TokenKind::CharLit
++                            | TokenKind::RParen
++                            | TokenKind::RBracket
++                    )
++                }) {
++                    return Err(p.unexpected(text::COMMA_OR_RBRACKET));
++                }
++            }
+             if kind == TokenKind::StrStart {
+                 strings = strings.saturating_add(1);
+             } else if kind == TokenKind::StrEnd {
+                 strings = strings.saturating_sub(1);
+-            } else if strings == 0 {
+-                if matches!(kind, TokenKind::LParen | TokenKind::LBracket) {
+-                    stack.push(kind);
+-                } else if matches!(kind, TokenKind::RParen | TokenKind::RBracket) {
+-                    let expected = if kind == TokenKind::RParen {
+-                        TokenKind::LParen
+-                    } else {
+-                        TokenKind::LBracket
+-                    };
+-                    if stack.pop() != Some(expected) {
+-                        return Err(p.unexpected(text::COMMA_OR_RBRACKET));
+-                    }
++            } else if matches!(kind, TokenKind::LParen | TokenKind::LBracket) {
++                stack.push(kind);
++            } else if matches!(kind, TokenKind::RParen | TokenKind::RBracket) {
++                let expected = if kind == TokenKind::RParen {
++                    TokenKind::LParen
++                } else {
++                    TokenKind::LBracket
++                };
++                if stack.pop() != Some(expected) {
++                    return Err(p.unexpected(text::COMMA_OR_RBRACKET));
+                 }
+             }
+             p.bump();
+@@ -56,6 +77,51 @@
+         items: items.into(),
+         element: 0..len,
+     })
++}
++
++fn element_token(kind: TokenKind) -> bool {
++    matches!(
++        kind,
++        TokenKind::StringLit
++            | TokenKind::StrStart
++            | TokenKind::StrMid
++            | TokenKind::StrEnd
++            | TokenKind::IntLit
++            | TokenKind::FloatLit
++            | TokenKind::DecimalLit
++            | TokenKind::CharLit
++            | TokenKind::LowerIdent
++            | TokenKind::UpperIdent
++            | TokenKind::Dot
++            | TokenKind::DotDot
++            | TokenKind::Plus
++            | TokenKind::Minus
++            | TokenKind::Star
++            | TokenKind::Slash
++            | TokenKind::Eq
++            | TokenKind::NotEq
++            | TokenKind::Lt
++            | TokenKind::Le
++            | TokenKind::Gt
++            | TokenKind::Ge
++            | TokenKind::PipeGt
++            | TokenKind::Arrow
++            | TokenKind::LeftArrow
++            | TokenKind::KwAnd
++            | TokenKind::KwOr
++            | TokenKind::KwDiv
++            | TokenKind::KwMod
++            | TokenKind::KwNot
++            | TokenKind::Amp
++            | TokenKind::At
++            | TokenKind::Colon
++            | TokenKind::Comma
++            | TokenKind::Underscore
++            | TokenKind::LParen
++            | TokenKind::RParen
++            | TokenKind::LBracket
++            | TokenKind::RBracket
++    )
+ }
+ 
+ fn classify(tokens: &[Token]) -> ScopeArgKind {
+--- a/crates/benitoite/src/syntax/parser/types.rs
++++ b/crates/benitoite/src/syntax/parser/types.rs
+@@ -93,7 +93,12 @@
+ fn parse_named(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
+     let start = p.pos;
+     let path = p.qual_name(true)?;
+-    if p.at(TokenKind::LBracket) && !type_start(p.peek_nth_kind(1)) {
++    if p.at(TokenKind::LBracket)
++        && matches!(
++            p.peek_nth_kind(1),
++            TokenKind::StringLit | TokenKind::StrStart | TokenKind::IntLit
++        )
++    {
+         return parse_scope_named(p, start, path);
+     }
+     let args = if p.eat(TokenKind::LBracket) {
+--- a/crates/benitoite/tests/fmt_command.rs
++++ b/crates/benitoite/tests/fmt_command.rs
+@@ -716,3 +716,32 @@
+         assert_eq!(dir.read("scope.bnt"), expected);
+     }
+ }
++
++// 関門: 不正な要素に式の役割を推測せず、内部の空白・コメント・改行を保つ。
++// 既存の範囲の整形テストは正しいリテラルだけで、f(1,2)の空白変更を捕まえない。
++#[test]
++fn invalid_scope_elements_keep_original_whitespace() {
++    let dir = TestDirectory::new("invalid_scope_elements_keep_original_whitespace");
++    for (input, expected) in [
++        (
++            "uses File.Write [\"/a\",f(1,2) ]\nfunction main()->Unit\n()\nend function\n",
++            "uses File.Write[\"/a\", f(1,2)]\n\nfunction main() -> Unit\n  ()\nend function\n",
++        ),
++        (
++            "uses File.Write [\"/a\",f( 1,\n\n // inner\n\t2 ) , \"/b\"]\nfunction main()->Unit\n()\nend function\n",
++            "uses File.Write[\"/a\", f( 1,\n\n // inner\n\t2 ), \"/b\"]\n\nfunction main() -> Unit\n  ()\nend function\n",
++        ),
++        (
++            "uses Http.Connect [ \"example.com\", 443 +  2, \"other.com\", \"${f( 1,2)}\" ]\nfunction main()->Unit\n()\nend function\n",
++            "uses Http.Connect[\"example.com\", 443 +  2, \"other.com\", \"${f( 1,2)}\"]\n\nfunction main() -> Unit\n  ()\nend function\n",
++        ),
++    ] {
++        dir.write("scope.bnt", input);
++        let output = fmt(&dir, &["scope.bnt"]);
++        assert_eq!(code(&output), 0, "{}", stderr(&output));
++        assert_eq!(dir.read("scope.bnt"), expected);
++        let output = fmt(&dir, &["--check", "scope.bnt"]);
++        assert_eq!(code(&output), 0, "{}", stderr(&output));
++        assert_eq!(dir.read("scope.bnt"), expected);
++    }
++}
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -246,6 +246,16 @@
+             "Local[\"/data\"]",
+             "E0513",
+         ),
++        (
++            "effect Write\n function ask() -> Unit\nend effect\n",
++            "Write[\"/data\"]",
++            "E0513",
++        ),
++        (
++            "effect Connect\n function ask() -> Unit\nend effect\n",
++            "Connect[\"example.com\", 443]",
++            "E0513",
++        ),
+         ("", "IO.All[\"/data\"]", "E0513"),
+         ("", "State[\"/data\"]", "E0513"),
+     ] {
+@@ -382,6 +392,7 @@
+ fn value_type_scope_misuse_and_unrecoverable_syntax_are_rejected() {
+     for ty in [
+         "Integer[\"/data\"]",
++        "Integer[\"${1}\"]",
+         "Integer[\"/data\", \"/other\"]",
+         "Reference[\"/data\"]",
+         "List[Integer[\"/data\"]]",
+@@ -410,3 +421,110 @@
+         "{diagnostics:?}"
+     );
+ }
++
++// 関門: 型の構文誤りの番号・文・位置は基準版の固定期待値で守る。
++// 既存の拒否テストはE0520だけを調べ、型引数への分岐の退行を捕まえない。
++#[test]
++fn malformed_type_arguments_keep_the_original_syntax_diagnostic() {
++    for (ty, found, column) in [
++        ("List[string]", "string", 17),
++        ("Option[int]", "int", 19),
++        ("List[]", "]", 17),
++        ("Integer[]", "]", 20),
++    ] {
++        let source = format!("type Bad = {ty}\n");
++        let checked = check(&source);
++        let diagnostics = errors(&checked);
++        assert_eq!(diagnostics.len(), 1, "{ty}: {diagnostics:?}");
++        let d = diagnostics[0];
++        assert_eq!(d.code.unwrap().info().id, "E0201", "{ty}: {d:?}");
++        assert_eq!(d.message, format!("expected a type, found `{found}`"));
++        let span = d.primary.as_ref().unwrap().span;
++        assert_eq!(slice(&source, span), found);
++        let pos = checked.sources.get(span.file).unwrap().line_col(span.start);
++        assert_eq!((pos.line, pos.column), (1, column));
++    }
++    for ty in ["List[42]", "List[\"a\"]", "List[\"${1}\"]"] {
++        let source = format!("type Bad = {ty}\n");
++        let checked = check(&source);
++        let diagnostics = errors(&checked);
++        assert_eq!(diagnostics.len(), 1, "{ty}: {diagnostics:?}");
++        let d = diagnostics[0];
++        assert_eq!(d.code.unwrap().info().id, "E0520");
++        assert_eq!(
++            d.message,
++            "invalid scope arguments for `List` (expected type arguments)"
++        );
++        assert_eq!(d.notes, [format!("found: {}", &ty[4..])]);
++    }
++}
++
++// 関門: 閉じ忘れで次の宣言や本体をEOFまで読み飛ばさない。
++// 旧テストの番号だけでは検出できないため、通常入口の主位置を行・列まで固定する。
++#[test]
++fn unclosed_scopes_stop_at_the_next_unexpected_token() {
++    for (source, token, line, column) in [
++        (
++            "uses File.Write[\"/data\"\nfunction after() -> Unit\nend function\n",
++            "function",
++            2,
++            1,
++        ),
++        ("uses File.Write[\"/data\"\nuses File.Read\n", "uses", 2, 1),
++        (
++            "function sample() -> Unit uses File.Write[\"/data\"\n ()\nend function\n",
++            "(",
++            2,
++            2,
++        ),
++        (
++            "function sample() -> Unit uses File.Write[\"/data\"\nend function\n",
++            "end",
++            2,
++            1,
++        ),
++        ("uses File.Write[\"/data\"\n)\n", ")", 2, 1),
++        ("uses File.Write[\"/data\" + (1]\n", "]", 1, 29),
++    ] {
++        let checked = check(source);
++        let d = errors(&checked)[0];
++        assert_eq!(d.code.unwrap().info().id, "E0201", "{source}: {d:?}");
++        assert_eq!(d.message, format!("expected `,` or `]`, found `{token}`"));
++        let span = d.primary.as_ref().unwrap().span;
++        assert_eq!(slice(source, span), token, "{source}: {d:?}");
++        let pos = checked.sources.get(span.file).unwrap().line_col(span.start);
++        assert_eq!((pos.line, pos.column), (line, column), "{source}");
++    }
++}
++
++// 関門: 一つの元の名前への診断・同じ修正編集を展開後の原子数だけ増やさない。
++// 既存の正常な展開とE0513の検査は、名前の検索の失敗を通らない。
++#[test]
++fn shorthand_reports_name_resolution_errors_and_repairs_once() {
++    for (annotation, code, replacements) in [
++        ("File.Wrte[\"/a\", \"/b\"]", "E0303", vec!["Write"]),
++        ("IO[\"/a\", \"/b\"]", "E0333", vec!["IO.All"]),
++        ("Integer[\"/a\", \"/b\"]", "E0315", vec![]),
++        (
++            "File.Read, Benitoite.Integer[\"/a\", \"/b\"]",
++            "E0316",
++            vec![],
++        ),
++    ] {
++        let source =
++            format!("{IMPORTS}function sample() -> Unit uses {annotation}\n ()\nend function\n");
++        let checked = check(&source);
++        let diagnostics = errors(&checked);
++        assert_eq!(diagnostics.len(), 1, "{annotation}: {diagnostics:?}");
++        let d = diagnostics[0];
++        assert_eq!(d.code.unwrap().info().id, code);
++        assert_eq!(
++            d.helps
++                .iter()
++                .flat_map(|h| &h.edits)
++                .map(|e| e.replacement.as_str())
++                .collect::<Vec<_>>(),
++            replacements
++        );
++    }
++}
+--- a/docs/design/01-spec/01-02-syntax.md
++++ b/docs/design/01-spec/01-02-syntax.md
+@@ -1079,6 +1079,8 @@
+ ListPatElem = Pattern | ".." [ LowerIdent ] .
+ ```
+ 
++`Type` の位置では、`[` の直後が `StringLit`・`StrStart`・`IntLit` のときだけ範囲引数の候補として読み、名前が範囲引数を取らない場合や要素の種類・個数が合わない場合は E0520 とし、それ以外の字句では従来の型引数の構文と診断を用いる。
++
+ この文法だけでは決まらない規則は、次のとおりである。いずれも、この文法で読める並びのうちの一部を誤りとするか、読み方を一つに決めるものである。
+ 
+ | 規則 | 定める箇所 |
+--- a/docs/design/02-impl/02-03-frontend.md
++++ b/docs/design/02-impl/02-03-frontend.md
+@@ -243,6 +243,8 @@
+ 
+ ### 型の解析
+ 
++【決定】型の位置で `[` の直後が `StringLit`・`StrStart`・`IntLit` なら範囲引数の候補とし、それ以外は型引数として読む。範囲の要素ではリテラル・文字列の各部分・識別子・演算子・対応する括弧だけを読み、宣言の語や完成した要素の後の `(` などは、その字句で E0201 とする。閉じ括弧の欠落によって後続の宣言をファイル末まで読み飛ばさない。
++
+ 【決定】型は括弧で囲める（`"(" Type ")"`）。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む。理由: 括弧がないと、型の並びの中の `uses` の並びの終わりと、`uses` がどの関数の型に付くかが決まらず、書き手が曖昧さを避ける手段もないからである。
+ 
+ 【方針】型を解析する関数は、次のように書く。
+--- a/docs/design/02-impl/02-04-resolver.md
++++ b/docs/design/02-impl/02-04-resolver.md
+@@ -103,6 +103,8 @@
+ 【決定】標準モジュールと同名の内部宣言を選ぶ位置にEffectを含める。Logのモジュール束縛を組み込みの根の名前で上書きせず、標準内部宣言Log.Logの識別を組み込みのエフェクト表と照合する。利用者同名の宣言には正規表示Logを適用しない。診断の位置のモジュールで利用者のモジュールなどがpreludeのLogを隠している場合、W0501の置換とE0501の修正案は `uses Benitoite.Log` と書く。
+ 
+ ### 範囲引数の解決
++
++【決定】略記の群の名前は最初の原子で一度だけ解決し、成功したエフェクトの束縛を後続の原子でも使う。名前の検索や種類の誤りの診断と修正案は、展開した原子ごとに重ねない。
+ 
+ 【決定】エフェクトの束縛と標準ライブラリの所有元を確認してから、引数の種類を検査する。標準の `File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組として `types::scope` で正規化する。同名の利用者のエフェクトにはこの規則を付けない。`Failure.Fail` だけは従来どおり一つの値の型引数を名前解決する。利用者のエフェクトと `IO.All`・`State` 等の対象を持たない名前への引数は E0513 とする。File に型引数を書いた場合と範囲の空・個数・種類・字句の不正は E0520 とする。`InvalidScope::Internal` は入力の誤りにせず、報告の種類を Internal とする（CLI の終了状態3）。
+ 
+--- a/docs/design/06-tooling/06-03-formatter.md
++++ b/docs/design/06-tooling/06-03-formatter.md
+@@ -57,6 +57,8 @@
+ 
+ 【決定】範囲引数の略記は元の角括弧の群を保ち、原子の列へ書き換えない。文字列の字面・ホスト名の大小文字・IP/CIDR の綴り・整数の基数と下線・範囲の順序は変えない。名前解決で正規化した範囲を整形の出力に使わない。角括弧と各要素の空白・字下げは型引数と同じ規則で整え、ポートの `..` の前後には空白を置かない。
+ 
++範囲引数として受理しない式・補間・定数参照の要素は、最初から最後の字句までを元のソースから写し、内部の空白・字下げ・空行・コメントを保つ。要素の外の区切りには通常の整形規則を適用する。
++
+ ### 字下げ
+ 
+ 【方針】字下げの一段は、空白 2 つとする。トップレベルの宣言（import の宣言と属性を含む）が始まる行の段は 0 である。行の段は、その行の最初の字句で決める。行の最初の字句とは、行の先頭が文字列の字句の途中（複数行の文字列の内容の行と、閉じの `"""` の行）でない行の、最初の字句である。複数行の文字列の内容の行は、後述の「複数行の文字列」の規則で動かす。

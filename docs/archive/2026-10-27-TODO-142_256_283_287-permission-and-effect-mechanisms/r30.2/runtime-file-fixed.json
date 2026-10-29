@@ -1,0 +1,39 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "runtime_builtins",
+    "file_in_operations",
+    "--",
+    "--nocapture"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 1.7021531250000002,
+  "maxrss_raw": 678707200,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 647.265625,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 1.727569292,
+  "recorded_at": "2026-10-29T04:46:07.963311+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2/run-record.py",
+    "--child",
+    "runtime-file-fixed",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "runtime_builtins",
+    "file_in_operations",
+    "--",
+    "--nocapture"
+  ]
+}

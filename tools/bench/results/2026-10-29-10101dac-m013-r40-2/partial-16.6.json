@@ -1,0 +1,145 @@
+{
+  "section": "16.6",
+  "phase_seconds": {
+    "verify": 0.11005083300000251,
+    "cli": 0.2981467500000008
+  },
+  "measurements": {
+    "patterns-integer-100": {
+      "before": {
+        "verify": [
+          0.015694583000012585
+        ],
+        "warmup": [
+          0.01537095800000543
+        ],
+        "cli": [
+          0.014867417000004934,
+          0.016219709000012017,
+          0.015003750000005311,
+          0.014990333999975292,
+          0.014759749999996075
+        ],
+        "control_cli": [
+          0.013890542000012829,
+          0.014637082999996665,
+          0.014280625000026248,
+          0.013269209000014826,
+          0.013379624999998896
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.017000209000002542
+        ],
+        "warmup": [
+          0.015766374999998334
+        ],
+        "cli": [
+          0.015544500000004291,
+          0.015494957999976577,
+          0.016300333000003775,
+          0.015509417000004078,
+          0.01589683400001718
+        ],
+        "control_cli": [
+          0.013992333000004464,
+          0.015611000000006925,
+          0.015030459000001883,
+          0.014144791999996187,
+          0.014591457999983959
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    }
+  },
+  "outputs": {
+    "patterns-integer-100": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/patterns-integer-100/shared-45ece08c24196a82/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/10101dacf7de5db49229d3d585707da08c768326-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/patterns-integer-100/shared-45ece08c24196a82/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/10101dacf7de5db49229d3d585707da08c768326-default/release/benitoite",
+          "check",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.015694583000012585,
+          "status": 0,
+          "stdout": "",
+          "stderr": "",
+          "validation": "verified",
+          "probe_verified": {
+            "seconds": 0.019382084000000077,
+            "status": 0,
+            "stdout": "{\"errors\":0,\"load_parse\":0.001969708,\"reparse\":0.00149075,\"resolve\":0.000972916,\"typeck\":0.009136458}\n",
+            "stderr": ""
+          },
+          "run_verified": {
+            "seconds": 0.018785833999999113,
+            "status": 0,
+            "stdout": "0\n99\n-1\n",
+            "stderr": ""
+          }
+        },
+        "after": {
+          "seconds": 0.017000209000002542,
+          "status": 0,
+          "stdout": "",
+          "stderr": "",
+          "validation": "verified",
+          "probe_verified": {
+            "seconds": 0.01844683299999872,
+            "status": 0,
+            "stdout": "{\"errors\":0,\"load_parse\":0.002052542,\"reparse\":0.001542708,\"resolve\":0.00110775,\"typeck\":0.007383459}\n",
+            "stderr": ""
+          },
+          "run_verified": {
+            "seconds": 0.02024099999999862,
+            "status": 0,
+            "stdout": "0\n99\n-1\n",
+            "stderr": ""
+          }
+        }
+      }
+    }
+  }
+}

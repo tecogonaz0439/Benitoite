@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Scope
+function main() -> Unit uses Http.Listen["a.example", 80]
+end function

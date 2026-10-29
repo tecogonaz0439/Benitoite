@@ -1,0 +1,20 @@
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.90s
+     Running tests/checked_args.rs (target/debug/deps/checked_args-4548f59f5fa349d7)
+
+running 11 tests
+test log_record_parameter_is_an_ordinary_contextual_name ... ok
+test constant_origins_follow_cached_transitive_values ... ok
+test range_checked_integer_hides_all_representation_operations ... ok
+test constant_origin_labels_are_bounded_and_keep_chain_endpoints ... ok
+test regex_pattern_count_is_shared_and_cached_failures_survive_exhaustion ... ok
+test source_location_requires_the_standard_direct_zero_argument_call ... ok
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test regex_constants_reject_only_known_direct_standard_calls ... ok
+test scoped_value_checks_report_known_bad_arguments_after_body_checking ... ok
+test additional_budgets_fall_back_to_runtime_and_do_not_reset_per_body ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.70s
+

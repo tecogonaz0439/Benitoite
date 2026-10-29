@@ -1,0 +1,37 @@
+== grep -nE 'sorry' pm20.01/lean-run-01.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm20.01/lean-run-01.log
+status=1
+== lines with 'depends on axioms'
+status=1
+== declarations (theorem/def/structure and fields)
+25:def KindSet (Kind : Type) : Type := Kind → Prop
+32:def Subset (A B : KindSet Kind) : Prop := ∀ k : Kind, A k → B k
+35:theorem Subset.trans {A B C : KindSet Kind}
+44:def traceKinds {Kind Ev : Type} (kindOf : Ev → Kind) (tr : List Ev) : KindSet Kind :=
+48:theorem mem_traceKinds {Kind Ev : Type} (kindOf : Ev → Kind) {tr : List Ev} {e : Ev}
+53:def KindCheck {Kind : Type} (declared allowed : KindSet Kind) : Prop := Subset declared allowed
+59:structure Policy (Kind Target : Type) where
+61:  kinds : KindSet Kind
+63:  allow : Kind → Target → Prop
+65:  deny : Kind → Target → Prop
+72:def WF (p : Policy Kind Target) : Prop := ∀ k t, p.allow k t → p.kinds k
+75:def permits (p : Policy Kind Target) (k : Kind) (t : Target) : Prop :=
+78:theorem permits_iff (p : Policy Kind Target) (k : Kind) (t : Target) :
+83:theorem permits_allow {p : Policy Kind Target} {k : Kind} {t : Target}
+88:theorem permits_not_deny {p : Policy Kind Target} {k : Kind} {t : Target}
+93:theorem permits_of_allow_of_not_deny {p : Policy Kind Target} {k : Kind} {t : Target}
+98:theorem permits_kind {p : Policy Kind Target} (hwf : p.WF) {k : Kind} {t : Target}
+109:def TraceAllowed (p : Policy Kind Target) (tr : List Ev) : Prop :=
+113:theorem traceAllowed_nil (p : Policy Kind Target) : TraceAllowed kindOf targetOf p [] :=
+117:theorem traceAllowed_cons_iff (p : Policy Kind Target) (e : Ev) (tr : List Ev) :
+130:theorem traceAllowed_kinds {p : Policy Kind Target} (hwf : p.WF) {tr : List Ev}
+139:theorem kindCheck_event_kind {p : Policy Kind Target} {declared : KindSet Kind} {tr : List Ev}
+count=22
+== #print axioms count
+22
+== 'does not depend on any axioms' count
+22
+== declared names (short) without a #print axioms line
+== sorry/axiom/decide in source
+status=1

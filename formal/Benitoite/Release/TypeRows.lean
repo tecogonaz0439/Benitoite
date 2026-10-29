@@ -12,7 +12,7 @@ namespace Benitoite.Release
 mutual
   /-- 型の中に再帰的に現れるすべての行が条件を満たす。 -/
   def Ty.RowsIn (pe : Nat → Prop) : Ty → Prop
-    | .base _ | .opaque _ | .bytes | .ctor _ | .tvar _ => True
+    | .base _ | .opaque _ _ | .bytes | .ctor _ | .tvar _ => True
     | .data _ as | .tapp _ as => Ty.RowsInList pe as
     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.RowsIn pe
     | .fn _ ps r e => Ty.RowsInList pe ps ∧ r.RowsIn pe ∧ Eff.RowsIn pe e

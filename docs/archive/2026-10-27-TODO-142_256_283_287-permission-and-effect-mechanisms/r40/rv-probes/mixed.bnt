@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+@test
+function a() -> Unit uses File.Read
+end function
+@test
+function b() -> Unit uses File.Read["/data/**"], Http.Connect["*.example", 1..1024], Http.Connect["10.0.0.0/8", 443]
+end function
+@test
+function c() -> Unit uses File.Read["/data/**"]
+end function

@@ -219,7 +219,305 @@ end function
 // 不正な HTTP は Http.respond では作れないので、この共有のサーバだけを Rust で置く。
 // 受信した要求を読み終えてから FIN を送る。未読の本体による RST を再現と取り違えない。
 fn raw_server(responses: Vec<Vec<u8>>) -> (u16, std::thread::JoinHandle<Vec<Vec<u8>>>) {
-    let listener = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+    raw_server_at("127.0.0.1", responses)
+}
+
+fn checked_send(request: &str, host: &str, port: u16) -> String {
+    format!(
+        r#"Http.sendIn(request: try Http.checkRequestIn(hostPattern: {host:?}, minimumPort: {port}, maximumPort: {port}, request: {request}) |> Result.mapError(r: _, f: lambda(error) return "check failed" end lambda))"#
+    )
+}
+
+// 関門: 新入口の非追従と五欄の引渡しは、旧sendの追従試験や純粋な射影では
+// 守れない。外部の相手だけをループバックで置き換え、追従先への未接続を直接観察する。
+// 射影した別レコードの更新、GCを挟む保持、query・重複header・本体も同じ境界で守る。
+#[test]
+fn send_in_returns_redirects_without_connecting_to_location() {
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        for (status, location) in [
+            (301, true),
+            (302, true),
+            (303, true),
+            (307, true),
+            (308, true),
+            (302, false),
+            (304, false),
+        ] {
+            let outside = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+            outside.set_nonblocking(true).unwrap();
+            let outside_port = outside.local_addr().unwrap().port();
+            let location = if location {
+                format!("Location: http://127.0.0.1:{outside_port}/outside\r\n")
+            } else {
+                String::new()
+            };
+            let (port, server) = raw_server(vec![format!(
+                "HTTP/1.1 {status} Response\r\n{location}Content-Length: 8\r\nConnection: close\r\n\r\nredirect"
+            )
+            .into_bytes()]);
+            let source = format!(
+                r#"
+function main() -> Result[Unit, String] uses Http.Connect["127.0.0.1", {port}], Console.Write
+ bind original <- Http.ClientRequest(..Http.clientRequest(method: "POST", url: "http://127.0.0.1:{port}/original?q=%2F#fragment"), headers: [Pair("X-Probe", "one"), Pair("x-probe", "two")], body: String.toUTF8("posted猫"), timeoutMilliseconds: 2000)
+ bind checked: Result[Http.RequestIn["127.0.0.1", {port}], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: {port}, maximumPort: {port}, request: original)
+ return match checked with
+  case Result.Error(_) -> Result.Error("check failed")
+  case Result.Ok(request) ->
+   bind projected <- Http.requestInValue(request: request)
+   bind changed <- Http.ClientRequest(..projected, method: "DELETE", url: "http://127.0.0.1:{outside_port}/changed", body: Bytes.empty())
+   bind unused <- String.repeat(s: "猫", n: 4000)
+   if Http.ClientRequest.method(changed) <> "DELETE" or String.byteLength(unused) <> 12000 then return Result.Error("preparation") end if
+   match Http.sendIn(request: request) with
+    case Result.Error(error) -> Result.Error(NetworkError.message(error))
+    case Result.Ok(response) ->
+     if Http.Response.status(response) <> {status} or Http.Response.body(response) <> String.toUTF8("{response_body}") then return Result.Error("response fields") end if
+     Console.writeLine(Integer.toString(Http.Response.status(response)))
+     Result.Ok(())
+   end match
+ end match
+end function
+"#,
+                response_body = if status == 304 { "" } else { "redirect" }
+            );
+            assert_eq!(run_script(&source, mode), format!("{status}\n"));
+            let requests = server.join().unwrap();
+            assert_eq!(requests.len(), 1);
+            let request = String::from_utf8(requests.first().unwrap().clone()).unwrap();
+            assert!(
+                request.starts_with("POST /original?q=%2F HTTP/1.1\r\n"),
+                "{request}"
+            );
+            let headers = request.to_ascii_lowercase();
+            assert!(
+                headers.contains(&format!("host: 127.0.0.1:{port}\r\n")),
+                "{request}"
+            );
+            assert!(headers.contains("x-probe: one\r\n"), "{request}");
+            assert!(headers.contains("x-probe: two\r\n"), "{request}");
+            assert!(request.ends_with("posted猫"), "{request}");
+            assert!(!request.contains("fragment"), "{request}");
+            assert!(
+                matches!(outside.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
+                "connected to the redirect target"
+            );
+        }
+    }
+}
+
+// 関門: URIの字面が異なっても実効endpointが同じなら送れ、Hostだけで別の
+// 対象へ取り替えられない。名前の大小・IPv6の表記・先頭0付きportをwireで照合する。
+#[test]
+fn send_in_matches_effective_endpoint_and_explicit_host() {
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        for (listen, url_host, pattern, host_header) in [
+            ("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"),
+            ("127.0.0.1", "LoCaLhOsT", "localhost", "LOCALHOST"),
+            ("::1", "[0:0:0:0:0:0:0:1]", "::1", "[::1]"),
+        ] {
+            let (port, server) = raw_server_at(
+                listen,
+                vec![
+                    b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec(),
+                ],
+            );
+            let request = format!(
+                r#"Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://{url_host}:0{port}/endpoint"), headers: [Pair("Host", "{host_header}:{port}")])"#
+            );
+            let send = checked_send(&request, pattern, port);
+            let source = format!(
+                r#"
+function main() -> Result[Unit, String] uses Http.Connect, Console.Write
+ return match {send} with
+  case Result.Error(error) -> Result.Error(NetworkError.message(error))
+  case Result.Ok(response) ->
+   if Http.Response.status(response) <> 200 then return Result.Error("status") end if
+   Console.writeLine("sent")
+   Result.Ok(())
+ end match
+end function
+"#
+            );
+            assert_eq!(run_script(&source, mode), "sent\n");
+            let requests = server.join().unwrap();
+            assert_eq!(requests.len(), 1);
+            let wire = String::from_utf8(requests.first().unwrap().clone()).unwrap();
+            assert!(wire.starts_with("GET /endpoint HTTP/1.1\r\n"), "{wire}");
+            assert!(
+                wire.to_ascii_lowercase().contains(&format!(
+                    "host: {}:{port}\r\n",
+                    host_header.to_ascii_lowercase()
+                )),
+                "{wire}"
+            );
+        }
+
+        let actual = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        actual.set_nonblocking(true).unwrap();
+        let port = actual.local_addr().unwrap().port();
+        let other = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        other.set_nonblocking(true).unwrap();
+        let other_port = other.local_addr().unwrap().port();
+        for host_header in [
+            format!("127.0.0.1:{other_port}"),
+            "other.invalid".into(),
+            "[invalid".into(),
+        ] {
+            let request = format!(
+                r#"Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:{port}/endpoint"), headers: [Pair("Host", {host_header:?})], timeoutMilliseconds: 100)"#
+            );
+            let send = checked_send(&request, "127.0.0.1", port);
+            let source = format!(
+                r#"
+function main() -> Result[Unit, String] uses Http.Connect
+ return match {send} with
+  case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.InvalidInput then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
+  case Result.Ok(_) -> Result.Error("mismatched Host succeeded")
+ end match
+end function
+"#
+            );
+            assert!(run_script(&source, mode).is_empty(), "{host_header}");
+        }
+        assert!(
+            matches!(actual.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+        );
+        assert!(
+            matches!(other.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+        );
+    }
+}
+
+// 関門: RequestCheckErrorはURL/所属の検査に限り、送信準備・通信の失敗は
+// NetworkErrorである。旧sendの失敗試験では新入口の準備・timeoutの渡し忘れに届かない。
+#[test]
+fn send_in_reports_preparation_and_transport_failures_as_network_errors() {
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let waiting = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let waiting_port = waiting.local_addr().unwrap().port();
+        let closed = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let closed_port = closed.local_addr().unwrap().port();
+        drop(closed);
+        let source = format!(
+            r#"
+function expect(request: Http.ClientRequest, kind: NetworkErrorKind) -> Result[Unit, String] uses Http.Connect
+ bind checked <- Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: 0, maximumPort: 65535, request: request)
+ return match checked with
+ case Result.Error(_) -> Result.Error("preparation was reported as RequestCheckError")
+ case Result.Ok(value) ->
+  match Http.sendIn(request: value) with
+  case Result.Error(error) -> if NetworkError.kind(error) = kind then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
+  case Result.Ok(_) -> Result.Error("invalid request or failed transport succeeded")
+  end match
+ end match
+end function
+function main() -> Result[Unit, String] uses Http.Connect
+ bind base <- Http.clientRequest(method: "GET", url: "http://127.0.0.1:{waiting_port}/failure")
+ bind _ <- try expect(request: Http.ClientRequest(..base, body: String.toUTF8("bad GET body")), kind: NetworkErrorKind.InvalidInput)
+ bind _ <- try expect(request: Http.ClientRequest(..base, method: "PURGE"), kind: NetworkErrorKind.InvalidInput)
+ bind _ <- try expect(request: Http.ClientRequest(..base, timeoutMilliseconds: 100), kind: NetworkErrorKind.TimedOut)
+ return expect(request: Http.ClientRequest(..base, url: "http://127.0.0.1:{closed_port}/failure", timeoutMilliseconds: 2000), kind: NetworkErrorKind.ConnectionRefused)
+end function
+"#
+        );
+        assert!(run_script(&source, mode).is_empty(), "{mode:?}");
+        for fields in [
+            "headers: [Pair(\"Bad Header\", \"value\")]",
+            "timeoutMilliseconds: 0",
+        ] {
+            let request = format!(
+                r#"Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:{waiting_port}/failure"), {fields})"#
+            );
+            let send = checked_send(&request, "127.0.0.1", waiting_port);
+            let source = format!(
+                r#"
+function main() -> Result[Unit, String] uses Http.Connect
+ bind response <- {send}
+ return Result.Ok(())
+end function
+"#
+            );
+            let (end, output, errors) = run_script_end(&source, mode);
+            assert_eq!(end.end, EndKind::Stopped, "{fields}: {end:?}");
+            assert!(end.main_error.is_none(), "{end:?}");
+            assert!(output.is_empty(), "{output}");
+            assert!(
+                end.reports
+                    .iter()
+                    .any(|report| report.message.contains("Benitoite.Network.Http.sendIn")),
+                "{fields}: {end:?} {errors:?}"
+            );
+        }
+    }
+}
+
+// 関門: proxy(None)を外す退行を、環境変数の影響が他テストへ漏れない子プロセスで
+// 捕まえる。送信先とproxyは別のループバックの待ち受けとし、追加接続を直接観察する。
+#[test]
+fn send_in_ignores_proxy_environment() {
+    const CHILD_PORT: &str = "BENITOITE_R30_SEND_IN_PROXY_TARGET";
+    if let Some(port) = std::env::var_os(CHILD_PORT) {
+        let port: u16 = port.to_str().unwrap().parse().unwrap();
+        let request =
+            format!(r#"Http.clientRequest(method: "GET", url: "http://127.0.0.1:{port}/direct")"#);
+        let send = checked_send(&request, "127.0.0.1", port);
+        let source = format!(
+            r#"
+function main() -> Result[Unit, String] uses Http.Connect
+ return match {send} with
+ case Result.Error(error) -> Result.Error(NetworkError.message(error))
+ case Result.Ok(response) -> if Http.Response.status(response) = 200 and Http.Response.body(response) = String.toUTF8("ok") then Result.Ok(()) else Result.Error("wrong response") end if
+ end match
+end function
+"#
+        );
+        for mode in [ExecMode::Direct, ExecMode::Request] {
+            assert!(run_script(&source, mode).is_empty());
+        }
+        return;
+    }
+    let proxy = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+    proxy.set_nonblocking(true).unwrap();
+    let proxy_port = proxy.local_addr().unwrap().port();
+    let (port, server) = raw_server(
+        vec![b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec(); 2],
+    );
+    let mut child = std::process::Command::new(std::env::current_exe().unwrap());
+    child
+        .arg("--exact")
+        .arg("send_in_ignores_proxy_environment")
+        .arg("--nocapture")
+        .env(CHILD_PORT, port.to_string());
+    for name in [
+        "HTTP_PROXY",
+        "http_proxy",
+        "HTTPS_PROXY",
+        "https_proxy",
+        "ALL_PROXY",
+        "all_proxy",
+    ] {
+        child.env(name, format!("http://127.0.0.1:{proxy_port}"));
+    }
+    child.env("NO_PROXY", "").env("no_proxy", "");
+    let output = child.output().unwrap();
+    assert!(
+        output.status.success(),
+        "child status {:?}\n{}\n{}",
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(server.join().unwrap().len(), 2);
+    assert!(
+        matches!(proxy.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
+        "connected to proxy"
+    );
+}
+
+fn raw_server_at(
+    host: &str,
+    responses: Vec<Vec<u8>>,
+) -> (u16, std::thread::JoinHandle<Vec<Vec<u8>>>) {
+    let listener = TcpListener::bind((host, 0)).unwrap();
     let port = listener.local_addr().unwrap().port();
     listener.set_nonblocking(true).unwrap();
     let thread = std::thread::spawn(move || {
@@ -266,6 +564,73 @@ fn raw_server(responses: Vec<Vec<u8>>) -> (u16, std::thread::JoinHandle<Vec<Vec<
         requests
     });
     (port, thread)
+}
+
+// 関門: 純粋入口の表だけでは届かない、検査→射影→旧sendの実経路を守る。
+// 射影したIPv6を受理してIPv4へ送る退行を、ループバックの相手と通常の
+// スクリプトで捕まえる。内部の差し替えや本番の公開範囲の拡大は要らない。
+#[test]
+fn checked_requests_reject_mapped_ipv6_before_loopback_send() {
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let response =
+            b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec();
+        let (v4_port, v4_server) = raw_server(vec![response.clone(); 2]);
+        let (v6_port, v6_server) = raw_server_at("::1", vec![response; 2]);
+        let mut source = String::from(
+            r#"
+import Benitoite.Unofficial.Scope
+function one(pattern: String, port: Integer, host: String) -> Unit uses Console.Write, Http.Connect
+ bind request <- Http.clientRequest(method: "GET", url: "http://[" + host + "]:" + Integer.toString(port) + "/")
+ match Http.checkRequestIn(hostPattern: pattern, minimumPort: port, maximumPort: port, request: request) with
+  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.InvalidTarget(input, reason))) ->
+   if input = host and String.byteLength(reason) > 0 then Console.writeLine("InvalidTarget") else Console.writeLine("wrong input") end if
+  case Result.Error(_) -> Console.writeLine("wrong error")
+  case Result.Ok(value) ->
+   bind projected <- Http.requestInValue(request: value)
+   match Http.send(projected) with
+    case Result.Ok(_) -> Console.writeLine("sent")
+    case Result.Error(_) -> Console.writeLine("send error")
+   end match
+ end match
+end function
+function main() -> Unit uses Console.Write, Http.Connect
+"#,
+        );
+        let mut expected = String::new();
+        for pattern in ["::/0", "::ffff:0.0.0.0/96", "::ffff:127.0.0.1"] {
+            for host in [
+                "::ffff:127.0.0.1",
+                "::FFFF:7F00:1",
+                "0:0:0:0:0:ffff:7f00:1",
+                "0:0:0:0:0:FFFF:127.0.0.1",
+            ] {
+                source.push_str(&format!(
+                    " one(pattern: {pattern:?}, port: {v4_port}, host: {host:?})\n"
+                ));
+                expected.push_str("InvalidTarget\n");
+            }
+        }
+        source.push_str(&format!(
+            r#" match Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: {v4_port}, maximumPort: {v4_port}, request: Http.clientRequest(method: "GET", url: "http://127.0.0.1:{v4_port}/")) with
+  case Result.Ok(value) ->
+   bind projected <- Http.requestInValue(request: value)
+   match Http.send(projected) with
+    case Result.Ok(_) -> Console.writeLine("sent")
+    case Result.Error(_) -> Console.writeLine("send error")
+   end match
+  case Result.Error(_) -> Console.writeLine("rejected IPv4")
+ end match
+ one(pattern: "::/0", port: {v6_port}, host: "0:0:0:0:0:0:0:1")
+end function
+"#
+        ));
+        expected.push_str("sent\nsent\n");
+        assert_eq!(run_script(&source, mode), expected, "{mode:?}");
+        let scoped = source.replace("Http.send(projected)", "Http.sendIn(request: value)");
+        assert_eq!(run_script(&scoped, mode), expected, "sendIn {mode:?}");
+        assert_eq!(v4_server.join().unwrap().len(), 2);
+        assert_eq!(v6_server.join().unwrap().len(), 2);
+    }
 }
 
 fn read_wire_request(stream: &mut TcpStream) -> Vec<u8> {

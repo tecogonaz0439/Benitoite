@@ -1,0 +1,92 @@
+Antichain.lean:208:17: error: Type mismatch: After simplification, term
+  h
+ has type
+  decide (b = a) = true
+but is expected to have type
+  a = b
+Antichain.lean:216:26: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.antisymm`
+Antichain.lean:263:73: error(lean.unknownIdentifier): Unknown identifier `refl`
+Antichain.lean:270:22: error: Application type mismatch: The argument
+  hab
+has type
+  le a b = true
+but is expected to have type
+  ?m.58 (le a c) (le b c)
+in the application
+  trans hab
+Antichain.lean:280:20: error(lean.unknownIdentifier): Unknown identifier `refl`
+Antichain.lean:283:13: error(lean.unknownIdentifier): Unknown identifier `a`
+Antichain.lean:283:25: error(lean.unknownIdentifier): Unknown identifier `refl`
+Antichain.lean:283:16: error: unsolved goals
+α : Type
+le : α → α → Bool
+xs : List α
+c : α
+h✝ : ¬xs.any (le c) = true
+hc : c ∈ c :: xs
+⊢ sorry () = c ∨ sorry () ∈ xs ∧ le (sorry ()) c = false
+Antichain.lean:286:37: error(lean.unknownIdentifier): Unknown identifier `refl`
+Antichain.lean:302:25: error: Application type mismatch: The argument
+  trans
+has type
+  ?m.58 ?m.62 ?m.63 → ?m.59 ?m.63 ?m.64 → ?m.60 ?m.62 ?m.64
+but is expected to have type
+  Cover le ?m.51 (a :: norm le xs)
+in the application
+  cover_trans le trans
+Antichain.lean:302:74: error(lean.unknownIdentifier): Unknown identifier `refl`
+Antichain.lean:319:42: error(lean.unknownIdentifier): Unknown identifier `refl`
+Antichain.lean:332:26: error(lean.unknownIdentifier): Unknown identifier `a`
+Antichain.lean:333:8: error: Tactic `contradiction` failed
+
+case isFalse.inl.inr
+α : Type
+le : α → α → Bool
+xs : List α
+h : Irredundant le xs
+b c : α
+hbc : le b c = true
+hn : ¬xs.any (le b) = true
+hb : b ∈ b :: List.filter (fun b_1 => !le b_1 b) xs
+hc✝¹ : c ∈ b :: List.filter (fun b_1 => !le b_1 b) xs
+hc✝ : c ∈ List.filter (fun b_1 => !le b_1 b) xs
+hc : c ∈ xs ∧ (!le c b) = true
+this : xs.any (le sorry) = true
+⊢ b = c
+Antichain.lean:354:44: error: Application type mismatch: The argument
+  hab
+has type
+  le a b = true
+but is expected to have type
+  ?m.91 (le a c) (le b c)
+in the application
+  trans hab
+Antichain.lean:362:27: error: Application type mismatch: The argument
+  trans
+has type
+  ?m.32 ?m.36 ?m.37 → ?m.33 ?m.37 ?m.38 → ?m.34 ?m.36 ?m.38
+but is expected to have type
+  Irredundant le ?m.27
+in the application
+  ext_irredundant le trans
+Antichain.lean:362:33: error(lean.unknownIdentifier): Unknown identifier `antisymm`
+Antichain.lean:363:2: error: No goals to be solved
+        0.55 real         0.66 user         0.24 sys
+           700530688  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45144  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                4593  involuntary context switches
+          6253097563  instructions retired
+          2648163157  cycles elapsed
+           151657832  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

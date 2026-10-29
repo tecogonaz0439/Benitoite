@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Failure
+function main() -> Unit uses Failure.Fail[String]
+  return Failure.raise("bad")
+end function

@@ -465,7 +465,7 @@ fn block_type(block: &Value) -> Value {
 /// 対応記録を本文から外し、呼び出し側の独立期待値とともに包む。
 pub(super) fn corpus(raw: &Value, mut connected: Connected, expected: Value) -> Value {
     connected.definition["expected"] = expected;
-    json!({"kind":"interval-corpus","version":1,"surfaceVersion":14,"traversalVersion":1,"profile":"base",
+    json!({"kind":"interval-corpus","version":1,"surfaceVersion":15,"traversalVersion":1,"profile":"base",
         "inputs":[{"name":raw["name"],"fuel":"200","limits":{"body":{"operations":"100000","items":"100000"},"whole":{"operations":"1000000","items":"1000000"}},
             "initial":{"body":{"operations":"0","temporary":"0","saved":"0","peak":"0"},"whole":{"operations":"0","saved":"0","peak":"0"}},
             "constants":strip(&raw["constants"]),"standards":[],"apiAt":[],"modules":[{"name":raw["module"],"definitions":[connected.definition]}]}]})

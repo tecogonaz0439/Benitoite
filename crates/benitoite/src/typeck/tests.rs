@@ -385,7 +385,11 @@ end function
     let n = node_at(&l, start);
     assert_eq!(
         t.type_args.get(n).unwrap().tys,
-        vec![TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))]
+        vec![TypeArg::Ty(Ty::Con(
+            TyCon::Builtin(B::INTEGER),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP
+        ))]
     );
     let start = s.find("Box.value(b)").unwrap();
     let n = node_at(&l, start);
@@ -1015,19 +1019,19 @@ fn effect_inference_names_and_stubs() {
     let s = t.decl_types.get(id(&r, "f")).unwrap();
     assert!(s.wrote_io_all);
     assert!(s.effects.names.contains(&EffectName::Builtin(
-        crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap()
+        crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap(),
+        crate::types::builtin::RangeIndex::TOP
     )));
-    assert!(
-        !s.effects
-            .names
-            .contains(&EffectName::Builtin(BuiltinEffectId::IO_ALL))
-    );
+    assert!(!s.effects.names.contains(&EffectName::Builtin(
+        BuiltinEffectId::IO_ALL,
+        crate::types::builtin::RangeIndex::TOP
+    )));
     let (_, r, t) = clean(
         "effect Write\n function write(s: String) -> Unit\nend effect\nfunction f() -> Unit uses Write\n write(\"hello\")\nend function\n",
     );
     assert_eq!(
         t.effects.get(id(&r, "Write")).unwrap().name,
-        EffectName::User(id(&r, "Write"))
+        EffectName::User(id(&r, "Write"), crate::types::builtin::RangeIndex::TOP)
     );
     let d = expect(
         "effect Write\n function write(s: String) -> Unit\nend effect\nfunction f() -> Unit\n write(\"hi\")\nend function\n",
@@ -1218,7 +1222,11 @@ fn higher_kinded_instantiation_and_equatable_declaration_summaries() {
             TypeArg::Head(crate::types::TyHead::Con(TyCon::Adt(
                 r.stdlib("Benitoite.Option.Option").unwrap()
             ))),
-            TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))
+            TypeArg::Ty(Ty::Con(
+                TyCon::Builtin(B::INTEGER),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP
+            ))
         ]
     );
     clean(
@@ -1470,7 +1478,11 @@ fn width_literals_keep_their_exact_types_and_values() {
         let node = node_at(&loaded, source.find(literal).unwrap());
         assert_eq!(
             typed.expr_types.get(node),
-            Some(&Ty::Con(TyCon::Builtin(builtin), vec![]))
+            Some(&Ty::Con(
+                TyCon::Builtin(builtin),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP
+            ))
         );
         assert!(typed.lit_values.get(node).is_some());
     }
@@ -1581,7 +1593,11 @@ fn width_integer_literals_check_both_boundaries_and_record_exact_values() {
             let node = node_at(&loaded, source.find(&literal).unwrap());
             assert_eq!(
                 typed.expr_types.get(node),
-                Some(&Ty::Con(TyCon::Builtin(builtin), vec![]))
+                Some(&Ty::Con(
+                    TyCon::Builtin(builtin),
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP
+                ))
             );
             assert_width_value(typed.lit_values.get(node).unwrap(), expected);
         }
@@ -1678,7 +1694,11 @@ fn width_integer_division_waits_for_operands_and_defaults_unconstrained_lambdas(
         let operand = node_at(&loaded, source.find(&format!("a {op} b")).unwrap());
         assert_eq!(
             typed.expr_types.get(operand),
-            Some(&Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))
+            Some(&Ty::Con(
+                TyCon::Builtin(B::INTEGER),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP
+            ))
         );
     }
 }
@@ -1933,8 +1953,22 @@ fn contracts_come_from_declarations_and_written_lambda_parameters() {
         panic!()
     };
     assert_eq!(lambda.param_names, ["value"]);
-    assert_eq!(lambda.params, [Ty::Con(TyCon::Builtin(B::INTEGER), vec![])]);
-    assert_eq!(lambda.ret, Ty::Con(TyCon::Builtin(B::INTEGER), vec![]));
+    assert_eq!(
+        lambda.params,
+        [Ty::Con(
+            TyCon::Builtin(B::INTEGER),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP
+        )]
+    );
+    assert_eq!(
+        lambda.ret,
+        Ty::Con(
+            TyCon::Builtin(B::INTEGER),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP
+        )
+    );
     assert_eq!(lambda.param_names.len(), lambda.params.len());
     for value in ["lambda(other) return other", "identity"] {
         let source = format!(

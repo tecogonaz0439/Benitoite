@@ -1,0 +1,42 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/ContLemmas.lean:132:    (h : ContTy P B Ψ R ε (.handleF hs :: k) a b ε0 Re) (ho : handles hs .fail = false) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/ContLemmas.lean:140:      rw [hc.handles] at ho
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/ContLemmas.lean:242:    (ho : handles hs .fail = false) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/ContLemmas.lean:316:          rw [hc.handles] at ho
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/EffectSound.lean:29:  have hall : (bs.map OpRef.prim).all (handles hs) = false := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:23:    (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec Δl) : handles h .fail = false := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:28:    simp only [handles, List.any_cons, Clause.op, Bool.or_eq_false_iff]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:38:theorem HasFailureClause.handles {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:39:    (hc : HasFailureClause P B Ψ Q C Γ E R h t ec Δl) : handles h .fail = true := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:41:  simp [Release.handles, Clause.op]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:18:    handles hs .fail = false ∨ ∃ E body, hs = [.fail E body] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:39:    (hsplit : SplitAt o k k1 hs k2) : handles hs .fail = false := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:43:    simp [handles, Clause.op] at hh
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:60:      rw [hc.handles] at hf
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:120:          simp [handles, Clause.op] at hf
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:138:          rw [hc.handles] at hf
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:209:          simp [handles, Clause.op] at hf
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:237:  simp [handles, Clause.op] at hf
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:253:    (ho : handles h .fail = true) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:378:    (hm : m' = .handle m h) (ho : handles h .fail = false) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:386:      simp [handles, Clause.op] at ho
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:513:      by_cases ho : handles h .fail = false
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:519:          hm.inv_handle_failure rfl (by cases hh : handles h .fail <;> simp_all)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:172:      by_cases hf : ∃ h, f = .handleF h ∧ handles h o = true
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:178:          · cases hh : handles h o
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:185:        · cases hh' : handles h' o
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:190:theorem findClause_of_handles {h : List Clause} {o : OpRef} (hh : handles h o = true) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:192:  unfold handles at hh
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:206:    have hall : (os.map OpRef.user).all (handles hs) = false := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Rename.lean:155:    handles h' o = handles h o := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Rename.lean:156:  unfold handles
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Rename.lean:172:      have : handles h' = handles h := funext (handles_of_ops e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/StepSound.lean:19:      have rest : ∀ {k1'}, splitHandler o k = some (k1', h, k2) → (∀ h', f = .handleF h' → handles h' o = false) →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Semantics.lean:84:  ∀ h, Frame.handleF h ∈ k → handles h o = false
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Semantics.lean:95:  k = k1 ++ .handleF h :: k2 ∧ handles h o = true ∧ NoHandler k1 o
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Semantics.lean:345:      if handles h o then some ([], h, k)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:120:/-- `handles(H, op)`。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:121:def handles (h : List Clause) (o : OpRef) : Bool := h.any (fun c => c.op == o)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:128:      | some (o :: os) => (o :: os).all (handles h)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Calls.lean:60:    handles (desugarClauses op cs) o = handles cs.skeleton o := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Calls.lean:64:      simpa only [desugarClauses, Clauses.skeleton, handles, List.any_cons, Clause.op] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Calls.lean:70:  have hh : handles (desugarClauses op cs) = handles cs.skeleton :=

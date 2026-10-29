@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "success": true,
+  "cases": [
+    {
+      "name": "numbering-stop",
+      "rustRules": 6,
+      "lean": "notApplicable-numbering-limit"
+    },
+    {
+      "name": "last-run-exceeded",
+      "rustRules": 2,
+      "key": {
+        "definition": "fn:43",
+        "surfacePreorder": 6
+      },
+      "reason": "budgetExceeded",
+      "nonTopRangesWithoutCandidates": 5,
+      "definitions": 1,
+      "reports": [
+        {
+          "tool": "surfaceCheck",
+          "returncode": 1,
+          "outerSeconds": 0.03957116699999999
+        },
+        {
+          "tool": "surfaceCheckAll",
+          "returncode": 1,
+          "outerSeconds": 0.039192332999999996
+        },
+        {
+          "tool": "desugarDiff",
+          "returncode": 0,
+          "outerSeconds": 0.029968874999999978
+        },
+        {
+          "tool": "builtinCheck",
+          "returncode": 0,
+          "outerSeconds": 0.03688037500000002
+        }
+      ]
+    },
+    {
+      "name": "inner-exceeded-outer-recovered",
+      "rustRules": 6,
+      "key": {
+        "definition": "fn:43",
+        "surfacePreorder": 19
+      },
+      "reason": "unknownSource",
+      "nonTopRangesWithoutCandidates": 16,
+      "definitions": 1,
+      "reports": [
+        {
+          "tool": "surfaceCheck",
+          "returncode": 1,
+          "outerSeconds": 0.03944783299999999
+        },
+        {
+          "tool": "surfaceCheckAll",
+          "returncode": 1,
+          "outerSeconds": 0.03056724999999999
+        },
+        {
+          "tool": "desugarDiff",
+          "returncode": 0,
+          "outerSeconds": 0.027539583000000034
+        },
+        {
+          "tool": "builtinCheck",
+          "returncode": 0,
+          "outerSeconds": 0.032719791
+        }
+      ]
+    }
+  ],
+  "rustOnlyCases": 1,
+  "auxiliaryExpectedMismatches": [
+    {
+      "name": "last-run-exceeded",
+      "expected": 6,
+      "actual": 4
+    }
+  ],
+  "auxiliaryFirstStops": {
+    "numbering-stop": null,
+    "last-run-exceeded": 4,
+    "inner-exceeded-outer-recovered": 13
+  },
+  "auxiliaryExpectedMismatchCount": 1,
+  "successScope": "Required\u306e\u30ad\u30fc\u30fb\u6dfb\u5b57\u30fb\u7406\u7531\u3002\u88dc\u52a9\u306e\u505c\u6b62\u5730\u70b9\u306f\u8a02\u6b63\u5024\u3068\u306e\u4e00\u81f4\u3092\u8981\u6c42\u3057\u3001\u521d\u7a3f\u3068\u306e\u4e0d\u4e00\u81f4\u3082\u4fdd\u6301\u3059\u308b",
+  "leanComparedCases": 2,
+  "requiredReasonComparisons": 2,
+  "maxRssBytesAuxiliary": 42188800
+}

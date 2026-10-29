@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses Process.Exit
+  bind r <- try Http.checkRequestIn(hostPattern: "a.example", minimumPort: 80, maximumPort: 80, request: Http.ClientRequest(method: "GET", url: "http://a.example/", headers: [], body: Bytes.empty(), timeoutMilliseconds: 1000)) or die
+  ()
+end function

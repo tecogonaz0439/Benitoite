@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "exchange_tests::typed_try_exchange_matches_independent_corpus_ten",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 13.260067833,
+  "maxrss_raw": 3158933504,
+  "maxrss_unit": "bytes on macOS",
+  "initial_failure": "w-r-retry.log の exchange_tests::typed_try_exchange_matches_independent_corpus_ten。新版の core prim に ranges:[] があり、旧独立期待値には欄がない。",
+  "fix": "corpus 10 固定入力を変えず、比較時の期待値の複製だけに範囲変数のない呼び出しの明示の空列を加えた。名前の原子をTopにする既存の表現追随と同じhelperへ集めた。"
+}

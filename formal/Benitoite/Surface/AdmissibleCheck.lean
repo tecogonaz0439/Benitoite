@@ -24,14 +24,14 @@ mutual
     | t :: ts => rowsTyCheck atoms ne t && rowsTysCheck atoms ne ts
   def rowsEffCheck (atoms : List Atom) (ne : Nat) : Eff → Bool
     | .mk a fs => atoms.all (fun x => match x with
-        | .name _ => true
+        | .name _ _ => true
         | .rho i => !a (.rho i) || decide (i < ne)) && rowsTysCheck atoms ne fs
 end
 
 private theorem rowsAtoms_spec {atoms : List Atom} {a : Atom → Bool} {ne : Nat}
     (ha : ∀ x, a x = true → x ∈ atoms) :
     atoms.all (fun x => match x with
-      | .name _ => true
+      | .name _ _ => true
       | .rho i => !a (.rho i) || decide (i < ne)) = true ↔
       ∀ i, a (.rho i) = true → i < ne := by
   rw [List.all_eq_true]
@@ -138,7 +138,7 @@ theorem instantiationCheck_method {atoms caller C ms ss τ es}
     (hp : Tys.AtomsIn atoms ms.params) (hr : ms.ret.AtomsIn atoms) (he : ms.eff.AtomsIn atoms)
     (ht : Tys.AtomsIn atoms (ss ++ [τ])) (hes : ∀ f ∈ es, f.AtomsIn atoms)
     (h : instantiationCheck atoms caller C.length ms.neffs ms.params ms.ret ms.eff (ss ++ [τ]) es = true) :
-    (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
+    (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
       MethodRowsAdmissible C (NoFailCtxOf caller) ms es := by
   simp only [instantiationCheck, Bool.and_eq_true, decide_eq_true_eq] at h
   obtain ⟨⟨⟨⟨⟨⟨htc, hec⟩, hn⟩, hpc⟩, hrc⟩, hec'⟩, hq⟩ := h

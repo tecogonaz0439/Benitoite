@@ -1,0 +1,13 @@
+{
+  "limits": {
+    "body": {
+      "operations": 16384,
+      "items": 512
+    },
+    "whole": {
+      "operations": 65536,
+      "items": 2048
+    }
+  },
+  "comment": "交換へ渡すのは limits の局所解析の四上限だけである。番号付けは DEFAULT_NUMBERING_OPERATIONS の独立した Rust の資源制限であり、交換へ載せない。"
+}

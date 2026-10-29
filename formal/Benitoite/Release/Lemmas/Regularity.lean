@@ -2,6 +2,7 @@ import Benitoite.Release.Lemmas.Inversion
 import Benitoite.Release.Lemmas.Rename
 import Benitoite.Release.Lemmas.TyLemmas
 import Benitoite.Release.Assumptions
+import Benitoite.Release.RangeInst
 
 /-!
 # 型の正しさの伝播（契約名を持つコア）
@@ -21,7 +22,7 @@ variable {P : Program} {B : Builtins}
 
 /-- 環境の型は、番号が `n` より小さい型の変数だけを使う。 -/
 def EnvWF (n : Nat) (Γ : List (Option Ty)) : Prop :=
-  ∀ (i : Nat) (x : Ty), Γ[i]? = some (some x) → Ty.WF n x
+  ∀ (i : Nat) (x : Ty), Γ[i]? = some (some x) → Ty.WF 0 n x
 
 /-- ストアの型付けの型は、型の変数を含まない。 -/
 def StoreTy.WF (Ψ : StoreTy) : Prop := ∀ l x, Ψ l = some x → x.WF
@@ -31,15 +32,15 @@ theorem StoreTy.WF.hideBuilders {Ψ : StoreTy} (h : Ψ.WF) : Ψ.hideBuilders.WF 
   fun l x hx => h l x (hideBuilders_sub Ψ l x hx)
 
 
-theorem fnTy_wf {n names ps r ε ts es} (hts : ∀ t ∈ ts, Ty.WF n t)
-    (hes : ∀ e ∈ es, Eff.WF n e) (hps : Ty.WFList ts.length ps)
-    (hr : Ty.WF ts.length r) (he : Eff.WF ts.length ε) (hnames : NamesWF names ps) :
-    Ty.WF n (fnTy names ps r ε ts es) := by
+theorem fnTy_wf {n names ps r ε ts es} (hts : ∀ t ∈ ts, Ty.WF 0 n t)
+    (hes : ∀ e ∈ es, Eff.WF 0 n e) (hps : Ty.WFList 0 ts.length ps)
+    (hr : Ty.WF 0 ts.length r) (he : Eff.WF 0 ts.length ε) (hnames : NamesWF names ps) :
+    Ty.WF 0 n (fnTy names ps r ε ts es) := by
   rw [fnTy_eq]
   exact ⟨NamesWF.map hnames _, Ty.substList_wf es hts hes ps hps,
     Ty.subst_wf es hts hes r hr, Eff.subst_wf es hts hes ε he, Eff.norm_idem _⟩
 
-theorem EnvWF.binds' {n as Γ} (has : ∀ a ∈ as, Ty.WF n a) (hΓ : EnvWF n Γ) :
+theorem EnvWF.binds' {n as Γ} (has : ∀ a ∈ as, Ty.WF 0 n a) (hΓ : EnvWF n Γ) :
     EnvWF n (Release.binds as ++ Γ) := by
   intro i x hi
   by_cases hlt : i < (Release.binds as).length
@@ -65,10 +66,10 @@ theorem EnvWF.shift {n Γ} (k : Nat) (h : EnvWF n Γ) : EnvWF (n + k) (shiftEnv 
       obtain ⟨a, rfl, rfl⟩ := hox
       exact Ty.shift_wf k _ (h _ _ ho)
 
-theorem Const.type_wf (c : Const) (n : Nat) : Ty.WF n c.type := by
+theorem Const.type_wf (c : Const) (n : Nat) : Ty.WF 0 n c.type := by
   cases c <;> simp [Const.type, Ty.WF]
 
-theorem varsInList_mem {n pe} : {as : List Ty} → Ty.VarsInList n pe as → ∀ {a}, a ∈ as → Ty.VarsIn n pe a
+theorem varsInList_mem {n pe} : {as : List Ty} → Ty.VarsInList 0 n pe as → ∀ {a}, a ∈ as → Ty.VarsIn 0 n pe a
   | [], _, _, h => by simp at h
   | b :: bs, w, a, h => by
       simp only [Ty.VarsInList] at w
@@ -78,8 +79,8 @@ theorem varsInList_mem {n pe} : {as : List Ty} → Ty.VarsInList n pe as → ∀
 
 -- パターンが束縛する変数の型の正しさ。
 mutual
-  theorem PatTy.wf {n : Nat} (hwf : P.WellFormed) {p a δ} (hp : PatTy P p a δ) (ha : Ty.WF n a) :
-      ∀ x ∈ δ, Ty.WF n x := by
+  theorem PatTy.wf {n : Nat} (hwf : P.WellFormed) {p a δ} (hp : PatTy P p a δ) (ha : Ty.WF 0 n a) :
+      ∀ x ∈ δ, Ty.WF 0 n x := by
     match hp with
     | .P_Wild => simp
     | .P_Var => simpa using ha
@@ -104,11 +105,11 @@ mutual
         refine PatTys.wf hwf hps ?_
         intro x hx
         obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
-        have hs : Ty.WF cd.ntys y := Ty.VarsIn.wf y (varsInList_mem (hwf.2.1 _ _ hc) hy)
+        have hs : Ty.WF 0 cd.ntys y := Ty.VarsIn.wf y (varsInList_mem (hwf.2.1 _ _ hc) hy)
         exact Ty.subst_wf [] (Ty.WFList.iff.mp ha) (by simp) y (by rw [hts]; exact hs)
 
   theorem PatTys.wf {n : Nat} (hwf : P.WellFormed) {ps as δ} (hps : PatTys P ps as δ)
-      (has : ∀ x ∈ as, Ty.WF n x) : ∀ x ∈ δ, Ty.WF n x := by
+      (has : ∀ x ∈ as, Ty.WF 0 n x) : ∀ x ∈ δ, Ty.WF 0 n x := by
     match hps with
     | .nil => simp
     | .cons hp hps' =>
@@ -119,25 +120,25 @@ mutual
 end
 
 theorem AltsTy.wf {n alts a δ} (hwf : P.WellFormed) (h : AltsTy P alts a δ)
-    (ha : Ty.WF n a) : ∀ x ∈ δ, Ty.WF n x := by
+    (ha : Ty.WF 0 n a) : ∀ x ∈ δ, Ty.WF 0 n x := by
   obtain ⟨p, γ, slots, hp, hs⟩ := h.witness
   intro x hx
   exact PatTy.wf hwf hp ha x (selectSlots_mem hs x hx)
 
 theorem LocTy.WF.ref {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) {l a} (h : Ψ l = some (.ref a)) (n : Nat) :
-    Ty.WF n a := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h)
+    Ty.WF 0 n a := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h)
 
 theorem LocTy.WF.lazy {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) {l a} (h : Ψ l = some (.lazy a)) (n : Nat) :
-    Ty.WF n a := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h)
+    Ty.WF 0 n a := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h)
 
 theorem LocTy.WF.contT {Ψ : StoreTy} (hΨ : StoreTy.WF Ψ) {l b t ε r} (h : Ψ l = some (.cont b t ε r))
-    (n : Nat) : Ty.WF n t := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h).2.1
+    (n : Nat) : Ty.WF 0 n t := Ty.WF.mono (Nat.zero_le _) _ (hΨ _ _ h).2.1
 
 mutual
   /-- 型付けの結果の型の正しさ（値）。 -/
-  theorem HasTypeVQ.wf {depth : Nat} (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ v a}
+  theorem HasTypeVQ.wf {depth : Nat} (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Ψ C Γ v a}
       (h : HasTypeVQ P B Ψ Q C Γ v a) (hΓ : EnvWF C.length Γ) (hΨ : StoreTy.WF Ψ)
-      (hv : Val.VarsIn C.length (fun _ => True) v depth) : Ty.WF C.length a := by
+      (hv : Val.VarsIn C.length (fun _ => True) v depth) : Ty.WF 0 C.length a := by
     match h with
     | .V_Var hi _ => exact hΓ _ _ hi
     | .V_Const => exact Const.type_wf _ _
@@ -153,17 +154,15 @@ mutual
         · rw [hl]; exact Ty.VarsInList.wf _ hsc.1
         · rw [hl]; exact Ty.VarsIn.wf _ hsc.2.1
         · rw [hl]; exact Eff.VarsIn.wf _ hsc.2.2.1
-    | .V_Prim hs hnames had =>
+    | .V_Prim hs hrs hnames had =>
         have hts := had.typeCount
         simp only [Val.VarsIn] at hv
-        have hsc := hb.sig_scoped _ _ hs
-        unfold PrimSig.Scoped at hsc
-        obtain ⟨_, hsc⟩ := hsc
+        have hsc := (hb.sig_scoped _ _ hs).inst_wf_zero hrs.nranges_le
         refine fnTy_wf (hnames := hnames) (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))
           (fun e he => Eff.VarsIn.wf e (Eff.VarsInList.iff.mp hv.2 e he)) ?_ ?_ ?_
-        · rw [hts]; exact Ty.VarsInList.wf _ hsc.1
-        · rw [hts]; exact Ty.VarsIn.wf _ hsc.2.1
-        · rw [hts]; exact Eff.VarsIn.wf _ hsc.2.2
+        · rw [hts]; exact hsc.1
+        · rw [hts]; exact hsc.2.1
+        · rw [hts]; exact hsc.2.2
     | .V_Op hod hnames hts =>
         simp only [Val.VarsIn] at hv
         have hsc := hwf.2.2.1 _ _ hod
@@ -199,11 +198,13 @@ mutual
         have := HasTypeVQ.wf (depth := _) hwf hb hv' hΓ hΨ hv
         simpa [Ty.WF] using this
     | .V_Sub _ _ hw => exact hw
+    | .V_Checked _ _ => simp [Ty.WF]
+    | .V_CheckedRequest _ _ _ _ => simp [Ty.WF]
 
   /-- 型付けの結果の型の正しさ（計算）。 -/
-  theorem HasTypeCQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R m a ε}
+  theorem HasTypeCQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Ψ C Γ R m a ε}
       (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) (hΓ : EnvWF C.length Γ) (hΨ : StoreTy.WF Ψ)
-      (hm : Comp.VarsIn C.length (fun _ => True) m depth) : Ty.WF C.length a := by
+      (hm : Comp.VarsIn C.length (fun _ => True) m depth) : Ty.WF 0 C.length a := by
     match h with
     | .C_BuilderLet _ hbBody =>
         refine HasTypeCQ.wf (depth := depth + 1) hwf hb hbBody ?_ hΨ hm.2
@@ -243,7 +244,7 @@ mutual
     | .C_ResumeL hl _ => exact LocTy.WF.contT hΨ hl C.length
     | .C_Meth (τ := τ) (ms := ms) hv hc hmeth hnames hts _ _ _ =>
         simp only [Comp.VarsIn] at hm
-        have hτ : Ty.WF C.length τ := by
+        have hτ : Ty.WF 0 C.length τ := by
           have := HasTypeVQ.wf (depth := _) hwf hb hv hΓ hΨ hm.1
           simpa [Ty.WF] using this
         have hsc := hwf.2.2.2.1 _ _ hc _ _ hmeth
@@ -258,10 +259,10 @@ mutual
         · simp only [List.length_append, List.length_singleton, hl]
           exact Ty.VarsIn.wf _ hsc.2.2.1
 
-  theorem HasTypeArmsQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ C Γ R arms a b ε}
-      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) (ha : Ty.WF C.length a) (hΓ : EnvWF C.length Γ)
+  theorem HasTypeArmsQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Ψ C Γ R arms a b ε}
+      (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) (ha : Ty.WF 0 C.length a) (hΓ : EnvWF C.length Γ)
       (hΨ : StoreTy.WF Ψ) (harms : Arm.VarsInList C.length (fun _ => True) arms depth) :
-      Ty.WF C.length b := by
+      Ty.WF 0 C.length b := by
     match h with
     | .nil hw => exact hw
     | .plain hp hbody _ =>

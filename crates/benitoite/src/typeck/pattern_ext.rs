@@ -58,7 +58,11 @@ pub(super) fn pattern(ctx: &mut Body<'_, '_>, p: &Pattern) -> ITy {
         }
         Pattern::List(p) => {
             let elem = ctx.fresh_ty();
-            let list = ITy::Con(TyCon::Builtin(B::LIST), vec![elem.clone()]);
+            let list = ITy::Con(
+                TyCon::Builtin(B::LIST),
+                vec![elem.clone()],
+                crate::types::builtin::RangeIndex::TOP,
+            );
             for child in p.before.iter().chain(&p.after) {
                 let found = ctx.pattern(child);
                 equal(ctx, elem.clone(), found, child.span(), ReasonKind::Pattern);
@@ -177,6 +181,7 @@ pub(super) fn guard(ctx: &mut Body<'_, '_>, g: &Expr) {
     let ty = ctx.expr_in(g, effect.clone(), None);
     ctx.clauses = clauses;
     ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Structural,
         sub: effect,
         sup: fixed(EffectSet::empty()),
         reason: reason(g.span(), ReasonKind::MatchGuard),
@@ -912,7 +917,7 @@ mod tests {
                     files.extend([
                         (
                             "package.bnt",
-                            "language \"0.0.12\"\ndependency Dep\n path \"dep\"\nend dependency\n",
+                            "language \"0.0.13\"\ndependency Dep\n path \"dep\"\nend dependency\n",
                         ),
                         (
                             "dep/package.bnt",
@@ -1139,7 +1144,12 @@ mod tests {
             out.expr_types.get(list.rest.as_ref().unwrap().id),
             Some(&crate::types::Ty::Con(
                 TyCon::Builtin(B::LIST),
-                vec![crate::types::Ty::Con(TyCon::Builtin(B::STRING), vec![])]
+                vec![crate::types::Ty::Con(
+                    TyCon::Builtin(B::STRING),
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP
+                )],
+                crate::types::builtin::RangeIndex::TOP
             ))
         );
         let s = "function grade(score: Integer) -> String\n return match score with\n case n if n < 0 -> \"invalid\"\n case 90..100 -> \"A\"\n case 70..89 -> \"B\"\n case _ -> \"C\"\n end match\nend function";

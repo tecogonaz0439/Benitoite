@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  match Scope.checkPathIn(pattern: "/a/**", path: "/b") with
+    case Result.Error(e) -> Console.writeLine("${e}")
+    case Result.Ok(_) -> Console.writeLine("ok")
+  end match
+end function

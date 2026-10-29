@@ -198,7 +198,11 @@ fn width_immediates_render_with_and_without_static_types() {
                 "-Infinity",
             ),
         ] {
-            let ty = Ty::Con(TyCon::Builtin(id), vec![]);
+            let ty = Ty::Con(
+                TyCon::Builtin(id),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP,
+            );
             assert_eq!(
                 render_value(ctx, &prepared.table, value, Some(&ty)).unwrap(),
                 expected

@@ -274,9 +274,11 @@ pub struct OpInfo {
 }
 
 /// 組み込みの関数の参照（`PRIM`・`IO` の B が指す）。
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct BuiltinRef {
     pub id: BuiltinId,
+    /// 型検査で受理し、コア IR から保存した範囲の列（設計書 02-06「コア IR」）。
+    pub ranges: Vec<crate::types::scope::Range>,
     pub arity: u16,
     /// 権限（`BuiltinDecl::capability` と同じ。設計書 02-08「組み込みの関数の呼び出し」）。生存の情報と VM が、待ちうる呼び出しかを決める
     pub capability: Capability,

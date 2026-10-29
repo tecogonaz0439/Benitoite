@@ -1,0 +1,222 @@
+== wait-for-lock start 09:26:50
+== lock acquired 09:26:50 after 0s
+✔ [107/506] Built Benitoite.Release.EffectCoverDef (338ms)
+✔ [109/506] Built Benitoite.Release.Typing (1.3s)
+✔ [111/506] Built Benitoite.Release.BuilderContents (377ms)
+✔ [112/506] Built Benitoite.Release.LocalTyping (377ms)
+✔ [115/506] Built Benitoite.Release.TypeRegularity (569ms)
+✔ [117/506] Built Benitoite.Release.BuiltinTable (669ms)
+✔ [119/506] Built Benitoite.Release.BuilderExec (487ms)
+✔ [121/506] Built Benitoite.Release.Lemmas.Basic (350ms)
+✔ [123/506] Built Benitoite.Release.TypeBounds (732ms)
+✔ [125/506] Built Benitoite.Release.SubstEnv (690ms)
+✔ [127/506] Built Benitoite.Release.TypeCongruence (889ms)
+✔ [129/506] Built Benitoite.Release.TypeVariables (1.2s)
+✔ [131/506] Built Benitoite.Release.WellFormed (484ms)
+✔ [132/506] Built Benitoite.Release.TypeScopedSubst (544ms)
+✔ [135/506] Built Benitoite.Release.FailureEffects (732ms)
+✔ [137/506] Built Benitoite.Release.Lemmas.TyLemmas (835ms)
+✔ [138/506] Built Benitoite.Release.Admissible (868ms)
+✔ [141/506] Built Benitoite.Release.EffectCover (966ms)
+✔ [143/506] Built Benitoite.Release.LocalScope (4.6s)
+✔ [144/506] Built Benitoite.Release.Semantics (2.1s)
+✔ [146/506] Built Benitoite.Release.RangeIxExamples (607ms)
+✔ [147/506] Built Benitoite.Release.Assumptions (715ms)
+✔ [148/506] Built Benitoite.Release.RangeWF (2.9s)
+✔ [151/506] Built Benitoite.Release.Examples (2.1s)
+✔ [152/506] Built Benitoite.Release.RangeInst (2.6s)
+✔ [154/506] Built Benitoite.Release.ShapeOk (429ms)
+✔ [156/506] Built Benitoite.Release.Lemmas.Rename (10s)
+✔ [157/506] Built Benitoite.Release.Lemmas.Names (8.1s)
+✔ [160/506] Built Benitoite.Release.Lemmas.Closed (7.5s)
+✔ [162/506] Built Benitoite.Surface.Lemmas.ScopedRename (462ms)
+✔ [163/506] Built Benitoite.Release.Lemmas.VariableBind (714ms)
+✔ [164/506] Built Benitoite.Surface.Lemmas.ShiftClean (1.8s)
+✔ [165/506] Built Benitoite.Release.Lemmas.NoFailContext (3.3s)
+✔ [167/506] Built Benitoite.Release.Lemmas.Irrelevant (5.1s)
+✔ [169/506] Built Benitoite.Release.Lemmas.FailureBase (521ms)
+✔ [171/506] Built Benitoite.Release.Lemmas.ContLemmas (757ms)
+✖ [173/506] Building Benitoite.Release.Lemmas.Inversion (22s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.setup.json --json
+error: Benitoite/Release/Lemmas/Inversion.lean:250:57: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:253:47: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:273:65: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:276:55: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:296:58: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:299:48: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:320:65: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:323:55: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:373:66: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:376:56: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:401:63: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:404:53: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:424:57: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:427:47: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:448:57: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:451:47: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:557:91: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:560:81: Application type mismatch: The argument
+  hs
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans hs' hs
+error: Benitoite/Release/Lemmas/Inversion.lean:584:51: Application type mismatch: The argument
+  he
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans he' he
+error: Benitoite/Release/Lemmas/Inversion.lean:587:41: Application type mismatch: The argument
+  he
+has type
+  ε.Covers ε✝
+but is expected to have type
+  ε✝.Sub ε
+in the application
+  Eff.Sub.trans he' he
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Inversion
+error: build failed
+       25.04 real       173.78 user         9.68 sys
+          3069591552  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1918990  page reclaims
+                  16  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 123  voluntary context switches
+              232134  involuntary context switches
+          2203459233  instructions retired
+          1089400711  cycles elapsed
+            50464064  peak memory footprint
+== exit 1

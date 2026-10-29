@@ -1,0 +1,23 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-e79e06fbc41075ec)
+
+running 1 test
+test scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli ... FAILED
+
+failures:
+
+---- scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli stdout ----
+
+thread 'scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli' (7177098) panicked at crates/benitoite/tests/cli_process/scoped_diagnostics.rs:84:5:
+assertion `left == right` failed
+  left: String("expected `Scope.PathIn[\"/data/**\"]`, found `Integer`")
+ right: "expected `Integer`, found `Scope.PathIn[\"/data/**\"]`"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 1.34s
+
+error: test failed, to rerun pass `-p benitoite --test cli_process`

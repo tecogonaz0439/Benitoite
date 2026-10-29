@@ -1,0 +1,11 @@
+$ python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py
+Traceback (most recent call last):
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py", line 69, in <module>
+    sources[label] = [digest(p) for p in sorted(directory.rglob("*")) if p.is_file()]
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py", line 69, in <listcomp>
+    sources[label] = [digest(p) for p in sorted(directory.rglob("*")) if p.is_file()]
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py", line 46, in digest
+    return {"path": str(path.relative_to(ROOT)), "bytes": len(data),
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 929, in relative_to
+    raise ValueError("{!r} is not in the subpath of {!r}"
+ValueError: 'crates/benitoite/tests/r10_7b_baseline/batch3/builders.bnt' is not in the subpath of '<wt>' OR one path is relative and the other is absolute.

@@ -1,0 +1,22 @@
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:36:4: error(lean.unknownIdentifier): Unknown identifier `Surface.ScopeState.requestOk`
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:37:55: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.checked` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Inhabits.checked`
+  [apply] `Val.checked`
+  [apply] `Inhabits.below.checked`
+  [apply] `Scope.Inference.ScopeFact.checked`
+'STCR.record_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.record_not_opaque' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.record_endpoint_ignored' depends on axioms: [propext]
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:120:14: error(lean.unknownIdentifier): Unknown constant `record_requestOk_falls_back`
+'STCR.check_signature_opaque' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.open_type_changes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.DataValue.rename_toVal' depends on axioms: [propext]
+'STCR.rename_toVals' depends on axioms: [propext]
+'STCR.DataValue.subst_toVal' depends on axioms: [propext]
+'STCR.subst_toVals' depends on axioms: [propext]
+'STCR.DataValue.substTy_toVal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.substTy_toVals' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.41 real         0.28 user         0.16 sys
+time: sysctl kern.clockrate: Operation not permitted

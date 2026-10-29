@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope as Http
+function sample(path: String) -> Result[Http.PathIn["/data/**"], Http.ScopeError]
+ return Http.checkPathIn(pattern: "/data/**", path: path)
+end function
+function main() -> Unit
+ ()
+end function

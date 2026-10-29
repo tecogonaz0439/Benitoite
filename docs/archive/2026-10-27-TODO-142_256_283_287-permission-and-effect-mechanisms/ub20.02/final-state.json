@@ -1,0 +1,363 @@
+{
+  "checkedUtc": "2026-10-28T13:22:59.345070+00:00",
+  "head": "3fc9b3f88c039e61bf797b1da574e5275028253d",
+  "branch": "m013/ub20",
+  "trackedDiff": "",
+  "stagedDiff": "",
+  "errors": [],
+  "probeSummary": {
+    "ub20.01": {
+      "cases": 17,
+      "matched": 17,
+      "exit0": 4
+    },
+    "ub20.02": {
+      "cases": 11,
+      "matched": 11,
+      "exit0": 7
+    }
+  },
+  "workDryRun": {
+    "command": "scripts/check.sh --level work --base 3fc9b3f88c039e61bf797b1da574e5275028253d --dry-run",
+    "exit": 0,
+    "startUtc": "2026-10-28T13:19:53.993222+00:00",
+    "endUtc": "2026-10-28T13:19:54.226190+00:00",
+    "elapsedSeconds": 0.232726666,
+    "maxRssBytes": 10993664,
+    "rssMethod": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; time -p does not collect RSS"
+  },
+  "untrackedBeforeThisRecord": [
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/build.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/build.log",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/MockScope.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/builtin-attribute.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/distinct-operation.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/effect-module-collision.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fake-scope-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fake-type-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fixed-argument-mismatch.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fixed-argument.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fixed-clause-mismatch.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/import-collision.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/standard-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/standard-effect-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/unhandled-test.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/unhandled.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/user-range.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/user-type.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/Collision.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/MockScope.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/builtin-attribute.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/distinct-operation-missing.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/distinct-operation.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/effect-module-collision.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fake-scope-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fake-type-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-argument-mismatch.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-argument.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-clause-mismatch.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-operation-value.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/import-collision.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/standard-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/standard-effect-alias.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/unhandled-test.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/unhandled.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/user-range.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/user-type.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probe-first.py.txt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probe.py",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probes-first.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probes-second.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probes.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/results.md",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/exchange-inventory.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/pure-handled.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/same-name-ranges.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/test-handled.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/test-pure.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probe-first.py.txt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probe.py",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probes-first.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probes.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/results.md",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/work-check-dry-run.json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/work-check-dry-run.log"
+  ],
+  "artifactsExcludingThisRecord": [
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/build.json",
+      "bytes": 244,
+      "sha256": "790d54b30fecd6315137548c60f1858dd488841467ef95aec6d5ce63d69becfd"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/build.log",
+      "bytes": 4773,
+      "sha256": "73b9b7b5def1019d7a4695b598eb4c379d31ffece070c356037beaecb5390c11"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/Collision.bnt",
+      "bytes": 53,
+      "sha256": "c9b58b63b0ca9f3514cbb36d0fb678a336f7af9db078376a5b51138cee9a23a3"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/MockScope.bnt",
+      "bytes": 136,
+      "sha256": "2374036a75ac156184c07caa5df955a78ca2c42318a7aa45d13b9c0b87712543"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/builtin-attribute.bnt",
+      "bytes": 103,
+      "sha256": "263f1a181c37b235a5c883bb58b9d12850e88a58f56285c431acd769649a0636"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/distinct-operation-missing.bnt",
+      "bytes": 272,
+      "sha256": "33f04492d624dcea222305a1944c87bde7f6ef584616ac6336410bba9946d5ac"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/distinct-operation.bnt",
+      "bytes": 287,
+      "sha256": "f2936b7bcc7a4b6907c64bde3993479993bdb2f8f6e00c111caf9e5a118a4d32"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/effect-module-collision.bnt",
+      "bytes": 58,
+      "sha256": "8ae32b6a266ceb85efc4c40ddd0ad1d9678da319971e225038194f9a79819567"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fake-scope-alias.bnt",
+      "bytes": 108,
+      "sha256": "7136b481ea1b404240210f399db2db0443a42b45dfaeb4b15f84648864b63b94"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fake-type-alias.bnt",
+      "bytes": 134,
+      "sha256": "4cef5153c25de83de1fe8f20767b364bbee6de3609504cb2fd2ae3507661f25a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-argument-mismatch.bnt",
+      "bytes": 599,
+      "sha256": "8b3a7ae63eb693d232d4a12118283ab17ddf29f365ec3bfc926d901869e34c71"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-argument.bnt",
+      "bytes": 606,
+      "sha256": "87e6740a37bc54cd0eda18648be0b9cd621b9934c064048545d021983ae0d701"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-clause-mismatch.bnt",
+      "bytes": 599,
+      "sha256": "b5ea80adb37429f7214ee9430825e7c9aa0f1b4db9652bf348c1b5ed62c4c777"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/fixed-operation-value.bnt",
+      "bytes": 625,
+      "sha256": "18d233e8a23c95a35737639a1d111ba791566dfa390d55719906fbc2f99c0a7a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/import-collision.bnt",
+      "bytes": 125,
+      "sha256": "56b57da9a86d7325daac61c323a5a58eb9f09e8e16547b7a7d57e29da7b5fd5a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/standard-alias.bnt",
+      "bytes": 127,
+      "sha256": "ae26f4b965ad655ea8ac07c7969765cdcfc5fb081be5c1a52faa9922c82f77fa"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/standard-effect-alias.bnt",
+      "bytes": 82,
+      "sha256": "0e9cc83d2fdd38709cb39f8cc36c305fb8d2e35770ebfe32b8d83bed9bc4028a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/unhandled-test.bnt",
+      "bytes": 156,
+      "sha256": "76e019adf07ed4c0ff5ced19ba7fdaf6b2f1f0fa1f01811bea4bab9c3ff3914e"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/unhandled.bnt",
+      "bytes": 107,
+      "sha256": "70823dee85360a5d7b5c3dbc56cdb8a93f52d4be5081904c6faaf3fe2d928304"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/user-range.bnt",
+      "bytes": 156,
+      "sha256": "435de74f27370ddb13c23e69433b6cb9c99d116cc031b2b2dd88a765a9af2d4a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs/user-type.bnt",
+      "bytes": 153,
+      "sha256": "b574ddd268add2f45c8e186ca7fffe12b7bba52ffc758de38e57e29b03440ad0"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/MockScope.bnt",
+      "bytes": 153,
+      "sha256": "ed41c725047a256aabff4749aac62d82f431d8969d4177e2fd392c13be324fe8"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/builtin-attribute.bnt",
+      "bytes": 120,
+      "sha256": "e63564166219ce6f8c0342872f49e620d61eeec9ee87f72ed9c90f3708309bc0"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/distinct-operation.bnt",
+      "bytes": 277,
+      "sha256": "a8e83f0aa90926ae83821e2d645cc1ee95bbe1653e68e2fd8af2ab0e0f6e17c4"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/effect-module-collision.bnt",
+      "bytes": 111,
+      "sha256": "4ee16398417dd747d2880b569f374a66e65c9c0f299ac505080691afbbb38d10"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fake-scope-alias.bnt",
+      "bytes": 108,
+      "sha256": "7136b481ea1b404240210f399db2db0443a42b45dfaeb4b15f84648864b63b94"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fake-type-alias.bnt",
+      "bytes": 134,
+      "sha256": "4cef5153c25de83de1fe8f20767b364bbee6de3609504cb2fd2ae3507661f25a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fixed-argument-mismatch.bnt",
+      "bytes": 599,
+      "sha256": "8b3a7ae63eb693d232d4a12118283ab17ddf29f365ec3bfc926d901869e34c71"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fixed-argument.bnt",
+      "bytes": 606,
+      "sha256": "87e6740a37bc54cd0eda18648be0b9cd621b9934c064048545d021983ae0d701"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/fixed-clause-mismatch.bnt",
+      "bytes": 599,
+      "sha256": "b5ea80adb37429f7214ee9430825e7c9aa0f1b4db9652bf348c1b5ed62c4c777"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/import-collision.bnt",
+      "bytes": 125,
+      "sha256": "56b57da9a86d7325daac61c323a5a58eb9f09e8e16547b7a7d57e29da7b5fd5a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/standard-alias.bnt",
+      "bytes": 127,
+      "sha256": "ae26f4b965ad655ea8ac07c7969765cdcfc5fb081be5c1a52faa9922c82f77fa"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/standard-effect-alias.bnt",
+      "bytes": 82,
+      "sha256": "0e9cc83d2fdd38709cb39f8cc36c305fb8d2e35770ebfe32b8d83bed9bc4028a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/unhandled-test.bnt",
+      "bytes": 156,
+      "sha256": "76e019adf07ed4c0ff5ced19ba7fdaf6b2f1f0fa1f01811bea4bab9c3ff3914e"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/unhandled.bnt",
+      "bytes": 107,
+      "sha256": "70823dee85360a5d7b5c3dbc56cdb8a93f52d4be5081904c6faaf3fe2d928304"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/user-range.bnt",
+      "bytes": 156,
+      "sha256": "435de74f27370ddb13c23e69433b6cb9c99d116cc031b2b2dd88a765a9af2d4a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/inputs-first/user-type.bnt",
+      "bytes": 153,
+      "sha256": "b574ddd268add2f45c8e186ca7fffe12b7bba52ffc758de38e57e29b03440ad0"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probe-first.py.txt",
+      "bytes": 4823,
+      "sha256": "b34666b6d356a7590c6af21484786e2b7270cce405564a7d12f10bbd2f7646ff"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probe.py",
+      "bytes": 5215,
+      "sha256": "4795ccc673ccdd54b14eff26961c513869dd133823c84b13b010f7b040f09baf"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probes-first.json",
+      "bytes": 204658,
+      "sha256": "ea9803a7b156dc96cdc59fd517f4482ce31e72995dcb38f8f8c80a0e4e823945"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probes-second.json",
+      "bytes": 204720,
+      "sha256": "4b9bdc9d2c8c661430ab0dec7ac40996bc4c374aa392a25f84955bbcb4c16e40"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/probes.json",
+      "bytes": 231896,
+      "sha256": "1844615278921c3d3732c7327554247d435374d2dacc6c59bc4bd9e228666c85"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.01/results.md",
+      "bytes": 15431,
+      "sha256": "b0ec485629dedc36b70d0c5e925a1c6686464630c8e2a89f2aa8a3dd0a29c0a7"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/exchange-inventory.json",
+      "bytes": 3334,
+      "sha256": "d2da0f4881aa02bdd7d6c9e6e5bfbc61c668e90dcbd8022e71a2bd4de095a8bf"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/pure-handled.bnt",
+      "bytes": 165,
+      "sha256": "5e61721ce46b1ae4ef1d962d07048c1a668ef2ed97f5ebee37c20ae28d064be3"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/same-name-ranges.bnt",
+      "bytes": 145,
+      "sha256": "3a668d2a59c3462825969b7d3c864342893d30de889e75c216e8e3875a60c263"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/test-handled.bnt",
+      "bytes": 614,
+      "sha256": "a808d143291212290979e937fc7fafe5b61d52309b92833c1d345c2d376b06f6"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/inputs/test-pure.bnt",
+      "bytes": 173,
+      "sha256": "c0a4a10f8b852796bf55cee2077c240f840a9583b423f609b1427038728345fe"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probe-first.py.txt",
+      "bytes": 4494,
+      "sha256": "4278af4ce451bc7eb18f0214e185106cc3ca9a1e127ea9d32362a794bbf3a284"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probe.py",
+      "bytes": 4666,
+      "sha256": "3019012d55f9ef2b78c5f353e80a3451aa04a79f0d0525205c3451527456b72b"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probes-first.json",
+      "bytes": 74485,
+      "sha256": "31837c558b15ebbad53cee9ccd68973640d68bc17b3fae62adb564b764af8867"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/probes.json",
+      "bytes": 98191,
+      "sha256": "327db8cced2faa7632a79a3eb733e4620806b169e0395bfcea5a1131063f42ee"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/results.md",
+      "bytes": 20925,
+      "sha256": "77fece00856a49740a4e68ccc190c08fc31b8b78c1b0fb275449824109b1f544"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/work-check-dry-run.json",
+      "bytes": 369,
+      "sha256": "36cc8a7fbcee53526f0790066f13904b2e2bcd0ff8ce6bfaa27251df49e06af3"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/ub20.02/work-check-dry-run.log",
+      "bytes": 265,
+      "sha256": "bd16f474258006661d7a5f1f773e81f76d8558c37ab93b4c2186b2ce17dd556f"
+    }
+  ]
+}

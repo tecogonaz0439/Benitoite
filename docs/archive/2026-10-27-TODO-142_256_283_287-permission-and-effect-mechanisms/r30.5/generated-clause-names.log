@@ -1,0 +1,33 @@
+$ git grep -n -E case[^\n]*\{[^\n]*\}[^\n]*\( -- crates/benitoite tools/bench/compare tools/skill-eval/tasks tools/syntax-measure/template docs/design docs/reference docs/ja
+crates/benitoite/examples/stack_probe/support.rs:161:                "data L\n Mk(L)\nend data\nfunction f(x: L) -> Unit\nmatch x with\ncase {pat} -> ()\nend match\nend function\n"
+crates/benitoite/examples/stack_probe/support.rs:168:                "function f(x: {ty}) -> Unit\nmatch x with\ncase {pat} -> ()\ncase _ -> ()\nend match\nend function\n"
+crates/benitoite/src/external/adapter/abi_tests.rs:65:                cases: (0..32).map(|i| (format!("c{i}"), i)).collect(),
+crates/benitoite/src/external/adapter/abi_tests.rs:392:            (type $v0 (variant (case "a" {left_wit}) (case "b" {right_wit})))
+crates/benitoite/src/external/types.rs:713:            Self::Enum { cases } | Self::Flags { cases } => format!(
+crates/benitoite/src/pipeline.rs:932:                            "function f(n: {ty}) -> Unit\n match n with\n case {pat} -> ()\n case _ -> ()\n end match\nend function\n"
+crates/benitoite/src/pipeline.rs:937:                            "data L\n Mk(L)\nend data\nfunction f(n: L) -> Unit\n match n with\n case {pat} -> ()\n end match\nend function\n"
+crates/benitoite/src/pipeline.rs:954:        let flat = format!(" case [{}] -> ()\n", vec!["_"; elements].join(", "));
+crates/benitoite/src/pipeline.rs:975:            matrix.push_str(&format!(" case [{}] -> ()\n", values.join(", ")));
+crates/benitoite/src/runtime/assert/tests.rs:333:            "@test\nfunction case{i}() -> Unit uses Assert.Check\n  bind a: {ty} <- {actual}\n  bind b: {ty} <- {expected}\n  Assert.equal(actual: a, expected: b)\nend function\n"
+crates/benitoite/src/runtime/heap/verification_tests.rs:161:                            let text = format!("{case}:{step}:{}", "あ".repeat(rng.pick(80)));
+crates/benitoite/src/syntax/parser/effects.rs:1212:                    "handle () with case op() -> {}(){} end handle",
+crates/benitoite/src/syntax/parser/effects.rs:1217:                    "handle () with case op() -> {}(){} end handle",
+crates/benitoite/src/syntax/parser/mod.rs:2841:                    "match x with\ncase {}_{} -> ()\nend match",
+crates/benitoite/src/syntax/parser/mod.rs:2846:                    "match x with\ncase {}_{} -> ()\nend match",
+crates/benitoite/src/syntax/parser/mod.rs:2869:                    "match x with\ncase C({}) -> ()\nend match",
+crates/benitoite/src/syntax/parser/mod.rs:2873:                    "match x with\ncase C({}) -> ()\nend match",
+crates/benitoite/src/syntax/parser/patterns_ext.rs:371:        format!("function f() -> Unit\nmatch x with\ncase {head} -> ()\nend match\nend function")
+crates/benitoite/src/syntax/parser/records.rs:519:                "match v with\ncase {pat} -> ()\nend match"
+crates/benitoite/src/syntax/parser/records.rs:552:                "match v with\ncase R({fields}) -> ()\nend match"
+crates/benitoite/src/typeck/interval/flow/widths/tests.rs:288:                format!("function case{i}(x: {ty}, flag: Boolean) -> {ty}\n {body}\nend function\n")
+crates/benitoite/src/typeck/pattern_ext.rs:1060:            source.push_str(&format!(" case Flags({fields}, ..) -> ()\n"));
+crates/benitoite/src/typeck/pattern_ext.rs:1063:            source.push_str(&format!(" case Flags(f{}: {value}, ..) -> ()\n", 4 * n));
+crates/benitoite/src/typeck/pattern_ext.rs:1535:            &format!(" case {pat} -> ()\n case _ -> ()"),
+crates/benitoite/tests/declarations.rs:170:            format!("match value with case {ctor}({pattern}) -> () end match"),
+crates/benitoite/tests/spec_examples.rs:380:            "function exampleWrapper() -> Unit\nmatch () with\ncase {source} -> ()\nend match\nend function"
+crates/benitoite/tests/test_command.rs:3043:            "@test\nfunction case{i}() -> Unit uses Assert.Check, State\n{test_body}end function\n"
+tools/bench/compare/analysis.py:31:        values = measurements.get(spec['case'], {}).get(spec['state'], {}).get(spec.get('metric', 'cli'), [])
+tools/bench/compare/scenarios/external_tests.py:48:        tests = ''.join(f'@test\nfunction case{i}() -> Unit uses {uses}\n{body}end function\n' for i in range(n))
+tools/bench/compare/test_compare.py:512:                        self.assertTrue(set(case.metrics) - {'allocated_bytes'} <= values.keys())
+
+exit=0

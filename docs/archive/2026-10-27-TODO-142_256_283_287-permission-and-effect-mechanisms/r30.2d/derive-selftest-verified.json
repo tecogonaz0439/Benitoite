@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "tools/derive/test_derive.py"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 88.491600625,
+  "maxrss_raw": 207618048,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 198.0,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 88.516101542,
+  "recorded_at": "2026-10-29T06:20:32.302032+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2d/run-record.py",
+    "--child",
+    "derive-selftest-verified",
+    "python3",
+    "-B",
+    "tools/derive/test_derive.py"
+  ]
+}

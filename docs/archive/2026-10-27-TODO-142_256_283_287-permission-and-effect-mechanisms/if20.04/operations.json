@@ -1,0 +1,2147 @@
+[
+  {
+    "module": "Integer",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Integer.bnt",
+      "line": 12
+    },
+    "builtin": "Integer.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/integer.rs",
+      "line": 10,
+      "function": "to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D001"
+  },
+  {
+    "module": "Float",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Float.bnt",
+      "line": 5
+    },
+    "builtin": "Float.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/float.rs",
+      "line": 10,
+      "function": "to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D002"
+  },
+  {
+    "module": "Decimal",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Decimal.bnt",
+      "line": 29
+    },
+    "builtin": "Decimal.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/decimal.rs",
+      "line": 78,
+      "function": "to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D003"
+  },
+  {
+    "module": "Byte",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Byte.bnt",
+      "line": 17
+    },
+    "builtin": "Byte.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/byte.rs",
+      "line": 25,
+      "function": "to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D004"
+  },
+  {
+    "module": "Character",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Character.bnt",
+      "line": 13
+    },
+    "builtin": "Character.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/character.rs",
+      "line": 34,
+      "function": "to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D005"
+  },
+  {
+    "module": "Character",
+    "name": "toUppercase",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Character.bnt",
+      "line": 45
+    },
+    "builtin": "Character.toUppercase",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/character.rs",
+      "line": 115,
+      "function": "to_uppercase",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Character→大文字/小文字の String。文字による結果と文字数の違いも依存する",
+    "id": "D006"
+  },
+  {
+    "module": "Character",
+    "name": "toLowercase",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Character.bnt",
+      "line": 49
+    },
+    "builtin": "Character.toLowercase",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/character.rs",
+      "line": 123,
+      "function": "to_lowercase",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Character→大文字/小文字の String。文字による結果と文字数の違いも依存する",
+    "id": "D007"
+  },
+  {
+    "module": "Integer8",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Integer8.bnt",
+      "line": 21
+    },
+    "builtin": "Integer8.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 69,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D008"
+  },
+  {
+    "module": "Integer16",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Integer16.bnt",
+      "line": 21
+    },
+    "builtin": "Integer16.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 79,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D009"
+  },
+  {
+    "module": "Integer32",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Integer32.bnt",
+      "line": 21
+    },
+    "builtin": "Integer32.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 89,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D010"
+  },
+  {
+    "module": "UnsignedInteger16",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/UnsignedInteger16.bnt",
+      "line": 21
+    },
+    "builtin": "UnsignedInteger16.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 99,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D011"
+  },
+  {
+    "module": "UnsignedInteger32",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/UnsignedInteger32.bnt",
+      "line": 21
+    },
+    "builtin": "UnsignedInteger32.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 109,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D012"
+  },
+  {
+    "module": "UnsignedInteger64",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/UnsignedInteger64.bnt",
+      "line": 21
+    },
+    "builtin": "UnsignedInteger64.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 119,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D013"
+  },
+  {
+    "module": "Float32",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Float32.bnt",
+      "line": 17
+    },
+    "builtin": "Float32.toString",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/width.rs",
+      "line": 129,
+      "function": "number! → to_string",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D014"
+  },
+  {
+    "module": "Integer64",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Integer64.bnt",
+      "line": 8
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D015"
+  },
+  {
+    "module": "Float64",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Float64.bnt",
+      "line": 4
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D016"
+  },
+  {
+    "module": "UnsignedInteger8",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/UnsignedInteger8.bnt",
+      "line": 18
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D017"
+  },
+  {
+    "module": "UnsignedInteger",
+    "name": "toString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/UnsignedInteger.bnt",
+      "line": 23
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "数または Character→文字列。符号・桁数・特殊値・文字を含め元の依存を保持する",
+    "id": "D018"
+  },
+  {
+    "module": "String",
+    "name": "byteLength",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 15
+    },
+    "builtin": "String.byteLength",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 17,
+      "function": "byte_length",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "元の UTF-8 バイト数→Integer。本文を含まない数値にも元の依存がある",
+    "id": "D019"
+  },
+  {
+    "module": "String",
+    "name": "byteSlice",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 19
+    },
+    "builtin": "String.byteSlice",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 35,
+      "function": "byte_slice",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列・開始・終了→断片と Some/None。範囲と UTF-8 境界の成否も依存する",
+    "id": "D020"
+  },
+  {
+    "module": "String",
+    "name": "characterCount",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 23
+    },
+    "builtin": "String.characterCount",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 26,
+      "function": "character_count",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "コードポイント数→Integer。内容を伏せても文字数を観測できる",
+    "id": "D021"
+  },
+  {
+    "module": "String",
+    "name": "characterAt",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 27
+    },
+    "builtin": "String.characterAt",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 72,
+      "function": "character_at",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列・添字→Character と Some/None。存在を調べるだけでも依存する",
+    "id": "D022"
+  },
+  {
+    "module": "String",
+    "name": "characterSlice",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 31
+    },
+    "builtin": "String.characterSlice",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 50,
+      "function": "character_slice",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列・文字位置→断片と Some/None。元の長さで成否が変わる",
+    "id": "D023"
+  },
+  {
+    "module": "String",
+    "name": "isEmpty",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 35
+    },
+    "builtin": "String.isEmpty",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 86,
+      "function": "is_empty",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列→空かどうか。Boolean に本文の有無の依存がある",
+    "id": "D024"
+  },
+  {
+    "module": "String",
+    "name": "contains",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 39
+    },
+    "builtin": "String.contains",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 95,
+      "function": "contains",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文・検索片→包含の Boolean。比較結果で後の出力を選べる",
+    "id": "D025"
+  },
+  {
+    "module": "String",
+    "name": "startsWith",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 43
+    },
+    "builtin": "String.startsWith",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 104,
+      "function": "starts_with",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文・接頭辞→Boolean。比較結果にも双方の依存がある",
+    "id": "D026"
+  },
+  {
+    "module": "String",
+    "name": "endsWith",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 47
+    },
+    "builtin": "String.endsWith",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 113,
+      "function": "ends_with",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文・接尾辞→Boolean。比較結果にも双方の依存がある",
+    "id": "D027"
+  },
+  {
+    "module": "String",
+    "name": "byteIndexOf",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 51
+    },
+    "builtin": "String.byteIndexOf",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 122,
+      "function": "byte_index_of",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文・検索片→位置と Some/None。位置・見つかった事実も派生値である",
+    "id": "D028"
+  },
+  {
+    "module": "String",
+    "name": "split",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 55
+    },
+    "builtin": "String.split",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 131,
+      "function": "split",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文・区切り→文字列の列、各片、件数・順序。空区切りの分岐も含む",
+    "id": "D029"
+  },
+  {
+    "module": "String",
+    "name": "lines",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 59
+    },
+    "builtin": "String.lines",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 156,
+      "function": "lines",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文→行の列と件数。CR/LF の処理は秘密の除去ではない",
+    "id": "D030"
+  },
+  {
+    "module": "String",
+    "name": "join",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 63
+    },
+    "builtin": "String.join",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 177,
+      "function": "join",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "各片・列の形・区切り→結合文字列と長さ。要素の依存を結ぶ",
+    "id": "D031"
+  },
+  {
+    "module": "String",
+    "name": "trim",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 67
+    },
+    "builtin": "String.trim",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 212,
+      "function": "trim",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文→前後を除いた文字列。残る内容・空になるかも元へ依存する",
+    "id": "D032"
+  },
+  {
+    "module": "String",
+    "name": "replace",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 71
+    },
+    "builtin": "String.replace",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 220,
+      "function": "replace",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "本文・検索片・置換片→文字列。置換箇所と回数にも依存する",
+    "id": "D033"
+  },
+  {
+    "module": "String",
+    "name": "repeat",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 75
+    },
+    "builtin": "String.repeat",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 244,
+      "function": "repeat",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列・回数→反復文字列と長さ。回数が0以下か元が空なら空文字列。結果の上限による停止も別に追う",
+    "id": "D034"
+  },
+  {
+    "module": "String",
+    "name": "characters",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 79
+    },
+    "builtin": "String.characters",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 263,
+      "function": "characters",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列→Character の列。内容・長さ・並びを保持する",
+    "id": "D035"
+  },
+  {
+    "module": "String",
+    "name": "fromCharacters",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 83
+    },
+    "builtin": "String.fromCharacters",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 273,
+      "function": "from_characters",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Character の列→文字列。文字と列の形の依存を保持する",
+    "id": "D036"
+  },
+  {
+    "module": "String",
+    "name": "toUppercase",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 87
+    },
+    "builtin": "String.toUppercase",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 333,
+      "function": "to_uppercase",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列と引数→大文字小文字の変換または表示幅の空白補充。内容と結果長・上限の成否を保持する",
+    "id": "D037"
+  },
+  {
+    "module": "String",
+    "name": "toLowercase",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 91
+    },
+    "builtin": "String.toLowercase",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 349,
+      "function": "to_lowercase",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列と引数→大文字小文字の変換または表示幅の空白補充。内容と結果長・上限の成否を保持する",
+    "id": "D038"
+  },
+  {
+    "module": "String",
+    "name": "toUTF8",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 95
+    },
+    "builtin": "String.toUTF8",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 378,
+      "function": "to_u_t_f8",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "String→Bytes。バイトへの表現変更でも元の依存を保持する",
+    "id": "D039"
+  },
+  {
+    "module": "String",
+    "name": "fromUTF8",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 99
+    },
+    "builtin": "String.fromUTF8",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 386,
+      "function": "from_u_t_f8",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Bytes→String と Some/None。正しい UTF-8 かどうかも派生値である",
+    "id": "D040"
+  },
+  {
+    "module": "String",
+    "name": "displayWidth",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 105
+    },
+    "builtin": "String.displayWidth",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 526,
+      "function": "display_width",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列→既定の表示幅。幅が同じでも内容を公開と分類しない",
+    "id": "D041"
+  },
+  {
+    "module": "String",
+    "name": "displayWidthCJK",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 110
+    },
+    "builtin": "String.displayWidthCJK",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 535,
+      "function": "display_width_cjk",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列→CJK の表示幅。端末を読まず計算する派生値である",
+    "id": "D042"
+  },
+  {
+    "module": "String",
+    "name": "displayWidthPadStart",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 114
+    },
+    "builtin": "String.displayWidthPadStart",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 544,
+      "function": "display_width_pad_start",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列と引数→大文字小文字の変換または表示幅の空白補充。内容と結果長・上限の成否を保持する",
+    "id": "D043"
+  },
+  {
+    "module": "String",
+    "name": "displayWidthPadEnd",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 118
+    },
+    "builtin": "String.displayWidthPadEnd",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 552,
+      "function": "display_width_pad_end",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列と引数→大文字小文字の変換または表示幅の空白補充。内容と結果長・上限の成否を保持する",
+    "id": "D044"
+  },
+  {
+    "module": "String",
+    "name": "displayWidthPadStartCJK",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 122
+    },
+    "builtin": "String.displayWidthPadStartCJK",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 560,
+      "function": "display_width_pad_start_cjk",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列と引数→大文字小文字の変換または表示幅の空白補充。内容と結果長・上限の成否を保持する",
+    "id": "D045"
+  },
+  {
+    "module": "String",
+    "name": "displayWidthPadEndCJK",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/String.bnt",
+      "line": 126
+    },
+    "builtin": "String.displayWidthPadEndCJK",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/string.rs",
+      "line": 568,
+      "function": "display_width_pad_end_cjk",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "文字列と引数→大文字小文字の変換または表示幅の空白補充。内容と結果長・上限の成否を保持する",
+    "id": "D046"
+  },
+  {
+    "module": "Time",
+    "name": "fromUnixSeconds",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 22
+    },
+    "builtin": "Time.fromUnixSeconds",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 36,
+      "function": "from_unix_seconds",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D047"
+  },
+  {
+    "module": "Time",
+    "name": "fromUnixMilliseconds",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 26
+    },
+    "builtin": "Time.fromUnixMilliseconds",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 45,
+      "function": "from_unix_milliseconds",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D048"
+  },
+  {
+    "module": "Time",
+    "name": "toUnixSeconds",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 30
+    },
+    "builtin": "Time.toUnixSeconds",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 54,
+      "function": "to_unix_seconds",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D049"
+  },
+  {
+    "module": "Time",
+    "name": "toUnixMilliseconds",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 34
+    },
+    "builtin": "Time.toUnixMilliseconds",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 62,
+      "function": "to_unix_milliseconds",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D050"
+  },
+  {
+    "module": "Time",
+    "name": "addMilliseconds",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 38
+    },
+    "builtin": "Time.addMilliseconds",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 70,
+      "function": "add_milliseconds",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D051"
+  },
+  {
+    "module": "Time",
+    "name": "differenceMilliseconds",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 42
+    },
+    "builtin": "Time.differenceMilliseconds",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 82,
+      "function": "difference_milliseconds",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D052"
+  },
+  {
+    "module": "Time",
+    "name": "toDateTime",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 46
+    },
+    "builtin": "Time.toDateTime",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 93,
+      "function": "to_date_time",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・数値・時差→時刻または暦の欄・経過量。丸め・差分でも元の分類と停止条件を保持する",
+    "id": "D053"
+  },
+  {
+    "module": "Time",
+    "name": "fromDateTime",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 50
+    },
+    "builtin": "Time.fromDateTime",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 109,
+      "function": "from_date_time",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "各日時欄→Instant または失敗文。無効な日付・範囲と時差の停止を区別する",
+    "id": "D054"
+  },
+  {
+    "module": "Time",
+    "name": "formatISO8601",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 54
+    },
+    "builtin": "Time.formatISO8601",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 129,
+      "function": "format_i_s_o8601",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻と時差→文字列。秒の端数の有無・桁数と不正な時差の停止にも依存する",
+    "id": "D055"
+  },
+  {
+    "module": "Time",
+    "name": "parseISO8601",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 58
+    },
+    "builtin": "Time.parseISO8601",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 147,
+      "function": "parse_i_s_o8601",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "入力文字列→Instant または依存が作る失敗文。解析成否を含めて入力の分類を保つ",
+    "id": "D056"
+  },
+  {
+    "module": "Time",
+    "name": "format",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Time.bnt",
+      "line": 62
+    },
+    "builtin": "Time.format",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/time.rs",
+      "line": 160,
+      "function": "format",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "時刻・時差・pattern→文字列または失敗文。pattern の通常文字はそのまま入り、未知指定なら Error",
+    "id": "D057"
+  },
+  {
+    "module": "IOError",
+    "name": "message",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/IOError.bnt",
+      "line": 5
+    },
+    "builtin": "IOError.message",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/io_error.rs",
+      "line": 10,
+      "function": "message",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "誤り→保存した文言（message）または種類タグ（kind）。表示・分岐に渡しても取得元と成否の分類を保持する",
+    "id": "D058"
+  },
+  {
+    "module": "IOError",
+    "name": "kind",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/IOError.bnt",
+      "line": 9
+    },
+    "builtin": "IOError.kind",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/io_error.rs",
+      "line": 29,
+      "function": "kind",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "誤り→保存した文言（message）または種類タグ（kind）。表示・分岐に渡しても取得元と成否の分類を保持する",
+    "id": "D059"
+  },
+  {
+    "module": "NetworkError",
+    "name": "kind",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/NetworkError.bnt",
+      "line": 5
+    },
+    "builtin": "NetworkError.kind",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/network_error.rs",
+      "line": 10,
+      "function": "kind",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "誤り→保存した文言（message）または種類タグ（kind）。表示・分岐に渡しても取得元と成否の分類を保持する",
+    "id": "D060"
+  },
+  {
+    "module": "NetworkError",
+    "name": "message",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/NetworkError.bnt",
+      "line": 9
+    },
+    "builtin": "NetworkError.message",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/network_error.rs",
+      "line": 20,
+      "function": "message",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "誤り→保存した文言（message）または種類タグ（kind）。表示・分岐に渡しても取得元と成否の分類を保持する",
+    "id": "D061"
+  },
+  {
+    "module": "Json",
+    "name": "parse",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 26
+    },
+    "builtin": "Json.parse",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/json.rs",
+      "line": 29,
+      "function": "parse",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "入力文字列→Json.Value または ParseError(line, column, message)。形・鍵・位置・解析の成否も入力へ依存する",
+    "id": "D062"
+  },
+  {
+    "module": "Json",
+    "name": "stringify",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 30
+    },
+    "builtin": "Json.stringify",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/json.rs",
+      "line": 394,
+      "function": "stringify",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value の値・鍵・列長・入れ子→JSON 文字列。非有限 Float→null、Pretty の改行・字下げにも依存する",
+    "id": "D063"
+  },
+  {
+    "module": "Json",
+    "name": "stringifyPretty",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 34
+    },
+    "builtin": "Json.stringifyPretty",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/json.rs",
+      "line": 402,
+      "function": "stringify_pretty",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value の値・鍵・列長・入れ子→JSON 文字列。非有限 Float→null、Pretty の改行・字下げにも依存する",
+    "id": "D064"
+  },
+  {
+    "module": "Json",
+    "name": "get",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 37
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value と鍵→選んだメンバと Some/None。Object か、鍵があるかにも依存する",
+    "id": "D065"
+  },
+  {
+    "module": "Json",
+    "name": "at",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 45
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value と添字→選んだ要素と Some/None。Array か、範囲内かにも依存する",
+    "id": "D066"
+  },
+  {
+    "module": "Json",
+    "name": "asString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 53
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Value.String→中の String の Some、ほか→None。内容と種類の判定に依存する",
+    "id": "D067"
+  },
+  {
+    "module": "Json",
+    "name": "asInteger",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 61
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Value.Integer→中の Integer の Some、ほか→None。値と種類の判定に依存する",
+    "id": "D068"
+  },
+  {
+    "module": "Json",
+    "name": "asFloat",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 69
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Value.Float または Integer→Float の Some、ほか→None。整数からの数値変換でも依存は残る",
+    "id": "D069"
+  },
+  {
+    "module": "Json",
+    "name": "asBoolean",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 78
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Value.Boolean→中の Boolean の Some、ほか→None。値と種類の判定に依存する",
+    "id": "D070"
+  },
+  {
+    "module": "Json",
+    "name": "asArray",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 86
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Value.Array→List の Some、ほか→None。要素・長さ・形と種類の判定に依存する",
+    "id": "D071"
+  },
+  {
+    "module": "Json",
+    "name": "asObject",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json.bnt",
+      "line": 94
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Value.Object→Map の Some、ほか→None。鍵・値・件数・形と種類の判定に依存する",
+    "id": "D072"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "kind",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 23
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "入力→種類名。内容を含まない文字列でも入力の形へ依存する",
+    "id": "D073"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "error",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 36
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "expected・found・reason→ConversionError。引数には任意の利用者文字列も入る",
+    "id": "D074"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "prepend",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 41
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "PathPart と失敗→外側の経路を加えた失敗。Field/Key/Index の内容と形を保持する",
+    "id": "D075"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeObject",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 46
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Object→Map、ほか→種類名付き失敗。入力の形で成功と失敗が分かれる",
+    "id": "D076"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeField",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 54
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "members・key→存在判定で decode/decodeMissing の一方だけを実行。失敗には Field(key) を付ける",
+    "id": "D077"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "missing",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 63
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "定数の欠落失敗を返す。ただし秘密依存の呼び出し条件や前段の欠落判定は残る",
+    "id": "D078"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "rejectExtra",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 69
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "入力鍵と許した鍵→最初の未知キーの失敗または成功。キーの字面・有無・鍵順が依存する",
+    "id": "D079"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 86
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "String→Json.Value.String の Ok。値を包んでも元の分類と呼び出し条件を保つ",
+    "id": "D080"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeString",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 91
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value.String→中の値の Ok、ほか→種類名付きの Error。成功と失敗も入力の形へ依存する",
+    "id": "D081"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeBoolean",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 99
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Boolean→Json.Value.Boolean の Ok。値を包んでも元の分類と呼び出し条件を保つ",
+    "id": "D082"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeBoolean",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 104
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value.Boolean→中の値の Ok、ほか→種類名付きの Error。成功と失敗も入力の形へ依存する",
+    "id": "D083"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeInteger",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 112
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Integer→Json.Value.Integer の Ok。値を包んでも元の分類と呼び出し条件を保つ",
+    "id": "D084"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeInteger",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 117
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value.Integer→中の値の Ok、ほか→種類名付きの Error。成功と失敗も入力の形へ依存する",
+    "id": "D085"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeFloat",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 125
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Float→有限なら Json.Value.Float の Ok、NaN/無限大なら固定文の Error。有限性と失敗の分岐にも依存する",
+    "id": "D086"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeFloat",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 133
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Json.Value.Float かつ有限なら中の Float の Ok、ほか→種類/有限性に応じた Error。Integer は受け付けない",
+    "id": "D087"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeOption",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 150
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "None→Null の Ok、Some→渡した encode を呼ぶ。構成子と関数の捕捉値、成功/失敗にも依存する",
+    "id": "D088"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeOption",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 158
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Null→None の Ok、ほか→渡した decode の結果を Some で包む。関数を呼ぶかと成否にも依存する",
+    "id": "D089"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeList",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 166
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "List の各要素→渡した encode→Array の Ok または最初の失敗。長さ・順序・失敗の Index と後続の非実行も依存する",
+    "id": "D090"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeList",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 171
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Array の各要素→渡した decode→List の Ok または最初の失敗。ほかの種類は Error。失敗には Index を付ける",
+    "id": "D091"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "encodeMap",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 188
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "String 鍵の Map を鍵順に encode→Object の Ok または最初の失敗。入力の鍵を Key として失敗へ付ける",
+    "id": "D092"
+  },
+  {
+    "module": "Json.Codec",
+    "name": "decodeMap",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt",
+      "line": 193
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Object の値を鍵順に decode→Map の Ok または最初の失敗。ほかの種類は Error。失敗には入力の Key を付ける",
+    "id": "D093"
+  },
+  {
+    "module": "Log",
+    "name": "emit",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 40
+    },
+    "builtin": "Benitoite.Log.emit",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/log.rs",
+      "line": 11,
+      "function": "emit",
+      "kind": "io"
+    },
+    "direction": "両方",
+    "effect": "Log",
+    "candidate": "契約を設ける",
+    "flow": "内→外: level・message・attributes の鍵/値/順序/件数・location と出力の有無。外→内: stderr の書き込み失敗による停止",
+    "id": "D094"
+  },
+  {
+    "module": "Log",
+    "name": "enabled",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 42
+    },
+    "builtin": "Benitoite.Log.enabled",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/log.rs",
+      "line": 27,
+      "function": "enabled",
+      "kind": "io"
+    },
+    "direction": "内部の派生",
+    "effect": "Log",
+    "candidate": "契約を設ける",
+    "flow": "既定は level→Info 以上かの Boolean。利用者ハンドラでは最低水準・sink の有無や捕捉値にも依存する",
+    "id": "D095"
+  },
+  {
+    "module": "Log",
+    "name": "attribute",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 124
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "key と ToLogValue の変換結果→Attribute。変換は一度であり、任意 Show を暗黙には呼ばない",
+    "id": "D096"
+  },
+  {
+    "module": "Log",
+    "name": "debug",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 129
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "Log",
+    "candidate": "契約を設ける",
+    "flow": "引数を先に評価して固定水準の Record→emit。内容と呼び出し条件、既定出力の失敗が依存する。Error 水準も終了操作ではない",
+    "id": "D097"
+  },
+  {
+    "module": "Log",
+    "name": "info",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 134
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "Log",
+    "candidate": "契約を設ける",
+    "flow": "引数を先に評価して固定水準の Record→emit。内容と呼び出し条件、既定出力の失敗が依存する。Error 水準も終了操作ではない",
+    "id": "D098"
+  },
+  {
+    "module": "Log",
+    "name": "warn",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 139
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "Log",
+    "candidate": "契約を設ける",
+    "flow": "引数を先に評価して固定水準の Record→emit。内容と呼び出し条件、既定出力の失敗が依存する。Error 水準も終了操作ではない",
+    "id": "D099"
+  },
+  {
+    "module": "Log",
+    "name": "error",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 144
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "Log",
+    "candidate": "契約を設ける",
+    "flow": "引数を先に評価して固定水準の Record→emit。内容と呼び出し条件、既定出力の失敗が依存する。Error 水準も終了操作ではない",
+    "id": "D100"
+  },
+  {
+    "module": "Log",
+    "name": "formatRecord",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 174
+    },
+    "builtin": "Log.formatRecord",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/log.rs",
+      "line": 44,
+      "function": "format",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "全欄→既定のテキスト。Debug も整形し、時刻・末尾 LF は足さない。JSON 引用でも値の依存は消えない",
+    "id": "D101"
+  },
+  {
+    "module": "Log",
+    "name": "withAttributes",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 177
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "Log, E",
+    "candidate": "契約を設ける",
+    "flow": "共通属性を前置して外側の emit/enabled へ送る。本文の結果・外側の成否・pc を保持する",
+    "id": "D102"
+  },
+  {
+    "module": "Log",
+    "name": "withTextLogger",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 187
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "Console.Write, E",
+    "candidate": "契約を設ける",
+    "flow": "内→外: 最低水準で選んだ記録→stderr。外→内: 書き込み失敗。水準による出力の有無と本文の結果も含む",
+    "id": "D103"
+  },
+  {
+    "module": "Log",
+    "name": "withSinks",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Log.bnt",
+      "line": 200
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "両方",
+    "effect": "E",
+    "candidate": "契約を設ける",
+    "flow": "水準・sink の列→呼ぶ相手と順序、空列なら破棄。各 sink の成否で後続を呼ばない。外部 IO の有無は E に従う",
+    "id": "D104"
+  },
+  {
+    "module": "SourceLocation",
+    "name": "here",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/SourceLocation.bnt",
+      "line": 12
+    },
+    "builtin": "SourceLocation.here",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/log.rs",
+      "line": 35,
+      "function": "here",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "直接呼び出しのソース表示名・行・列→通常の Location。事前展開であり、手作りの Location の欄も公開と仮定しない",
+    "id": "D105"
+  },
+  {
+    "module": "Encoding",
+    "name": "base64Encode",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Encoding.bnt",
+      "line": 5
+    },
+    "builtin": "Encoding.base64Encode",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/encoding.rs",
+      "line": 13,
+      "function": "base64_encode",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Bytes→Base64/Base64URL の String。内容と長さを別の表現で保持する。可逆な表現変更は非機密化ではない",
+    "id": "D106"
+  },
+  {
+    "module": "Encoding",
+    "name": "base64Decode",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Encoding.bnt",
+      "line": 9
+    },
+    "builtin": "Encoding.base64Decode",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/encoding.rs",
+      "line": 21,
+      "function": "base64_decode",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Base64/Base64URL の String→Bytes の Ok または固定文の Error。内容と復号の成否にも入力の依存を保持する",
+    "id": "D107"
+  },
+  {
+    "module": "Encoding",
+    "name": "base64UrlEncode",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Encoding.bnt",
+      "line": 13
+    },
+    "builtin": "Encoding.base64UrlEncode",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/encoding.rs",
+      "line": 29,
+      "function": "base64_url_encode",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Bytes→Base64/Base64URL の String。内容と長さを別の表現で保持する。可逆な表現変更は非機密化ではない",
+    "id": "D108"
+  },
+  {
+    "module": "Encoding",
+    "name": "base64UrlDecode",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Encoding.bnt",
+      "line": 17
+    },
+    "builtin": "Encoding.base64UrlDecode",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/encoding.rs",
+      "line": 37,
+      "function": "base64_url_decode",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Base64/Base64URL の String→Bytes の Ok または固定文の Error。内容と復号の成否にも入力の依存を保持する",
+    "id": "D109"
+  },
+  {
+    "module": "Csv",
+    "name": "parse",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Csv.bnt",
+      "line": 14
+    },
+    "builtin": "Csv.parse",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/csv.rs",
+      "line": 26,
+      "function": "parse",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "入力文字列→行と欄の列または ParseError。内容・行数・欄数と解析成否、失敗した行と文言も依存する",
+    "id": "D110"
+  },
+  {
+    "module": "Csv",
+    "name": "parseWith",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Csv.bnt",
+      "line": 18
+    },
+    "builtin": "Csv.parseWith",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/csv.rs",
+      "line": 34,
+      "function": "parse_with",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "入力文字列と区切り→行と欄の列または ParseError。不正な区切りの停止と内容・件数・解析成否も依存する",
+    "id": "D111"
+  },
+  {
+    "module": "Csv",
+    "name": "parseWithHeader",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Csv.bnt",
+      "line": 22
+    },
+    "builtin": "Csv.parseWithHeader",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/csv.rs",
+      "line": 46,
+      "function": "parse_with_header",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "先頭行→鍵、残りの行→Map の列または ParseError。鍵・欄・行の件数と解析の成否も依存する",
+    "id": "D112"
+  },
+  {
+    "module": "Csv",
+    "name": "format",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Csv.bnt",
+      "line": 26
+    },
+    "builtin": "Csv.format",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/csv.rs",
+      "line": 54,
+      "function": "format",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "行・欄の String の列→CSV 文字列。引用・区切り・LF と出力長も内容と形へ依存する",
+    "id": "D113"
+  },
+  {
+    "module": "Csv",
+    "name": "formatWith",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Csv.bnt",
+      "line": 30
+    },
+    "builtin": "Csv.formatWith",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/csv.rs",
+      "line": 62,
+      "function": "format_with",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "行・欄の列と区切り→CSV 文字列。不正な区切りの停止と、引用・LF・出力長も依存する",
+    "id": "D114"
+  },
+  {
+    "module": "Bytes",
+    "name": "toHex",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Bytes.bnt",
+      "line": 29
+    },
+    "builtin": "Bytes.toHex",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/bytes.rs",
+      "line": 75,
+      "function": "to_hex",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Bytes→16 進/2 進文字列。バイト値と長さが結果に現れる",
+    "id": "D115"
+  },
+  {
+    "module": "Bytes",
+    "name": "toBinary",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Bytes.bnt",
+      "line": 33
+    },
+    "builtin": "Bytes.toBinary",
+    "implementation": {
+      "path": "crates/benitoite/src/builtins/funcs/bytes.rs",
+      "line": 91,
+      "function": "to_binary",
+      "kind": "pure"
+    },
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "Bytes→16 進/2 進文字列。バイト値と長さが結果に現れる",
+    "id": "D116"
+  },
+  {
+    "module": "Test.Property",
+    "name": "formatFailure",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Test/Property.bnt",
+      "line": 501
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "CheckFailure と利用者の show 関数→設定・試行/縮小件数・元/縮小後の反例と説明の String。失敗の種類と callback の捕捉値も依存する",
+    "id": "D117"
+  },
+  {
+    "module": "Http",
+    "name": "json",
+    "declaration": {
+      "path": "crates/benitoite/src/prelude/stdlib/Network/Http.bnt",
+      "line": 100
+    },
+    "builtin": null,
+    "implementation": null,
+    "direction": "内部の派生",
+    "effect": "なし",
+    "candidate": "契約を設ける",
+    "flow": "status と Json.Value→Json.stringify→String.toUTF8→Response.body。構築は純粋であり、実送信と成否は respond の別契約に従う",
+    "id": "D118"
+  }
+]

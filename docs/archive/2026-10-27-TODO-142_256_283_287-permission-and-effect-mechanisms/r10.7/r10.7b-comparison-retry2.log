@@ -1,0 +1,69 @@
+$ python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_baseline",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_baseline",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:19:45.798132+00:00",
+  "ended_at": "2026-10-28T14:19:48.074082+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.27588175,
+  "auxiliary_max_rss_bytes": 684998656,
+  "auxiliary_max_rss_mib": 653.265625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_current",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_current",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:19:48.121172+00:00",
+  "ended_at": "2026-10-28T14:19:52.084645+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 3.963405875,
+  "auxiliary_max_rss_bytes": 688881664,
+  "auxiliary_max_rss_mib": 656.96875,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}
+Traceback (most recent call last):
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py", line 120, in <module>
+    before, after = json.loads(old.read_bytes()), json.loads(new.read_bytes())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1249, in read_bytes
+    with self.open(mode='rb') as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '<wt>/target/r10.7b-baseline-export/stdlib.json'

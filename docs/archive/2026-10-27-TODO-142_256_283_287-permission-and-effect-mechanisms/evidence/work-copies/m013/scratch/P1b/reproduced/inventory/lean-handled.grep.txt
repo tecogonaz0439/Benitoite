@@ -1,0 +1,53 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/ContLemmas.lean:37:    (hl : Eff.mem ε (.name l)) (hno : ∀ hs, Frame.handleF hs ∈ k → Eff.test (handled P B hs) (.name l) = false) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/ContLemmas.lean:49:        change Eff.test (handled P B hs) (.name l) = true at hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/ContLemmas.lean:61:/-- `State` はどの `handled(H)` にも含まれない。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/ContLemmas.lean:63:    Eff.test (handled P B hs) (.name stateEff) = false := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/ContLemmas.lean:64:  simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/ContLemmas.lean:133:    ∃ t εb εc, Ty.Le a t ∧ ε = Eff.union εc (handled P B hs) ∧ ContTy P B Ψ R εb k t b ε0 Re ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/EffectSound.lean:34:  simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hPl, hbs, Option.map_some]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/FailureBase.lean:53:/-- handled は名前だけを含み、Fail と行を含まない。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/FailureBase.lean:55:    NoFail Qempty (handled P B h) := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:379:    ∃ t εm ε', HasTypeCQ P B Ψ Q C Γ R m t εm Δl ∧ Eff.Sub εm (Eff.union ε' (handled P B h)) ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Progress.lean:211:    simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hos]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:164:    (e : h'.map Clause.op = h.map Clause.op) : handled P B h' = handled P B h := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:167:    simp only [Eff.test, Eff.ofAtoms, handled, Eff.atoms]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:177:    handled P B (Clause.renameList ξ h) = handled P B h :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:117:/-- `handled(H)` はエフェクト変数を含まないので、エフェクト変数の置き換えで変わらない。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:119:    Eff.substRho es (handled P B h) = handled P B h := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:129:        · simp [Eff.mem, Eff.test, Eff.atoms, Eff.ofAtoms, handled] at hi
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:131:    | rho k => simp [Eff.mem, Eff.test, Eff.atoms, Eff.ofAtoms, handled]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:132:  · change (Eff.substAt 0 [] es (handled P B h)).fails = (handled P B h).fails
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:134:    have hempty : Eff.rowFails (es.map (Eff.rawShift 0 0)) (handled P B h).atoms = [] := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:136:      have hf : List.filter (fun i => (handled P B h).atoms (.rho i))
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:139:        simp [handled, Eff.atoms, Eff.ofAtoms]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubst.lean:146:    Eff.substAt c ts es (handled P B h) = handled P B h :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:563:      ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:123:/-- `handled(H)`。一つ以上の操作を持ち、そのすべての操作の節を H が持つエフェクトの集合。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:124:def handled (P : Program) (B : Builtins) (h : List Clause) : Eff := Eff.ofAtoms fun a =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:490:        HasTypeCQ P B Ψ Q C Γ R m t εm Δ → Eff.Sub εm (Eff.union ε (handled P B h)) →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Check.lean:610:        let h := handled q.D.patternProgram q.B cs.skeleton
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckComputeControl.lean:148:  have hi : (diffEff q.atoms εbody (handled q.D.patternProgram q.B cs.skeleton)).AtomsIn q.atoms :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckCounterexamples.lean:49:private def handled : Def :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckCounterexamples.lean:57:example : errorOf (checkDef input [] handled) =
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckExamples.lean:257:private def handled : Expr :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckExamples.lean:260:example : got (checkExpr opInput .strict [] [] none .other [] handled) intTy = true := by decide
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckLemmas.lean:331:    (h : acceptEff q path (union q ε (handled q.D.patternProgram q.B cs.skeleton)) actual = .ok u) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckLemmas.lean:332:    Eff.Sub actual (Eff.union ε (handled q.D.patternProgram q.B cs.skeleton)) := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckSoundControl.lean:311:  have initialAtoms := diffEff_atoms (h := handled q.D.patternProgram q.B cs.skeleton) bs.2.2
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/Calls.lean:58:/-- handled は節の本体を読まないので、脱糖前の操作の並びで計算できる。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/Calls.lean:68:    handled (desugarProgram op p) B (desugarClauses op cs) =
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/Calls.lean:69:      handled p.declarations.patternProgram B cs.skeleton := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/Calls.lean:77:        simp only [Eff.test, Eff.ofAtoms, handled, hh]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:93:def handled (body : Expr) (forward : Bool := false) (output : Bool := false) : Expr :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:103:    result (handled emit) unitTy Eff.empty = .ok true ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:104:    result (handled enabled) boolTy Eff.empty = .ok true := by constructor <;> rfl
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:106:    result (handled emit true) unitTy (Eff.single "Log") = .ok true ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:107:    result (handled enabled true) boolTy (Eff.single "Log") = .ok true := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:110:    result (handled emit false true) unitTy (Eff.single "Console.Write") = .ok true := by rfl
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:127:     ("silent", entryDef (handled emit) unitTy Eff.empty),
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:128:     ("forward", entryDef (handled emit true) unitTy (Eff.single "Log")),
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:129:     ("console", entryDef (handled emit false true) unitTy (Eff.single "Console.Write"))] }
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/LogExamples.lean:138:    checkDef input [] (entryDef (handled emit false true) unitTy Eff.empty) =
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Syntax.lean:466:/-- handled は操作名だけを読む。本体を型付けに依存せずに捨てた節の並び。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Syntax.lean:548:/-- PatTy・Exhaustive・opSig・handled が読む宣言の表を備えたプログラム。 -/
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Typing.lean:433:        Eff.Sub εbody (Eff.union ε (handled D.patternProgram B cs.skeleton)) →

@@ -1,0 +1,31 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+SK.lean:538:39: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable
+    (match ArgTy.checked scope✝ with
+    | ArgTy.raw => True
+    | ArgTy.checked s => Matches s.scope.pattern v.target ∧ InPort s.scope.ports v.port)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+SK.lean:553:25: error(lean.unknownIdentifier): Unknown identifier `cv.property`
+'SK.trace_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.86 real         1.17 user         0.28 sys
+           733560832  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47167  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               11000  involuntary context switches
+          9845596078  instructions retired
+          4351794313  cycles elapsed
+           183082368  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

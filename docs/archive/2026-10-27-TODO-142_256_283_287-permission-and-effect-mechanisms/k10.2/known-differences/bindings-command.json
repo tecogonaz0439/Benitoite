@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rustc",
+    "--edition=2024",
+    "--crate-name",
+    "k10_known_bindings",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/known-differences/capture-current-bindings.rs",
+    "--extern",
+    "benitoite=target/debug/deps/libbenitoite-fcdc63768f260f1e.rlib",
+    "-L",
+    "dependency=target/debug/deps",
+    "-o",
+    "target/k10-known-bindings/capture"
+  ],
+  "returncode": 0,
+  "outerSeconds": 1.800633458
+}

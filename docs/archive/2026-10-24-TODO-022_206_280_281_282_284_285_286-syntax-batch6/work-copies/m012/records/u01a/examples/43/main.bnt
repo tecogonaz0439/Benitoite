@@ -1,0 +1,40 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+import Benitoite.Unofficial.Network.Http
+
+function route(request: Http.Request) -> Http.Response
+  return match Pair(Http.Request.method(request), Http.pathSegments(Http.Request.path(request))) with
+    case Pair("GET", ["hello", name]) -> Http.text(status: 200, s: "Hello, ${name}!")
+    case Pair("GET", ["items"]) -> Http.json(status: 200, value: Json.Value.Array([Json.Value.Integer(1), Json.Value.Integer(2)]))
+    case otherPath -> Http.text(status: 404, s: "not found")
+  end match
+end function
+
+function serveLoop(listener: Http.Listener, remaining: Integer) -> Result[Unit, String] uses Http.Listen, State
+  if remaining = 0 then return Result.Ok(()) end if
+  bind exchange <- try Http.accept(listener) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
+  bind _ <- try Http.respond(exchange: exchange, response: route(Http.requestOf(exchange))) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
+  bind _ <- try Http.closeExchange(exchange) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error)) or return
+  return serveLoop(listener: listener, remaining: remaining - 1)
+end function
+
+function show(response: Http.Response) -> Unit uses Console.Write
+  bind body <- Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "(not UTF-8)")
+  return Console.writeLine("${Http.Response.status(response)} ${body}")
+end function
+
+function main() -> Unit uses Http.Listen, Http.Connect, Console.Write, State, Process.Exit
+  with listener = try Http.listen(host: "127.0.0.1", port: 0) or die,
+    group = TaskGroup.open() do
+    bind base <- "http://127.0.0.1:${Http.listenerPort(listener)}"
+    bind server <- TaskGroup.spawn(group: group, action: lambda() return serveLoop(listener: listener, remaining: 3))
+    bind hello <- try Http.get(base + "/hello/Ada") or die
+    bind items <- try Http.get(base + "/items") or die
+    bind request <- Http.ClientRequest(..Http.clientRequest(method: "POST", url: base + "/upload"), body: String.toUTF8("data"))
+    bind missing <- try Http.send(request) or die
+    bind _ <- try Task.await(server) or die
+    List.forEach(xs: [hello, items, missing], f: lambda(value) show(value))
+    return ()
+  end with
+end function

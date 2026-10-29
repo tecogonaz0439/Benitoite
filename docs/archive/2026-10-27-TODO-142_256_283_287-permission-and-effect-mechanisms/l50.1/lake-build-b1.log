@@ -1,0 +1,70 @@
+== wait-for-lock start 08:55:17
+== lock acquired 08:55:17 after 0s
+✔ [112/119] Built Benitoite.Surface.CheckTables (688ms)
+✔ [113/119] Built Benitoite.Exchange.Range (1.1s)
+✔ [114/119] Built Benitoite.Exchange.Syntax (3.0s)
+✔ [115/119] Built Benitoite.Exchange.Version (662ms)
+✖ [116/119] Building Benitoite.Exchange.Convert (1.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Exchange/Convert.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Exchange/Convert.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Exchange/Convert.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Exchange/Convert.c --setup <wt>/formal/.lake/build/ir/Benitoite/Exchange/Convert.setup.json --json
+warning: Benitoite/Exchange/Convert.lean:216:10: This simp argument is unused:
+  List.contains_iff_mem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [this] at ha
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Exchange/Convert.lean:226:24: Application type mismatch: The argument
+  rfl
+has type
+  ?m.57 = ?m.57
+but is expected to have type
+  (have listed := List.filterMap Atom.toRelease atoms;
+    have __do_jp := fun __r => pure (writeAtoms atoms e.test);
+    match unlistedAtom? (listed ++ univ) listed e with
+    | some a => do
+      let __r ← throw (toString "effect atom is not in the exchange atom list: " ++ toString (repr a))
+      __do_jp __r
+    | x => __do_jp ()) =
+    Except.error ?m.55
+in the application
+  Exists.intro ?m.55 rfl
+error: Benitoite/Exchange/Convert.lean:273:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (writeAtoms atoms xs.namesToRelease.test).readAtoms
+in the target expression
+  Release.EffR.mk (writeAtoms atoms (Release.Eff.test (Release.EffR.mk xs.readAtoms []))).readAtoms [] =
+    Release.EffR.mk xs.readAtoms []
+
+case refine_1
+atoms xs : Eff
+univ : List Release.Atom
+htop : ∀ (x : Atom), x ∈ xs → x.IsTop
+hin : ∀ (x : Atom), x ∈ xs → x ∈ atoms
+hsupp : ∀ (a : Release.Atom), xs.namesToRelease.test a = true → a ∈ List.filterMap Atom.toRelease atoms
+⊢ Release.EffR.mk (writeAtoms atoms (Release.Eff.test (Release.EffR.mk xs.readAtoms []))).readAtoms [] =
+    Release.EffR.mk xs.readAtoms []
+error: Benitoite/Exchange/Convert.lean:934:39: failed to synthesize instance of type class
+  ToJson (List (Scope.Signature.Ix → Atom))
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Some required targets logged failures:
+- Benitoite.Exchange.Convert
+error: build failed
+        5.96 real         7.63 user         1.48 sys
+          1670987776  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              427768  page reclaims
+                4566  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 676  voluntary context switches
+               32224  involuntary context switches
+          1174320551  instructions retired
+           422540686  cycles elapsed
+            32539824  peak memory footprint
+== exit 1

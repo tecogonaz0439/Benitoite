@@ -27,7 +27,7 @@ theorem accessorDef_scoped {c cd k} (sc : cd.Scoped) (hk : k < cd.args.length) :
       exact List.mem_range.mp hi)
   · exact Ty.VarsIn.mono (Nat.le_refl _) (by intro i hi; exact False.elim hi) _
       (varsInList_mem sc (List.getElem_mem hk))
-  · exact ⟨fun _ h => Bool.noConfusion h, trivial⟩
+  · exact ⟨fun _ h => Bool.noConfusion h, trivial, fun _ h => Bool.noConfusion h⟩
 
 theorem InhabitsAll.length {P as vs} (h : InhabitsAll P as vs) : as.length = vs.length := by
   match h with
@@ -93,7 +93,7 @@ theorem accessorPattern_exhaustive {P : Release.Program} {c cd ts k}
 
 
 /-- 宣言自身の型変数で具体化すると、レコードのフィールド型は変わらない。 -/
-theorem record_subst_identity (n : Nat) (t : Ty) (h : Ty.VarsIn n (fun _ => False) t) :
+theorem record_subst_identity (n : Nat) (t : Ty) (h : Ty.VarsIn 0 n (fun _ => False) t) :
     t.subst ((List.range n).map Ty.tvar) [] = t := by
   rw [Ty.subst, Ty.substAt_eq_bind]
   have he : Ty.bind (SubstEnv.at 0 ((List.range n).map Ty.tvar) []) t =
@@ -106,7 +106,7 @@ theorem record_subst_identity (n : Nat) (t : Ty) (h : Ty.VarsIn n (fun _ => Fals
   rw [he, Ty.bind_identity, (Ty.VarsIn.wf t h).canonical t]
 
 theorem record_substList_identity (n : Nat) (ts : List Ty)
-    (h : Ty.VarsInList n (fun _ => False) ts) :
+    (h : Ty.VarsInList 0 n (fun _ => False) ts) :
     ts.map (Ty.subst ((List.range n).map Ty.tvar) []) = ts := by
   calc
     _ = ts.map id := List.map_congr_left (fun t ht =>
@@ -219,7 +219,7 @@ theorem recordUpdateValues_typed {P : Release.Program} {B : Builtins} {C Γ c n 
     (hn : n = tys.length)
     (h : HasTypeVsQ P B StoreTy.empty Q C Γ vs
       (positions.map fun i => (tys[i]?).getD (.base .unit)))
-    (hclean : Ty.VarsInList C.length (fun _ => True) tys)
+    (hclean : Ty.VarsInList 0 C.length (fun _ => True) tys)
     (hp : PatTy P (recordUpdatePattern c n positions) (.data d ts)
       (retainedTypes (List.range n) positions (fun i => (tys[i]?).getD (.base .unit)))) :
     HasTypeVsQ P B StoreTy.empty Q C

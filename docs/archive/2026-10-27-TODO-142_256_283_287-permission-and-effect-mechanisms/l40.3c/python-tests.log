@@ -1,0 +1,246 @@
+== formal/tests/test_batch2_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.241s
+
+OK
+        1.27 real         0.97 user         0.24 sys
+            40960000  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              178582  page reclaims
+                8407  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  70  voluntary context switches
+                 956  involuntary context switches
+          2086630448  instructions retired
+           720307008  cycles elapsed
+            14483816  peak memory footprint
+== exit 0 formal/tests/test_batch2_exchange.py
+== formal/tests/test_batch3_exchange.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 3.311s
+
+OK
+        3.34 real         2.66 user         0.56 sys
+            41451520  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              430354  page reclaims
+               19422  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 170  voluntary context switches
+                2339  involuntary context switches
+         13191431368  instructions retired
+          3389713396  cycles elapsed
+            19022184  peak memory footprint
+== exit 0 formal/tests/test_batch3_exchange.py
+== formal/tests/test_batch4_exchange.py
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 5.888s
+
+OK
+        5.92 real         4.83 user         0.88 sys
+            42565632  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              682801  page reclaims
+               29987  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 254  voluntary context switches
+                3543  involuntary context switches
+         22681592837  instructions retired
+          5847592382  cycles elapsed
+            19841384  peak memory footprint
+== exit 0 formal/tests/test_batch4_exchange.py
+== formal/tests/test_batch5_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 2.028s
+
+OK
+        2.06 real         1.65 user         0.33 sys
+            41680896  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              254477  page reclaims
+               11535  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  97  voluntary context switches
+                1355  involuntary context switches
+          6237359520  instructions retired
+          1692856706  cycles elapsed
+            17498472  peak memory footprint
+== exit 0 formal/tests/test_batch5_exchange.py
+== formal/tests/test_extensible_exchange.py
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.649s
+
+OK
+        5.68 real         4.37 user         1.06 sys
+            41320448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              811447  page reclaims
+               38282  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 302  voluntary context switches
+                4435  involuntary context switches
+          7709544289  instructions retired
+          2667339132  cycles elapsed
+            16417128  peak memory footprint
+== exit 0 formal/tests/test_extensible_exchange.py
+== formal/tests/test_interval_exchange.py
+{"calls": 144, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow", "initial": "292", "selected": "292", "attempts": [{"fuel": "292", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "width", "initial": "580", "selected": "580", "attempts": [{"fuel": "580", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "range", "initial": "200", "selected": "200", "attempts": [{"fuel": "200", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "domain", "initial": "2192", "selected": "2192", "attempts": [{"fuel": "2192", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow-containers", "initial": "40", "selected": "80", "attempts": [{"fuel": "40", "exit": 1, "excluded": "1"}, {"fuel": "80", "exit": 0, "excluded": "0"}]}]}
+        3.22 real         2.52 user         0.58 sys
+            45989888  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              429983  page reclaims
+               19602  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 146  voluntary context switches
+                2298  involuntary context switches
+          7908632790  instructions retired
+          2192236439  cycles elapsed
+            25936232  peak memory footprint
+== exit 0 formal/tests/test_interval_exchange.py
+== formal/tests/test_named_exchange.py
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 2.162s
+
+OK
+        2.19 real         1.71 user         0.39 sys
+            41385984  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              284467  page reclaims
+               13118  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  97  voluntary context switches
+                1611  involuntary context switches
+          3191161948  instructions retired
+          1096706631  cycles elapsed
+            16351592  peak memory footprint
+== exit 0 formal/tests/test_named_exchange.py
+== formal/tests/test_range_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 0.920s
+
+OK
+        0.95 real         0.76 user         0.15 sys
+            46366720  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              113060  page reclaims
+                4767  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  35  voluntary context switches
+                 615  involuntary context switches
+          3362342407  instructions retired
+           920945821  cycles elapsed
+            32244096  peak memory footprint
+== exit 0 formal/tests/test_range_exchange.py
+== formal/tests/test_try_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.389s
+
+OK
+        3.42 real         2.65 user         0.60 sys
+            41402368  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              442980  page reclaims
+               20466  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 166  voluntary context switches
+                2599  involuntary context switches
+          6790841344  instructions retired
+          2059520956  cycles elapsed
+            15352192  peak memory footprint
+== exit 0 formal/tests/test_try_exchange.py
+== formal/tests/test_width_exchange.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 1.046s
+
+OK
+        1.07 real         0.82 user         0.19 sys
+            41435136  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              151264  page reclaims
+                7326  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  58  voluntary context switches
+                 874  involuntary context switches
+           819245861  instructions retired
+           360511191  cycles elapsed
+            11370856  peak memory footprint
+== exit 0 formal/tests/test_width_exchange.py

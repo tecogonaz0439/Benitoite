@@ -43,6 +43,7 @@ pub(super) enum IArg {
     Head(IHead),
 }
 /// 囲むハンドラの節の情報。
+#[derive(Clone)]
 pub(super) struct ClauseContext {
     pub failure: bool,
     pub op_ret: ITy,
@@ -51,6 +52,8 @@ pub(super) struct ClauseContext {
 /// 一つの本体の推論と後検査の記録。子の走査はエフェクトと戻り値を差し替えられる。
 pub(super) struct Body<'a, 'd> {
     pub owner: Option<NodeId>,
+    pub scoped_calls: super::scoped_calls::ScopedCalls,
+    pub active_scope_call: Option<NodeId>,
     /// 宣言側の所属。lambda・guard・lazy は同じ Body を使うため、この所属を保つ。
     pub module: ModuleId,
     pub decls: &'a mut Decls<'d>,
@@ -74,6 +77,10 @@ pub(super) struct Body<'a, 'd> {
     pub die_shows: BodyNodeMap<DictExpr>,
     pub die_message_boundary: bool,
     pub handlers: BodyNodeMap<HandleInfo>,
+    pub pending_handlers: std::collections::VecDeque<super::effects::PendingHandle<'d>>,
+    pub checked_handlers: Vec<super::effects::CheckedHandle<'d>>,
+    pub handler_overrides: BTreeMap<NodeId, super::effects::Selection>,
+    pub handler_revisions: BTreeMap<NodeId, super::effects::Selection>,
     pub failure_handles: Vec<(NodeId, ITy, Span)>,
     pub clauses: Vec<ClauseContext>,
     /// プレースホルダの展開が継続を隠している間の E0509 の補助。
@@ -111,6 +118,8 @@ impl<'a, 'd> Body<'a, 'd> {
         let ret = Some(lift(&scheme.ret));
         Self {
             owner: None,
+            scoped_calls: super::scoped_calls::ScopedCalls::default(),
+            active_scope_call: None,
             module,
             decls,
             scope,
@@ -132,6 +141,10 @@ impl<'a, 'd> Body<'a, 'd> {
             die_shows: BodyNodeMap::default(),
             die_message_boundary: false,
             handlers: BodyNodeMap::default(),
+            pending_handlers: std::collections::VecDeque::new(),
+            checked_handlers: vec![],
+            handler_overrides: BTreeMap::new(),
+            handler_revisions: BTreeMap::new(),
             failure_handles: vec![],
             clauses: vec![],
             placeholder_boundary: false,
@@ -236,14 +249,16 @@ impl<'a, 'd> Body<'a, 'd> {
             .collect::<Vec<_>>();
         while let Some(ty) = pending.pop() {
             match ty {
-                Ty::Con(con, args) => {
-                    let name = Ty::Con(con, vec![]).show(&TyNames {
-                        bindings: &self.decls.resolved.bindings,
-                        adts: &self.decls.out.adts,
-                        effects: &self.decls.out.effects,
-                        type_params: &[],
-                        effect_params: &[],
-                    });
+                Ty::Con(con, args, _) => {
+                    let name = Ty::Con(con, vec![], crate::types::builtin::RangeIndex::TOP).show(
+                        &TyNames {
+                            bindings: &self.decls.resolved.bindings,
+                            adts: &self.decls.out.adts,
+                            effects: &self.decls.out.effects,
+                            type_params: &[],
+                            effect_params: &[],
+                        },
+                    );
                     by_name.entry(name).or_default().insert(con);
                     pending.extend(args);
                 }
@@ -374,7 +389,7 @@ impl<'a, 'd> Body<'a, 'd> {
                 };
                 *ty = Ty::Param(n);
             }
-            Ty::Con(_, args) | Ty::App(_, args) => {
+            Ty::Con(_, args, _) | Ty::App(_, args) => {
                 for t in args {
                     self.name_rigid_types(t, names, indices);
                 }
@@ -475,6 +490,7 @@ impl<'a, 'd> Body<'a, 'd> {
         let constraints = std::mem::take(&mut self.constraints);
         solver.solve(self, constraints);
         self.solver = solver;
+        super::effects::recheck_handlers(self);
         self.check_single_failures();
         super::pattern_ext::check_body(self);
         super::effects::check_body(self);
@@ -590,6 +606,16 @@ impl<'a, 'd> Body<'a, 'd> {
     }
 
     pub fn finish(&mut self) {
+        // 入力の構造は型生成より前に収集済み。番号付けに必要な補間の
+        // 変換の有無だけを補い、型確定後の区間解析へ依存させない。
+        for (node, ty) in self.interp_types.iter() {
+            let ty = self.solver.zonk(ty);
+            if !matches!(ty, ITy::Var(_) | ITy::Error) {
+                let converter = !matches!(ty, ITy::Con(TyCon::Builtin(b), ref args, _) if b == crate::types::builtin::BuiltinTypeId::STRING && args.is_empty());
+                self.decls.scope_inputs.interpolation(node, converter);
+            }
+        }
+
         if self
             .diagnostics
             .iter()
@@ -682,18 +708,51 @@ impl<'a, 'd> Body<'a, 'd> {
         }
         self.decls.diagnostics.append(&mut self.diagnostics);
     }
+    /// 呼び出しと宣言の直接読者へ、範囲を先に具体化した署名を渡す。
+    pub fn signature_at_top(&mut self, binding: BindingId) -> Option<Scheme> {
+        if self.decls.invalid.contains(&binding) {
+            return None;
+        }
+        let scheme = self.decls.out.decl_types.get(binding)?.clone();
+        let Some(ranges) = self
+            .decls
+            .out
+            .range_signatures
+            .get(binding)
+            .filter(|ranges| ranges.range_count() != 0)
+        else {
+            return Some(scheme);
+        };
+        let operation = self
+            .decls
+            .resolved
+            .bindings
+            .get(binding)
+            .is_some_and(|b| matches!(b.kind, crate::resolve::BindingKind::Op { .. }));
+        let instantiated = ranges.instantiate_top(&scheme, operation);
+        if instantiated.is_none() {
+            self.diagnostic(crate::runtime::report::internal_diagnostic(
+                "check",
+                "standard signature scope instantiation did not produce closed indices",
+                None,
+                crate::runtime::report::FaultThread::Stage,
+            ));
+        }
+        instantiated
+    }
+
     pub fn instantiate(
         &mut self,
         node: NodeId,
         span: Span,
         binding: BindingId,
     ) -> (ITy, Vec<ITy>, ITy) {
-        let Some(s) = self.decls.out.decl_types.get(binding).cloned() else {
+        // 宣言の範囲を先に具体化し、型／行の代入に未具体化の範囲変数を渡さない。
+        // 呼び出しの最終の列は対象の型の候補と合わせて制約の解決時に確定する
+        // （設計書 02-05「型とエフェクトの表現」）。
+        let Some(s) = self.signature_at_call(node, span, binding) else {
             return (ITy::Error, vec![], ITy::Error);
         };
-        if self.decls.invalid.contains(&binding) {
-            return (ITy::Error, vec![], ITy::Error);
-        }
         let args: Vec<_> = s
             .type_params
             .iter()
@@ -765,6 +824,7 @@ impl<'a, 'd> Body<'a, 'd> {
             .collect::<Vec<_>>();
         let ret = substitute(&s.ret, &args, &effs);
         let effect = substitute_effect(&s.effects, &args, &effs);
+        let (params, ret, effect) = self.scope_shape(node, span, binding, params, ret, effect);
         (
             ITy::Fn(Box::new(IFnTy {
                 contract: IContract::Known(s.param_names.clone()),
@@ -813,7 +873,11 @@ pub(super) fn substitute(t: &Ty, args: &[IArg], effs: &[IEffect]) -> ITy {
             },
             ts.iter().map(|t| substitute(t, args, effs)).collect(),
         ),
-        Ty::Con(c, ts) => ITy::Con(*c, ts.iter().map(|t| substitute(t, args, effs)).collect()),
+        Ty::Con(c, ts, ix) => ITy::Con(
+            *c,
+            ts.iter().map(|t| substitute(t, args, effs)).collect(),
+            ix.clone(),
+        ),
         Ty::Fn(f) => ITy::Fn(Box::new(IFnTy {
             contract: IContract::Known(f.param_names.clone()),
             params: f.params.iter().map(|t| substitute(t, args, effs)).collect(),
@@ -826,7 +890,7 @@ pub(super) fn substitute(t: &Ty, args: &[IArg], effs: &[IEffect]) -> ITy {
         },
     }
 }
-fn substitute_effect(e: &EffectSet, args: &[IArg], effs: &[IEffect]) -> IEffect {
+pub(super) fn substitute_effect(e: &EffectSet, args: &[IArg], effs: &[IEffect]) -> IEffect {
     let mut out = IEffect {
         failures: e
             .failures

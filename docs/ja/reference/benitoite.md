@@ -1,6 +1,6 @@
 # Benitoite 言語リファレンス
 
-> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.13 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（crates/benitoite/tests/reference_examples.rs）:
@@ -16,11 +16,11 @@
 この訳のコードの例は検査しない。検査するのは英語の版である。
 -->
 
-このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.12` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
+このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.13` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。
 
 `benitoite` のインストールは、[Benitoite のインストール](install.md)を参照する。
 
-Benitoite は、静的に型付けされた関数型のスクリプト言語である。スクリプトは `.bnt` のファイルである。何かを実行する前に、`benitoite` はスクリプトの型と、スクリプトが使うエフェクト（ファイルの書き込みやコマンドの起動など、各関数がプログラムの外で行ってよいこと）を検査する。検査が保証するのは、スクリプトがこれらの規則に従っていることだけである。スクリプトが意図どおりに動くこと、外部の操作が成功すること、スクリプトが終わることは保証しない。
+Benitoite は、静的に型付けされた関数型のスクリプト言語である。スクリプトは `.bnt` のファイルである。何かを実行する前に、`benitoite` はスクリプトの型と、スクリプトが使うエフェクト（ファイルの書き込みやコマンドの起動など、各関数がプログラムの外で行ってよいこと）を検査する。範囲付きのエフェクトは、操作の対象の静的な上限も表す。検査が保証するのは、スクリプトがこれらの規則に従っていることだけである。スクリプトが意図どおりに動くこと、外部の操作が成功すること、スクリプトが終わることは保証しない。実行前にエージェントやハーネスで宣言した契約を確認し、実行時の隔離にはそのサンドボックスを使う。対象の上限は、実行時の権限制御や情報フロー制御を行わない。
 
 ## 目次
 
@@ -100,7 +100,7 @@ benitoite --licenses
 | `skill` | 同梱の Agent Skill をインストール・削除する。または、インストールせずに埋め込み文書の一覧を取得し、本文を取り出す。[Benitoite のインストール](install.md#3-agent-skill-をインストールする)を参照する。 |
 | `package` | 実験的な機能。局所の依存の宣言を追加・更新・移動する。[パッケージのコマンド](#パッケージのコマンド)を参照する。 |
 | `--help` | 使い方を出力する。 |
-| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.12`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
+| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.13`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |
 | `--version=json` | 版・ビルド・対応する形式の情報を一つの JSON オブジェクトとして出力する。最初の引数でなければならず、後続の引数は受け付けない。 |
 | `--licenses` | 実行ファイルに含まれる第三者のソフトウェアのライセンスを出力する。ソースからのビルドはこの一覧を含まず、そのことを出力する。 |
 
@@ -159,7 +159,7 @@ Linux では `#!/usr/bin/env benitoite run` と書かない。Linux はインタ
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "unicodeVersion": "17.0.0",
   "displayWidthUnicodeVersion": "17.0.0",
   "build": {
@@ -238,7 +238,7 @@ benitoite test --check --report=json tests/
 
 成功した `main` は `{symbol: "main", location, effects, processShellReference, shellReferenceScope}` である。`tests` の各要素は `{function, description, location, effects}` であり、宣言順に並ぶ。テストの説明を省いた場合は `null`、空の説明を明示した場合は `""` になる。`location` は `{file, start, end, label: ""}` で関数名の位置を示す。start と end は、1 から数える `line` と `column`、元のソースでの 0 から数えるバイト位置 `offset` を含む。
 
-Effects オブジェクトは `{basis: "declaredUpperBound", expanded: [...]}` である。配列には組み込みの原子的なエフェクトの名前が、重複なく辞書順に並ぶ。本体で使わないものも含め、宣言した上限を報告する。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` へ展開し、Log も HTTP のどちらのエフェクトも `Assert.Check` も含まない。テストの各契約、集計、後のエフェクトの上限の比較では `Assert.Check` を保持する。`main` での `Assert.Check` の宣言は検査の誤り（`E0415`）になる。処理していない `or die` は `Process.Exit` を要する。これをすべて処理し、宣言した上限から取り除けば、報告からも取り除かれる。単独の `try` や `or return` は終了のエフェクトを加えない。
+Effects オブジェクトは `basis: "declaredUpperBound"`、`expanded: [...]`、および[宣言した対象の上限](#宣言した対象の上限)で説明する任意の `bounds` 配列を持つ。`expanded` には、範囲の引数を除いた組み込みの原子的なエフェクトの名前が、重複なく辞書順に並ぶ。本体で使わないものも含め、宣言した上限を報告する。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` へ展開し、Log も HTTP のどちらのエフェクトも `Assert.Check` も含まない。テストの各契約、集計、後のエフェクトの上限の比較では `Assert.Check` を保持する。`main` での `Assert.Check` の宣言は検査の誤り（`E0415`）になる。処理していない `or die` は `Process.Exit` を要する。これをすべて処理し、宣言した上限から取り除けば、報告からも取り除かれる。単独の `try` や `or return` は終了のエフェクトを加えない。
 
 main かテストに未処理の `Failure.Fail[E]` があれば、test --check も含め、検査の誤り E0506 になる。入口の内部で処理するか、Failure.toResult で変換する。Fail は IO.All、expanded、--allow-effects が受け付ける名前に含めない。報告とエフェクト上限のスキーマの版は変わらない。
 
@@ -262,6 +262,23 @@ main かテストに未処理の `Failure.Fail[E]` があれば、test --check �
 集計を確認済みの集合として使う前に、単一 JSON オブジェクトが完全に出力されていること、解釈できる `schemaVersion` と `kind` であること、`status: "ok"`、`complete: true`、終了状態 0 を確かめる。`--deny-warnings` で誤りにした警告があれば、報告は `checkError` になる。テストの非実行の検査で複数の失敗があれば、中断、処理系の不具合、使い方の誤り、検査の誤りの順に優先する。
 
 出力を始める前に、報告の組み立てと直列化を終える。書き込みや flush の失敗を優先し、終了状態 1 で終える。別の報告を追記・再送しない。OS の書き込みが分割されない保証はない。初期化の失敗、報告の境界の外の失敗、失敗報告そのものの組み立て中の失敗、abort、強制終了、出力の切断では、完全な報告を保証しない。テストの非実行の検査は、各ファイルを始める前に中断を確認し、検査中は継続的に確認しない。最後のファイルの検査中の要求は、報告されないことがある。main の非実行の検査では、シグナルを OS の既定の動作に委ねる。
+
+### 宣言した対象の上限
+
+ハーネスは、main、選択したテスト、実行する文書の例、集計で、`expanded` とともに `effects.bounds` を読む。各要素は `{name, scope}` である。使わない宣言も含む宣言上限が基準であり、推論した最小値や実行の観測ではない。この実装は、Effects オブジェクトを出力するときは常に `bounds` を含める。互換性のため、この欄は任意である。存在しないときは、`expanded` の各名前がその種類のすべての対象を含むものとして読む。報告の版と[検査報告](#検査報告)の受理条件は変わらない。
+
+| `scope.kind` | 追加の欄と意味 |
+|---|---|
+| `all` | 狭い範囲が不明な対象も含む、すべての対象。追加の欄はない。 |
+| `pathExact` | `path`: 一つの絶対パスの表記。 |
+| `pathTree` | `path`: `/**` を除いたツリーの幹。その幹と子孫を含む。 |
+| `endpoint` | `host` と `ports: {minimum, maximum}`。ポートの両端を含む。 |
+
+endpoint の `host` は、名前のホストでは `{kind: "exact"|"one"|"many", name}` であり、`name` にワイルドカードの接頭部を含めない。IP アドレスでは `{kind: "exact"|"cidr", family: "v4"|"v6", address}` であり、`address` は正規形、CIDR は追加の `prefixLength` を持つ。ホストとポートの上限は HTTP と HTTPS の両方を含み、scheme、URL のパス、メッセージの内容、固定の origin は選ばない。範囲の構文と保証は[範囲付きのエフェクト](#範囲付きのエフェクト)を参照する。
+
+`expanded` は名前の重複を除く。`bounds` は構造が同じ原子の重複だけを除き、同じ名前の異なる範囲は残す。一方が他方を被覆しても、狭い範囲と Top の両方を残す。未知の対象は `{kind: "all"}` であり、空配列にはしない。未完の契約は Effects 全体を null とする。既知の純粋な契約は、`expanded` と `bounds` がともに空配列となる。
+
+文書の `check` と `error` の例は実行の入口を選ばず、ソースで main やテストにエフェクトを宣言していても、空の Effects オブジェクトと `tests: []` を返す。この空のオブジェクトは純粋性を表さない。これらの例は実行の集計に加えず、通常のテストと `test`/`run` の例だけを加える。完全に処理した利用者エフェクトは、`expanded`、`bounds`、権限に再び現れない。診断による検査した値の局所の由来の説明は宣言した上限とは別であり、説明中に挙げた利用者エフェクトは権限を加えない。
 
 ### 区間解析の範囲
 
@@ -299,7 +316,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 benitoite --allow-effects= pure.bnt
 ```
 
-最後のコマンドは空集合を許す。オプションは、[エフェクト](#10-エフェクト)にある 14 個の原子的な名前（`State` と `Assert.Check` を含む）を、任意の順にコンマで区切った一つの集合を受け付ける。名前の重複、空の要素、どの位置にある空白、未知の名前、利用者定義の名前、取り込みの別名、`IO.All`、`*` は拒否し、値の前後の空白を取り除かない。オプションは一度だけ指定できる。`check`、`test --check`、`fmt` は受け付けない。`run` のスクリプトのパスの後では、スクリプトの引数になる。
+最後のコマンドは空集合を許す。オプションは、[エフェクト](#10-エフェクト)にある 14 個の原子的な名前（`State` と `Assert.Check` を含む）を、任意の順にコンマで区切った一つの集合を受け付ける。名前の重複、空の要素、どの位置にある空白、未知の名前、利用者定義の名前、取り込みの別名、`IO.All`、`*`、`File.Read["/data/**"]` などの範囲の引数は拒否し、値の前後の空白を取り除かない。了承した各名前は、契約内の範囲付き原子も含め、その種類のすべての対象を許す。オプションは一度だけ指定できる。`check`、`test --check`、`fmt` は受け付けない。`run` のスクリプトのパスの後では、スクリプトの引数になる。
 
 新たに検査した宣言上限は、渡した集合の部分集合でなければならない。余分な名前の許可は受け付ける。不足するエフェクトがあると、該当する関数ごとに一つの `E0512` を、その位置、不足するエフェクト、許可集合とともに出し、実行前に終了状態 2 で終える。`--diagnostics=json` では、標準エラー出力の通常の診断行になり、標準出力に承認のオブジェクトは出さない。不明な契約を比較する前に、それ以前の型やエフェクトの誤りを優先する。
 
@@ -918,7 +935,7 @@ invalid input
 
 標準の Regex.compile の直接呼び出しでは、既知の定数の source も検査する。構文の不正は E0457、実行時と同じコンパイル制限は E0458 となる。取り込みの別名も標準の束縛を参照する。この検査によってトップレベルの const 内で Regex.compile を使えるようにはならない（E0433）。局所の bind の値を伝播したり、任意の純粋な関数を評価したりはしない。
 
-Scope.checkHost、Scope.checkPath、Scope.checkEndpoint の直接呼び出しも、既知の不正な引数を拒否する。不正なパターンは E0459、対象は E0460、ポートの端点や 0〜65535 外のポートは E0461、条件に属さない対象は E0462 となる。ほかの引数が動的でも、既知の部分を検査する。Endpoint では文字列二つが既知ならホストの所属を、整数三つが既知ならポートの所属を検査する。拒否する呼び出しは、未知の引数がどの値でも Result.Error を返す。[Scope](#scope)に表記と保証を示す。
+`Scope.checkHost`、`Scope.checkPath`、`Scope.checkEndpoint`、`Scope.checkPathIn`、`Http.checkRequestIn` の直接呼び出しも、既知の不正な引数を拒否する。不正なパターンは E0459、対象は E0460、ポートの端点や 0〜65535 外のポートは E0461、条件に属さない対象は E0462 となる。ほかの引数が動的でも、既知の部分を検査する。Endpoint では文字列二つが既知ならホストの所属を、整数三つが既知ならポートの所属を検査する。`Http.checkRequestIn` は、ここでは既知のホストパターンとポートの端点を検査し、URL は実行時に解析する。射影の `Scope.pathInValue` と `Http.requestInValue` は、この追加検査で調べる条件の引数を持たない。拒否する呼び出しは、未知の引数がどの値でも `Result.Error` を返す。[Scope](#scope)に表記と保証を示す。この追加の定数診断と、[範囲付きの値と IO](#範囲付きの値と-io)で説明する必須の範囲への受け入れの検査は別である。動的な入力を実行時に検査しても、必須の検査は省略できない。
 
 動的な引数、局所の関数値、部分適用、プレースホルダ、高階の呼び出し、パイプは実行時に検査する。追加検査の評価予算はプログラム全体で 64 MiB である。Regex のコンパイルの暫定予算は、パターンごとの source が 1 MiB、合計 8 MiB で、同じ入力の結果を再利用する。この検査予算を超えた場合は実行時の検査へ残し、E0458 にはしない。受理した呼び出しも Result[Regex.Pattern, String] を返し、実行時にコンパイルする。不正なパターンの Result.Error をテストなどで調べる場合は、通常の関数の引数を経由させる。
 
@@ -1074,7 +1091,7 @@ ready
 | `Assert.Check` | テストでの期待の確かめ |
 | `IO.All` | `Console`、`File`、`Process`、`Clock`、`Random`、`State` のすべて（Log とネットワークのエフェクトは含まない） |
 
-エフェクトが示すのは、関数が行ってよい操作の*種類*であり、どのファイル、コマンド、ホストかではない。`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。この版は、スクリプトの実行中に操作を制限しない。信頼しないスクリプトはサンドボックスの中で実行する。`main` の読み手がスクリプトの行うことを見てとれるように、`IO.All` よりも個々のエフェクトを挙げるほうを選ぶ。
+引数のないエフェクトが示すのは、関数が行ってよい操作の*種類*である。一部の標準エフェクトは、[範囲の引数](#範囲付きのエフェクト)で操作の対象も制約できる。`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。この版は、スクリプトの実行中に操作を制限しない。スクリプトはエージェントかハーネスのサンドボックスの中で実行する。`main` の読み手がスクリプトの行うことを見てとれるように、`IO.All` よりも個々のエフェクトを挙げるほうを選ぶ。
 
 ```benitoite error
 import Benitoite.Unofficial.IO.Console
@@ -1095,6 +1112,20 @@ error[E0501]
 `greet` に `uses Console.Write` を加えると、誤りは直る。
 
 エフェクトは関数の値の型の一部である。`function(text: String) -> Unit uses Console.Write` のように書く。
+
+### 範囲付きのエフェクト
+
+`File.Read["/data/**"]` と `File.Write["/out/report.txt"]` はパスの表記を制約する。`Http.Connect["api.example", 443]` はホストとポートを制約し、`Http.Connect["192.168.1.0/24", 80..81]` は IP ネットワークと両端を含むポート区間を使う。引数の省略は、制限のない範囲 Top を意味する。Top と、受け付ける絶対パスの表記を覆う `File.Read["/**"]` は異なる。この引数は閉じたリテラルであり、式、変数、利用者定義の範囲パラメータは使えない。利用者エフェクトを含め、ほかのエフェクトは範囲の引数を受け付けない。
+
+パスのパターンは、完全一致する絶対パスか、`/**` で終わるツリーである。ホストのパターンは、完全一致する名前、直前の一ラベルを表す `*.example.com`、一つ以上を表す `**.example.com` であり、どちらのワイルドカードも幹を含まない。正規形の IPv4/IPv6 アドレスと CIDR ネットワークも受け付ける。表記、正規化、拒否する対象は [Scope](#scope) を参照する。ポートは 0〜65535 の整数リテラルであり、一つのポートか `minimum..maximum` で書く。minimum は maximum 以下でなければならない。
+
+一組の角括弧に複数の範囲をまとめて書ける。`File.Write["/out/a/**", "/out/b/**"]` は二原子、`Http.Connect["a.example", 443, "b.example", 80..81]` は二つの endpoint 原子である。正規化後の原子の重複は誤りとなる。異なる範囲は、一方が他方を被覆しても別の原子のままである。
+
+エフェクトの上限の比較では、必要な各原子を、囲む上限の同名の一原子が被覆しなければならない。ツリーは幹と子孫を含み、IP の包含は同じアドレスファミリ内で判定し、endpoint はホストとポートの両方の包含を要する。二つの区間 `0..4` と `5..9` で、必要な一原子 `0..9` を合わせて被覆することはない。Top は同名のすべての範囲を被覆し、閉じた範囲は Top を被覆しない。検査済みの値の型の添字は不変であり、エフェクトの被覆によって狭い値を広い型へ暗黙に変換しない。
+
+E0519 は、同名の範囲への受け入れの失敗を報告する。理由は `notCovered`、`atomicCoverOnly`（一原子では被覆できず、和集合を判定しない）、`unknownSource`（明示した Top も含む Top）、`budgetExceeded`（必須の局所解析の予算超過）である。実行した対象が契約の外になるという証明ではない。エフェクト名の不足は E0501/E0502 のままであり、不変の値の型の不一致では E0401 を報告することがある。E0521 は一貫したハンドラの範囲を決められなかったことを表し、提案した変更での収束は保証しない。この必須の検査は、任意の局所の区間警告と解析範囲の報告とは別である。
+
+上限は、検査済みの値が保持したものと同じ操作の対象を扱う。対象はパスの表記、またはホストとポートからなるプログラムの接続先 endpoint である。シンボリックリンクの解決後の実ファイル、DNS や OS/ネットワークの変換後の相手、DNS の問い合わせや OS の TLS 証明書・失効確認の通信の宛先は特定しない。endpoint は scheme を持つ origin ではない。上限は内容や情報フローを制約せず、実行を許可しない。ハーネスは[宣言した対象の上限](#宣言した対象の上限)を説明し、[エフェクトの上限](#実行前のエフェクトの上限)には正規名を使う。
 
 ### ファイル単位のエフェクトの宣言
 
@@ -1281,6 +1312,20 @@ total: 500
 制約付きの操作は、関数値として保存し、`_` で部分適用し、`|>` の右辺に使える。関数型には宣言した公開のパラメータと操作のエフェクトだけを保つ。節内のラムダは、上位の型クラスを含む宣言した制約を捕捉できる。入れ子の節はそれぞれの制約を保つ。名前付き引数はソース順に一度ずつ評価し、その後で宣言順へ並べる。
 
 `File.readText` や `Process.run` などの組み込みのエフェクトの操作も、同じように処理できる。テストはこの方法で外の世界を置き換える（[16. テスト](#16-テスト)）。エフェクトの操作の一部だけを処理するハンドラは、そのエフェクトを型から取り除かない。エフェクトに `State` を含む関数（`Reference`、`TaskGroup`、`Task.await`、`close…` の関数）は処理できない。
+
+### 完全ハンドラと部分ハンドラ
+
+完全ハンドラはエフェクトの全操作に節を与える。部分ハンドラでは、本体が差し替えた操作だけを呼んでいても、囲む契約にそのエフェクトが残る。現在の操作の集合は次のとおりである。
+
+| エフェクト | 完全な処理に必要な全操作 |
+|---|---|
+| `File.Read`（13） | `readText`, `readTextIn`, `openReader`, `readLine`, `readBytes`, `readBytesIn`, `readLines`, `exists`, `info`, `listDirectory`, `walk`, `canonicalize`, `readChunk` |
+| `File.Write`（16） | `writeText`, `writeTextIn`, `appendText`, `appendTextIn`, `writeBytes`, `writeBytesIn`, `appendBytes`, `appendBytesIn`, `createDirectory`, `remove`, `removeTree`, `rename`, `openWriter`, `write`, `writeLine`, `writeChunk` |
+| `Http.Connect`（2） | `send`, `sendIn` |
+
+たとえば[テスト](#16-テスト)の `File.readText` の節は、残り12の Read 操作を処理せず、`File.Read` を残す。`File.writeText` の節だけでは15の Write 操作が未処理となる。`Http.send` だけのハンドラは `sendIn` が不足する部分ハンドラであり、`Http.Connect` を残す。`Http.get` は `send` を呼ぶ通常の関数である。完全ハンドラは本体から処理したエフェクトを除くが、節が行う IO は、その節自身の範囲でハンドラの外に残る。ファイル単位の宣言も囲む契約の一部として残る。
+
+完全性は表記の一致ではなく、名前解決後の操作の同一性で判定する。File や Http を含め、エフェクトを宣言する標準モジュールは `as` で改名できない（E0339）。純粋な Scope モジュールに許される別名は、引き続き標準宣言を指す。同名の利用者の関数や操作に標準の範囲の規則が適用されることはない。節の対象の引数は、保護する本体で推論したエフェクトから選んだ不変の範囲を持つ。射影と転送の制限は[範囲付きの値と IO](#範囲付きの値と-io)を参照する。
 
 `uses` と `case` では、同じモジュールで宣言したエフェクトや操作はモジュールの名前を付けずに書き（`Log`、`write`）、別のモジュールのものは付けて書く（`Logging.Log`、`Logging.write`、`Console.writeLine`）。
 
@@ -1948,7 +1993,7 @@ Regex/Scope の定数拒否、Range の Error、不透明な境界、構築器�
 - 非公式のモジュールを標準ライブラリへ移すと、その取り込みの名前が変わる。これはマイナー版でだけ行う。
 - 同梱の Agent Skill は、一緒に配られた版の `benitoite` だけを説明する。更新した後は `benitoite skill install` を再び実行する。
 
-> 注記: `0.0.1` から `0.0.12` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
+> 注記: `0.0.1` から `0.0.13` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。
 
 ## 21. 実験的な機能: パッケージと外部の関数
 
@@ -1960,7 +2005,7 @@ Regex/Scope の定数拒否、Range の Error、不透明な境界、構築器�
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.12"
+language "0.0.13"
 
 package Textkit
   license "MIT"
@@ -1978,7 +2023,7 @@ end function
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.12"
+language "0.0.13"
 
 dependency Textkit
   path "packages/textkit"
@@ -2010,7 +2055,7 @@ hello-packages
 
 ```files
 name: package.bnt
-language "0.0.12"
+language "0.0.13"
 ```
 
 ```benitoite check
@@ -2021,7 +2066,7 @@ end function
 
 依存のブロックも、その根の設定ファイルへ移せる。依存は一か所にまとめる。起点のスクリプトと `package.bnt` の両方で依存を宣言すると誤りになる。両方で `language` を宣言しても誤りになる。
 
-`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.12` では、`0.0.12` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
+`language "MAJOR.MINOR.PATCH"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.13` では、`0.0.13` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。
 
 `package.bnt` には、設定（`language`、`dependency`、`package` のブロック）だけを書き、取り込みや宣言は書かない。`package` ブロックはこのファイルにだけ書け、依存と組み合わせられない。その名前は大文字で始まる識別子であり、メタデータの欄は、省略可能な `license` だけである。欄の値は通常の文字列リテラルであり、文字列補間は使えない。欄の順序は自由だが、重複する欄や未知の欄は誤りになる。
 
@@ -2266,7 +2311,7 @@ derive の property.generator と property.shrinker は独立して指定でき�
 
 縮小器は再帰する容器の内容の削除を先行し、その後に欄順で一つの欄を縮小する。必須のレコード欄は自分自身を縮小し、親を子で置き換えない。標準の葉と容器は自己候補を除き、再帰節点数を増やさない。制約のない型パラメータに独自 Shrinker を渡す場合、その入力自身を候補から除く責任は呼び出し側にある。独自コールバックの停止と大域的な最小性は保証しない。Show/Order の制約は宣言グラフへ伝播し、Order は組み込みの等値を導かない。
 
-独自の fields.gen/fields.shrink は対にし、完全修飾した純粋・単相・零引数の関数でフィールド全体を置き換える。版 3 の `.generated.json` 記録（`generatorVersion: 3.1.0-syntax-batch5`）、config、libraryVersion 2.0.0、ソース、具体的な反例、独自関数を保存する。inventory は版 3、設定は版 1 である。道具を更新する前に、保存した旧道具で未完の apply と復旧を終える。旧本文のハッシュを検証し、新しい preview と記録を確認してから、その確認済み manifest の正確なハッシュで適用する。生成器の版が同じでも、道具の入力ハッシュによって以前の manifest が無効になりうる。seed だけでは生成器の版をまたぐ分布を再現できない。適用後はハーネスに通常の check/test と derive check を実行させる。全手順と復旧は、[derive の道具](../../../tools/derive/README.md)を参照する。
+独自の fields.gen/fields.shrink は対にし、完全修飾した純粋・単相・零引数の関数でフィールド全体を置き換える。宣言の inventory と意味ハッシュは版4であり、型とエフェクトの添字、範囲多相の標準シグネチャを含む。設定は版1、manifest・receipt・`.generated.json` 記録の外枠は版3を保つ。manifest と生成記録は `inventoryVersion: 4` と `hashVersion: 4` を持ち、receipt は正確な manifest と記録のハッシュに結び付いたままである。生成規則は `3.1.0-syntax-batch5`、Property.libraryVersion は 2.0.0 を保つ。古い manifest と receipt は新しい apply を承認しない。承認は、確認済みの正確な manifest のハッシュと、その入力・道具の同一性に結び付く。生成規則の版が同じでも、古い意味ハッシュを比較できるようにはならず、承認も保たれない。seed だけでは生成器の版をまたぐ分布を再現できない。ハーネスは、手順の正である [derive の道具](../../../tools/derive/README.md)に従い、設定・記録・ソース・具体的な反例・独自関数を保存する。
 
 ### Range
 
@@ -2371,7 +2416,11 @@ Benitoite.Unofficial.Scope を取り込む。全関数は純粋である。不�
 | `endpointHost(value: CheckedEndpoint)`, `endpointHostPattern(value: CheckedEndpoint)` | `String` |
 | `endpointPort(value: CheckedEndpoint)`, `endpointMinimumPort(value: CheckedEndpoint)`, `endpointMaximumPort(value: CheckedEndpoint)` | `Integer` |
 
-ホストは、ASCII の英数字とハイフンからなる非空のラベルをドットで区切る。ラベルの両端のハイフン、空のラベル、末尾のドット、URL、ポートの接尾辞、IPv6、非 ASCII、NUL は拒否する。数字だけの四ラベルは値の範囲にかかわらず IPv4 の形式として拒否する。localhost は受け付ける。パターンは完全一致、直前の一ラベルに一致する *.host、一つ以上に一致する **.host である。ワイルドカードはどちらも幹自体を含まない。成功したホスト検査はパターンと対象を小文字で保存する。DNS の長さの規格はこの契約に含めない。
+名前のホストは、ASCII の英数字とハイフンからなる非空のラベルをドットで区切る。ラベルの両端のハイフン、空のラベル、末尾のドット、URL、ポートの接尾辞、非 ASCII、NUL は拒否する。`localhost` は受け付ける。名前のパターンは完全一致、直前の一ラベルに一致する `*.host`、一つ以上に一致する `**.host` である。ワイルドカードはどちらも幹自体を含まない。成功した名前のホストの検査はパターンと対象を小文字で保存する。DNS の長さの規格はこの契約に含めない。
+
+ホストには、正規形の IPv4 と IPv6 アドレスも受け付ける。パターンにはアドレスの完全一致と CIDR ネットワークを受け付ける。IPv4 は 0〜255 の四つの十進成分で書き、`0` 自体以外の先頭のゼロを認めない。数字だけの四ラベルの不正な表記は、名前に読み替えずに拒否する。IPv6 は、小文字で先頭のゼロを省き、二つ以上続くゼロの群のうち最初の最長列を圧縮した正規形を使う。CIDR の接頭部の長さは先頭のゼロを持たない十進数であり、ホスト部のビットはゼロでなければならない。IPv4 の `/32` と IPv6 の `/128` は、アドレスの完全一致に正規化する。IP のアドレスファミリは区別し、DNS の解決で比較しない。ゾーン ID、IPvFuture、直接のホスト引数の角括弧、IP を幹とするワイルドカードは拒否する。URL 内の IPv6 の構文は[検査済みの HTTP 要求](#検査済みの-http-要求)を参照する。
+
+IPv4 射影 IPv6 アドレスのパターンは、`::ffff:192.0.2.1` のような混合の正規形を保ち、範囲の代数でも IPv6 のままである。`::ffff:0:0/96` 内のすべての対象を `InvalidTarget` として拒否する。その範囲内だけのパターンは有効だが、受け付けるどの対象にも一致しない。`::/0` のような広いパターンは、ほかの IPv6 の対象にも一致する。これにより、OS が射影アドレスを通じて IPv4 に接続できる場合に、その対象を IPv6 だけの操作と扱うことを防ぐ。
 
 パスはスラッシュ区切りの絶対表記を使う。/ は受け付け、ほかの末尾のスラッシュ、空の成分、. と ..、NUL、バックスラッシュを拒否する。ほかの Unicode 文字は表記を保つ。パターンは完全一致か末尾の /** であり、ほかの位置の星を拒否する。/data/reports/** は /data/reports とその子孫を含み、/data/reports-old は含まない。/** は根と受理できる全パスを含む。対象パス内の星は通常の文字である。成功した検査は両方の文字列をそのまま保存する。
 
@@ -2416,4 +2465,92 @@ end function
 true
 ```
 
-成功は、保存した対象の表記が保存した条件を満たすことを表す。権限の付与、DNS の解決先やファイル・リンクの実体の特定、隔離、後の変更の防止、URL とリダイレクトの検証、IO の成功は保証しない。既存の IO 関数は引き続き String と Integer を受け取る。検査済みの対象を使うときは射影した値を明示的に渡す。
+成功は、保存した対象の表記が保存した条件を満たすことを表す。権限の付与、DNS の解決先やファイル・リンクの実体の特定、隔離、後の変更の防止、URL とリダイレクトの検証、IO の成功は保証しない。既存の IO 関数は引き続き String と Integer を受け取る。それらの入口で検査済みの対象を使うときは、射影した値を明示的に渡す。以下の別の範囲付きの入口は、検査済みの対象を保持したまま使う。
+
+### 範囲付きの値と IO
+
+`Scope.PathIn["/data/**"]` と `Http.RequestIn["api.example", 443]` は、一つの不変の範囲の添字を持つ不透明な標準の値型である。引数のない `Scope.PathIn` と `Http.RequestIn` の範囲は Top である。型パラメータや複数の範囲は受け付けず、等値比較、外からの構築、更新、表現のパターン、自動アクセサは使えない。Top でない値を照合するときは、変数か `_` に束縛する。エフェクトの被覆は、これらの値型を暗黙に拡大しない。
+
+以下の六つの宣言は純粋である。シグネチャは引数のない型を示し、検査器が呼び出しごとの静的な範囲を選ぶ。
+
+| 宣言 | 結果と範囲の関係 |
+|---|---|
+| `Scope.checkPathIn(pattern: String, path: String)` | `Result[Scope.PathIn, Scope.ScopeError]`。動的な条件と選んだ静的な範囲の両方を検査し、同じパスを保持する。 |
+| `Scope.pathInValue(path: Scope.PathIn)` | `String`。保持したパスを返す。 |
+| `Scope.widenPathIn(path: Scope.PathIn)` | `Scope.PathIn`。同じ値を保ち、明示的な注釈で与えた、その値を被覆する行き先の範囲を持つ。 |
+| `Http.checkRequestIn(hostPattern: String, minimumPort: Integer, maximumPort: Integer, request: Http.ClientRequest)` | `Result[Http.RequestIn, Http.RequestCheckError]`。両方の条件を検査し、同じ要求と有効な endpoint を保持する。 |
+| `Http.requestInValue(request: Http.RequestIn)` | `Http.ClientRequest`。同じ保持したレコードを返す。 |
+| `Http.widenRequestIn(request: Http.RequestIn)` | `Http.RequestIn`。要求と endpoint を保ち、明示的な注釈で与えた、その値を被覆する行き先の範囲を持つ。 |
+
+直接の検査では、条件が認定できるリテラルか `const` の直接参照なら狭い範囲を選び、未知の条件には Top を要求する。通常の型制約が、Top を含む被覆する範囲を要求する場合もある。静的な Top でも、動的な所属の検査は省略しない。この規則は、許される取り込みの別名も含め、名前解決した標準の宣言を認定する。同じ表記の利用者の関数は認定しない。関数値の呼び出し、穴、パイプを通じて、この局所規則から狭い検査結果を与えることはない。
+
+検査器は、一度保存した検査結果と、その同じ `Ok` の値を局所的に追跡する。射影と拡大の呼び出しを `bind` の右辺へ直接置き、束縛した結果をほかの式で使う。文字列への埋め込み、引数の並び、コレクションの要素に入れ子になった呼び出しでは、その局所の事実を読まない。別名、再包装、未知の呼び出しによって由来が成立することはない。必須の解析は区間の警告とは別の予算を持ち、超過すると由来を忘れて Top を要求することがある。型の注釈だけでは所属は成立しない。
+
+この例は、実行時には純粋な検査と射影だけを行う。使わない関数は、不変の狭い値を射影せずに IO へ転送する形も示す。
+
+```benitoite
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Console
+
+function readInput(path: S.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
+  return File.readTextIn(path: path)
+end function
+
+function main() -> Unit uses Console.Write
+  bind checked: Result[S.PathIn["/data/a"], S.ScopeError] <- S.checkPathIn(pattern: "/data/a", path: "/data/a")
+  match checked with
+    case Result.Ok(value) ->
+      bind path <- S.pathInValue(path: value)
+      bind wider: S.PathIn["/data/**"] <- S.widenPathIn(path: value)
+      Console.writeLine(path)
+    case Result.Error(_) -> Console.writeLine("path check failed")
+  end match
+end function
+```
+
+```output
+/data/a
+```
+
+狭い関数の仮引数、宣言した戻り値、ハンドラ節の仮引数は、受け取る境界で検査した値の局所の由来を持たない。射影や拡大を直接の `bind` へ移しても、その由来は成立しない。同じ狭い入力型を持つ IO へ、そのまま転送することはできる。関数の実引数を拡大するには、検査した値の由来が分かる呼び出し元で拡大し、広い仮引数型を使う。引数のない仮引数では Top の射影が許されるが、それを通した IO の範囲は Top になる。節の仮引数の型は、保護する本体で推論したエフェクトから選ばれる。Top にするには保護する本体も Top とし、囲む契約の拡大も必要な場合がある。これは、現在の射影と拡大の精度の制限である。
+
+| 範囲付きの操作 | ほかの引数 | 結果 | 入力の範囲を使うエフェクト |
+|---|---|---|---|
+| `File.readTextIn(path: Scope.PathIn)` | なし | `Result[String, IOError]` | `File.Read` |
+| `File.readBytesIn(path: Scope.PathIn)` | なし | `Result[Bytes, IOError]` | `File.Read` |
+| `File.writeTextIn(path: Scope.PathIn, text: String)` | `text` | `Result[Unit, IOError]` | `File.Write` |
+| `File.appendTextIn(path: Scope.PathIn, text: String)` | `text` | `Result[Unit, IOError]` | `File.Write` |
+| `File.writeBytesIn(path: Scope.PathIn, content: Bytes)` | `content` | `Result[Unit, IOError]` | `File.Write` |
+| `File.appendBytesIn(path: Scope.PathIn, content: Bytes)` | `content` | `Result[Unit, IOError]` | `File.Write` |
+| `Http.sendIn(request: Http.RequestIn)` | なし | `Result[Http.Response, NetworkError]` | `Http.Connect` |
+
+各操作は、検査済みの入力が保持する同じパスや要求を使う。入力型が、値の範囲と操作のエフェクトの範囲の両方を決める。期待する型や後で渡す入力型から範囲が決まる場合は、操作の値と部分適用にもこの規則を使う。制約のない入力は Top を既定とする。結果の型は対象の範囲を決めない。従来の String を取る File の操作と `Http.get`/`Http.send` は、Top のエフェクトを保つ。従来の操作だけの処理は、[完全ハンドラと部分ハンドラ](#完全ハンドラと部分ハンドラ)で説明した部分的な処理である。
+
+#### 検査済みの HTTP 要求
+
+`checkRequestIn` は、userinfo を含まず、パーセントエスケープが正しく、ホストが非空の、ASCII の絶対 HTTP/HTTPS URL を受け付ける。非 ASCII のパスやクエリの文字は、URL を作る前に符号化する。URL のポートの省略と空のポートは HTTP では80、HTTPS では443となる。明示したポートは 0〜65535 の十進数でなければならない。URL 内の角括弧付きの IPv6 は数値として解析し、有効な endpoint には正規形を使う。IPv4 射影 IPv6 アドレスの対象、ゾーン ID、IPvFuture、不正な IPv4、`127.1`、`2130706433`、`127.0x.0.1` のような数値に見える曖昧なホストは拒否する。数値に見えるホストの制限は URL の検査に固有であり、Scope の直接のホスト検査は前述の表記の規則を使う。
+
+成功した値は、五フィールドの `ClientRequest`（`method`、`url`、`headers`、`body`、`timeoutMilliseconds`）をそのまま保持し、有効なホストとポートも保持する。クエリとフラグメントは保存した URL に残るが、フラグメントは送信しない。射影はそのレコードを返す。射影したレコードを更新しても検査済みの値は変わらず、変更した要求には再検査が必要である。拡大は静的な添字だけを変える。
+
+`Http.RequestCheckError` は、endpoint を取り出せない URL の形を表す `InvalidUrl(String)` と、対象・条件・ポート・所属の失敗を表す `Scope(Scope.ScopeError)` を持つ。標準の Show の実装はない。構成子を照合するか、`or die` の前にエラーを変換する。内側の ScopeError は Show を持つ。送信とその準備の失敗は、純粋な検査のエラーとは別に `NetworkError` を使う。
+
+```benitoite
+import Benitoite.Unofficial.Network.Http
+
+function describe(error: Http.RequestCheckError) -> String
+  return match error with
+    case Http.RequestCheckError.InvalidUrl(message) -> message
+    case Http.RequestCheckError.Scope(_) -> "endpoint check failed"
+  end match
+end function
+
+function main() -> Unit
+  ()
+end function
+```
+
+```output
+```
+
+`sendIn` は保持した要求を送り、リダイレクトを追わずに 3xx の応答を返し、環境のプロキシを自動では使わない。明示した Host ヘッダは、URI と保持した endpoint の有効なホスト・ポートに一致しなければならず、不一致なら `NetworkErrorKind.InvalidInput` を返す。プログラムの接続先は、DNS/OS の変換前の、保持した endpoint である。DNS の通信や OS による TLS 中間証明書・失効確認の取得には、この静的な保証の外の宛先がある。`Http.send` は、射影したレコードを渡した場合も、既存の自動リダイレクトと Top の範囲を保つ。

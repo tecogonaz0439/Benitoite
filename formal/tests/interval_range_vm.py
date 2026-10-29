@@ -174,7 +174,7 @@ def exercise(runner, directory, cli):
                      else 'parameterOrGeneralCall') for name in definitions if name[1:] not in specs]
     original['modules'][0]['definitions'] = selected
     original['apiAt'] = [s for s in original['apiAt'] if s['key'][0][1:] in specs]
-    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=14, traversalVersion=1,
+    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=15, traversalVersion=1,
                   profile='domain', inputs=[original])
     report = runner.invoke('range-closed', 'eval', corpus, 0)
     assert report['comparedCount'] == str(len(specs)) and report['excludedCount'] == '0'

@@ -18,14 +18,14 @@ private def decls : Declarations :=
     ops := fun o => if o == "Pick.value" then some {
       eff := "Pick", tparams := [], names := [], params := [], ret := intTy } else none }
 private def builtins : Builtins :=
-  { sig := fun _ => none, delta := fun _ _ _ _ => none,
-    ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
+  { sig := fun _ => none, delta := fun _ _ _ _ _ => none,
+    ioResponse := fun _ _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
     isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False,
     refGet := "get", refSet := "set" }
 private def input : Input :=
   { D := decls, B := builtins, satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => false,
     opPrim := fun _ _ => none,
-    ctors := fun n => if n == "Option" then ["Option.Some","Option.None"] else [], atoms := [.name "Pick"] }
+    ctors := fun n => if n == "Option" then ["Option.Some","Option.None"] else [], atoms := [.nameTop "Pick"] }
 private def partialAdd (e : Expr) : Expr :=
   .partialCall (.funName "add" [] []) ["left", "right"] (.expr (some "left") 0 e (.hole (some "right") 1 intTy .nil)) intTy emptyEff
 private def make : Def :=

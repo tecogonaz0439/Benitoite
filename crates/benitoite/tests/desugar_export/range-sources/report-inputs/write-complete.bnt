@@ -1,0 +1,29 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+function protected() -> Integer uses File.Write["/data/**"]
+ return 1
+end function
+function main() -> Unit
+ bind _ <- handle protected() with
+ case File.writeText(path, text) -> 0
+ case File.writeTextIn(path, text) -> 0
+ case File.appendText(path, text) -> 0
+ case File.appendTextIn(path, text) -> 0
+ case File.writeBytes(path, content) -> 0
+ case File.writeBytesIn(path, content) -> 0
+ case File.appendBytes(path, content) -> 0
+ case File.appendBytesIn(path, content) -> 0
+ case File.createDirectory(path) -> 0
+ case File.remove(path) -> 0
+ case File.removeTree(path) -> 0
+ case File.rename(from, to) -> 0
+ case File.openWriter(path, mode) -> 0
+ case File.write(writer, text) -> 0
+ case File.writeLine(writer, text) -> 0
+ case File.writeChunk(writer, content) -> 0
+ end handle
+end function
+@test
+function upper() -> Unit
+ main()
+end function

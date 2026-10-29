@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.NonEmptyList
+@test
+function nonEmptyExample() -> Unit uses Assert.Check
+  match NonEmptyList.fromList([3, 4]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: NonEmptyList.head(checked), expected: 3)
+      Assert.equal(actual: NonEmptyList.tail(checked), expected: [4])
+      bind mapped <- NonEmptyList.map(value: checked, f: lambda(value) return Integer.toString(value) end lambda)
+      Assert.equal(actual: NonEmptyList.toList(mapped), expected: ["3", "4"])
+    case Result.Error(_) -> Assert.fail("nonempty input was rejected")
+  end match
+end function

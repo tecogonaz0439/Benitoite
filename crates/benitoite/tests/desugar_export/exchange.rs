@@ -15,8 +15,14 @@ use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 #[path = "builtins.rs"]
-mod builtin_export;
+pub(super) mod builtin_export;
 pub use builtin_export::{complete_stdlib, named_builtin_tables};
+
+#[path = "scope.rs"]
+pub(super) mod scope_export;
+
+#[path = "atom_order.rs"]
+mod atom_order;
 
 #[path = "builders.rs"]
 mod builder_export;
@@ -24,8 +30,8 @@ mod builder_export;
 #[path = "named_calls.rs"]
 pub(super) mod named_calls;
 
-// arbitrary_precision なしの Value は Decimal の 96 ビットの仮数を保持できない。
-// 材料では文字列に保持し、交換形式の書き出し時だけ i128 の整数として書く。
+// arbitrary_precision なしの Value は Decimal の 96 ビットの仮数と IPv6 の全幅を保持できない。
+// 材料では文字列に保持し、交換形式の書き出し時だけ i128/u128 の整数として書く。
 // Lean が読む mantissa の型と数の精度を変えない（設計書 07-04「01-12 との対応」）。
 struct ExchangeJson<'a>(&'a Value);
 
@@ -35,7 +41,15 @@ impl Serialize for ExchangeJson<'_> {
             Value::Object(object) => {
                 let mut output = serializer.serialize_map(Some(object.len()))?;
                 for (key, value) in object {
-                    if key == "mantissa"
+                    if ((key == "bits" && object.contains_key("family"))
+                        || (key == "network" && object.contains_key("prefixLen")))
+                        && let Value::String(value) = value
+                    {
+                        let number = value
+                            .parse::<u128>()
+                            .map_err(serde_core::ser::Error::custom)?;
+                        output.serialize_entry(key, &number)?;
+                    } else if key == "mantissa"
                         && let Value::String(value) = value
                     {
                         let number = value
@@ -62,7 +76,7 @@ impl Serialize for ExchangeJson<'_> {
     }
 }
 
-/// Decimal の仮数を整数のまま書く、交換形式のバイト列。
+/// Decimal の仮数と IP のビット列を整数のまま書く、交換形式のバイト列。
 pub(super) fn to_vec(value: &Value) -> serde_json::Result<Vec<u8>> {
     serde_json::to_vec(&ExchangeJson(value))
 }
@@ -125,8 +139,15 @@ impl InputStream {
 fn tagged(tag: &str, fields: Value) -> Value {
     json!({tag:fields})
 }
-fn con_name(adt: BindingId, tag: u32) -> String {
-    format!("con:{}:{tag}", adt.0)
+/// 標準の成功腕だけを必須判定の読者の名前へそろえ、他は束縛の番号を保つ。
+pub(super) fn con_name(p: &CheckedProgram, adt: BindingId, tag: u32) -> String {
+    // 必須判定の既存読者は標準 Result の成功腕をこの交換名で認定する。
+    // 綴りが同じ利用者の構成子は、解決済みの標準の束縛と区別する。
+    if Some(adt) == p.resolved.stdlib("Benitoite.Result.Result") && tag == 0 {
+        "Ok".to_owned()
+    } else {
+        format!("con:{}:{tag}", adt.0)
+    }
 }
 fn fun_name(id: BindingId) -> String {
     format!("fn:{}", id.0)
@@ -298,6 +319,9 @@ pub fn attach_metadata(input: &mut Value, table: &Value, coverage: &mut Value) {
         }
     }
     input["dataTypes"] = json!(ds);
+    // 現在の入力に現れるリテラルを読み、局所解析の採用上限を必ず明示する。
+    input["scopeAcceptance"] = scope_export::acceptance(input);
+    input["candidates"] = builtin_export::candidate_atoms(input, table);
 }
 
 struct ConstantEntry {
@@ -346,22 +370,24 @@ pub struct CoverageExport {
     pub bindings: Vec<Value>,
 }
 
-struct Surface<'a> {
+pub(super) struct Surface<'a> {
     p: &'a CheckedProgram,
     coverage: CoverageExport,
     constants: Option<&'a ConstantTable>,
     constant_references: BTreeSet<BindingId>,
     closed_constant: bool,
-    outside: BTreeSet<String>,
+    pub(super) outside: BTreeSet<String>,
     return_ty: Option<Ty>,
     clause_types: Vec<(NodeId, usize)>,
     type_order: Vec<usize>,
     // [対象箇所数, 元の注釈が R と異なる箇所数]。対象外の関数も含む。
     annotations: BTreeMap<&'static str, [usize; 2]>,
     record_origins: bool,
+    // Some は型表の一署名の内部だけ。項と通常の型では rvar を拒否する。
+    range_bound: Option<usize>,
 }
 impl Surface<'_> {
-    fn new(p: &CheckedProgram, ret: Option<Ty>, type_order: Vec<usize>) -> Surface<'_> {
+    pub(super) fn new(p: &CheckedProgram, ret: Option<Ty>, type_order: Vec<usize>) -> Surface<'_> {
         Surface {
             p,
             coverage: CoverageExport::default(),
@@ -374,32 +400,26 @@ impl Surface<'_> {
             type_order,
             annotations: BTreeMap::new(),
             record_origins: false,
+            range_bound: None,
         }
     }
-    fn eff(&mut self, e: &EffectSet) -> Value {
+    pub(super) fn eff(&mut self, e: &EffectSet) -> Value {
         let mut atoms: Vec<Value> = e
             .names
             .iter()
             .map(|n| {
                 let name = match n {
-                    EffectName::User(id) => format!("effect:{}", id.0),
-                    EffectName::Builtin(id) => {
-                        let d = id.def().unwrap();
-                        // die の型規則が指定する標準の原子名へ揃える。型・効果・
-                        // 組み込みの表を同じ名前で交換する（07-04「01-12 との対応」）。
-                        if d.module == ["IO", "Process"] && d.name == "Exit" {
-                            "Process.Exit".to_owned()
-                        } else if d.module.is_empty() {
-                            d.name.to_owned()
-                        } else {
-                            format!("{}.{}", d.module.join("."), d.name)
-                        }
-                    }
+                    EffectName::User(id, _) => format!("effect:{}", id.0),
+                    EffectName::Builtin(id, _) => scope_export::effect_name(*id),
                 };
-                tagged("name", json!({"value":name}))
+                tagged(
+                    "name",
+                    json!({"value":name,"ix":scope_export::index(n.index(), self.range_bound)}),
+                )
             })
             .collect();
         atoms.extend(e.vars.iter().map(|i| tagged("rho", json!({"index":i.0}))));
+        atom_order::sort(&mut atoms);
         atoms.extend(
             e.failures
                 .iter()
@@ -522,7 +542,7 @@ impl Surface<'_> {
         self.outside.insert(name.to_owned());
         json!("unit")
     }
-    fn ty(&mut self, ty: &Ty) -> Value {
+    pub(super) fn ty(&mut self, ty: &Ty) -> Value {
         match ty {
             Ty::Param(index) => tagged("tvar", json!({"index":self.type_index(*index)})),
             Ty::App(i, ts) => {
@@ -563,8 +583,16 @@ impl Surface<'_> {
                 fields["names"] = json!(f.param_names);
                 tagged("fn", fields)
             }
-            Ty::Con(con, args) => {
+            Ty::Con(con, args, ix) => {
                 let args: Vec<_> = args.iter().map(|t| self.ty(t)).collect();
+                if !matches!(con, TyCon::Builtin(id) if id.def().is_some_and(|d| matches!(d.class, BuiltinTypeClass::Opaque | BuiltinTypeClass::Resource)))
+                {
+                    assert_eq!(
+                        *ix,
+                        benitoite::types::builtin::RangeIndex::TOP,
+                        "nonopaque range index"
+                    );
+                }
                 match con {
                     TyCon::External(_) => self.outside("external type"),
                     TyCon::Adt(id) => tagged("data", json!({"name":data_name(*id),"args":args})),
@@ -588,7 +616,7 @@ impl Surface<'_> {
                             // Task などは Release の O[A] に対応する一意な中身を見せない型名。
                             _ => tagged(
                                 "opaque",
-                                json!({"name":format!("{}:{}",id.0,serde_json::to_string(&args).unwrap())}),
+                                json!({"name":format!("{}:{}",id.0,serde_json::to_string(&args).unwrap()),"ix":scope_export::index(ix, self.range_bound)}),
                             ),
                         }
                     }
@@ -646,7 +674,7 @@ impl Surface<'_> {
         let BindingKind::Ctor { data, tag } = self.p.resolved.bindings.get(id).unwrap().kind else {
             panic!("invalid stdlib constructor: {name}")
         };
-        con_name(data, tag)
+        con_name(self.p, data, tag)
     }
     fn targs(&mut self, id: NodeId, binding: BindingId) -> (Vec<Value>, Vec<Value>) {
         let scheme = self.p.types.decl_types.get(binding).unwrap();
@@ -775,7 +803,10 @@ impl Surface<'_> {
                     panic!("ctor pattern")
                 };
                 let args: Vec<_> = v.args.iter().map(|p| self.pattern(p, env)).collect();
-                tagged("con", json!({"name":con_name(data,tag),"args":args}))
+                tagged(
+                    "con",
+                    json!({"name":con_name(self.p, data,tag),"args":args}),
+                )
             }
             a::Pattern::Record(v) => {
                 let adt = self.reference(v.id);
@@ -799,7 +830,7 @@ impl Surface<'_> {
                 }
                 tagged(
                     "record",
-                    json!({"name":con_name(adt,0),"n":n,"positions":positions,"args":args}),
+                    json!({"name":con_name(self.p, adt,0),"n":n,"positions":positions,"args":args}),
                 )
             }
             a::Pattern::Range(v) => {
@@ -927,6 +958,20 @@ impl Surface<'_> {
                 };
                 if tag == "opName" {
                     tagged(tag, json!({"name":name,"tys":tys}))
+                } else if tag == "primName" {
+                    let ranges: Vec<_> = self
+                        .p
+                        .types
+                        .call_ranges
+                        .get(n.id)
+                        .expect("accepted builtin ranges")
+                        .iter()
+                        .map(scope_export::range)
+                        .collect();
+                    tagged(
+                        tag,
+                        json!({"name":name,"tys":tys,"effs":effs,"ranges":ranges}),
+                    )
                 } else {
                     tagged(tag, json!({"name":name,"tys":tys,"effs":effs}))
                 }
@@ -1003,13 +1048,19 @@ impl Surface<'_> {
         let (tys, _) = self.targs(n.id, id);
         let instantiated = self.p.types.expr_types.get(n.id).unwrap().clone();
         let Ty::Fn(f) = instantiated else {
-            return tagged("nullCon", json!({"name":con_name(data, tag), "tys":tys}));
+            return tagged(
+                "nullCon",
+                json!({"name":con_name(self.p, data, tag), "tys":tys}),
+            );
         };
         if f.params.is_empty() {
-            tagged("nullCon", json!({"name":con_name(data, tag), "tys":tys}))
+            tagged(
+                "nullCon",
+                json!({"name":con_name(self.p, data, tag), "tys":tys}),
+            )
         } else {
             let params: Vec<_> = f.params.iter().map(|t| self.ty(t)).collect();
-            let mut fields = json!({"name":con_name(data,tag),"tys":tys,"params":params});
+            let mut fields = json!({"name":con_name(self.p, data,tag),"tys":tys,"params":params});
             assert_eq!(f.param_names.len(), f.params.len());
             fields["names"] = json!(f.param_names);
             tagged("conValue", fields)
@@ -1156,7 +1207,7 @@ impl Surface<'_> {
                 }
             }
             a::Expr::List(v) => {
-                let Ty::Con(_, ts) = self.p.types.expr_types.get(v.id).unwrap() else {
+                let Ty::Con(_, ts, _) = self.p.types.expr_types.get(v.id).unwrap() else {
                     panic!("list type")
                 };
                 let elem = self.ty(&ts[0]);
@@ -1198,7 +1249,12 @@ impl Surface<'_> {
                     } else {
                         panic!("invalid List.concatenate binding: {kind:?}")
                     };
-                    let concat = tagged(tag, json!({"name":name,"tys":[elem.clone()],"effs":effs}));
+                    let concat_fields = if tag == "primName" {
+                        json!({"name":name,"tys":[elem.clone()],"effs":effs,"ranges":[]})
+                    } else {
+                        json!({"name":name,"tys":[elem.clone()],"effs":effs})
+                    };
+                    let concat = tagged(tag, concat_fields);
                     let list_ty = self.node_ty(v.id);
                     let concat_ty = json!({"fn":{"names":scheme.param_names,"params":[list_ty,list_ty],"ret":list_ty,"eff":[]}});
                     let concat = self.located_type(v.id, v.span, concat_ty, concat);
@@ -1314,7 +1370,7 @@ impl Surface<'_> {
                 for s in &v.segments {
                     es.push(self.expr(&s.expr, env));
                     let ty = self.p.types.interp_types.get(s.expr.id()).unwrap();
-                    let Ty::Con(TyCon::Builtin(b), args) = ty else {
+                    let Ty::Con(TyCon::Builtin(b), args, _) = ty else {
                         panic!("non-basic interpolation type: {ty:?}")
                     };
                     assert!(args.is_empty());
@@ -1348,7 +1404,10 @@ impl Surface<'_> {
                             "kind":kind,"align":align,"sign":sign,"alternate":spec.alternate,
                             "zero":spec.zero,"width":spec.width,"precision":spec.precision}}),
                         ));
-                        let converter = tagged("primName", json!({"name":name,"tys":[],"effs":[]}));
+                        let converter = tagged(
+                            "primName",
+                            json!({"name":name,"tys":[],"effs":[],"ranges":[]}),
+                        );
                         let converter_ty = json!({"fn":{"names":["value"],"params":[self.ty(ty)],"ret":{"base":{"name":"String"}},"eff":[]}});
                         converters.push(self.located_type(
                             s.expr.id(),
@@ -1362,7 +1421,10 @@ impl Surface<'_> {
                         let id = table::interpolation_builtin(*b).unwrap();
                         let name = builtins::builtin_decl(id).unwrap().name;
                         parts.push(tagged("converted", json!({"ty":self.ty(ty)})));
-                        let converter = tagged("primName", json!({"name":name,"tys":[],"effs":[]}));
+                        let converter = tagged(
+                            "primName",
+                            json!({"name":name,"tys":[],"effs":[],"ranges":[]}),
+                        );
                         let converter_ty = json!({"fn":{"names":["value"],"params":[self.ty(ty)],"ret":{"base":{"name":"String"}},"eff":[]}});
                         converters.push(self.located_type(
                             s.expr.id(),
@@ -1391,7 +1453,7 @@ impl Surface<'_> {
                     })
                     .collect();
                 let tys = if let Some(base) = &v.base {
-                    let Ty::Con(TyCon::Adt(data), tys) =
+                    let Ty::Con(TyCon::Adt(data), tys, _) =
                         self.p.types.expr_types.get(base.id()).unwrap()
                     else {
                         panic!("record base type")
@@ -1407,12 +1469,12 @@ impl Surface<'_> {
                 if let Some(base) = base {
                     tagged(
                         "recordUpdate",
-                        json!({"name":con_name(adt,0),"tys":tys,"n":n,"positions":positions,"base":base,"args":args}),
+                        json!({"name":con_name(self.p, adt,0),"tys":tys,"n":n,"positions":positions,"base":base,"args":args}),
                     )
                 } else {
                     tagged(
                         "record",
-                        json!({"name":con_name(adt,0),"tys":tys,"positions":positions,"args":args}),
+                        json!({"name":con_name(self.p, adt,0),"tys":tys,"positions":positions,"args":args}),
                     )
                 }
             }
@@ -1424,7 +1486,7 @@ impl Surface<'_> {
                         a::TryAction::ImplicitReturn | a::TryAction::Return { .. },
                         benitoite::typeck::TryActionInfo::Return { ret },
                     ) => {
-                        let Ty::Con(_, ret_args) = ret else {
+                        let Ty::Con(_, ret_args, _) = ret else {
                             panic!("try return type")
                         };
                         let ret_args: Vec<_> = ret_args.iter().map(|t| self.ty(t)).collect();
@@ -1681,7 +1743,7 @@ impl Surface<'_> {
                     self.outside("record");
                 }
                 let (tys, _) = self.targs(n.id, id);
-                ctor = Some((con_name(data, tag), tys));
+                ctor = Some((con_name(self.p, data, tag), tys));
             }
         }
         self.named_call(v, env, ctor)
@@ -1943,11 +2005,13 @@ impl Core<'_> {
                 )
             }
             c::ValKind::External { .. } => unsupported("external function"),
-            c::ValKind::Builtin { id, targs, .. } => {
+            c::ValKind::Builtin {
+                id, targs, ranges, ..
+            } => {
                 let (tys, effs) = self.surface.args(targs);
                 tagged(
                     "prim",
-                    json!({"name":builtins::builtin_decl(*id).unwrap().name,"tys":tys,"effs":effs}),
+                    json!({"name":builtins::builtin_decl(*id).unwrap().name,"tys":tys,"effs":effs,"ranges":ranges.iter().map(scope_export::range).collect::<Vec<_>>()}),
                 )
             }
             c::ValKind::Lambda(l) => {
@@ -1977,7 +2041,7 @@ impl Core<'_> {
                 let args: Vec<_> = args.iter().map(|v| self.value(v, env)).collect();
                 tagged(
                     "con",
-                    json!({"name":con_name(*adt,*tag),"tys":tys,"args":args}),
+                    json!({"name":con_name(self.surface.p, *adt,*tag),"tys":tys,"args":args}),
                 )
             }
             c::ValKind::List(vs) => {
@@ -2013,7 +2077,10 @@ impl Core<'_> {
             c::CorePat::Const(c) => tagged("const", json!({"value":self.constant(c)})),
             c::CorePat::Ctor { adt, tag, args } => {
                 let args: Vec<_> = args.iter().map(|p| self.pattern(p, vars)).collect();
-                tagged("con", json!({"name":con_name(*adt,*tag),"args":args}))
+                tagged(
+                    "con",
+                    json!({"name":con_name(self.surface.p, *adt,*tag),"args":args}),
+                )
             }
             c::CorePat::Range { lo, hi } => tagged(
                 "range",
@@ -2420,7 +2487,7 @@ fn getter_definition(
         "constant reference in generated accessor"
     );
     json!({"name":name,"annotations":annotations,"scope":tagged("accessor",json!({
-        "name":fun_name(d.binding),"con":con_name(record,0),"k":index,"decl":decl,"core":actual}))})
+        "name":fun_name(d.binding),"con":con_name(p, record,0),"k":index,"decl":decl,"core":actual}))})
 }
 
 // 表層の本体は名前だけを保持する。依存先の範囲判定は使用時に伝播する。
@@ -2677,7 +2744,11 @@ pub(super) fn definitions_recorded(
             effect_params: Vec::new(),
             class_constraints: Vec::new(),
             params: Vec::new(),
-            ret: Ty::Con(TyCon::Builtin(BuiltinTypeId::UNIT), Vec::new()),
+            ret: Ty::Con(
+                TyCon::Builtin(BuiltinTypeId::UNIT),
+                Vec::new(),
+                benitoite::types::builtin::RangeIndex::TOP,
+            ),
             effects: EffectSet::empty(),
             wrote_io_all: false,
         };
@@ -2771,7 +2842,12 @@ pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Valu
             prim_ops.insert(name.to_owned(), entry);
         } else {
             assert_eq!(op.param_names, scheme.param_names);
-            let EffectName::User(effect) = op.effect else {
+            assert_eq!(
+                op.effect.index(),
+                &benitoite::types::builtin::RangeIndex::TOP,
+                "scoped operation requires the new exchange format"
+            );
+            let EffectName::User(effect, _) = &op.effect else {
                 panic!("non-builtin operation in builtin effect");
             };
             let mut header = surface.header(scheme);
@@ -2793,7 +2869,8 @@ pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Valu
     let effects: Vec<_> = p.types.effects.iter().filter_map(|(_, e)| {
         for op in &e.ops { assert!(seen.contains(op), "missing core operation"); }
         if Some(e.binding) == p.resolved.stdlib("Benitoite.Failure.Fail") { return None; }
-        let EffectName::User(id) = e.name else { return None; };
+        assert_eq!(e.name.index(), &benitoite::types::builtin::RangeIndex::TOP, "scoped effect declaration requires the new exchange format");
+        let EffectName::User(id, _) = &e.name else { return None; };
         Some(json!({"name":format!("effect:{}",id.0),"ops":e.ops.iter().map(|id| format!("op:{}",id.0)).collect::<Vec<_>>()}))
     }).collect();
     assert!(
@@ -2888,7 +2965,11 @@ pub fn named_class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
             effect_params: Vec::new(),
             class_constraints: Vec::new(),
             params: Vec::new(),
-            ret: Ty::Con(TyCon::Builtin(BuiltinTypeId::UNIT), Vec::new()),
+            ret: Ty::Con(
+                TyCon::Builtin(BuiltinTypeId::UNIT),
+                Vec::new(),
+                benitoite::types::builtin::RangeIndex::TOP,
+            ),
             effects: EffectSet::empty(),
             wrote_io_all: false,
         };
@@ -2958,7 +3039,11 @@ pub fn named_stdlib_declarations(
                 effect_params: Vec::new(),
                 class_constraints: Vec::new(),
                 params: Vec::new(),
-                ret: Ty::Con(TyCon::Builtin(BuiltinTypeId::UNIT), Vec::new()),
+                ret: Ty::Con(
+                    TyCon::Builtin(BuiltinTypeId::UNIT),
+                    Vec::new(),
+                    benitoite::types::builtin::RangeIndex::TOP,
+                ),
                 effects: EffectSet::empty(),
                 wrote_io_all: false,
             };

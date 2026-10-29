@@ -1,0 +1,28 @@
+$ cargo test --test desugar_export export_preserves -- --nocapture
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0603]: function `index` is private
+   --> crates/benitoite/tests/desugar_export/scope_tables.rs:364:30
+    |
+364 |     assert_eq!(scope_export::index(&RangeIndex::var(0), Some(1)), json!({"rvar":0}));
+    |                              ^^^^^ private function
+    |
+note: the function `index` is defined here
+   --> crates/benitoite/tests/desugar_export/scope.rs:72:1
+    |
+ 72 | pub(super) fn index(ix: &RangeIndex, bound: Option<usize>) -> Value {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0603]: function `index` is private
+   --> crates/benitoite/tests/desugar_export/scope_tables.rs:365:19
+    |
+365 |     scope_export::index(&RangeIndex::var(1), Some(1));
+    |                   ^^^^^ private function
+    |
+note: the function `index` is defined here
+   --> crates/benitoite/tests/desugar_export/scope.rs:72:1
+    |
+ 72 | pub(super) fn index(ix: &RangeIndex, bound: Option<usize>) -> Value {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `benitoite` (test "desugar_export") due to 2 previous errors

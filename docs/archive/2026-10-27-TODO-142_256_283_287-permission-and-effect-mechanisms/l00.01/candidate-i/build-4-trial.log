@@ -1,0 +1,131 @@
+== wait-for-lock start 17:55:39
+== lock acquired 17:55:39 after 0s
+✔ [30/410] Built Benitoite.Release.Atom (196ms)
+✔ [32/410] Built Benitoite.Release.Types (258ms)
+✔ [34/410] Built Benitoite.Release.Order.Atoms (416ms)
+✔ [36/410] Built Benitoite.Release.Order.FiniteAtoms (313ms)
+✔ [38/410] Built Benitoite.Release.Order.Labels (617ms)
+✔ [40/410] Built Benitoite.Release.Order.Types (1.6s)
+✖ [42/410] Building Benitoite.Release.Normalize (540ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Normalize.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Normalize.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Normalize.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Normalize.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Normalize.setup.json --json
+error: Benitoite/Release/Normalize.lean:17:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/Normalize.lean:76:10: fail to show termination for
+  Benitoite.Release.Ty.norm_idem
+  Benitoite.Release.Eff.norm_idem
+  Benitoite.Release.Ty.normTys_idem
+with errors
+failed to infer structural recursion:
+Skipping arguments of type List Ty, as Benitoite.Release.Ty.norm_idem has no compatible argument.
+Cannot use parameters t of Benitoite.Release.Ty.norm_idem, e of Benitoite.Release.Eff.norm_idem, and as of Benitoite.Release.Ty.normTys_idem:
+  failed to eliminate recursive application
+    Ty.norm_idem (Ty.opaque o✝ r✝)
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  ?
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.normTys_idem at 76:10-22:
+   #1
+#3  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.normTys_idem at 76:10-22:
+   #1
+#3  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Eff.norm_idem at 76:10-22:
+   #1
+#2  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Eff.norm_idem at 76:10-22:
+   #1
+#2  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+ #1
+  _
+Call from Benitoite.Release.Ty.norm_idem to Benitoite.Release.Ty.normTys_idem at 76:10-22:
+   #1
+#3  _
+Call from Benitoite.Release.Eff.norm_idem to Benitoite.Release.Ty.normTys_idem at 89:47-65:
+   #2
+#3  _
+Call from Benitoite.Release.Ty.normTys_idem to Benitoite.Release.Ty.norm_idem at 76:10-22:
+   #3
+#1  _
+Call from Benitoite.Release.Ty.normTys_idem to Benitoite.Release.Ty.normTys_idem at 76:10-22:
+ #3
+  _
+
+
+#1: sizeOf t
+#2: sizeOf e
+#3: sizeOf as
+
+Please use `termination_by` to specify a decreasing measure.
+error: Benitoite/Release/Normalize.lean:109:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/Normalize.lean:126:16: `simp` made no progress
+error: Benitoite/Release/Normalize.lean:125:65: unsolved goals
+case ctor
+φ✝ : TyCon
+h : True
+⊢ (Ty.ctor φ✝).norm = Ty.ctor φ✝
+error: Benitoite/Release/Normalize.lean:125:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.norm_legacy'
+error: Benitoite/Release/Normalize.lean:154:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/Normalize.lean:172:16: `simp` made no progress
+error: Benitoite/Release/Normalize.lean:171:82: unsolved goals
+case ctor
+φ✝ : TyCon
+h : True
+⊢ (Ty.ctor φ✝).Canonical
+error: Benitoite/Release/Normalize.lean:171:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.canonical_of_failsLeOne'
+Some required targets logged failures:
+- Benitoite.Release.Normalize
+error: build failed
+        3.47 real         3.95 user         1.01 sys
+           779599872  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              292228  page reclaims
+                  61  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  21  voluntary context switches
+               21502  involuntary context switches
+          1244716088  instructions retired
+           453385074  cycles elapsed
+            26772608  peak memory footprint
+== exit 1

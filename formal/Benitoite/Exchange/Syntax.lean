@@ -1,5 +1,6 @@
 import Lean
 import Benitoite.Surface.Desugar
+import Benitoite.Exchange.Range
 
 /-! 契約名とソース順を保持する独立した交換の入口。
 設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
@@ -13,12 +14,14 @@ inductive TyCon where
 
 mutual
   inductive Atom where
-    | name (value : String)
+    /-- 名前の原子と範囲の位置（corpus 15・sidecar 7。旧版は明示の Top で読む。`Exchange/Range.lean`）。 -/
+    | name (value : String) (ix : Scope.Signature.Ix)
     | rho (index : Nat)
     | fail (error : Ty)
   inductive Ty where
     | base (name : String)
-    | opaque (name : String)
+    /-- 不透明型と範囲の位置（corpus 15・sidecar 7。旧版は明示の Top で読む）。 -/
+    | opaque (name : String) (ix : Scope.Signature.Ix)
     | data (name : String) (args : List Ty)
     | list (elem : Ty)
     | fn (names : List String) (params : List Ty) (ret : Ty) (eff : List Atom)
@@ -39,12 +42,12 @@ abbrev Eff := List Atom
 
 mutual
   partial def encodeAtom : Atom → Json
-    | .name n => Json.mkObj [("name", Json.mkObj [("value", toJson n)])]
+    | .name n ix => Json.mkObj [("name", encodeNameBody n ix)]
     | .rho i => Json.mkObj [("rho", Json.mkObj [("index", toJson i)])]
     | .fail t => Json.mkObj [("kind", toJson "fail"), ("error", encodeTy t)]
   partial def encodeTy : Ty → Json
     | .base x0 => Json.mkObj [("base", Json.mkObj [("name", toJson x0)])]
-    | .opaque x0 => Json.mkObj [("opaque", Json.mkObj [("name", toJson x0)])]
+    | .opaque x0 ix => Json.mkObj [("opaque", encodeOpaqueBody x0 ix)]
     | .data x0 x1 => Json.mkObj [("data", Json.mkObj [("name", toJson x0), ("args", Json.arr (x1.map encodeTy).toArray)])]
     | .list x0 => Json.mkObj [("list", Json.mkObj [("elem", encodeTy x0)])]
     | .fn x0 x1 x2 x3 => Json.mkObj [("fn", Json.mkObj [("names", toJson x0), ("params", Json.arr (x1.map encodeTy).toArray), ("ret", encodeTy x2), ("eff", Json.arr (x3.map encodeAtom).toArray)])]
@@ -63,12 +66,19 @@ mutual
     if let .ok k := j.getObjVal? "kind" then
       if k != toJson "fail" || (← j.getObj?).toArray.size != 2 then throw "invalid Fail atom"
       return .fail (← decodeTy (← j.getObjVal? "error"))
-    if let .ok o := j.getObjVal? "name" then return .name (← o.getObjValAs? String "value")
+    if let .ok o := j.getObjVal? "name" then
+      let (l, ix) ← decodeNameBody o
+      -- 新版の必須の欄を補わず、余りの欄を読み捨てない。
+      if encodeNameBody l ix != o then throw "unexpected effect atom fields"
+      return .name l ix
     if let .ok o := j.getObjVal? "rho" then return .rho (← o.getObjValAs? Nat "index")
     throw "unknown effect atom"
   partial def decodeTy (j : Json) : Except String Ty := do
     if let .ok o := j.getObjVal? "base" then return .base (← fromJson? (← o.getObjVal? "name"))
-    if let .ok o := j.getObjVal? "opaque" then return .opaque (← fromJson? (← o.getObjVal? "name"))
+    if let .ok o := j.getObjVal? "opaque" then
+      let (n, ix) ← decodeOpaqueBody o
+      if encodeOpaqueBody n ix != o then throw "unexpected opaque type fields"
+      return .opaque n ix
     if let .ok o := j.getObjVal? "data" then return .data (← fromJson? (← o.getObjVal? "name")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeTy)
     if let .ok o := j.getObjVal? "list" then return .list (← decodeTy (← o.getObjVal? "elem"))
     if let .ok o := j.getObjVal? "fn" then return .fn (← fromJson? (← o.getObjVal? "names")) (← (← (← o.getObjVal? "params").getArr?).toList.mapM decodeTy) (← decodeTy (← o.getObjVal? "ret")) (← (← (← o.getObjVal? "eff").getArr?).toList.mapM decodeAtom)
@@ -194,7 +204,8 @@ mutual
         (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
     | methName (dict : DictEv) (name : String) (tys : List Ty) (effs : List Eff)
         (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
-    | primName (name : String) (tys : List Ty) (effs : List Eff)
+    /-- 型検査器が選んだ範囲の列を持つ（corpus 15。旧版は空の列で読む）。 -/
+    | primName (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
     | opName (name : String) (tys : List Ty)
     | opDicts (name : String) (tys : List Ty) (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
     | raise (result error : Ty)
@@ -275,7 +286,7 @@ mutual
     | .methName dict name tys effs dicts names params eff => Json.mkObj [("methName", Json.mkObj [("names", toJson names), ("dict", toJson dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
     | .local index => Json.mkObj [("local", Json.mkObj [("index", toJson index)])]
     | .funName name tys effs => Json.mkObj [("funName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
-    | .primName name tys effs => Json.mkObj [("primName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
+    | .primName name tys effs ranges => Json.mkObj [("primName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", encodeRanges ranges)])]
     | .nullCon name tys => Json.mkObj [("nullCon", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
     | .conValue name tys names params => Json.mkObj [("conValue", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("params", toJson params)])]
     | .literal value => Json.mkObj [("literal", Json.mkObj [("value", toJson value)])]
@@ -407,7 +418,7 @@ mutual
     if let .ok o := j.getObjVal? "funName" then
       return .funName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
     if let .ok o := j.getObjVal? "primName" then
-      return .primName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
+      return .primName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← decodeRanges (← o.getObjVal? "ranges"))
     if let .ok o := j.getObjVal? "nullCon" then
       return .nullCon (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys"))
     if let .ok o := j.getObjVal? "conValue" then
@@ -575,7 +586,8 @@ mutual
     | var (index : Nat)
     | const (value : Const)
     | fnRef (name : String) (tys : List Ty) (effs : List Eff)
-    | prim (name : String) (tys : List Ty) (effs : List Eff)
+    /-- 具体化した範囲の列を持つ（corpus 15。旧版は空の列で読む）。 -/
+    | prim (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
     | op (name : String) (tys : List Ty)
     | raise (result error : Ty)
     | lam (names : List String) (params : List Ty) (body : Comp)
@@ -612,7 +624,7 @@ mutual
     | .var index => Json.mkObj [("var", Json.mkObj [("index", toJson index)])]
     | .const value => Json.mkObj [("const", Json.mkObj [("value", toJson value)])]
     | .fnRef name tys effs => Json.mkObj [("fnRef", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
-    | .prim name tys effs => Json.mkObj [("prim", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
+    | .prim name tys effs ranges => Json.mkObj [("prim", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", encodeRanges ranges)])]
     | .lam names params body => Json.mkObj [("lam", Json.mkObj [("names", toJson names), ("params", toJson params), ("body", encodeComp body)])]
     | .con name tys args => Json.mkObj [("con", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .list elems => Json.mkObj [("list", Json.mkObj [("elems", Json.arr (elems.map encodeVal).toArray)])]
@@ -654,7 +666,7 @@ mutual
     if let .ok o := j.getObjVal? "fnRef" then
       return .fnRef (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
     if let .ok o := j.getObjVal? "prim" then
-      return .prim (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
+      return .prim (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← decodeRanges (← o.getObjVal? "ranges"))
     if let .ok o := j.getObjVal? "lam" then
       return .lam (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← decodeComp (← o.getObjVal? "body"))
     if let .ok o := j.getObjVal? "con" then
@@ -825,6 +837,9 @@ structure Input where
   primOps : List PrimOpEntry
   classes : List ClassEntry
   impls : List ImplEntry
+  /-- 必須の判定の入力（corpus 15。`Exchange/Observe.lean` の `ScopeAcceptanceEntry`）。旧版は `null`（規則のない受理
+  の入力、旧の像）で読む。中身は `CheckInput.prepare` が読む。 -/
+  scopeAcceptance : Json
   deriving ToJson, FromJson
 structure OperatorEntry where
   op : String

@@ -1,0 +1,31 @@
+{
+  "positive": "passed",
+  "mutations": [
+    {
+      "mode": "missing-range-group",
+      "rejected": true,
+      "reason": "range source nonTop groups differ"
+    },
+    {
+      "mode": "missing-definition",
+      "rejected": true,
+      "reason": "range source groups or all definition counts differ from independent expectations"
+    },
+    {
+      "mode": "top-compatibility-changed",
+      "rejected": true,
+      "reason": "range source all-Top compatibility groups differ"
+    },
+    {
+      "mode": "missing-budget-key",
+      "rejected": true,
+      "reason": "range budget Lean report cases missing"
+    },
+    {
+      "mode": "known-exclusion-changed",
+      "rejected": true,
+      "reason": "range known exclusions differ"
+    }
+  ],
+  "firstProbeFailure": "KeyError(nonTopRanges): optional exact counts were initially required for old-ip/user-spelling; corrected to use each hand-written minimum and only present exact counts"
+}

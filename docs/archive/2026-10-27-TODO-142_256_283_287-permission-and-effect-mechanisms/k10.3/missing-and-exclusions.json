@@ -1,0 +1,76 @@
+{
+  "inputs": 1792,
+  "missing": [
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [],
+      "definitions": [],
+      "effects": [],
+      "excluded": [
+        "entry: NoMainFile { dir: \"<wt>/crates/benitoite/testdata/modules/c11-no-main\" }"
+      ],
+      "group": "golden",
+      "impls": [],
+      "name": "testdata/modules/c11-no-main",
+      "ops": [],
+      "primOps": []
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [],
+      "definitions": [],
+      "effects": [],
+      "excluded": [
+        "entry: NoMainFile { dir: \"<wt>/crates/benitoite/testdata/test/check_error\" }"
+      ],
+      "group": "golden",
+      "impls": [],
+      "name": "testdata/test/check_error",
+      "ops": [],
+      "primOps": []
+    },
+    {
+      "classes": [],
+      "constants": [],
+      "dataTypes": [],
+      "definitions": [],
+      "effects": [],
+      "excluded": [
+        "entry: NoMainFile { dir: \"<wt>/crates/benitoite/testdata/test/directory\" }"
+      ],
+      "group": "golden",
+      "impls": [],
+      "name": "testdata/test/directory",
+      "ops": [],
+      "primOps": []
+    }
+  ],
+  "noMainComparisons": [
+    {
+      "group": "golden",
+      "name": "testdata/modules/c11-no-main",
+      "normalized": [
+        "entry: NoMainFile { dir: \"crates/benitoite/testdata/modules/c11-no-main\" }"
+      ]
+    },
+    {
+      "group": "golden",
+      "name": "testdata/test/check_error",
+      "normalized": [
+        "entry: NoMainFile { dir: \"crates/benitoite/testdata/test/check_error\" }"
+      ]
+    },
+    {
+      "group": "golden",
+      "name": "testdata/test/directory",
+      "normalized": [
+        "entry: NoMainFile { dir: \"crates/benitoite/testdata/test/directory\" }"
+      ]
+    }
+  ],
+  "oldLiteralComparisonsFailed": 3,
+  "normalizedComparisonsPassed": 3,
+  "wrongRelativeLocationRejected": 6
+}

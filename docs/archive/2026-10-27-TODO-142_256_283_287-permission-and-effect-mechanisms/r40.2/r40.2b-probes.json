@@ -1,0 +1,37 @@
+[
+  {
+    "name": "docerr",
+    "command": [
+      "target/debug/benitoite",
+      "test",
+      "--check",
+      "--doc",
+      "--report=json",
+      "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.2/rv-probes/docerr.bnt"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 0.115721792,
+    "stderr": "",
+    "status": "ok",
+    "effects": {
+      "basis": "declaredUpperBound",
+      "bounds": [],
+      "expanded": []
+    },
+    "observedError": "E0401"
+  },
+  {
+    "name": "h1",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--report=json",
+      "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.2/rv-probes/h1.bnt"
+    ],
+    "exitCode": 2,
+    "elapsedSeconds": 0.038974708999999996,
+    "stderr": "",
+    "status": "checkError",
+    "observedError": "E0520"
+  }
+]

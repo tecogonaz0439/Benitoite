@@ -1,0 +1,31 @@
+Model.lean:544:6: warning: Try `simp at hk` instead of `simpa using hk`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Model.lean:652:21: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+"4.34.1"
+'SG.lattice_noninterference' depends on axioms: [propext]
+'SG.FiniteSecrets.phase_iff_generic' depends on axioms: [propext, Quot.sound]
+'SG.FiniteSecrets.phase_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.integrity_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsement_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsed_command_approved' depends on axioms: [propext]
+'SG.Integrity.unconditional_endorsement_NI_false' depends on axioms: [propext, Quot.sound]
+        0.85 real         1.02 user         0.26 sys
+           722239488  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46713  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+                8153  involuntary context switches
+          9602377529  instructions retired
+          3904099432  cycles elapsed
+           172613064  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

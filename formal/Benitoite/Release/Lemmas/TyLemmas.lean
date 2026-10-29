@@ -53,8 +53,8 @@ theorem Ty.shift_applyTo {k c} (t : Ty) (as : List Ty) :
   congr 1
   exact List.map_congr_left (fun a _ => (Ty.shift_eq_bind k c a).symm)
 
-theorem Ty.applyTo_wf {n : Nat} {t : Ty} {as : List Ty} (ht : Ty.WF n t) (has : Ty.WFList n as) :
-    Ty.WF n (t.applyTo as) := by
+theorem Ty.applyTo_wf {n : Nat} {t : Ty} {as : List Ty} (ht : Ty.WF 0 n t) (has : Ty.WFList 0 n as) :
+    Ty.WF 0 n (t.applyTo as) := by
   rw [Ty.applyTo_eq_raw_norm]
   exact Ty.norm_rawWF _ (Ty.rawApplyTo_rawWF t as (Ty.WF.raw t ht) (Ty.WFList.raw as has))
 
@@ -68,30 +68,30 @@ theorem Ty.shiftList_zero (c : Nat) (as : List Ty) (h : ∀ a ∈ as, a.Canonica
     _ = as.map id := List.map_congr_left (fun a ha => Ty.shift_zero c a (h a ha))
     _ = as := List.map_id as
 
-theorem Ty.shiftList_of_wf {c : Nat} (k : Nat) (as : List Ty) (w : Ty.WFList c as) :
+theorem Ty.shiftList_of_wf {c : Nat} (k : Nat) (as : List Ty) (w : Ty.WFList 0 c as) :
     as.map (Ty.shift k c) = as := by
   calc
     _ = as.map id := List.map_congr_left (fun a ha => Ty.shift_of_wf k a (Ty.WFList.iff.mp w a ha))
     _ = as := List.map_id as
 
-theorem Ty.shiftList_wf {n : Nat} (k : Nat) (as : List Ty) (w : Ty.WFList n as) :
-    Ty.WFList (n + k) (as.map (Ty.shift k 0)) := by
+theorem Ty.shiftList_wf {n : Nat} (k : Nat) (as : List Ty) (w : Ty.WFList 0 n as) :
+    Ty.WFList 0 (n + k) (as.map (Ty.shift k 0)) := by
   apply Ty.WFList.iff.mpr
   rintro t ht
   obtain ⟨a, ha, rfl⟩ := List.mem_map.mp ht
   exact Ty.shift_wf k a (Ty.WFList.iff.mp w a ha)
 
 theorem Ty.substAtList_wf {c : Nat} {ts : List Ty} (es : List Eff)
-    (hts : ∀ t ∈ ts, Ty.WF 0 t) (hes : ∀ e ∈ es, Eff.WF 0 e)
-    (as : List Ty) (w : Ty.WFList (c + ts.length) as) :
-    Ty.WFList c (as.map (Ty.substAt c ts es)) := by
+    (hts : ∀ t ∈ ts, Ty.WF 0 0 t) (hes : ∀ e ∈ es, Eff.WF 0 0 e)
+    (as : List Ty) (w : Ty.WFList 0 (c + ts.length) as) :
+    Ty.WFList 0 c (as.map (Ty.substAt c ts es)) := by
   apply Ty.WFList.iff.mpr
   rintro t ht
   obtain ⟨a, ha, rfl⟩ := List.mem_map.mp ht
   exact Ty.substAt_wf es hts hes a (Ty.WFList.iff.mp w a ha)
 
 theorem Ty.shiftList_substAt {c k : Nat} {ts : List Ty} (es : List Eff)
-    (hts : ∀ t ∈ ts, Ty.WF 0 t) (hes : ∀ e ∈ es, Eff.WF 0 e) (as : List Ty) :
+    (hts : ∀ t ∈ ts, Ty.WF 0 0 t) (hes : ∀ e ∈ es, Eff.WF 0 0 e) (as : List Ty) :
     (as.map (Ty.shift k 0)).map (Ty.substAt (c + k) ts es) =
       (as.map (Ty.substAt c ts es)).map (Ty.shift k 0) := by
   simp only [List.map_map]

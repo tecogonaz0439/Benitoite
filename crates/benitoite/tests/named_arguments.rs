@@ -628,9 +628,20 @@ fn nested_dictionary_arguments_wait_for_numeric_defaulting() {
     assert_eq!(callback.param_names.len(), callback.params.len());
     assert_eq!(
         callback.params,
-        [Ty::Con(TyCon::Builtin(B::INTEGER), vec![])]
+        [Ty::Con(
+            TyCon::Builtin(B::INTEGER),
+            vec![],
+            benitoite::types::builtin::RangeIndex::TOP
+        )]
     );
-    assert_eq!(callback.ret, Ty::Con(TyCon::Builtin(B::INTEGER), vec![]));
+    assert_eq!(
+        callback.ret,
+        Ty::Con(
+            TyCon::Builtin(B::INTEGER),
+            vec![],
+            benitoite::types::builtin::RangeIndex::TOP
+        )
+    );
     assert!(pipeline::desugar_checked(&p).is_ok());
 }
 
@@ -796,7 +807,8 @@ fn named_holes_and_pipe_insertion_keep_exact_contracts_and_causes() {
                             benitoite::types::TyCon::Builtin(
                                 benitoite::types::builtin::BuiltinTypeId::INTEGER
                             ),
-                            vec![]
+                            vec![],
+                            benitoite::types::builtin::RangeIndex::TOP
                         );
                         plan.hole_names.len()
                     ]

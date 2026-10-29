@@ -42,6 +42,8 @@ mutual
     | .bytes => exact .bytes
     | .dict => exact .dict
     | .tapp => exact .tapp
+    | .checked => exact .checked
+    | .checkedRequest => exact .checkedRequest
     | .ctor => exact .ctor
 
   theorem InhabitsAll.consCongr {P Q : Release.Program} (hc : P.cons = Q.cons)

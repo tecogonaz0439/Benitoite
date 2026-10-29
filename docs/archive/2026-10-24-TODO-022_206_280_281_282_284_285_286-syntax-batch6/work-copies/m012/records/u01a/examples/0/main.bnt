@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Result[Unit, String] uses File.Read, Console.Write
+  bind lines <- try File.readLines("input.txt") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  List.forEach(xs: lines, f: lambda(value) Console.writeLine("${String.characterCount(value)} ${value}"))
+  return match List.head(lines) with
+    case Option.Some(first) -> Result.Ok(Console.writeLine("first: ${first}"))
+    case Option.None -> Result.Error("input.txt is empty")
+  end match
+end function

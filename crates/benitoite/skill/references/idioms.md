@@ -551,6 +551,49 @@ end function
 404 not found
 ```
 
+`Http.checkRequestIn` retains the same five-field request and its effective endpoint. `Http.sendIn` uses that retained request, returns 3xx without following the redirect, and does not automatically connect through a proxy. An explicit Host header must match the URI and retained endpoint's effective host and port; a mismatch returns `NetworkErrorKind.InvalidInput`. Send preparation or communication errors are `NetworkError`, separate from `RequestCheckError`. A changed request needs another check. The endpoint range is a static upper bound on host/IP and port strings before DNS and OS conversion; it does not grant runtime permission or constrain the scheme or message contents. During TLS certificate validation, the OS may fetch intermediate certificates or revocation information from other destinations; the endpoint range does not guarantee the destinations of this additional traffic.
+
+Use a direct `bind` for projection and explicit widening. The annotation below selects the checked value's endpoint range; widening preserves its request and endpoint. This example is checked without making a connection.
+
+`Http.RequestCheckError` has no standard Show implementation. Match `InvalidUrl(message)` and `Scope(error)` explicitly; the inner ScopeError has Show if needed. Sending errors use NetworkError instead. The processor defines URL acceptance and these errors under [checked HTTP requests](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#checked-http-requests).
+
+```benitoite check
+import Benitoite.Unofficial.Network.Http
+
+function sendToApi(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect["**.example", 400..500]
+  bind checked: Result[Http.RequestIn["api.example", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
+  return match checked with
+    case Result.Ok(value) ->
+      bind wider: Http.RequestIn["**.example", 400..500] <- Http.widenRequestIn(request: value)
+      Http.sendIn(request: wider)
+    case Result.Error(_) -> Result.Ok(Http.text(status: 400, s: "request check failed"))
+  end match
+end function
+
+function previewUrl(request: Http.ClientRequest) -> Option[String]
+  bind checked <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
+  return match checked with
+    case Result.Ok(value) ->
+      bind original <- Http.requestInValue(request: value)
+      Option.Some(Http.ClientRequest.url(original))
+    case Result.Error(_) -> Option.None
+  end match
+end function
+
+function describeRequestError(error: Http.RequestCheckError) -> String
+  return match error with
+    case Http.RequestCheckError.InvalidUrl(message) -> message
+    case Http.RequestCheckError.Scope(_) -> "endpoint check failed"
+  end match
+end function
+
+function main() -> Unit
+  ()
+end function
+```
+
+A narrow handler parameter, narrow function parameter, or value obtained through a declared narrow return type has no local check provenance: even a direct `bind` cannot project or widen it. To keep the narrow contract, forward it unchanged to a scoped entry such as `Http.sendIn`. For a function parameter, widen the bound checked value in the caller where check provenance is available, and give the parameter that wider type. For a handler clause parameter, change the argument type in the operation declaration. A Top clause parameter also requires a Top protected body, and the enclosing `uses` contract may need to be widened. Accepting the bare `Http.RequestIn` means accepting all targets. IO through the bare type has Top scope. These are current precision limits of projection and widening. `Http.Connect` contains both `send` and `sendIn`; handling only `send` leaves that effect on the enclosing function.
+
 A server that runs until it is stopped is simplest with `Http.serve`, which calls the handler for every request. (This example is only checked, not run, because it never ends.)
 
 ```benitoite check
@@ -709,6 +752,8 @@ end function
 ```
 
 Replace a built-in operation in a test with `handle ... with case Op(args) -> ...`. The handler runs instead of the real operation, so the test does not touch files or start commands. `resume(value)` returns `value` to the code that called the operation. Handling some operations of an effect does not remove the effect from the type, so the test still lists `File.Read` and `Process.Run` in `uses`. Functions whose type has `State` (`Reference`, `TaskGroup`, `Task.await`, the `close...` functions) cannot be handled in a `case`.
+
+File.Read has 13 operations and File.Write has 16; a `readText` clause alone leaves the other 12 Read operations unhandled. Complete handlers must include the scoped operations too. See the processor's [complete and partial handlers](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#complete-and-partial-handlers) for all operation sets and clause effects.
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File

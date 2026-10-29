@@ -1,0 +1,133 @@
+{
+  "atomic-left-accepted": {
+    "comparison": "accepted",
+    "definitions": 2,
+    "nonTopRanges": 6
+  },
+  "atomic-right-accepted": {
+    "comparison": "accepted",
+    "definitions": 2,
+    "nonTopRanges": 6
+  },
+  "atomic-union-rejected": {
+    "comparison": "typing",
+    "definitions": 2,
+    "meaning": "0..9 を0..4と5..9の和で受理しない",
+    "nonTopRanges": 6
+  },
+  "effect-atomic": {
+    "comparison": "typing",
+    "definitions": 2,
+    "nonTopRanges": 6,
+    "rustReason": "atomicCoverOnly"
+  },
+  "effect-atomic-accepted": {
+    "comparison": "accepted",
+    "definitions": 2,
+    "nonTopRanges": 4
+  },
+  "effect-not-covered": {
+    "comparison": "typing",
+    "definitions": 2,
+    "nonTopRanges": 4,
+    "rustReason": "notCovered"
+  },
+  "effect-not-covered-accepted": {
+    "comparison": "accepted",
+    "definitions": 2,
+    "nonTopRanges": 4
+  },
+  "effect-top": {
+    "atomReasonExpected": "unknownSource",
+    "comparison": "typing",
+    "definitions": 2,
+    "nonTopRanges": 2,
+    "rustReason": "unknownSource"
+  },
+  "effect-top-accepted": {
+    "comparison": "accepted",
+    "definitions": 2,
+    "nonTopRanges": 0
+  },
+  "effect-top-exceeded": {
+    "atomReasonExpected": "budgetExceeded",
+    "comparison": "typing",
+    "definitions": 2,
+    "nonTopRanges": 2,
+    "rustReason": "unknownSource"
+  },
+  "request-widen-rejected": {
+    "comparison": "required",
+    "contract": {
+      "endpoint": {
+        "host": {
+          "name": {
+            "exact": [
+              "api",
+              "example",
+              "com"
+            ]
+          }
+        },
+        "ports": {
+          "hi": 443,
+          "lo": 443
+        }
+      }
+    },
+    "definitions": 1,
+    "index": "top",
+    "nonTopRanges": 7,
+    "reason": "unknownSource"
+  },
+  "request-widen-rejected-accepted": {
+    "comparison": "accepted",
+    "definitions": 1,
+    "nonTopRanges": 0
+  },
+  "required-not-covered": {
+    "comparison": "required",
+    "contract": {
+      "path": {
+        "exact": [
+          "data",
+          "a"
+        ]
+      }
+    },
+    "definitions": 1,
+    "index": {
+      "path": {
+        "tree": [
+          "data"
+        ]
+      }
+    },
+    "nonTopRanges": 3,
+    "reason": "notCovered"
+  },
+  "required-not-covered-accepted": {
+    "comparison": "accepted",
+    "definitions": 1,
+    "nonTopRanges": 3
+  },
+  "required-unknown": {
+    "comparison": "required",
+    "contract": {
+      "path": {
+        "tree": [
+          "data"
+        ]
+      }
+    },
+    "definitions": 1,
+    "index": "top",
+    "nonTopRanges": 3,
+    "reason": "unknownSource"
+  },
+  "required-unknown-accepted": {
+    "comparison": "accepted",
+    "definitions": 1,
+    "nonTopRanges": 0
+  }
+}

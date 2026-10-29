@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+  bind value <- Scope.CheckedHost(pattern: "example.com", host: "example.com")
+  return ()
+end function

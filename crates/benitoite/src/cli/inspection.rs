@@ -1,6 +1,10 @@
 //! 検査済みの表から報告用の契約を所有して取り出す（設計書 02-01「検査と実行の経路」、
 //! 06-01「main の非実行の検査報告」）。
 
+use std::collections::BTreeSet;
+
+use serde_json::{Value, json};
+
 use crate::base::{BindingId, Span};
 use crate::ir::InternalError;
 use crate::modules::ModuleKind;
@@ -8,14 +12,82 @@ use crate::pipeline::CheckedProgram;
 use crate::syntax::ast::Item;
 use crate::types::EffectName;
 use crate::types::builtin::BuiltinEffectId;
+use crate::types::scope::{Family, HostPattern, NameKind, PathKind, Range, ip_text};
 
 /// 検査した関数の宣言名・位置・原子的エフェクトの上限。
+/// 名前による照合と範囲を含む報告を分け、型表の原子を被覆で間引かない。
 pub(super) struct FunctionContract {
     pub binding: BindingId,
     pub name: String,
     pub location: Span,
     pub effects: Vec<BuiltinEffectId>,
+    pub bounds: EffectSummary,
     pub file_origins: Vec<(BuiltinEffectId, Span)>,
+}
+
+/// 宣言上限の名前集合と構造上異なる原子。推論した本体の効果ではない。
+#[derive(Clone, Default)]
+pub(super) struct EffectSummary(BTreeSet<(String, Range)>);
+
+impl EffectSummary {
+    /// 同じ名前の冗長な範囲も保持して、検査済みの宣言上限を集約する。
+    pub fn extend(&mut self, other: &Self) {
+        self.0.extend(other.0.iter().cloned());
+    }
+
+    /// 旧形式の読者が全対象の上限として読む、重複のない正規名。
+    pub fn names(&self) -> BTreeSet<&str> {
+        self.0.iter().map(|(name, _)| name.as_str()).collect()
+    }
+
+    /// 完了した検査からだけ作る任意の bounds。未知の対象は all で表す。
+    pub fn value(&self) -> Result<Value, InternalError> {
+        let bounds = self
+            .0
+            .iter()
+            .map(|(name, scope)| Ok(json!({"name": name, "scope": scope_value(scope)?})))
+            .collect::<Result<Vec<_>, InternalError>>()?;
+        Ok(json!({"basis": "declaredUpperBound", "expanded": self.names(), "bounds": bounds}))
+    }
+}
+
+fn host_value(host: &HostPattern) -> Value {
+    match host {
+        HostPattern::Name(pattern) => json!({
+            "kind": match pattern.kind() {
+                NameKind::Exact => "exact", NameKind::One => "one", NameKind::Many => "many"
+            },
+            "name": pattern.stem().labels().join(".")
+        }),
+        HostPattern::Ip(pattern) => {
+            let family = match pattern.address().family() {
+                Family::V4 => "v4",
+                Family::V6 => "v6",
+            };
+            let address = ip_text::format_address(pattern.address());
+            match pattern.prefix_len() {
+                Some(prefix) => json!({
+                    "kind": "cidr", "family": family, "address": address, "prefixLength": prefix
+                }),
+                None => json!({"kind": "exact", "family": family, "address": address}),
+            }
+        }
+    }
+}
+
+fn scope_value(scope: &Range) -> Result<Value, InternalError> {
+    Ok(match scope {
+        Range::Top => json!({"kind": "all"}),
+        Range::Path(pattern) => json!({
+            "kind": match pattern.kind() { PathKind::Exact => "pathExact", PathKind::Tree => "pathTree" },
+            "path": format!("/{}", pattern.stem().parts().join("/"))
+        }),
+        Range::Host(_) => return Err(internal("host-only scope in effect contract")),
+        Range::Endpoint(endpoint) => json!({
+            "kind": "endpoint", "host": host_value(&endpoint.host),
+            "ports": { "minimum": endpoint.ports.lo().value(), "maximum": endpoint.ports.hi().value() }
+        }),
+    })
 }
 
 /// AST と型表を破棄した後も報告に使う所有データ。
@@ -64,15 +136,26 @@ pub(super) fn function_contract(
     if !scheme.no_fail.is_empty() || !scheme.effects.vars.is_empty() {
         return Err(internal("effect variables in checked entry contract"));
     }
+    let mut bounds = EffectSummary::default();
     let mut effects = scheme
         .effects
         .names
         .iter()
         .map(|effect| {
-            let EffectName::Builtin(id) = effect else {
+            if !effect.indices_valid(0) {
+                return Err(internal(
+                    "uninstantiated or invalid scope in checked entry contract",
+                ));
+            }
+            let EffectName::Builtin(id, ix) = effect else {
                 return Err(internal("user effect in checked entry contract"));
             };
-            Ok((effect_name(*id)?, *id))
+            let name = effect_name(*id)?;
+            let range = ix
+                .range()
+                .ok_or_else(|| internal("uninstantiated scope in checked entry contract"))?;
+            bounds.0.insert((name.clone(), range.clone()));
+            Ok((name, *id))
         })
         .collect::<Result<Vec<_>, InternalError>>()?;
     effects.sort_by(|a, b| a.0.cmp(&b.0));
@@ -82,6 +165,7 @@ pub(super) fn function_contract(
         name: name.into(),
         location,
         effects: effects.into_iter().map(|(_, id)| id).collect(),
+        bounds,
         file_origins: checked
             .types
             .effective_effects
@@ -90,15 +174,28 @@ pub(super) fn function_contract(
             .flat_map(|effective| &effective.origins)
             .filter(|origin| origin.file)
             .flat_map(|origin| {
-                origin.effects.names.iter().filter_map(|effect| {
-                    if let EffectName::Builtin(id) = effect {
-                        Some((*id, origin.span))
-                    } else {
-                        None
-                    }
-                })
+                origin
+                    .effects
+                    .names
+                    .iter()
+                    .filter_map(|effect| match effect {
+                        EffectName::Builtin(id, _) if effect.indices_valid(0) => {
+                            Some(Ok((*id, origin.span)))
+                        }
+                        EffectName::Builtin(..) => Some(Err(internal(
+                            "uninstantiated or invalid scope in checked file contract",
+                        ))),
+                        EffectName::User(_, ix)
+                            if ix == &crate::types::builtin::RangeIndex::TOP =>
+                        {
+                            None
+                        }
+                        EffectName::User(..) => {
+                            Some(Err(internal("scoped effect in checked file contract")))
+                        }
+                    })
             })
-            .collect(),
+            .collect::<Result<Vec<_>, InternalError>>()?,
     })
 }
 

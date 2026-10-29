@@ -1,0 +1,47 @@
+{
+  "success": true,
+  "scope": "名指ししたRustの結果と除外理由。Rust/Leanの同じ受理や理由の一致へ算入しない",
+  "cases": [
+    {
+      "name": "class-structural",
+      "returncode": 2,
+      "codes": [
+        "E0711"
+      ],
+      "outerSeconds": 0.069349834,
+      "exclusion": "E0711",
+      "target": "trait versus implementation effect declaration of class-structural",
+      "reason": "Rust compares implementation and trait effect declarations structurally; Lean checks method body coverage under the trait declaration"
+    },
+    {
+      "name": "nul-direct",
+      "returncode": 2,
+      "codes": [
+        "E0459"
+      ],
+      "outerSeconds": 0.10464575,
+      "exclusion": "leanStringPrecision",
+      "target": "the direct hostPattern literal of nul-direct only",
+      "reason": "Only the condition literal beginning U+0000 and followed by integer spelling; Rust retains a String argument and rejects its host spelling, while Lean absArg forgets that literal"
+    },
+    {
+      "name": "nul-dynamic",
+      "returncode": 0,
+      "codes": [],
+      "outerSeconds": 0.10515433300000002,
+      "exclusion": null,
+      "target": null,
+      "reason": "Local string condition is statically unknown and accepted at Top; runtime spelling check remains"
+    }
+  ],
+  "exclusions": {
+    "E0711": 1,
+    "leanStringPrecision": 1
+  },
+  "outsideExclusions": [
+    "ordinary integer ports",
+    "ordinary string conditions",
+    "whole Http.ClientRequest records",
+    "all dynamic host patterns"
+  ]
+}

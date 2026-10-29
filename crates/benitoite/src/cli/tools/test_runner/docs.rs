@@ -1,12 +1,11 @@
 //! docの同じ発見一覧を準備・許可照合・報告・実行へ渡す
 //! （設計書 06-04「テストの実行」「テストの非実行の検査」「結果の報告」）。
 
-use std::collections::BTreeSet;
-
 use serde_json::{Value, json};
 
 use super::*;
 use crate::cli::check_report::{diagnostic_value, source_id, sources};
+use crate::cli::inspection::EffectSummary;
 use crate::cli::tools::doc_examples::{DocExample, Expectation};
 
 mod execute;
@@ -27,7 +26,7 @@ pub(super) struct Example {
     pub example: DocExample,
     pub checked: CheckResult,
     pub tests: Value,
-    pub effects: Option<BTreeSet<String>>,
+    pub effects: Option<EffectSummary>,
     pub accepted: bool,
     pub expectation_matched: bool,
     compiled: Option<Compiled>,
@@ -145,7 +144,7 @@ impl Example {
             "sourceId": self.checked.entry.map(|file| source_id(&source_prefix, file)),
             "status": if internal { "internalError" } else if self.complete() { "ok" } else { "checkError" },
             "complete": self.complete(),
-            "effects": self.effects.as_ref().map(|expanded| json!({"basis": "declaredUpperBound", "expanded": expanded})),
+            "effects": self.effects.as_ref().map(EffectSummary::value).transpose()?,
             "tests": self.tests,
             "expectedDiagnosticCodes": self.example.expectation.diagnostic_codes().iter().map(|code| code.info().id).collect::<Vec<_>>(),
             "observedDiagnostics": observed,
@@ -156,11 +155,9 @@ impl Example {
         sources(&self.checked.sources, &format!("{target}:d{index}"))
     }
 
-    pub(super) fn execution_effects(&self) -> impl Iterator<Item = &String> {
+    pub(super) fn execution_effects(&self) -> Option<&EffectSummary> {
         executable(&self.example.expectation)
             .then_some(self.effects.as_ref())
-            .flatten()
-            .into_iter()
             .flatten()
     }
 }

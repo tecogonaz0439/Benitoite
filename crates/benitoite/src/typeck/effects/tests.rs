@@ -32,7 +32,11 @@ fn clean(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput) {
     (l, r, t)
 }
 fn basic(b: B) -> Ty {
-    Ty::Con(TyCon::Builtin(b), vec![])
+    Ty::Con(
+        TyCon::Builtin(b),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 fn binding(r: &ResolveOutput, name: &str) -> BindingId {
     r.bindings
@@ -132,7 +136,13 @@ fn specification_examples_and_output_tables() {
     let info = t.handlers.get(h.id).unwrap();
     assert_eq!(info.clauses[0].op, binding(&r, "write"));
     assert!(info.clauses[0].tail_resumptive);
-    assert_eq!(info.handled.names, [EffectName::User(binding(&r, "Log"))]);
+    assert_eq!(
+        info.handled.names,
+        [EffectName::User(
+            binding(&r, "Log"),
+            crate::types::builtin::RangeIndex::TOP
+        )]
+    );
     assert_eq!(
         t.expr_types.get(h.clauses[0].params[0].id),
         Some(&basic(B::STRING))
@@ -190,7 +200,8 @@ fn specification_examples_and_output_tables() {
             TyCon::Builtin(
                 crate::types::builtin::find_builtin_type(&["IO", "File"], "Reader").unwrap()
             ),
-            vec![]
+            vec![],
+            crate::types::builtin::RangeIndex::TOP
         ))
     );
 }
@@ -429,7 +440,11 @@ fn lazy_resources_and_taskgroup_placement() {
     };
     assert_eq!(
         t.expr_types.get(e.value.id()),
-        Some(&Ty::Con(TyCon::Builtin(B::LAZY), vec![basic(B::INTEGER)]))
+        Some(&Ty::Con(
+            TyCon::Builtin(B::LAZY),
+            vec![basic(B::INTEGER)],
+            crate::types::builtin::RangeIndex::TOP
+        ))
     );
     let source = "import Benitoite.Unofficial.IO.Console\nfunction f() -> Lazy[Unit]\n return lazy Console.writeLine(\"a\") end lazy\nend function\n";
     let d = expect(source, &[(C::E0503, "Console.writeLine", 0)]);
@@ -503,7 +518,8 @@ fn try_infers_return_types_and_reports_incompatible_types() {
             super::super::TryActionInfo::Return {
                 ret: Ty::Con(
                     TyCon::Adt(r.stdlib("Benitoite.Result.Result").unwrap()),
-                    vec![basic(B::INTEGER), basic(B::STRING)]
+                    vec![basic(B::INTEGER), basic(B::STRING)],
+                    crate::types::builtin::RangeIndex::TOP
                 )
             }
         );
@@ -1222,12 +1238,12 @@ fn die_uses_standard_show_and_exit_despite_local_names_and_aliases() {
         "{diagnostics:#?}"
     );
     let exit = crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap();
-    assert!(
-        types
-            .lambda_effects
-            .iter()
-            .any(|(_, effects)| effects.names.contains(&EffectName::Builtin(exit)))
-    );
+    assert!(types.lambda_effects.iter().any(|(_, effects)| {
+        effects.names.contains(&EffectName::Builtin(
+            exit,
+            crate::types::builtin::RangeIndex::TOP,
+        ))
+    }));
 }
 
 // 作成時の関門: 本番のソース読み込みから内部依存・利用者の名前空間・不足効果の

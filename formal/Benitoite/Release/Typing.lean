@@ -1,5 +1,7 @@
 import Benitoite.Release.Subst
 import Benitoite.Release.NoFail
+import Benitoite.Release.RangeInstDef
+import Benitoite.Release.EffectCoverDef
 
 /-!
 # 型付け規則（段階 B）
@@ -55,16 +57,35 @@ structure PrimSig where
   kind : PrimKind
   /-- 組み込みのエフェクトの操作のとき、そのエフェクトの名前。 -/
   opEff : Option EffName
+  /-- 署名の範囲の変数ごとの対象の種類（問 2・4、RV-L00 軽7）。範囲の変数 `Ix.rvar i` の i 番目の種類である。
+  既定は空の列（範囲の変数のない旧の項目）。既定の空の列のまま `rvar` を書いた項目は、`PrimSig.Scoped` の
+  番号の上限で拒否される（範囲を書かないと黙って Top になる既定引数とは別である）。 -/
+  rkinds : List Scope.Domain.Kind := []
+  /-- IO を行う項目の形（`Scope.Signature.IOShape`。問 7〜9）。対象なし（`untargeted`）、旧 Top の対象あり
+  （`topTargeted k`）、単一の対象（`single k p`。引数の位置 p が種類 k の範囲付きの値型）のどれかである。
+  `Builtins.Assumptions` の `io_op`（形の検査 `Builtins.ShapeOk`）が効果・範囲の変数・引数と照らし合わせ、
+  `io_target`（`TargetAgreement`）が観測の条件に使う。IO を行わない項目は読まない。既定は対象なし。 -/
+  shape : Scope.Signature.IOShape := .untargeted
 
 def PrimSig.ntys (s : PrimSig) : Nat := s.tparams.length
+
+/-- 値が保持する検査済みの対象（`Scope.Signature.ShapeTargets` の `target?`）。検査済みの要求の値は実効の endpoint を返す。 -/
+def Val.target? : Val → Option Scope.Domain.Target
+  | .checked t => some t
+  | .checkedRequest t _ => some t
+  | _ => none
+
+/-- 署名の範囲の変数の個数（`rkinds` の長さ）。範囲の変数の番号はこの個数より小さい（`PrimSig.Scoped`）。 -/
+def PrimSig.nranges (s : PrimSig) : Nat := s.rkinds.length
 
 /-- 組み込みの関数と、01-12 がほかの章に委ねているもの。 -/
 structure Builtins where
   sig : PrimName → Option PrimSig
   /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（01-12「実行の規則」）。 -/
-  delta : PrimName → List Ty → List Eff → List Val → Option Outcome
-  /-- IO を行う組み込みの関数の応答として起こりうるもの。 -/
-  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
+  delta : PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Option Outcome
+  /-- IO を行う組み込みの関数の応答と、その応答で作用した対象の観測（有限列）として起こりうるもの
+  （問 8 の O1。観測は応答の関係に含める。設計書 01-12「実行の規則」）。 -/
+  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → List Scope.Domain.Target → Prop
   /-- 事象 `release(V)` の応答として起こりうるもの。`none` が `ok`、`some r` が `error(r)`。 -/
   releaseResponse : Val → Option ErrKind → Prop
   /-- リソースの型か。リソースの型の解放のエフェクト `rel(O_r)` は `{State}` である。 -/
@@ -76,6 +97,40 @@ structure Builtins where
   /-- `Reference.get` と `Reference.set` の名前。`Reference.update` の遷移が使う。 -/
   refGet : PrimName
   refSet : PrimName
+  /-- エフェクトの名前の対象の種類（`File.Read`・`File.Write` は path、`Http.Connect` は endpoint）。対象を持たない
+  名前は `none` である。表のデータであり、正しさは信頼の対象である（問 11、設計書 07-04「形式化で仮定するもの」）。
+  `Builtins.Assumptions` の欄にはしない。既定は全て `none`。 -/
+  effKind : EffName → Option Scope.Domain.Kind := fun _ => none
+  /-- 範囲付きの値型の名前の対象の種類（`Scope.PathIn` は path、`Http.RequestIn` は endpoint）。既存の不透明型と
+  資源の型は `none` である（RV-PL10 中3 (b)）。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
+  valKind : OpaqueName → Option Scope.Domain.Kind := fun _ => none
+  /-- 組み込みの関数ごとの範囲の具体化の制約（明示拡大の被覆など。型引数の `admits` に当たる）。全て Top の列は
+  この制約によらず許す（`Builtins.RangeAdmissible`）。表のデータであり、正しさは信頼の対象である。既定は何も
+  許さない（Top の列だけを許す）。 -/
+  admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
+  /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
+  要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
+  valContent : OpaqueName → Option Ty := fun _ => none
+
+/-! ## 署名の具体化と範囲の具体化の許容 -/
+
+/-- 署名の具体化 `s.inst rs`。引数は最上位の対象の位置だけを、結果と効果は全ての位置を具体化する。名前・型
+パラメータ・制約・種類・範囲の変数の種類は変えない。 -/
+noncomputable def PrimSig.inst (rs : List Scope.Domain.Range) (s : PrimSig) : PrimSig :=
+  { s with params := s.params.map (Ty.instTarget rs), ret := s.ret.instR rs, eff := Eff.instR rs s.eff }
+
+
+/-- 範囲の具体化の許容（問 4、RV-L00 軽7、RV-L10 中1）。採用定義 `Scope.Signature.RangeAdmissible`（範囲の変数
+ごとの種類 `rkinds` に置けること。個数の一致を含む。整形式性と項目の制約）に、範囲の正規形を加える。項目の制約は
+表のデータ `B.admitsR b` であり、全て Top の列はこの制約によらず許す。プログラムの型の注釈の範囲の正規形と整形式性は
+解析器の側で扱い、ここでは条件にしない（問 4、設計書 07-04「形式化で仮定するもの」）。 -/
+def Builtins.RangeAdmissible (B : Builtins) (b : PrimName) (s : PrimSig) (rs : List Scope.Domain.Range) : Prop :=
+  Scope.Signature.RangeAdmissible s.rkinds (fun rs => (∀ r ∈ rs, r = .top) ∨ B.admitsR b rs) rs ∧
+    ∀ r ∈ rs, r.Canonical
+
+
+/-- 署名の範囲の変数の個数の長さの Top の列。脱糖と節の型付けが使う具体化である（節の添字は Top）。 -/
+abbrev PrimSig.topRanges (s : PrimSig) : List Scope.Domain.Range := List.replicate s.nranges .top
 
 def fnTy (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) : Ty :=
   Ty.subst ts es (.fn names params ret eff)
@@ -102,9 +157,73 @@ def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
       match B.sig b with
       | some s =>
           match s.opEff with
-          | some l => some ⟨s.tparams, s.names, s.params, s.ret, l⟩
+          | some l => some ⟨s.tparams, s.names, s.params.map (Ty.instTarget s.topRanges), s.ret, l⟩
           | none => none
       | none => none
+
+/-- 捕捉した組み込みの操作の型を節の添字 S で具体化した操作の型（L30.1）。組み込みの操作では引数を
+`Ty.instTarget` で S の列（長さは範囲の変数の個数）に具体化し、結果は `s.ret` のままにする（組み込みの操作の結果の
+型は範囲の変数を持たない。`PrimSig.Scoped` の操作の結果の条件）。利用者の操作は `opSig` と同じで S によらない。
+`Ty.instTarget` だけで書くので計算できる。 -/
+def opSigAt (P : Program) (B : Builtins) (S : Scope.Domain.Range) : OpRef → Option OpSig
+  | .fail => none
+  | .user o => (P.ops o).map fun od => ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩
+  | .prim b =>
+      match B.sig b with
+      | some s =>
+          match s.opEff with
+          | some l => some ⟨s.tparams, s.names, s.params.map (Ty.instTarget (List.replicate s.nranges S)), s.ret, l⟩
+          | none => none
+      | none => none
+
+/-- 節の添字の規則の条件（判断 11）。保護本体の効果 e が行の変数を持たず、名前 l の原子をちょうど一つ持ち、
+その範囲の位置が閉じた範囲 r である。 -/
+def Eff.ClauseRangeIs (e : Eff) (l : EffName) (r : Scope.Domain.Range) : Prop :=
+  (∀ i, ¬ Eff.mem e (.rho i)) ∧ Eff.mem e (.name l (.fixed r)) ∧
+    ∀ ix, Eff.mem e (.name l ix) → ix = .fixed r
+
+open Classical in
+/-- 節の添字の規則（判断 11）。保護本体の効果 e に名前 l の閉じた原子がちょうど一つだけあればその範囲、
+複数の原子・同名の Top・未確定の行の変数・同名の原子なしの場合は Top とする。節の本体や期待される出力を読まない。 -/
+noncomputable def Eff.clauseRange (e : Eff) (l : EffName) : Scope.Domain.Range :=
+  if h : ∃ r, e.ClauseRangeIs l r then Classical.choose h else .top
+
+/-- 節の添字 S の許容（L30.1）。S は Top か、操作 o が組み込みの操作でエフェクトの名前 l を持ち、S が保護本体の
+効果 e についての規則の値（`Eff.ClauseRangeIs`）である。型付けは規則の値のほかに Top も許す。型の代入で行の
+変数を具体化すると規則の値が変わりうるので、代入の前に Top で型付けた節を代入の後も型付けるためである
+（`ClauseIxOk.substAt`）。 -/
+def ClauseIxOk (B : Builtins) (e : Eff) (o : OpRef) (S : Scope.Domain.Range) : Prop :=
+  S = .top ∨ ∃ b s l, o = .prim b ∧ B.sig b = some s ∧ s.opEff = some l ∧ e.ClauseRangeIs l S
+
+/-- 節の操作の型（L30.1）。保護本体の効果 e から許容される節の添字 S を選び、操作の型を S で具体化する。 -/
+def ClauseSig (P : Program) (B : Builtins) (e : Eff) (o : OpRef) (sg : OpSig) : Prop :=
+  ∃ S, ClauseIxOk B e o S ∧ opSigAt P B S o = some sg
+
+/-- 節の添字が Top のとき、`opSigAt` は `opSig` である。 -/
+theorem opSigAt_top (P : Program) (B : Builtins) (o : OpRef) : opSigAt P B .top o = opSig P B o := by
+  cases o <;> rfl
+
+/-- 利用者の操作の型は節の添字によらない。 -/
+theorem opSigAt_user (P : Program) (B : Builtins) (S : Scope.Domain.Range) (o : OpName) :
+    opSigAt P B S (.user o) = opSig P B (.user o) := rfl
+
+/-- 操作の型を持つ節の操作は Fail ではない。 -/
+theorem ClauseSig.ne_fail {P : Program} {B : Builtins} {e : Eff} {o : OpRef} {sg : OpSig}
+    (h : ClauseSig P B e o sg) : o ≠ .fail := by
+  obtain ⟨S, -, h⟩ := h
+  rintro rfl
+  cases h
+
+/-- Top の節の添字はどの保護本体の効果のもとでも許される。 -/
+theorem ClauseSig.of_opSig {P : Program} {B : Builtins} {e : Eff} {o : OpRef} {sg : OpSig}
+    (h : opSig P B o = some sg) : ClauseSig P B e o sg :=
+  ⟨.top, Or.inl rfl, by rw [opSigAt_top]; exact h⟩
+
+/-- 利用者の操作の節の操作の型は `opSig` である。 -/
+theorem ClauseSig.user {P : Program} {B : Builtins} {e : Eff} {o : OpName} {sg : OpSig}
+    (h : ClauseSig P B e (.user o) sg) : opSig P B (.user o) = some sg := by
+  obtain ⟨S, -, h⟩ := h
+  exact h
 
 /-- 操作の辞書数。組み込みの操作は辞書を持たない。 -/
 def opDictCount (P : Program) : OpRef → Nat
@@ -120,53 +239,69 @@ def effOps (P : Program) (B : Builtins) (l : EffName) : Option (List OpRef) :=
 /-- `handles(H, op)`。 -/
 def handles (h : List Clause) (o : OpRef) : Bool := h.any (fun c => c.op == o)
 
-/-- `handled(H)`。一つ以上の操作を持ち、そのすべての操作の節を H が持つエフェクトの集合。 -/
+/-- `handled(H)`。一つ以上の操作を持ち、そのすべての操作の節を H が持つエフェクトの集合。名前の原子は
+範囲の位置 r を見ずに名前だけで判定する（`handled_name`）。 -/
 def handled (P : Program) (B : Builtins) (h : List Clause) : Eff := Eff.ofAtoms fun a =>
   match a with
-  | .name l =>
+  | .name l _ =>
       match effOps P B l with
       | some (o :: os) => (o :: os).all (handles h)
       | _ => false
   | .rho _ => false
 
+/-- `handled(H)` は名前の原子の範囲の位置を見ない。名前の全操作の節がそろえば、その名前のどの範囲の原子も
+除く（判断 11。範囲の一部だけの処理を加えない）。 -/
+theorem handled_name (P : Program) (B : Builtins) (h : List Clause) (l : EffName)
+    (r : Scope.Signature.Ix) : Eff.test (handled P B h) (.name l r) = Eff.test (handled P B h) (.nameTop l) :=
+  rfl
+
+/-- 範囲の位置の違う二つの名前の原子は、`handled(H)` に同時に含まれるか、同時に含まれない。 -/
+theorem mem_handled_name_iff (P : Program) (B : Builtins) (h : List Clause) (l : EffName)
+    (r s : Scope.Signature.Ix) : Eff.mem (handled P B h) (.name l r) ↔ Eff.mem (handled P B h) (.name l s) := by
+  simp only [Eff.mem, handled_name]
+
 /-! ## 型の正しさ -/
 
 mutual
-  /-- 型の中の型の変数の番号が `n` より小さい（その位置で束縛された型の変数だけを使う）。 -/
-  def Ty.WF (n : Nat) : Ty → Prop
+  /-- 型の中の型の変数の番号が `n` より小さく（その位置で束縛された型の変数だけを使う）、範囲の位置の範囲の変数の
+  番号が `nr` より小さい（`Scope.Signature.Ix.WF nr`）。プログラムの型は `nr = 0` で読み、範囲の変数を置かせない
+  （問 3 の P1）。 -/
+  def Ty.WF (nr n : Nat) : Ty → Prop
     | .base _ => True
-    | .opaque _ => True
-    | .data _ args => Ty.WFList n args
-    | .list a => Ty.WF n a
-    | .fn names params ret e => NamesWF names params ∧ Ty.WFList n params ∧ Ty.WF n ret ∧ Eff.WF n e ∧ Eff.Canonical e
+    | .opaque _ ix => ix.WF nr
+    | .data _ args => Ty.WFList nr n args
+    | .list a => Ty.WF nr n a
+    | .fn names params ret e => NamesWF names params ∧ Ty.WFList nr n params ∧ Ty.WF nr n ret ∧ Eff.WF nr n e ∧ Eff.Canonical e
     | .tvar i => i < n
-    | .reference a => Ty.WF n a
-    | .lazy a => Ty.WF n a
-    | .cont b t e => Ty.WF n b ∧ Ty.WF n t ∧ Eff.WF n e ∧ Eff.Canonical e
-    | .map a b => Ty.WF n a ∧ Ty.WF n b
-    | .set a => Ty.WF n a
+    | .reference a => Ty.WF nr n a
+    | .lazy a => Ty.WF nr n a
+    | .cont b t e => Ty.WF nr n b ∧ Ty.WF nr n t ∧ Eff.WF nr n e ∧ Eff.Canonical e
+    | .map a b => Ty.WF nr n a ∧ Ty.WF nr n b
+    | .set a => Ty.WF nr n a
     | .bytes => True
-    | .dict _ τ => Ty.WF n τ
-    | .tapp i args => i < n ∧ Ty.WFList n args
+    | .dict _ τ => Ty.WF nr n τ
+    | .tapp i args => i < n ∧ Ty.WFList nr n args
     | .ctor _ => True
 
-  def Ty.WFList (n : Nat) : List Ty → Prop
+  def Ty.WFList (nr n : Nat) : List Ty → Prop
     | [] => True
-    | a :: as => Ty.WF n a ∧ Ty.WFList n as
+    | a :: as => Ty.WF nr n a ∧ Ty.WFList nr n as
 
-  /-- 効果の Fail 型がその位置の型変数の範囲と正規形の条件を満たす。
-  計算の最上位の効果の列自体には Canonical を求めない。 -/
-  def Eff.WF (n : Nat) : Eff → Prop
-    | .mk _ fs => Ty.WFList n fs
+  /-- 効果の Fail 型がその位置の型変数・範囲の変数の範囲と正規形の条件を満たす。
+  計算の最上位の効果の列自体には Canonical を求めない。名前の原子の範囲の位置は、ここでは検査せず、宣言と項の
+  変数の範囲（`Ty.VarsIn`・`Eff.VarsIn`）で検査する。継続の型付け（`K_Handle_Fail` の `Rest` など）が導出の中で
+  選ぶ効果にも整形式が求められるので、原子の条件をここに置くと継続の規則に新しい前提が要るためである。 -/
+  def Eff.WF (nr n : Nat) : Eff → Prop
+    | .mk _ fs => Ty.WFList nr n fs
 end
 
 structure Admissible (B : Builtins) (C : List TParam)
     (tps : List TParam) (ne : Nat) (Qs Qt : NoFailCtx)
     (ts : List Ty) (es : List Eff) (e : Eff) : Prop where
   types : SatAll B C ts tps
-  typeScope : ∀ t ∈ ts, Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e
+  typeScope : ∀ t ∈ ts, Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e
   rowCount : es.length = ne
-  rowScope : ∀ f ∈ es, Eff.WF C.length f
+  rowScope : ∀ f ∈ es, Eff.WF 0 C.length f
   sourceRows : Eff.RowsIn (· < es.length) e
   sourceQ : ∀ i, Qs i → i < es.length
   noFailRows : RowTransport Qs Qt es
@@ -175,16 +310,16 @@ structure PrimitiveAdmissible (C : List TParam) (s : PrimSig)
     (Q : NoFailCtx) (ts : List Ty) (es : List Eff) : Prop where
   typeCount : ts.length = s.ntys
   admits : s.admits C ts
-  typeScope : ∀ t ∈ ts, Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e
+  typeScope : ∀ t ∈ ts, Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e
   rowCount : es.length = s.neffs
-  rowScope : ∀ f ∈ es, Eff.WF C.length f
+  rowScope : ∀ f ∈ es, Eff.WF 0 C.length f
   sourceRows : Eff.RowsIn (· < es.length) s.eff
   sourceQ : ∀ i, Qsig s.params s.ret s.eff i → i < es.length
   noFailRows : RowTransport (Qsig s.params s.ret s.eff) Q es
 
 def MethodRowsAdmissible (C : List TParam) (Q : NoFailCtx) (ms : MethSig)
     (es : List Eff) : Prop :=
-  es.length = ms.neffs ∧ (∀ f ∈ es, Eff.WF C.length f) ∧
+  es.length = ms.neffs ∧ (∀ f ∈ es, Eff.WF 0 C.length f) ∧
   Eff.RowsIn (· < es.length) ms.eff ∧
   (∀ i, Qsig ms.params ms.ret ms.eff i → i < es.length) ∧
   RowTransport (Qsig ms.params ms.ret ms.eff) Q es
@@ -192,8 +327,10 @@ def MethodRowsAdmissible (C : List TParam) (Q : NoFailCtx) (ms : MethSig)
 
 /-! ## 型の包含 -/
 
+/-- 型の包含。関数の型だけが、潜在効果を判断 5 の一原子の被覆（`Eff.Covers`。外側が先）で広げられる（判断 10 の
+最外側の関数のエフェクトの拡大。L40.6c）。入れ子の関数型・リストの要素・値型の添字へは広げない。 -/
 def Ty.Le (a a' : Ty) : Prop :=
-  a = a' ∨ ∃ names ps r ε ε', a = .fn names ps r ε ∧ a' = .fn names ps r ε' ∧ Eff.Sub ε ε'
+  a = a' ∨ ∃ names ps r ε ε', a = .fn names ps r ε ∧ a' = .fn names ps r ε' ∧ Eff.Covers ε' ε
 
 /-! ## ストアの型付けと環境 -/
 
@@ -309,6 +446,12 @@ mutual
     | dict {cl τ v} : Inhabits P (.dict cl τ) v
     | tapp {i as v} : Inhabits P (.tapp i as) v
     | ctor {φ v} : Inhabits P (.ctor φ) v
+    /-- 検査済みの対象の値は範囲付きの値型に属する（V-Checked に対応する。不透明型の定数は `const` の場合）。
+    パターンは検査済みの対象の値の中を調べないので、網羅性には変数か `_` の選択肢が要る。旧の像（範囲が Top の
+    不透明型）では不透明型の定数が既に属するので、網羅性の判断は変わらない（`Exhaustive.opaqueTop_iff`）。 -/
+    | checked {o R t} : Inhabits P (.opaque o (.fixed R)) (.checked t)
+    /-- 検査済みの要求の値も範囲付きの値型に属する（V-CheckedRequest に対応する）。 -/
+    | checkedRequest {o R t c} : Inhabits P (.opaque o (.fixed R)) (.checkedRequest t c)
 
   inductive InhabitsAll (P : Program) : List Ty → List Val → Prop
     | nil : InhabitsAll P [] []
@@ -387,17 +530,19 @@ mutual
         P.defs f = some d → NamesWF d.names d.params →
         Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
         HasTypeVQ P B Ψ Q C Γ (.fnRef f ts es) (fnTy d.names d.params d.ret d.eff ts es)
-    | V_Prim {Γ b s ts es} :
-        B.sig b = some s → NamesWF s.names s.params → PrimitiveAdmissible C s Q ts es →
-        HasTypeVQ P B Ψ Q C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es)
+    | V_Prim {Γ b s rs ts es} :
+        B.sig b = some s → B.RangeAdmissible b s rs → NamesWF (s.inst rs).names (s.inst rs).params →
+        PrimitiveAdmissible C (s.inst rs) Q ts es →
+        HasTypeVQ P B Ψ Q C Γ (.prim b ts es rs)
+          (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es)
     | V_Op {Γ o od ts} :
         P.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams →
         HasTypeVQ P B Ψ Q C Γ (.op o ts) (fnTy od.names od.params od.ret (Eff.single od.eff) ts [])
     | V_Raise {Γ T E} :
-        Ty.WF C.length T → Ty.WF C.length E →
+        Ty.WF 0 C.length T → Ty.WF 0 C.length E →
         HasTypeVQ P B Ψ Q C Γ (.raise T E) (.fn ["error"] [E] T (Eff.singleFail E))
     | V_Lam {Γ names ps body r ε} :
-        NamesWF names ps → Ty.WF C.length (.fn names ps r ε) →
+        NamesWF names ps → Ty.WF 0 C.length (.fn names ps r ε) →
         HasTypeCQ P B Ψ.hideBuilders Q C (binds ps ++ hideConts Γ) (some r) body r ε [] →
         HasTypeVQ P B Ψ Q C Γ (.lam names ps body) (.fn names ps r ε)
     | V_Con {Γ c ts args cd} :
@@ -407,17 +552,17 @@ mutual
     /-- V-List。要素の型は、その位置で束縛された型の変数だけを使う（空のリストの要素の型は項に現れないので、
     型の正しさを前提に置く）。 -/
     | V_List {Γ elems a} :
-        HasTypeEachQ P B Ψ Q C Γ elems a → Ty.WF C.length a → HasTypeVQ P B Ψ Q C Γ (.list elems) (.list a)
+        HasTypeEachQ P B Ψ Q C Γ elems a → Ty.WF 0 C.length a → HasTypeVQ P B Ψ Q C Γ (.list elems) (.list a)
     /-- `Ψ(ℓ) = A` のとき `ℓ : A`（01-12「確かめる性質」）。 -/
     | V_LocRef {Γ l a} : Ψ l = some (.ref a) → HasTypeVQ P B Ψ Q C Γ (.loc l) (.reference a)
     | V_LocLazy {Γ l a} : Ψ l = some (.lazy a) → HasTypeVQ P B Ψ Q C Γ (.loc l) (.lazy a)
     /-- V-Map。鍵と値の型は、V-List と同じく、その位置で束縛された型の変数だけを使う。 -/
     | V_Map {Γ ks vs a b} :
         HasTypeEachQ P B Ψ Q C Γ ks a → HasTypeEachQ P B Ψ Q C Γ vs b → ks.length = vs.length →
-        B.sat C a TParam.keyC → Ty.WF C.length a → Ty.WF C.length b →
+        B.sat C a TParam.keyC → Ty.WF 0 C.length a → Ty.WF 0 C.length b →
         HasTypeVQ P B Ψ Q C Γ (.mapV ks vs) (.map a b)
     | V_Set {Γ elems a} :
-        HasTypeEachQ P B Ψ Q C Γ elems a → B.sat C a TParam.keyC → Ty.WF C.length a →
+        HasTypeEachQ P B Ψ Q C Γ elems a → B.sat C a TParam.keyC → Ty.WF 0 C.length a →
         HasTypeVQ P B Ψ Q C Γ (.setV elems) (.set a)
     | V_Bytes {Γ bs} : HasTypeVQ P B Ψ Q C Γ (.bytesV bs) .bytes
     /-- V-Dict。実装の型パラメータの制約を、型引数が満たす。 -/
@@ -429,7 +574,21 @@ mutual
         HasTypeVQ P B Ψ Q C Γ v (.dict cl τ) → P.classes cl = some cd → s ∈ cd.supers →
         HasTypeVQ P B Ψ Q C Γ (.super v s) (.dict s τ)
     | V_Sub {Γ v a a'} :
-        HasTypeVQ P B Ψ Q C Γ v a → Ty.Le a a' → Ty.WF C.length a' → HasTypeVQ P B Ψ Q C Γ v a'
+        HasTypeVQ P B Ψ Q C Γ v a → Ty.Le a a' → Ty.WF 0 C.length a' → HasTypeVQ P B Ψ Q C Γ v a'
+    /-- V-Checked（値の所属の葉の規則）。名前 o の対象の種類（表のデータ `valKind`）が対象の種類に合い、対象が
+    範囲 R に所属するとき、検査済みの対象の値は範囲付きの値型 `o[R]` を持つ（設計書 01-12「型付け規則」）。
+    範囲の拡大は V-Sub ではなく、この規則の補題（`HasTypeVQ.checked_widen`）で行う。 -/
+    | V_Checked {Γ o R t} :
+        B.valKind o = some t.kind → R.Mem t →
+        HasTypeVQ P B Ψ Q C Γ (.checked t) (.opaque o (.fixed R))
+    /-- V-CheckedRequest（検査済みの要求の値の規則）。V-Checked の所属に加え、名前 o の値が保持する要求の型（表の
+    データ `valContent`）が T のとき、保持する要求は、同じストアの型付け Ψ、空の NoFail の文脈、空の型の文脈と値の
+    文脈で型 T を持つ（閉じた値。設計書 01-12「型付け規則」）。外側の文脈を変える改名・代入・型代入は保持する要求を
+    変えず、この前提をそのまま使える。 -/
+    | V_CheckedRequest {Γ o R t req T} :
+        B.valKind o = some t.kind → R.Mem t → B.valContent o = some T →
+        HasTypeVQ P B Ψ Qempty [] [] req T →
+        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t req) (.opaque o (.fixed R))
 
   inductive HasTypeVsQ (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop
@@ -447,19 +606,20 @@ mutual
   inductive HasTypeCQ (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → Comp → Ty → Eff → (Δ : LocalCtx := []) → Prop
     | C_BuilderLet {Δ Γ R kind body a ε} :
-        Ty.WF C.length kind.contents →
+        Ty.WF 0 C.length kind.contents →
         HasTypeCQ P B Ψ Q C (none :: Γ) R body a ε (some kind :: Δ) →
         HasTypeCQ P B Ψ Q C Γ R (.builderLet kind body) a ε Δ
     | C_BuilderOp {Δ Γ R kind op ref args} :
-        Ty.WF C.length kind.contents → LocalRef.HasKind Ψ Δ ref kind →
+        Ty.WF 0 C.length kind.contents → LocalRef.HasKind Ψ Δ ref kind →
         HasTypeVsQ P B Ψ Q C Γ args (op.params kind) →
         HasTypeCQ P B Ψ Q C Γ R (.builderOp kind op ref args) (op.result kind) Eff.empty Δ
     | C_Return {Δ Γ R v a} : HasTypeVQ P B Ψ Q C Γ v a → HasTypeCQ P B Ψ Q C Γ R (.ret v) a Eff.empty Δ
+    /-- C-Sub。結果の型を `Ty.Le` で、許容エフェクトを判断 5 の一原子の被覆で広げる（L40.6c）。 -/
     | C_Sub {Δ Γ R m a a' ε ε'} :
-        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
-    /-- 結果の型を変えず、計算の許容エフェクトだけを広げる。型の整形式は元の導出から引き継ぐ。 -/
+        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Covers ε' ε → Ty.WF 0 C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
+    /-- 結果の型を変えず、計算の許容エフェクトだけを被覆で広げる。型の整形式は元の導出から引き継ぐ。 -/
     | C_Eff {Δ Γ R m a ε ε'} :
-        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Eff.Sub ε ε' → HasTypeCQ P B Ψ Q C Γ R m a ε' Δ
+        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Eff.Covers ε' ε → HasTypeCQ P B Ψ Q C Γ R m a ε' Δ
     | C_Let {Δ Γ R m n a b ε} :
         HasTypeCQ P B Ψ Q C Γ R m a ε Δ → HasTypeCQ P B Ψ Q C (some a :: Γ) R n b ε (LocalCtx.extend 1 Δ) →
         HasTypeCQ P B Ψ Q C Γ R (.letIn m n) b ε Δ
@@ -479,16 +639,16 @@ mutual
         HasTypeCQ P B Ψ Q C Γ R (.lazyC m) (.lazy a) Eff.empty Δ
     /-- `Γ; R ⊢v V : R` のとき、`Γ; R ⊢c escape V : A ! ε`（任意の A と ε）。 -/
     | C_Escape {Δ Γ r v a ε} :
-        HasTypeVQ P B Ψ Q C Γ v r → Ty.WF C.length a → HasTypeCQ P B Ψ Q C Γ (some r) (.escape v) a ε Δ
+        HasTypeVQ P B Ψ Q C Γ v r → Ty.WF 0 C.length a → HasTypeCQ P B Ψ Q C Γ (some r) (.escape v) a ε Δ
     /-- C-Use。解放のエフェクト `rel(O_r) = {State}` を ε が含む。 -/
     | C_Use {Δ Γ R v o m b ε} :
-        HasTypeVQ P B Ψ Q C Γ v (.opaque o) → B.isResource o = true →
-        HasTypeCQ P B Ψ Q C Γ R m b ε Δ → Eff.mem ε (.name stateEff) →
+        HasTypeVQ P B Ψ Q C Γ v (.opaqueTop o) → B.isResource o = true →
+        HasTypeCQ P B Ψ Q C Γ R m b ε Δ → Eff.mem ε (.nameTop stateEff) →
         HasTypeCQ P B Ψ Q C Γ R (.use v m) b ε Δ
     /-- C-Handle。 -/
     | C_Handle {Δ Γ R m h t εm ε} :
         HasTypeCQ P B Ψ Q C Γ R m t εm Δ → Eff.Sub εm (Eff.union ε (handled P B h)) →
-        HasTypeClausesQ P B Ψ Q C Γ R h t ε Δ →
+        HasTypeClausesQ P B Ψ Q C Γ R εm h t ε Δ →
         HasTypeCQ P B Ψ Q C Γ R (.handle m h) t ε Δ
     | C_Handle_Fail {Δ Γ R m h t E eb Rest ec} :
         HasTypeCQ P B Ψ Q C Γ R m t eb Δ →
@@ -508,14 +668,14 @@ mutual
     | C_Meth {Δ Γ R v cl τ cd m ms ss es ws} :
         HasTypeVQ P B Ψ Q C Γ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
         NamesWF ms.names ms.params → SatAll B C ss ms.tparams →
-        (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
+        (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
         MethodRowsAdmissible C Q ms es →
         HasTypeVsQ P B Ψ Q C Γ ws (ms.params.map (Ty.subst (ss ++ [τ]) es)) →
         HasTypeCQ P B Ψ Q C Γ R (.meth v m ss es ws) (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff) Δ
 
   inductive HasTypeArmsQ (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Arm → Ty → Ty → Eff → (Δ : LocalCtx := []) → Prop
-    | nil {Δ Γ R a b ε} : Ty.WF C.length b → HasTypeArmsQ P B Ψ Q C Γ R [] a b ε Δ
+    | nil {Δ Γ R a b ε} : Ty.WF 0 C.length b → HasTypeArmsQ P B Ψ Q C Γ R [] a b ε Δ
     | plain {Δ Γ R alts body arms a b ε δ} :
         AltsTy P alts a δ → HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε (LocalCtx.extend δ.length Δ) →
         HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δ →
@@ -531,21 +691,21 @@ mutual
   節の中の型の変数の番号 `0..k-1` に束縛した、宣言の制約を持つ、ほかの型とは等しくない型の変数である。
   節の外側の Γ・T・R の型は、番号を k だけずらす。 -/
   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
-    | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
-    | cons {Δ Γ R o n k body cs t ε sg} :
-        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
+      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → Eff → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+    | nil {Δ Γ R εb t ε} : HasTypeClausesQ P B Ψ Q C Γ R εb [] t ε Δ
+    | cons {Δ Γ R εb o n k body cs t ε sg} :
+        ClauseSig P B εb o sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF 0 C.length ε →
         HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
           (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
           (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) [] →
-        HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δ →
-        HasTypeClausesQ P B Ψ Q C Γ R (.mk o n k body :: cs) t ε Δ
+        HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δ →
+        HasTypeClausesQ P B Ψ Q C Γ R εb (.mk o n k body :: cs) t ε Δ
 
   /-- Fail 節は一つだけであり、予約した継続の位置には型を与えない。 -/
   inductive HasFailureClause (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → List (Option Ty) → Ty → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
     | one {C Δ Γ E R body t ec} :
-        Ty.WF C.length E → Ty.WF C.length t → Eff.WF C.length ec →
+        Ty.WF 0 C.length E → Ty.WF 0 C.length t → Eff.WF 0 C.length ec →
         HasTypeCQ P B Ψ.hideBuilders Q (({} : TParam) :: C)
           (none :: some (E.shift 1 0) :: shiftEnv 1 Γ)
           (R.map (Ty.shift 1 0)) body (t.shift 1 0) (Eff.shift 1 0 ec) [] →
@@ -567,7 +727,7 @@ mutual
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
     | .V_Fun hd hn ha => exact .V_Fun hd hn ha
-    | .V_Prim hs hn ha => exact .V_Prim hs hn ha
+    | .V_Prim hs hr hn ha => exact .V_Prim hs hr hn ha
     | .V_Op ho hn ha => exact .V_Op ho hn ha
     | .V_Raise ht he => exact .V_Raise ht he
     | .V_Lam hn hw hb => exact .V_Lam hn hw (by simpa only [hideBuilders_idem] using hb)
@@ -582,6 +742,8 @@ mutual
     | .V_Dict hi ht hv => exact .V_Dict hi ht (hideBuilders_strengthen_vals hv)
     | .V_Super hv hc hs => exact .V_Super (hideBuilders_strengthen_val hv) hc hs
     | .V_Sub hv hl hw => exact .V_Sub (hideBuilders_strengthen_val hv) hl hw
+    | .V_Checked hk hm => exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc hr => exact .V_CheckedRequest hk hm hc (hideBuilders_strengthen_val hr)
 
   theorem hideBuilders_strengthen_vals {P B Ψ Q C Γ vs ts}
       (h : HasTypeVsQ P B Ψ Q C Γ vs ts) : HasTypeVsQ P B Ψ.hideBuilders Q C Γ vs ts := by

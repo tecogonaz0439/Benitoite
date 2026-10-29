@@ -1,0 +1,104 @@
+$ cargo test -p benitoite --lib syntax::parser::
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.22s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 92 tests
+test syntax::parser::effects::tests::legacy_handler_clause_is_reported_without_secondary_errors ... ok
+test syntax::parser::effects::tests::log_example_and_operation_restrictions ... ok
+test syntax::parser::effects::tests::operation_type_parameters_reject_constructors_and_keep_class_and_builtin_bounds ... ok
+test syntax::parser::effects::tests::resource_bindings_do_not_end_the_handler_body ... ok
+test syntax::parser::effects::tests::lazy_escape_and_try_operand_extent ... ok
+test syntax::parser::exprs::named_argument_tests::invalid_named_labels_keep_normal_syntax_diagnostics ... ok
+test syntax::parser::exprs::named_argument_tests::ordinary_input_parses_named_holes_and_pipe_arguments ... ok
+test syntax::parser::exprs::named_argument_tests::named_values_and_holes_keep_separate_label_and_value_spans ... ok
+test syntax::parser::effects::tests::die_actions_share_pratt_boundaries_in_production ... ok
+test syntax::parser::header::tests::file_uses_does_not_forward_a_doc_comment_to_a_function ... ok
+test syntax::parser::header::tests::file_uses_after_bodyless_function_is_late ... ok
+test syntax::parser::effects::tests::resume_context_follows_nested_handlers_and_restores_on_exit ... ok
+test syntax::parser::effects::tests::try_actions_belong_to_the_innermost_expression_scope ... ok
+test syntax::parser::header::tests::duplicate_header_items_point_at_the_keyword ... ok
+test syntax::parser::header::tests::file_uses_rejects_empty_duplicate_and_misplaced_declarations ... ok
+test syntax::parser::header::tests::file_uses_preserves_source_and_individual_contracts ... ok
+test syntax::parser::effects::tests::try_actions_keep_operand_extent_and_reject_values_and_continuations ... ok
+test syntax::parser::header::tests::unknown_header_fields_list_usable_fields ... ok
+test syntax::parser::effects::tests::explicit_try_return_preserves_statement_boundaries ... ok
+test syntax::parser::header::tests::misplaced_headers_are_discarded_and_do_not_hide_the_next_declaration ... ok
+test syntax::parser::interp::tests::interpolation_parts_and_nested_spans_cover_dollar_to_brace ... ok
+test syntax::parser::header::tests::header_preserves_order_names_and_values ... ok
+test syntax::parser::exprs::named_argument_tests::prepared_named_arguments_format_labels_comments_and_nested_values ... ok
+test syntax::parser::header::tests::missing_header_end_preserves_the_next_item ... ok
+test syntax::parser::interp::tests::malformed_format_bytes_keep_only_lexical_diagnostics ... ok
+test syntax::parser::interp::tests::legacy_lookahead_skips_nested_strings_but_keeps_outer_colons ... ok
+test syntax::parser::items::tests::aliases_constants_and_record_declarations_build_their_ast ... ok
+test syntax::parser::items::tests::builtin_signatures_and_missing_bodies_preserve_the_next_function ... ok
+test syntax::parser::items::tests::documentation_is_attached_and_also_preserved_as_comments ... ok
+test syntax::parser::interp::tests::formatted_interpolation_preserves_expression_boundaries_and_source_spans ... ok
+test syntax::parser::header::tests::malformed_headers_report_and_recover ... ok
+test syntax::parser::items::tests::extensible_attributes_accept_only_data_and_records ... ok
+test syntax::parser::items::tests::imports_preserve_names_aliases_and_report_order_and_paths ... ok
+test syntax::parser::items::external_tests::external_header_rules_and_body_recovery ... ok
+test syntax::parser::items::tests::invalid_attributes_report_one_diagnostic_per_attribute ... ok
+test syntax::parser::items::tests::public_and_attributes_are_attached_to_the_declaration ... ok
+test syntax::parser::items::tests::misplaced_docs_and_foreign_forms_report_repairs_and_recover ... ok
+test syntax::parser::items::tests::opaque_attribute_contract ... ok
+test syntax::parser::items::tests::package_visibility_preserves_spans ... ok
+test syntax::parser::patterns_ext::tests::alternatives_respect_constructor_parentheses_and_fix_foreign_separator ... ok
+test syntax::parser::patterns_ext::tests::comma_after_guard_reports_one_error_and_recovers_to_next_arm ... ok
+test syntax::parser::items::tests::package_visibility_repairs_only_closed_arguments ... ok
+test syntax::parser::patterns_ext::tests::list_pattern_rest_splits_before_and_after_and_reports_each_duplicate ... ok
+test syntax::parser::patterns_ext::tests::tuple_diagnostics_choose_pair_triple_or_record_in_all_positions ... ok
+test syntax::parser::patterns_ext::tests::guard_context_requires_parenthesized_if_and_restores_escape ... ok
+test syntax::parser::records::tests::constructor_calls_and_patterns_are_distinct_from_records ... ok
+test syntax::parser::records::tests::record_construction_update_and_patterns_preserve_fields ... ok
+test syntax::parser::records::tests::record_declarations_allow_newlines_before_the_type_name ... ok
+test syntax::parser::patterns_ext::tests::ranges_preserve_endpoints_and_offer_inclusive_replacements ... ok
+test syntax::parser::records::tests::record_is_rejected_as_a_field_name ... ok
+test syntax::parser::records::tests::record_values_preserve_statement_boundaries ... ok
+test syntax::parser::records::tests::empty_updates_patterns_and_placeholders_report_exact_repairs ... ok
+test syntax::parser::spread::tests::spreads_preserve_elements_and_report_repair_locations ... ok
+test syntax::parser::tests::bracket_assist_requires_a_name_and_only_repairs_calls ... ok
+test syntax::parser::tests::bindings_data_and_type_parameters ... ok
+test syntax::parser::tests::builtin_body_rule_is_ready_for_f03 ... ok
+test syntax::parser::tests::diagnostic_locations_and_source_based_suggestions ... ok
+test syntax::parser::interp::tests::interpolation_sequence_and_nesting_limits_use_default_stack ... ok
+test syntax::parser::tests::eof_without_a_token_still_identifies_the_source_end ... ok
+test syntax::parser::interp::tests::invalid_formats_report_the_part_and_keep_expression_diagnostics ... ok
+test syntax::parser::tests::diagnostics_and_recovery_for_foreign_forms ... ok
+test syntax::parser::tests::independent_errors_and_lexical_error_tokens ... ok
+test syntax::parser::tests::incomplete_short_lambda_bodies_do_not_suggest_moving_the_outer_end ... ok
+test syntax::parser::tests::mismatched_and_missing_ends_identify_the_opening ... ok
+test syntax::parser::tests::lambda_endings_preserve_explicit_spans_and_recovery ... ok
+test syntax::parser::tests::fixes_have_exact_locations_and_resulting_text ... ok
+test syntax::parser::interp::tests::pending_diagnostics_keep_owners_and_restore_without_format_confirmation ... ok
+test syntax::parser::tests::precedence_calls_and_written_forms ... ok
+test syntax::parser::tests::short_lambdas_leave_outer_endings_independent_of_spacing ... ok
+test syntax::parser::tests::short_lambda_diagnostics_keep_syntax_errors_and_outer_recovery ... ok
+test syntax::parser::tests::short_lambdas_preserve_boundaries_and_explicit_endings ... ok
+test syntax::parser::tests::nodes_cover_their_tokens_and_have_distinct_ids_across_files ... ok
+test syntax::parser::tests::uses_attaches_to_the_innermost_type_and_reads_longest_list ... ok
+test syntax::parser::tests::two_line_inline_lambda_endings_explain_the_migration ... ok
+test syntax::parser::tests::return_value_must_start_on_the_same_physical_line ... ok
+test syntax::parser::tests::uses_before_type_arguments_can_be_repaired_with_parentheses ... ok
+test syntax::parser::traits::tests::constraint_diagnostics_remove_only_the_invalid_constraint ... ok
+test syntax::parser::traits::tests::implementation_functions_keep_docs_and_distinct_reference_ids ... ok
+test syntax::parser::traits::tests::trait_parameters_supertraits_and_method_signatures ... ok
+test syntax::parser::tests::specification_examples_and_golden_programs_parse ... ok
+test syntax::parser::types::final_type_tests::unnamed_function_types_report_the_parameter_without_inventing_names ... ok
+test syntax::parser::traits::tests::golden_programs_and_resource_specification_example_parse ... ok
+test syntax::parser::types::named_type_tests::ordinary_input_accepts_named_function_types ... ok
+test syntax::parser::types::named_type_tests::function_types_keep_names_and_nested_types ... ok
+test syntax::parser::types::tests::declaration_constraints_are_reported_and_left_out_of_the_ast ... ok
+test syntax::parser::types::named_type_tests::prepared_named_function_type_formats_from_each_label ... ok
+test syntax::parser::patterns_ext::tests::alternatives_and_nested_lists_count_pattern_nodes ... ok
+test syntax::parser::types::tests::uses_bracket_repairs_require_a_type_list_and_a_local_closing_bracket ... ok
+test syntax::parser::items::tests::standard_library_sources_parse_as_prelude ... ok
+test syntax::parser::effects::tests::extension_sequence_and_nesting_limits_use_default_thread_stack ... ok
+test syntax::parser::records::tests::records_obey_sequence_and_recursive_depth_limits ... ok
+
+thread 'syntax::parser::tests::nesting_and_sequence_limits_use_the_default_test_thread_stack' (2635441) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+error: test failed, to rerun pass `-p benitoite --lib`
+
+Caused by:
+  process didn't exit successfully: `<wt>/target/debug/deps/benitoite-81c2c2cf772f4aa1 'syntax::parser::'` (signal: 6, SIGABRT: process abort signal)

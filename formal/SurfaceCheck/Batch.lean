@@ -119,7 +119,12 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
   for (n,d) in m.defs do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
     let bodyQ := { q with D := q.D.withView (m.functionViews n) }
-    let result := Benitoite.Surface.Check.checkDef bodyQ [] d
+    -- 型付けを通った本体は必須の判定でも受理する（`CheckAccept.acceptDef`）。拒否は理由付きの不一致にする。
+    let result := match Benitoite.Surface.Check.checkDef bodyQ [] d with
+      | .error e => .error e
+      | .ok () => match Benitoite.Surface.CheckAccept.acceptDef p.accept n d with
+        | .error (k, f) => .error ⟨[], s!"required check is not covered: {k.surfacePreorder} {(Benitoite.Exchange.encodeCoverFailure f).compress}"⟩
+        | .ok () => .ok ()
     r := record bodyQ r input.group input.name n "definition" w bad result
     if !w.changes.isEmpty then
       let before := (Benitoite.Surface.CheckTables.lookup p.materials.defs n).map
@@ -133,7 +138,14 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
         | _ => j }
   for (n,i) in m.impls do
     let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let result := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.input (m.methodViews n)
+    let typed := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.input (m.methodViews n)
+    let accepted := Benitoite.Surface.ScopeAccept.allOk i.methods fun (mn, mi) =>
+      Benitoite.Surface.CheckAccept.acceptMethod p.accept n mn mi
+    let result := match typed with
+      | .error e => .error e
+      | .ok () => match accepted with
+        | .error (k, f) => .error ⟨[], s!"required check is not covered: {k.surfacePreorder} {(Benitoite.Exchange.encodeCoverFailure f).compress}"⟩
+        | .ok () => .ok ()
     r := record q r input.group input.name n "implementation" w bad result
   for (n,reasons) in p.outside do
     r := { r with counts := bump r.counts "outOfScope", outcomes := r.outcomes.push (Json.mkObj [("group",toJson input.group),("input",toJson input.name),("definition",toJson n),
@@ -212,6 +224,7 @@ def run (args : List String) : IO UInt32 := do
     ("tailMatches",toJson r.tailMatches),("replacements",toJson r.replacements),("nonUnitReplacements",toJson r.nonUnitReplacements),
     ("mismatchExamples",toJson (r.outcomes.filter fun j =>
       (j.getObjValAs? String "category").toOption == some "mismatched")),
+    ("nonTopRanges",toJson (Benitoite.Exchange.countNonTopRanges (Json.arr inputs))),
     ("elapsedNanos",toJson (stop-start)),("outcomes",toJson r.outcomes),("preparationErrors",toJson r.preparationErrors)]
   IO.FS.writeFile reportFile (output.pretty ++ "\n")
   IO.println counts.compress

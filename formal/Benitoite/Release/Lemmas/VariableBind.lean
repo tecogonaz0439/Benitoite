@@ -11,7 +11,7 @@ namespace Benitoite.Release
 mutual
   theorem Ty.bind_clean {n m : Nat} (θ : SubstEnv)
       (ht : ∀ i < m, TyOK n (θ.types i))
-      (he : ∀ e ∈ θ.rows, Eff.VarsIn n (fun _ => True) e)
+      (he : ∀ e ∈ θ.rows, Eff.VarsIn 0 n (fun _ => True) e)
       (t : Ty) (h : TyOK m t) : TyOK n (Ty.bind θ t) := by
     cases t <;> simp only [TyOK, Ty.VarsIn] at h <;>
       simp only [Ty.bind, Ty.rawBind, Ty.norm, TyOK, Ty.VarsIn]
@@ -34,39 +34,40 @@ mutual
 
   theorem Ty.bindTys_clean {n m : Nat} (θ : SubstEnv)
       (ht : ∀ i < m, TyOK n (θ.types i))
-      (he : ∀ e ∈ θ.rows, Eff.VarsIn n (fun _ => True) e)
-      (ts : List Ty) (h : Ty.VarsInList m (fun _ => True) ts) :
-      Ty.VarsInList n (fun _ => True) (Ty.normTys (Ty.rawBindTys θ ts)) := by
+      (he : ∀ e ∈ θ.rows, Eff.VarsIn 0 n (fun _ => True) e)
+      (ts : List Ty) (h : Ty.VarsInList 0 m (fun _ => True) ts) :
+      Ty.VarsInList 0 n (fun _ => True) (Ty.normTys (Ty.rawBindTys θ ts)) := by
     cases ts with
     | nil => trivial
     | cons t ts => exact ⟨Ty.bind_clean θ ht he t h.1, Ty.bindTys_clean θ ht he ts h.2⟩
 
   theorem Eff.bind_clean {n m : Nat} (θ : SubstEnv)
       (ht : ∀ i < m, TyOK n (θ.types i))
-      (he : ∀ e ∈ θ.rows, Eff.VarsIn n (fun _ => True) e)
-      (e : Eff) (h : Eff.VarsIn m (fun _ => True) e) :
-      Eff.VarsIn n (fun _ => True) (Eff.bind θ e) := by
+      (he : ∀ e ∈ θ.rows, Eff.VarsIn 0 n (fun _ => True) e)
+      (e : Eff) (h : Eff.VarsIn 0 m (fun _ => True) e) :
+      Eff.VarsIn 0 n (fun _ => True) (Eff.bind θ e) := by
     cases e with
     | mk a fs =>
-      refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_⟩
+      refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_,
+        Eff.substAtoms_wf h.2.2 (fun f hf => by cases f; exact (he _ hf).2.2)⟩
       intro t hm
       change t ∈ Order.sortUnique tyCompare
         (Ty.normTys (Ty.rawBindTys θ fs ++ Eff.rowFails θ.rows a)) at hm
       rw [Ty.normTys_append] at hm
       rcases List.mem_append.mp (Order.mem_sortUnique.mp hm) with hm | hm
-      · exact Ty.VarsInList.iff.mp (Ty.bindTys_clean θ ht he fs h.2) t hm
+      · exact Ty.VarsInList.iff.mp (Ty.bindTys_clean θ ht he fs h.2.1) t hm
       · obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ (Eff.rowFails θ.rows a).map Ty.norm from by
           simpa only [Ty.normTys_eq_map] using hm)
         obtain ⟨i, e, hi, _, hx⟩ := Eff.mem_rowFails.mp hx
         cases e with
         | mk b gs =>
           exact Ty.norm_VarsIn x
-            (Ty.VarsInList.iff.mp (he (.mk b gs) (List.mem_of_getElem? hi)).2 x hx)
+            (Ty.VarsInList.iff.mp (he (.mk b gs) (List.mem_of_getElem? hi)).2.1 x hx)
 end
 
 theorem Ty.subst_clean {n : Nat} (ts : List Ty) (es : List Eff)
-    (ht : Ty.VarsInList n (fun _ => True) ts)
-    (he : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e) (t : Ty) (h : TyOK ts.length t) :
+    (ht : Ty.VarsInList 0 n (fun _ => True) ts)
+    (he : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e) (t : Ty) (h : TyOK ts.length t) :
     TyOK n (t.subst ts es) := by
   rw [Ty.subst, Ty.substAt_eq_bind]
   apply Ty.bind_clean (m := ts.length)
@@ -80,10 +81,10 @@ theorem Ty.subst_clean {n : Nat} (ts : List Ty) (es : List Eff)
   · exact h
 
 theorem Eff.subst_clean {n : Nat} (ts : List Ty) (es : List Eff)
-    (ht : Ty.VarsInList n (fun _ => True) ts)
-    (he : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e) (e : Eff)
-    (h : Eff.VarsIn ts.length (fun _ => True) e) :
-    Eff.VarsIn n (fun _ => True) (Eff.substAt 0 ts es e) := by
+    (ht : Ty.VarsInList 0 n (fun _ => True) ts)
+    (he : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e) (e : Eff)
+    (h : Eff.VarsIn 0 ts.length (fun _ => True) e) :
+    Eff.VarsIn 0 n (fun _ => True) (Eff.substAt 0 ts es e) := by
   apply Eff.bind_clean (m := ts.length)
   · intro i hi
     simpa [SubstEnv.at, hi, Ty.rawShift_zero] using

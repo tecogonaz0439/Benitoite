@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Network.Http
+function sample(request: Http.ClientRequest) -> Unit
+ bind pattern <- "\u{0}443"
+ bind _ <- Http.checkRequestIn(hostPattern: pattern, minimumPort: 80, maximumPort: 443, request: request)
+ ()
+end function

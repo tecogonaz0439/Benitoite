@@ -1,0 +1,46 @@
+{
+  "rust": {
+    "command": [
+      "rustc",
+      "-Vv"
+    ],
+    "exit": 0,
+    "output": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8"
+  },
+  "cargo": {
+    "command": [
+      "cargo",
+      "-V"
+    ],
+    "exit": 0,
+    "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+  },
+  "system": {
+    "command": [
+      "uname",
+      "-sm"
+    ],
+    "exit": 0,
+    "output": "Darwin arm64"
+  },
+  "branch": {
+    "command": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "exit": 0,
+    "output": "m013/r20.3"
+  },
+  "head": {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit": 0,
+    "output": "d8a640adad54aa13ff0baaebebab91b6cad59f85"
+  },
+  "dependency_or_toolchain_edits": false,
+  "index_diff_empty": true
+}

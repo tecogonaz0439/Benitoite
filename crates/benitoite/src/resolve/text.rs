@@ -41,3 +41,14 @@ pub(super) const BUILDER_LAMBDA: &str = "lambda";
 pub(super) const BUILDER_LAZY: &str = "lazy";
 pub(super) const BUILDER_PARTIAL: &str = "partial application";
 pub(super) const BUILDER_CLAUSE: &str = "handler clause";
+
+// 範囲引数の診断で使う種類。
+pub(super) const PATH_SCOPE: &str = "path string literal";
+pub(super) const ENDPOINT_SCOPE: &str = "host string and port literal pairs";
+pub(super) const HOST_SCOPE: &str = "host string literal";
+pub(super) const SINGLE_PATH_SCOPE: &str = "exactly one path string literal";
+pub(super) const SINGLE_ENDPOINT_SCOPE: &str = "exactly one host string and port literal pair";
+pub(super) const SINGLE_HOST_SCOPE: &str = "exactly one host string literal";
+pub(super) const NO_SCOPE_ARGUMENTS: &str = "no scope arguments";
+pub(super) const TYPE_ARGUMENTS: &str = "type arguments";
+pub(super) const SCOPE_ARGUMENTS: &str = "scope arguments";

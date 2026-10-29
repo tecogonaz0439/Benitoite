@@ -48,7 +48,7 @@ def unknownChildren (runExpr : AbstractEnv → Expr → Analysis BaseApprox)
     let body := fun b => independentWith (.block b) env (fun initial => runBlock initial b)
     match source with
     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
     | .negFloat32 _ | .unit => pure ()
@@ -75,7 +75,7 @@ def unknownChildren (runExpr : AbstractEnv → Expr → Analysis BaseApprox)
       visit e; childOptional visit fuel message
     | .withE owner e b => do
       visit e
-      let inner ← scan (BudgetScan.push env (topSlot (some (.opaque owner))))
+      let inner ← scan (BudgetScan.push env (topSlot (some (.opaqueTop owner))))
       independentWith (.block b) inner (fun initial => runBlock initial b)
     | .handleE b clauses => do body b; skipClauses fuel clauses
 

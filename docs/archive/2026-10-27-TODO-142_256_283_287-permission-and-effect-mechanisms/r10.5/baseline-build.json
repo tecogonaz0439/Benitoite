@@ -1,0 +1,33 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "benitoite",
+    "--manifest-path",
+    "<baseline>/Cargo.toml",
+    "--bin",
+    "benitoite",
+    "--target-dir",
+    "<baseline>/target"
+  ],
+  "invoked": [
+    "cargo",
+    "build",
+    "-p",
+    "benitoite",
+    "--manifest-path",
+    "<baseline>/Cargo.toml",
+    "--bin",
+    "benitoite",
+    "--target-dir",
+    "<baseline>/target"
+  ],
+  "started_at": "2026-10-28T12:00:38.563981+00:00",
+  "ended_at": "2026-10-28T12:00:38.587440+00:00",
+  "exit_code": 101,
+  "elapsed_seconds": 0.02339425,
+  "auxiliary_max_rss_bytes": 15794176,
+  "auxiliary_max_rss_mib": 15.0625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

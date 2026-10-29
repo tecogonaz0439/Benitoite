@@ -1,0 +1,18 @@
+== plan: level work against 98b420af9bf9e6de4eea81bab140efb835529bd9 (changed files not classified) (partial selection: --only tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test skill_examples
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== tests_related
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s
+     Running tests/skill_examples.rs (target/debug/deps/skill_examples-78abf7303726bbb4)
+
+running 4 tests
+test local_interval_warning_example_matches_the_golden_input ... ok
+test skill_md_is_short_and_lists_every_reference_document ... ok
+test example_checker_reports_document_and_line_of_a_wrong_output ... ok
+test code_examples_in_hand_written_documents_behave_as_written ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.58s
+
+selected checks passed

@@ -14,17 +14,17 @@ inductive CallHead.HasTypeQ (P : Release.Program) (B : Builtins) (Q : NoFailCtx)
     (Γ : List (Option Ty)) : CallHead → List String → List Ty → Ty → Eff → Prop
   | app {v ds dnames names dtys as a εcall ε} :
       HasTypeVQ P B StoreTy.empty Q C Γ v (.fn (dnames ++ names) (dtys ++ as) a εcall) →
-      HasTypeVsQ P B StoreTy.empty Q C Γ ds dtys → Eff.Sub εcall ε →
+      HasTypeVsQ P B StoreTy.empty Q C Γ ds dtys → Eff.Covers ε εcall →
       CallHead.HasTypeQ P B Q C Γ (.app v ds) names as a ε
   | meth {d cl τ cd m ms ss es us utys as ε} :
       HasTypeVQ P B StoreTy.empty Q C Γ d (.dict cl τ) →
       P.classes cl = some cd → cd.methods m = some ms → NamesWF ms.names ms.params →
       SatAll B C ss ms.tparams →
-      (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
+      (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
       MethodRowsAdmissible C Q ms es →
       HasTypeVsQ P B StoreTy.empty Q C Γ us utys →
       ms.params.map (Ty.subst (ss ++ [τ]) es) = utys ++ as →
-      Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε →
+      Eff.Covers ε (Eff.substAt 0 (ss ++ [τ]) es ms.eff) →
       CallHead.HasTypeQ P B Q C Γ (.meth d m ss es us) (ms.names.drop us.length) as
         (ms.ret.subst (ss ++ [τ]) es) ε
 
@@ -37,7 +37,7 @@ theorem CallHead.HasTypeQ.apply {P B C Γ h names as a ε R ws}
   cases hh with
   | app hv hd hs => exact .C_Eff (.C_App hv (hd.append hw)) hs
   | meth hd hc hm hn ht hscope he hu hp hs =>
-      apply HasTypeCQ.weakenEff (HasTypeCQ.C_Meth hd hc hm hn ht hscope he ?_) hs
+      apply HasTypeCQ.C_Eff (HasTypeCQ.C_Meth hd hc hm hn ht hscope he ?_) hs
       rw [hp]; exact hu.append hw
 
 theorem CallHead.HasTypeQ.rename {P B C Γ Δ h names as a ε ξ}
@@ -52,8 +52,8 @@ theorem CallHead.HasTypeQ.weakenEff {P B C Γ h names as a ε δ}
     (hh : CallHead.HasTypeQ P B Q C Γ h names as a ε) (hs : Eff.Sub ε δ) :
     CallHead.HasTypeQ P B Q C Γ h names as a δ := by
   cases hh with
-  | app hv hd he => exact .app hv hd (he.trans hs)
-  | meth hd hc hm hn ht hscope he hu hp heff => exact .meth hd hc hm hn ht hscope he hu hp (heff.trans hs)
+  | app hv hd he => exact .app hv hd (hs.covers.trans he)
+  | meth hd hc hm hn ht hscope he hu hp heff => exact .meth hd hc hm hn ht hscope he hu hp (hs.covers.trans heff)
 
 /-- handled は節の本体を読まないので、脱糖前の操作の並びで計算できる。 -/
 theorem desugarClauses_handles (op : OpPrim) (cs : Clauses) (o : OpRef) :
@@ -224,7 +224,7 @@ theorem callComp_typed {R shift inserted f callee positions ms names ps a ε εc
     (hi : HasTypeVsQ P B StoreTy.empty Q C (xs ++ Γ) inserted
       (sourceTypes ps (List.range inserted.length)))
     (hms : CompTypesQ P B Q C Γ R ε ms (sourceTypes ps positions) Δl)
-    (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps positions))
+    (hc : Ty.VarsInList 0 C.length (fun _ => True) (sourceTypes ps positions))
     (he : Eff.Sub εcall ε) :
     HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R (callComp shift inserted f callee positions ms) a ε (LocalCtx.extend xs.length Δl) := by
   have hm : ms.length = positions.length := by simpa only [sourceTypes_length] using hms.length
@@ -277,7 +277,7 @@ theorem callArgs_typed {R shift f callee positions plans names ps a ε εcall}
       CallHead.HasTypeQ P B Q C (ys ++ Γ)
         (h.rename (· + (shift + ys.length))) names ps a εcall)
     (hm : ArgTypesQ P B Q C Γ R ε Δl plans (sourceTypes ps positions))
-    (hc : Ty.VarsInList C.length (fun _ => True) (sourceTypes ps positions))
+    (hc : Ty.VarsInList 0 C.length (fun _ => True) (sourceTypes ps positions))
     (he : Eff.Sub εcall ε) :
     HasTypeCQ P B StoreTy.empty Q C Γ R (callArgs shift f callee positions plans) a ε Δl := by
   unfold callArgs

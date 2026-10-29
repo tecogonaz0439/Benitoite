@@ -1,0 +1,39 @@
+$ cargo test -p benitoite --lib ir::check::tests::
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.80s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 30 tests
+test ir::check::tests::constant_definitions_and_references_are_pure ... ok
+test ir::check::tests::effect_arguments_substitute_inside_function_types_and_remain_distinct ... ok
+test ir::check::tests::all_independent_errors_are_reported_across_branches_and_definitions ... ok
+test ir::check::tests::effect_contracts_and_escape_boundaries ... ok
+test ir::check::tests::builtin_declarations_and_builtin_constraints ... ok
+test ir::check::tests::continuations_are_hidden_by_lambda_and_lazy_but_visible_in_nested_handlers ... ok
+test ir::check::tests::capture_boundaries_restore_return_and_continuations_after_a_rejected_body ... ok
+test ir::check::tests::handled_effects_require_every_operation_and_never_include_state ... ok
+test ir::check::tests::constrained_top_functions_check_equality_key_and_declaration_summaries ... ok
+test ir::check::tests::failure_types_require_well_formed_parameter_contracts ... ok
+test ir::check::tests::lambda_effect_annotation_may_include_more_than_its_body ... ok
+test ir::check::tests::handlers_resume_and_rigid_clause_parameters ... ok
+test ir::check::tests::lazy_purity_and_resource_release_effects ... ok
+test ir::check::tests::implementation_dictionary_type_arguments_satisfy_builtin_constraints ... ok
+test ir::check::tests::operation_application_uses_its_declaration ... ok
+test ir::check::tests::higher_kinded_dictionaries_substitute_constructor_heads ... ok
+test ir::check::tests::indexed_values_are_invariant_and_program_types_are_closed ... ok
+test ir::check::tests::polymorphic_values_applications_and_node_annotations ... ok
+test ir::check::tests::local_scopes_restore_overwritten_and_absent_variables_even_after_errors ... ok
+test ir::check::tests::rigid_parameters_cannot_escape_their_clause_scope ... ok
+test ir::check::tests::program_effects_reject_uninstantiated_scope_variables ... ok
+test ir::check::tests::rigid_parameters_use_the_operation_builtin_constraints ... ok
+test ir::check::tests::subsumption_only_widens_the_outer_function_effects ... ok
+test ir::check::tests::dictionary_types_supertraits_scope_and_method_contracts ... ok
+test ir::check::tests::pattern_alternatives_ranges_lists_and_guards ... ok
+test ir::check::tests::deep_ir_is_checked_without_changing_the_thread_stack ... ok
+test ir::check::tests::failure_handle_preserves_the_remaining_body_effects ... ok
+test ir::check::tests::failure_clause_error_type_kind_and_unavailable_continuation_are_checked ... ok
+test ir::check::tests::method_arguments_preserve_parameter_contracts ... ok
+test ir::check::tests::operation_clause_dictionary_count_order_type_and_scope_are_checked ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 1349 filtered out; finished in 0.19s
+

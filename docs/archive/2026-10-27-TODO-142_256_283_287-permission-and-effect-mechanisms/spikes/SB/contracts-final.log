@@ -1,0 +1,64 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+'SB.subset_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.mem_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.Eff.Sub.refl' does not depend on any axioms
+'SB.Eff.Sub.trans' does not depend on any axioms
+'SB.Ty.Le.substType' depends on axioms: [propext]
+'SB.interval_type_substitution' depends on axioms: [propext]
+'SB.Ty.Le.fn_left' does not depend on any axioms
+'SB.Ty.Le.fn_fn' does not depend on any axioms
+'SB.Ty.Le.fn_right' does not depend on any axioms
+'SB.pure_to_unscoped' does not depend on any axioms
+'SB.outer_latent_wf_is_insufficient' depends on axioms: [propext, Quot.sound]
+'SB.outer_latent_wf_rev_is_insufficient' depends on axioms: [propext, Quot.sound]
+'SB.Ty.Le.eq_of_rigid_right' depends on axioms: [propext]
+'SB.Ty.Le.eq_of_rigid_left' depends on axioms: [propext]
+'SB.nonfunction_subtyping_not_equality' depends on axioms: [propext]
+'SB.function_parts_not_equal' depends on axioms: [propext]
+'SB.narrowing_is_not_subsumption' depends on axioms: [propext]
+'SB.covariance_counterexample' depends on axioms: [propext]
+'SB.function_subtyping_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.Ty.Le.integer_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.RenOk.up' depends on axioms: [propext]
+'SB.HasTypeV.rename' depends on axioms: [propext]
+'SB.HasTypeC.rename' depends on axioms: [propext]
+'SB.SubstOk.up' depends on axioms: [propext]
+'SB.HasTypeV.subst' depends on axioms: [propext]
+'SB.HasTypeC.subst' depends on axioms: [propext]
+'SB.singleSubst_ok' depends on axioms: [propext]
+'SB.value_substitution' depends on axioms: [propext]
+'SB.body_substitution' depends on axioms: [propext]
+'SB.call_with_subtype' depends on axioms: [propext]
+'SB.beta_contract' depends on axioms: [propext]
+'SB.HasTypeV.inv_lam' depends on axioms: [propext]
+'SB.HasTypeC.inv_app' depends on axioms: [propext]
+'SB.beta_preservation' depends on axioms: [propext]
+'SB.HasTypeV.int_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.range_as_integer' depends on axioms: [propext]
+'SB.rawMake_success' does not depend on any axioms
+'SB.rawMake_none_iff' depends on axioms: [propext]
+'SB.checked_integer_to_range' depends on axioms: [propext]
+'SB.integer_to_range_requires_evidence' depends on axioms: [propext]
+'SB.cannot_assign_outside_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.no_unchecked_integer_narrowing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.port_identity_call' depends on axioms: [propext]
+'SB.substitution_under_lambda' depends on axioms: [propext]
+        0.92 real         1.14 user         0.26 sys
+           727220224  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46852  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                6500  involuntary context switches
+         10952288921  instructions retired
+          4237354340  cycles elapsed
+           178855344  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

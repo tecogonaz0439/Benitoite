@@ -1,0 +1,10 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Examples.lean:169:def summarize : State × List Event → Result × Nat
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/PresMain.lean:19:    (hb : B.Assumptions P) {Eb : Eff} {s : State} {ev : Option Event} {s' : State}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/StepSound.lean:107:    {Eb : Eff} {s : State} {l : Option Event} {s' : State}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:62:inductive Event where
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:116:inductive Step (P : Program) (B : Builtins) : State → Option Event → State → Prop
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:351:    Option (Option Event × State) :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:359:    (fresh : Store → Nat) : State → Option (Option Event × State)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:533:    (fresh : Store → Nat) : Nat → State → List Event → State × List Event
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Theorems.lean:27:    {s : State} {l : Option Event} {s' : State} :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Theorems.lean:43:    (hb : B.Assumptions P) {s : State} {l : Option Event} {s' : State} :

@@ -1,0 +1,25 @@
+$ cargo test -p benitoite --test fmt_command invalid_scope_elements_keep_original_whitespace
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.28s
+     Running tests/fmt_command.rs (target/debug/deps/fmt_command-496b046a5eed825e)
+
+running 1 test
+test invalid_scope_elements_keep_original_whitespace ... FAILED
+
+failures:
+
+---- invalid_scope_elements_keep_original_whitespace stdout ----
+
+thread 'invalid_scope_elements_keep_original_whitespace' (2736144) panicked at crates/benitoite/tests/fmt_command.rs:742:9:
+assertion `left == right` failed
+  left: "uses File.Write[\"/a\", f (1, 2)]\n\nfunction main() -> Unit\n  ()\nend function\n"
+ right: "uses File.Write[\"/a\", f(1,2)]\n\nfunction main() -> Unit\n  ()\nend function\n"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    invalid_scope_elements_keep_original_whitespace
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 22 filtered out; finished in 1.06s
+
+error: test failed, to rerun pass `-p benitoite --test fmt_command`

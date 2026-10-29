@@ -83,7 +83,8 @@ def marker(expr):
     if not isinstance(expr, dict) or 'call' not in expr:
         return None
     call = expr['call']
-    if call['callee'] != {'primName': dict(name='Benitoite.IO.Console.writeLine', tys=[], effs=[])}:
+    # 実ソースの材料は Surface 15。組み込みの参照は空の場合も範囲の列を持つ。
+    if call['callee'] != {'primName': dict(name='Benitoite.IO.Console.writeLine', tys=[], effs=[], ranges=[])}:
         return None
     assert call['positions'] == [0] and call['labels'] == [None]
     return call['args'][0]['literal']['value']['string']['value']
@@ -163,7 +164,8 @@ def require_closed(entries, standards=(), api_at=(), fixed_domain=False):
             assert declaration in registered, ('unknown call', expr)
             head = expr['call']['callee']
             allowed = ('funName', 'primName') if 'fixedDomain' in registered[declaration]['rule'] else ('funName',)
-            assert any(head == {tag: dict(name=declaration, tys=[], effs=[])} for tag in allowed)
+            assert any(head == {tag: dict(name=declaration, tys=[], effs=[],
+                **({'ranges': []} if tag == 'primName' else {}))} for tag in allowed)
             continue
         if isinstance(expr, dict) and set(expr) <= {'funName', 'primName'}:
             parent = entries[int(entry['parent'])]
@@ -251,7 +253,7 @@ def exercise(runner, directory, cli):
     for site in sites:
         row = entries[site['key'][0]][int(site['key'][1])]
         assert row['span'] == site['span'] and row['expression'] == site['expression'] and row['acquired']
-    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=14, traversalVersion=1,
+    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=15, traversalVersion=1,
                   profile='domain', inputs=[original])
     report = runner.invoke('vm-closed', 'eval', corpus, 0)
     assert report['comparedCount'] == str(len(SPECS)) and report['excludedCount'] == '0'

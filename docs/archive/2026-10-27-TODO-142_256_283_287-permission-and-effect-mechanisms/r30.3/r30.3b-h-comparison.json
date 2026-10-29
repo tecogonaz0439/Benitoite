@@ -1,0 +1,234 @@
+{
+  "source_h": "../r30.1/heap.log",
+  "source_h_metadata": "../r30.1/heap.json",
+  "source_base_head": "ddadf40d6d85b752717252c315cabe3f662c1cf8",
+  "source_implementation_commit": "c8d271825e600bfdb2c3a64ea3433a9b43759982",
+  "target_base_head": "42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab",
+  "source_state_limit": "H は未コミット状態で実行。実装コミットの比較は関係する保持経路の追跡に用い、元の全入力の一致とはしない。",
+  "files": [
+    {
+      "file": "Cargo.lock",
+      "source_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "current_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "same": true
+    },
+    {
+      "file": "Cargo.toml",
+      "source_sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+      "current_sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/Cargo.toml",
+      "source_sha256": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+      "current_sha256": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/builtins/funcs/http_client.rs",
+      "source_sha256": "93dc71c99132120743d9cf028f1e9b1f9f1bbf14ab8b03766707c63658d278d1",
+      "current_sha256": "93dc71c99132120743d9cf028f1e9b1f9f1bbf14ab8b03766707c63658d278d1",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/builtins/funcs/http_client/checked_request.rs",
+      "source_sha256": "bff1162ab4ca2526090d715f99babc758346d3fdff98401b54a6bc415d112544",
+      "current_sha256": "bff1162ab4ca2526090d715f99babc758346d3fdff98401b54a6bc415d112544",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs",
+      "source_sha256": "b0b2c0004a227ba3b29364db70cd8a0ddf9161afcb8ecca209986cfab379fcc3",
+      "current_sha256": "b0b2c0004a227ba3b29364db70cd8a0ddf9161afcb8ecca209986cfab379fcc3",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/builtins/funcs/http_client/tests.rs",
+      "source_sha256": "d795a7864d9ebfa6d0e43c05f2b7170cebc2d2271e490c9525b90a5609b3bfb9",
+      "current_sha256": "d795a7864d9ebfa6d0e43c05f2b7170cebc2d2271e490c9525b90a5609b3bfb9",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/builtins/funcs/http_util.rs",
+      "source_sha256": "e64b9ac53af0e6b9dc4ce82e97f1ece49a891c694a62fb8ebe3a3ccf47342430",
+      "current_sha256": "e64b9ac53af0e6b9dc4ce82e97f1ece49a891c694a62fb8ebe3a3ccf47342430",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/refinterp/convert.rs",
+      "source_sha256": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917",
+      "current_sha256": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/build.rs",
+      "source_sha256": "228c229aa2954bd623dfb9992076603f86bce38adb6d31bcaa9c9efadb91ef4c",
+      "current_sha256": "228c229aa2954bd623dfb9992076603f86bce38adb6d31bcaa9c9efadb91ef4c",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/builders.rs",
+      "source_sha256": "05224bfb1802822d143c4bb7954ad2eaa6c91c54d29b779a77d568f272348dd3",
+      "current_sha256": "05224bfb1802822d143c4bb7954ad2eaa6c91c54d29b779a77d568f272348dd3",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/builders_tests.rs",
+      "source_sha256": "b7f9888e90ea123559e7f64fe228c1f6a10feedbf82ebf7a8a84f2d98876d7a9",
+      "current_sha256": "b7f9888e90ea123559e7f64fe228c1f6a10feedbf82ebf7a8a84f2d98876d7a9",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core.rs",
+      "source_sha256": "f95fbcd3a3a72c55cd555208733293582d20fa5edcabbcf022ffff684de645bd",
+      "current_sha256": "f95fbcd3a3a72c55cd555208733293582d20fa5edcabbcf022ffff684de645bd",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core/alloc.rs",
+      "source_sha256": "121a1dcbc79776f032a2dd2e46e1160a26132676830d25b22af062d361d3f514",
+      "current_sha256": "121a1dcbc79776f032a2dd2e46e1160a26132676830d25b22af062d361d3f514",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core/layout.rs",
+      "source_sha256": "00a757675bf8f1d466bce16fbcc113b94335099759b7c58e9853c8da69315605",
+      "current_sha256": "00a757675bf8f1d466bce16fbcc113b94335099759b7c58e9853c8da69315605",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core/mark_sweep.rs",
+      "source_sha256": "9c65d995ff7f6f3bcf41d1cc554570a797bbd2132a472347876aa9c2ca51c68f",
+      "current_sha256": "9c65d995ff7f6f3bcf41d1cc554570a797bbd2132a472347876aa9c2ca51c68f",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core/probe.rs",
+      "source_sha256": "1f3cf61b7435128ec310530c36031e4684b6e21a98bd3b97690f45351b24a091",
+      "current_sha256": "1f3cf61b7435128ec310530c36031e4684b6e21a98bd3b97690f45351b24a091",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core/tests.rs",
+      "source_sha256": "388d726fad8cde0c854c3636b4cbdcdab36ce56611ff636338c2621b38dacd50",
+      "current_sha256": "388d726fad8cde0c854c3636b4cbdcdab36ce56611ff636338c2621b38dacd50",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/core/verify.rs",
+      "source_sha256": "ff26718a0c891bad1d15b4da4c065733cc56112a34f55eacc2663ced38130fcb",
+      "current_sha256": "ff26718a0c891bad1d15b4da4c065733cc56112a34f55eacc2663ced38130fcb",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/ctx.rs",
+      "source_sha256": "833ec134a85c64573a5bdd7ea31cac3b37af3754ac9d1ec696b2efb87ce440e9",
+      "current_sha256": "833ec134a85c64573a5bdd7ea31cac3b37af3754ac9d1ec696b2efb87ce440e9",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/mod.rs",
+      "source_sha256": "839f5647430f67d5a695dba74f0d0a9d37d1af4947e2648288aeaa5dbc62fb7c",
+      "current_sha256": "839f5647430f67d5a695dba74f0d0a9d37d1af4947e2648288aeaa5dbc62fb7c",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/slot.rs",
+      "source_sha256": "5061e23baec6f22a0180946e226528631280b6d6451a8b320e4671bdb9517d15",
+      "current_sha256": "5061e23baec6f22a0180946e226528631280b6d6451a8b320e4671bdb9517d15",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/stats.rs",
+      "source_sha256": "4859d43a9af285c637f162e8619e0a85fd7a681b1259854dfeac09c2cc28e53b",
+      "current_sha256": "4859d43a9af285c637f162e8619e0a85fd7a681b1259854dfeac09c2cc28e53b",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/trace.rs",
+      "source_sha256": "ecaa40e0245199a62a12fe2489d060116b465616f415c2a2a28c14b62de6118d",
+      "current_sha256": "ecaa40e0245199a62a12fe2489d060116b465616f415c2a2a28c14b62de6118d",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/value.rs",
+      "source_sha256": "ae21f03a4586877c242ded1f3c4bd5ee8675cd21875c8cd978ec3b686b15c822",
+      "current_sha256": "ae21f03a4586877c242ded1f3c4bd5ee8675cd21875c8cd978ec3b686b15c822",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/runtime/heap/verification_tests.rs",
+      "source_sha256": "64a2127faf3a7d5b5161d94ac3329d218da712bea96a30be0b51259fda0b9cac",
+      "current_sha256": "64a2127faf3a7d5b5161d94ac3329d218da712bea96a30be0b51259fda0b9cac",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/src/vm/dispatch/tasks/io.rs",
+      "source_sha256": "9aa1bd14aae6e412c2af5898f7f9e4054e4658102dfa1ba35ca2a0ca71a4f798",
+      "current_sha256": "9aa1bd14aae6e412c2af5898f7f9e4054e4658102dfa1ba35ca2a0ca71a4f798",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/tests/l32_http_client.rs",
+      "source_sha256": "6ce14a3f48ff7b3afbc4537c768c6a5053f51455b2af2cac8cd29cefe13018fd",
+      "current_sha256": "6ce14a3f48ff7b3afbc4537c768c6a5053f51455b2af2cac8cd29cefe13018fd",
+      "same": true
+    },
+    {
+      "file": "crates/benitoite/tests/vm_handlers.rs",
+      "source_sha256": "ae9c1e7cb35da43784faaf3b2aa6555cfaf391fb36d667fd9b361887a162b921",
+      "current_sha256": "ae9c1e7cb35da43784faaf3b2aa6555cfaf391fb36d667fd9b361887a162b921",
+      "same": true
+    },
+    {
+      "file": "fuzz/Cargo.lock",
+      "source_sha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+      "current_sha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+      "same": true
+    },
+    {
+      "file": "rust-toolchain.toml",
+      "source_sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "current_sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "same": true
+    },
+    {
+      "file": "scripts/check-heap.sh",
+      "source_sha256": "241426346cc2b0d15a0187e7d8af5bdeca9ad4f3523d1b9377b02711591a2e34",
+      "current_sha256": "241426346cc2b0d15a0187e7d8af5bdeca9ad4f3523d1b9377b02711591a2e34",
+      "same": true
+    },
+    {
+      "file": "scripts/check.sh",
+      "source_sha256": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+      "current_sha256": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+      "same": true
+    }
+  ],
+  "retention_tests": [
+    {
+      "test": "http_request_in_checks_endpoints_and_retains_the_same_request",
+      "source_sha256": "7cfd315e7291201cfbdfa893d9657a871269efebfccd85bb3dbf68b61fef2287",
+      "current_sha256": "7cfd315e7291201cfbdfa893d9657a871269efebfccd85bb3dbf68b61fef2287",
+      "same": true
+    },
+    {
+      "test": "http_request_in_projection_and_widen_return_the_original_objects",
+      "source_sha256": "ab60b9b153d738864603045e566c2e7b33daf0c9267b7a4f097cb7ce172087c3",
+      "current_sha256": "ab60b9b153d738864603045e566c2e7b33daf0c9267b7a4f097cb7ce172087c3",
+      "same": true
+    },
+    {
+      "test": "scoped_widen_calls_round_trip_through_both_evaluators",
+      "source_sha256": "fb122326d76a65dee16c4e5c9dc643b1664a12769b7c87cdedac676f1e312ac8",
+      "current_sha256": "fb122326d76a65dee16c4e5c9dc643b1664a12769b7c87cdedac676f1e312ac8",
+      "same": true
+    }
+  ],
+  "source_records": {
+    "../r30.1/results.md": "bc173f3045b8c0d03634b282cda0dc9ad41394170acfcc3f8f541bcfb9d61611",
+    "../r30.1/heap.log": "ecf3592e8e3e64df70706397937cfa6e05daafd7041c967e8cfd3cede0b71a7d",
+    "../r30.1/heap.json": "b0c13668738dd49b01499d07966178994ded9ae5d150b2bb05946a137a7097a5",
+    "../r30.1/r30.1b-integrity.json": "41550561534c008ce5039d8e51231660e4b37575f5ba1e131fcb5ad52b50bfd0"
+  }
+}

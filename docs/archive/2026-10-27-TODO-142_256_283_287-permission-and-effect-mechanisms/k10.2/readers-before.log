@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<wt>/crates/benitoite/tests/desugar_export/check_batch3.py", line 173, in <module>
+    main()
+  File "<wt>/crates/benitoite/tests/desugar_export/check_batch3.py", line 169, in main
+    check(args.rust_dir.resolve(), args.report.resolve())
+  File "<wt>/crates/benitoite/tests/desugar_export/check_batch3.py", line 94, in check
+    data, expected = BATCH3["rust_inputs"](directory)
+  File "<wt>/formal/tests/test_batch3_exchange.py", line 165, in rust_inputs
+    raise AssertionError('expected corpus12, corpus13 or corpus14')
+AssertionError: expected corpus12, corpus13 or corpus14

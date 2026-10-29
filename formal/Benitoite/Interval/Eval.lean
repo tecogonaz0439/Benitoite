@@ -27,7 +27,7 @@ def classify : Expr → FragmentClass
   | .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .neg _ _ => .width
   | .call _ _ _ _ | .record _ _ _ _ | .recordUpdate _ _ _ _ _ _ => .api
   | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-  | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+  | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
   | .nullCon _ _ | .conValue _ _ _ _ => .unknownValue
   | .builderOp _ _ _ _ | .handleFail _ _ _ _ | .negFloat _ | .negDecimal _ _
   | .negFloat32 _ | .conCall _ _ _ | .pipe _ _ | .partialCall _ _ _ _ _
@@ -381,7 +381,7 @@ def ConcreteEnv.standardAt (env : ConcreteEnv) (key : OperationKey) : Option Sta
 
 /-- 型引数・エフェクト引数のない標準関数と組み込み関数の直接 call の頭だけを読む。 -/
 def standardCallHead : Expr → Option FunName
-  | .funName declaration [] [] | .primName declaration [] [] => some declaration
+  | .funName declaration [] [] | .primName declaration [] [] [] => some declaration
   | _ => none
 
 /-- Range と固定域の標準宣言を、元のキー・宣言・引数位置で認定する。 -/

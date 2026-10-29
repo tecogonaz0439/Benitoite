@@ -1,0 +1,66 @@
+formal/tests/test_batch2_exchange.py exit=0 6s
+formal/tests/test_batch3_exchange.py exit=0 3s
+formal/tests/test_batch4_exchange.py exit=0 6s
+formal/tests/test_batch5_exchange.py exit=0 3s
+formal/tests/test_extensible_exchange.py exit=0 6s
+formal/tests/test_interval_exchange.py exit=0 4s
+formal/tests/test_named_exchange.py exit=0 2s
+formal/tests/test_range_exchange.py exit=0 1s
+formal/tests/test_try_exchange.py exit=0 4s
+formal/tests/test_width_exchange.py exit=0 1s
+== py_test_batch2_exchange.log
+........
+----------------------------------------------------------------------
+Ran 8 tests in 6.172s
+
+OK
+== py_test_batch3_exchange.log
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 3.270s
+
+OK
+== py_test_batch4_exchange.log
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 5.850s
+
+OK
+== py_test_batch5_exchange.log
+........
+----------------------------------------------------------------------
+Ran 8 tests in 2.179s
+
+OK
+== py_test_extensible_exchange.log
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.870s
+
+OK
+== py_test_interval_exchange.log
+{"calls": 144, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow", "initial": "292", "selected": "292", "attempts": [{"fuel": "292", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "width", "initial": "580", "selected": "580", "attempts": [{"fuel": "580", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "range", "initial": "200", "selected": "200", "attempts": [{"fuel": "200", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "domain", "initial": "2192", "selected": "2192", "attempts": [{"fuel": "2192", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow-containers", "initial": "40", "selected": "80", "attempts": [{"fuel": "40", "exit": 1, "excluded": "1"}, {"fuel": "80", "exit": 0, "excluded": "0"}]}]}
+== py_test_named_exchange.log
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 2.198s
+
+OK
+== py_test_range_exchange.log
+........
+----------------------------------------------------------------------
+Ran 8 tests in 0.902s
+
+OK
+== py_test_try_exchange.log
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.402s
+
+OK
+== py_test_width_exchange.log
+....
+----------------------------------------------------------------------
+Ran 4 tests in 1.058s
+
+OK

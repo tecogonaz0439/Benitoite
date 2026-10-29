@@ -19,7 +19,7 @@ theorem ContTy.handler_kind {Ψ R ε k a b ε0 Re hs}
   induction hk with
   | K_Empty => simp at hm
   | K_Sub _ _ ih => exact ih hm
-  | K_Handle _ _ hc _ ih =>
+  | K_Handle _ _ _ hc _ ih =>
       rcases List.mem_cons.mp hm with heq | hm
       · cases heq; exact Or.inl hc.no_failure
       · exact ih hm
@@ -51,8 +51,8 @@ theorem ContTy.fail_end {Ψ R ε k a b ε0 Re E}
   | K_Empty hs _ => exact hs.2 _ he
   | K_Let _ _ _ _ ih | K_Mark _ _ ih | K_Update _ _ ih | K_Release _ _ _ _ ih
   | K_Drop _ _ _ ih => exact ih (fun hs hm => hno hs (by simp [hm])) he
-  | K_Handle _ hs _ _ ih =>
-      have hh := (Eff.memFail_union _ _ _).mp he
+  | K_Handle _ hs hbh _ _ ih =>
+      have hh := (Eff.memFail_union _ _ _).mp (hbh.2 _ he)
       have hh' := hh.resolve_right ((handled_noFail P B _).not_memFail E)
       exact ih (fun hs hm => hno hs (by simp [hm])) (hs.2 _ hh')
   | K_Handle_Fail _ _ _ hc _ _ _ =>
@@ -68,7 +68,7 @@ theorem ContTy.failure_prefix {Ψ R ein k1 E body k2 a b Eb Re E'}
     (hno : NoHandler k1 .fail) (he : Eff.memFail ein E') :
     ∃ Rh eout Rest ec t,
       HasFailureClause P B Ψ Qempty [] [] E Rh [.fail E body] t ec ∧
-      NoFail Qempty Rest ∧ Eff.Sub Rest eout ∧ Eff.Sub ec eout ∧ Ty.WF 0 t ∧
+      NoFail Qempty Rest ∧ Eff.Covers eout Rest ∧ Eff.Covers eout ec ∧ Ty.WF 0 0 t ∧
       ContTy P B Ψ Rh eout k2 t b Eb Re ∧
       Eff.memFail (Eff.union (Eff.singleFail E) Rest) E' := by
   generalize heq : (k1 ++ Frame.handleF [.fail E body] :: k2) = k0 at h
@@ -111,7 +111,7 @@ theorem ContTy.failure_prefix {Ψ R ein k1 E body k2 a b Eb Re E'}
           obtain ⟨rfl, heq⟩ := heq
           exact ih (fun hs hm => hno hs (by simp [hm])) he heq
   | K_Guard => exact ((Eff.memFail_empty E').mp he).elim
-  | K_Handle _ hs hc _ ih =>
+  | K_Handle _ hs hbh hc _ ih =>
       cases k1 with
       | nil =>
           simp only [List.nil_append, List.cons.injEq, Frame.handleF.injEq] at heq
@@ -121,7 +121,7 @@ theorem ContTy.failure_prefix {Ψ R ein k1 E body k2 a b Eb Re E'}
       | cons f k1 =>
           simp only [List.cons_append, List.cons.injEq] at heq
           obtain ⟨rfl, heq⟩ := heq
-          have he' := ((Eff.memFail_union _ _ _).mp he).resolve_right ((handled_noFail P B _).not_memFail E')
+          have he' := ((Eff.memFail_union _ _ _).mp (hbh.2 _ he)).resolve_right ((handled_noFail P B _).not_memFail E')
           exact ih (fun hs hm => hno hs (by simp [hm])) (hs.2 _ he') heq
   | K_Handle_Fail ht hr hn hc hec hw ih =>
       cases k1 with
@@ -143,7 +143,7 @@ theorem ContTy.split_failure {Ψ R ein k1 E body k2 a b Eb Re}
     (h : ContTy P B Ψ R ein (k1 ++ .handleF [.fail E body] :: k2) a b Eb Re) :
     ∃ t Rh eout Rest ec,
       HasFailureClause P B Ψ Qempty [] [] E Rh [.fail E body] t ec ∧
-      NoFail Qempty Rest ∧ Eff.Sub Rest eout ∧ Eff.Sub ec eout ∧ Ty.WF 0 t ∧
+      NoFail Qempty Rest ∧ Eff.Covers eout Rest ∧ Eff.Covers eout ec ∧ Ty.WF 0 0 t ∧
       ContTy P B Ψ Rh eout k2 t b Eb Re ∧
       ContTy P B Ψ R ein (k1 ++ [.handleF [.fail E body]]) a t (captureEff Rest ec) Rh := by
   generalize heq : (k1 ++ Frame.handleF [.fail E body] :: k2) = k0 at h
@@ -200,7 +200,7 @@ theorem ContTy.split_failure {Ψ R ein k1 E body k2 a b Eb Re}
           obtain ⟨rfl, heq⟩ := heq
           obtain ⟨t, Rh, eout, Rest, ec, hc, hnf, hre, he, htw, ht, hsave⟩ := ih heq
           exact ⟨t, Rh, eout, Rest, ec, hc, hnf, hre, he, htw, ht, .K_Guard hm hsub hp hb hsave⟩
-  | K_Handle ht hs hc hw ih =>
+  | K_Handle ht hs hbh hc hw ih =>
       cases k1 with
       | nil =>
           simp only [List.nil_append, List.cons.injEq, Frame.handleF.injEq] at heq
@@ -211,7 +211,7 @@ theorem ContTy.split_failure {Ψ R ein k1 E body k2 a b Eb Re}
           simp only [List.cons_append, List.cons.injEq] at heq
           obtain ⟨rfl, heq⟩ := heq
           obtain ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, hsave⟩ := ih heq
-          exact ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, .K_Handle hsave hs hc hw⟩
+          exact ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, .K_Handle hsave hs hbh hc hw⟩
   | K_Handle_Fail ht hr hn hc he hw ih =>
       cases k1 with
       | nil =>
@@ -239,44 +239,48 @@ theorem splitAt_failure_prefix {k k1 E body k2}
 /-- 包含で広がった raise の型から元の二型と潜在効果を取り出す。 -/
 theorem HasTypeVQ.inv_raise {Ψ Q C Γ v a T E}
     (hv : HasTypeVQ P B Ψ Q C Γ v a) (heq : v = .raise T E) :
-    Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le (.fn ["error"] [E] T (Eff.singleFail E)) a := by
+    Ty.WF 0 C.length T ∧ Ty.WF 0 C.length E ∧ Ty.Le (.fn ["error"] [E] T (Eff.singleFail E)) a := by
   match hv with
+  | .V_CheckedRequest .. => cases heq
   | .V_Const => cases heq
   | .V_Raise ht he => cases heq; exact ⟨ht, he, Ty.Le.refl _⟩
   | .V_Sub hv hl _ =>
       obtain ⟨ht, he, hl'⟩ := hv.inv_raise heq
       exact ⟨ht, he, hl'.trans hl⟩
 
+-- 値の型付けに葉の規則 V-Checked を加えた後、相互帰納の型の構造的な再帰の展開が既定の上限（200000）を超えた。
+-- 証明は変えずに上限だけを上げる（同じ値を `Interval/` の補題が使っている）。
+set_option maxHeartbeats 800000 in
 /-- Fail 専用の handle の入力上限と、外へ残す効果を取り出す。 -/
 theorem HasTypeCQ.inv_handle_failure {Δl : LocalCtx} {Ψ Q C Γ R m' a ε m h}
     (hh : HasTypeCQ P B Ψ Q C Γ R m' a ε Δl) (hm : m' = .handle m h)
     (ho : handles h .fail = true) :
     ∃ t eb E Rest ec, HasTypeCQ P B Ψ Q C Γ R m t eb Δl ∧
       Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) ∧ NoFail Q Rest ∧
-      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Sub (Eff.union Rest ec) ε := by
+      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Covers ε (Eff.union Rest ec) := by
   match hh with
   | .C_Handle _ _ hc => cases hm; rw [hc.no_failure] at ho; cases ho
   | .C_Handle_Fail ht hs hn hc =>
-      cases hm; exact ⟨_, _, _, _, _, ht, hs, hn, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
+      cases hm; exact ⟨_, _, _, _, _, ht, hs, hn, hc, Ty.Le.refl _, Eff.Covers.refl _⟩
   | .C_Sub ht hl hs _ =>
       obtain ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl', hs'⟩ := ht.inv_handle_failure hm ho
-      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl'.trans hl, hs'.trans hs⟩
+      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl'.trans hl, hs.trans hs'⟩
   | .C_Eff ht hs =>
       obtain ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs'⟩ := ht.inv_handle_failure hm ho
-      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs'.trans hs⟩
+      exact ⟨t, eb, E, Rest, ec, ht, hb, hn, hc, hl, hs.trans hs'⟩
   | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
 
 /-- raise の適用で必要な Fail は C_Sub/C_Eff/V_Sub を通っても残る。 -/
 theorem HasTypeCQ.inv_raise_app {Δl : LocalCtx} {Ψ Q C Γ R T E v a em}
     (hm : HasTypeCQ P B Ψ Q C Γ R (.app (.raise T E) [v]) a em Δl) :
-    Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le T a ∧
+    Ty.WF 0 C.length T ∧ Ty.WF 0 C.length E ∧ Ty.Le T a ∧
       Eff.Sub (Eff.singleFail E) em ∧ HasTypeVQ P B Ψ Q C Γ v E := by
   obtain ⟨names, as, b, e, hf, ha, hl, hs⟩ := hm.inv_app rfl
   obtain ⟨ht, he, hfn⟩ := hf.inv_raise rfl
   obtain ⟨e', hfn', hsub⟩ := hfn.fn_left
   cases hfn'
   cases ha with
-  | cons hv ht' => exact ⟨ht, he, hl, hsub.trans hs, hv⟩
+  | cons hv ht' => exact ⟨ht, he, hl, (hs.trans hsub).sub_of_singleFail, hv⟩
 
 /-- 継続の上限から捕捉先の生のエラー型の一致と引数の型を導く。 -/
 theorem failure_clause_selected_typed {Ψ R T E' v a b ein em Eb k k1 E body k2}
@@ -288,7 +292,7 @@ theorem failure_clause_selected_typed {Ψ R T E' v a b ein em Eb k k1 E body k2}
   rw [hsplit.1] at hk
   have hem : Eff.memFail ein E' := (hfail.trans hs).2 _ ((Eff.memFail_singleFail _ _).mpr rfl)
   obtain ⟨Rh, eout, Rest, ec, t, hc, hn, _, _, _, _, he⟩ := hk.failure_prefix hsplit.2.2 hem
-  have hwE : Ty.WF 0 E := by cases hc with | one he _ _ _ => exact he
+  have hwE : Ty.WF 0 0 E := by cases hc with | one he _ _ _ => exact he
   have heq := failure_upper_bound hwE.canonical he'.canonical hn he
   exact ⟨heq, heq ▸ hv⟩
 

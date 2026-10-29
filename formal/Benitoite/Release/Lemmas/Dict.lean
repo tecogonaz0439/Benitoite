@@ -27,7 +27,7 @@ theorem Eff.substRho_of_noRho (es : List Eff) {e : Eff}
 
 /-- 移動してから前置した引数列で置き換えると、元の引数列での代入になる。 -/
 theorem Ty.shift_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss : ss.length = g)
-    (u : Ty) (h : Ty.VarsIn ts.length (fun _ => False) u) :
+    (u : Ty) (h : Ty.VarsIn 0 ts.length (fun _ => False) u) :
     (u.shift g 0).substAt 0 (ss ++ ts) es = u.substAt 0 ts [] := by
   rw [Ty.shift_eq_bind, Ty.substAt_eq_bind, Ty.bind_comp, Ty.substAt_eq_bind]
   apply Ty.bind_congr_scoped (n := ts.length)
@@ -43,13 +43,13 @@ theorem Ty.shift_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss :
   · exact Ty.RowsIn.mono (fun _ hi => hi.elim) u (Ty.VarsIn.rows u h)
 
 theorem Ty.shiftList_subst_append {ts ss : List Ty} {g : Nat} (es : List Eff) (hss : ss.length = g)
-    (as : List Ty) (h : Ty.VarsInList ts.length (fun _ => False) as) :
+    (as : List Ty) (h : Ty.VarsInList 0 ts.length (fun _ => False) as) :
     as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.shift g 0)) = as.map (Ty.substAt 0 ts []) :=
   List.map_congr_left (fun a ha => Ty.shift_subst_append es hss a (Ty.VarsInList.iff.mp h a ha))
 
 /-- 型クラスの引数の代入と、呼び出し時の同時代入の合成。 -/
 theorem Ty.methTy_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
-    (hss : ss.length = g) (t : Ty) (h : Ty.VarsIn (g + 1) pe t) :
+    (hss : ss.length = g) (t : Ty) (h : Ty.VarsIn 0 (g + 1) pe t) :
     (t.substAt g [u] []).substAt 0 (ss ++ ts) es =
       t.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es := by
   let v := (u.shift g 0).substAt 0 (ss ++ ts) es
@@ -93,7 +93,7 @@ theorem Ty.methTy_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty)
       show Eff.rawShift 0 0 = id from funext (Eff.rawShift_zero 0), Eff.norm_idem]
 
 theorem Ty.methTyList_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
-    (hss : ss.length = g) (as : List Ty) (h : Ty.VarsInList (g + 1) pe as) :
+    (hss : ss.length = g) (as : List Ty) (h : Ty.VarsInList 0 (g + 1) pe as) :
     as.map ((Ty.substAt 0 (ss ++ ts) es) ∘ (Ty.substAt g [u] [])) =
       as.map (Ty.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es) :=
   List.map_congr_left (fun a ha => Ty.methTy_subst u es hss a (Ty.VarsInList.iff.mp h a ha))
@@ -118,10 +118,10 @@ theorem ImplDecl.methTy_subst {id : ImplDecl} (hsc : id.Scoped P) {ms : MethSig}
 
 /-- メソッドの効果に含まれる型にも、型クラスの引数の同じ具体化を行う。 -/
 theorem Eff.methTy_subst {ts ss : List Ty} {g : Nat} {pe : Nat → Prop} (u : Ty) (es : List Eff)
-    (hss : ss.length = g) (e : Eff) (h : Eff.VarsIn (g + 1) pe e) :
+    (hss : ss.length = g) (e : Eff) (h : Eff.VarsIn 0 (g + 1) pe e) :
     Eff.substAt 0 (ss ++ ts) es (Eff.substAt g [u] [] e) =
       Eff.substAt 0 (ss ++ [(u.shift g 0).substAt 0 (ss ++ ts) es]) es e := by
-  have hw : Ty.VarsIn (g + 1) pe (.fn [] [] (.base .unit) (Eff.norm e)) :=
+  have hw : Ty.VarsIn 0 (g + 1) pe (.fn [] [] (.base .unit) (Eff.norm e)) :=
     ⟨⟨rfl, by simp⟩, trivial, trivial, Eff.norm_VarsIn e h, Eff.norm_idem e⟩
   have ht := Ty.methTy_subst (ts := ts) u es hss _ hw
   simp only [Ty.substAt, Ty.substTysAt] at ht
@@ -175,7 +175,7 @@ theorem Val.superStep_super_of_not_dict {w : Val} {s : ClassName} (h : ∀ i ts 
   cases w <;> simp_all [Val.superStep]
 
 /-- 上位の型クラスの辞書 `I[T̄](V̄)↑S` から取り出した辞書 `U[T̄/β̄][V̄/d̄]` に、型 `Dict[S, τ[T̄/β̄]]` が付く。 -/
-theorem superStep_dict_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.Assumptions P) {Ψ}
+theorem superStep_dict_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.CoreAssumptions P) {Ψ}
     (hΨ : StoreTy.WF Ψ) {i ts vs s id u cl τ}
     (hv : HasTypeV P B Ψ [] [] (.super (.dict i ts vs) s) (.dict cl τ))
     (hc : Val.VarsIn 0 (fun _ => True) (.super (.dict i ts vs) s))
@@ -210,7 +210,7 @@ theorem superStep_dict_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.
     rw [Nat.zero_add, hsat.1]
     exact Val.VarsIn.toTrue _ (hsc.2.2.1 _ u hu)
 
-theorem superStep_super_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.Assumptions P) {Ψ}
+theorem superStep_super_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.CoreAssumptions P) {Ψ}
     (hΨ : StoreTy.WF Ψ) :
     (w : Val) → (s : ClassName) → ∀ {v' cl τ}, (Val.super w s).superStep P = some v' →
       HasTypeV P B Ψ [] [] (.super w s) (.dict cl τ) → Val.VarsIn 0 (fun _ => True) (.super w s) →
@@ -235,7 +235,7 @@ theorem superStep_super_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B
   | .var _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .const _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .fnRef _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
-  | .prim _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+  | .prim _ _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .lam _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .con _ _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .list _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
@@ -244,9 +244,10 @@ theorem superStep_super_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B
   | .mapV _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .setV _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
   | .bytesV _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+  | .checkedRequest _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
 
 /-- E-Super の一歩は、辞書の型と、型の変数を含まないことを保つ。 -/
-theorem superStep_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.Assumptions P) {Ψ}
+theorem superStep_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.CoreAssumptions P) {Ψ}
     (hΨ : StoreTy.WF Ψ) {v v' cl τ} (h : v.superStep P = some v')
     (hv : HasTypeV P B Ψ [] [] v (.dict cl τ)) (hc : Val.VarsIn 0 (fun _ => True) v) :
     HasTypeV P B Ψ [] [] v' (.dict cl τ) ∧ Val.VarsIn 0 (fun _ => True) v' := by

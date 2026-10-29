@@ -1,0 +1,251 @@
+{
+  "checkedAt": "2026-10-29T15:52:55.794876+00:00",
+  "basis": "記録とソースの読解・同定。ビルドと比較の新規実行ではない",
+  "head": "174a8540fbde08464908a772992685f1d8068811",
+  "branch": "m013/ub30.01",
+  "priorState": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.3/k10.3b-final-state.json.gz",
+  "priorHead": "d35557f93ca65e73a841a17d6f19f1b79cf04464",
+  "selectedSourceFiles": [
+    {
+      "path": "crates/benitoite/src/types/mod.rs",
+      "bytes": 58187,
+      "sha256": "0cabb2a360fab981dc571b7b97c7d0d798a79a76f70006e7c7e24c4d42ce17d4",
+      "k103bSha256": "0cabb2a360fab981dc571b7b97c7d0d798a79a76f70006e7c7e24c4d42ce17d4",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/resolve/scope.rs",
+      "bytes": 8819,
+      "sha256": "dc923771b75338714c33e1de98683e0b920a43a2cfb0e3e9be2de17e7c69c812",
+      "k103bSha256": "dc923771b75338714c33e1de98683e0b920a43a2cfb0e3e9be2de17e7c69c812",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/typeck/decls.rs",
+      "bytes": 62571,
+      "sha256": "14e416fdd98b85b98a712915d4d260f87290f655fa85c5445746c0377e25ae2f",
+      "k103bSha256": "14e416fdd98b85b98a712915d4d260f87290f655fa85c5445746c0377e25ae2f",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/typeck/effects/declarations.rs",
+      "bytes": 17172,
+      "sha256": "a9d730903297a5175e45dc33b4329f9fe5400baf40c8670ec73be5c1a0be1a4a",
+      "k103bSha256": "a9d730903297a5175e45dc33b4329f9fe5400baf40c8670ec73be5c1a0be1a4a",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/typeck/effects/handle.rs",
+      "bytes": 16567,
+      "sha256": "9fb60aff1a79f91c211d76a31ba3bbe522b1279d58f0016f23d1e347780e2c12",
+      "k103bSha256": "9fb60aff1a79f91c211d76a31ba3bbe522b1279d58f0016f23d1e347780e2c12",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/cli/inspection.rs",
+      "bytes": 10924,
+      "sha256": "1e80ff7a82cb7082383da280784fb21127a6fb47155b41516d0b121a5227521b",
+      "k103bSha256": "1e80ff7a82cb7082383da280784fb21127a6fb47155b41516d0b121a5227521b",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/cli/effect_limit.rs",
+      "bytes": 3317,
+      "sha256": "1589e2f7f3a5fea3cc4ba66576d49b52620d4498ccc7116979518e2462202e0d",
+      "k103bSha256": "1589e2f7f3a5fea3cc4ba66576d49b52620d4498ccc7116979518e2462202e0d",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/cli/check_report.rs",
+      "bytes": 13405,
+      "sha256": "52322ffd891c72170fdf80494e8afa10e753a5fface736fee75e9abc4f226925",
+      "k103bSha256": "52322ffd891c72170fdf80494e8afa10e753a5fface736fee75e9abc4f226925",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/src/cli/tools/test_runner/check_report.rs",
+      "bytes": 18615,
+      "sha256": "24d36d910b72c277d844db213cb8f595bbf138e3614221a7be203e8dc8bcd54d",
+      "k103bSha256": "24d36d910b72c277d844db213cb8f595bbf138e3614221a7be203e8dc8bcd54d",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/cli_process/scoped_reports.rs",
+      "bytes": 12220,
+      "sha256": "f0199fe7d8389700741922ffcc0b0a677c844c54578b6a0634b14070c369a3bf",
+      "k103bSha256": "f0199fe7d8389700741922ffcc0b0a677c844c54578b6a0634b14070c369a3bf",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/cli_process/fixtures/handled-scoped-write.bnt",
+      "bytes": 816,
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "k103bSha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/exchange.rs",
+      "bytes": 134348,
+      "sha256": "f34229dc6b925c42f305747c609e6f69ce447e1bc638a4e4314b89b5fdb6acd8",
+      "k103bSha256": "f34229dc6b925c42f305747c609e6f69ce447e1bc638a4e4314b89b5fdb6acd8",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range_sources.rs",
+      "bytes": 7260,
+      "sha256": "66bef67577beaa9ccaadf1904e0b9d76cb1fd6225d8cfba34ee0ecf7d5946384",
+      "k103bSha256": "66bef67577beaa9ccaadf1904e0b9d76cb1fd6225d8cfba34ee0ecf7d5946384",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/expected.json",
+      "bytes": 14651,
+      "sha256": "6688b76b06958277738339f67baf1e3b8e153c126f159dfd4e57b4fee4d3ca2a",
+      "k103bSha256": "6688b76b06958277738339f67baf1e3b8e153c126f159dfd4e57b4fee4d3ca2a",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-expected.json",
+      "bytes": 12930,
+      "sha256": "c8bfe176ea31e0098f29063424f722845f3193b7c7106b11a033d88cef1254bc",
+      "k103bSha256": "c8bfe176ea31e0098f29063424f722845f3193b7c7106b11a033d88cef1254bc",
+      "matchesK103b": true
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/handled-scoped-write.bnt",
+      "bytes": 816,
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "k103bSha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "matchesK103b": true
+    },
+    {
+      "path": "formal/tests/test_range_sources.py",
+      "bytes": 12864,
+      "sha256": "68178531622820318f53ba3c76967b5597dcff8be67cce1ccd03814e7dcbd48a",
+      "k103bSha256": "68178531622820318f53ba3c76967b5597dcff8be67cce1ccd03814e7dcbd48a",
+      "matchesK103b": true
+    },
+    {
+      "path": "formal/tests/test_range_exchange.py",
+      "bytes": 35454,
+      "sha256": "d2c4ec7a0cd70d9da1239c23a5b8a680863911452cbf995d08a5a8e558e2cef2",
+      "k103bSha256": "d2c4ec7a0cd70d9da1239c23a5b8a680863911452cbf995d08a5a8e558e2cef2",
+      "matchesK103b": true
+    },
+    {
+      "path": "scripts/check-formal.sh",
+      "bytes": 13157,
+      "sha256": "09aa4eb572ef3a9a9368400fe4e0d84df5aee3b7563e247c5b027c99803c2cb1",
+      "k103bSha256": "09aa4eb572ef3a9a9368400fe4e0d84df5aee3b7563e247c5b027c99803c2cb1",
+      "matchesK103b": true
+    },
+    {
+      "path": "scripts/check/formal_interval.py",
+      "bytes": 22569,
+      "sha256": "184f43571d721918ec83944e7ccac56686115cd9604f65d34e6ca07c4b89c405",
+      "k103bSha256": "184f43571d721918ec83944e7ccac56686115cd9604f65d34e6ca07c4b89c405",
+      "matchesK103b": true
+    }
+  ],
+  "allSelectedMatchK103b": true,
+  "currentDesigns": [
+    {
+      "path": "docs/design/01-spec/01-07-effects.md",
+      "sha256": "56413054dd6d4aa6cba6757c46aa6613cf56e1b943992c2dbdac2d31c0891435",
+      "comparison": "K10.3b の sourceHashes に含まれないため現行文書の同定のみ"
+    },
+    {
+      "path": "docs/design/07-quality/07-01-security-model.md",
+      "sha256": "ebf8b18cd11b02769649f8fc5a15b4abab77b6b2cbaf1c30e12402e4fbc18b8b",
+      "comparison": "K10.3b の sourceHashes に含まれないため現行文書の同定のみ"
+    },
+    {
+      "path": "docs/design/06-tooling/06-01-cli.md",
+      "sha256": "f871fa7612d5c1dae5cbcec9de321df66e759246ad49df57deeae3a0142a3383",
+      "comparison": "K10.3b の sourceHashes に含まれないため現行文書の同定のみ"
+    },
+    {
+      "path": "docs/design/06-tooling/06-06-agent-skills.md",
+      "sha256": "d07fa6c20a6f0ad69b5147228b6f655236ac7ff5d65a8ccfb79048bbde27f59b",
+      "comparison": "K10.3b の sourceHashes に含まれないため現行文書の同定のみ"
+    }
+  ],
+  "fixedUserOperation": {
+    "sameBytesInThreeFixtures": true,
+    "fixtures": [
+      {
+        "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt",
+        "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5"
+      },
+      {
+        "path": "crates/benitoite/tests/cli_process/fixtures/handled-scoped-write.bnt",
+        "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5"
+      },
+      {
+        "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/handled-scoped-write.bnt",
+        "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5"
+      }
+    ],
+    "reportCase": {
+      "file": "inputs/handled-scoped-write.bnt",
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data/reports"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "固定範囲の利用者操作の節から File.writeTextIn へ渡す。本体は実行しない"
+    },
+    "exchangeCases": [
+      "host-one",
+      "host-many",
+      "ipv4-exact",
+      "ipv4-cidr",
+      "ipv6-exact",
+      "ipv6-cidr",
+      "port-range",
+      "path-tree",
+      "request-retained",
+      "path-widen",
+      "shorthand-location",
+      "old-ip",
+      "user-spelling",
+      "all-top",
+      "required-not-covered",
+      "required-unknown",
+      "request-widen-rejected",
+      "effect-not-covered",
+      "effect-atomic",
+      "effect-top",
+      "old-invalid-pattern",
+      "old-invalid-target",
+      "old-invalid-ports",
+      "old-outside",
+      "new-invalid-pattern",
+      "new-invalid-target",
+      "new-invalid-ports",
+      "new-outside",
+      "request-errors",
+      "path-widen-projection-rejected",
+      "effect-top-exceeded"
+    ],
+    "includedInExchangeCases": false,
+    "reader": "formal/tests/test_range_sources.py::check_reports は CLI のみを呼ぶ。六入口の実ソース群とは別",
+    "writer": "crates/benitoite/tests/desugar_export/range_sources.rs::export_range_sources は expected.json の cases を書き出す",
+    "limitation": "一般corpusと独立交換の成功から、この固定範囲の利用者操作の組合せを比較済みとはしない"
+  }
+}

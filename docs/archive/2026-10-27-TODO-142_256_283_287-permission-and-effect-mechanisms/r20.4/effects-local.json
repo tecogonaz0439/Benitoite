@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "typeck::effects::tests"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-28T22:44:58.248215+00:00",
+  "finished_utc": "2026-10-28T22:45:00.616548+00:00",
+  "command_exit": 101,
+  "outer_seconds": 2.36742975,
+  "maxrss_raw": 167985152,
+  "maxrss_unit": "bytes",
+  "maxrss_bytes": 167985152,
+  "maxrss_mib": 160.203125,
+  "maxrss_gib": 0.1564483642578125,
+  "maxrss_method": "getrusage(RUSAGE_CHILDREN); fresh wrapper; maximum child RSS, not sum"
+}

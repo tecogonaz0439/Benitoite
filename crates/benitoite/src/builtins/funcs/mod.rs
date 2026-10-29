@@ -160,6 +160,9 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
     log::DECLS,
     string::DISPLAY_WIDTH_DECLS,
     format::DECLS,
+    http_client::PURE_DECLS,
+    file::SCOPED_DECLS,
+    http_client::SCOPED_DECLS,
 ];
 
 #[cfg(test)]

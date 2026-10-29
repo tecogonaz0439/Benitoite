@@ -1,0 +1,2267 @@
+{
+  "finished": "2026-10-30T07:59:46.244723+09:00",
+  "expectationsSha256": "d7ac00da6eb012f1cce6dca09d2862340e15530b37f6474b0e7e777604e1015f",
+  "cliSha256": "a3f6610893bf6d38a9ae43b58e66f7b763de92298a47a8a2c015e7bda3d3b737",
+  "cliCases": 73,
+  "commands": 148,
+  "successes": 148,
+  "failures": [],
+  "records": [
+    {
+      "id": "version",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "--version=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004050125,
+      "stdoutSha256": "7d21fabbc3a95912bd6598521ce532403a7ea9d01021658f8e4958768f9d1039",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-pure-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020180666,
+      "stdoutSha256": "47a273e198be1127871ba230d66d4f89e664ad260bddbbdfd7127938e2117e95",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-pure-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020540666,
+      "stdoutSha256": "85f6a74091f973b0c050b4d33aa577d4f4df40e79dd20b8b3eb55e9185447feb",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-top-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020751084000000003,
+      "stdoutSha256": "c3fbc09396ef4c5b4d48bc4c6921bf4b3c584ef1705d7be3579d433bd8d87d29",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-top-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02070316600000001,
+      "stdoutSha256": "70ed02ab3adc0e16defc5bacd0157198da70d71f5988e4b0357aa75e2469ebdb",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-non-top-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02058575,
+      "stdoutSha256": "a8cd51fbaba5950cd382fa2447ddd05a383ac2758622eab60f78c9cd3329917d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-non-top-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020525833999999993,
+      "stdoutSha256": "370afb57cef9e01e1668fd79d30760f2fb0675ca4875afe1cfab8587494eeffc",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-redundant-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02068895899999998,
+      "stdoutSha256": "6a2b09d7f802f7ff14640128a9eb51190281d90e435e77f864ffeea74530a011",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-redundant-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020451499999999984,
+      "stdoutSha256": "e7d34c9ce97bf4aaf3dd0fe8adc627f0d97a0ba5ac6954060cfd8264145fa659",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-handled-user-pure-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.012514917000000014,
+      "stdoutSha256": "0819b6d5f276cfc9b0fd1651a0e16669eb19e82efc3bb0878e0f20c4c6e1f942",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-handled-user-pure-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.012745167000000002,
+      "stdoutSha256": "deac0ebecc51b95a8934e2fe4a29f7de69d0d3308906256f3c1667ce1f28d4f0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-handled-scoped-write-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.014193082999999995,
+      "stdoutSha256": "735f5af3c144c02665ad61e65fd14bdd53ecaf7daaebe951958841accc3efc0e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-handled-scoped-write-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.014083041000000018,
+      "stdoutSha256": "b1819d3bf76a4293c810c48026e5a95fa85f613f20e07ad5be2e4df480811090",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-not-covered-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.014360042000000017,
+      "stdoutSha256": "3c2089f096885f3cb654eb94e1e673148640a3d59dfe397e9aab3a608a6271c3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-not-covered-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.014934959000000025,
+      "stdoutSha256": "d7a7955a1bf87d779997597eb9922b0b5d8fb7df5f2832d171acda04847fb43a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-atomic-cover-only-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.01437575000000002,
+      "stdoutSha256": "bb6403aabd265676aee29add9c9606d207a0027c09d0e0406f368b30860c79e1",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-atomic-cover-only-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.014024583000000035,
+      "stdoutSha256": "a8c36f5ec896a30f84ca3c11f808b2835f37248d0162f83cc595bbba498e3589",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-unknown-source-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.013705458000000004,
+      "stdoutSha256": "88fd9f8833386e926bd3993e5d06c0864325baf5aa496ac53e0b583c55230403",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-unknown-source-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.013649250000000002,
+      "stdoutSha256": "693cae9fb1222edfc809fe6efa1c06c11d322b87dd94c6e512f93e0be448dad1",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-budget-exceeded-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.029233542,
+      "stdoutSha256": "bf097d49d167c2700ecf1f515dd8ff48f23e680e32e00ea07414aa347fb50481",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-budget-exceeded-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.03054858399999999,
+      "stdoutSha256": "9abe75865184ef351b7ab3af5fe063ed15b7f5fa3a3b71d28b78399bf168fd8d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-show-rejected-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020348957999999973,
+      "stdoutSha256": "7e271fee08485e610630f04215bbac9e348638121d02af6488f7e62c86583ba1",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-show-rejected-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.02009570899999996,
+      "stdoutSha256": "673417c62663c9067d7a7dce3d7e2ca8570f48e0d8081f463367e81a61af4874",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-projection-repaired-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.014256708000000007,
+      "stdoutSha256": "12dde10f15e564b01a4dc812ced04021f075cdbd60332eafd397c007a8cc3560",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-projection-repaired-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.014239583999999972,
+      "stdoutSha256": "858e59071324f7e80661d3364ccfa4449ed401cd6e83fefb652ddce6ea6e4243",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-show-match-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020381125,
+      "stdoutSha256": "443d66848146447defc37324eae79061a65d11485c13fd3b03e9a7e26808374e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-show-match-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02031812500000002,
+      "stdoutSha256": "ca6c480fcc45ba579dc17c76247d98ea9be07359f6949ab776b313c589980999",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-user-unhandled-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.01280833299999995,
+      "stdoutSha256": "f88898b5c4df75b763a15479f6b917bcfff9f3dcf36775011d321b965801d6a9",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-user-unhandled-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.012819625000000001,
+      "stdoutSha256": "354d9184231a34bc87868d309e6cfafbdf1d403d8338c4ce956d66467d19ca39",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-user-scope-rejected-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.0074332080000000245,
+      "stdoutSha256": "3e93ea0cc4767d8f902654e83a8ac621ca67c8a737ba86d6748a3f51e6a5b7ae",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-user-scope-rejected-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.0069177910000000065,
+      "stdoutSha256": "fbe40ecf402c69d82ab759877d7150758114d1ba14560851a7b4036a598f6f45",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-read-complete-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020766583000000005,
+      "stdoutSha256": "4e205c3ff6b2c7a64effd5e732c6832e71e65dc3eb2612fa9b4c674b8bff209d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-read-complete-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02089200000000002,
+      "stdoutSha256": "888d070d676311bd161fab19b335a368ba31bd212b728952612174b841d23103",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-read-partial-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020395000000000052,
+      "stdoutSha256": "afd99dc20094d156cb5e6ec0ff84a6e20cad5e9ce532c5579550c5d13225b86d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-read-partial-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020943959000000012,
+      "stdoutSha256": "23bf163afe466fb9d4e88817ab82daf09043187cceb7e8a25bff1f3b1da26b05",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-read-missing-upper-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020726250000000057,
+      "stdoutSha256": "7d00ae33175148da977c51b29e1dffcd6e53528c5d5635767a0713e4596fca1b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-read-missing-upper-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.02103866700000001,
+      "stdoutSha256": "7a05af0a6a1bb7bcd9c41286d109156fe53407c18ed49a93550261e736a41c43",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-write-complete-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02102549999999992,
+      "stdoutSha256": "95e1df42288743ae4c6f93e7adfcbc6f954f3c79c7ee30f63bc19d2e101eb39f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-write-complete-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02054558399999995,
+      "stdoutSha256": "45dbcad74f035c75a06f1af1db6f976a38a6d808751cf638c21f55c9448b7446",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-write-partial-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.02062474999999997,
+      "stdoutSha256": "3e86667113e53e72eb869e31e28ee60e8955edae3c3241e24648f2adcd50bc6c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-write-partial-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020595083000000014,
+      "stdoutSha256": "215cf888d6ec0f6378d582592d886d1595b5fe0ea41899f9627fa89db1649ab9",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-write-missing-upper-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020831541000000064,
+      "stdoutSha256": "7f8de0a2655ae29041c75fa0e1b72f2e9a779a90c137d71716c73c03bf2c2c1f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-write-missing-upper-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020580874999999943,
+      "stdoutSha256": "078627a7bacdb5f67fe7671b889db4d862792db0d831e699d98dbf795de9d329",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-connect-complete-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020442791999999987,
+      "stdoutSha256": "8c44c834496ed0a9710fd119b807a0ba78c34d58043d3b637f43aca54ee7627a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-connect-complete-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020875291999999934,
+      "stdoutSha256": "2a0410d6e30e9521390db2c615ad08bbb7ebebb4a995dab83e2a270500cb7fee",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-connect-partial-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020684166000000004,
+      "stdoutSha256": "4744d2d052dbcfa3230dff31cccf18c920df00e3e39193b5553797409229d32e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-connect-partial-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.020681957999999945,
+      "stdoutSha256": "788419e157473691244401445c39ff367465af10b9b0566fc9b1ab97dad54e7f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-connect-missing-upper-check",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.021159750000000033,
+      "stdoutSha256": "957986ac7fd61cf8759a9dcf8011976ea6251e1759eef79767cb7cedf74ac212",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-connect-missing-upper-test",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020788583999999943,
+      "stdoutSha256": "7d254ec0ec0abb6d3e25314d252d1a852ce8fa266a834645f7b769f7d4c57864",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-doc-error-doc",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--doc",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-error.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.021674958999999938,
+      "stdoutSha256": "86ca6cd040c19c5124d43817e5cf797e6b5a7fb385823b847b84d878f1c81c81",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "report-doc-check-doc",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--doc",
+        "--check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-check.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.021921999999999997,
+      "stdoutSha256": "79751b98af45ea98a6003b0475cd51078995f80e557411d3db170e9ae2933e3f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "range-required-not-covered",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3c/inputs/required-not-covered.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.013919291,
+      "stdoutSha256": "73ea991d40fc4d3fd8b09ba8b0eb70576fe3eaf8f8633ef14c3d77636c15c73f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "range-required-unknown",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3c/inputs/required-unknown.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.01372249999999997,
+      "stdoutSha256": "12f7fc38fdcea9781e2ac68341a192cc63dd85983c0b0a3b5291af4b1a9ea5d8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "range-request-widen-rejected",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3c/inputs/request-widen-rejected.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020428124999999908,
+      "stdoutSha256": "8cd646fe67cc3155014d3eb97e23797368d8865dcb60dbabc20ad7d392306af5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "range-effect-not-covered",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/effect-not-covered.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.01421966600000002,
+      "stdoutSha256": "616b33fda0fe2cdb51f0c0cf44a30cf7082dd3497458a48cc3aaae8e8ec6c2ea",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "range-effect-atomic",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/independent/effect-atomic.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.013998208000000067,
+      "stdoutSha256": "3a8ef0f9b61e08a2f5104978a3503fac60a12c61edf6685625ef3f2df1b3b9a0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "old-file-old-complete-none",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/file-old-complete-none.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.014223125000000003,
+      "stdoutSha256": "91d60a716b936e549c02fba72f8f6551eea5cfb90c079746ce8b79c876414ac0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "old-file-old-complete-0012",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/file-old-complete-0012.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.006735834000000107,
+      "stdoutSha256": "adc6708d609ae8fcef0af9f640d7bbd59c1e70eb2f07fc66bf35a62394817934",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "old-write-old-complete-none",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/write-old-complete-none.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.013756290999999976,
+      "stdoutSha256": "462c2ba6420d3959ec89228f044637e2ddc88601bddd3974b80de774571cb162",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "old-write-old-complete-0012",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/write-old-complete-0012.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.006959666999999836,
+      "stdoutSha256": "ccc6a9622ffbd2d58a3c04741e249e96a4a479b574546cb035bc95a8a4bbe065",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "old-send-plain-none",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/send-plain-none.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020000624999999994,
+      "stdoutSha256": "ef0ae9ed8c9ab4ec3bc8b2c2533b71dcca51159405b885010496741f689c3651",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "old-send-plain-0012",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "check",
+        "--report=json",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ab-inputs/send-plain-0012.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.007232958000000123,
+      "stdoutSha256": "a87ab57764309e6c009a380752eece3630c77a43e41a090196b0fe7e79a4b6fd",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "allow-run-name",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=File.Write",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.025612833999999918,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "allow-run-empty",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020869209,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "4bd6277f91c13fc30bebd296777b2aa0a902560fefb759f400ff4058402f7efd",
+      "matched": true
+    },
+    {
+      "id": "allow-run-user",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=Report",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.004448291000000104,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "f87f16b1febfa67b87d4c79fc79cd9e2f1328760cb8c645f50b60b281cef97be",
+      "matched": true
+    },
+    {
+      "id": "allow-run-scope",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=File.Write[\"/data/**\"]",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.0038889170000000473,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "62d3c6b328fcaede362f17bfe302e7c96ac5108c604c77813c35c3bc9de9918e",
+      "matched": true
+    },
+    {
+      "id": "allow-run-empty-pure",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.025495374999999987,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "allow-run-empty-handled-user-pure",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "run",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.015347708000000182,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "allow-test-name",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=File.Write",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.026024833999999997,
+      "stdoutSha256": "fdfb785e4cbaa02c8b75451fad6f12949b1abd6667cb15f5f962155e1f37da91",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "allow-test-empty",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.020654417000000036,
+      "stdoutSha256": "d98643e152de2bd765de5feb5856b2186d69385b2f7c6565a90575799479c90a",
+      "stderrSha256": "4b444c078cf2871299f6f36dd6cbcbab8f9b2dd2e395d6f883414b7a79529be8",
+      "matched": true
+    },
+    {
+      "id": "allow-test-user",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=Report",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.004151540999999925,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "f87f16b1febfa67b87d4c79fc79cd9e2f1328760cb8c645f50b60b281cef97be",
+      "matched": true
+    },
+    {
+      "id": "allow-test-scope",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=File.Write[\"/data/**\"]",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 2,
+      "seconds": 0.004042542000000093,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "62d3c6b328fcaede362f17bfe302e7c96ac5108c604c77813c35c3bc9de9918e",
+      "matched": true
+    },
+    {
+      "id": "allow-test-empty-pure",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.025388667000000087,
+      "stdoutSha256": "0915895d22bf4f16f3258542d7ac73a2d2670d97dec641074ed94999e241031a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "allow-test-empty-handled-user-pure",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "test",
+        "--diagnostics=json",
+        "--allow-effects=",
+        "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "exit": 0,
+      "seconds": 0.015114791000000016,
+      "stdoutSha256": "2ba548d67ed87ab0f6bd86aa8d1262cecfe082e30603058bf736d8ab7cb0342e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "skill-list",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "list",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.005012875000000028,
+      "stdoutSha256": "1c56b7c202bec15fe9f0b206a34c5e0bb9a708fc7f95117566bbfbf621596d76",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "id": "skill-0",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "LICENSE-APACHE",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004582957999999859,
+      "stdoutSha256": "bddc3f7c8fc2b92744eca787db834a5138bbced263a4b712cfcb6ededbd025e3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "LICENSE-APACHE"
+    },
+    {
+      "id": "skill-1",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "LICENSE-MIT",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00426937500000002,
+      "stdoutSha256": "2572497fbe0d27cb0184b3cee0541770269c17caed2d3a1547ce4bbb3bc5df92",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "LICENSE-MIT"
+    },
+    {
+      "id": "skill-2",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "SKILL.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004069917000000034,
+      "stdoutSha256": "c6fbbec91d1a3771ddfbcb4bbb44dbb4b0817252afebe2f9f9ae01005f0313b5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "SKILL.md"
+    },
+    {
+      "id": "skill-3",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/common-mistakes.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004093083999999969,
+      "stdoutSha256": "97f208503eeafd244c422dee47abb3c75d68a13dcd295cea5933333b9a49770b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/common-mistakes.md"
+    },
+    {
+      "id": "skill-4",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/diagnostics.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004434625000000025,
+      "stdoutSha256": "142333e309751a5f5ea7ab0ec6adc19e60b6fec8ebf0aa445a0409d924271a20",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/diagnostics.md"
+    },
+    {
+      "id": "skill-5",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/grammar.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004022874999999981,
+      "stdoutSha256": "d3a2fb1a3c4861efea290a259d723b73cebedd93902b672833deb00e894cde26",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/grammar.md"
+    },
+    {
+      "id": "skill-6",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/idioms.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0041137920000000605,
+      "stdoutSha256": "1b82b5ba2fc506375de2c956cd70a026d394febde36b80612ec6eeaade50fcdc",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/idioms.md"
+    },
+    {
+      "id": "skill-7",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/inspection.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003996375000000052,
+      "stdoutSha256": "5de672b76bd6ea43cc4025158b280bbc9044b2dfe5a559a51bf6343e7543a392",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/inspection.md"
+    },
+    {
+      "id": "skill-8",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/language-comparison.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003935124999999928,
+      "stdoutSha256": "1bba8eca0f1802da7a20151648666d428b4de3fb75c68f053b86860ddd147800",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/language-comparison.md"
+    },
+    {
+      "id": "skill-9",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Assert.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003983416999999934,
+      "stdoutSha256": "9177447a58863620c7cad16be81b572011cf39c03f8bdce77a890fab7e976dc3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Assert.md"
+    },
+    {
+      "id": "skill-10",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Boolean.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003921000000000063,
+      "stdoutSha256": "e5ace2d82b2c844466a8e0b3c4532618b19bd9a456b21d3d0583cafbf22d52dd",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Boolean.md"
+    },
+    {
+      "id": "skill-11",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Byte.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003747874999999956,
+      "stdoutSha256": "90197b357a5a71cdd4c9d74f2c9fe846d1d66336aa5f036eacbc110f5ea1252a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Byte.md"
+    },
+    {
+      "id": "skill-12",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/ByteOrder.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0039094589999999485,
+      "stdoutSha256": "45f56417fc2a5a63bdbb7e4372ab30c2fb5391d9cf5fe4578ca64dfef138cf26",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/ByteOrder.md"
+    },
+    {
+      "id": "skill-13",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Bytes.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037558330000000417,
+      "stdoutSha256": "cd89f05dff620c15cfa68b59e66d7c76663b1ac480ba5981662662e37e959d7d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Bytes.md"
+    },
+    {
+      "id": "skill-14",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/BytesBuilder.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0038617920000001416,
+      "stdoutSha256": "472e9aa90cc19a0ecedea7440fb010defaa3b4e31e57e3b023280343507ac5e4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/BytesBuilder.md"
+    },
+    {
+      "id": "skill-15",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Character.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00391858299999992,
+      "stdoutSha256": "29bd12643a08e768a71a5991ddd8e7bee087d181db9d9ef30552933c8e1a28c0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Character.md"
+    },
+    {
+      "id": "skill-16",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Csv.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003827875000000036,
+      "stdoutSha256": "ef656a3bb4ca7ac1a359c22020e23311f1ebec587748bf915bfc36e2e66d5ea3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Csv.md"
+    },
+    {
+      "id": "skill-17",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Decimal.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0039042500000001645,
+      "stdoutSha256": "61fe736de50ce8646240c4ff4c4e1dbd784f3f8ca2715eced28f606b0726acc5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Decimal.md"
+    },
+    {
+      "id": "skill-18",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Encoding.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.004005875000000048,
+      "stdoutSha256": "646046a5a1bfc9e27eeb2c2f7719aebaf6494da8778b82a89d92ab0b99f67793",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Encoding.md"
+    },
+    {
+      "id": "skill-19",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Failure.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037158330000000017,
+      "stdoutSha256": "84ac6c0dfa34e8ecb511e9b4e97245d589af1b187b6701cbefe26d6590b6250a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Failure.md"
+    },
+    {
+      "id": "skill-20",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Float.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036640829999998736,
+      "stdoutSha256": "5e2b93c53f527985a021d3acca9af6334ed44fb1e872dd324bfa257353d08eb2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Float.md"
+    },
+    {
+      "id": "skill-21",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Float32.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037592079999999584,
+      "stdoutSha256": "63912edf85912165dea2667803372d4f7289e17f719f5d4b18e0d86ee15b334c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Float32.md"
+    },
+    {
+      "id": "skill-22",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Float64.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003807957999999889,
+      "stdoutSha256": "5ff96dcfe20c42d59b385b888862547465992327c1ed71cd7ab3516761af65c2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Float64.md"
+    },
+    {
+      "id": "skill-23",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Hash.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036439999999999806,
+      "stdoutSha256": "24e70ca448b18eaaf6e579b146e06e29cabfeef8b06f3891390fa2fe7a1f2989",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Hash.md"
+    },
+    {
+      "id": "skill-24",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IO.Clock.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036237500000000367,
+      "stdoutSha256": "6d15c892aed1cc4a9220f14c1bde090ff397f922c319808cb57224be0cec91b2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IO.Clock.md"
+    },
+    {
+      "id": "skill-25",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IO.Console.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003727958000000031,
+      "stdoutSha256": "e0637e965716a96bb6dc13909bad8882135c2d5f6502fc2efc27fe73f3d260c5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IO.Console.md"
+    },
+    {
+      "id": "skill-26",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IO.File.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037544589999998212,
+      "stdoutSha256": "cb3dd114e3144298c2daab0a6eb2a13a559a652670a0c6387f7b57e76a3ba924",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IO.File.md"
+    },
+    {
+      "id": "skill-27",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IO.Process.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037660419999998584,
+      "stdoutSha256": "619e69f6e97f8cf10b764cf262f23e8504a0f103cfe478b72881c7a9ebece627",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IO.Process.md"
+    },
+    {
+      "id": "skill-28",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IO.Random.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035845829999998635,
+      "stdoutSha256": "2e0ad6a5f9bea01b6d9984a0572324a3a06974f91a3cdf5c38501cb4272ff602",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IO.Random.md"
+    },
+    {
+      "id": "skill-29",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IO.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037143749999999365,
+      "stdoutSha256": "8f048e4283cf038a5e3ce2be1db5742640e8fff08f4eade3ecb03ec99573dbdd",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IO.md"
+    },
+    {
+      "id": "skill-30",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IOError.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036745419999999474,
+      "stdoutSha256": "63060271f65466bccf366c610970093289951ecc0a30acf3e3c1299d7cce09d5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IOError.md"
+    },
+    {
+      "id": "skill-31",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/IOErrorKind.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003579709000000042,
+      "stdoutSha256": "5bbd392da3407de4e8092c3886fb762246bded9c1e2311cdabfba85f3a149f8c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/IOErrorKind.md"
+    },
+    {
+      "id": "skill-32",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Integer.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036048330000000295,
+      "stdoutSha256": "080ca1ea4a4db1b32b19b089d8a5d9947513208d51d27925aedbb7b8f21e8ef6",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Integer.md"
+    },
+    {
+      "id": "skill-33",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Integer16.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036183750000000625,
+      "stdoutSha256": "52ebb6594728ec9cdded774be65f6df6a2159d1961c8164a91dbaae5bcbf7739",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Integer16.md"
+    },
+    {
+      "id": "skill-34",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Integer32.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003780041999999817,
+      "stdoutSha256": "4a0a864556e78d41124a0d9602b99cbbe7c620353ead152d5fa7a5596bee5c14",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Integer32.md"
+    },
+    {
+      "id": "skill-35",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Integer64.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00354741599999997,
+      "stdoutSha256": "7ae7845c89e9a5c3e6393c3c505823d408cc09c645ce8ae453b2198d49de4a6a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Integer64.md"
+    },
+    {
+      "id": "skill-36",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Integer8.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00350362500000001,
+      "stdoutSha256": "04bad7e8361b1be875f3d819ca7de096a2e66b3df12b442fd4c552a9337ed26e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Integer8.md"
+    },
+    {
+      "id": "skill-37",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Json.Codec.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003541124999999923,
+      "stdoutSha256": "f9c02e79713aa4293920321ac389f595b641e685b13d90f5d980b4bfba5bf645",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Json.Codec.md"
+    },
+    {
+      "id": "skill-38",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Json.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00368129099999992,
+      "stdoutSha256": "af2e5b4a0eed17b5060a9bbe24ffa1edb529e0911c1060ce6a7d56fdc09236b1",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Json.md"
+    },
+    {
+      "id": "skill-39",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Lazy.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035147079999999775,
+      "stdoutSha256": "4329b7c4a8761ea84cacc67423b0db0f3ee8b4c837514a06cd18e635eca70729",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Lazy.md"
+    },
+    {
+      "id": "skill-40",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/List.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003590666999999881,
+      "stdoutSha256": "f3a6192f6c2dc1522eb7c09148d28a6b53aec31fbcb099241128cda70aa4833b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/List.md"
+    },
+    {
+      "id": "skill-41",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/ListBuilder.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035363330000000026,
+      "stdoutSha256": "26f3910ca618c42fcb52462417f74fa7922d864200bd8c5b147b36c719611a5f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/ListBuilder.md"
+    },
+    {
+      "id": "skill-42",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Log.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003569750000000038,
+      "stdoutSha256": "80d8186420bcab76f5ed487c5d01db5de82caef948cc18dfd42de1295433e4c3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Log.md"
+    },
+    {
+      "id": "skill-43",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Map.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00363270800000004,
+      "stdoutSha256": "c5340ed7f104674fd8f906dea7f0f61db396d5df69259b22769874ba1e322e47",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Map.md"
+    },
+    {
+      "id": "skill-44",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Network.Http.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003654916000000119,
+      "stdoutSha256": "2748e6b283d412a2dd3615ee60693e750dfce4515219dcdd808ebd87ded0e74e",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Network.Http.md"
+    },
+    {
+      "id": "skill-45",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/NetworkError.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036778749999999416,
+      "stdoutSha256": "49f1d394fcd2237dd4c8dd3f66a7a06b199d16a4374d4ad268fd4edd90cf6153",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/NetworkError.md"
+    },
+    {
+      "id": "skill-46",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/NetworkErrorKind.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035091660000001745,
+      "stdoutSha256": "a61463d16294a76416dc2a8c9aeb31eef239ab09f135acabdbfc0294976b6263",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/NetworkErrorKind.md"
+    },
+    {
+      "id": "skill-47",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/NonEmptyList.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036870839999998406,
+      "stdoutSha256": "30c2fba8a212f6e3d69a72506961c06904a98f672f280e32803927ef039b2b43",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/NonEmptyList.md"
+    },
+    {
+      "id": "skill-48",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Option.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035797500000001037,
+      "stdoutSha256": "c0a0c1aca2cd9a3bc0c5c935a4840e81b3eb4884204f2fcad83cd93b1fb5131b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Option.md"
+    },
+    {
+      "id": "skill-49",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Pair.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003599791999999935,
+      "stdoutSha256": "9da26c9d51bb91d1b37032dce5133565fb5785f803f15b257bc166d562c445ff",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Pair.md"
+    },
+    {
+      "id": "skill-50",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Path.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036149169999999398,
+      "stdoutSha256": "5879e5715144f0761fd2c1bb11fa9995a6a93a399fcbfd7cf29a1766be67a12f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Path.md"
+    },
+    {
+      "id": "skill-51",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Range.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003634666999999814,
+      "stdoutSha256": "3f5c3088893e7074d8b28a1570693b77cc01a2f0aa4a7a9da96647bfe908bc8c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Range.md"
+    },
+    {
+      "id": "skill-52",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Reference.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035428749999999454,
+      "stdoutSha256": "7e3cdd5f6dd6496e68647126826fd820de92116d5100a5315e45145d43a4d48d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Reference.md"
+    },
+    {
+      "id": "skill-53",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Regex.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035271669999998867,
+      "stdoutSha256": "2281045350973ce5bd3387b65df5a5ff4b22c63b7c7fbf174fb386e1902348fe",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Regex.md"
+    },
+    {
+      "id": "skill-54",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Result.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003538999999999959,
+      "stdoutSha256": "acdf0bfb95d482540e4460951305cdf3e4b139e82fa525b7b56675014abc7428",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Result.md"
+    },
+    {
+      "id": "skill-55",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/RoundingMode.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036859160000000113,
+      "stdoutSha256": "7cd4c2bf200183c27f9f1fad99033b4f568f9e553664045e5658ed9cd83c1b21",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/RoundingMode.md"
+    },
+    {
+      "id": "skill-56",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Scope.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036111670000000817,
+      "stdoutSha256": "253addee5f60c12c6ce96d8bd6e4cb973ac612927100e01cce31e58c882e4b21",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Scope.md"
+    },
+    {
+      "id": "skill-57",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Set.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003591416000000125,
+      "stdoutSha256": "3f904c0899a9c592c1439c105d89aa20039dd4c00a95fc224897261d2c7193c8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Set.md"
+    },
+    {
+      "id": "skill-58",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/SourceLocation.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003616458000000211,
+      "stdoutSha256": "b0e0f1c5bc344b6eb37cd6fbf2825ce7f5a6dfd0a758bb437c86793ea538a4c4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/SourceLocation.md"
+    },
+    {
+      "id": "skill-59",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/String.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003719165999999996,
+      "stdoutSha256": "7d43de90a40413bc91df40ef2a73e268ec8da85e97785610396a3e96e4de4877",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/String.md"
+    },
+    {
+      "id": "skill-60",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/StringBuilder.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036270419999999692,
+      "stdoutSha256": "2156f077f53141f8432641cab29125edef04c443c4f955cdd120705d046e076b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/StringBuilder.md"
+    },
+    {
+      "id": "skill-61",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Task.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003705999999999987,
+      "stdoutSha256": "de9322257e31e7f16858800ced7f8c1686b7e3c81fa7cb509353eccb24f0f68b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Task.md"
+    },
+    {
+      "id": "skill-62",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/TaskGroup.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035917080000000823,
+      "stdoutSha256": "faa1c58712656cb3a76df004bdb5b80c6e0ea075b0e84631623e1d600e333510",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/TaskGroup.md"
+    },
+    {
+      "id": "skill-63",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Test.Property.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0038313750000000812,
+      "stdoutSha256": "7fbe81ec940903bdec9822c1eda1cebd56780ffee917fccb5d23e150707a6f93",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Test.Property.md"
+    },
+    {
+      "id": "skill-64",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Time.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035695000000000032,
+      "stdoutSha256": "1e7a6da6eb26b437225cb0dd33736f7dbb8baebcd863b059de708b59f2fd32f6",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Time.md"
+    },
+    {
+      "id": "skill-65",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Trait.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036662090000001424,
+      "stdoutSha256": "a74b117c5caa8373e08ba78cc26ba0a9090fd4158ebf10e738d8797c2ce146af",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Trait.md"
+    },
+    {
+      "id": "skill-66",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/Triple.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036175830000000353,
+      "stdoutSha256": "3a00ef0de36aac84e9a554a44585a44477dd95434932bf570b8b99d8fadfd7c0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/Triple.md"
+    },
+    {
+      "id": "skill-67",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/UnsignedInteger.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0037748749999999553,
+      "stdoutSha256": "923fad98ce5d525e8acb36791af48fd4cadf6538cbe9650afb09eef9a6719494",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/UnsignedInteger.md"
+    },
+    {
+      "id": "skill-68",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/UnsignedInteger16.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036555000000000337,
+      "stdoutSha256": "fdf1de961ea10f471d6958409f731a3b06c679977c6407f03752e65167185438",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/UnsignedInteger16.md"
+    },
+    {
+      "id": "skill-69",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/UnsignedInteger32.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0036670420000000092,
+      "stdoutSha256": "fc64b7329b838446ea629eb4bc457c231f705f34adbc1f58d858713fd5ffc103",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/UnsignedInteger32.md"
+    },
+    {
+      "id": "skill-70",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/UnsignedInteger64.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.0035235410000000744,
+      "stdoutSha256": "69236121a7415b5d8c76a0c4e7e87201a225486740cb37f4642f6a5ed09bdff4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/UnsignedInteger64.md"
+    },
+    {
+      "id": "skill-71",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/UnsignedInteger8.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.00373033300000003,
+      "stdoutSha256": "703735b8dc95c509acfde225d56e1b0e38fa3f71a3b5aa80b3f22db9a195c15b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/UnsignedInteger8.md"
+    },
+    {
+      "id": "skill-72",
+      "command": [
+        "<repo>/target/release/benitoite",
+        "skill",
+        "show",
+        "references/stdlib/index.md",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.003892041999999929,
+      "stdoutSha256": "1ff69cc34f860c4faf515283d3b71c92100b21ddad256b40438c545185661859",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true,
+      "name": "references/stdlib/index.md"
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+ "affected_modules": 243,
+ "checked_affected": 167,
+ "failed_modules": [
+  "Benitoite.Surface.FiniteExamples",
+  "Benitoite.Surface.Lemmas.ShiftClean",
+  "Benitoite.Surface.NoFailCheck"
+ ],
+ "error_diagnostics": 9,
+ "sorry_warnings_from_errors": 0,
+ "broken_declarations": 9,
+ "broken_files": 3,
+ "declarations": [
+  {
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "decl": "example <example@18>",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "decl": "example <example@19>",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "decl": "example <example@25>",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "decl": "example <example@26>",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/ShiftClean.lean",
+   "decl": "theorem shift_clean",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "decl": "def noFailCheck",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "decl": "def qTyAt",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "decl": "theorem noFailCheck_spec",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "decl": "theorem qTyAt_spec",
+   "errors": 1
+  }
+ ],
+ "files": [
+  "Benitoite/Surface/FiniteExamples.lean",
+  "Benitoite/Surface/Lemmas/ShiftClean.lean",
+  "Benitoite/Surface/NoFailCheck.lean"
+ ],
+ "unchecked_count": 76,
+ "unchecked": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Surface.AdmissibleCheck",
+  "Benitoite.Surface.BuilderCheck",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.Check",
+  "Benitoite.Surface.CheckComputeAtoms",
+  "Benitoite.Surface.CheckComputeCalls",
+  "Benitoite.Surface.CheckComputeCases",
+  "Benitoite.Surface.CheckComputeControl",
+  "Benitoite.Surface.CheckComputePipe",
+  "Benitoite.Surface.CheckComputeSound",
+  "Benitoite.Surface.CheckCounterexamples",
+  "Benitoite.Surface.CheckDictSupport",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckInduction",
+  "Benitoite.Surface.CheckLemmas",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundBasicExpr",
+  "Benitoite.Surface.CheckSoundCalls",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckSoundDie",
+  "Benitoite.Surface.CheckSoundSequence",
+  "Benitoite.Surface.CheckTables",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BlockSequence",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderLower",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Builders",
+  "Benitoite.Surface.Lemmas.CallHead",
+  "Benitoite.Surface.Lemmas.Calls",
+  "Benitoite.Surface.Lemmas.Dict",
+  "Benitoite.Surface.Lemmas.Extensions",
+  "Benitoite.Surface.Lemmas.ExtensionsScoped",
+  "Benitoite.Surface.Lemmas.Invariants",
+  "Benitoite.Surface.Lemmas.PatternSupport",
+  "Benitoite.Surface.Lemmas.Patterns",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Lemmas.Records",
+  "Benitoite.Surface.Lemmas.ReturnTry",
+  "Benitoite.Surface.Lemmas.Scoped",
+  "Benitoite.Surface.Lemmas.ScopedSupport",
+  "Benitoite.Surface.Lemmas.Sequence",
+  "Benitoite.Surface.Lemmas.SubstClean",
+  "Benitoite.Surface.Lemmas.Typing",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.NoFailCheckExamples",
+  "Benitoite.Surface.SingleFailCheck",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "diagnostics": [
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Lemmas/ShiftClean.lean",
+   "line": 10,
+   "col": 4,
+   "decl": "theorem shift_clean",
+   "decl_line": 8,
+   "msg": "Missing cases:"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "line": 24,
+   "col": 4,
+   "decl": "def qTyAt",
+   "decl_line": 23,
+   "msg": "Missing cases:"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "line": 43,
+   "col": 41,
+   "decl": "def noFailCheck",
+   "decl_line": 42,
+   "msg": "Missing cases:"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "line": 55,
+   "col": 10,
+   "decl": "theorem qTyAt_spec",
+   "decl_line": 55,
+   "msg": "fail to show termination for"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/NoFailCheck.lean",
+   "line": 104,
+   "col": 16,
+   "decl": "theorem noFailCheck_spec",
+   "decl_line": 92,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "line": 18,
+   "col": 64,
+   "decl": "example <example@18>",
+   "decl_line": 18,
+   "msg": "maximum recursion depth has been reached"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "line": 20,
+   "col": 90,
+   "decl": "example <example@19>",
+   "decl_line": 19,
+   "msg": "maximum recursion depth has been reached"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "line": 25,
+   "col": 80,
+   "decl": "example <example@25>",
+   "decl_line": 25,
+   "msg": "maximum recursion depth has been reached"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/FiniteExamples.lean",
+   "line": 26,
+   "col": 78,
+   "decl": "example <example@26>",
+   "decl_line": 26,
+   "msg": "maximum recursion depth has been reached"
+  }
+ ]
+}

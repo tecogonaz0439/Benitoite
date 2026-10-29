@@ -19,6 +19,7 @@ pub(super) fn program(
         adts: types.adts.clone(),
         traits: types.traits.clone(),
         schemes: types.decl_types.clone(),
+        range_signatures: types.range_signatures.clone(),
         main: types.main.map(|m| m.binding),
         main_returns_result: types.main.is_some_and(|m| m.returns_result),
         body_count: 0,
@@ -108,7 +109,7 @@ pub(super) fn program(
                 failure: Some(*id) == resolved.stdlib("Benitoite.Failure.raise"),
                 param_names: s.param_names.clone(),
                 binding: *id,
-                effect: effect.name,
+                effect: effect.name.clone(),
                 name: format!("{prefix}.{}", b.name),
                 arity: number(s.class_constraints.len().saturating_add(s.params.len()))?,
                 builtin: resolved.builtin_ops.get(*id).copied(),
@@ -408,9 +409,12 @@ fn implementation(
             .ok_or_else(|| error("missing target ADT"))?
             .name
             .clone(),
-        TypeArg::Head(TyHead::Con(TyCon::External(id))) => {
-            Ty::Con(TyCon::External(*id), vec![]).show(&names)
-        }
+        TypeArg::Head(TyHead::Con(TyCon::External(id))) => Ty::Con(
+            TyCon::External(*id),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP,
+        )
+        .show(&names),
         TypeArg::Head(TyHead::Con(TyCon::Builtin(b))) => basic(*b).show(&names),
     };
     let class = types

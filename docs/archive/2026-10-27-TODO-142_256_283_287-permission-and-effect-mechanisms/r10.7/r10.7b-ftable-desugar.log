@@ -1,0 +1,145 @@
+$ formal/.lake/build/bin/desugarDiff target/r10.7b-ftable/scope-tables-corpus.json target/r10.7b-ftable/desugar-report.json
+golden programs: matched=1 mismatched=0 outOfScope=0 excluded(check error)=0
+golden functions: matched=2 mismatched=0 outOfScope=0 excluded(check error)=0
+golden compared construction: guard: positions=0, units=0
+golden compared construction: alternatives: positions=0, units=0
+golden compared construction: alternative: positions=0, units=0
+golden compared construction: alternative: reordered binders: positions=0, units=0
+golden compared construction: guarded alternatives: positions=0, units=0
+golden compared construction: range pattern: positions=0, units=0
+golden compared construction: range pattern: negative Integer: positions=0, units=0
+golden compared construction: range pattern: Character: positions=0, units=0
+golden compared construction: list pattern: no rest: positions=0, units=0
+golden compared construction: list pattern: skip: positions=0, units=0
+golden compared construction: list pattern: bind: positions=0, units=0
+golden compared construction: list pattern: suffix: positions=0, units=0
+golden compared construction: list pattern binding: positions=0, units=0
+golden compared construction: constant reference: positions=0, units=0
+golden compared construction: constant: basic: positions=0, units=0
+golden compared construction: constant: list: positions=0, units=0
+golden compared construction: constant: record: positions=0, units=0
+golden compared construction: constant: data: positions=0, units=0
+golden compared construction: constant: nested: positions=0, units=0
+golden compared construction: constant: call argument: positions=0, units=0
+golden compared construction: constant: constructor field: positions=0, units=0
+golden compared construction: constant: list element: positions=0, units=0
+golden compared construction: constant: lambda: positions=0, units=0
+golden compared construction: constant: record update base: positions=0, units=0
+golden compared construction: constant: under local binding: positions=0, units=0
+golden compared construction: Decimal literal: positions=0, units=0
+golden compared construction: Decimal direct negation: positions=0, units=0
+golden compared construction: Decimal direct negative zero: positions=0, units=0
+golden compared construction: spread: first: positions=0, units=0
+golden compared construction: spread: middle: positions=0, units=0
+golden compared construction: spread: last: positions=0, units=0
+golden compared construction: spread: before empty: positions=0, units=0
+golden compared construction: spread: after empty: positions=0, units=0
+golden compared construction: spread: both empty: positions=0, units=0
+golden compared construction: interpolation: positions=0, units=0
+golden compared construction: interpolation: text: positions=0, units=0
+golden compared construction: interpolation: empty text: positions=0, units=0
+golden compared construction: interpolation: String: positions=0, units=0
+golden compared construction: interpolation: Integer: positions=0, units=0
+golden compared construction: interpolation: Float: positions=0, units=0
+golden compared construction: interpolation: Character: positions=0, units=0
+golden compared construction: interpolation: Boolean: positions=0, units=0
+golden compared construction: interpolation: Byte: positions=0, units=0
+golden compared construction: interpolation: Decimal: positions=0, units=0
+golden compared construction: interpolation: consecutive expressions: positions=0, units=0
+golden compared construction: interpolation: parts 0: positions=0, units=0
+golden compared construction: interpolation: parts 1: positions=0, units=0
+golden compared construction: interpolation: parts 2+: positions=0, units=0
+golden compared construction: record construction: positions=0, units=0
+golden compared construction: record construction: reordered: positions=0, units=0
+golden compared construction: record update: partial: positions=0, units=0
+golden compared construction: record update: all: positions=0, units=0
+golden compared construction: record update: reordered: positions=0, units=0
+golden compared construction: record pattern: positions=0, units=0
+golden compared construction: record pattern: partial: positions=0, units=0
+golden compared construction: record pattern: nested: positions=0, units=0
+golden compared construction: record pattern: reordered: positions=0, units=0
+golden compared construction: accessor definition: positions=0, units=0
+golden compared construction: accessor definition: polymorphic: positions=0, units=0
+golden compared construction: accessor direct: call: positions=0, units=0
+golden compared construction: accessor parenthesized: call: positions=0, units=0
+golden compared construction: accessor direct: pipe rule 1: positions=0, units=0
+golden compared construction: accessor parenthesized: pipe rule 1: positions=0, units=0
+golden compared construction: accessor direct: pipe rule 2: positions=0, units=0
+golden compared construction: accessor parenthesized: pipe rule 2: positions=0, units=0
+golden compared construction: accessor direct: placeholder: positions=0, units=0
+golden compared construction: accessor parenthesized: placeholder: positions=0, units=0
+golden compared construction: accessor direct: placeholder pipe rule 2: positions=0, units=0
+golden compared construction: accessor parenthesized: placeholder pipe rule 2: positions=0, units=0
+golden compared construction: accessor parenthesized value: positions=0, units=0
+random programs: matched=0 mismatched=0 outOfScope=0 excluded(check error)=0
+random functions: matched=0 mismatched=0 outOfScope=0 excluded(check error)=0
+random compared construction: guard: positions=0, units=0
+random compared construction: alternatives: positions=0, units=0
+random compared construction: alternative: positions=0, units=0
+random compared construction: alternative: reordered binders: positions=0, units=0
+random compared construction: guarded alternatives: positions=0, units=0
+random compared construction: range pattern: positions=0, units=0
+random compared construction: range pattern: negative Integer: positions=0, units=0
+random compared construction: range pattern: Character: positions=0, units=0
+random compared construction: list pattern: no rest: positions=0, units=0
+random compared construction: list pattern: skip: positions=0, units=0
+random compared construction: list pattern: bind: positions=0, units=0
+random compared construction: list pattern: suffix: positions=0, units=0
+random compared construction: list pattern binding: positions=0, units=0
+random compared construction: constant reference: positions=0, units=0
+random compared construction: constant: basic: positions=0, units=0
+random compared construction: constant: list: positions=0, units=0
+random compared construction: constant: record: positions=0, units=0
+random compared construction: constant: data: positions=0, units=0
+random compared construction: constant: nested: positions=0, units=0
+random compared construction: constant: call argument: positions=0, units=0
+random compared construction: constant: constructor field: positions=0, units=0
+random compared construction: constant: list element: positions=0, units=0
+random compared construction: constant: lambda: positions=0, units=0
+random compared construction: constant: record update base: positions=0, units=0
+random compared construction: constant: under local binding: positions=0, units=0
+random compared construction: Decimal literal: positions=0, units=0
+random compared construction: Decimal direct negation: positions=0, units=0
+random compared construction: Decimal direct negative zero: positions=0, units=0
+random compared construction: spread: first: positions=0, units=0
+random compared construction: spread: middle: positions=0, units=0
+random compared construction: spread: last: positions=0, units=0
+random compared construction: spread: before empty: positions=0, units=0
+random compared construction: spread: after empty: positions=0, units=0
+random compared construction: spread: both empty: positions=0, units=0
+random compared construction: interpolation: positions=0, units=0
+random compared construction: interpolation: text: positions=0, units=0
+random compared construction: interpolation: empty text: positions=0, units=0
+random compared construction: interpolation: String: positions=0, units=0
+random compared construction: interpolation: Integer: positions=0, units=0
+random compared construction: interpolation: Float: positions=0, units=0
+random compared construction: interpolation: Character: positions=0, units=0
+random compared construction: interpolation: Boolean: positions=0, units=0
+random compared construction: interpolation: Byte: positions=0, units=0
+random compared construction: interpolation: Decimal: positions=0, units=0
+random compared construction: interpolation: consecutive expressions: positions=0, units=0
+random compared construction: interpolation: parts 0: positions=0, units=0
+random compared construction: interpolation: parts 1: positions=0, units=0
+random compared construction: interpolation: parts 2+: positions=0, units=0
+random compared construction: record construction: positions=0, units=0
+random compared construction: record construction: reordered: positions=0, units=0
+random compared construction: record update: partial: positions=0, units=0
+random compared construction: record update: all: positions=0, units=0
+random compared construction: record update: reordered: positions=0, units=0
+random compared construction: record pattern: positions=0, units=0
+random compared construction: record pattern: partial: positions=0, units=0
+random compared construction: record pattern: nested: positions=0, units=0
+random compared construction: record pattern: reordered: positions=0, units=0
+random compared construction: accessor definition: positions=0, units=0
+random compared construction: accessor definition: polymorphic: positions=0, units=0
+random compared construction: accessor direct: call: positions=0, units=0
+random compared construction: accessor parenthesized: call: positions=0, units=0
+random compared construction: accessor direct: pipe rule 1: positions=0, units=0
+random compared construction: accessor parenthesized: pipe rule 1: positions=0, units=0
+random compared construction: accessor direct: pipe rule 2: positions=0, units=0
+random compared construction: accessor parenthesized: pipe rule 2: positions=0, units=0
+random compared construction: accessor direct: placeholder: positions=0, units=0
+random compared construction: accessor parenthesized: placeholder: positions=0, units=0
+random compared construction: accessor direct: placeholder pipe rule 2: positions=0, units=0
+random compared construction: accessor parenthesized: placeholder pipe rule 2: positions=0, units=0
+random compared construction: accessor parenthesized value: positions=0, units=0

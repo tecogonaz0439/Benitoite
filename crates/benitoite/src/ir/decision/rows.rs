@@ -271,7 +271,7 @@ impl Lowerer<'_> {
                 test: ConstTest::Range(lo.clone(), hi.clone()),
             }),
             CorePat::Ctor { adt, tag, args } => {
-                let Ty::Con(TyCon::Adt(actual), tys) = &column.ty else {
+                let Ty::Con(TyCon::Adt(actual), tys, _) = &column.ty else {
                     return Err(error("invalid ADT pattern"));
                 };
                 if actual != adt {
@@ -310,7 +310,7 @@ impl Lowerer<'_> {
                 rest,
                 after,
             } => {
-                let Ty::Con(TyCon::Builtin(b), tys) = &column.ty else {
+                let Ty::Con(TyCon::Builtin(b), tys, _) = &column.ty else {
                     return Err(error("invalid list pattern"));
                 };
                 if *b != BuiltinTypeId::LIST {

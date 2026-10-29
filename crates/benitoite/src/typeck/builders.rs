@@ -54,17 +54,21 @@ pub(super) fn operation(ctx: &mut Body<'_, '_>, call: &CallExpr, info: BuilderCa
     let kind = decl.as_ref().filter(|_| valid_target).map(|d| &d.kind);
     let contents = match kind {
         Some(BuilderKind::String) => basic(B::STRING),
-        Some(BuilderKind::List(t)) => {
-            ITy::Con(crate::types::TyCon::Builtin(B::LIST), vec![lift(t)])
-        }
+        Some(BuilderKind::List(t)) => ITy::Con(
+            crate::types::TyCon::Builtin(B::LIST),
+            vec![lift(t)],
+            crate::types::builtin::RangeIndex::TOP,
+        ),
         Some(BuilderKind::Bytes) => basic(B::BYTES),
         // 対象の誤りはラベル・個数の後で診断する。ここで誤り型にすると
         // 呼び出しの計画自体が消えて対象の診断へ進めなくなる。
         None => match info.class {
             BuilderClass::String => basic(B::STRING),
-            BuilderClass::List => {
-                ITy::Con(crate::types::TyCon::Builtin(B::LIST), vec![ctx.fresh_ty()])
-            }
+            BuilderClass::List => ITy::Con(
+                crate::types::TyCon::Builtin(B::LIST),
+                vec![ctx.fresh_ty()],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
             BuilderClass::Bytes => basic(B::BYTES),
         },
     };

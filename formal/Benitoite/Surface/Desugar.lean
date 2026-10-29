@@ -72,7 +72,7 @@ def directCallee : Expr → Option CallHead
   | .funDicts f ts es ds _ _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
   -- 同表第 1 行: メソッドの呼び出し。
   | .methName d m ss es us _ _ => some (.meth d.toVal m ss es (DictEv.toValList us))
-  | .primName b ts es => some (.app (.prim b ts es) [])
+  | .primName b ts es rs => some (.app (.prim b ts es rs) [])
   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
   | .opName o ts => some (.app (.op o ts) [])
   | .opDicts o ts ds _ _ => some (.app (.op o ts) (DictEv.toValList ds))
@@ -107,8 +107,8 @@ def joinStringFrom (op : OpPrim) (depth : Nat) (left : Val) : List Val → Comp
   | right :: rest => match op (.binary .add) (.base .string) with
       | none => .ret (.const .unit)
       | some (b, ts) => match rest with
-          | [] => .app (.prim b ts []) [left, right.rename (· + depth)]
-          | _ :: _ => .letIn (.app (.prim b ts []) [left, right.rename (· + depth)])
+          | [] => .app (.prim b ts [] []) [left, right.rename (· + depth)]
+          | _ :: _ => .letIn (.app (.prim b ts [] []) [left, right.rename (· + depth)])
               (joinStringFrom op (depth + 1) (.var 0) rest)
 
 def joinStringParts (op : OpPrim) : List Val → Comp
@@ -177,7 +177,7 @@ def mkArm (pat : Release.Pat) (body : Comp) : Arm :=
 説明と原因の計算は省かない（設計書 01-12「die の先行モデル」）。 -/
 def dieFailure (t : Ty) (exit : PrimName) (depth : Nat) (cause : Comp)
     (message : Option Comp) : Comp :=
-  let finish := Comp.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]
+  let finish := Comp.app (.prim exit [t] [] []) [.const (.integer ⟨1, by decide⟩)]
   match message with
   | none => .letIn cause finish
   | some msg => .letIn (msg.rename (· + depth))
@@ -207,7 +207,7 @@ mutual
         (.meth (d.toVal.rename (· + ps.length)) m ss es
           (Val.renameList (· + ps.length) (DictEv.toValList us) ++ boundVars ps.length)))
     -- 同節: prelude の関数 M.g | return b[T̄; Ē]（Σ にあるものは関数の名前）
-    | .primName b ts es => .ret (.prim b ts es)
+    | .primName b ts es rs => .ret (.prim b ts es rs)
     -- 01-12「ハンドラ」: 利用者の操作の名前 op を、呼ばずに値として使う | return op[T̄]
     | .opName o ts => .ret (.op o ts)
     -- 01-12「形式化した操作の制約と節の辞書」: 辞書を値の作成時に捕え、
@@ -295,12 +295,12 @@ mutual
     | .binary o t lhs rhs =>
         match opPrim (.binary o) t with
         | some (b, ts) => sequence [desugarExpr opPrim .other lhs, desugarExpr opPrim .other rhs]
-            (fun vs => .app (.prim b ts []) vs)
+            (fun vs => .app (.prim b ts [] []) vs)
         | none => .ret (.const .unit)
     -- 同節: -e（直接の整数・Float リテラルを除く） | let x ⇐ ⟦e⟧ in neg_T(x)
     | .neg t e =>
         match opPrim .neg t with
-        | some (b, ts) => .letIn (desugarExpr opPrim .other e) (.app (.prim b ts []) [.var 0])
+        | some (b, ts) => .letIn (desugarExpr opPrim .other e) (.app (.prim b ts [] []) [.var 0])
         | none => .ret (.const .unit)
     -- 同節: not e | let x ⇐ ⟦e⟧ in if x then return false else return true
     | .not e => .letIn (desugarExpr opPrim .other e)

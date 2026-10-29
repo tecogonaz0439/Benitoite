@@ -1,0 +1,26 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+'SF.noninterference' depends on axioms: [propext]
+'SF.TwoPoint.reject_explicit' depends on axioms: [propext]
+'SF.TwoPoint.reject_implicit' depends on axioms: [propext]
+'SF.Readers.destination_noninterference' depends on axioms: [propext]
+'SF.Readers.pattern_inclusion_gives_flow' depends on axioms: [propext, Quot.sound]
+'SF.Readers.intersection_not_single_pattern' depends on axioms: [propext, Quot.sound]
+        0.77 real         0.85 user         0.26 sys
+           713719808  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46194  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                7615  involuntary context switches
+          8290725528  instructions retired
+          3352468099  cycles elapsed
+           164306376  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

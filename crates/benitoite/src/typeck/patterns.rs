@@ -219,7 +219,7 @@ impl<'a> Search<'a> {
             self.enumerate(1)?;
             cells = cells.saturating_add(1);
             match ty {
-                Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args),
+                Ty::Con(_, args, _) | Ty::App(_, args) => pending.extend(args),
                 Ty::Fn(f) => {
                     for name in &f.param_names {
                         self.enumerate(name.len())?;
@@ -289,7 +289,7 @@ pub(super) fn check_match_diagnostic(
     let mut search = Search::new(MAX_COVERAGE_WORK, view);
     search.concrete = true;
     let mut checked = check_match_with(scrutinee, arms, adts, &mut search)?;
-    if matches!(scrutinee, Ty::Con(TyCon::Builtin(b), _) if *b == B::INTEGER) {
+    if matches!(scrutinee, Ty::Con(TyCon::Builtin(b), _, _) if *b == B::INTEGER) {
         for issue in &mut checked.issues {
             if let MatchIssue::NonExhaustive { witness, .. } = issue
                 && witness == "_"
@@ -528,7 +528,7 @@ fn shapes(
 ) -> Result<Option<Vec<Shape>>, Undecided> {
     search.enumerate(column.len().saturating_add(1))?;
     Ok(Some(match ty {
-        Ty::Con(TyCon::Adt(id), args) => {
+        Ty::Con(TyCon::Adt(id), args, _) => {
             let Some(d) = adts.get(*id) else {
                 return Ok(Some(vec![Shape::Other]));
             };
@@ -549,11 +549,11 @@ fn shapes(
             }
             result
         }
-        Ty::Con(TyCon::Builtin(b), _) if *b == B::BOOLEAN => {
+        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::BOOLEAN => {
             vec![Shape::Boolean(true), Shape::Boolean(false)]
         }
-        Ty::Con(TyCon::Builtin(b), _) if *b == B::UNIT => vec![Shape::Unit],
-        Ty::Con(TyCon::Builtin(b), _) if *b == B::INTEGER || *b == B::CHARACTER => {
+        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::UNIT => vec![Shape::Unit],
+        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::INTEGER || *b == B::CHARACTER => {
             let character = *b == B::CHARACTER;
             // 整列した端点を一度だけ走査し、各最小区間の被覆を活動区間数で求める。
             // max64+1 は i128 のまま保ち、Integer の値へ戻さない（02-05「本体の後の検査」）。
@@ -613,7 +613,7 @@ fn shapes(
             }
             result
         }
-        Ty::Con(TyCon::Builtin(b), _) if *b == B::STRING => {
+        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::STRING => {
             let mut result = vec![Shape::Other];
             let mut seen = HashSet::new();
             for p in column {
@@ -627,7 +627,7 @@ fn shapes(
             }
             result
         }
-        Ty::Con(TyCon::Builtin(b), args) if *b == B::LIST => {
+        Ty::Con(TyCon::Builtin(b), args, _) if *b == B::LIST => {
             let elem = args.first().cloned().unwrap_or(Ty::Param(0));
             let (mut exact_end, mut front, mut back) = (0, 0, 0);
             for p in column {
@@ -1289,7 +1289,11 @@ mod tests {
     }
 
     fn builtin(b: B) -> Ty {
-        Ty::Con(TyCon::Builtin(b), vec![])
+        Ty::Con(
+            TyCon::Builtin(b),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP,
+        )
     }
     fn arm(p: Pat) -> ArmPats {
         ArmPats {
@@ -1627,7 +1631,11 @@ mod tests {
             assert_eq!(checked_issues(&ty, &arms, &table), vec![]);
         }
         // 型引数が足りず構成子の欄の型を取得できない場合も、問いの形を保つ。
-        let missing_args = Ty::Con(TyCon::Adt(BindingId(0)), vec![]);
+        let missing_args = Ty::Con(
+            TyCon::Adt(BindingId(0)),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         assert_eq!(
             checked_issues(
                 &missing_args,
@@ -1653,7 +1661,11 @@ mod tests {
     #[test]
     fn lists_distinguish_exact_lengths_and_front_back_alignment() {
         let table = AdtTable::default();
-        let ty = Ty::Con(TyCon::Builtin(B::LIST), vec![builtin(B::BOOLEAN)]);
+        let ty = Ty::Con(
+            TyCon::Builtin(B::LIST),
+            vec![builtin(B::BOOLEAN)],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let empty = list(vec![], false, vec![]);
         let any_nonempty = list(vec![Pat::Wild], true, vec![]);
         let exact_one = list(vec![Pat::Wild], false, vec![]);
@@ -1767,7 +1779,14 @@ mod tests {
                 key_summary: TypeSummary::default(),
             },
         );
-        (Ty::Con(TyCon::Adt(id), vec![builtin(B::BOOLEAN)]), table)
+        (
+            Ty::Con(
+                TyCon::Adt(id),
+                vec![builtin(B::BOOLEAN)],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
+            table,
+        )
     }
     fn some(p: Pat) -> Pat {
         Pat::Ctor {
@@ -1919,7 +1938,11 @@ mod tests {
             .unwrap();
             assert_eq!(checked.issues, vec![unreachable(0, 2, &[])]);
             assert_eq!(checked.covering, vec![((0, 2), vec![(0, 1)])]);
-            let list_ty = Ty::Con(TyCon::Builtin(B::LIST), vec![ty.clone()]);
+            let list_ty = Ty::Con(
+                TyCon::Builtin(B::LIST),
+                vec![ty.clone()],
+                crate::types::builtin::RangeIndex::TOP,
+            );
             let arms = [
                 arm(list(vec![], false, vec![])),
                 arm(list(vec![known.clone()], true, vec![])),
@@ -1943,7 +1966,12 @@ mod tests {
             outer.adts.insert(BindingId(10), inner);
             let nested_ty = Ty::Con(
                 TyCon::Adt(BindingId(0)),
-                vec![Ty::Con(TyCon::Adt(BindingId(10)), vec![])],
+                vec![Ty::Con(
+                    TyCon::Adt(BindingId(10)),
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP,
+                )],
+                crate::types::builtin::RangeIndex::TOP,
             );
             let nested_known = Pat::Ctor {
                 adt: BindingId(10),
@@ -2162,7 +2190,14 @@ mod tests {
                 key_summary: TypeSummary::default(),
             },
         );
-        (Ty::Con(TyCon::Adt(id), vec![]), table)
+        (
+            Ty::Con(
+                TyCon::Adt(id),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
+            table,
+        )
     }
     fn review_arms(n: usize) -> Vec<ArmPats> {
         let mut arms = vec![];

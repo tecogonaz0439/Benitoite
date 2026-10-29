@@ -1,0 +1,154 @@
+$ rustc --edition=2024 --test <tmp>/probe.rs -o <tmp>/probe
+warning: function `quoted` is never used
+  --> <tmp>/base/literal.rs:28:15
+   |
+28 | pub(crate) fn quoted(chars: impl Iterator<Item = char>, quote: char) -> String {
+   |               ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `escape_into` is never used
+  --> <tmp>/base/literal.rs:39:15
+   |
+39 | pub(crate) fn escape_into(out: &mut String, c: char, quote: char) {
+   |               ^^^^^^^^^^^
+
+warning: constant `ELLIPSIS` is never used
+ --> <tmp>/base/literal.rs:7:15
+  |
+7 |     pub const ELLIPSIS: &str = "…";
+  |               ^^^^^^^^
+
+warning: constant `TRUE` is never used
+ --> <tmp>/base/literal.rs:8:15
+  |
+8 |     pub const TRUE: &str = "true";
+  |               ^^^^
+
+warning: constant `FALSE` is never used
+ --> <tmp>/base/literal.rs:9:15
+  |
+9 |     pub const FALSE: &str = "false";
+  |               ^^^^^
+
+warning: constant `UNIT` is never used
+  --> <tmp>/base/literal.rs:10:15
+   |
+10 |     pub const UNIT: &str = "()";
+   |               ^^^^
+
+warning: constant `LIST_OPEN` is never used
+  --> <tmp>/base/literal.rs:11:15
+   |
+11 |     pub const LIST_OPEN: &str = "[";
+   |               ^^^^^^^^^
+
+warning: constant `LIST_CLOSE` is never used
+  --> <tmp>/base/literal.rs:12:15
+   |
+12 |     pub const LIST_CLOSE: &str = "]";
+   |               ^^^^^^^^^^
+
+warning: constant `MAP_OPEN` is never used
+  --> <tmp>/base/literal.rs:13:15
+   |
+13 |     pub const MAP_OPEN: &str = "Map.fromList([";
+   |               ^^^^^^^^
+
+warning: constant `SET_OPEN` is never used
+  --> <tmp>/base/literal.rs:14:15
+   |
+14 |     pub const SET_OPEN: &str = "Set.fromList([";
+   |               ^^^^^^^^
+
+warning: constant `BYTES_OPEN` is never used
+  --> <tmp>/base/literal.rs:15:15
+   |
+15 |     pub const BYTES_OPEN: &str = "Bytes.fromList([";
+   |               ^^^^^^^^^^
+
+warning: constant `FROM_LIST_CLOSE` is never used
+  --> <tmp>/base/literal.rs:16:15
+   |
+16 |     pub const FROM_LIST_CLOSE: &str = "])";
+   |               ^^^^^^^^^^^^^^^
+
+warning: constant `PAIR_OPEN` is never used
+  --> <tmp>/base/literal.rs:17:15
+   |
+17 |     pub const PAIR_OPEN: &str = "Pair(";
+   |               ^^^^^^^^^
+
+warning: constant `ARGS_OPEN` is never used
+  --> <tmp>/base/literal.rs:18:15
+   |
+18 |     pub const ARGS_OPEN: &str = "(";
+   |               ^^^^^^^^^
+
+warning: constant `ARGS_CLOSE` is never used
+  --> <tmp>/base/literal.rs:19:15
+   |
+19 |     pub const ARGS_CLOSE: &str = ")";
+   |               ^^^^^^^^^^
+
+warning: constant `SEPARATOR` is never used
+  --> <tmp>/base/literal.rs:20:15
+   |
+20 |     pub const SEPARATOR: &str = ", ";
+   |               ^^^^^^^^^
+
+warning: constant `FIELD_SEPARATOR` is never used
+  --> <tmp>/base/literal.rs:21:15
+   |
+21 |     pub const FIELD_SEPARATOR: &str = ": ";
+   |               ^^^^^^^^^^^^^^^
+
+warning: constant `QUALIFIER` is never used
+  --> <tmp>/base/literal.rs:22:15
+   |
+22 |     pub const QUALIFIER: &str = ".";
+   |               ^^^^^^^^^
+
+warning: constant `UNKNOWN_CONSTRUCTOR` is never used
+  --> <tmp>/base/literal.rs:24:15
+   |
+24 |     pub const UNKNOWN_CONSTRUCTOR: &str = "<constructor #{tag}>";
+   |               ^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Path` is never constructed
+   --> <tmp>/types/scope.rs:495:5
+    |
+494 | pub enum Target {
+    |          ------ variant in this enum
+495 |     Path(Path),
+    |     ^^^^
+    |
+    = note: `Target` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: 20 warnings emitted
+
+
+exit=0, elapsed=0.239s
+$ <tmp>/probe scope_suffix_uses_language_literals
+
+running 1 test
+test types::scope::tests::scope_suffix_uses_language_literals ... FAILED
+
+failures:
+
+---- types::scope::tests::scope_suffix_uses_language_literals stdout ----
+
+thread 'types::scope::tests::scope_suffix_uses_language_literals' (2618929) panicked at <tmp>/types/scope/tests.rs:16:9:
+assertion `left == right` failed
+  left: "[\"/data/${name}\"]"
+ right: "[\"/data/\\${name}\"]"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    types::scope::tests::scope_suffix_uses_language_literals
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s
+
+
+exit=101, elapsed=0.281s

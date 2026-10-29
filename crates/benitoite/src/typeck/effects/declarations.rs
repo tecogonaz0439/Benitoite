@@ -8,10 +8,10 @@ use crate::diag::{DiagBuilder, DiagCode, Edit};
 use crate::syntax::ast::{EffectRef, Expr, FnDecl, Item, UsesList};
 use crate::types::builtin::{BUILTIN_EFFECTS, BuiltinEffectId};
 use crate::types::{EffectName, EffectSet};
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
-    let mut names = BTreeSet::new();
+    let mut names = BTreeMap::new();
     let mut vars = BTreeSet::new();
     for (i, e) in uses.effects.iter().enumerate() {
         let Some(id) = d.reference(e.id) else {
@@ -22,8 +22,38 @@ pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
         }
         let repeated = if let Some(v) = scope.effects.get(id) {
             !vars.insert(*v)
-        } else if let Some(name) = d.effect_name(id) {
-            !names.insert(name)
+        } else if let Some(mut name) = d.effect_name(id) {
+            if let Some(range) = d.resolved.scopes.get(e.id) {
+                match &mut name {
+                    EffectName::Builtin(_, scope) | EffectName::User(_, scope) => {
+                        *scope = crate::types::builtin::RangeIndex::fixed(range.clone())
+                    }
+                }
+            }
+            if let Some(first) = names.get(&name).copied() {
+                if e.scope.is_some() {
+                    let first: &EffectRef = first;
+                    d.diagnostics.push(
+                        DiagBuilder::new(DiagCode::E0419)
+                            .primary(e.scope.as_deref().map_or(e.span, |s| s.element_span()))
+                            .secondary(
+                                first
+                                    .scope
+                                    .as_deref()
+                                    .map_or(first.span, |s| s.element_span()),
+                                "first_scope",
+                            )
+                            .arg("name", path(e))
+                            .help("scope")
+                            .build(),
+                    );
+                    continue;
+                }
+                true
+            } else {
+                names.insert(name, e);
+                false
+            }
         } else {
             false
         };
@@ -104,13 +134,13 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
                 let failure = (!origin.effects.failures.is_empty())
                     .then(|| d.resolved.stdlib("Benitoite.Failure.Fail"))
                     .flatten()
-                    .map(EffectName::User);
-                for name in origin.effects.names.iter().copied().chain(failure) {
-                    if !seen.insert(name) {
+                    .map(|id| EffectName::User(id, crate::types::builtin::RangeIndex::TOP));
+                for name in origin.effects.names.iter().cloned().chain(failure) {
+                    if !seen.insert(name.clone()) {
                         continue;
                     }
                     match name {
-                        EffectName::User(id)
+                        EffectName::User(id, _)
                             if d.resolved.bindings.get(id).is_some_and(|b| {
                                 matches!(b.kind, crate::resolve::BindingKind::Effect)
                             }) =>
@@ -129,7 +159,7 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
                             }
                             d.diagnostics.push(diagnostic.build());
                         }
-                        EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {
+                        EffectName::Builtin(b, _) if main && b != BuiltinEffectId::IO_ALL => {
                             if b.def().is_some_and(|b| b.module == ["Assert"]) {
                                 d.diagnostics.push(
                                     DiagBuilder::new(DiagCode::E0415)
@@ -150,7 +180,7 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
                                 );
                             }
                         }
-                        EffectName::Builtin(_) | EffectName::User(_) => {}
+                        EffectName::Builtin(_, _) | EffectName::User(_, _) => {}
                     }
                 }
             }
@@ -211,9 +241,9 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
         .enumerate()
         .filter_map(|(i, e)| {
             if e.in_io_all {
-                u16::try_from(i)
-                    .ok()
-                    .map(|i| EffectName::Builtin(BuiltinEffectId(i)))
+                u16::try_from(i).ok().map(|i| {
+                    EffectName::Builtin(BuiltinEffectId(i), crate::types::builtin::RangeIndex::TOP)
+                })
             } else {
                 None
             }
@@ -256,7 +286,10 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
         ctx.decls
             .reference(e.id)
             .and_then(|id| ctx.decls.effect_name(id))
-            == Some(EffectName::Builtin(BuiltinEffectId::IO_ALL))
+            == Some(EffectName::Builtin(
+                BuiltinEffectId::IO_ALL,
+                crate::types::builtin::RangeIndex::TOP,
+            ))
     }) else {
         return;
     };
@@ -280,10 +313,10 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
                         .decls
                         .reference(e.id)
                         .and_then(|id| ctx.decls.effect_name(id))
-                        == Some(**name)
+                        == Some((*name).clone())
             })
         })
-        .map(|name| effect_name(ctx, *name, module))
+        .map(|name| effect_name(ctx, name, module))
         .chain(actual.vars.iter().filter_map(|v| {
             // すでに uses にある変数は残し、未宣言の変数は修正案にも含める。
             // 本体にエフェクトの誤りがあっても、生じた集合を示す（設計書 02-05「警告」）。
@@ -326,7 +359,7 @@ fn shown_effects(ctx: &Body<'_, '_>, effects: &EffectSet, module: Option<ModuleI
     effects
         .names
         .iter()
-        .map(|n| effect_name(ctx, *n, module))
+        .map(|n| effect_name(ctx, n, module))
         .chain(effects.vars.iter().filter_map(|v| {
             usize::try_from(v.0)
                 .ok()
@@ -339,13 +372,21 @@ fn shown_effects(ctx: &Body<'_, '_>, effects: &EffectSet, module: Option<ModuleI
 /// 診断の位置のモジュールで解決できるエフェクトの名前（設計書 02-10「修正案」）。
 pub(in crate::typeck) fn effect_name(
     ctx: &Body<'_, '_>,
-    name: EffectName,
+    name: &EffectName,
     module: Option<ModuleId>,
 ) -> String {
+    format!(
+        "{}{}",
+        effect_base_name(ctx, name, module),
+        name.index().suffix()
+    )
+}
+
+fn effect_base_name(ctx: &Body<'_, '_>, name: &EffectName, module: Option<ModuleId>) -> String {
     // 修正案も取り込み時の別名を使う。関数名の表記からエフェクトを推測しない
     // （設計書 01-03「修飾された名前の解決」、02-10「修正案」）。
     let (target, name, fallback) = match name {
-        EffectName::Builtin(b) => {
+        EffectName::Builtin(b, _) => {
             let Some(def) = b.def() else {
                 return String::new();
             };
@@ -367,7 +408,10 @@ pub(in crate::typeck) fn effect_name(
                                             .chain(def.module.iter().copied()))
                                 })
                             } else {
-                                ctx.decls.effect_name(id) != Some(name)
+                                !matches!(
+                                    ctx.decls.effect_name(id),
+                                    Some(EffectName::Builtin(other, _)) if other == *b
+                                )
                             }
                     })
                 });
@@ -397,8 +441,8 @@ pub(in crate::typeck) fn effect_name(
                 format!("{}.{}", def.module.last().copied().unwrap_or(""), def.name),
             )
         }
-        EffectName::User(id) => {
-            let Some(b) = ctx.decls.resolved.bindings.get(id) else {
+        EffectName::User(id, _) => {
+            let Some(b) = ctx.decls.resolved.bindings.get(*id) else {
                 return String::new();
             };
             (Some(b.module), b.name.clone(), b.name.clone())

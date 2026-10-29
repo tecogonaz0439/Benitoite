@@ -1,0 +1,930 @@
+{
+  "relative_links_and_fragments_checked": 182,
+  "errors": [],
+  "design_headings": [
+    {
+      "file": "docs/design/02-impl/02-09-runtime.md",
+      "headings_unchanged": true
+    },
+    {
+      "file": "docs/design/07-quality/07-04-formal-semantics.md",
+      "headings_unchanged": true
+    },
+    {
+      "file": "docs/design/03-interop/03-09-network.md",
+      "headings_unchanged": true
+    }
+  ],
+  "links": [
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../00-overview/00-03-roadmap.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-08-evaluation.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-07-io-modules.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-09-network.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../07-quality/07-01-security-model.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-11-embedding.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../07-quality/07-03-compiler-testing.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../07-quality/07-03-compiler-testing.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-11-embedding.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../06-tooling/06-04-test-runner.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-07-io-modules.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-09-network.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-09-network.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../07-quality/07-01-security-model.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-11-embedding.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../07-quality/07-03-compiler-testing.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../06-tooling/06-01-cli.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md#解放の失敗",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-07-io-modules.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-09-network.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-09-network.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-10-diagnostics.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-08-evaluation.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-08-evaluation.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-10-diagnostics.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-09-network.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md#参照インタプリタ",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-11-embedding.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-10-external-functions.md#実行",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-10-external-functions.md#実行",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-10-external-functions.md#実行",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-01-library-structure.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../03-interop/03-10-external-functions.md#実行",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-11-embedding.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-08-vm.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-08-evaluation.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-10-diagnostics.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-10-diagnostics.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../07-quality/07-03-compiler-testing.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-08-evaluation.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-10-diagnostics.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "../06-tooling/06-01-cli.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/02-impl/02-09-runtime.md",
+      "target": "02-11-embedding.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../00-overview/00-03-roadmap.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../01-spec/01-12-core-calculus.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "07-03-compiler-testing.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../01-spec/01-12-core-calculus.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "07-03-compiler-testing.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../02-impl/02-05-typechecker.md#区間解析の範囲と保証",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../02-impl/02-05-typechecker.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../01-spec/01-06-type-system.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../01-spec/01-03-names-modules.md#公開初回リリース版",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../02-impl/02-08-vm.md#値の表現",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../02-impl/02-09-runtime.md#メモリの管理",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "07-03-compiler-testing.md#実装の規約と静的な検査",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../../../formal/README.md#検査",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "07-03-compiler-testing.md#実装の規約と静的な検査",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../02-impl/02-05-typechecker.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/07-quality/07-04-formal-semantics.md",
+      "target": "../02-impl/02-05-typechecker.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "03-07-io-modules.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "03-08-text-and-data.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "03-06-stdlib.md#標準の型クラス初回リリース版",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-09-errors.md#失敗時に終了する処置",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "03-06-stdlib.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-07-effects.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-06-type-system.md#範囲付きの不透明標準型",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "03-06-stdlib.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../02-impl/02-09-runtime.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-10-resources.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-05-data-types.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-06-type-system.md#範囲付きの不透明標準型",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../02-impl/02-05-typechecker.md#本体の後の検査",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-07-effects.md#閉じた範囲引数",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../02-impl/02-09-runtime.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-05-data-types.md#拡張可能な型",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-09-errors.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../02-impl/02-09-runtime.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../02-impl/02-09-runtime.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "../01-spec/01-11-concurrency.md",
+      "ok": true
+    },
+    {
+      "from": "docs/design/03-interop/03-09-network.md",
+      "target": "03-01-library-structure.md",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../reviews/RV-R30.3.md",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r20.0b/url-boundary.md",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "url-sources.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "rv-probes/probe.bnt",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "rv-probes/server.py",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "rv-probes/probe.out",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "rv-probes/server.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../reviews/RV-R30.3.md#指摘",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../reviews/RV-R30.3.md#指摘",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r30.1/results.md#検査",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r30.1/results.md#r301b-rv-r301-軽1軽5への対応",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r30.1/heap.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r30.1/heap.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "environment.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r30.1/r30.1b-integrity.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-h-comparison.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r20.0b/heap.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r20.0b/heap.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r20.3/h.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r20.3/h.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "../r20.3/environment.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "environment.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "inputs.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r20.3-input-comparison.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r20.3-commit-comparison.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "retention-tests-comparison.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-before.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-final.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "run_logged.py",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "local-http.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "local-http.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "local-widen.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "local-widen.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "local-exchange.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "local-exchange.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "work-dry-run.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "work-dry-run.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "work.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "work.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "state.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-work-dry-run.log",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-work-dry-run.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-links.json",
+      "ok": true
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.3/results.md",
+      "target": "r30.3b-final.json",
+      "ok": true
+    }
+  ]
+}

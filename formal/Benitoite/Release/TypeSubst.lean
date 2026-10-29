@@ -44,7 +44,7 @@ def SubstEnv.shift (k c : Nat) : SubstEnv :=
 /-- 行の原子の置換は型を含まない。 -/
 def Eff.substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
   let kept := match x with
-    | .name l => a (.name l)
+    | .name l r => a (.name l r)
     | .rho i => if i < es.length then false else a (.rho i)
   kept || (List.range es.length).any (fun i =>
     a (.rho i) && match es[i]? with
@@ -80,7 +80,7 @@ mutual
   /-- 正規化前の型への同時代入。 -/
   def Ty.rawBind (θ : SubstEnv) : Ty → Ty
     | .base b => .base b
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d as => .data d (Ty.rawBindTys θ as)
     | .list a => .list (Ty.rawBind θ a)
     | .fn ns ps r e => .fn ns (Ty.rawBindTys θ ps) (Ty.rawBind θ r) (Eff.rawBind θ e)
@@ -132,7 +132,7 @@ mutual
   /-- 型と行を同時に置き換える。再帰するのは入力の型だけであり、挿入した像には再適用しない。 -/
   noncomputable def Ty.substAt (c : Nat) (ts : List Ty) (es : List Eff) : Ty → Ty
     | .base ι => .base ι
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d args => .data d (Ty.substTysAt c ts es args)
     | .list a => .list (Ty.substAt c ts es a)
     | .fn names params ret eff =>

@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(r: Http.ClientRequest) -> Unit
+ bind x <- Http.checkRequestIn(hostPattern: "::1", minimumPort: 1, maximumPort: 99999, request: r)
+ ()
+end function

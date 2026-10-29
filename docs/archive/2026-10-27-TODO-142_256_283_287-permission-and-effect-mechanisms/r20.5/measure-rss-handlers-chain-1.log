@@ -1,0 +1,10 @@
+
+running 1 test
+SCOPE_MEASURE {"accepted_selected_calls":0,"bodies":[{"calls":0,"definition":".sample","metrics":{"body_operations":0,"max_body_items":0,"max_whole_items":0,"stops":[],"whole_operations":0},"numbering_operations":79,"occurrences":24,"stopped":"None"}],"body_items_max":0,"body_operations_max":0,"candidates":[{"definition":".sample","limits":{"body":{"items":8,"operations":128},"whole":{"items":32,"operations":512}},"local_stopped":"None","lost_ranges":0,"name":"small","numbering_operations":79,"numbering_stopped":"None","rejections":[],"stops":[]},{"definition":".sample","limits":{"body":{"items":128,"operations":2048},"whole":{"items":512,"operations":8192}},"local_stopped":"None","lost_ranges":0,"name":"middle","numbering_operations":79,"numbering_stopped":"None","rejections":[],"stops":[]},{"definition":".sample","limits":{"body":{"items":512,"operations":16384},"whole":{"items":2048,"operations":65536}},"local_stopped":"None","lost_ranges":0,"name":"large","numbering_operations":79,"numbering_stopped":"None","rejections":[],"stops":[]}],"case":"handlers-chain-1","configuration":"release-default","definitions":2,"exit":0,"handler_reinferences":1,"handlers":2,"limits":{"body":{"items":100000,"operations":1000000},"whole":{"items":10000000,"operations":100000000}},"narrow_rejections":[],"occurrences":24,"rss_kib_after":null,"rss_method":"ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark","scope_analysis_and_candidates_seconds":0.000016959,"sha256":"c183eac7ab67a4a97a37ec33dc6293b757a17596be8669a138655202927e7ef0","source_bytes":828,"typecheck_seconds":0.018645208,"whole_items_max":0,"whole_operations_total":0}
+test typeck::scope::tests::measure_scope_budget ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1411 filtered out; finished in 0.02s
+
+real 0.02
+user 0.02
+sys 0.00

@@ -1,0 +1,907 @@
+{
+  "section": "runtime",
+  "phase_seconds": {
+    "verify": 0.33454358400000217,
+    "cli": 2.9292158340000043
+  },
+  "measurements": {
+    "runtime-fib-short": {
+      "before": {
+        "verify": [
+          0.01793612500000563
+        ],
+        "warmup": [
+          0.01878983299999959
+        ],
+        "cli": [
+          0.01793100000000436,
+          0.0177593340000044,
+          0.017920541999998818,
+          0.018102374999998005,
+          0.017893958999991355
+        ],
+        "control_cli": [
+          0.017163708999987648,
+          0.015458583000011572,
+          0.01537841699999376,
+          0.015004083000007995,
+          0.015745458000012036
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.01870149999999171
+        ],
+        "warmup": [
+          0.01956400000000258
+        ],
+        "cli": [
+          0.01798841700001219,
+          0.018237999999996646,
+          0.018249416000003293,
+          0.020283124999991742,
+          0.018284624999992616
+        ],
+        "control_cli": [
+          0.016066957999996134,
+          0.015500415999994743,
+          0.01574700000000462,
+          0.016310917000012637,
+          0.01554812500000935
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-loop-short": {
+      "before": {
+        "verify": [
+          0.02395337500000494
+        ],
+        "warmup": [
+          0.02376504199999374
+        ],
+        "cli": [
+          0.024029709000004118,
+          0.023595874999998045,
+          0.023418499999991127,
+          0.025926499999997077,
+          0.023492250000003878
+        ],
+        "control_cli": [
+          0.01626237499999661,
+          0.015420833000007406,
+          0.0152514579999945,
+          0.016345624999999586,
+          0.015904457999994293
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.024443083000008414
+        ],
+        "warmup": [
+          0.023828916999988792
+        ],
+        "cli": [
+          0.023651874999998768,
+          0.024074124999998503,
+          0.024461834000007343,
+          0.02450575000000299,
+          0.024491457999999966
+        ],
+        "control_cli": [
+          0.016032250000009185,
+          0.015789416999993477,
+          0.01684187499999723,
+          0.017221332999994843,
+          0.016181542000012428
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-list-short": {
+      "before": {
+        "verify": [
+          0.029450792000005777
+        ],
+        "warmup": [
+          0.031643166999998584
+        ],
+        "cli": [
+          0.029654749999991736,
+          0.03122845800000107,
+          0.029629916999994066,
+          0.029430957999991847,
+          0.029489459000004103
+        ],
+        "control_cli": [
+          0.016456915999995658,
+          0.016221250000000964,
+          0.015742374999987874,
+          0.016067875000004506,
+          0.015994499999990808
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.029786166999997477
+        ],
+        "warmup": [
+          0.03092308300000468
+        ],
+        "cli": [
+          0.029686374999997156,
+          0.02999862500000461,
+          0.029734833000006233,
+          0.03002516600000149,
+          0.02988225
+        ],
+        "control_cli": [
+          0.016371250000005944,
+          0.016380709000003435,
+          0.01630045800000346,
+          0.0163047499999891,
+          0.01663058399999784
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-tree-short": {
+      "before": {
+        "verify": [
+          0.01892320800000391
+        ],
+        "warmup": [
+          0.018818166000002634
+        ],
+        "cli": [
+          0.018342208000007076,
+          0.019157124999992448,
+          0.0181217920000023,
+          0.01955266599999561,
+          0.017977541999997015
+        ],
+        "control_cli": [
+          0.015977292000002308,
+          0.015925124999995433,
+          0.015720125000001417,
+          0.01589779100000044,
+          0.015853290999999103
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.018926541999988444
+        ],
+        "warmup": [
+          0.019130000000004088
+        ],
+        "cli": [
+          0.018818499999994742,
+          0.019043750000008686,
+          0.018679958999996416,
+          0.019039165999998886,
+          0.01843695800000944
+        ],
+        "control_cli": [
+          0.016298458999997933,
+          0.01692483300000447,
+          0.016053209000006063,
+          0.01569645799999364,
+          0.01600783299998909
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-eval-short": {
+      "before": {
+        "verify": [
+          0.022090334000012035
+        ],
+        "warmup": [
+          0.022202625000005582
+        ],
+        "cli": [
+          0.022046791999997595,
+          0.0216840830000109,
+          0.023372875000006843,
+          0.022098749999997835,
+          0.022044250000007537
+        ],
+        "control_cli": [
+          0.015838708000003976,
+          0.015353916999998773,
+          0.015724583000007897,
+          0.01576962500000434,
+          0.015287542000010035
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.022516459000001987
+        ],
+        "warmup": [
+          0.022448749999995243
+        ],
+        "cli": [
+          0.022093832999999563,
+          0.02239975000000527,
+          0.022348292000003767,
+          0.02247641699999292,
+          0.022476083000000813
+        ],
+        "control_cli": [
+          0.015600542000001383,
+          0.015949750000004315,
+          0.016125541999997495,
+          0.01614820800000416,
+          0.016059832999999912
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-string-short": {
+      "before": {
+        "verify": [
+          0.018370250000003807
+        ],
+        "warmup": [
+          0.016604833000002373
+        ],
+        "cli": [
+          0.01669187499999225,
+          0.017015209000007303,
+          0.016839791999998965,
+          0.0163869999999946,
+          0.0164903749999894
+        ],
+        "control_cli": [
+          0.016018458000004898,
+          0.01517350000000306,
+          0.01532550000000299,
+          0.015534584000008067,
+          0.015164124999998307
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.01769654200001014
+        ],
+        "warmup": [
+          0.017178250000000617
+        ],
+        "cli": [
+          0.016782875000004083,
+          0.017086958999996682,
+          0.017877915999989114,
+          0.018198916000002896,
+          0.016987042000010888
+        ],
+        "control_cli": [
+          0.01572183300000063,
+          0.015622624999991785,
+          0.01633279200000004,
+          0.015966708000007657,
+          0.015897916000000123
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-println-short": {
+      "before": {
+        "verify": [
+          0.017431333000004656
+        ],
+        "warmup": [
+          0.017784500000004755
+        ],
+        "cli": [
+          0.017035291999988544,
+          0.01702975000000606,
+          0.016941250000002128,
+          0.017123333000000684,
+          0.01769104100000618
+        ],
+        "control_cli": [
+          0.016069291999997404,
+          0.015648249999998143,
+          0.015177166000000852,
+          0.015638417000005234,
+          0.015619374999999991
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.018095208000005414
+        ],
+        "warmup": [
+          0.01818608300000335
+        ],
+        "cli": [
+          0.017480333999998265,
+          0.01743370799999866,
+          0.017863875000003304,
+          0.017642082999998365,
+          0.01775270799998907
+        ],
+        "control_cli": [
+          0.016168500000006247,
+          0.016119458000005693,
+          0.016475458000002163,
+          0.016046583000004944,
+          0.01725604199999964
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    },
+    "runtime-lines-short": {
+      "before": {
+        "verify": [
+          0.017163874999994277
+        ],
+        "warmup": [
+          0.01689495799999463
+        ],
+        "cli": [
+          0.016740291999994383,
+          0.01689304200000663,
+          0.016596292000002677,
+          0.016865791999990165,
+          0.016690624999995407
+        ],
+        "control_cli": [
+          0.01584929099999499,
+          0.01587049999999124,
+          0.015704749999997603,
+          0.015460959000009211,
+          0.015274582999992958
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.017832666000003883
+        ],
+        "warmup": [
+          0.017326333999989174
+        ],
+        "cli": [
+          0.01720704100000603,
+          0.017177666999998564,
+          0.018380209000000036,
+          0.017406250000007617,
+          0.017141792000003875
+        ],
+        "control_cli": [
+          0.016179124999993633,
+          0.015939041999999404,
+          0.016146208999998635,
+          0.015915207999995573,
+          0.01609820799998829
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    }
+  },
+  "outputs": {
+    "runtime-fib-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-fib-short/shared-523cfb034e81cbc2/main.bnt",
+          "20"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-fib-short/shared-523cfb034e81cbc2/main.bnt",
+          "20"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.01793612500000563,
+          "status": 0,
+          "stdout": "6765\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.01870149999999171,
+          "status": 0,
+          "stdout": "6765\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-loop-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-loop-short/shared-59e0e7fdf3bc172b/main.bnt",
+          "100000"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-loop-short/shared-59e0e7fdf3bc172b/main.bnt",
+          "100000"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.02395337500000494,
+          "status": 0,
+          "stdout": "4999950000\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.024443083000008414,
+          "status": 0,
+          "stdout": "4999950000\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-list-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-list-short/shared-ae918f635718b437/main.bnt",
+          "10000"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-list-short/shared-ae918f635718b437/main.bnt",
+          "10000"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.029450792000005777,
+          "status": 0,
+          "stdout": "74985000\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.029786166999997477,
+          "status": 0,
+          "stdout": "74985000\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-tree-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-tree-short/shared-375206c323c3f8ac/main.bnt",
+          "12"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-tree-short/shared-375206c323c3f8ac/main.bnt",
+          "12"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.01892320800000391,
+          "status": 0,
+          "stdout": "4096\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.018926541999988444,
+          "status": 0,
+          "stdout": "4096\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-eval-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-eval-short/shared-d1d8c8c1624ea8d4/main.bnt",
+          "100"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-eval-short/shared-d1d8c8c1624ea8d4/main.bnt",
+          "100"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.022090334000012035,
+          "status": 0,
+          "stdout": "4175100\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.022516459000001987,
+          "status": 0,
+          "stdout": "4175100\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-string-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-string-short/shared-dc1945a23e551c7a/main.bnt",
+          "10000"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-string-short/shared-dc1945a23e551c7a/main.bnt",
+          "10000"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.018370250000003807,
+          "status": 0,
+          "stdout": "10002\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.01769654200001014,
+          "status": 0,
+          "stdout": "10002\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-println-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-println-short/shared-16e30c804ccd983e/main.bnt",
+          "1000"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-println-short/shared-16e30c804ccd983e/main.bnt",
+          "1000"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.017431333000004656,
+          "status": 0,
+          "stdout": "line 0\nline 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30\nline 31\nline 32\nline 33\nline 34\nline 35\nline 36\nline 37\nline 38\nline 39\nline 40\nline 41\nline 42\nline 43\nline 44\nline 45\nline 46\nline 47\nline 48\nline 49\nline 50\nline 51\nline 52\nline 53\nline 54\nline 55\nline 56\nline 57\nline 58\nline 59\nline 60\nline 61\nline 62\nline 63\nline 64\nline 65\nline 66\nline 67\nline 68\nline 69\nline 70\nline 71\nline 72\nline 73\nline 74\nline 75\nline 76\nline 77\nline 78\nline 79\nline 80\nline 81\nline 82\nline 83\nline 84\nline 85\nline 86\nline 87\nline 88\nline 89\nline 90\nline 91\nline 92\nline 93\nline 94\nline 95\nline 96\nline 97\nline 98\nline 99\nline 100\nline 101\nline 102\nline 103\nline 104\nline 105\nline 106\nline 107\nline 108\nline 109\nline 110\nline 111\nline 112\nline 113\nline 114\nline 115\nline 116\nline 117\nline 118\nline 119\nline 120\nline 121\nline 122\nline 123\nline 124\nline 125\nline 126\nline 127\nline 128\nline 129\nline 130\nline 131\nline 132\nline 133\nline 134\nline 135\nline 136\nline 137\nline 138\nline 139\nline 140\nline 141\nline 142\nline 143\nline 144\nline 145\nline 146\nline 147\nline 148\nline 149\nline 150\nline 151\nline 152\nline 153\nline 154\nline 155\nline 156\nline 157\nline 158\nline 159\nline 160\nline 161\nline 162\nline 163\nline 164\nline 165\nline 166\nline 167\nline 168\nline 169\nline 170\nline 171\nline 172\nline 173\nline 174\nline 175\nline 176\nline 177\nline 178\nline 179\nline 180\nline 181\nline 182\nline 183\nline 184\nline 185\nline 186\nline 187\nline 188\nline 189\nline 190\nline 191\nline 192\nline 193\nline 194\nline 195\nline 196\nline 197\nline 198\nline 199\nline 200\nline 201\nline 202\nline 203\nline 204\nline 205\nline 206\nline 207\nline 208\nline 209\nline 210\nline 211\nline 212\nline 213\nline 214\nline 215\nline 216\nline 217\nline 218\nline 219\nline 220\nline 221\nline 222\nline 223\nline 224\nline 225\nline 226\nline 227\nline 228\nline 229\nline 230\nline 231\nline 232\nline 233\nline 234\nline 235\nline 236\nline 237\nline 238\nline 239\nline 240\nline 241\nline 242\nline 243\nline 244\nline 245\nline 246\nline 247\nline 248\nline 249\nline 250\nline 251\nline 252\nline 253\nline 254\nline 255\nline 256\nline 257\nline 258\nline 259\nline 260\nline 261\nline 262\nline 263\nline 264\nline 265\nline 266\nline 267\nline 268\nline 269\nline 270\nline 271\nline 272\nline 273\nline 274\nline 275\nline 276\nline 277\nline 278\nline 279\nline 280\nline 281\nline 282\nline 283\nline 284\nline 285\nline 286\nline 287\nline 288\nline 289\nline 290\nline 291\nline 292\nline 293\nline 294\nline 295\nline 296\nline 297\nline 298\nline 299\nline 300\nline 301\nline 302\nline 303\nline 304\nline 305\nline 306\nline 307\nline 308\nline 309\nline 310\nline 311\nline 312\nline 313\nline 314\nline 315\nline 316\nline 317\nline 318\nline 319\nline 320\nline 321\nline 322\nline 323\nline 324\nline 325\nline 326\nline 327\nline 328\nline 329\nline 330\nline 331\nline 332\nline 333\nline 334\nline 335\nline 336\nline 337\nline 338\nline 339\nline 340\nline 341\nline 342\nline 343\nline 344\nline 345\nline 346\nline 347\nline 348\nline 349\nline 350\nline 351\nline 352\nline 353\nline 354\nline 355\nline 356\nline 357\nline 358\nline 359\nline 360\nline 361\nline 362\nline 363\nline 364\nline 365\nline 366\nline 367\nline 368\nline 369\nline 370\nline 371\nline 372\nline 373\nline 374\nline 375\nline 376\nline 377\nline 378\nline 379\nline 380\nline 381\nline 382\nline 383\nline 384\nline 385\nline 386\nline 387\nline 388\nline 389\nline 390\nline 391\nline 392\nline 393\nline 394\nline 395\nline 396\nline 397\nline 398\nline 399\nline 400\nline 401\nline 402\nline 403\nline 404\nline 405\nline 406\nline 407\nline 408\nline 409\nline 410\nline 411\nline 412\nline 413\nline 414\nline 415\nline 416\nline 417\nline 418\nline 419\nline 420\nline 421\nline 422\nline 423\nline 424\nline 425\nline 426\nline 427\nline 428\nline 429\nline 430\nline 431\nline 432\nline 433\nline 434\nline 435\nline 436\nline 437\nline 438\nline 439\nline 440\nline 441\nline 442\nline 443\nline 444\nline 445\nline 446\nline 447\nline 448\nline 449\nline 450\nline 451\nline 452\nline 453\nline 454\nline 455\nline 456\nline 457\nline 458\nline 459\nline 460\nline 461\nline 462\nline 463\nline 464\nline 465\nline 466\nline 467\nline 468\nline 469\nline 470\nline 471\nline 472\nline 473\nline 474\nline 475\nline 476\nline 477\nline 478\nline 479\nline 480\nline 481\nline 482\nline 483\nline 484\nline 485\nline 486\nline 487\nline 488\nline 489\nline 490\nline 491\nline 492\nline 493\nline 494\nline 495\nline 496\nline 497\nline 498\nline 499\nline 500\nline 501\nline 502\nline 503\nline 504\nline 505\nline 506\nline 507\nline 508\nline 509\nline 510\nline 511\nline 512\nline 513\nline 514\nline 515\nline 516\nline 517\nline 518\nline 519\nline 520\nline 521\nline 522\nline 523\nline 524\nline 525\nline 526\nline 527\nline 528\nline 529\nline 530\nline 531\nline 532\nline 533\nline 534\nline 535\nline 536\nline 537\nline 538\nline 539\nline 540\nline 541\nline 542\nline 543\nline 544\nline 545\nline 546\nline 547\nline 548\nline 549\nline 550\nline 551\nline 552\nline 553\nline 554\nline 555\nline 556\nline 557\nline 558\nline 559\nline 560\nline 561\nline 562\nline 563\nline 564\nline 565\nline 566\nline 567\nline 568\nline 569\nline 570\nline 571\nline 572\nline 573\nline 574\nline 575\nline 576\nline 577\nline 578\nline 579\nline 580\nline 581\nline 582\nline 583\nline 584\nline 585\nline 586\nline 587\nline 588\nline 589\nline 590\nline 591\nline 592\nline 593\nline 594\nline 595\nline 596\nline 597\nline 598\nline 599\nline 600\nline 601\nline 602\nline 603\nline 604\nline 605\nline 606\nline 607\nline 608\nline 609\nline 610\nline 611\nline 612\nline 613\nline 614\nline 615\nline 616\nline 617\nline 618\nline 619\nline 620\nline 621\nline 622\nline 623\nline 624\nline 625\nline 626\nline 627\nline 628\nline 629\nline 630\nline 631\nline 632\nline 633\nline 634\nline 635\nline 636\nline 637\nline 638\nline 639\nline 640\nline 641\nline 642\nline 643\nline 644\nline 645\nline 646\nline 647\nline 648\nline 649\nline 650\nline 651\nline 652\nline 653\nline 654\nline 655\nline 656\nline 657\nline 658\nline 659\nline 660\nline 661\nline 662\nline 663\nline 664\nline 665\nline 666\nline 667\nline 668\nline 669\nline 670\nline 671\nline 672\nline 673\nline 674\nline 675\nline 676\nline 677\nline 678\nline 679\nline 680\nline 681\nline 682\nline 683\nline 684\nline 685\nline 686\nline 687\nline 688\nline 689\nline 690\nline 691\nline 692\nline 693\nline 694\nline 695\nline 696\nline 697\nline 698\nline 699\nline 700\nline 701\nline 702\nline 703\nline 704\nline 705\nline 706\nline 707\nline 708\nline 709\nline 710\nline 711\nline 712\nline 713\nline 714\nline 715\nline 716\nline 717\nline 718\nline 719\nline 720\nline 721\nline 722\nline 723\nline 724\nline 725\nline 726\nline 727\nline 728\nline 729\nline 730\nline 731\nline 732\nline 733\nline 734\nline 735\nline 736\nline 737\nline 738\nline 739\nline 740\nline 741\nline 742\nline 743\nline 744\nline 745\nline 746\nline 747\nline 748\nline 749\nline 750\nline 751\nline 752\nline 753\nline 754\nline 755\nline 756\nline 757\nline 758\nline 759\nline 760\nline 761\nline 762\nline 763\nline 764\nline 765\nline 766\nline 767\nline 768\nline 769\nline 770\nline 771\nline 772\nline 773\nline 774\nline 775\nline 776\nline 777\nline 778\nline 779\nline 780\nline 781\nline 782\nline 783\nline 784\nline 785\nline 786\nline 787\nline 788\nline 789\nline 790\nline 791\nline 792\nline 793\nline 794\nline 795\nline 796\nline 797\nline 798\nline 799\nline 800\nline 801\nline 802\nline 803\nline 804\nline 805\nline 806\nline 807\nline 808\nline 809\nline 810\nline 811\nline 812\nline 813\nline 814\nline 815\nline 816\nline 817\nline 818\nline 819\nline 820\nline 821\nline 822\nline 823\nline 824\nline 825\nline 826\nline 827\nline 828\nline 829\nline 830\nline 831\nline 832\nline 833\nline 834\nline 835\nline 836\nline 837\nline 838\nline 839\nline 840\nline 841\nline 842\nline 843\nline 844\nline 845\nline 846\nline 847\nline 848\nline 849\nline 850\nline 851\nline 852\nline 853\nline 854\nline 855\nline 856\nline 857\nline 858\nline 859\nline 860\nline 861\nline 862\nline 863\nline 864\nline 865\nline 866\nline 867\nline 868\nline 869\nline 870\nline 871\nline 872\nline 873\nline 874\nline 875\nline 876\nline 877\nline 878\nline 879\nline 880\nline 881\nline 882\nline 883\nline 884\nline 885\nline 886\nline 887\nline 888\nline 889\nline 890\nline 891\nline 892\nline 893\nline 894\nline 895\nline 896\nline 897\nline 898\nline 899\nline 900\nline 901\nline 902\nline 903\nline 904\nline 905\nline 906\nline 907\nline 908\nline 909\nline 910\nline 911\nline 912\nline 913\nline 914\nline 915\nline 916\nline 917\nline 918\nline 919\nline 920\nline 921\nline 922\nline 923\nline 924\nline 925\nline 926\nline 927\nline 928\nline 929\nline 930\nline 931\nline 932\nline 933\nline 934\nline 935\nline 936\nline 937\nline 938\nline 939\nline 940\nline 941\nline 942\nline 943\nline 944\nline 945\nline 946\nline 947\nline 948\nline 949\nline 950\nline 951\nline 952\nline 953\nline 954\nline 955\nline 956\nline 957\nline 958\nline 959\nline 960\nline 961\nline 962\nline 963\nline 964\nline 965\nline 966\nline 967\nline 968\nline 969\nline 970\nline 971\nline 972\nline 973\nline 974\nline 975\nline 976\nline 977\nline 978\nline 979\nline 980\nline 981\nline 982\nline 983\nline 984\nline 985\nline 986\nline 987\nline 988\nline 989\nline 990\nline 991\nline 992\nline 993\nline 994\nline 995\nline 996\nline 997\nline 998\nline 999\ndone 1000\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.018095208000005414,
+          "status": 0,
+          "stdout": "line 0\nline 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30\nline 31\nline 32\nline 33\nline 34\nline 35\nline 36\nline 37\nline 38\nline 39\nline 40\nline 41\nline 42\nline 43\nline 44\nline 45\nline 46\nline 47\nline 48\nline 49\nline 50\nline 51\nline 52\nline 53\nline 54\nline 55\nline 56\nline 57\nline 58\nline 59\nline 60\nline 61\nline 62\nline 63\nline 64\nline 65\nline 66\nline 67\nline 68\nline 69\nline 70\nline 71\nline 72\nline 73\nline 74\nline 75\nline 76\nline 77\nline 78\nline 79\nline 80\nline 81\nline 82\nline 83\nline 84\nline 85\nline 86\nline 87\nline 88\nline 89\nline 90\nline 91\nline 92\nline 93\nline 94\nline 95\nline 96\nline 97\nline 98\nline 99\nline 100\nline 101\nline 102\nline 103\nline 104\nline 105\nline 106\nline 107\nline 108\nline 109\nline 110\nline 111\nline 112\nline 113\nline 114\nline 115\nline 116\nline 117\nline 118\nline 119\nline 120\nline 121\nline 122\nline 123\nline 124\nline 125\nline 126\nline 127\nline 128\nline 129\nline 130\nline 131\nline 132\nline 133\nline 134\nline 135\nline 136\nline 137\nline 138\nline 139\nline 140\nline 141\nline 142\nline 143\nline 144\nline 145\nline 146\nline 147\nline 148\nline 149\nline 150\nline 151\nline 152\nline 153\nline 154\nline 155\nline 156\nline 157\nline 158\nline 159\nline 160\nline 161\nline 162\nline 163\nline 164\nline 165\nline 166\nline 167\nline 168\nline 169\nline 170\nline 171\nline 172\nline 173\nline 174\nline 175\nline 176\nline 177\nline 178\nline 179\nline 180\nline 181\nline 182\nline 183\nline 184\nline 185\nline 186\nline 187\nline 188\nline 189\nline 190\nline 191\nline 192\nline 193\nline 194\nline 195\nline 196\nline 197\nline 198\nline 199\nline 200\nline 201\nline 202\nline 203\nline 204\nline 205\nline 206\nline 207\nline 208\nline 209\nline 210\nline 211\nline 212\nline 213\nline 214\nline 215\nline 216\nline 217\nline 218\nline 219\nline 220\nline 221\nline 222\nline 223\nline 224\nline 225\nline 226\nline 227\nline 228\nline 229\nline 230\nline 231\nline 232\nline 233\nline 234\nline 235\nline 236\nline 237\nline 238\nline 239\nline 240\nline 241\nline 242\nline 243\nline 244\nline 245\nline 246\nline 247\nline 248\nline 249\nline 250\nline 251\nline 252\nline 253\nline 254\nline 255\nline 256\nline 257\nline 258\nline 259\nline 260\nline 261\nline 262\nline 263\nline 264\nline 265\nline 266\nline 267\nline 268\nline 269\nline 270\nline 271\nline 272\nline 273\nline 274\nline 275\nline 276\nline 277\nline 278\nline 279\nline 280\nline 281\nline 282\nline 283\nline 284\nline 285\nline 286\nline 287\nline 288\nline 289\nline 290\nline 291\nline 292\nline 293\nline 294\nline 295\nline 296\nline 297\nline 298\nline 299\nline 300\nline 301\nline 302\nline 303\nline 304\nline 305\nline 306\nline 307\nline 308\nline 309\nline 310\nline 311\nline 312\nline 313\nline 314\nline 315\nline 316\nline 317\nline 318\nline 319\nline 320\nline 321\nline 322\nline 323\nline 324\nline 325\nline 326\nline 327\nline 328\nline 329\nline 330\nline 331\nline 332\nline 333\nline 334\nline 335\nline 336\nline 337\nline 338\nline 339\nline 340\nline 341\nline 342\nline 343\nline 344\nline 345\nline 346\nline 347\nline 348\nline 349\nline 350\nline 351\nline 352\nline 353\nline 354\nline 355\nline 356\nline 357\nline 358\nline 359\nline 360\nline 361\nline 362\nline 363\nline 364\nline 365\nline 366\nline 367\nline 368\nline 369\nline 370\nline 371\nline 372\nline 373\nline 374\nline 375\nline 376\nline 377\nline 378\nline 379\nline 380\nline 381\nline 382\nline 383\nline 384\nline 385\nline 386\nline 387\nline 388\nline 389\nline 390\nline 391\nline 392\nline 393\nline 394\nline 395\nline 396\nline 397\nline 398\nline 399\nline 400\nline 401\nline 402\nline 403\nline 404\nline 405\nline 406\nline 407\nline 408\nline 409\nline 410\nline 411\nline 412\nline 413\nline 414\nline 415\nline 416\nline 417\nline 418\nline 419\nline 420\nline 421\nline 422\nline 423\nline 424\nline 425\nline 426\nline 427\nline 428\nline 429\nline 430\nline 431\nline 432\nline 433\nline 434\nline 435\nline 436\nline 437\nline 438\nline 439\nline 440\nline 441\nline 442\nline 443\nline 444\nline 445\nline 446\nline 447\nline 448\nline 449\nline 450\nline 451\nline 452\nline 453\nline 454\nline 455\nline 456\nline 457\nline 458\nline 459\nline 460\nline 461\nline 462\nline 463\nline 464\nline 465\nline 466\nline 467\nline 468\nline 469\nline 470\nline 471\nline 472\nline 473\nline 474\nline 475\nline 476\nline 477\nline 478\nline 479\nline 480\nline 481\nline 482\nline 483\nline 484\nline 485\nline 486\nline 487\nline 488\nline 489\nline 490\nline 491\nline 492\nline 493\nline 494\nline 495\nline 496\nline 497\nline 498\nline 499\nline 500\nline 501\nline 502\nline 503\nline 504\nline 505\nline 506\nline 507\nline 508\nline 509\nline 510\nline 511\nline 512\nline 513\nline 514\nline 515\nline 516\nline 517\nline 518\nline 519\nline 520\nline 521\nline 522\nline 523\nline 524\nline 525\nline 526\nline 527\nline 528\nline 529\nline 530\nline 531\nline 532\nline 533\nline 534\nline 535\nline 536\nline 537\nline 538\nline 539\nline 540\nline 541\nline 542\nline 543\nline 544\nline 545\nline 546\nline 547\nline 548\nline 549\nline 550\nline 551\nline 552\nline 553\nline 554\nline 555\nline 556\nline 557\nline 558\nline 559\nline 560\nline 561\nline 562\nline 563\nline 564\nline 565\nline 566\nline 567\nline 568\nline 569\nline 570\nline 571\nline 572\nline 573\nline 574\nline 575\nline 576\nline 577\nline 578\nline 579\nline 580\nline 581\nline 582\nline 583\nline 584\nline 585\nline 586\nline 587\nline 588\nline 589\nline 590\nline 591\nline 592\nline 593\nline 594\nline 595\nline 596\nline 597\nline 598\nline 599\nline 600\nline 601\nline 602\nline 603\nline 604\nline 605\nline 606\nline 607\nline 608\nline 609\nline 610\nline 611\nline 612\nline 613\nline 614\nline 615\nline 616\nline 617\nline 618\nline 619\nline 620\nline 621\nline 622\nline 623\nline 624\nline 625\nline 626\nline 627\nline 628\nline 629\nline 630\nline 631\nline 632\nline 633\nline 634\nline 635\nline 636\nline 637\nline 638\nline 639\nline 640\nline 641\nline 642\nline 643\nline 644\nline 645\nline 646\nline 647\nline 648\nline 649\nline 650\nline 651\nline 652\nline 653\nline 654\nline 655\nline 656\nline 657\nline 658\nline 659\nline 660\nline 661\nline 662\nline 663\nline 664\nline 665\nline 666\nline 667\nline 668\nline 669\nline 670\nline 671\nline 672\nline 673\nline 674\nline 675\nline 676\nline 677\nline 678\nline 679\nline 680\nline 681\nline 682\nline 683\nline 684\nline 685\nline 686\nline 687\nline 688\nline 689\nline 690\nline 691\nline 692\nline 693\nline 694\nline 695\nline 696\nline 697\nline 698\nline 699\nline 700\nline 701\nline 702\nline 703\nline 704\nline 705\nline 706\nline 707\nline 708\nline 709\nline 710\nline 711\nline 712\nline 713\nline 714\nline 715\nline 716\nline 717\nline 718\nline 719\nline 720\nline 721\nline 722\nline 723\nline 724\nline 725\nline 726\nline 727\nline 728\nline 729\nline 730\nline 731\nline 732\nline 733\nline 734\nline 735\nline 736\nline 737\nline 738\nline 739\nline 740\nline 741\nline 742\nline 743\nline 744\nline 745\nline 746\nline 747\nline 748\nline 749\nline 750\nline 751\nline 752\nline 753\nline 754\nline 755\nline 756\nline 757\nline 758\nline 759\nline 760\nline 761\nline 762\nline 763\nline 764\nline 765\nline 766\nline 767\nline 768\nline 769\nline 770\nline 771\nline 772\nline 773\nline 774\nline 775\nline 776\nline 777\nline 778\nline 779\nline 780\nline 781\nline 782\nline 783\nline 784\nline 785\nline 786\nline 787\nline 788\nline 789\nline 790\nline 791\nline 792\nline 793\nline 794\nline 795\nline 796\nline 797\nline 798\nline 799\nline 800\nline 801\nline 802\nline 803\nline 804\nline 805\nline 806\nline 807\nline 808\nline 809\nline 810\nline 811\nline 812\nline 813\nline 814\nline 815\nline 816\nline 817\nline 818\nline 819\nline 820\nline 821\nline 822\nline 823\nline 824\nline 825\nline 826\nline 827\nline 828\nline 829\nline 830\nline 831\nline 832\nline 833\nline 834\nline 835\nline 836\nline 837\nline 838\nline 839\nline 840\nline 841\nline 842\nline 843\nline 844\nline 845\nline 846\nline 847\nline 848\nline 849\nline 850\nline 851\nline 852\nline 853\nline 854\nline 855\nline 856\nline 857\nline 858\nline 859\nline 860\nline 861\nline 862\nline 863\nline 864\nline 865\nline 866\nline 867\nline 868\nline 869\nline 870\nline 871\nline 872\nline 873\nline 874\nline 875\nline 876\nline 877\nline 878\nline 879\nline 880\nline 881\nline 882\nline 883\nline 884\nline 885\nline 886\nline 887\nline 888\nline 889\nline 890\nline 891\nline 892\nline 893\nline 894\nline 895\nline 896\nline 897\nline 898\nline 899\nline 900\nline 901\nline 902\nline 903\nline 904\nline 905\nline 906\nline 907\nline 908\nline 909\nline 910\nline 911\nline 912\nline 913\nline 914\nline 915\nline 916\nline 917\nline 918\nline 919\nline 920\nline 921\nline 922\nline 923\nline 924\nline 925\nline 926\nline 927\nline 928\nline 929\nline 930\nline 931\nline 932\nline 933\nline 934\nline 935\nline 936\nline 937\nline 938\nline 939\nline 940\nline 941\nline 942\nline 943\nline 944\nline 945\nline 946\nline 947\nline 948\nline 949\nline 950\nline 951\nline 952\nline 953\nline 954\nline 955\nline 956\nline 957\nline 958\nline 959\nline 960\nline 961\nline 962\nline 963\nline 964\nline 965\nline 966\nline 967\nline 968\nline 969\nline 970\nline 971\nline 972\nline 973\nline 974\nline 975\nline 976\nline 977\nline 978\nline 979\nline 980\nline 981\nline 982\nline 983\nline 984\nline 985\nline 986\nline 987\nline 988\nline 989\nline 990\nline 991\nline 992\nline 993\nline 994\nline 995\nline 996\nline 997\nline 998\nline 999\ndone 1000\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    },
+    "runtime-lines-short": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-lines-short/shared-3e66dbbdeb024653/main.bnt",
+          "<repo>/target/bench/compare/inputs/runtime-lines-short/shared-3e66dbbdeb024653/lines.txt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/runtime-lines-short/shared-3e66dbbdeb024653/main.bnt",
+          "<repo>/target/bench/compare/inputs/runtime-lines-short/shared-3e66dbbdeb024653/lines.txt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/bf01d0caa366be726b572aef2f01c0519891cbca-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.017163874999994277,
+          "status": 0,
+          "stdout": "1000\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.017832666000003883,
+          "status": 0,
+          "stdout": "1000\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    }
+  }
+}

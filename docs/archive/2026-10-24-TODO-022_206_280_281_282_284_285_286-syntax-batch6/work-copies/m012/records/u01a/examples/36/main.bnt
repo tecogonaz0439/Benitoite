@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
+  bind _ <- try File.createDirectory("out") or die
+  bind names <- try File.listDirectory(".") or die
+  List.forEach(xs: List.sort(names), f: lambda(value) Console.writeLine(value))
+  bind found <- try File.exists("notes.md") or die
+  Console.writeLine(match found with
+    case true -> "notes.md exists"
+    case false -> "no notes.md"
+  end match)
+  return ()
+end function

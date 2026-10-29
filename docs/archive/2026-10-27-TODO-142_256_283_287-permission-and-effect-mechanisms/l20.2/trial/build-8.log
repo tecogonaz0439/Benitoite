@@ -1,0 +1,43 @@
+== wait-for-lock start 23:55:41
+== lock acquired 23:55:41 after 0s
+✔ [100/431] Built Benitoite.Release.Typing (1.5s)
+✔ [102/431] Built Benitoite.Release.BuilderContents (449ms)
+✔ [103/431] Built Benitoite.Release.LocalTyping (459ms)
+✔ [106/431] Built Benitoite.Release.TypeRegularity (670ms)
+✔ [108/431] Built Benitoite.Release.BuiltinTable (780ms)
+✔ [110/431] Built Benitoite.Release.BuilderExec (571ms)
+✔ [111/431] Built Benitoite.Release.Lemmas.Basic (369ms)
+✔ [114/431] Built Benitoite.Release.TypeBounds (858ms)
+✔ [116/431] Built Benitoite.Release.SubstEnv (723ms)
+✔ [118/431] Built Benitoite.Release.TypeCongruence (943ms)
+✖ [120/431] Building Benitoite.Release.TypeVariables (1.2s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeVariables.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeVariables.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeVariables.setup.json --json
+error: Benitoite/Release/TypeVariables.lean:67:23: Invalid `⟨...⟩` notation: The expected type `Ty.WFList nr n fs` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+✔ [144/431] Built Benitoite.Release.LocalScope (3.9s)
+✔ [145/431] Built Benitoite.Release.Lemmas.Rename (7.7s)
+✔ [149/431] Built Benitoite.Release.Lemmas.Irrelevant (2.6s)
+✔ [152/431] Built Benitoite.Release.Lemmas.Inversion (10s)
+Some required targets logged failures:
+- Benitoite.Release.TypeVariables
+error: build failed
+       12.93 real        70.89 user         3.80 sys
+          1588854784  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              787732  page reclaims
+                 869  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 661  voluntary context switches
+               93154  involuntary context switches
+          1673711559  instructions retired
+           720596690  cycles elapsed
+            58230056  peak memory footprint
+== exit 1

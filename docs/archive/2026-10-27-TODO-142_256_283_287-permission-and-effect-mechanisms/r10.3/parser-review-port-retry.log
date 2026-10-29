@@ -1,0 +1,27 @@
+port 443 exit 2
+error[E0414]: no `main` function
+   = help: define `function main() -> Unit` in the file where execution starts
+
+error: could not check <tmp>/main.bnt due to 1 previous error
+
+port 443s64 exit 2
+error[E0520]: invalid scope arguments for `Http.Connect` (expected host string and port literal pairs)
+  --> <tmp>/main.bnt:2:40
+   |
+ 2 | function f() -> Unit uses Http.Connect["example.com", 443s64]
+   |                                        ^^^^^^^^^^^^^^^^^^^^^ invalid scope argument
+   |
+   = note: found: PathPattern
+
+error: could not check <tmp>/main.bnt due to 1 previous error
+
+port 443u16 exit 2
+error[E0520]: invalid scope arguments for `Http.Connect` (expected host string and port literal pairs)
+  --> <tmp>/main.bnt:2:40
+   |
+ 2 | function f() -> Unit uses Http.Connect["example.com", 443u16]
+   |                                        ^^^^^^^^^^^^^^^^^^^^^ invalid scope argument
+   |
+   = note: found: PathPattern
+
+error: could not check <tmp>/main.bnt due to 1 previous error

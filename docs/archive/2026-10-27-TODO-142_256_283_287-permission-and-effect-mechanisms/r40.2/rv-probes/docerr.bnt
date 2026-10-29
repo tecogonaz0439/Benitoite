@@ -1,0 +1,11 @@
+//! ```benitoite error
+//! import Benitoite.Unofficial.IO.File
+//! function main() -> Unit uses File.Write
+//!   return 1
+//! end function
+//! ```
+//! ```diagnostic
+//! E0401
+//! ```
+function helper() -> Unit
+end function

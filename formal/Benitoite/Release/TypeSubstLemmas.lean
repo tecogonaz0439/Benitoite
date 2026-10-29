@@ -87,7 +87,7 @@ theorem Eff.memFail_rawBind (θ : SubstEnv) (e : Eff) (t : Ty) :
 theorem Eff.mem_substAtoms (es : List Eff) (e : Eff) (a : Atom) :
     Eff.substAtoms es e.atoms a = true ↔
       (match a with
-        | .name l => Eff.mem e (.name l)
+        | .name l r => Eff.mem e (.name l r)
         | .rho i => es.length ≤ i ∧ Eff.mem e (.rho i)) ∨
       ∃ i f, es[i]? = some f ∧ Eff.mem e (.rho i) ∧ Eff.mem f a := by
   simp only [Eff.substAtoms, Bool.or_eq_true, List.any_eq_true, List.mem_range, Bool.and_eq_true]

@@ -1,0 +1,68 @@
+warning: fields `generation` and `index` are never read
+  --> <wt>/target/r20.5b-probe/probe-source/convert.rs:14:5
+   |
+13 | struct RefValue {
+   |        -------- fields in this struct
+14 |     generation: u64,
+   |     ^^^^^^^^^^
+15 |     index: u32,
+   |     ^^^^^
+   |
+   = note: `RefValue` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: variants `Location`, `Opaque`, `Dict`, and `Func` are never constructed
+  --> <wt>/crates/benitoite/src/refinterp/value.rs:19:5
+   |
+17 | pub(super) enum Value {
+   |                 ----- variants in this enum
+18 |     Decimal(Decimal),
+19 |     Location(usize),
+   |     ^^^^^^^^
+20 |     Resource(ResourceId),
+21 |     Opaque(u32),
+   |     ^^^^^^
+22 |     Dict { code: DictCode, args: Rc<Values> },
+   |     ^^^^
+...
+35 |     Func(Rc<Closure>),
+   |     ^^^^
+   |
+   = note: `Value` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: variants `Body`, `TopFn`, `Builtin`, and `Op` are never constructed
+  --> <wt>/crates/benitoite/src/refinterp/value.rs:54:5
+   |
+53 | pub(super) enum FunctionCode {
+   |                 ------------ variants in this enum
+54 |     Body(BodyId),
+   |     ^^^^
+55 |     TopFn(BindingId),
+   |     ^^^^^
+56 |     Builtin(BuiltinId, BuiltinInfo, Rc<[crate::types::scope::Range]>),
+   |     ^^^^^^^
+57 |     Op(BindingId),
+   |     ^^
+   |
+   = note: `FunctionCode` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variants `Impl` and `Super` are never constructed
+  --> <wt>/crates/benitoite/src/refinterp/value.rs:69:5
+   |
+68 | pub(super) enum DictCode {
+   |                 -------- variants in this enum
+69 |     Impl(NodeId),
+   |     ^^^^
+70 |     Super(u32),
+   |     ^^^^^
+   |
+   = note: `DictCode` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: function `values_equal` is never used
+   --> <wt>/crates/benitoite/src/refinterp/value.rs:135:15
+    |
+135 | pub(super) fn values_equal(a: &Value, b: &Value) -> Result<bool, Stop> {
+    |               ^^^^^^^^^^^^
+
+warning: 5 warnings emitted
+

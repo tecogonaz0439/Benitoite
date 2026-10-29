@@ -1,0 +1,19 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Exchange/Builtins.lean:242:    ioResponse := fun _ _ _ _ _ => False
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Assumptions.lean:64:  io_kind : ∀ b s ts es ws o, B.sig b = some s → B.ioResponse b ts es ws o →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Assumptions.lean:69:    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Assumptions.lean:74:    ∃ o, B.ioResponse b ts es ws o
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Examples.lean:44:  ioResponse
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/StepSound.lean:104:    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Model.lean:42:  ioResponse := fun _ _ _ _ _ => False
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:186:      B.ioResponse b ts es ws (.val v) →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:191:      B.ioResponse b ts es ws (.err r) →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:196:      B.ioResponse b ts es ws (.exit n) →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Theorems.lean:24:    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:67:  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckCounterexamples.lean:22:    ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckExamples.lean:456:    ioResponse := fun b ts es vs out => match b, vs with
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckExamples.lean:459:      | _, _ => renderBuiltins.ioResponse b ts es vs out
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckTables.lean:101:    ioResponse := fun _ _ _ _ _ => False
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/CheckToolsExamples.lean:204:    delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False,
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/FailureExamples.lean:43:  ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/SurfaceCheck/Validation.lean:9:  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.name "A"] }

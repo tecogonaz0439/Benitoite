@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-27",
+  "base": "3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34",
+  "areas": [
+    "crates",
+    "tools",
+    "docs/design",
+    "docs/reference"
+  ],
+  "files": 14,
+  "matches": 14,
+  "http_send": 0,
+  "entries": [
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 199,
+      "source": "    case File.readText(_) -> resume(Result.Ok(\"alpha\\nbeta\\n\"))",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 732,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "crates/benitoite/testdata/acceptance/test_replaces_effects.bnt",
+      "line": 49,
+      "source": "    case File.writeText(path, text) ->",
+      "operations": [
+        "writeText"
+      ]
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/c12-builtin-port.bnt",
+      "line": 17,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "crates/benitoite/testdata/handlers/first-release-port.bnt",
+      "line": 13,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/todo-handler/main.bnt",
+      "line": 13,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "crates/benitoite/testdata/test/handler_replacement.bnt",
+      "line": 15,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "docs/design/01-spec/01-07-effects.md",
+      "line": 328,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "docs/design/01-spec/01-11-concurrency.md",
+      "line": 118,
+      "source": "  case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "docs/design/06-tooling/06-04-test-runner.md",
+      "line": 79,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1516,
+      "source": "    case File.readText(path) ->",
+      "operations": [
+        "readText"
+      ]
+    },
+    {
+      "path": "tools/skill-eval/tasks/write_tests/reference.bnt",
+      "line": 43,
+      "source": "    case File.readLines(path) ->",
+      "operations": [
+        "readLines"
+      ]
+    },
+    {
+      "path": "tools/skill-eval/tasks/write_tests/task.json",
+      "line": 1,
+      "source": "{\"kind\": \"test\", \"script\": \"settings_test.bnt\", \"attempt_limit\": 10, \"min_tests\": 4, \"require_text\": [\"case File.readLines(\", \"resume(\"]}",
+      "operations": [
+        "readLines"
+      ]
+    },
+    {
+      "path": "tools/skill-eval/tasks/write_tests/task.md",
+      "line": 11,
+      "source": "- at least 1 test of `loadSettings` that replaces `File.readLines` with a handler (`handle ... with case File.readLines(path) -> ...`), so that the test does not read a real file.",
+      "operations": [
+        "readLines"
+      ]
+    }
+  ],
+  "limits": "字句検索であり別名の網羅的な名前解決ではない。task.json と task.md は節の要求の記述であり実行可能なハンドラそのものではない。docs/ja と改造の検討文書は別の全検索へ記録。"
+}

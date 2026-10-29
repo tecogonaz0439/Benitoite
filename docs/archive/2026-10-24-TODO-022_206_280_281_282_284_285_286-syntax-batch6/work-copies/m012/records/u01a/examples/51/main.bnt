@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind amount <- 2.675m
+  bind number <- -42
+  bind label <- "猫"
+  Console.writeLine("${amount:.2f}|${number:#08x}|${label:>5s}")
+end function

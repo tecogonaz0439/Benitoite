@@ -1,0 +1,37 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.40s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 7 tests
+
+thread 'acceptance_checks_definitions_before_implementation_methods' (4977769) panicked at crates/benitoite/tests/scoped_calls.rs:288:5:
+assertion `left == right` failed: [Diagnostic { kind: Check, severity: Error, code: Some(E0401), message: "mismatched types", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(237), end: BytePos(242) }, text: "expected `Scope.PathIn`, found `Scope.PathIn[\"/data/**\"]`" }), secondary: [Label { span: Span { file: FileId(41), start: BytePos(4447), end: BytePos(4453) }, text: "expected because of this" }], notes: ["argument 1 must match the parameter type of the called function"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0401), message: "mismatched types", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(365), end: BytePos(370) }, text: "expected `Scope.PathIn`, found `Scope.PathIn[\"/data/**\"]`" }), secondary: [Label { span: Span { file: FileId(41), start: BytePos(4447), end: BytePos(4453) }, text: "expected because of this" }], notes: ["argument 1 must match the parameter type of the called function"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 2
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test acceptance_checks_definitions_before_implementation_methods ... FAILED
+test reversed_request_literals_are_unknown_and_do_not_gain_membership_from_an_annotation ... ok
+
+thread 'scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening' (4977774) panicked at crates/benitoite/tests/scoped_calls.rs:166:9:
+assertion `left == right` failed: import Benitoite.Unofficial.Scope
+function sample(value: Scope.PathIn["/data/**"]) -> String
+ return Scope.pathInValue(path: value)
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0401), message: "mismatched types", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(125), end: BytePos(130) }, text: "expected `Scope.PathIn`, found `Scope.PathIn[\"/data/**\"]`" }), secondary: [Label { span: Span { file: FileId(41), start: BytePos(4447), end: BytePos(4453) }, text: "expected because of this" }], notes: ["argument 1 must match the parameter type of the called function"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: "E0401"
+ right: "E0519"
+test scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening ... FAILED
+test function_values_holes_and_unannotated_widen_do_not_invent_ranges ... ok
+test accepted_calls_keep_non_top_ranges_and_widen_uses_the_return_annotation ... ok
+test numbering_budget_applies_to_a_rule_after_the_expanding_constant ... ok
+test unannotated_checks_use_top_when_projection_or_join_requires_it ... ok
+
+failures:
+
+failures:
+    acceptance_checks_definitions_before_implementation_methods
+    scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening
+
+test result: FAILED. 5 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.64s
+
+error: test failed, to rerun pass `-p benitoite --test scoped_calls`

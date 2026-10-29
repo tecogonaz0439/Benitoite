@@ -1,0 +1,439 @@
+{
+  "schemaVersion": 1,
+  "basis": "独立期待値を公開契約から先に固定。CLI 出力は不使用",
+  "rule": "期待値だけを書き換えない。差は入力・理由・承認とともに後続へ返す",
+  "baselineWork": "867a36713aa30520be4d5ea8dff0d57b846c919c",
+  "cases": [
+    {
+      "file": "inputs/pure.bnt",
+      "sha256": "fba7175f66172925e88653ea4f560a154fbe98f575d3de8fe40179f31824f3f1",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "本体は純粋でも宣言上限を保持。Top と狭い原子の併存も省かない"
+    },
+    {
+      "file": "inputs/top.bnt",
+      "sha256": "bba7188e9219fbfcb9dbe4370ba48b75a6ed4258702f8c3b74cd990410b3a298",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "all"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "本体は純粋でも宣言上限を保持。Top と狭い原子の併存も省かない"
+    },
+    {
+      "file": "inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "本体は純粋でも宣言上限を保持。Top と狭い原子の併存も省かない"
+    },
+    {
+      "file": "inputs/redundant.bnt",
+      "sha256": "a73d2bcbc0f3517d51625bd3d3c2877fcd851b79f336bdb2416459f15ef01382",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "all"
+              }
+            },
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathExact",
+                "path": "/data/a"
+              }
+            },
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "本体は純粋でも宣言上限を保持。Top と狭い原子の併存も省かない"
+    },
+    {
+      "file": "inputs/handled-user-pure.bnt",
+      "sha256": "d32b4806d3bf646a59675f8eb8a415f50c43a9617b8dffbc1d1034a35227570d",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "処理した利用者名を名前集合と bounds へ戻さない"
+    },
+    {
+      "file": "inputs/handled-scoped-write.bnt",
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data/reports"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "固定範囲の利用者操作の節から File.writeTextIn へ渡す。本体は実行しない"
+    },
+    {
+      "file": "inputs/not-covered.bnt",
+      "sha256": "8c26a0c13384ee7c6458ac5ffe2c4d97fa70ea7caf0c77cd52cd48969e3abf82",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "notCovered"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/atomic-cover-only.bnt",
+      "sha256": "1d6a7ee2041b6df0c3bc3b33100220076804cd70189f3bde89e21324b0000e18",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "atomicCoverOnly"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/unknown-source.bnt",
+      "sha256": "255d418c35c77f668316dfe691f4a2700a35ec1dd3b8ef09268c392b5df39a56",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "unknownSource"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/budget-exceeded.bnt",
+      "sha256": "df179321213e83537d23dbcfbe527d506afb3727cdc57dcd26ac3af9dd441b6d",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0519",
+        "reason": "budgetExceeded"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/show-rejected.bnt",
+      "sha256": "28ea2c356b673ff4a36207b760810ccc5425416847336ad77a835518bde177f2",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0705"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/projection-repaired.bnt",
+      "sha256": "07843877ccb33e11dfa2996233efd9d579c41830b9504e91f284b05e0c090dc4",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "案内による受理。RequestCheckError の標準 Show を追加しない判断を保つ"
+    },
+    {
+      "file": "inputs/show-match.bnt",
+      "sha256": "563e1c4d0a383985a4b864eba5ccadb276b128e3e9408abe51c44b7f69993c75",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "案内による受理。RequestCheckError の標準 Show を追加しない判断を保つ"
+    },
+    {
+      "file": "inputs/user-unhandled.bnt",
+      "sha256": "70823dee85360a5d7b5c3dbc56cdb8a93f52d4be5081904c6faaf3fe2d928304",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0506"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/user-scope-rejected.bnt",
+      "sha256": "435de74f27370ddb13c23e69433b6cb9c99d116cc031b2b2dd88a765a9af2d4a",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0513"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/read-complete.bnt",
+      "sha256": "367811c7bf54d02a74011fa0366b9b3388153883f141acd0f4544386d76aded3",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "File.Read 全13節を処理"
+    },
+    {
+      "file": "inputs/read-partial.bnt",
+      "sha256": "297d096b4174401f069cfb804c0c9adf1207824b60f020742716670573dfae71",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Read"
+          ],
+          "bounds": [
+            {
+              "name": "File.Read",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "File.Read 全13節のうち File.readTextIn(path) が不足"
+    },
+    {
+      "file": "inputs/read-missing-upper.bnt",
+      "sha256": "5101647cc7b4d2d76a62000ea5bd39a7b47ea0ebc78a0eb3f4df72350f21402e",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/write-complete.bnt",
+      "sha256": "ce90e9d7905f50a2be301e43e0f183cfafb8bb6dfb51c771defeda746c4feb45",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "File.Write 全16節を処理"
+    },
+    {
+      "file": "inputs/write-partial.bnt",
+      "sha256": "ff0a9bbf9e32dcfbd839ebc4aa2d039809830901295c26314f0b79bd97e87df9",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "File.Write"
+          ],
+          "bounds": [
+            {
+              "name": "File.Write",
+              "scope": {
+                "kind": "pathTree",
+                "path": "/data"
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "File.Write 全16節のうち File.writeTextIn(path, text) が不足"
+    },
+    {
+      "file": "inputs/write-missing-upper.bnt",
+      "sha256": "f1b61e51b3480ca7af98c60208ed759e1e03dca30736083cfcd277f8cd92a2bf",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/connect-complete.bnt",
+      "sha256": "2f01a8a351b76b2f804dcb4f244ce5eb790eb86996b715301cf9b88345c194f8",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        }
+      },
+      "purpose": "Http.Connect 全2節を処理"
+    },
+    {
+      "file": "inputs/connect-partial.bnt",
+      "sha256": "4b6d9c5b5378e85f95289d020c204623d3ad4b8fee16b7fdd6295bb602fef3e3",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [
+            "Http.Connect"
+          ],
+          "bounds": [
+            {
+              "name": "Http.Connect",
+              "scope": {
+                "kind": "endpoint",
+                "host": {
+                  "kind": "exact",
+                  "name": "api.example"
+                },
+                "ports": {
+                  "minimum": 443,
+                  "maximum": 443
+                }
+              }
+            }
+          ]
+        }
+      },
+      "purpose": "Http.Connect 全2節のうち Http.sendIn(request) が不足"
+    },
+    {
+      "file": "inputs/connect-missing-upper.bnt",
+      "sha256": "f7806e1a8b236c967c004ec375fcd9383f6c50792009ff3421564c0a6e4bbac7",
+      "expected": {
+        "exit": 2,
+        "complete": false,
+        "effects": null,
+        "code": "E0501"
+      },
+      "purpose": "拒否時は集約も null。理由は診断の注記で照合する"
+    },
+    {
+      "file": "inputs/doc-error.bnt",
+      "sha256": "9f7b2393783c281e346db87f25f0722a1e31e2066ed42bc5cefe0b6c7b77daca",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "doc": true,
+        "diagnosticCode": "E0401"
+      },
+      "purpose": "期待した拒否の doc 例の空 Effects は純粋を意味しない。実行の集約から除く"
+    },
+    {
+      "file": "inputs/doc-check.bnt",
+      "sha256": "07044f3856fb4a29cc03e87a323ce94b9add869b00c2e2497393a1b49825c982",
+      "expected": {
+        "exit": 0,
+        "complete": true,
+        "effects": {
+          "basis": "declaredUpperBound",
+          "expanded": [],
+          "bounds": []
+        },
+        "doc": true,
+        "docExampleTests": []
+      },
+      "purpose": "main と @test の宣言上限があっても check 例の Effects と tests は空。純粋を意味しない"
+    }
+  ]
+}

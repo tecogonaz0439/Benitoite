@@ -1,6 +1,8 @@
 //! JSON への変換は通常の型の表を読む。型の解決は行わない（設計書 03-06「外部生成の宣言情報」）。
 pub mod config;
+mod ranges;
 mod schema;
+pub use ranges::to_string;
 pub mod text;
 use benitoite::{
     base::{BindingId, Span},
@@ -112,7 +114,7 @@ impl Output<'_> {
     }
     fn dependencies(&self, ty: &Ty, out: &mut Vec<String>) {
         match ty {
-            Ty::Con(con, args) => {
+            Ty::Con(con, args, _) => {
                 if let TyCon::Adt(id) | TyCon::External(id) = con {
                     let name = self.name(*id);
                     if !out.contains(&name) {
@@ -168,7 +170,7 @@ impl Output<'_> {
             .fields;
         let fields = record.fields.iter().zip(types).map(|(f,t)| {
             self.dependencies(t,&mut deps);
-            Ok(json!({"name":f.name.text,"span":self.span(f.span),"typeSpan":self.span(f.ty.span()),"type":self.ty(t,scheme)?,"metadata":{"original":self.original(f.ty.span()),"resolved":self.show(t,scheme),"span":self.span(f.ty.span())}}))
+            Ok(json!({"name":f.name.text,"span":self.span(f.span),"typeSpan":self.span(f.ty.span()),"type":self.ty(t,scheme,&benitoite::types::signature::RangeSignature::default())?,"metadata":{"original":self.original(f.ty.span()),"resolved":self.show(t,scheme),"span":self.span(f.ty.span())}}))
         }).collect::<Result<Vec<_>, Error>>()?;
         Ok(
             json!({"type":self.name(id),"module":self.inv.modules.get(binding.module).map(|m|m.name.dotted()),
@@ -192,7 +194,7 @@ impl Output<'_> {
             .ok_or(text::MISSING_FUNCTION_BINDING)?;
         Ok(
             json!({"name":self.name(id),"span":self.span(f.span),"public":b.public,"package":b.package,
-            "visibility":visibility(b)?,"signature":self.signature(s)?}),
+            "visibility":visibility(b)?,"signature":self.signature(s,id)?}),
         )
     }
 }
@@ -495,7 +497,7 @@ pub fn inventory(root: &Path, config: &Value, config_bytes: &[u8]) -> Result<Val
     }
     let declarations = inv.resolved.bindings.iter().filter(|(_,b)|matches!(b.decl,DeclSite::Node(_)) && !matches!(b.kind,BindingKind::Local(_) | BindingKind::TypeParam{..} | BindingKind::EffectVar{..})).map(|(id,b)|json!({"name":out.name(id),"module":inv.modules.get(b.module).map(|m|m.name.dotted()),"topLevel":matches!(b.decl,DeclSite::Node(node) if top_level.contains(&node)),"kind":out.declaration_kind(b.kind),"public":b.public,"package":b.package,"visibility":visibility(b).ok(),"span":b.span.map(|s|out.span(s))})).collect::<Vec<_>>();
     Ok(
-        json!({"version":3,"types":types,"classes":classes,"implementations":implementations,"configSha256":hash(config_bytes),"targets":rows,"records":records,"functions":functions,"declarations":declarations,"modules":modules,"inputs":inputs}),
+        json!({"version":4,"types":types,"classes":classes,"implementations":implementations,"configSha256":hash(config_bytes),"targets":rows,"records":records,"functions":functions,"declarations":declarations,"modules":modules,"inputs":inputs}),
     )
 }
 

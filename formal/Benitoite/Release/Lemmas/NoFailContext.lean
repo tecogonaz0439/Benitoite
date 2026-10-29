@@ -12,7 +12,7 @@ mutual
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
     | .V_Fun hd hn had => exact .V_Fun hd hn (had.mono hq)
-    | .V_Prim hs hn had => exact .V_Prim hs hn (had.mono hq)
+    | .V_Prim hs hrs hn had => exact .V_Prim hs hrs hn (had.mono hq)
     | .V_Op hod hn hts => exact .V_Op hod hn hts
     | .V_Raise ht he => exact .V_Raise ht he
     | .V_Lam hn hw hb => exact .V_Lam hn hw (HasTypeCQ.q_mono hb hq)
@@ -27,6 +27,8 @@ mutual
     | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVsQ.q_mono hvs hq)
     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.q_mono hv hq) hc hs
     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.q_mono h hq) hle hw
+    | .V_Checked hk hm => exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
 
   theorem HasTypeVsQ.q_mono {Ψ Q' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hq : QLe Q Q') :
       HasTypeVsQ P B Ψ Q' C Γ vs as := by
@@ -72,8 +74,8 @@ mutual
     | .guarded hp hg hm ht =>
         exact .guarded hp (HasTypeCQ.q_mono hg hq) (HasTypeCQ.q_mono hm hq) (HasTypeArmsQ.q_mono ht hq)
 
-  theorem HasTypeClausesQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
-      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R h t ε Δl := by
+  theorem HasTypeClausesQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
+      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R εb h t ε Δl := by
     match hc with
     | .nil => exact .nil
     | .cons hsg hnames hn hk hew hbody hrest =>

@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.Network.Http
+
+function respondTo(request: Http.Request) -> Http.Response
+  return match Http.pathSegments(Http.Request.path(request)) with
+    case [] -> Http.html(status: 200, s: "<h1>Home</h1>")
+    case ["health"] -> Http.text(status: 200, s: "ok")
+    case otherPath -> Http.text(status: 404, s: "not found")
+  end match
+end function
+
+function main() -> Result[Unit, String] uses Http.Listen, State
+  return Http.serve(host: "127.0.0.1", port: 8080, handler: respondTo) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error))
+end function

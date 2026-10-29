@@ -1,0 +1,43 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Contracts.lean:82:51: error: unexpected token '+'; expected command
+Contracts.lean:82:62: error: unexpected identifier; expected 'instance'
+Contracts.lean:177:13: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+⊢ Ty.integer ≠ Ty.range (interval 1 65535) ∧ Ty.range (interval 1 1) ≠ Ty.integer
+Contracts.lean:216:13: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Repr Ty
+
+Hint: Adding the command `deriving instance Repr for SB.Ty` may allow Lean to derive the missing instance.
+Contracts.lean:216:13: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Repr Ty
+
+Hint: Adding the command `deriving instance Repr for SB.Ty` may allow Lean to derive the missing instance.
+'SB.HasTypeV.subst' depends on axioms: [propext]
+'SB.HasTypeC.subst' depends on axioms: [propext]
+'SB.body_substitution' depends on axioms: [propext]
+'SB.beta_contract' depends on axioms: [propext]
+'SB.Ty.Le.fn_fn' does not depend on any axioms
+'SB.Ty.Le.substType' depends on axioms: [propext]
+'SB.Ty.Le.eq_of_rigid_right' depends on axioms: [propext]
+'SB.Ty.Le.eq_of_rigid_left' depends on axioms: [propext]
+'SB.covariance_counterexample' depends on axioms: [propext]
+'SB.checked_integer_to_range' depends on axioms: [propext]
+        0.71 real         0.72 user         0.22 sys
+           708952064  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45734  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                3906  involuntary context switches
+          7722833369  instructions retired
+          2908353091  cycles elapsed
+           161111424  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

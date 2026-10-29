@@ -1,0 +1,88 @@
+--- before/crates/benitoite/skill/SKILL.md
++++ after/crates/benitoite/skill/SKILL.md
+@@ -167,7 +167,7 @@
+ 
+ `File.readTextIn`, `readBytesIn`, `writeTextIn`, `appendTextIn`, `writeBytesIn`, and `appendBytesIn` take a checked `Scope.PathIn`. Their `File.Read` or `File.Write` effect uses the same range as that input type. They operate on the path retained by the check; the range describes path strings and does not isolate symbolic-link targets or special files.
+ 
+-`Http.sendIn` takes a checked `Http.RequestIn` and has `Http.Connect` at that input's endpoint range. It sends the retained request without following redirects or automatically using a proxy; 3xx responses are returned. An explicit Host header must have the same effective host and port as the URI and retained endpoint; a mismatch returns `NetworkErrorKind.InvalidInput`. `Http.send` keeps its automatic redirect behavior and Top effect. A complete `Http.Connect` handler needs both `send` and `sendIn`; a handler for `send` alone leaves `Http.Connect`. Endpoint ranges cover host/IP strings and ports before DNS and OS conversion, and do not constrain schemes, fixed origins, message contents, or runtime permission. See the checked examples in `references/idioms.md`.
++`Http.sendIn` takes a checked `Http.RequestIn` and has `Http.Connect` at that input's endpoint range. It sends the retained request without following redirects or automatically using a proxy; 3xx responses are returned. An explicit Host header must have the same effective host and port as the URI and retained endpoint; a mismatch returns `NetworkErrorKind.InvalidInput`. `Http.send` keeps its automatic redirect behavior and Top effect. A complete `Http.Connect` handler needs both `send` and `sendIn`; a handler for `send` alone leaves `Http.Connect`. Endpoint ranges cover host/IP strings and ports before DNS and OS conversion, and do not constrain schemes, fixed origins, message contents, or runtime permission. During TLS certificate validation, the OS may fetch intermediate certificates or revocation information from other destinations; the endpoint range does not guarantee the destinations of this additional traffic. See the checked examples in `references/idioms.md`.
+ 
+ Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow handler argument has no local check provenance, so this form still cannot project or widen that argument. Forward it with the same narrow input type, or use a bare `Scope.PathIn` or `Http.RequestIn` input when projection is needed; IO through the bare type has a Top range.
+ 
+--- before/crates/benitoite/skill/references/idioms.md
++++ after/crates/benitoite/skill/references/idioms.md
+@@ -551,7 +551,7 @@
+ 404 not found
+ ```
+ 
+-`Http.checkRequestIn` retains the same five-field request and its effective endpoint. `Http.sendIn` uses that retained request, returns 3xx without following the redirect, and does not automatically connect through a proxy. An explicit Host header must match the URI and retained endpoint's effective host and port; a mismatch returns `NetworkErrorKind.InvalidInput`. Send preparation or communication errors are `NetworkError`, separate from `RequestCheckError`. A changed request needs another check. The endpoint range is a static upper bound on host/IP and port strings before DNS and OS conversion; it does not grant runtime permission or constrain the scheme or message contents.
++`Http.checkRequestIn` retains the same five-field request and its effective endpoint. `Http.sendIn` uses that retained request, returns 3xx without following the redirect, and does not automatically connect through a proxy. An explicit Host header must match the URI and retained endpoint's effective host and port; a mismatch returns `NetworkErrorKind.InvalidInput`. Send preparation or communication errors are `NetworkError`, separate from `RequestCheckError`. A changed request needs another check. The endpoint range is a static upper bound on host/IP and port strings before DNS and OS conversion; it does not grant runtime permission or constrain the scheme or message contents. During TLS certificate validation, the OS may fetch intermediate certificates or revocation information from other destinations; the endpoint range does not guarantee the destinations of this additional traffic.
+ 
+ Use a direct `bind` for projection and explicit widening. The annotation below selects the checked value's endpoint range; widening preserves its request and endpoint. This example is checked without making a connection.
+ 
+--- before/crates/benitoite/skill/references/stdlib/Network.Http.md
++++ after/crates/benitoite/skill/references/stdlib/Network.Http.md
+@@ -32,7 +32,7 @@
+   /// Sends the request and returns the response, including 4xx and 5xx responses.
+   function send(request: ClientRequest) -> Result[Response, NetworkError]
+   /// Sends the same checked request to its retained endpoint. Returns 3xx responses without following redirects and does not use environment proxies.
+-  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkError.InvalidInput.
++  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkErrorKind.InvalidInput.
+   /// Protocol and communication failures are NetworkError, separate from the pure check's RequestCheckError.
+   function sendIn(request: RequestIn) -> Result[Response, NetworkError]
+ end effect
+--- before/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
++++ after/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
+@@ -26,7 +26,7 @@
+   /// Sends the request and returns the response, including 4xx and 5xx responses.
+   function send(request: ClientRequest) -> Result[Response, NetworkError]
+   /// Sends the same checked request to its retained endpoint. Returns 3xx responses without following redirects and does not use environment proxies.
+-  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkError.InvalidInput.
++  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkErrorKind.InvalidInput.
+   /// Protocol and communication failures are NetworkError, separate from the pure check's RequestCheckError.
+   function sendIn(request: RequestIn) -> Result[Response, NetworkError]
+ end effect
+--- before/docs/design/02-impl/02-08-vm.md
++++ after/docs/design/02-impl/02-08-vm.md
+@@ -217,7 +217,7 @@
+ 
+ 【決定】`Http.checkRequestIn`・`Http.requestInValue` も純粋な組み込みの関数として `PRIM` で呼ぶ。検査は、要求の `url` から実効の端点を得て共通のホスト・ポートの判定に通し、成功時に同じ要求のレコードと端点を構成子に保存する。射影は保存したレコードの値を直接返す。二つの標準署名は端点の範囲変数を一つ持ち、パスの二入口と同じ登録・確定した列の具体化の経路を使う。要求の五欄を作り直したり、検査後に別の端点へ取り替えたりしない。`Scope.widenPathIn`・`Http.widenRequestIn` は二要素の列の被覆を確かめて同じ値を返す。組み込み参照は範囲の列も保持し、VM と参照実行器はその列を実行文脈へ渡す。
+ 
+-【決定】`Http.sendIn` は `Http.Connect` の操作として `IO` で呼び、引数の `RequestIn` の三欄から同じ要求と端点を読む。対象位置0の入力型と潜在効果を同じ一要素の範囲の列で具体化する。要求の五欄は旧 `send` と共通の読取りでホスト所有の要求へ変換し、URI と保持した端点、明示された Host を照合してから、非追従の通信処理へ渡す。Direct と Request の両方式、および参照実行器は同じ登録と実処理を使う。ハンドラの節を実行する場合は通常どおりその節へ引数を渡す。
++【決定】`Http.sendIn` は `Http.Connect` の操作として `IO` で呼び、引数の `RequestIn` の三欄から同じ要求と端点を読む。対象位置0の入力型と潜在効果を同じ一要素の範囲の列で具体化する。要求の五欄は旧 `send` と共通の読取りでホスト所有の要求へ変換し、URI と保持した端点、明示された Host を照合してから、非追従の通信処理へ渡す。Direct と Request の両方式は同じ登録と実処理を使う。参照実行器も同じ登録を持つが、HTTP の実通信の本体は VM のランタイムを要するため、参照実行器では実行できず、試みると処理系の不具合として停止する。旧 `Http.send` も同じ制限を持つ。ハンドラの節を実行する場合は通常どおりその節へ引数を渡す。
+ 
+ 【決定】`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn` は、パスの種類・対象位置 0 の単一対象の IO として登録し、`IO` で呼ぶ。対象引数の `Scope.PathIn` と効果の原子は、同じ一つの範囲変数で具体化する。実行本体は `PathIn` の欄から保持した文字列を借り、対応する既存の File の Rust の処理へ渡す。言語のソースの関数から旧操作を呼んで効果を消す実装にはしない。操作を待たせる処理・完了の処理・言語のハンドラの選択は、既存の IO と同じ経路を使う。
+ 
+@@ -449,7 +449,7 @@
+ 
+ ### 参照インタプリタ
+ 
+-【決定】参照インタプリタは、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の初回リリース版の状態 `⟨M, K, σ⟩`・`error(r̄, K, σ)`・`exit(n, r̄, K, σ)` と遷移を、そのまま実装する。ストア σ は、可変のセル、明示遅延の対象、継続を持つ。継続 K は、コア計算の枠（`let`・`mark`・`update`・`release`・`handle`・`drop`）と、セルへの書き込み・`match` のガード・トップレベルの定数の計算のための補助の枠の並びとして持ち、E-Op は継続を枠の並びとして写して保存する。参照インタプリタは、VM と値の実装を共有せず、`Rc` による安全で単純な値の型を使う。VM の値の実装の不具合が両方に同じく現れて、比べても見つからないことを避けるためである。ただし、組み込みの関数（組み込みのエフェクトの操作を含む）を呼ぶときだけは、引数を自分の値からヒープの値に変換し、VM と同じ組み込みの関数の実装を呼び、結果を自分の値に戻す。共有するのは組み込みの関数の本体だけであり、評価、値の表現、ヒープ、VM は共有しない。タスクはコア計算に含まれないので、参照インタプリタとの比較は、タスクを使わないプログラムに限る（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。
++【決定】参照インタプリタは、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の初回リリース版の状態 `⟨M, K, σ⟩`・`error(r̄, K, σ)`・`exit(n, r̄, K, σ)` と遷移を、そのまま実装する。ストア σ は、可変のセル、明示遅延の対象、継続を持つ。継続 K は、コア計算の枠（`let`・`mark`・`update`・`release`・`handle`・`drop`）と、セルへの書き込み・`match` のガード・トップレベルの定数の計算のための補助の枠の並びとして持ち、E-Op は継続を枠の並びとして写して保存する。参照インタプリタは、VM と値の実装を共有せず、`Rc` による安全で単純な値の型を使う。VM の値の実装の不具合が両方に同じく現れて、比べても見つからないことを避けるためである。ただし、組み込みの関数（組み込みのエフェクトの操作を含む）を呼ぶときだけは、引数を自分の値からヒープの値に変換し、VM と同じ組み込みの関数の実装を呼び、結果を自分の値に戻す。共有するのは組み込みの関数の本体だけであり、評価、値の表現、ヒープ、VM は共有しない。HTTP の実通信の本体は VM のランタイムを要するため、前述の `Http.send`・`Http.sendIn` の制限に従う。タスクはコア計算に含まれないので、参照インタプリタとの比較は、タスクを使わないプログラムに限る（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。
+ 
+ 【決定】通常値とヒープ値の橋渡しは、一呼び出しの引数全体と戻り値にそれぞれ私有の変換区間を設ける。構成子・List・Map・Set・String・Bytes の行きの対応表は、保持した Rc の対象の同一性と値の種類を鍵とし、構成子はタグ、String・Bytes は長さも含める。戻りの対応表は `ValueCtx::object_id` の ObjId と ObjKind を鍵とする。明示の作業列で子を先に変換し、完成した対象を再利用する。処理中の対象への再入は循環として処理系の不具合を返す。理由: 共有する子を繰り返し展開せず、同じ並びを異なる種類・タグで使う値も区別するためである。
+ 
+--- before/docs/design/07-quality/07-01-security-model.md
++++ after/docs/design/07-quality/07-01-security-model.md
+@@ -59,7 +59,7 @@
+ 
+ 【決定】純粋な `Http.checkRequestIn` は、渡された要求の URL から実効のホストとポートを得て、明示した条件への所属を検査する。成功値は同じ要求のレコードと端点を保持し、`Http.requestInValue` は同じレコードを返す。Top は動的な検査を省く理由にはしない。この検査は、操作の許可、DNS の解決先、網に依るアドレスやポートの変換（NAT64 など）、通信の成功、送る内容の制限を保証しない。端点の範囲に scheme を含めないため、固定した origin の制限も保証しない（[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)）。射影したレコードの更新は元の成功値を変えず、URL の変更には再検査を要する。
+ 
+-【決定】HTTPS の証明書の検証では、OS が中間証明書（AIA の `caIssuers`）や失効の情報（OCSP など）を別の宛先から取得しうる。これは標準の範囲の動作であり、DNS の問い合わせと同じく OS が行う副次的な通信として扱う（[RFC 5280 §4.2.2.1](https://www.rfc-editor.org/rfc/rfc5280.html#section-4.2.2.1)）。macOS の SecTrust では、SSL policy による不足した中間証明書のネットワーク取得は既定で有効であり、信頼の評価は失効の検査のための通信も含みうる（[SecTrustSetNetworkFetchAllowed](https://developer.apple.com/documentation/security/sectrustsetnetworkfetchallowed(_:_:))、[SecTrustEvaluateWithError](https://developer.apple.com/documentation/security/sectrustevaluatewitherror(_:_:))）。固定した `ureq 3.4.2` の PlatformVerifier が使う `rustls-platform-verifier 0.7.1` の Apple 実装はこの取得を無効化せず、OS による取得は ureq の解決器と proxy の設定を通らない（[検証器の実装](https://docs.rs/crate/rustls-platform-verifier/0.7.1/source/src/verification/apple.rs)）。静的な端点の範囲は、DNS の解決先とともに、これらの副次的な通信の宛先を保証しない。
++【決定】HTTPS の証明書の検証では、OS が中間証明書（AIA の `caIssuers`）や失効の情報（OCSP など）を別の宛先から取得しうる。これは標準の範囲の動作であり、DNS の問い合わせと同じく OS が行う副次的な通信として扱う（[RFC 5280 §4.2.2.1](https://www.rfc-editor.org/rfc/rfc5280.html#section-4.2.2.1)）。macOS の SecTrust では、SSL policy による不足した中間証明書のネットワーク取得は既定で有効であり、信頼の評価は失効の検査のための通信も含みうる（出典: macOS 27.0 SDK の `System/Library/Frameworks/Security.framework/Headers/SecTrust.h`、260〜289行の `SecTrustSetNetworkFetchAllowed`・`SecTrustGetNetworkFetchAllowed`、405〜425行の `SecTrustEvaluateWithError`）。固定した `ureq 3.4.2` の PlatformVerifier が使う `rustls-platform-verifier 0.7.1` の Apple 実装はこの取得を無効化せず、OS による取得は ureq の解決器と proxy の設定を通らない（[検証器の実装](https://docs.rs/crate/rustls-platform-verifier/0.7.1/source/src/verification/apple.rs)）。静的な端点の範囲は、DNS の解決先とともに、これらの副次的な通信の宛先を保証しない。
+ 
+ 【決定】`Http.sendIn` は保持した要求と端点を読み、送信用 URI と明示された Host の実効 host/port を照合し、リダイレクトも環境 proxy への自動接続も行わない。3xx は応答として返す。対象の観測の単位は、プログラムが接続する endpoint（DNS と OS による変換前の、保持した endpoint）一つである。DNS の問い合わせと TLS の証明書の検証に伴う OS の副次的な通信は、この観測に含めない。名前の解決で得た複数のアドレスへの接続試行の数や、ソケットの相手のアドレスの族も、この一対象の数え方とは別である。旧 `Http.send` の自動追従は保ち、検査済みの要求を射影して旧入口へ渡すだけでは、プログラムが接続する endpoint を一つに保てない。
+ 
+--- before/docs/design/07-quality/07-04-formal-semantics.md
++++ after/docs/design/07-quality/07-04-formal-semantics.md
+@@ -273,8 +273,8 @@
+ 【決定】信頼条件は、旧の条件 `Builtins.CoreAssumptions` と対象一致の条件 `Builtins.TargetAgreement` に分ける（問 7 の S1）。全体の `Builtins.Assumptions` は二つを明示して含む構造体であり（`extends`）、二つへの射影 `Builtins.Assumptions.core`・`target` を持つ。四つの主定理は `CoreAssumptions` だけを前提に持つ（前述の「証明する性質」）。
+ 
+ - `CoreAssumptions` の欄の名前と並びは、以前の `Builtins.Assumptions` の欄と同じである。L20.7 で内容を変えたのは `io_op` だけであり、IO を行う組み込みの関数とプロセスの終了の関数が形の検査 `Builtins.ShapeOk` を通ることにした（問 18 の行 1）。ほかの欄の内容の変更（範囲の列と観測の量化、値の所属の葉の規則と被覆による包含を通じた意味の変化）は、前の段落と「証明する性質」のとおりである。形の検査は、全ての形で `opEff = some L`・`neffs = 0`・組み込みのエフェクト L の操作の一覧への所属を求め、項目の形（`PrimSig.shape`。`Scope.Signature.IOShape`）ごとに次を求める。対象なしの形（`untargeted`）は `effKind L` がなく、範囲の変数を持たず、効果は `{L}`（範囲の位置が Top の一原子）である。旧 Top の形（`topTargeted k`）は `effKind L = k` で、範囲の変数を持たず、効果は `{L}` である。単一の対象の形（`single k p`）は `effKind L = k` で、範囲の変数は種類 k の一つだけ、効果は `{L[rvar 0]}`、引数の位置 p の型は `valKind O = k` の範囲付きの値型 `O[rvar 0]` である（入力の添字と効果の一致）。対象なしの形と旧 Top の形は以前の `io_op` の内容を満たし（`Release/ShapeOk.lean` の `Builtins.ShapeOk.old`）、単一の対象の形は Top の列で具体化した署名が以前の内容を満たす（`Builtins.ShapeOk.inst_top_old`）。
+-- `TargetAgreement` の唯一の欄 `io_target` は、計画済みの新しい信頼条件（決定の判断 15）である。範囲の具体化の許容を満たす範囲の列 R̄ と、`s.inst R̄` で型の付いた引数について、応答の関係が許す観測が項目の形の観測の条件 `Scope.Signature.ShapeTargets` を満たすことを求める。範囲の列は欄の中で量化し、応答の関係は範囲の列を受け取らない。対象なしの形は対象を報告しない。旧 Top の形は宣言した種類の対象だけを報告する（リダイレクト・再帰・複数の対象を含めてよい）。単一の対象の形は、対象の位置の引数が保持する同じ対象をちょうど一つ報告する（問 9 の E1）。単一の対象の形でも、対象の位置の引数が対象を保持しないとき（検査済みの対象の値でも検査済みの要求の値でもない、範囲が Top の不透明型の定数の値）は、旧 Top の形として読む（`PrimSig.shapeAt`。対象は `Val.target?` で取り出す）。理由: 範囲が Top の不透明型には不透明型の定数も属し、その値は対象を持たないので、「ちょうど一つ」を求めると `io_exists` と両立しないためである。入力が範囲に属することは仮定せず、値の型付け（V-Checked・V-CheckedRequest）から示す。`io_target` と形の検査から、一回の呼び出しの観測の対象はどれも具体化した署名の効果の同じ名前の原子が許すことを示した（`Release/Lemmas/TargetSound.lean` の `Builtins.TargetAgreement.obs_allowed`。許可の関係の κ は表の `effKind` で読む `Builtins.Allows`）。この補題と継続を通した伝播から、一段の対象健全性と到達先の対象健全性を示した（前述の「証明する性質」）。
+-- 旧 Top の形には、文言として「実装が作用した対象をすべて観測に含む」（完全性。問 10）を加えて信頼する。完全性は対象の健全性の証明に使わないので、`io_target` の Lean の条件には書かない。`io_target` と完全性の文言、形の検査が読む表のデータ（`shape`・`effKind`・`valKind`）は、処理系の表と実装（観測の報告）との照合の対象であり、まだ照合していない。
++- `TargetAgreement` の唯一の欄 `io_target` は、計画済みの新しい信頼条件（決定の判断 15）である。範囲の具体化の許容を満たす範囲の列 R̄ と、`s.inst R̄` で型の付いた引数について、応答の関係が許す観測が項目の形の観測の条件 `Scope.Signature.ShapeTargets` を満たすことを求める。範囲の列は欄の中で量化し、応答の関係は範囲の列を受け取らない。対象なしの形は対象を報告しない。旧 Top の形は宣言した種類の対象だけを報告する（リダイレクト・再帰・複数の対象を含めてよい）。単一の対象の形は、対象の位置の引数が保持する同じ対象をちょうど一つ報告する（問 9 の E1）。HTTP の観測でいう対象は、プログラムが接続する endpoint であり、DNS の問い合わせと TLS の証明書の検証による OS の副次的な通信を含めない。単一の対象の形でも、対象の位置の引数が対象を保持しないとき（検査済みの対象の値でも検査済みの要求の値でもない、範囲が Top の不透明型の定数の値）は、旧 Top の形として読む（`PrimSig.shapeAt`。対象は `Val.target?` で取り出す）。理由: 範囲が Top の不透明型には不透明型の定数も属し、その値は対象を持たないので、「ちょうど一つ」を求めると `io_exists` と両立しないためである。入力が範囲に属することは仮定せず、値の型付け（V-Checked・V-CheckedRequest）から示す。`io_target` と形の検査から、一回の呼び出しの観測の対象はどれも具体化した署名の効果の同じ名前の原子が許すことを示した（`Release/Lemmas/TargetSound.lean` の `Builtins.TargetAgreement.obs_allowed`。許可の関係の κ は表の `effKind` で読む `Builtins.Allows`）。この補題と継続を通した伝播から、一段の対象健全性と到達先の対象健全性を示した（前述の「証明する性質」）。
++- 旧 Top の形には、文言として「実装が作用した対象をすべて観測に含む」（完全性。問 10）を加えて信頼する。HTTP の完全性も、プログラムが接続する endpoint を単位として読む。完全性は対象の健全性の証明に使わないので、`io_target` の Lean の条件には書かない。`io_target` と完全性の文言、形の検査が読む表のデータ（`shape`・`effKind`・`valKind`）は、処理系の表と実装（観測の報告）との照合の対象であり、まだ照合していない。
+ 
+ 【決定】Rust の `Scope.checkPathIn` が作る `PathIn` は、入力のパスを保持する構成子の値であり、形式化の `Val.checked t` に対応させる。静的な範囲が Top でも対象を保持し、`pathInValue` は同じパスを返す。この成功値を、対象を持たない Top の不透明型の定数へ対応させない。`PrimSig.shapeAt` がその定数を旧 Top の形として読む条件は形式化に残るが、この条件は実装の所属検査と対象の保持を省く根拠にはしない。二つの純粋な入口の標準署名には種類 path の範囲変数を一つ持ち、Rust の型検査とコアの検査は呼び出しごとの確定した範囲へ具体化する。型の制約と局所解析の規則で範囲が決まらなければ Top とする。署名の範囲変数と種類は通常の交換で書き出すが、プログラムの型には範囲変数を残さない。動的な検査・対象の保持と、[仮想機械](../02-impl/02-08-vm.md#値の表現)・[ランタイム](../02-impl/02-09-runtime.md#メモリの管理)の安全条件は Rust の実装とテストで照合する。
+ 

@@ -1,0 +1,10 @@
+import Benitoite.StringBuilder
+
+function main() -> Unit
+  bind b: StringBuilder <- StringBuilder.new()
+  StringBuilder.append(builder: b, text: "a")
+  bind before <- StringBuilder.copy(b)
+  StringBuilder.appendAll(texts: ["b", "c"], builder: b)
+  bind after <- StringBuilder.copy(b)
+  bind size <- StringBuilder.byteLength(b)
+end function

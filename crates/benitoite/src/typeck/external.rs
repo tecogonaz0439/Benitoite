@@ -37,7 +37,11 @@ pub(super) fn check(d: &mut Decls<'_>) {
             };
             let state = scheme.effects.failures.is_empty()
                 && scheme.effects.vars.is_empty()
-                && scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE)];
+                && scheme.effects.names.as_slice()
+                    == [EffectName::Builtin(
+                        BuiltinEffectId::STATE,
+                        crate::types::builtin::RangeIndex::TOP,
+                    )];
             if external && !state || !external && (f.uses.is_some() || !scheme.effects.is_empty()) {
                 let file_origin = d.out.effective_effects.get(binding).and_then(|effective| {
                     effective.origins.iter().find(|origin| {
@@ -45,7 +49,11 @@ pub(super) fn check(d: &mut Decls<'_>) {
                             && (!external
                                 || !origin.effects.failures.is_empty()
                                 || origin.effects.names.iter().any(|name| {
-                                    *name != EffectName::Builtin(BuiltinEffectId::STATE)
+                                    *name
+                                        != EffectName::Builtin(
+                                            BuiltinEffectId::STATE,
+                                            crate::types::builtin::RangeIndex::TOP,
+                                        )
                                 }))
                     })
                 });
@@ -74,7 +82,7 @@ fn contains_external<'a>(
     for ty in types {
         crate::external::expansion::walk(ty, resolved, adts, total, |ty, visit| {
             if matches!(visit, crate::external::expansion::Visit::Enter)
-                && matches!(ty, Ty::Con(TyCon::External(_), _))
+                && matches!(ty, Ty::Con(TyCon::External(_), _, _))
             {
                 external = true;
             }
@@ -86,7 +94,7 @@ fn contains_external<'a>(
 }
 
 fn is_unit(ty: &Ty) -> bool {
-    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args) if args.is_empty())
+    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args, _) if args.is_empty())
 }
 
 fn external_effect_error(f: &FnDecl, external: bool) -> Diagnostic {

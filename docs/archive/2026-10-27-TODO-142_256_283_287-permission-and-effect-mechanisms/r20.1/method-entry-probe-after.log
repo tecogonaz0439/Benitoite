@@ -1,0 +1,12 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.49s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+{"exportedDictionaryCount":0,"exportedHeaderNames":["value"],"exportedMethod":{"annotations":{},"name":"Inspect[List[T]].inspect (fn:45)","scope":{"inScope":{"core":{"body":{"letIn":{"body":{"ret":{"value":{"const":{"value":"unit"}}}},"bound":{"ret":{"value":{"var":{"index":0}}}}}},"header":{"eff":[],"effParams":[],"names":["value"],"neffs":0,"params":[{"list":{"elem":{"tvar":{"index":0}}}}],"ret":{"base":{"name":"Unit"}},"tparams":[[false,false]]},"lambdaEffects":[],"supers":[]},"surface":{"body":{"discard":{"expr":{"local":{"index":0}},"rest":{"last":{"expr":"unit"}}}},"dictParams":[],"header":{"eff":[],"effParams":[],"names":["value"],"neffs":0,"params":[{"list":{"elem":{"tvar":{"index":0}}}}],"ret":{"base":{"name":"Unit"}},"tparams":[[false,false]]},"implementation":"impl:22","method":"meth:44","package":"root","supers":[]}}}},"implClassConstraints":1,"implNode":22,"leanMethodInputNameCount":1,"schemeClassConstraints":1,"schemeValueParams":1,"scopeBodyKey":{"definition":"%impl:1:0:inspect","surfacePreorder":0},"scopeEntry":{"dictionaries":0,"nextId":1,"positions":[564]}}
+test r20_1_method_entry_probe ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 43 filtered out; finished in 0.08s
+
+
+exit: 0

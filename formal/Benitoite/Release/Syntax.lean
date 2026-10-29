@@ -171,7 +171,7 @@ def Const.type : Const → Ty
   | .unit => .base .unit
   | .byte _ => .base .byte
   | .decimal _ _ => .base .decimal
-  | .opaque o _ => .opaque o
+  | .opaque o _ => .opaqueTop o
   | .integer8 _ => .base .integer8
   | .integer16 _ => .base .integer16
   | .integer32 _ => .base .integer32
@@ -235,7 +235,8 @@ mutual
     | var (i : Nat)
     | const (c : Const)
     | fnRef (f : FunName) (tys : List Ty) (effs : List Eff)
-    | prim (b : PrimName) (tys : List Ty) (effs : List Eff)
+    /-- 組み込みの関数 `b[T̄; Ē; R̄]`。`rs` は具体化した範囲の列（問 5）。 -/
+    | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List Scope.Domain.Range)
     | lam (names : List String) (params : List Ty) (body : Comp)
     | con (c : ConName) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
@@ -255,6 +256,17 @@ mutual
     | dict (i : ImplName) (tys : List Ty) (args : List Val)
     /-- 上位の型クラスの辞書 `V↑S`。 -/
     | super (v : Val) (s : ClassName)
+    /-- 検査済みの対象の値（問 6 の A）。範囲付きの値型 `opaque o (fixed R)` の値に当たる（設計書 01-12「構文」）。
+    型と値の変数を持たないので、代入・改名・shift で変わらない。表層の構文と脱糖はこの値を作らない。型付けは
+    所属を前提に持つ葉の規則 V-Checked だけで行う（`HasTypeVQ.inv_checked`）。遷移の規則はこの値を特別に作らず、
+    この値を作るのは組み込みの表の δ（検査の項目）である。 -/
+    | checked (t : Scope.Domain.Target)
+    /-- 検査済みの要求の値（決定の判断 7）。`Http.RequestIn[H,P]` の値に当たり、検査した要求 `req` と、検査で得た実効の
+    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は `Http.ClientRequest` のレコードの閉じた値
+    （同じストアの型付けのもとで、空の NoFail の文脈・型の文脈・値の文脈で型を持つ値）である。型の変数を含まないことは
+    規則の前提ではなく、実例の表の検査の δ が `ModelHttp.groundVal` で保証する。閉じた値なので、代入・改名・shift は
+    この値を変えない（中へ下りない）。型付けは規則 V-CheckedRequest だけで行う。 -/
+    | checkedRequest (t : Scope.Domain.Target) (req : Val)
 
   inductive Comp where
     | builderLet (kind : BuilderKind) (body : Comp)

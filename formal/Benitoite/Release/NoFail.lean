@@ -18,7 +18,7 @@ def QLe (Q Q' : NoFailCtx) : Prop := ∀ i, Q i → Q' i
 mutual
   /-- 型内部の全署名の、明示の Fail と並ぶ行。 -/
   def QTy : Ty → NoFailCtx
-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => Qempty
+    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => Qempty
     | .data _ as | .tapp _ as => QTys as
     | .list a | .reference a | .lazy a | .set a | .dict _ a => QTy a
     | .map a b => fun i => QTy a i ∨ QTy b i
@@ -190,7 +190,7 @@ theorem NoFail.bind {Qs Qt : NoFailCtx} {e : Eff} (θ : SubstEnv)
     · exact h.not_memFail x hx
     · exact (hr i (h.2 i hi)).not_memFail t hit
   · intro j hj
-    rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, hl, _⟩ | ⟨i, hi, hij⟩
+    rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, r, hl, _⟩ | ⟨i, hi, hij⟩
     · cases hl
     · exact (hr i (h.2 i hi)).2 j hij
 

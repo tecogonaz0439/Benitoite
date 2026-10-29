@@ -1,0 +1,53 @@
+== wait-for-lock start 06:52:44
+== lock acquired 06:52:44 after 0s
+✔ [128/461] Built Benitoite.Release.WellFormed (455ms)
+✔ [130/461] Built Benitoite.Release.Admissible (758ms)
+✔ [132/461] Built Benitoite.Release.Semantics (1.8s)
+✔ [134/461] Built Benitoite.Release.RangeIxExamples (605ms)
+✔ [135/461] Built Benitoite.Release.Assumptions (730ms)
+✔ [136/461] Built Benitoite.Release.RangeWF (2.6s)
+✔ [139/461] Built Benitoite.Release.Examples (1.8s)
+✔ [140/461] Built Benitoite.Release.LocalScope (5.3s)
+✔ [141/461] Built Benitoite.Release.RangeInst (2.5s)
+✔ [142/461] Built Benitoite.Release.ShapeOk (384ms)
+✔ [143/461] Built Benitoite.Release.RangeInst:c.o (593ms)
+✔ [144/461] Built Benitoite.Release.Lemmas.TyLemmas (7.6s)
+✔ [145/461] Built Benitoite.Release.Lemmas.Names (7.6s)
+✔ [147/461] Built Benitoite.Release.Lemmas.Rename (9.3s)
+✔ [148/461] Built Benitoite.Release.Lemmas.Rename:c.o (786ms)
+✔ [149/461] Built Benitoite.Release.Lemmas.NoFailContext (3.2s)
+✔ [151/461] Built Benitoite.Release.Lemmas.Irrelevant (4.8s)
+✔ [152/461] Built Benitoite.Release.Lemmas.Closed (6.2s)
+✔ [153/461] Built Benitoite.Release.Lemmas.FailureBase (579ms)
+✔ [154/461] Built Benitoite.Surface.Lemmas.ScopedRename (526ms)
+✔ [155/461] Built Benitoite.Release.Lemmas.VariableBind (780ms)
+✔ [156/461] Built Benitoite.Release.Lemmas.ContLemmas (742ms)
+✔ [157/461] Built Benitoite.Release.Lemmas.Closed:c.o (1.4s)
+✔ [158/461] Built Benitoite.Surface.Lemmas.ShiftClean (1.5s)
+✖ [159/461] Building Benitoite.Release.Lemmas.Inversion (21s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.setup.json --json
+error: Benitoite/Release/Lemmas/Inversion.lean:139:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Inversion
+error: build failed
+       21.24 real       164.29 user         6.52 sys
+          2982445056  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1234410  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  92  voluntary context switches
+              156881  involuntary context switches
+          1906069333  instructions retired
+           897095302  cycles elapsed
+            52053384  peak memory footprint
+== exit 1

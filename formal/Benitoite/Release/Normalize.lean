@@ -15,7 +15,7 @@ mutual
   /-- 型のすべての子と、埋め込まれた効果を正規化する。 -/
   noncomputable def Ty.norm : Ty → Ty
     | .base b => .base b
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d as => .data d (Ty.normTys as)
     | .list a => .list a.norm
     | .fn ns ps r e => .fn ns (Ty.normTys ps) r.norm (Eff.norm e)
@@ -106,7 +106,7 @@ theorem Eff.norm_memFail (e : Eff) (t : Ty) : e.norm.memFail t ↔ e.memFail t :
 mutual
   /-- Fail のない旧型は、効果の支持の有限性によらず保持する。 -/
   def Ty.Legacy : Ty → Prop
-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => True
+    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => True
     | .data _ as | .tapp _ as => Ty.LegacyTys as
     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.Legacy
     | .fn _ ps r e => Ty.LegacyTys ps ∧ r.Legacy ∧ Eff.Legacy e
@@ -151,7 +151,7 @@ end
 mutual
   /-- すべての深さで Fail の列が高々一要素である。 -/
   def Ty.FailsLeOne : Ty → Prop
-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => True
+    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => True
     | .data _ as | .tapp _ as => Ty.FailsLeOneTys as
     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.FailsLeOne
     | .fn _ ps r e => Ty.FailsLeOneTys ps ∧ r.FailsLeOne ∧ Eff.FailsLeOne e

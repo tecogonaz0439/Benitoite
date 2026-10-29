@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+const lo: Integer = 443
+const lo2: Integer = lo
+const hi: Integer = 80
+function f(r: Http.ClientRequest) -> Result[Http.RequestIn, Http.RequestCheckError]
+ return Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: lo2, maximumPort: hi, request: r)
+end function

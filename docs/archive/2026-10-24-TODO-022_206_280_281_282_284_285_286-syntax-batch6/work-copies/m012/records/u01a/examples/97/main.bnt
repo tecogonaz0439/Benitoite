@@ -1,0 +1,21 @@
+//! Prints a short report.
+
+import Benitoite.Unofficial.IO.Console
+
+/// Returns the larger of two integers.
+function larger(a: Integer, b: Integer) -> Integer
+  if a > b then
+    return a
+  end if
+  return b
+end function
+
+function main() -> Unit uses Console.Write
+  bind total <- 10
+  bind increased <- total + larger(a: 3, b: 7)
+  bind label <- match increased > 15 with
+    case true -> "big"
+    case false -> "small"
+  end match
+  Console.writeLine("${label}: ${increased}")
+end function

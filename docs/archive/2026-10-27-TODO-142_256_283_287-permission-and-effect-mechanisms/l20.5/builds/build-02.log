@@ -1,0 +1,28 @@
+== wait-for-lock start 02:37:57
+== lock acquired 02:37:57 after 0s
+✔ [156/438] Built Benitoite.Release.RangeWF (791ms)
+✖ [158/438] Building Benitoite.Release.RangeInst (850ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/RangeInst.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/RangeInst.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/RangeInst.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/RangeInst.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/RangeInst.setup.json --json
+error: Benitoite/Release/RangeInst.lean:781:10: Unknown constant `Benitoite.Release.PrimSig.Scoped.scopedRanges`
+Some required targets logged failures:
+- Benitoite.Release.RangeInst
+error: build failed
+        1.74 real         2.18 user         0.40 sys
+           759578624  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              101654  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   7  voluntary context switches
+               18325  involuntary context switches
+          1405868224  instructions retired
+           559618495  cycles elapsed
+            22545560  peak memory footprint
+== exit 1

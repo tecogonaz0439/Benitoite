@@ -1,0 +1,10 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit
+ ()
+end function
+function f() -> Result[Scope.CheckedEndpoint, Scope.ScopeError]
+ return Scope.checkEndpoint(hostPattern: "0:0:0:0:0:0:0:1", host: "::1", minimumPort: 0, maximumPort: 0, port: 0)
+end function

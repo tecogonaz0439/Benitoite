@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-28T22:31:58.274274+00:00",
+  "finished_utc": "2026-10-28T22:37:16.535535+00:00",
+  "command_exit": 0,
+  "outer_seconds": 318.260939292,
+  "maxrss_raw": 2818686976,
+  "maxrss_unit": "bytes",
+  "maxrss_bytes": 2818686976,
+  "maxrss_mib": 2688.109375,
+  "maxrss_gib": 2.6251068115234375,
+  "maxrss_method": "getrusage(RUSAGE_CHILDREN); fresh wrapper; maximum child RSS, not sum"
+}

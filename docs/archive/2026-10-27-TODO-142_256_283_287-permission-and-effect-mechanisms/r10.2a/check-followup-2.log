@@ -1,0 +1,70 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+  --> crates/benitoite/examples/try_actions_inventory.rs:36:33
+   |
+36 |             EffectName::Builtin(id) => benitoite::types::builtin::effect_name(*id)?,
+   |                                 ^^ expected 2 fields, found 1
+   |
+  ::: crates/benitoite/src/types/mod.rs:44:13
+   |
+44 |     Builtin(BuiltinEffectId, scope::Range),
+   |             ---------------  ------------ tuple variant has 2 fields
+   |
+help: use `_` to explicitly ignore each field
+   |
+36 |             EffectName::Builtin(id, _) => benitoite::types::builtin::effect_name(*id)?,
+   |                                   +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+  --> crates/benitoite/examples/try_actions_inventory.rs:37:30
+   |
+37 |             EffectName::User(id) => checked.types.effects.get(*id)?.display_name.clone(),
+   |                              ^^ expected 2 fields, found 1
+   |
+  ::: crates/benitoite/src/types/mod.rs:46:10
+   |
+46 |     User(BindingId, scope::Range),
+   |          ---------  ------------ tuple variant has 2 fields
+   |
+help: use `_` to explicitly ignore each field
+   |
+37 |             EffectName::User(id, _) => checked.types.effects.get(*id)?.display_name.clone(),
+   |                                +++
+
+For more information about this error, try `rustc --explain E0023`.
+error: could not compile `benitoite` (example "try_actions_inventory") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/tests/../examples/derive_inventory/schema.rs:109:33
+    |
+109 |             EffectName::Builtin(id) => {
+    |                                 ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:44:13
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+109 |             EffectName::Builtin(id, _) => {
+    |                                   +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/tests/../examples/derive_inventory/schema.rs:113:30
+    |
+113 |             EffectName::User(id) => Ok(json!({"tag":"named","name":self.name(*id)})),
+    |                              ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:46:10
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+113 |             EffectName::User(id, _) => Ok(json!({"tag":"named","name":self.name(*id)})),
+    |                                +++
+
+error: could not compile `benitoite` (test "declarations") due to 2 previous errors

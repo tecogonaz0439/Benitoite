@@ -24,7 +24,11 @@ fn source_span(start: usize, end: usize) -> Span {
 }
 
 fn ty(id: BuiltinTypeId) -> Ty {
-    Ty::Con(TyCon::Builtin(id), vec![])
+    Ty::Con(
+        TyCon::Builtin(id),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 fn val(kind: ValKind<Comp>, ty: Ty, origin: Span) -> CoreVal {
     Val { kind, ty, origin }
@@ -209,6 +213,7 @@ fn die_failure_core_has_one_message_then_one_cause_and_canonical_exit() {
                 failures: vec![],
                 names: vec![EffectName::Builtin(
                     crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap(),
+                    crate::types::builtin::RangeIndex::TOP,
                 )],
                 vars: vec![],
             };
@@ -217,6 +222,7 @@ fn die_failure_core_has_one_message_then_one_cause_and_canonical_exit() {
                 kind: CompKind::App {
                     func: val(
                         ValKind::Builtin {
+                            ranges: vec![],
                             id: crate::builtins::lookup_builtin("Benitoite.IO.Process.exit")
                                 .unwrap(),
                             info: BuiltinInfo {

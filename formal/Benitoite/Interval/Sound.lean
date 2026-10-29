@@ -2023,7 +2023,7 @@ def targetOperationAt (env : AbstractEnv) (key : OperationKey) (source : Expr) :
     Option TargetOperation :=
   match source with
   | .call (.funName declaration [] []) _ _ _
-  | .call (.primName declaration [] []) _ _ _ => do
+  | .call (.primName declaration [] [] []) _ _ _ => do
     let binding ← env.standardAt key
     if declaration = binding.declaration then some (.standard binding) else none
   | _ => arithmeticOperationAt source
@@ -2055,7 +2055,7 @@ theorem target_at_function (env : AbstractEnv) (key : OperationKey)
 /-- 組み込み関数の位置も、標準関数と同じ二表と宣言を照合する。 -/
 theorem target_at_primitive (env : AbstractEnv) (key : OperationKey)
     (declaration : PrimName) (labels positions arguments) :
-    targetOperationAt env key (.call (.primName declaration [] []) labels positions arguments) =
+    targetOperationAt env key (.call (.primName declaration [] [] []) labels positions arguments) =
       (env.standardAt key).bind (fun binding =>
         if declaration = binding.declaration then some (.standard binding) else none) := rfl
 
@@ -2086,8 +2086,10 @@ theorem call_binding_target {env : AbstractEnv} {key source binding}
   cases source <;> simp only at head <;> try contradiction
   rename_i callee labels positions arguments
   cases callee <;> simp only [standardCallHead] at head <;> try contradiction
-  all_goals rename_i declaration types effects
-  all_goals cases types <;> cases effects <;> simp_all [standardCallHead, targetOperationAt]
+  case funName declaration types effects =>
+    cases types <;> cases effects <;> simp_all [targetOperationAt]
+  case primName declaration types effects ranges =>
+    cases types <;> cases effects <;> cases ranges <;> simp_all [targetOperationAt]
 
 /-- 算術の構文との一致は保ち、固定域の標準 call の構文だけを追加する。 -/
 def WarningOperationSyntax (source : Expr) (operation : TargetOperation) : Prop :=

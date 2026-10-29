@@ -1,0 +1,105 @@
+Model.lean:545:90: warning: This simp argument is unused:
+  accept
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, lattice, productLattice, label, context, publicTrusted, publicUntrusted, FiniteSecrets.union,
+    FiniteSecrets.empty, FiniteSecrets.lattice] at hk
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:750:18: error: unsolved goals
+case seq
+L D : Type
+S : System L D
+O : Observer S
+Γ : Ctx L
+pc : L
+c : Cmd D
+Γ✝ : Ctx L
+pc✝ : L
+a✝² b✝ : Cmd D
+a✝¹ : Typed S Γ✝ pc✝ a✝²
+a✝ : Typed S Γ✝ pc✝ b✝
+ia : O.visible pc✝ = false → ∀ (ρ : Env), observeResult O (run a✝² ρ) = Result.done []
+ib : O.visible pc✝ = false → ∀ (ρ : Env), observeResult O (run b✝ ρ) = Result.done []
+hp : O.visible pc✝ = false
+ρ : Env
+⊢ observeResult O
+      (match run a✝² ρ, run b✝ ρ with
+      | Result.failed tr, x => Result.failed tr
+      | Result.done ta, Result.done tb => Result.done (ta ++ tb)
+      | Result.done ta, Result.failed tb => Result.failed (ta ++ tb)) =
+    Result.done []
+Model.lean:752:22: warning: This simp argument is unused:
+  observe_then
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [run, ia hp ρ, ib hp ρ, Result.then, List.nil_append]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:752:36: warning: This simp argument is unused:
+  ia hp ρ
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [run, observe_then, ib hp ρ, Result.then, List.nil_append]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:752:45: warning: This simp argument is unused:
+  ib hp ρ
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [run, observe_then, ia hp ρ, Result.then, List.nil_append]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:752:67: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [run, observe_then, ia hp ρ, ib hp ρ, Result.then]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:819:22: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidableRel system.flows
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Model.lean:842:67: error: Tactic `decide` failed for proposition
+  publicObserver.visible (context 0).snd = false
+because its `Decidable` instance
+  instDecidableEqBool (publicObserver.visible (context 0).snd) false
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool` and `Bool.decEq`, reduction got stuck at the `Decidable` instance
+  match publicObserver.visible (context 0).snd, false with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+"4.34.1"
+'SG.lattice_noninterference' depends on axioms: [propext]
+'SG.FiniteSecrets.phase_iff_generic' depends on axioms: [propext, Quot.sound]
+'SG.FiniteSecrets.phase_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.integrity_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsement_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsed_command_approved' depends on axioms: [propext]
+'SG.Integrity.unconditional_endorsement_NI_false' depends on axioms: [propext, Quot.sound]
+'SG.Failure.noninterference' depends on axioms: [propext, sorryAx]
+'SG.Failure.Examples.rejects_secret_failure' depends on axioms: [propext, Quot.sound]
+'SG.Failure.Examples.accepts_public_failure' depends on axioms: [propext, Quot.sound]
+        1.04 real         1.36 user         0.28 sys
+           733413376  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47502  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               10488  involuntary context switches
+         12010093997  instructions retired
+          4969581620  cycles elapsed
+           183705056  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

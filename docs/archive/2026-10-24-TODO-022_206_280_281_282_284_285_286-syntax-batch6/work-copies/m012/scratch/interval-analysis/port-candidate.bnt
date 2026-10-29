@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.Range
+
+function nextPortCandidate(port: Integer) -> Result[Range.CheckedInteger, Range.RangeError]
+  match Range.checkInteger(minimum: 0, maximum: 65534, value: port) with
+    case Result.Ok(checked) ->
+      bind next <- Range.value(checked) + 1
+      return Range.checkInteger(minimum: 1, maximum: 65535, value: next)
+    case Result.Error(error) -> return Result.Error(error)
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- nextPortCandidate(1)
+  return ()
+end function

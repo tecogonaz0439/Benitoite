@@ -13,11 +13,11 @@ How the code examples in this file are checked (crates/benitoite/tests/reference
 - Blocks with other info strings (such as `text` and `sh`) are not checked.
 -->
 
-This reference describes Benitoite `0.0.12`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
+This reference describes Benitoite `0.0.13`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.
 
 To install `benitoite`, see [Installing Benitoite](install.md).
 
-Benitoite is a statically typed functional scripting language. A script is a `.bnt` file. Before anything runs, `benitoite` checks the types of the script and the effects it uses: what each function may do outside the program, such as writing files or starting commands. The checks guarantee only that the script follows these rules. They do not guarantee that the script does what you intended, that an outside operation succeeds, or that the script finishes.
+Benitoite is a statically typed functional scripting language. A script is a `.bnt` file. Before anything runs, `benitoite` checks the types of the script and the effects it uses: what each function may do outside the program, such as writing files or starting commands. Scoped effects also express static upper bounds on operation targets. The checks guarantee only that the script follows these rules. They do not guarantee that the script does what you intended, that an outside operation succeeds, or that the script finishes. Have the agent or harness inspect the declared contracts before execution and use its sandbox for runtime isolation; target bounds do not enforce runtime permissions or information-flow control.
 
 ## Contents
 
@@ -97,7 +97,7 @@ benitoite --licenses
 | `skill` | Installs or removes the bundled Agent Skill, or lists and retrieves its embedded documents without installing them. See [Installing Benitoite](install.md#3-install-the-agent-skill). |
 | `package` | Experimental. Adds, updates, or moves local dependency declarations. See [The package commands](#the-package-commands). |
 | `--help` | Prints the usage. |
-| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.12`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
+| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.13`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |
 | `--version=json` | Prints version, build, and supported-format information as one JSON object. It must be the first argument and accepts no following arguments. |
 | `--licenses` | Prints the licenses of the third-party software in the executable. A build from source does not contain this list and says so. |
 
@@ -156,7 +156,7 @@ Use `benitoite --version=json` to discover the formats that an executable suppor
   "schemaVersion": 1,
   "kind": "version",
   "name": "benitoite",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "unicodeVersion": "17.0.0",
   "displayWidthUnicodeVersion": "17.0.0",
   "build": {
@@ -235,7 +235,7 @@ Every target has `targetId`, `requestIndex`, `entry`, `root`, `sourceId`, `kind`
 
 A successful `main` is `{symbol: "main", location, effects, processShellReference, shellReferenceScope}`. Each item in `tests` is `{function, description, location, effects}` in declaration order. An omitted test description is `null`; an explicitly empty description is `""`. `location` identifies the function name, using `{file, start, end, label: ""}`; start and end contain one-based `line` and `column` and a zero-based byte `offset` in the original source.
 
-An Effects object is `{basis: "declaredUpperBound", expanded: [...]}`. Its array contains unique atomic built-in names in lexical order. It reports the declared upper bound, including effects that the body does not use. `IO.All` expands to `Clock.Time`, `Console.Read`, `Console.Write`, `File.Read`, `File.Write`, `Process.Environment`, `Process.Exit`, `Process.Run`, `Random.Generate`, and `State`; it includes neither HTTP effect nor `Assert.Check`. Tests retain `Assert.Check` in each contract, the aggregate, and later effect-limit comparisons. Declaring `Assert.Check` on `main` is a check error (`E0415`). An unhandled `or die` needs `Process.Exit`; fully handling it and removing it from the declared bound removes it from the report. A bare `try` or `or return` adds no exit effect.
+An Effects object has `basis: "declaredUpperBound"`, `expanded: [...]`, and an optional `bounds` array described under [Declared target bounds](#declared-target-bounds). `expanded` contains unique atomic built-in names in lexical order, without scope arguments. It reports the declared upper bound, including effects that the body does not use. `IO.All` expands to `Clock.Time`, `Console.Read`, `Console.Write`, `File.Read`, `File.Write`, `Process.Environment`, `Process.Exit`, `Process.Run`, `Random.Generate`, and `State`; it includes neither HTTP effect nor `Assert.Check` nor Log. Tests retain `Assert.Check` in each contract, the aggregate, and later effect-limit comparisons. Declaring `Assert.Check` on `main` is a check error (`E0415`). An unhandled `or die` needs `Process.Exit`; fully handling it and removing it from the declared bound removes it from the report. A bare `try` or `or return` adds no exit effect.
 
 An unhandled `Failure.Fail[E]` on `main` or a test is a check error (`E0506`), including during `test --check`. Handle it inside the entry, or convert it with `Failure.toResult`. Fail is excluded from `IO.All`, `expanded`, and the names accepted by `--allow-effects`; the report and effect-limit schema versions stay unchanged.
 
@@ -259,6 +259,23 @@ Usage errors have `complete: false`, `targetsComplete: false`, empty `targets`, 
 Check for a complete single JSON object, an understood `schemaVersion` and `kind`, `status: "ok"`, `complete: true`, and exit status 0 before using the aggregate as a confirmed set. A warning promoted by `--deny-warnings` makes the report a `checkError`. For multiple test-inspection failures, precedence is interrupted, internal error, usage error, then check error.
 
 Report assembly and serialization finish before output starts. A write or flush failure takes precedence and exits with 1, without appending or resending another report. OS writes are not guaranteed to be indivisible. Initialization failures, failures outside the report boundary, a failure while building the failure report itself, aborts, forced termination, and broken output do not guarantee a complete report. Test inspection observes interruption before starting each file, not continuously during checking; a request during the last file may go unreported. Main inspection leaves signals to the OS default behavior.
+
+### Declared target bounds
+
+The harness reads `effects.bounds` alongside `expanded` on main, selected tests, executable documentation examples, and aggregates. Each item is `{name, scope}`. The basis is the declared upper bound, including unused declarations, rather than an inferred minimum or an observation of execution. This implementation emits `bounds` whenever it emits an Effects object. The field is optional for compatibility: when absent, read every name in `expanded` as covering all targets of that kind. Report versions and the acceptance rules under [Inspection reports](#inspection-reports) are unchanged.
+
+| `scope.kind` | Additional fields and meaning |
+|---|---|
+| `all` | All targets, including a target whose narrower range is unknown; no additional fields. |
+| `pathExact` | `path`: one absolute path spelling. |
+| `pathTree` | `path`: a tree stem without `/**`, including that stem and its descendants. |
+| `endpoint` | `host` and `ports: {minimum, maximum}`, with inclusive port bounds. |
+
+An endpoint's `host` is `{kind: "exact"|"one"|"many", name}` for a named host, without wildcard prefixes in `name`. For an IP address it is `{kind: "exact"|"cidr", family: "v4"|"v6", address}`, with canonical `address` and an additional `prefixLength` for CIDR. Host and port bounds cover both HTTP and HTTPS; they do not select a scheme, URL path, message contents, or a fixed origin. See [Scoped effects](#scoped-effects) for the scope syntax and guarantee.
+
+`expanded` removes repeated names. `bounds` removes only structurally identical atoms; it retains different scopes of one name, including a narrow scope alongside Top, even when one covers another. An unknown target is `{kind: "all"}`, never an empty array. An unfinished contract is a null Effects value. A known pure contract has empty `expanded` and `bounds` arrays.
+
+Documentation `check` and `error` examples select no execution entry and return an empty Effects object and `tests: []`, even when their source declares effects on `main` or tests. This empty object does not assert purity. These examples do not contribute to execution's aggregate; ordinary tests and `test`/`run` examples do. Fully handled user effects do not reappear in `expanded`, `bounds`, or permissions. Diagnostic explanations of local check provenance are separate from declared bounds: a user effect named in an explanation adds no permission.
 
 ### Interval analysis coverage
 
@@ -296,7 +313,7 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 benitoite --allow-effects= pure.bnt
 ```
 
-The last command allows the empty set. The option accepts one comma-separated set in any order, using the 14 atomic names in [Effects](#10-effects), with `State` and `Assert.Check` included. It rejects duplicate names, empty elements, whitespace anywhere, unknown or user-defined names, import aliases, `IO.All`, and `*`; it does not trim the value. The option may occur once. It is not accepted by `check`, `test --check`, or `fmt`. After a `run` script path it is a script argument.
+The last command allows the empty set. The option accepts one comma-separated set in any order, using the 14 atomic names in [Effects](#10-effects), with `State` and `Assert.Check` included. It rejects duplicate names, empty elements, whitespace anywhere, unknown or user-defined names, import aliases, `IO.All`, `*`, and scope arguments such as `File.Read["/data/**"]`; it does not trim the value. Each accepted name covers all targets of that kind, including scoped atoms in the contract. The option may occur once. It is not accepted by `check`, `test --check`, or `fmt`. After a `run` script path it is a script argument.
 
 The newly checked declared upper bound must be a subset of the supplied set; extra allowed names are accepted. A missing effect produces one `E0512` per offending function, with its location, the missing effects, and the allowed set, and exits with 2 before execution. With `--diagnostics=json`, these are ordinary diagnostic lines on standard error, without an approval object on standard output. Earlier type or effect errors take precedence over comparing an unknown contract.
 
@@ -946,7 +963,7 @@ Top-level constant evaluation accounts for storage of direct constant references
 
 A direct call to the standard `Regex.compile` also checks a known constant `source`. A syntax error is E0457; the same compilation limit used at runtime is E0458. An import alias still refers to the standard binding. This does not permit `Regex.compile` in a top-level `const` (E0433), and it does not propagate local `bind` values or evaluate arbitrary pure functions.
 
-Direct calls to `Scope.checkHost`, `Scope.checkPath`, and `Scope.checkEndpoint` also reject known invalid arguments. E0459 identifies a malformed pattern, E0460 a malformed target, E0461 invalid port bounds or a port outside 0..65535, and E0462 a target outside its supplied condition. Known parts are checked even when other arguments are dynamic: Endpoint checks host membership when its two strings are known and port membership when its three integers are known. A rejected call would return `Result.Error` for every possible value of the unknown arguments. See [Scope](#scope) for its spelling rules and guarantees.
+Direct calls to `Scope.checkHost`, `Scope.checkPath`, `Scope.checkEndpoint`, `Scope.checkPathIn`, and `Http.checkRequestIn` also reject known invalid arguments. E0459 identifies a malformed pattern, E0460 a malformed target, E0461 invalid port bounds or a port outside 0..65535, and E0462 a target outside its supplied condition. Known parts are checked even when other arguments are dynamic: Endpoint checks host membership when its two strings are known and port membership when its three integers are known. `Http.checkRequestIn` checks its known host pattern and port bounds here; URL parsing remains a runtime check. The projections `Scope.pathInValue` and `Http.requestInValue` have no condition arguments for this additional check. A rejected call would return `Result.Error` for every possible value of the unknown arguments. See [Scope](#scope) for its spelling rules and guarantees. These extra constant diagnostics are separate from the required scope admission checks described under [Scoped values and IO](#scoped-values-and-io); runtime checking of dynamic inputs does not bypass those required checks.
 
 Dynamic arguments, local function values, partial application, placeholders, higher-order calls, and pipes keep runtime checking. The additional check has its own 64 MiB evaluation budget shared across the program; regex compilation provisionally allows 1 MiB of source per pattern and 8 MiB in total, reusing identical inputs. Exceeding these check budgets leaves the call for runtime; it is not E0458. An accepted call still returns `Result[Regex.Pattern, String]` and still compiles at runtime. To observe an invalid pattern's `Result.Error`, including in tests, pass it through a normal function parameter:
 
@@ -1098,7 +1115,7 @@ The built-in effects are:
 | `Assert.Check` | checking expectations in tests |
 | `IO.All` | all of `Console`, `File`, `Process`, `Clock`, `Random`, and `State` (not Log or the network effects) |
 
-Effects say what *kind* of operation a function may perform, not which file, command, or host. A script that passes `check` performs no built-in operation outside the `uses` of `main`. This release does not restrict operations while a script runs; run scripts you do not trust inside a sandbox. Prefer listing specific effects over `IO.All`, so that readers of `main` see what the script does.
+Bare effects say what *kind* of operation a function may perform. Selected standard effects can also bound operation targets with [scope arguments](#scoped-effects). A script that passes `check` performs no built-in operation outside the `uses` of `main`. This release does not restrict operations while a script runs; run scripts inside the agent's or harness's sandbox. Prefer listing specific effects over `IO.All`, so that readers of `main` see what the script does.
 
 ```benitoite error
 import Benitoite.Unofficial.IO.Console
@@ -1119,6 +1136,20 @@ error[E0501]
 Adding `uses Console.Write` to `greet` fixes the error.
 
 An effect is part of the type of a function value: `function(text: String) -> Unit uses Console.Write`.
+
+### Scoped effects
+
+`File.Read["/data/**"]` and `File.Write["/out/report.txt"]` bound path spellings. `Http.Connect["api.example", 443]` bounds a host and port; `Http.Connect["192.168.1.0/24", 80..81]` uses an IP network and inclusive port interval. Omitting the arguments means Top, the unrestricted scope. Top is distinct from `File.Read["/**"]`, which covers accepted absolute path spellings. These arguments are closed literals, not expressions, variables, or user-defined range parameters. Other effects, including user effects, do not accept scope arguments.
+
+Path patterns are exact absolute paths or trees ending in `/**`. Host patterns are exact names, `*.example.com` for one preceding label, or `**.example.com` for one or more; neither wildcard includes the stem. Canonical IPv4/IPv6 addresses and CIDR networks are also accepted. See [Scope](#scope) for spelling, normalization, and rejected targets. Ports are integer literals from 0 through 65535, written as one port or `minimum..maximum` with minimum no greater than maximum.
+
+Multiple scopes can be abbreviated in one pair of brackets: `File.Write["/out/a/**", "/out/b/**"]` is two atoms, and `Http.Connect["a.example", 443, "b.example", 80..81]` is two endpoint atoms. Duplicate normalized atoms are errors. Different scopes remain separate atoms even if one covers another.
+
+Where effect bounds are compared, each required atom must be covered by one surrounding atom of the same name. A tree includes its stem and descendants, IP containment stays within one address family, and an endpoint requires both host containment and port containment. Two intervals `0..4` and `5..9` do not jointly cover one required `0..9` atom. Top covers every scope of the same name; a closed scope does not cover Top. Checked value types keep invariant indices, so effect coverage does not implicitly convert a narrow value to a wider value type.
+
+E0519 reports a same-name scope admission failure. Its reasons are `notCovered`, `atomicCoverOnly` (no single atom covers the requirement; unions are not decided), `unknownSource` (Top, including explicit Top), and `budgetExceeded` (required local analysis exhausted its budget). It does not prove that an executed target would be outside the contract. A missing effect name retains E0501/E0502, and an incompatible invariant value type can report E0401. E0521 means consistent handler scopes could not be determined; its suggested changes do not guarantee convergence. These required checks are separate from the optional local interval warnings and their coverage report.
+
+The bound concerns the same operation target retained by a checked value: a path spelling, or the program's connection endpoint consisting of host and port. It does not identify the actual file after symbolic-link resolution, the peer after DNS or OS/network conversion, or destinations of DNS queries and OS TLS certificate/revocation traffic. An endpoint is not a scheme-bearing origin. Bounds do not constrain contents or information flow and do not authorize execution. The harness explains [declared target bounds](#declared-target-bounds) and uses canonical names for [effect limits](#effect-limits-before-execution).
 
 ### File-level effect declarations
 
@@ -1303,6 +1334,20 @@ An operation can constrain its value type parameters with traits and built-in co
 A constrained operation can also be stored as a function value, partially applied with `_`, or used on the right of `|>`. Its function type keeps only the declared public parameters and the operation effect. A lambda inside a clause can capture the declared constraints, including supertraits; nested clauses keep their own constraints. Named arguments are evaluated once in source order before they are placed in declaration order.
 
 Operations of built-in effects, such as `File.readText` or `Process.run`, can be handled in the same way. This is how tests replace the outside world ([Tests](#16-tests)). A handler that handles only some operations of an effect does not remove the effect from the type. Functions whose effects include `State` (`Reference`, `TaskGroup`, `Task.await`, and the `close…` functions) cannot be handled.
+
+### Complete and partial handlers
+
+A complete handler supplies every operation of an effect; a partial handler leaves that effect in the enclosing contract even if its body calls only the intercepted operation. The current operation sets are:
+
+| Effect | All operations required for completeness |
+|---|---|
+| `File.Read` (13) | `readText`, `readTextIn`, `openReader`, `readLine`, `readBytes`, `readBytesIn`, `readLines`, `exists`, `info`, `listDirectory`, `walk`, `canonicalize`, `readChunk` |
+| `File.Write` (16) | `writeText`, `writeTextIn`, `appendText`, `appendTextIn`, `writeBytes`, `writeBytesIn`, `appendBytes`, `appendBytesIn`, `createDirectory`, `remove`, `removeTree`, `rename`, `openWriter`, `write`, `writeLine`, `writeChunk` |
+| `Http.Connect` (2) | `send`, `sendIn` |
+
+For example, the `File.readText` clause in [Tests](#16-tests) leaves the other 12 Read operations unhandled and keeps `File.Read`. A `File.writeText` clause alone leaves 15 Write operations unhandled. A handler with only `Http.send` is partial because `sendIn` is missing, and retains `Http.Connect`; `Http.get` is an ordinary function that calls `send`. A complete handler removes the body's handled effect, but any IO performed by its clauses remains outside that handler, at the clauses' own scopes. File-level declarations also remain part of the enclosing contract.
+
+Completeness uses resolved operation identities, not matching spellings. Standard modules declaring effects, including File and Http, cannot be renamed with `as` (E0339). A permitted alias for the pure Scope module still refers to its standard declarations; a user function or operation with the same name does not acquire their scope rules. The clause's target argument has the invariant range selected from the protected body's inferred effects. See [Scoped values and IO](#scoped-values-and-io) for its projection and forwarding limits.
 
 In `uses` and in `case`, an effect or operation declared in the same module is written without a module name (`Log`, `write`); one from another module is written with it (`Logging.Log`, `Logging.write`, `Console.writeLine`).
 
@@ -2044,7 +2089,7 @@ While the major version is 0:
 - Moving an unofficial module into the standard library changes its import name, and happens only in a minor version.
 - The bundled Agent Skill describes only the version of `benitoite` it comes with. Run `benitoite skill install` again after updating.
 
-> Note: Releases `0.0.1` through `0.0.12` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
+> Note: Releases `0.0.1` through `0.0.13` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.
 
 ## 21. Experimental: packages and external functions
 
@@ -2056,7 +2101,7 @@ A package is a directory with a `package.bnt` settings file and modules that oth
 
 ```files
 name: packages/textkit/package.bnt
-language "0.0.12"
+language "0.0.13"
 
 package Textkit
   license "MIT"
@@ -2074,7 +2119,7 @@ Declare the dependency before imports and declarations in the starting script:
 
 ```benitoite
 // spec: 01-03 依存のパッケージの取り込み
-language "0.0.12"
+language "0.0.13"
 
 dependency Textkit
   path "packages/textkit"
@@ -2106,7 +2151,7 @@ For example, a root settings file can record the language version while the star
 
 ```files
 name: package.bnt
-language "0.0.12"
+language "0.0.13"
 ```
 
 ```benitoite check
@@ -2117,7 +2162,7 @@ end function
 
 Dependency blocks can also be moved into that root settings file. Put all dependencies in one place: declaring them in both the starting script and `package.bnt` is an error. Declaring `language` in both files is also an error.
 
-`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.12`, a declaration of `0.0.12` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
+`language "MAJOR.MINOR.PATCH"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.13`, a declaration of `0.0.13` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).
 
 `package.bnt` contains settings only: `language`, `dependency`, and `package` blocks, with no imports or declarations. A `package` block can appear only in this file, and cannot be combined with dependencies. Its name is an uppercase identifier; its only metadata field is the optional `license`. Fields take plain string literals; interpolation is not allowed. Field order is unrestricted, but duplicate or unknown fields are errors.
 
@@ -2407,7 +2452,7 @@ Generators need a finite base and regular recursive type arguments. The size bud
 
 Shrinkers delete recursive container contents before shrinking one field at a time in declaration order. A required record field shrinks itself; it does not replace its parent with a child. Standard leaves/containers discard self candidates and do not increase recursive node count. A custom Shrinker supplied for an unconstrained type parameter must exclude its own input. Custom callback termination and global minimality are not guaranteed. Show/Order constraints propagate through the declaration graph; Order does not imply builtin equality.
 
-Custom fields.gen/fields.shrink remain paired, fully qualified pure monomorphic zero-argument functions replacing an entire field. Save the version 3 `.generated.json` record (`generatorVersion: 3.1.0-syntax-batch5`), config, libraryVersion 2.0.0, source, concrete failures, and custom functions. Inventory is version 3, configuration stays 1. Finish pending apply/recovery with the saved old tool before updating it. Verify old body hashes, review a fresh preview and record, then apply its exact reviewed manifest hash. Tool input hashes can invalidate an earlier manifest even when the generator version stays the same. A seed alone cannot reproduce distributions across generator versions. Have the harness run normal check/test and derive check after apply; see the [derive tool](../../tools/derive/README.md) for the full workflow and recovery.
+Custom fields.gen/fields.shrink remain paired, fully qualified pure monomorphic zero-argument functions replacing an entire field. The declaration inventory and semantic hashes use version 4, including type/effect indices and range-polymorphic standard signatures. Configuration stays 1; manifest, receipt, and `.generated.json` record envelopes stay 3. Manifests and generation records carry `inventoryVersion: 4` and `hashVersion: 4`; receipts remain tied to the exact manifest hash and record hash. Generator rules stay `3.1.0-syntax-batch5`, and Property.libraryVersion stays 2.0.0. Old manifests and receipts do not authorize a new apply: approval is tied to the exact reviewed manifest hash and its input/tool identities. An unchanged generator-rules version does not make an old semantic hash comparable or preserve approval. A seed alone cannot reproduce distributions across generator versions. Have the harness use the [derive tool](../../tools/derive/README.md) as the workflow authority and retain the configuration, record, source, concrete failures, and custom functions.
 
 ### Range
 
@@ -2507,7 +2552,11 @@ Import `Benitoite.Unofficial.Scope`. All its functions are pure. The opaque reco
 | `endpointHost(value: CheckedEndpoint)`, `endpointHostPattern(value: CheckedEndpoint)` | `String` |
 | `endpointPort(value: CheckedEndpoint)`, `endpointMinimumPort(value: CheckedEndpoint)`, `endpointMaximumPort(value: CheckedEndpoint)` | `Integer` |
 
-Hosts contain nonempty ASCII alphanumeric/hyphen labels separated by dots, with no edge hyphens, empty labels, trailing dot, URL, port suffix, IPv6, non-ASCII, or NUL. Four all-decimal labels are rejected as IPv4 form regardless of their numerical range. `localhost` is accepted. The patterns are an exact host, `*.host` for exactly one preceding label, and `**.host` for one or more preceding labels. Both wildcards exclude the stem itself. Successful host checks store lowercase pattern and target. DNS length standards are outside this contract.
+Named hosts contain nonempty ASCII alphanumeric/hyphen labels separated by dots, with no edge hyphens, empty labels, trailing dot, URL, port suffix, non-ASCII, or NUL. `localhost` is accepted. Named patterns are an exact host, `*.host` for exactly one preceding label, and `**.host` for one or more preceding labels. Both wildcards exclude the stem itself. Successful named-host checks store lowercase pattern and target. DNS length standards are outside this contract.
+
+Hosts also accept canonical IPv4 and IPv6 addresses; patterns accept exact addresses and CIDR networks. IPv4 requires four decimal components in 0..255 without leading zeros except for `0` itself. Malformed four all-decimal labels are rejected rather than reinterpreted as names. IPv6 must use its canonical lowercase spelling with leading zeros omitted and the first longest run of at least two zero groups compressed. CIDR prefixes are decimal without leading zeros and require zero host bits. `/32` for IPv4 and `/128` for IPv6 normalize to exact addresses. IP families stay distinct and are never compared by DNS resolution. Zone IDs, IPvFuture, brackets in these direct host arguments, and wildcards with an IP stem are rejected. URL IPv6 syntax is described under [Checked HTTP requests](#checked-http-requests).
+
+IPv4-mapped IPv6 patterns retain mixed canonical spelling such as `::ffff:192.0.2.1` and remain IPv6 in the range algebra. The checks reject any target in `::ffff:0:0/96` as `InvalidTarget`; a pattern confined to that range is valid but matches no accepted target. A broader pattern such as `::/0` can still match other IPv6 targets. This prevents a mapped target from being treated as an IPv6-only operation when the OS can connect to IPv4 through it.
 
 Paths use absolute slash-separated spelling. `/` is accepted; other trailing slashes, empty components, `.`/`..`, NUL, and backslash are rejected. Other Unicode characters keep their spelling. A pattern is exact or ends in `/**`; stars elsewhere in a pattern are rejected. `/data/reports/**` includes `/data/reports` and its children, while `/data/reports-old` is outside. `/**` includes the root and all accepted paths. Stars in a target path are ordinary characters. Successful checks preserve both path strings exactly.
 
@@ -2552,4 +2601,92 @@ end function
 true
 ```
 
-Success means the saved target spelling satisfies the saved condition. It does not grant permission, identify DNS resolution or filesystem/link targets, guarantee isolation, prevent later changes, validate URLs or redirects, or guarantee IO success. Existing IO functions continue to accept `String` and `Integer`; explicitly pass the projected value when using a checked target.
+Success means the saved target spelling satisfies the saved condition. It does not grant permission, identify DNS resolution or filesystem/link targets, guarantee isolation, prevent later changes, validate URLs or redirects, or guarantee IO success. Existing IO functions continue to accept `String` and `Integer`; explicitly pass the projected value when using a checked target through those entries. The separate scoped entries below retain the checked target instead.
+
+### Scoped values and IO
+
+`Scope.PathIn["/data/**"]` and `Http.RequestIn["api.example", 443]` are opaque standard value types with one invariant scope index. The bare types `Scope.PathIn` and `Http.RequestIn` have Top scope. They accept neither type parameters nor multiple scopes and do not support equality, external construction, updates, representation patterns, or automatic accessors. Bind a non-Top value to a variable or `_` when matching it. Effect coverage does not implicitly widen these value types.
+
+These six declarations are pure. The signatures below show bare types; the checker selects the static scope for each call.
+
+| Declaration | Result and scope relationship |
+|---|---|
+| `Scope.checkPathIn(pattern: String, path: String)` | `Result[Scope.PathIn, Scope.ScopeError]`; checks both the dynamic condition and the selected static range, retaining the same path. |
+| `Scope.pathInValue(path: Scope.PathIn)` | `String`; returns that retained path. |
+| `Scope.widenPathIn(path: Scope.PathIn)` | `Scope.PathIn`; preserves the same value, with an explicitly annotated covering destination range. |
+| `Http.checkRequestIn(hostPattern: String, minimumPort: Integer, maximumPort: Integer, request: Http.ClientRequest)` | `Result[Http.RequestIn, Http.RequestCheckError]`; checks both conditions and retains the same request and effective endpoint. |
+| `Http.requestInValue(request: Http.RequestIn)` | `Http.ClientRequest`; returns the same retained record. |
+| `Http.widenRequestIn(request: Http.RequestIn)` | `Http.RequestIn`; preserves the request and endpoint, with an explicitly annotated covering destination range. |
+
+A direct check selects a narrow scope when its conditions are recognized literals or direct `const` references; unknown conditions require Top. Ordinary type constraints can require a covering scope, including Top. Static Top does not omit the dynamic membership check. These rules recognize resolved standard declarations, including permitted import aliases, not user functions with the same spelling. Narrow check results are not supplied by these local rules through function-value calls, holes, or pipes.
+
+The checker tracks a check result saved once and that same `Ok` value locally. Place projection and widening calls directly on the right of `bind`, then use the bound result in other expressions. Nested calls in interpolation, argument lists, or collection elements do not read those local facts. Aliases, rewrapping, and unknown calls do not establish provenance. Required analysis has its own budget, separate from interval warnings; exhaustion can forget provenance and require Top. Type annotations alone do not establish membership.
+
+This example performs only a pure check and projection at runtime. Its unused function also demonstrates forwarding an invariant narrow value to IO without projecting it.
+
+```benitoite
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Console
+
+function readInput(path: S.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
+  return File.readTextIn(path: path)
+end function
+
+function main() -> Unit uses Console.Write
+  bind checked: Result[S.PathIn["/data/a"], S.ScopeError] <- S.checkPathIn(pattern: "/data/a", path: "/data/a")
+  match checked with
+    case Result.Ok(value) ->
+      bind path <- S.pathInValue(path: value)
+      bind wider: S.PathIn["/data/**"] <- S.widenPathIn(path: value)
+      Console.writeLine(path)
+    case Result.Error(_) -> Console.writeLine("path check failed")
+  end match
+end function
+```
+
+```output
+/data/a
+```
+
+A narrow function parameter, declared return value, or handler clause parameter has no local check provenance at the receiving boundary. Moving its projection or widening into a direct `bind` still cannot establish that provenance. It can be forwarded unchanged to IO with the same narrow input type. To widen a function argument, do so in the caller where check provenance is available and use the wider parameter type. A bare parameter permits Top projection, but IO through it has Top scope. A clause parameter's type is selected from the protected body's inferred effects; making it Top also requires a Top protected body and may require a wider enclosing contract. This is a current precision limit of projection and widening.
+
+| Scoped operation | Other arguments | Result | Effect at the input's scope |
+|---|---|---|---|
+| `File.readTextIn(path: Scope.PathIn)` | None | `Result[String, IOError]` | `File.Read` |
+| `File.readBytesIn(path: Scope.PathIn)` | None | `Result[Bytes, IOError]` | `File.Read` |
+| `File.writeTextIn(path: Scope.PathIn, text: String)` | `text` | `Result[Unit, IOError]` | `File.Write` |
+| `File.appendTextIn(path: Scope.PathIn, text: String)` | `text` | `Result[Unit, IOError]` | `File.Write` |
+| `File.writeBytesIn(path: Scope.PathIn, content: Bytes)` | `content` | `Result[Unit, IOError]` | `File.Write` |
+| `File.appendBytesIn(path: Scope.PathIn, content: Bytes)` | `content` | `Result[Unit, IOError]` | `File.Write` |
+| `Http.sendIn(request: Http.RequestIn)` | None | `Result[Http.Response, NetworkError]` | `Http.Connect` |
+
+Each operation uses the same path or request retained by its checked input; the input type determines both the value's scope and the operation's effect scope. This also applies to operation values and partial applications when their expected or later input type determines the scope; unconstrained inputs default to Top. Results do not determine target scopes. The older String-based File operations and `Http.get`/`Http.send` keep Top effects. Handling only those older operations is partial, as explained under [Complete and partial handlers](#complete-and-partial-handlers).
+
+#### Checked HTTP requests
+
+`checkRequestIn` accepts ASCII absolute HTTP/HTTPS URLs without userinfo, with valid percent escapes and a nonempty host. Encode non-ASCII path/query characters before constructing the URL. Omitted or empty URL ports mean 80 for HTTP and 443 for HTTPS; explicit ports must be decimal in 0..65535. Bracketed IPv6 in a URL is parsed numerically and canonicalized for its effective endpoint. IPv4-mapped IPv6 targets, zone IDs, IPvFuture, malformed IPv4, and ambiguous numeric-looking hosts such as `127.1`, `2130706433`, or `127.0x.0.1` are rejected. This numeric-looking-host restriction is specific to URL checking; direct Scope host checks use the spelling rules above.
+
+The successful value retains the exact five-field `ClientRequest` (`method`, `url`, `headers`, `body`, `timeoutMilliseconds`) and its effective host and port. Query and fragment remain in the saved URL; the fragment is not transmitted. Projection returns that record. Updating a projected record does not update the checked value; a changed request needs another check. Widening changes only its static index.
+
+`Http.RequestCheckError` has `InvalidUrl(String)` for URL forms from which an endpoint cannot be extracted and `Scope(Scope.ScopeError)` for target, condition, port, or membership failures. It has no standard Show implementation. Match its constructors, or convert the error before using `or die`; the inner ScopeError has Show. Sending and preparation failures use `NetworkError`, separately from these pure-check errors.
+
+```benitoite
+import Benitoite.Unofficial.Network.Http
+
+function describe(error: Http.RequestCheckError) -> String
+  return match error with
+    case Http.RequestCheckError.InvalidUrl(message) -> message
+    case Http.RequestCheckError.Scope(_) -> "endpoint check failed"
+  end match
+end function
+
+function main() -> Unit
+  ()
+end function
+```
+
+```output
+```
+
+`sendIn` sends the retained request, returns 3xx responses without following redirects, and does not automatically use an environment proxy. An explicit Host header must match the URI and the retained endpoint's effective host and port; a mismatch returns `NetworkErrorKind.InvalidInput`. The program's connection target is the retained endpoint before DNS/OS conversion. DNS traffic and OS TLS intermediate-certificate or revocation lookups can have other destinations outside this static guarantee. `Http.send` keeps its existing automatic redirect behavior and Top scope, including when passed a projected record.

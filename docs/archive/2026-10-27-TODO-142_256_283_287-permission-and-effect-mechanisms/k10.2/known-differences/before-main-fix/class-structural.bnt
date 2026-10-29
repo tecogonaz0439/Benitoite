@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.File
+trait Readable[T]
+ function read(value: T) -> Unit uses File.Read["/data/**"]
+end trait
+implement Readable[Integer]
+ function read(value: Integer) -> Unit uses File.Read["/data/a"]
+  ()
+ end function
+end implement

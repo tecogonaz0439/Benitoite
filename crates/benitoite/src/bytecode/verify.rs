@@ -205,6 +205,12 @@ fn verify_tables(p: &CompiledProgram) -> Result<(), VerifyError> {
         let decl = builtin_decl(reference.id)
             .ok_or_else(|| error(id, None, "builtin declaration is missing"))?;
         check(reference.arity == decl.arity, "builtin arity mismatch")?;
+        let signature = crate::builtins::table::builtin_range_signature(reference.id)
+            .ok_or_else(|| error(id, None, "builtin range signature is missing"))?;
+        check(
+            signature.admits(&reference.ranges),
+            "builtin ranges are invalid",
+        )?;
         check(
             reference.capability == decl.capability,
             "builtin capability mismatch",
@@ -708,12 +714,14 @@ mod tests {
             }],
             builtins: vec![
                 BuiltinRef {
+                    ranges: vec![],
                     id: lookup_builtin("String.byteLength").unwrap(),
                     arity: 1,
                     capability: Capability::Pure,
                     op: None,
                 },
                 BuiltinRef {
+                    ranges: vec![],
                     id: lookup_builtin("Benitoite.IO.Console.writeLine").unwrap(),
                     arity: 1,
                     capability: Capability::Io,

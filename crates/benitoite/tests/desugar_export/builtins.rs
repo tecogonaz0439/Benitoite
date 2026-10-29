@@ -23,10 +23,114 @@ fn used_prims(value: &Value, names: &mut BTreeSet<String>) {
     }
 }
 
+/// 脱糖の読者は corpus 全体から候補を集めるため、署名だけに現れる閉じた原子と、
+/// 呼び出しで具体化した原子も corpus に添える。署名の範囲変数そのものは移さない。
+pub(crate) fn candidate_atoms(input: &Value, table: &Value) -> Value {
+    fn atoms(value: &Value, found: &mut Vec<Value>) {
+        match value {
+            Value::Array(xs) => xs.iter().for_each(|v| atoms(v, found)),
+            Value::Object(xs) => {
+                if value["name"]["value"].is_string() && value["name"].get("ix").is_some()
+                    || value["rho"]["index"].is_u64()
+                {
+                    if !found.contains(value) {
+                        found.push(value.clone());
+                    }
+                } else {
+                    xs.values().for_each(|v| atoms(v, found));
+                }
+            }
+            Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
+        }
+    }
+    fn calls(value: &Value, found: &mut Vec<(String, Vec<Value>)>) {
+        match value {
+            Value::Array(xs) => xs.iter().for_each(|v| calls(v, found)),
+            Value::Object(xs) => {
+                for tag in ["prim", "primName"] {
+                    if let Some(call) = value.get(tag)
+                        && let Some(ranges) = call.get("ranges").and_then(Value::as_array)
+                    {
+                        let name = call["name"].as_str().expect("primitive call name");
+                        let entry = (name.to_owned(), ranges.clone());
+                        if !found.contains(&entry) {
+                            found.push(entry);
+                        }
+                    }
+                }
+                xs.values().for_each(|v| calls(v, found));
+            }
+            Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
+        }
+    }
+    fn insert_closed(atom: Value, found: &mut Vec<Value>) {
+        if atom.get("name").is_some() {
+            assert!(
+                atom["name"]["ix"].get("fixed").is_some(),
+                "candidate contains rvar"
+            );
+        }
+        if !found.contains(&atom) {
+            found.push(atom);
+        }
+    }
+
+    let mut found = Vec::new();
+    atoms(input, &mut found);
+    let mut candidates = Vec::new();
+    for atom in found {
+        insert_closed(atom, &mut candidates);
+    }
+    let mut uses = Vec::new();
+    calls(input, &mut uses);
+    for signature in table["prims"].as_array().expect("primitive signatures") {
+        let name = signature["name"]
+            .as_str()
+            .expect("primitive signature name");
+        let kinds = signature["rkinds"].as_array().expect("signature rkinds");
+        let mut signature_atoms = Vec::new();
+        atoms(signature, &mut signature_atoms);
+        for atom in &signature_atoms {
+            if let Some(index) = atom["name"]["ix"]["rvar"].as_u64() {
+                let index = usize::try_from(index).expect("range variable index");
+                assert!(index < kinds.len(), "signature rvar outside rkinds");
+                let effect_kind = table["effKinds"]
+                    .as_array()
+                    .expect("effect kinds")
+                    .iter()
+                    .find(|e| e["name"] == atom["name"]["value"])
+                    .expect("range variable effect kind");
+                assert_eq!(effect_kind["kind"], kinds[index], "signature range kind");
+            } else {
+                insert_closed(atom.clone(), &mut candidates);
+            }
+        }
+        for (_, ranges) in uses.iter().filter(|(n, _)| n == name) {
+            assert_eq!(ranges.len(), kinds.len(), "call range count");
+            for (range, kind) in ranges.iter().zip(kinds) {
+                assert!(
+                    range == "top" || range.get(kind.as_str().expect("range kind")).is_some(),
+                    "call range kind"
+                );
+            }
+            for atom in &signature_atoms {
+                if let Some(index) = atom["name"]["ix"]["rvar"].as_u64() {
+                    let mut instantiated = atom.clone();
+                    instantiated["name"]["ix"] =
+                        json!({"fixed": ranges[usize::try_from(index).unwrap()]});
+                    insert_closed(instantiated, &mut candidates);
+                }
+            }
+        }
+    }
+    super::atom_order::sort(&mut candidates);
+    json!(candidates)
+}
+
 // opaque の名前の中の引数は Release.Ty.subst が辿れない。具体的な引数でも印を残す。
 fn opaque_arguments(ty: &Ty, names: &mut BTreeSet<String>) {
     match ty {
-        Ty::Con(con, args) => {
+        Ty::Con(con, args, _) => {
             if let TyCon::Builtin(id) = con
                 && !args.is_empty()
                 && !matches!(*id, BuiltinTypeId::REFERENCE | BuiltinTypeId::LAZY)
@@ -88,13 +192,14 @@ pub fn complete_stdlib() -> CheckedProgram {
 // 補助入力のデータ型だけを元の入力の名前空間へ移す。型パラメータ・エフェクトは変えない。
 fn remap_ty(ty: &Ty, names: &BTreeMap<BindingId, BindingId>) -> Ty {
     match ty {
-        Ty::Con(con, args) => Ty::Con(
+        Ty::Con(con, args, ix) => Ty::Con(
             match con {
                 TyCon::Adt(id) => TyCon::Adt(names[id]),
                 TyCon::Builtin(id) => TyCon::Builtin(*id),
                 TyCon::External(id) => TyCon::External(*id),
             },
             args.iter().map(|t| remap_ty(t, names)).collect(),
+            ix.clone(),
         ),
         Ty::Fn(f) => Ty::Fn(Box::new(types::FnTy {
             param_names: f.param_names.clone(),
@@ -166,6 +271,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
     let mut used = BTreeSet::new();
     used_prims(input, &mut used);
     let mut prims = Vec::new();
+    let mut range_signatures = Vec::new();
     let mut state_pure = Vec::new();
     let mut supplemental_prims = Vec::new();
     let mut surface = Surface::new(p, None, Vec::new());
@@ -219,25 +325,6 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             | table::EntryKind::Format { .. }
             | table::EntryKind::Interpolation { .. } => table::builtin_scheme(id).unwrap(),
         };
-        // operation_tables と同じ番号順。prim の tys の番号を入れ替えない。
-        let tparams: Vec<_> = scheme
-            .type_params
-            .iter()
-            .map(|t| {
-                let equality = matches!(
-                    t.builtin,
-                    Some(types::BuiltinConstraint::Equality | types::BuiltinConstraint::Key)
-                );
-                json!({"equality":equality,"key":t.builtin == Some(types::BuiltinConstraint::Key),
-                "ordered":t.builtin == Some(types::BuiltinConstraint::Ordered)})
-            })
-            .collect();
-        let mut unconvertible = BTreeSet::new();
-        scheme
-            .params
-            .iter()
-            .for_each(|t| opaque_arguments(t, &mut unconvertible));
-        opaque_arguments(&scheme.ret, &mut unconvertible);
         let kind = match decl.name {
             "Reference.new" => "refNew",
             "Reference.get" => "refGet",
@@ -248,6 +335,9 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             _ if entry == table::EntryKind::EffectOp => "io",
             _ => "pure",
         };
+        let ranges = table::builtin_range_signature(id).unwrap();
+        assert!(ranges.signature_valid(&scheme, entry == table::EntryKind::EffectOp));
+        surface.range_bound = Some(ranges.range_count());
         let op_eff = if entry == table::EntryKind::EffectOp {
             assert_eq!(decl.capability, Capability::Io);
             assert!(scheme.effect_params.is_empty());
@@ -261,27 +351,15 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
         if decl.capability == Capability::State && kind == "pure" {
             state_pure.push(decl.name);
         }
-        let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
-        let eff_params: Vec<_> = scheme
-            .effect_params
-            .iter()
-            .enumerate()
-            .map(|(i, _)| json!({"noFail":scheme.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))}))
-            .collect();
-        let mut prim = json!({"name":decl.name,"tparams":tparams,"neffs":scheme.effect_params.len(),"effParams":eff_params,
-            "params":params,"ret":surface.ty(&scheme.ret),"eff":surface.eff(&scheme.effects),
-            "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
-            "unconvertibleTypes":unconvertible});
-        assert_eq!(
-            scheme
-                .param_names
-                .iter()
-                .collect::<std::collections::BTreeSet<_>>()
-                .len(),
-            scheme.params.len()
+        let prim = export_prim(
+            &mut surface,
+            decl.name,
+            &scheme,
+            &ranges,
+            kind,
+            op_eff.as_deref(),
         );
-        assert_eq!(scheme.param_names.len(), scheme.params.len());
-        prim["names"] = json!(scheme.param_names);
+        range_signatures.push((decl.name.to_owned(), ranges));
         prims.push(prim);
     }
     let effects: Vec<_> = BUILTIN_EFFECTS
@@ -295,7 +373,10 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
             }
             let effect = surface.eff(&EffectSet {
                 failures: vec![],
-                names: vec![EffectName::Builtin(id)],
+                names: vec![EffectName::Builtin(
+                    id,
+                    benitoite::types::builtin::RangeIndex::TOP,
+                )],
                 vars: vec![],
             });
             let name = effect[0]["name"]["value"].as_str().unwrap();
@@ -353,7 +434,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
                 assert_eq!(u32::try_from(tag).unwrap(), c.tag);
                 let args: Vec<_> = c.fields.iter().map(|t| surface.ty(t)).collect();
                 let mut ctor =
-                    json!({"name":con_name(id, c.tag),"constructorName":c.name,"args":args});
+                    json!({"name":con_name(p, id, c.tag),"constructorName":c.name,"args":args});
                 ctor["fields"] = json!(
                     adt.record
                         .as_ref()
@@ -370,9 +451,31 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
         "unsupported builtin/data declaration: {:?}",
         surface.outside
     );
-    json!({"group":input["group"],"name":input["name"],"prims":prims,"effects":effects,
+    let mut output = json!({"group":input["group"],"name":input["name"],"prims":prims,"effects":effects,
         "resources":resources,"dataDecls":data_decls,"summaries":summaries,"statePure":state_pure,
-        "supplementalData":supplemental_data,"supplementalPrims":supplemental_prims})
+        "supplementalData":supplemental_data,"supplementalPrims":supplemental_prims});
+    // 保持する内容は署名・dataDecls と同じ名前空間のレコード型である。
+    let request_binding = stdlib
+        .types
+        .adts
+        .adts
+        .iter()
+        .find_map(|(id, adt)| {
+            (qualified_data(stdlib, adt) == "Benitoite.Network.Http.ClientRequest")
+                .then_some(names[&id])
+        })
+        .expect("standard Http.ClientRequest record");
+    let content = surface.ty(&Ty::Con(
+        TyCon::Adt(request_binding),
+        vec![],
+        types::builtin::RangeIndex::TOP,
+    ));
+    let data = scope_export::table_data(&range_signatures, content);
+    output
+        .as_object_mut()
+        .unwrap()
+        .extend(data.as_object().unwrap().clone());
+    output
 }
 
 fn builtin_data(p: &CheckedProgram, id: BindingId) -> &'static str {
@@ -383,4 +486,52 @@ fn builtin_data(p: &CheckedProgram, id: BindingId) -> &'static str {
     } else {
         "ordinary"
     }
+}
+
+/// 一署名の範囲変数を個数で制限し、項へ漏らさないために署名の内部だけで書く。
+pub(crate) fn export_prim(
+    surface: &mut Surface<'_>,
+    name: &str,
+    scheme: &Scheme,
+    ranges: &types::signature::RangeSignature,
+    kind: &str,
+    op_eff: Option<&str>,
+) -> Value {
+    assert!(
+        ranges.signature_valid(scheme, kind == "io"),
+        "invalid table signature: {name}"
+    );
+    assert!(surface.range_bound.is_none() || surface.range_bound == Some(ranges.range_count()));
+    surface.range_bound = Some(ranges.range_count());
+    // operation_tables と同じ番号順。prim の tys の番号を入れ替えない。
+    let tparams: Vec<_> = scheme
+        .type_params
+        .iter()
+        .map(|t| {
+            let equality = matches!(
+                t.builtin,
+                Some(types::BuiltinConstraint::Equality | types::BuiltinConstraint::Key)
+            );
+            json!({"equality":equality,"key":t.builtin == Some(types::BuiltinConstraint::Key),
+                "ordered":t.builtin == Some(types::BuiltinConstraint::Ordered)})
+        })
+        .collect();
+    let mut unconvertible = BTreeSet::new();
+    scheme
+        .params
+        .iter()
+        .for_each(|t| opaque_arguments(t, &mut unconvertible));
+    opaque_arguments(&scheme.ret, &mut unconvertible);
+
+    let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
+    let eff_params: Vec<_> = scheme.effect_params.iter().enumerate().map(|(i, _)|
+        json!({"noFail":scheme.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))})).collect();
+    let prim = json!({"name":name,"tparams":tparams,"neffs":scheme.effect_params.len(),"effParams":eff_params,
+        "params":params,"ret":surface.ty(&scheme.ret),"eff":surface.eff(&scheme.effects),
+        "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
+        "unconvertibleTypes":unconvertible,"names":scheme.param_names,
+        "rkinds":ranges.kinds.iter().map(|k| scope_export::kind(*k)).collect::<Vec<_>>(),
+        "shape":scope_export::shape(ranges.shape)});
+    surface.range_bound = None;
+    prim
 }

@@ -227,13 +227,84 @@ def counts(roots):
             'Log six-entry report missing')
     for name, sha in log_report['files'].items():
         require(digest(desugar/'batch3/g2'/(name+'.json')) == sha, 'Log input hash differs')
-    return dict(profiles=profiles['profiles'], sourceDirectories=list(SOURCE_DIRS), realSources=sources,
+    return dict(**range_counts(desugar),
+                profiles=profiles['profiles'], sourceDirectories=list(SOURCE_DIRS), realSources=sources,
                 sourceEvidence=evidence,
                 vm=dict(arithmetic=arithmetic['compared'], range=ranged['compared'],
                         rangeSelectedOut=ranged['selectedOut'], shifts=shifts['compared'],
                         shiftsIndependentOnly=shifts['independentOnly'],
                         shiftsExcluded=shifts['evaluationExcluded']),
                 log=dict(input='log-standard', entries=sorted(TOOLS), inputHashes=log_report['files']))
+
+
+def range_counts(desugar):
+    # 型表だけの一致や、範囲の群が全Topへ戻る退行を最終manifestでも拒む。
+    range_sources = read(desugar/'range-source-comparison/summary.json')
+    require(range_sources['status'] == 'passed' and range_sources['groups'] > 0 and
+            range_sources['definitions'] > 0 and range_sources['rejections'] > 0 and
+            range_sources['excluded'] > 0, 'range source comparison missing or incomplete')
+    require(set(range_sources['sixEntries']) == TOOLS and len(range_sources['sixEntries']) == len(TOOLS),
+            'range source six entries missing or duplicated')
+    require(range_sources['nonTopRanges'] and all(count > 0 for count in range_sources['nonTopRanges'].values()),
+            'range source group all Top or absent')
+    source_expected_path = ROOT/'crates/benitoite/tests/desugar_export/range-sources/expected.json'
+    source_expected = read(source_expected_path)['cases']
+    accepted = {case['name']: case for case in source_expected if case['exit'] == 0}
+    require(range_sources['groups'] == len(accepted) and
+            range_sources['definitions'] == sum(case['definitions'] for case in accepted.values()),
+            'range source groups or all definition counts differ from independent expectations')
+    required_ranges = {name: case for name, case in accepted.items() if case['nonTopRangesMinimum'] > 0}
+    top_ranges = {name: case for name, case in accepted.items() if case['nonTopRangesMinimum'] == 0}
+    require(set(range_sources['nonTopRanges']) == set(required_ranges) and
+            all(range_sources['nonTopRanges'][name] == case['nonTopRanges']
+                for name, case in required_ranges.items()), 'range source nonTop groups differ')
+    require(set(range_sources['topCompatibility']) == set(top_ranges) and
+            all(range_sources['topCompatibility'][name] >= case['nonTopRangesMinimum'] and
+                ('nonTopRanges' not in case or range_sources['topCompatibility'][name] == case['nonTopRanges'])
+                for name, case in top_ranges.items()), 'range source all-Top compatibility groups differ')
+    require([(case['name'], case['definitions'], case['allDefinitionsChecked'])
+             for case in range_sources['successes']] ==
+            [(name, case['definitions'], True) for name, case in accepted.items()],
+            'range source definition manifest incomplete')
+    report_expected_path = source_expected_path.with_name('report-expected.json')
+    report_cases = read(report_expected_path)['cases']
+    require(range_sources['reportSubset'] == dict(inputs=len(report_cases),
+            commands=sum(1 if case['expected'].get('doc') else 2 for case in report_cases), status='passed'),
+            'fixed reporting subset comparison incomplete')
+    budget = read(desugar/'range-budget-comparison/summary.json')
+    require(budget['success'] is True and budget['rustOnlyCases'] == 1 and
+            budget['leanComparedCases'] == budget['requiredReasonComparisons'] == 2,
+            'range budget comparison incomplete')
+    require(len(budget['cases']) == 3 and
+            len({case['name'] for case in budget['cases']}) == 3,
+            'range budget cases missing or duplicated')
+    lean_budget_cases = [case for case in budget['cases'] if 'key' in case]
+    require(len(lean_budget_cases) == budget['leanComparedCases'],
+            'range budget Lean report cases missing')
+    require(all(case['nonTopRangesWithoutCandidates'] > 0 and case['definitions'] > 0
+                for case in lean_budget_cases),
+            'range budget comparison empty or all Top')
+    # 初稿を保持し、定義から訂正した期待値だけを現在の受け入れに使う。
+    budget_expected = read(source_expected_path.parent.parent/'range-budget/expected.json')['cases']
+    stops = {case['name']: case.get('firstStopPreorderCorrection', {}).get(
+        'value', case.get('firstStopPreorder')) for case in budget_expected}
+    mismatches = [dict(name=case['name'], expected=case.get('firstStopPreorder'), actual=stops[case['name']])
+                  for case in budget_expected if case.get('firstStopPreorder') != stops[case['name']]]
+    require(budget['auxiliaryFirstStops'] == stops, 'range budget auxiliary stop differs from corrected expectation')
+    require(budget['auxiliaryExpectedMismatches'] == mismatches and
+            budget['auxiliaryExpectedMismatchCount'] == len(mismatches),
+            'range budget auxiliary mismatch set differs')
+    known_differences = read(desugar/'range-known-differences/summary.json')
+    require(known_differences['success'] is True and
+            known_differences['exclusions'] == {'E0711': 1, 'leanStringPrecision': 1},
+            'range known exclusions differ')
+    require(len(known_differences['cases']) == 3 and
+            len({case['name'] for case in known_differences['cases']}) == 3 and
+            sum(case['exclusion'] is None for case in known_differences['cases']) == 1,
+            'range known exclusions or accepted control missing')
+    return dict(rangeSources=range_sources,
+                rangeSourceExpectedHashes=dict(sources=digest(source_expected_path), reports=digest(report_expected_path)),
+                rangeBudgets=budget, rangeKnownDifferences=known_differences)
 
 
 def inventory(roots):

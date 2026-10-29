@@ -1,0 +1,93 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+SK.lean:867:53: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑{ kind := Kind.write, pattern := Pattern.exact ["out", "a.txt"], ports := { lo := 0, hi := 65535 } }.ports.lo
+ b := ↑{ kind := Kind.write, pattern := Pattern.exact ["out", "a.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi
+SK.lean:867:63: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≥ 65536
+where
+ a := ↑{ kind := Kind.write, pattern := Pattern.exact ["out", "a.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi
+SK.lean:869:57: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑{ kind := Kind.write, pattern := Pattern.exact ["outside", "b.txt"], ports := { lo := 0, hi := 65535 } }.ports.lo
+ b := ↑{ kind := Kind.write, pattern := Pattern.exact ["outside", "b.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi
+SK.lean:869:67: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≥ 65536
+where
+ a := ↑{ kind := Kind.write, pattern := Pattern.exact ["outside", "b.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi
+SK.lean:917:67: error: unsolved goals
+obs : PrimName → Value → IOEvent
+b : PrimName
+⊢ (signature b).kind = ((implementation obs).sig b).kind
+SK.lean:935:23: warning: declaration uses `sorry`
+SK.lean:937:23: warning: declaration uses `sorry`
+SK.lean:949:17: warning: declaration uses `sorry`
+SK.lean:962:17: warning: declaration uses `sorry`
+SK.lean:998:41: error: Invalid `⟨...⟩` notation: The expected type
+  ?m.28.3 ?m.29 ?m.30 ?m.32 ?m.33
+is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+SK.lean:1035:76: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.25 = ?m.25
+but is expected to have type
+  OutcomeTy ?m.19
+in the application
+  ⟨rfl, rfl⟩
+SK.lean:1039:54: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑{ kind := Kind.tcp, pattern := Pattern.tree ["com", "example"] 1, ports := { lo := 443, hi := 443 } }.ports.lo
+ b := ↑{ kind := Kind.tcp, pattern := Pattern.tree ["com", "example"] 1, ports := { lo := 443, hi := 443 } }.ports.hi
+SK.lean:1039:64: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≥ 65536
+where
+ a := ↑{ kind := Kind.tcp, pattern := Pattern.tree ["com", "example"] 1, ports := { lo := 443, hi := 443 } }.ports.hi
+'SK.checked_invariant' does not depend on any axioms
+'SK.argument_bound' depends on axioms: [propext, Quot.sound]
+'SK.io_bound' depends on axioms: [propext, Quot.sound]
+'SK.preservation' depends on axioms: [propext, Quot.sound]
+'SK.progress' depends on axioms: [propext, Quot.sound]
+'SK.trace_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.reachable_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.Examples.checked_alone_insufficient' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SK.Examples.good_assumptions' depends on axioms: [propext, sorryAx]
+'SK.Examples.wrong_rule_unsound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SK.Examples.original_target_budget_rejected' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+        0.94 real         1.40 user         0.32 sys
+           739196928  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47577  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               14334  involuntary context switches
+         10960797756  instructions retired
+          5068875811  cycles elapsed
+           187882928  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

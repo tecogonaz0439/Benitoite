@@ -145,7 +145,11 @@ struct Checker<'a> {
 }
 
 fn builtin(id: BuiltinTypeId, args: Vec<Ty>) -> Ty {
-    Ty::Con(TyCon::Builtin(id), args)
+    Ty::Con(
+        TyCon::Builtin(id),
+        args,
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 
 /// V-Const の type(c)。P-Const でも定数の種類を同じ型に対応させる。
@@ -173,6 +177,9 @@ fn constant_type(c: &Const) -> Ty {
 // 名前を含む構造上の一致だけでは、不正な名前表どうしの一致を排除できない。
 // コアの型付けでも個数と一意性を要求する（設計書 02-06「コア IR の検査器」）。
 fn valid_contracts(ty: &Ty) -> bool {
+    if !ty.indices_valid(0) {
+        return false;
+    }
     let mut pending = vec![ty];
     while let Some(ty) = pending.pop() {
         match ty {
@@ -182,8 +189,9 @@ fn valid_contracts(ty: &Ty) -> bool {
                 }
                 pending.extend(&f.params);
                 pending.push(&f.ret);
+                pending.extend(&f.effects.failures);
             }
-            Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args),
+            Ty::Con(_, args, _) | Ty::App(_, args) => pending.extend(args),
             Ty::Param(_) | Ty::Rigid { .. } => {}
         }
     }
@@ -198,7 +206,7 @@ fn accepts(actual: &Ty, expected: &Ty) -> bool {
             || matches!((actual, expected), (Ty::Fn(a), Ty::Fn(b))
         if a.valid_contract() && b.valid_contract() && a.param_names == b.param_names
         && a.params.len() == b.params.len() && a.params.iter().zip(&b.params).all(|(a,b)| a == b)
-        && a.ret == b.ret && a.effects.is_subset(&b.effects)))
+        && a.ret == b.ret && b.effects.covers(&a.effects)))
 }
 
 /// V-Dict・C-Meth の同時置換。型構成子の頭も置き換える。
@@ -247,10 +255,21 @@ impl<'a> Checker<'a> {
     }
 
     fn effects(&mut self, origin: Span, actual: &EffectSet, expected: &EffectSet) {
-        if !actual.is_subset(expected) {
+        if !actual.indices_valid(0) || !expected.indices_valid(0) || !expected.covers(actual) {
             self.error(
                 origin,
                 format!("expected effects within {expected:?}, found {actual:?}"),
+            );
+        }
+    }
+
+    // 保護本体と純粋要求は C-Sub の被覆と別の構造包含である
+    // （設計書 02-06「コア IR の検査器」）。
+    fn structural_effects(&mut self, origin: Span, actual: &EffectSet, expected: &EffectSet) {
+        if !actual.indices_valid(0) || !expected.indices_valid(0) || !actual.is_subset(expected) {
+            self.error(
+                origin,
+                format!("expected structural effects within {expected:?}, found {actual:?}"),
             );
         }
     }
@@ -336,17 +355,43 @@ impl<'a> Checker<'a> {
         self.name.clone_from(&def.name);
         self.computation(&def.body, &mut Env::default());
         self.flow(def.body.origin, &def.body.ty, &def.ty);
-        self.effects(def.body.origin, &def.body.eff, &EffectSet::empty());
+        self.structural_effects(def.body.origin, &def.body.eff, &EffectSet::empty());
     }
 
     /// V-Fun・V-Prim（操作を含む）。引数の数、カインド、組み込みの制約を検査する。
     fn instantiate(
         &mut self,
         scheme: &Scheme,
+        declaration: Option<BindingId>,
+        supplied_ranges: Option<&[crate::types::scope::Range]>,
         targs: &TypeArgs,
         env: &Env<'_>,
         origin: Span,
     ) -> Ty {
+        // 受理した列で、型／行代入の前に具体化する。節は保護本体から選んだ列を渡す
+        // （設計書 02-06「コア IR の検査器」）。
+        let closed;
+        let scheme = if let Some((binding, ranges)) = declaration.and_then(|binding| {
+            self.program
+                .range_signatures
+                .get(binding)
+                .map(|ranges| (binding, ranges))
+        }) {
+            let operation = self.program.ops.iter().any(|op| op.binding == binding);
+            let instantiated = match supplied_ranges {
+                Some(values) => ranges.instantiate(scheme, values, operation),
+                None => ranges.instantiate_top(scheme, operation),
+            };
+            if let Some(scheme) = instantiated {
+                closed = scheme;
+                &closed
+            } else {
+                self.error(origin, "standard signature scope instantiation failed");
+                scheme
+            }
+        } else {
+            scheme
+        };
         self.count(
             origin,
             "type arguments",
@@ -371,6 +416,9 @@ impl<'a> Checker<'a> {
             }
         }
         let ty = scheme.fn_ty().subst(&targs.tys, &targs.effects);
+        if !ty.indices_valid(0) {
+            self.error(origin, "instantiated source type has invalid scope indices");
+        }
         if !ty.failure_rows_valid(env.no_fail) {
             self.error(origin, "instantiated source type lacks NoFail");
         }
@@ -434,10 +482,10 @@ impl<'a> Checker<'a> {
     /// V-Prim・V-Fun の equality・key・ordered。ADT は宣言の要約で判定する。
     fn satisfies(&self, ty: &Ty, constraint: BuiltinConstraint, env: &Env<'_>) -> bool {
         if constraint == BuiltinConstraint::Ordered {
-            return matches!(ty, Ty::Con(TyCon::Builtin(b), args) if args.is_empty() && TySet::ORD.contains(*b));
+            return matches!(ty, Ty::Con(TyCon::Builtin(b), args, _) if args.is_empty() && TySet::ORD.contains(*b));
         }
         match ty {
-            Ty::Fn(_) | Ty::App(_, _) | Ty::Con(TyCon::External(_), _) => false,
+            Ty::Fn(_) | Ty::App(_, _) | Ty::Con(TyCon::External(_), _, _) => false,
             Ty::Param(i) => at(env.params, *i)
                 .and_then(|p| p.builtin)
                 .is_some_and(|c| c == BuiltinConstraint::Key || c == constraint),
@@ -448,7 +496,7 @@ impl<'a> Checker<'a> {
                 .and_then(|s| at(&s.type_params, *index))
                 .and_then(|p| p.builtin)
                 .is_some_and(|c| c == BuiltinConstraint::Key || c == constraint),
-            Ty::Con(TyCon::Builtin(b), args) => match b.def() {
+            Ty::Con(TyCon::Builtin(b), args, _) => match b.def() {
                 Some(d) if usize::from(d.arity) == args.len() => match d.class {
                     BuiltinTypeClass::Basic => {
                         constraint != BuiltinConstraint::Key
@@ -461,7 +509,7 @@ impl<'a> Checker<'a> {
                 },
                 Some(_) | None => false,
             },
-            Ty::Con(TyCon::Adt(a), args) => self.program.adts.get(*a).is_some_and(|d| {
+            Ty::Con(TyCon::Adt(a), args, _) => self.program.adts.get(*a).is_some_and(|d| {
                 let allowed = |summary: &crate::types::TypeSummary, c| {
                     !summary.always
                         && summary
@@ -494,26 +542,45 @@ impl<'a> Checker<'a> {
                     self.error(val.origin, "unknown top-level function");
                     None
                 } else if let Some(scheme) = self.program.schemes.get(*def) {
-                    Some(self.instantiate(scheme, targs, env, val.origin))
+                    Some(self.instantiate(scheme, Some(*def), None, targs, env, val.origin))
                 } else {
                     self.error(val.origin, "missing function scheme");
                     None
                 }
             }
             ValKind::External { def, .. } => match self.program.schemes.get(*def) {
-                Some(s) => Some(self.instantiate(s, &TypeArgs::default(), env, val.origin)),
+                Some(s) => Some(self.instantiate(
+                    s,
+                    Some(*def),
+                    None,
+                    &TypeArgs::default(),
+                    env,
+                    val.origin,
+                )),
                 None => {
                     self.error(val.origin, "missing external scheme");
                     None
                 }
             },
-            ValKind::Builtin { id, targs, info } => {
+            ValKind::Builtin {
+                id,
+                targs,
+                info,
+                ranges,
+            } => {
+                if !crate::builtins::table::builtin_range_signature(*id)
+                    .is_some_and(|signature| signature.admits(ranges))
+                {
+                    self.error(val.origin, "builtin range arguments are invalid");
+                }
                 let scheme = match info.decl {
                     Some(decl) => self.program.schemes.get(decl).cloned(),
                     None => builtin_scheme(*id),
                 };
                 match scheme {
-                    Some(s) => Some(self.instantiate(&s, targs, env, val.origin)),
+                    Some(s) => {
+                        Some(self.instantiate(&s, info.decl, Some(ranges), targs, env, val.origin))
+                    }
                     None => {
                         self.error(val.origin, "missing builtin scheme");
                         None
@@ -521,7 +588,7 @@ impl<'a> Checker<'a> {
                 }
             }
             ValKind::Op { op, targs } => match self.program.schemes.get(*op) {
-                Some(s) => Some(self.instantiate(s, targs, env, val.origin)),
+                Some(s) => Some(self.instantiate(s, Some(*op), None, targs, env, val.origin)),
                 None => {
                     self.error(val.origin, "missing operation scheme");
                     None
@@ -542,7 +609,11 @@ impl<'a> Checker<'a> {
                         "unknown constructor or incorrect type argument count",
                     );
                 }
-                Some(Ty::Con(TyCon::Adt(*adt), tys.clone()))
+                Some(Ty::Con(
+                    TyCon::Adt(*adt),
+                    tys.clone(),
+                    crate::types::builtin::RangeIndex::TOP,
+                ))
             }
             ValKind::List(items) => {
                 self.list(items, &val.ty, env, val.origin);
@@ -579,7 +650,7 @@ impl<'a> Checker<'a> {
                     );
                 }
             }
-            Ty::Con(_, args) | Ty::App(_, args) => {
+            Ty::Con(_, args, _) | Ty::App(_, args) => {
                 for t in args {
                     self.rigid_scope(t, env, origin);
                 }
@@ -614,7 +685,7 @@ impl<'a> Checker<'a> {
                 self.effects(lambda.body.origin, &lambda.body.eff, &f.effects);
                 f.effects.clone()
             }
-            Ty::Con(_, _) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
+            Ty::Con(_, _, _) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
                 lambda.body.eff.clone()
             }
         };
@@ -629,7 +700,7 @@ impl<'a> Checker<'a> {
     /// V-List。要素の型の最も外側が関数である場合にだけ V-Sub を使う。
     fn list(&mut self, items: &[CoreVal], ty: &Ty, env: &mut Env<'_>, origin: Span) {
         let element = match ty {
-            Ty::Con(TyCon::Builtin(b), args) if *b == BuiltinTypeId::LIST && args.len() == 1 => {
+            Ty::Con(TyCon::Builtin(b), args, _) if *b == BuiltinTypeId::LIST && args.len() == 1 => {
                 args.first()
             }
             Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => None,
@@ -926,14 +997,17 @@ impl<'a> Checker<'a> {
     /// C-Use。リソースの表を引き、解放の State を導く。
     fn use_comp(&mut self, resource: &CoreVal, body: &Comp, comp: &Comp, env: &mut Env<'_>) {
         self.value(resource, env);
-        if !matches!(&resource.ty, Ty::Con(TyCon::Builtin(b), args)
+        if !matches!(&resource.ty, Ty::Con(TyCon::Builtin(b), args, _)
             if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource && usize::from(d.arity) == args.len()))
         {
             self.error(resource.origin, "use requires a resource type");
         }
         self.computation(body, env);
         let mut eff = body.eff.clone();
-        eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));
+        eff.insert_name(EffectName::Builtin(
+            BuiltinEffectId::STATE,
+            crate::types::builtin::RangeIndex::TOP,
+        ));
         self.equal(comp.origin, &comp.ty, &body.ty);
         self.effects(comp.origin, &eff, &comp.eff);
     }
@@ -945,7 +1019,7 @@ impl<'a> Checker<'a> {
         env.hide_builders();
         self.computation(body, env);
         env.restore(mark);
-        self.effects(body.origin, &body.eff, &EffectSet::empty());
+        self.structural_effects(body.origin, &body.eff, &EffectSet::empty());
         self.equal(
             comp.origin,
             &comp.ty,
@@ -1130,7 +1204,7 @@ impl<'a> Checker<'a> {
         };
         let mut targs = call.targs.clone();
         targs.tys.insert(0, call.dict.arg.clone());
-        let ty = self.instantiate(s, &targs, env, origin);
+        let ty = self.instantiate(s, None, None, &targs, env, origin);
         self.dictionary_arguments(
             &call.dicts,
             Some((s.class_constraints.get(1..).unwrap_or(&[]), &targs.tys)),
@@ -1312,9 +1386,9 @@ impl<'a> Checker<'a> {
             self.effects(handle.body.origin, &rest, &comp.eff);
             let mut upper = rest;
             upper.insert_failure(error_ty.clone());
-            self.effects(handle.body.origin, &handle.body.eff, &upper);
+            self.structural_effects(handle.body.origin, &handle.body.eff, &upper);
         } else {
-            self.effects(
+            self.structural_effects(
                 handle.body.origin,
                 &handle.body.eff,
                 &comp.eff.union(&handle.handled),
@@ -1323,7 +1397,11 @@ impl<'a> Checker<'a> {
         let mut handled = EffectSet::empty();
         for op in &self.program.ops {
             if !op.failure
-                && op.effect != EffectName::Builtin(BuiltinEffectId::STATE)
+                && op.effect
+                    != EffectName::Builtin(
+                        BuiltinEffectId::STATE,
+                        crate::types::builtin::RangeIndex::TOP,
+                    )
                 && self
                     .program
                     .ops
@@ -1331,7 +1409,18 @@ impl<'a> Checker<'a> {
                     .filter(|o| o.effect == op.effect)
                     .all(|o| handle.clauses.iter().any(|c| c.op == o.binding))
             {
-                handled.insert_name(op.effect);
+                handled.insert_name(op.effect.clone());
+                for atom in &handle.body.eff.names {
+                    let matches = match (atom, &op.effect) {
+                        (EffectName::Builtin(a, _), EffectName::Builtin(b, _)) => a == b,
+                        (EffectName::User(a, _), EffectName::User(b, _)) => a == b,
+                        (EffectName::Builtin(_, _), EffectName::User(_, _))
+                        | (EffectName::User(_, _), EffectName::Builtin(_, _)) => false,
+                    };
+                    if matches {
+                        handled.insert_name(atom.clone());
+                    }
+                }
             }
         }
         if handled != handle.handled {
@@ -1344,12 +1433,18 @@ impl<'a> Checker<'a> {
             );
         }
         for clause in &handle.clauses {
-            self.clause(clause, comp, env);
+            self.clause(clause, &handle.body.eff, comp, env);
         }
     }
 
     /// C-Handle の節。操作の型引数は節のノード番号で区別する剛体型である。
-    fn clause(&mut self, clause: &Clause<Comp>, comp: &Comp, env: &mut Env<'_>) {
+    fn clause(
+        &mut self,
+        clause: &Clause<Comp>,
+        body_effect: &EffectSet,
+        comp: &Comp,
+        env: &mut Env<'_>,
+    ) {
         let mark = env.updates.len();
         if let Some(t) = &clause.failure_type {
             self.rigid_scope(t, env, clause.span);
@@ -1397,7 +1492,22 @@ impl<'a> Checker<'a> {
                     })
                 })
                 .collect();
-            let expected = s.fn_ty().subst(&tys, &[]);
+            let ranges = self
+                .program
+                .range_signatures
+                .get(clause.op)
+                .map(|signature| signature.clause_ranges(s, body_effect));
+            let expected = self.instantiate(
+                s,
+                Some(clause.op),
+                ranges.as_deref(),
+                &TypeArgs {
+                    tys,
+                    effects: vec![],
+                },
+                env,
+                clause.span,
+            );
             if let Ty::Fn(f) = expected {
                 self.count(
                     clause.span,
@@ -1441,7 +1551,7 @@ impl<'a> Checker<'a> {
         self.effects(clause.body.origin, &clause.body.eff, &comp.eff);
     }
 
-    /// C-Resume。継続の結果の型とエフェクトは一致を求める。
+    /// C-Resume と C-Eff。結果の型は一致し、効果は周囲の一原子で覆える。
     fn resume(&mut self, cont: VarId, value: &CoreVal, comp: &Comp, env: &mut Env<'_>) {
         self.value(value, env);
         match env
@@ -1454,12 +1564,7 @@ impl<'a> Checker<'a> {
             Some((_, arg, ret, eff)) => {
                 self.flow(value.origin, &value.ty, arg);
                 self.equal(comp.origin, &comp.ty, ret);
-                if comp.eff != *eff {
-                    self.error(
-                        comp.origin,
-                        format!("resume requires effects {eff:?}, found {:?}", comp.eff),
-                    );
-                }
+                self.effects(comp.origin, eff, &comp.eff);
             }
             None => self.error(comp.origin, "continuation is not visible in this scope"),
         }
@@ -1506,7 +1611,7 @@ impl<'a> Checker<'a> {
                     &guard.ty,
                     &builtin(BuiltinTypeId::BOOLEAN, vec![]),
                 );
-                self.effects(guard.origin, &guard.eff, &EffectSet::empty());
+                self.structural_effects(guard.origin, &guard.eff, &EffectSet::empty());
                 effects = effects.union(&guard.eff);
             }
             self.computation(&arm.body, env);
@@ -1533,6 +1638,7 @@ impl<'a> Checker<'a> {
                                 | BuiltinTypeId::BOOLEAN
                                 | BuiltinTypeId::UNIT
                         ),
+                        _,
                         _
                     )
                 ) {
@@ -1542,7 +1648,7 @@ impl<'a> Checker<'a> {
                 }
             }
             CorePat::Ctor { adt, tag, args } => match ty {
-                Ty::Con(TyCon::Adt(a), tys) if a == adt => {
+                Ty::Con(TyCon::Adt(a), tys, _) if a == adt => {
                     match self.program.adts.field_types(*adt, *tag, tys) {
                         Some(fields) => {
                             self.count(origin, "constructor patterns", args.len(), fields.len());
@@ -1575,7 +1681,7 @@ impl<'a> Checker<'a> {
                 rest,
                 after,
             } => match ty {
-                Ty::Con(TyCon::Builtin(b), args)
+                Ty::Con(TyCon::Builtin(b), args, _)
                     if *b == BuiltinTypeId::LIST && args.len() == 1 =>
                 {
                     if let Some(t) = args.first() {
@@ -1664,6 +1770,7 @@ mod tests {
     fn write() -> EffectSet {
         effect(EffectName::Builtin(
             find_builtin_effect(&["IO", "Console"], "Write").unwrap(),
+            crate::types::builtin::RangeIndex::TOP,
         ))
     }
     fn effect(name: EffectName) -> EffectSet {
@@ -1672,7 +1779,10 @@ mod tests {
         e
     }
     fn state() -> EffectSet {
-        effect(EffectName::Builtin(BuiltinEffectId::STATE))
+        effect(EffectName::Builtin(
+            BuiltinEffectId::STATE,
+            crate::types::builtin::RangeIndex::TOP,
+        ))
     }
     fn var(id: u32, ty: Ty) -> Var {
         Var {
@@ -1787,6 +1897,7 @@ mod tests {
             adts: AdtTable::default(),
             traits: BindingMap::new(),
             schemes: BindingMap::new(),
+            range_signatures: BindingMap::new(),
             main: Some(MAIN),
             main_returns_result: false,
             body_count: 100,
@@ -1890,6 +2001,7 @@ mod tests {
         let ty = s.fn_ty().subst(&tys, &[]);
         val(
             ValKind::Builtin {
+                ranges: vec![],
                 id,
                 targs: TypeArgs {
                     tys,
@@ -1940,6 +2052,83 @@ mod tests {
             ty,
             pos,
         )
+    }
+
+    // 関門: 型のEqだけでは、検査器が同じ名前の添字を無視する退行を捕まえない。
+    // 公開のcheck_programで受理と拒否を対にし、範囲変数・資源の非Topも同じ境界で断る。
+    #[test]
+    fn indexed_values_are_invariant_and_program_types_are_closed() {
+        use crate::types::builtin::RangeIndex;
+        use crate::types::scope::{PathPattern, Range};
+        let indices = [
+            RangeIndex::TOP,
+            RangeIndex::fixed(Range::Path(PathPattern::parse("/data/**").unwrap())),
+            RangeIndex::fixed(Range::Path(PathPattern::parse("/data/input").unwrap())),
+        ];
+        let ty = |id, ix| Ty::Con(TyCon::Builtin(id), vec![], ix);
+        for a in &indices {
+            for b in &indices {
+                let input = ty(BuiltinTypeId::PATH_IN, a.clone());
+                let output = ty(BuiltinTypeId::PATH_IN, b.clone());
+                let p = main_program(
+                    ret(variable(1, output, 1)),
+                    vec![var(1, input)],
+                    EffectSet::empty(),
+                );
+                assert_eq!(check_program(&p).is_empty(), a == b);
+            }
+        }
+        let reader = find_builtin_type(&["IO", "File"], "Reader").unwrap();
+        for t in [
+            ty(BuiltinTypeId::PATH_IN, RangeIndex::var(0)),
+            ty(BuiltinTypeId::IO_ERROR, indices[1].clone()),
+            ty(reader, indices[1].clone()),
+        ] {
+            let p = main_program(
+                ret(variable(1, t.clone(), 1)),
+                vec![var(1, t)],
+                EffectSet::empty(),
+            );
+            assert!(!check_program(&p).is_empty());
+        }
+    }
+
+    // 関門: 原子に同じ未具体化の変数を両側へ残すと構造と被覆だけの照合は通る。
+    // 公開の検査入口で確定プログラムへの漏れを拒否し、閉じた同名原子は受理する。
+    #[test]
+    fn program_effects_reject_uninstantiated_scope_variables() {
+        use crate::types::builtin::RangeIndex;
+        let read = crate::types::builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
+        for (index, valid) in [(RangeIndex::TOP, true), (RangeIndex::var(0), false)] {
+            let effects = effect(EffectName::Builtin(read, index));
+            let mut body = ret(integer(1));
+            body.eff = effects.clone();
+            let program = main_program(body, vec![], effects);
+            assert_eq!(check_program(&program).is_empty(), valid);
+        }
+    }
+
+    // 型の等号だけでは、Failの中で同じ不正な契約名を両側に持つ場合を見落とす。
+    // 公開の検査入口で整形式の対を先に受理し、個数と重複だけを変えて拒否を確かめる。
+    #[test]
+    fn failure_types_require_well_formed_parameter_contracts() {
+        for names in [vec!["first", "second"], vec!["first"], vec!["same", "same"]] {
+            let inner = Ty::Fn(Box::new(FnTy {
+                param_names: names.iter().map(|name| (*name).into()).collect(),
+                params: vec![int(), int()],
+                ret: int(),
+                effects: EffectSet::empty(),
+            }));
+            let mut effects = EffectSet::empty();
+            effects.insert_failure(inner);
+            let ty = fn_ty(vec![], int(), effects);
+            let p = main_program(
+                ret(variable(1, ty.clone(), 1)),
+                vec![var(1, ty)],
+                EffectSet::empty(),
+            );
+            assert_eq!(check_program(&p).is_empty(), names == ["first", "second"]);
+        }
     }
 
     #[test]
@@ -2280,7 +2469,10 @@ mod tests {
         let mut s = scheme(
             vec![ty.clone()],
             ty,
-            effect(EffectName::User(BindingId(42))),
+            effect(EffectName::User(
+                BindingId(42),
+                crate::types::builtin::RangeIndex::TOP,
+            )),
         );
         if polymorphic {
             s.type_params.push(param(ParamKind::Value, constraint));
@@ -2290,7 +2482,7 @@ mod tests {
             failure: false,
             param_names: (1..=1).map(|i| format!("arg{i}")).collect(),
             binding: OP,
-            effect: EffectName::User(BindingId(42)),
+            effect: EffectName::User(BindingId(42), crate::types::builtin::RangeIndex::TOP),
             name: "Log.echo".into(),
             arity: 1,
             builtin: None,
@@ -2350,7 +2542,10 @@ mod tests {
             id: BodyId(2),
             body,
             clauses: vec![clause],
-            handled: effect(EffectName::User(BindingId(42))),
+            handled: effect(EffectName::User(
+                BindingId(42),
+                crate::types::builtin::RangeIndex::TOP,
+            )),
         };
         add_def(
             &mut p,
@@ -2544,6 +2739,78 @@ end function
         one(&p, 11, "accepted");
     }
 
+    // 関門: 表層の仮署名だけでは通れない IR の節の非Top具体化を独立に守る。
+    // C-Eff で狭い保護本体を与え、節の型の不一致と結果の範囲変数を検査する。
+    #[test]
+    fn scoped_clause_signature_uses_protected_body_and_rejects_wrong_index() {
+        use crate::types::builtin::RangeIndex;
+        use crate::types::scope::{Kind, PathPattern, Range};
+        use crate::types::signature::{IoShape, RangeAdmission, RangeSignature};
+        let narrow = Range::Path(PathPattern::parse("/data/a").unwrap());
+        let read = |range| EffectName::Builtin(BuiltinEffectId::FILE_READ, range);
+        let path = |range| Ty::Con(TyCon::Builtin(BuiltinTypeId::PATH_IN), vec![], range);
+        let mut program = handled_program(false);
+        program.schemes.insert(
+            OP,
+            scheme(
+                vec![path(RangeIndex::var(0))],
+                int(),
+                effect(read(RangeIndex::var(0))),
+            ),
+        );
+        program.range_signatures.insert(
+            OP,
+            RangeSignature {
+                kinds: vec![Kind::Path],
+                admission: RangeAdmission::Any,
+                shape: IoShape::Single {
+                    kind: Kind::Path,
+                    position: 0,
+                },
+            },
+        );
+        program.ops[0].effect = read(RangeIndex::TOP);
+        let handle = handler(&mut program);
+        handle.body = comp(
+            CompKind::Return(integer(10)),
+            int(),
+            effect(read(RangeIndex::fixed(narrow.clone()))),
+            12,
+        );
+        handle.handled = effect(read(RangeIndex::TOP));
+        handle
+            .handled
+            .insert_name(read(RangeIndex::fixed(narrow.clone())));
+        handle.clauses[0].params[0].ty = path(RangeIndex::fixed(narrow));
+        handle.clauses[0].cont.arg = int();
+        handle.clauses[0].body = comp(
+            CompKind::Resume {
+                cont: VarId(2),
+                value: integer(13),
+            },
+            int(),
+            EffectSet::empty(),
+            14,
+        );
+        good(&program);
+        let mut broken = program.clone();
+        handler(&mut broken).clauses[0].params[0].ty = path(RangeIndex::TOP);
+        assert!(
+            check_program(&broken)
+                .iter()
+                .any(|error| error.message.contains("expected "))
+        );
+        let mut broken = program;
+        let mut scheme = broken.schemes.get(OP).unwrap().clone();
+        scheme.ret = path(RangeIndex::var(0));
+        broken.schemes.insert(OP, scheme);
+        assert!(
+            check_program(&broken)
+                .iter()
+                .any(|error| error.message.contains("scope instantiation failed"))
+        );
+    }
+
     #[test]
     fn handlers_resume_and_rigid_clause_parameters() {
         for poly in [false, true] {
@@ -2562,7 +2829,10 @@ end function
         let mut broken = p.clone();
         handler(&mut broken).handled = EffectSet::empty();
         // 本体は εM ⊆ ε ∪ handled を満たすよう、ハンドラの許可する ε を広げる。
-        broken.defs[0].body.eff = effect(EffectName::User(BindingId(42)));
+        broken.defs[0].body.eff = effect(EffectName::User(
+            BindingId(42),
+            crate::types::builtin::RangeIndex::TOP,
+        ));
         broken.defs[0].eff = broken.defs[0].body.eff.clone();
         handler(&mut broken).clauses[0].body.eff = broken.defs[0].eff.clone();
         broken
@@ -2637,7 +2907,10 @@ end function
                 body: outer_resume,
                 span: span(24),
             }],
-            handled: effect(EffectName::User(BindingId(42))),
+            handled: effect(EffectName::User(
+                BindingId(42),
+                crate::types::builtin::RangeIndex::TOP,
+            )),
         };
         handler(&mut p).clauses[0].body = comp(
             CompKind::Handle(Box::new(nested)),
@@ -2757,7 +3030,11 @@ end function
             param: 1,
             class: SUPER,
         };
-        let target = Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]);
+        let target = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![Ty::Param(0)],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let helper_body = ret(variable(0, Ty::Param(0), 10));
         let mut helper = definition(
             ID,
@@ -2889,12 +3166,27 @@ end function
         );
         let mut super_option = definition(
             BindingId(26),
-            vec![var(0, Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]))],
-            Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]),
+            vec![var(
+                0,
+                Ty::Con(
+                    TyCon::Adt(OPTION),
+                    vec![Ty::Param(0)],
+                    crate::types::builtin::RangeIndex::TOP,
+                ),
+            )],
+            Ty::Con(
+                TyCon::Adt(OPTION),
+                vec![Ty::Param(0)],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
             EffectSet::empty(),
             ret(variable(
                 0,
-                Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]),
+                Ty::Con(
+                    TyCon::Adt(OPTION),
+                    vec![Ty::Param(0)],
+                    crate::types::builtin::RangeIndex::TOP,
+                ),
                 41,
             )),
         );
@@ -2961,13 +3253,21 @@ end function
                     )],
                 },
                 SUPER,
-                TypeArg::Ty(Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)])),
+                TypeArg::Ty(Ty::Con(
+                    TyCon::Adt(OPTION),
+                    vec![Ty::Param(0)],
+                    crate::types::builtin::RangeIndex::TOP,
+                )),
                 23,
             )],
             methods: vec![method],
             span: span(203),
         });
-        let target = Ty::Con(TyCon::Adt(OPTION), vec![int()]);
+        let target = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![int()],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let show = dict(
             DictKind::Impl {
                 impl_decl: IMPL,
@@ -3028,7 +3328,11 @@ end function
                     33,
                 )),
             },
-            Ty::Con(TyCon::Adt(OPTION), vec![int()]),
+            Ty::Con(
+                TyCon::Adt(OPTION),
+                vec![int()],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
             EffectSet::empty(),
             34,
         );
@@ -3057,7 +3361,11 @@ end function
                 args: vec![concrete_dict(24)],
             },
             SHOW,
-            TypeArg::Ty(Ty::Con(TyCon::Adt(OPTION), vec![int()])),
+            TypeArg::Ty(Ty::Con(
+                TyCon::Adt(OPTION),
+                vec![int()],
+                crate::types::builtin::RangeIndex::TOP,
+            )),
             28,
         );
         one(&broken, 28, "Dict");
@@ -3089,7 +3397,11 @@ end function
         let CompKind::App { func, .. } = &mut body.kind else {
             panic!()
         };
-        let ty = Ty::Con(TyCon::Adt(OPTION), vec![int()]);
+        let ty = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![int()],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         *func = lambda(ret(variable(10, ty.clone(), 35)), vec![var(10, ty)], 31);
         one(&broken, 33, "dictionary arguments");
         let mut broken = p.clone();
@@ -3139,7 +3451,11 @@ end function
         ];
         s.class_constraints = vec![ClassConstraint { param: 0, class }];
         p.schemes.insert(method_id, s);
-        let option = Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]);
+        let option = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![Ty::Param(0)],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let mut m = definition(
             method_binding,
             vec![var(0, option.clone())],
@@ -3177,7 +3493,11 @@ end function
             span: span(201),
         });
         let head = TypeArg::Head(TyHead::Con(TyCon::Adt(OPTION)));
-        let option = Ty::Con(TyCon::Adt(OPTION), vec![int()]);
+        let option = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![int()],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let body = comp(
             CompKind::Method(Box::new(MethodCall {
                 dict: dict(
@@ -3422,7 +3742,11 @@ end function
             rows[0].pattern = CorePat::Wild;
             good(&p);
         }
-        let ty = Ty::Con(TyCon::Adt(RECORD), vec![]);
+        let ty = Ty::Con(
+            TyCon::Adt(RECORD),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let value = val(
             ValKind::Ctor {
                 adt: RECORD,
@@ -3524,15 +3848,27 @@ end function
         let opaque = builtin(BuiltinTypeId::REFERENCE, vec![int()]);
         let float = builtin(BuiltinTypeId::FLOAT, vec![]);
         let float32 = builtin(BuiltinTypeId::FLOAT32, vec![]);
-        let option_float = Ty::Con(TyCon::Adt(OPTION), vec![float.clone()]);
-        let option_fn = Ty::Con(TyCon::Adt(OPTION), vec![plain_fn.clone()]);
+        let option_float = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![float.clone()],
+            crate::types::builtin::RangeIndex::TOP,
+        );
+        let option_fn = Ty::Con(
+            TyCon::Adt(OPTION),
+            vec![plain_fn.clone()],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         for (constraint, ty, expected) in [
             (BuiltinConstraint::Equality, float, true),
             (BuiltinConstraint::Equality, float32.clone(), true),
             (BuiltinConstraint::Key, float32.clone(), false),
             (
                 BuiltinConstraint::Key,
-                Ty::Con(TyCon::Adt(OPTION), vec![float32]),
+                Ty::Con(
+                    TyCon::Adt(OPTION),
+                    vec![float32],
+                    crate::types::builtin::RangeIndex::TOP,
+                ),
                 false,
             ),
             (BuiltinConstraint::Equality, plain_fn, false),
@@ -3542,7 +3878,11 @@ end function
             (BuiltinConstraint::Key, list_ty(int()), true),
             (
                 BuiltinConstraint::Key,
-                Ty::Con(TyCon::Adt(RECORD), vec![]),
+                Ty::Con(
+                    TyCon::Adt(RECORD),
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP,
+                ),
                 true,
             ),
             (
@@ -3664,26 +4004,28 @@ end function
     #[test]
     fn handled_effects_require_every_operation_and_never_include_state() {
         let mut p = handled_program(false);
-        let effect_name = EffectName::User(BindingId(42));
+        let effect_name = EffectName::User(BindingId(42), crate::types::builtin::RangeIndex::TOP);
         p.ops.push(OpDef {
             failure: false,
             param_names: Vec::new(),
             binding: BindingId(41),
-            effect: effect_name,
+            effect: effect_name.clone(),
             name: "Log.other".into(),
             arity: 0,
             builtin: None,
         });
-        p.schemes
-            .insert(BindingId(41), scheme(vec![], int(), effect(effect_name)));
+        p.schemes.insert(
+            BindingId(41),
+            scheme(vec![], int(), effect(effect_name.clone())),
+        );
         handler(&mut p).handled = EffectSet::empty();
-        p.defs[0].body.eff = effect(effect_name);
-        p.defs[0].eff = effect(effect_name);
-        handler(&mut p).clauses[0].body.eff = effect(effect_name);
+        p.defs[0].body.eff = effect(effect_name.clone());
+        p.defs[0].eff = effect(effect_name.clone());
+        handler(&mut p).clauses[0].body.eff = effect(effect_name.clone());
         p.schemes
-            .insert(MAIN, scheme(vec![], int(), effect(effect_name)));
+            .insert(MAIN, scheme(vec![], int(), effect(effect_name.clone())));
         good(&p);
-        handler(&mut p).handled = effect(effect_name);
+        handler(&mut p).handled = effect(effect_name.clone());
         one(&p, 16, "handled effects");
         handler(&mut p).handled = state();
         one(&p, 16, "handled effects");
@@ -4145,13 +4487,21 @@ mod exit_report_tests {
                 }
                 2 => {
                     report.cause.kind = ValKind::Const(Const::Int(4));
-                    report.cause.ty = Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]);
+                    report.cause.ty = Ty::Con(
+                        TyCon::Builtin(BuiltinTypeId::INTEGER),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP,
+                    );
                     "expected"
                 }
                 3 => {
                     let message = report.message.as_mut().expect("message");
                     message.kind = ValKind::Const(Const::Int(4));
-                    message.ty = Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]);
+                    message.ty = Ty::Con(
+                        TyCon::Builtin(BuiltinTypeId::INTEGER),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP,
+                    );
                     "expected"
                 }
                 _ => {

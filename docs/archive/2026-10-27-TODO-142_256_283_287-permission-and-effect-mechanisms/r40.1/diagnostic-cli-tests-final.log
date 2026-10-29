@@ -1,0 +1,15 @@
+command: cargo test -p benitoite --test cli_process scoped_
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.19s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-e79e06fbc41075ec)
+
+running 3 tests
+test scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli ... ok
+test scoped_diagnostics::scoped_projection_and_widening_guidance_repairs_are_accepted ... ok
+test scoped_contracts_reach_reports_and_name_limits ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 37 filtered out; finished in 3.34s
+
+
+exit: 0
+wall: 12.02 seconds

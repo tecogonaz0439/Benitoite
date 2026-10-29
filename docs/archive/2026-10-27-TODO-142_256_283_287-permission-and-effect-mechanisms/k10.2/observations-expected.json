@@ -1,0 +1,41 @@
+{
+  "basis": "hand-written before local runtime comparisons",
+  "unit": "program IO target; excludes OS DNS/TLS auxiliary traffic",
+  "file": {
+    "operations": ["File.readTextIn", "File.readBytesIn", "File.writeTextIn", "File.appendTextIn", "File.writeBytesIn", "File.appendBytesIn"],
+    "scope": "controlled directory tree",
+    "actual": "controlled directory/actual",
+    "missing": "controlled directory/absent-parent/actual",
+    "observationCardinalityPerOperation": 1,
+    "encodingTemplate": [{"path": ["controlled directory", "actual"]}],
+    "allowedRetainedTarget": true,
+    "allowedDifferentTargetOutsideScope": false,
+    "decoyBytes": [117, 110, 116, 111, 117, 99, 104, 101, 100],
+    "finalActualBytes": [255, 0, 65, 66, 10]
+  },
+  "http": {
+    "operation": "Http.sendIn",
+    "host": "127.0.0.1",
+    "port": "actual listening socket port",
+    "observationCardinalityPerOperation": 1,
+    "encodingTemplate": [{"endpoint": {"host": {"ip": {"family": "v4", "bits": 2130706433}}, "port": "actual listening socket port"}}],
+    "allowedRetainedEndpoint": true,
+    "allowedRedirectEndpointOutsideScope": false,
+    "connectionsToRetainedEndpoint": 1,
+    "connectionsToRedirectEndpoint": 0,
+    "method": "POST",
+    "pathAndQuery": "/original?q=%2F",
+    "duplicateHeaders": [["X-Probe", "one"], ["x-probe", "two"]],
+    "body": "posted猫",
+    "statuses": [301, 302, 303, 307, 308, 302, 304]
+  },
+  "leanGuardCases": {
+    "encodeDecodeObservation": ["path", "host name", "endpoint host name", "endpoint IPv4"],
+    "fileWriteAllowed": {"/data/a.txt": true, "/etc/passwd": false},
+    "httpConnectAllowed": {"api.example.com:443": true, "192.168.1.20:443": false},
+    "wrongKindAllowed": false,
+    "noTargetNameEmptyObservationAllowed": true,
+    "noTargetNameNonemptyObservationAllowed": false,
+    "rvarAllowed": false
+  }
+}

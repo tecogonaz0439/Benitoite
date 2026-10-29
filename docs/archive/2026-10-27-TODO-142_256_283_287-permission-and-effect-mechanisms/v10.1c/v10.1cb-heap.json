@@ -1,0 +1,23 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--all-targets",
+    "--no-default-features",
+    "--features",
+    "gc-mark-sweep,heap-verify",
+    "--no-fail-fast"
+  ],
+  "started_utc": "2026-10-29T21:23:13.880059+00:00",
+  "finished_utc": "2026-10-29T21:35:57.785641+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 763.905222209,
+  "max_rss_bytes": 5003902976,
+  "max_rss_mib": 4772.09375,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; child maximum, not concurrent total",
+  "raw_log": "target/v10.1c/v10.1cb-heap.log",
+  "raw_log_bytes": 318247,
+  "raw_log_sha256": "86dc860e2db616957bb890b6624fa3742f1359584d4eae7685e8eb6d196ee8c9",
+  "saved_log_sha256": "fd4a971f81e8e0d82e5b981d35ef764e0db50808e94bcc0ba9a7f9cda7356272"
+}

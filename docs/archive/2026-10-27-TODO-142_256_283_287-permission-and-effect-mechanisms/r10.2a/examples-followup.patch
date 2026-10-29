@@ -1,0 +1,31 @@
+--- a/crates/benitoite/examples/derive_inventory/schema.rs
++++ b/crates/benitoite/examples/derive_inventory/schema.rs
+@@ -106,11 +106,12 @@
+     }
+     fn effect_set(&self, e: &EffectSet, s: &Scheme) -> Result<Value, Error> {
+         let mut names = e.names.iter().map(|n|match n {
+-            EffectName::Builtin(id) => {
++            EffectName::Builtin(id, benitoite::types::scope::Range::Top) => {
+                 let d = id.def().ok_or(text::INVALID_SCHEMA)?;
+                 Ok(json!({"tag":"builtin","name":d.module.iter().copied().chain(std::iter::once(d.name)).collect::<Vec<_>>().join(".")}))
+             }
+-            EffectName::User(id) => Ok(json!({"tag":"named","name":self.name(*id)})),
++            EffectName::User(id, benitoite::types::scope::Range::Top) => Ok(json!({"tag":"named","name":self.name(*id)})),
++            _ => Err(text::INVALID_SCHEMA.into()),
+         }).collect::<Result<Vec<_>,Error>>()?;
+         names.sort_by_key(|v| {
+             v.get("name")
+--- a/crates/benitoite/examples/try_actions_inventory.rs
++++ b/crates/benitoite/examples/try_actions_inventory.rs
+@@ -33,8 +33,9 @@
+     let mut out = Vec::new();
+     for effect in &effects.names {
+         out.push(match effect {
+-            EffectName::Builtin(id) => benitoite::types::builtin::effect_name(*id)?,
+-            EffectName::User(id) => checked.types.effects.get(*id)?.display_name.clone(),
++            EffectName::Builtin(id, benitoite::types::scope::Range::Top) => benitoite::types::builtin::effect_name(*id)?,
++            EffectName::User(id, benitoite::types::scope::Range::Top) => checked.types.effects.get(*id)?.display_name.clone(),
++            _ => return None,
+         });
+     }
+     for failure in &effects.failures {

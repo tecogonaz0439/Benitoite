@@ -1,0 +1,196 @@
+[
+  {
+    "run": "gen-skill",
+    "command": [
+      "cargo",
+      "run",
+      "-p",
+      "benitoite",
+      "--example",
+      "gen_skill"
+    ],
+    "started_utc": "2026-10-28T15:27:34.008625+00:00",
+    "finished_utc": "2026-10-28T15:27:37.521701+00:00",
+    "exit": 0,
+    "outer_seconds": 3.5130385840000002,
+    "max_rss_raw": 11386880,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 10.859375,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "runtime-path",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "runtime_builtins",
+      "scope_path_in_checks_dynamic_inputs_and_preserves_the_same_ok",
+      "--",
+      "--exact"
+    ],
+    "started_utc": "2026-10-28T15:25:12.190294+00:00",
+    "finished_utc": "2026-10-28T15:25:29.763401+00:00",
+    "exit": 0,
+    "outer_seconds": 17.573041292,
+    "max_rss_raw": 4033282048,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 3846.4375,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "export-path",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "desugar_export",
+      "exports_used_path_checks_with_range_variables_only_in_signatures",
+      "--",
+      "--nocapture"
+    ],
+    "started_utc": "2026-10-28T15:25:43.341504+00:00",
+    "finished_utc": "2026-10-28T15:25:46.582169+00:00",
+    "exit": 101,
+    "outer_seconds": 3.240622167,
+    "max_rss_raw": 687046656,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 655.21875,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "export-path-retry",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "desugar_export",
+      "exports_used_path_checks_with_range_variables_only_in_signatures",
+      "--",
+      "--nocapture"
+    ],
+    "started_utc": "2026-10-28T15:26:05.565264+00:00",
+    "finished_utc": "2026-10-28T15:26:07.951478+00:00",
+    "exit": 0,
+    "outer_seconds": 2.3861617080000004,
+    "max_rss_raw": 688209920,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 656.328125,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "signature-final-check",
+    "command": [
+      "cargo",
+      "check",
+      "-p",
+      "benitoite",
+      "--lib"
+    ],
+    "started_utc": "2026-10-28T15:28:13.361652+00:00",
+    "finished_utc": "2026-10-28T15:28:15.078367+00:00",
+    "exit": 0,
+    "outer_seconds": 1.716672583,
+    "max_rss_raw": 920748032,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 878.09375,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "538090391ea48a833ddd824f4b732e599616d48c"
+    ],
+    "started_utc": "2026-10-28T15:28:37.539983+00:00",
+    "finished_utc": "2026-10-28T15:28:49.379232+00:00",
+    "exit": 1,
+    "outer_seconds": 11.839201708000001,
+    "max_rss_raw": 2384543744,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 2274.078125,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "work-retry",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "538090391ea48a833ddd824f4b732e599616d48c"
+    ],
+    "started_utc": "2026-10-28T15:29:27.814514+00:00",
+    "finished_utc": "2026-10-28T15:31:10.179014+00:00",
+    "exit": 1,
+    "outer_seconds": 102.364444333,
+    "max_rss_raw": 3369418752,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 3213.328125,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "work-retry2",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "538090391ea48a833ddd824f4b732e599616d48c"
+    ],
+    "started_utc": "2026-10-28T15:32:16.551600+00:00",
+    "finished_utc": "2026-10-28T15:40:01.144476+00:00",
+    "exit": 0,
+    "outer_seconds": 464.59274579099997,
+    "max_rss_raw": 2320056320,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 2212.578125,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  },
+  {
+    "run": "heap",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "538090391ea48a833ddd824f4b732e599616d48c",
+      "--only",
+      "doc_default,heap_local,stress_local",
+      "--test",
+      "runtime_builtins",
+      "--test",
+      "vm_handlers",
+      "--test",
+      "io_modes",
+      "--test",
+      "l32_http_client"
+    ],
+    "started_utc": "2026-10-28T15:40:05.031525+00:00",
+    "finished_utc": "2026-10-28T15:42:22.146205+00:00",
+    "exit": 0,
+    "outer_seconds": 137.11460720899998,
+    "max_rss_raw": 3958046720,
+    "max_rss_unit": "bytes",
+    "max_rss_mib": 3774.6875,
+    "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+    "platform": "darwin"
+  }
+]

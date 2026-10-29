@@ -1,0 +1,777 @@
+== wait-for-lock start 03:25:26
+== lock acquired 03:25:26 after 0s
+⚠ [208/443] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:969:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1246:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [214/443] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:782:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:792:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1243:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1758:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1765:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2044:30: This simp argument is unused:
+  targetOperationAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AbstractEnv.standardAt, standards, apiAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2090:56: This simp argument is unused:
+  standardCallHead
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2251:75: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [arithmeticOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:117: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [222/443] Replayed Benitoite.Interval.RangeBorrowed
+warning: Benitoite/Interval/RangeBorrowed.lean:204:27: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [noArgs, hl, hp, ne_eq, not_true_eq_false, false_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:207:24: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:208:62: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rule, ha]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [225/443] Replayed Benitoite.Interval.BudgetRange
+warning: Benitoite/Interval/BudgetRange.lean:367:27: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:367:34: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:19: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:26: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:373:51: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:29: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:36: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:42: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:21: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:28: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:34: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:419:53: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:35: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:45: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:51: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:27: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:37: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:43: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:427:72: This simp argument is unused:
+  hMaximum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:530:23: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:532:15: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:35: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:42: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:48: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:27: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:34: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:40: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:596:23: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:599:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:25: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:33: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:39: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:17: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:25: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:31: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:614:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:621:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:664:35: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:666:27: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [227/443] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:23: This simp argument is unused:
+  binarySupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:40: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [binarySupported]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:182:19: Variable name `labels` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _labels
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [231/443] Replayed Benitoite.Interval.SyntacticReach
+warning: Benitoite/Interval/SyntacticReach.lean:83:28: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:85:30: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:156:154: This simp argument is unused:
+  List.append_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [syntacticReachChildren, List.map_append, syntacticReachExpr_sources, syntacticReachBlock_sources,
+    syntacticReachArms_sources, syntacticReachExprs_sources, outsideSyntacticReach_sources, surfacePreorder,
+    List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [232/443] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:472:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Benitoite/Interval/BudgetNormal.lean:493:57: This simp argument is unused:
+  exprsChildren
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fieldAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:1328:0: unused `termination_by`, function is not recursive
+⚠ [234/443] Replayed Benitoite.Interval.BudgetSound
+warning: Benitoite/Interval/BudgetSound.lean:425:31: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:425:60: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_assoc, Nat.add_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:639:105: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:727:27: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [238/443] Replayed Benitoite.Interval.BudgetCallReach
+warning: Benitoite/Interval/BudgetCallReach.lean:384:26: This simp argument is unused:
+  exprsTables_sources
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [CallReach.children, childrenTables, append_sources, exprTables_sources, blockTables_sources,
+    armListTables_sources, outside, surfacePreorder, List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [433/443] Built Benitoite.Release.Model (2.0s)
+✖ [434/443] Building Benitoite.Release.BuilderExamples (482ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/BuilderExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuilderExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuilderExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/BuilderExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/BuilderExamples.setup.json --json
+error: Benitoite/Release/BuilderExamples.lean:19:29: Unknown constant `Prod.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  Outcome × List Scope.Domain.Target
+error: Benitoite/Release/BuilderExamples.lean:27:29: Unknown constant `Prod.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  Outcome × List Scope.Domain.Target
+error: Benitoite/Release/BuilderExamples.lean:36:29: Unknown constant `Prod.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  Outcome × List Scope.Domain.Target
+error: Benitoite/Release/BuilderExamples.lean:46:29: Unknown constant `Prod.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  Outcome × List Scope.Domain.Target
+error: Benitoite/Release/BuilderExamples.lean:54:29: Unknown constant `Prod.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  Outcome × List Scope.Domain.Target
+error: Benitoite/Release/BuilderExamples.lean:82:35: Unknown constant `Prod.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  Outcome × List Scope.Domain.Target
+✔ [435/443] Built Benitoite.Release.FailureExamples (533ms)
+✔ [436/443] Built Benitoite.Release.Lemmas.Membership (683ms)
+✖ [437/443] Building Benitoite.Release.Lemmas.PrimRanges (580ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/PrimRanges.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PrimRanges.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PrimRanges.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/PrimRanges.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/PrimRanges.setup.json --json
+error: Benitoite/Release/Lemmas/PrimRanges.lean:81:4: type expected, got
+  (B.ioResponse b ts es ws o : List Scope.Domain.Target → Prop)
+error: Benitoite/Release/Lemmas/PrimRanges.lean:86:78: Type mismatch
+  B.ioResponse b ts es ws o
+has type
+  List Scope.Domain.Target → Prop
+but is expected to have type
+  Prop
+error: Benitoite/Release/Lemmas/PrimRanges.lean:96:36: Application type mismatch: The argument
+  hs
+has type
+  B.sig b = some s
+of sort `Prop` but is expected to have type
+  List Scope.Domain.Target
+of sort `Type` in the application
+  hb.io_typed Ψ b s rs ts es ws o hs
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:98:8: declaration uses `sorry`
+error: Benitoite/Release/Lemmas/PrimRanges.lean:114:4: type expected, got
+  (B.ioResponse b ts es ws o : List Scope.Domain.Target → Prop)
+error: Benitoite/Release/Lemmas/PrimRanges.lean:121:9: Type mismatch
+  B.ioResponse b ts es ws o
+has type
+  List Scope.Domain.Target → Prop
+but is expected to have type
+  Prop
+error: Benitoite/Release/Lemmas/PrimRanges.lean:144:53: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case mp
+P : Program
+B : Builtins
+hB : B.RangeFree
+hsc : ∀ (b : PrimName) (s : PrimSig), B.sig b = some s → s.Scoped
+h : B.FieldOld (IOTypedAt P B)
+Ψ : StoreTy
+b : PrimName
+s : PrimSig
+ts : List Ty
+es : List Eff
+ws : List Val
+o : Outcome
+hs : B.sig b = some s
+hk : s.kind = PrimKind.io ∨ s.kind = PrimKind.exit
+htl : ts.length = s.ntys
+hel : es.length = s.neffs
+had : s.admits [] ts
+hargs : HasTypeVs P B Ψ [] [] ws (List.map (Ty.subst ts es) s.params)
+⊢ sorry
+error: Benitoite/Release/Lemmas/PrimRanges.lean:148:53: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case mpr
+P : Program
+B : Builtins
+hB : B.RangeFree
+hsc : ∀ (b : PrimName) (s : PrimSig), B.sig b = some s → s.Scoped
+h : IOTypedOld P B
+b : PrimName
+s : PrimSig
+hs : B.sig b = some s
+Ψ : StoreTy
+ts : List Ty
+es : List Eff
+ws : List Val
+o : Outcome
+hk : s.kind = PrimKind.io ∨ s.kind = PrimKind.exit
+htl : ts.length = s.ntys
+hel : es.length = s.neffs
+had : s.admits [] ts
+hargs : HasTypeVs P B Ψ [] [] ws (List.map (Ty.subst ts es) (PrimSig.inst [] s).params)
+⊢ sorry
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:152:8: declaration uses `sorry`
+error: Benitoite/Release/Lemmas/PrimRanges.lean:375:36: Type mismatch
+  b = "File.writeTextIn" ∧ ws.length = 2 ∧ o = Outcome.val (Val.con "Ok" [] [Val.const Const.unit])
+has type
+  Prop
+but is expected to have type
+  List Scope.Domain.Target → Prop
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:418:14: declaration uses `sorry`
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:431:42: declaration uses `sorry`
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:440:14: declaration uses `sorry`
+error: Benitoite/Release/Lemmas/PrimRanges.lean:451:12: Application type mismatch: The argument
+  Event.io "File.writeTextIn" [Val.checked target, Val.const (Const.string "x")]
+    (Outcome.val (Val.con "Ok" [] [Val.const Const.unit]))
+has type
+  List Scope.Domain.Target → Event
+but is expected to have type
+  Event
+in the application
+  some
+    (Event.io "File.writeTextIn" [Val.checked target, Val.const (Const.string "x")]
+      (Outcome.val (Val.con "Ok" [] [Val.const Const.unit])))
+error: Benitoite/Release/Lemmas/PrimRanges.lean:453:79: Invalid `⟨...⟩` notation: The expected type
+  ?m.21.3 ?m.22 ?m.23 ?m.24 ?m.26 (Outcome.val ?m.29) ?m.30
+is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+error: Benitoite/Release/Lemmas/PrimRanges.lean:453:34: `simp` made no progress
+error: Benitoite/Release/Lemmas/PrimRanges.lean:453:70: Dependent elimination failed: Failed to solve equation
+  ?m.27 = Frame.handleF x✝ :: as✝
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:453:40: declaration uses `sorry`
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:460:15: declaration uses `sorry`
+warning: Benitoite/Release/Lemmas/PrimRanges.lean:473:10: declaration uses `sorry`
+✔ [439/443] Built Benitoite.Surface.ScopeState (1.0s)
+✔ [440/443] Built Benitoite.Surface.ScopeStateExamples (531ms)
+✔ [441/443] Built Benitoite.Surface.Examples (4.3s)
+Some required targets logged failures:
+- Benitoite.Release.BuilderExamples
+- Benitoite.Release.Lemmas.PrimRanges
+error: build failed
+        6.48 real        15.30 user         1.77 sys
+          1205010432  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              434254  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  26  voluntary context switches
+               36368  involuntary context switches
+          2034028584  instructions retired
+           981056021  cycles elapsed
+            39027864  peak memory footprint
+== exit 1

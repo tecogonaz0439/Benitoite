@@ -1,0 +1,159 @@
+{
+ "log": "build-07-trial.log",
+ "modules_in_default_closure": 274,
+ "failed_modules": [
+  "Benitoite.Interval.BudgetChildrenExamples",
+  "Benitoite.Interval.FlowExamples",
+  "Benitoite.Interval.SyntacticReachExamples",
+  "Benitoite.Release.Lemmas.Progress",
+  "Benitoite.Scope.CompatExamples",
+  "Benitoite.Surface.Check",
+  "Benitoite.Surface.Lemmas.CallHead"
+ ],
+ "unchecked_modules_count": 69,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Lemmas.StepSound",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Scope.TargetExamples",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.CheckComputeAtoms",
+  "Benitoite.Surface.CheckComputeCalls",
+  "Benitoite.Surface.CheckComputeCases",
+  "Benitoite.Surface.CheckComputeControl",
+  "Benitoite.Surface.CheckComputePipe",
+  "Benitoite.Surface.CheckComputeSound",
+  "Benitoite.Surface.CheckCounterexamples",
+  "Benitoite.Surface.CheckDictSupport",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckInduction",
+  "Benitoite.Surface.CheckLemmas",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundBasicExpr",
+  "Benitoite.Surface.CheckSoundCalls",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckSoundDie",
+  "Benitoite.Surface.CheckSoundSequence",
+  "Benitoite.Surface.CheckTables",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BlockSequence",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderLower",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Builders",
+  "Benitoite.Surface.Lemmas.Dict",
+  "Benitoite.Surface.Lemmas.Extensions",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Lemmas.ReturnTry",
+  "Benitoite.Surface.Lemmas.Scoped",
+  "Benitoite.Surface.Lemmas.Typing",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "error_diagnostics": 22,
+ "error_files": [
+  "Benitoite/Interval/BudgetChildrenExamples.lean",
+  "Benitoite/Interval/FlowExamples.lean",
+  "Benitoite/Interval/SyntacticReachExamples.lean",
+  "Benitoite/Release/Lemmas/Progress.lean",
+  "Benitoite/Scope/CompatExamples.lean",
+  "Benitoite/Surface/Check.lean",
+  "Benitoite/Surface/Lemmas/CallHead.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Interval/BudgetChildrenExamples.lean",
+   "decl": "def output",
+   "line": 25,
+   "errors": 7
+  },
+  {
+   "file": "Benitoite/Interval/FlowExamples.lean",
+   "decl": "def signature",
+   "line": 29,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Interval/SyntacticReachExamples.lean",
+   "decl": "example <example@48>",
+   "line": 48,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/Progress.lean",
+   "decl": "theorem no_unhandled_user",
+   "line": 200,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Scope/CompatExamples.lean",
+   "decl": "def embII",
+   "line": 77,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Scope/CompatExamples.lean",
+   "decl": "theorem no_eq_of_semCovers",
+   "line": 382,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/Check.lean",
+   "decl": "def checkExprR",
+   "line": 206,
+   "errors": 4
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/CallHead.lean",
+   "decl": "theorem HasTypeQ.inv_opDicts",
+   "line": 110,
+   "errors": 2
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ],
+  [
+   "Benitoite/Release/Lemmas/Progress.lean",
+   "theorem progress_app"
+  ],
+  [
+   "Benitoite/Surface/Lemmas/CallHead.lean",
+   "theorem directCallee_typed"
+  ]
+ ]
+}

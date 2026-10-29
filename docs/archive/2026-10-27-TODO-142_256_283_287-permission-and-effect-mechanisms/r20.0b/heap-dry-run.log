@@ -1,0 +1,12 @@
+== plan: level work against 7220e886b6e1f8d15cb8e8855f1940d0af904de4 (changed files not classified) (partial selection: --only doc_default,heap_local,stress_local)
+   [doc_default] because of --only (estimate: seconds to a few min)
+      command: cargo test --workspace --doc
+   [heap_local] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --no-default-features --features gc-mark-sweep\,heap-verify --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client
+   [stress_local] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --no-default-features --features gc-mark-sweep\,heap-verify\,gc-stress --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client
+   later: stage checks named connections; change covers full regression; release checks the candidate
+command_exit=0
+real 0.03
+user 0.01
+sys 0.00

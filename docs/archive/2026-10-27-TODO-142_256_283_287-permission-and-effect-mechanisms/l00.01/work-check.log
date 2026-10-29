@@ -1,0 +1,24 @@
+== plan: level work against d0ec12062c7e430d1050d13b8ee477e1cc35e999 (168 changed file(s))
+   [formal_build] because of formal/Benitoite.lean (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== formal_build
+selected checks passed
+        0.24 real         0.11 user         0.27 sys
+            69484544  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               12681  page reclaims
+                  33  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   4  signals received
+                  29  voluntary context switches
+                2788  involuntary context switches
+           346364576  instructions retired
+            75217881  cycles elapsed
+             2621848  peak memory footprint

@@ -89,6 +89,18 @@ fn operands(
         .builtin_call_operands(instruction)
         .ok_or_else(|| missing("IO operands missing"))
 }
+// 待つ呼び出しの範囲も命令の参照から読み、再開時に同じ列を使う
+// （設計書 02-08「IO の命令」）。
+fn call_ranges(
+    program: &CompiledProgram,
+    site: InstrRef,
+) -> Result<&[crate::types::scope::Range], Stop> {
+    let call = operands(program, site)?;
+    program
+        .builtin(call.builtin)
+        .map(|reference| reference.ranges.as_slice())
+        .ok_or_else(|| missing("IO builtin ranges missing"))
+}
 fn args<'e>(
     program: &CompiledProgram,
     state: &RunState,
@@ -292,7 +304,8 @@ fn serve_inner(
             rt,
             resources: &mut state.resources,
         };
-        let mut call = CallCtx::new(ctx, Some(&mut view), None, Some(req.site));
+        let mut call = CallCtx::new(ctx, Some(&mut view), None, Some(req.site))
+            .with_ranges(call_ranges(program, req.site)?);
         (req.op.raw)(&mut call, &args)?
     };
     match reply {
@@ -979,7 +992,8 @@ fn complete<'e>(
         rt,
         resources: &mut state.resources,
     };
-    let mut call = CallCtx::new(ctx, Some(&mut view), None, Some(site));
+    let mut call = CallCtx::new(ctx, Some(&mut view), None, Some(site))
+        .with_ranges(call_ranges(program, site)?);
     done.complete(&mut call.io_ctx()?, &args)
 }
 

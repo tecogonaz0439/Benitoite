@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-c",
+    "from pathlib import Path; import subprocess; r=Path(\"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.4\"); cases=[(\"accepted\",0),(\"top-rejected\",2),(\"union-rejected\",2),(\"family-rejected\",2)]; results=[]; [(print(name,flush=True),results.append((name,subprocess.run([\"target/debug/benitoite\",\"check\",\"--diagnostics=json\",str(r/(name+\".bnt\"))]).returncode,expected))) for name,expected in cases]; print(results); assert all(code==expected for _,code,expected in results)"
+  ],
+  "invoked": [
+    "python3",
+    "-c",
+    "from pathlib import Path; import subprocess; r=Path(\"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.4\"); cases=[(\"accepted\",0),(\"top-rejected\",2),(\"union-rejected\",2),(\"family-rejected\",2)]; results=[]; [(print(name,flush=True),results.append((name,subprocess.run([\"target/debug/benitoite\",\"check\",\"--diagnostics=json\",str(r/(name+\".bnt\"))]).returncode,expected))) for name,expected in cases]; print(results); assert all(code==expected for _,code,expected in results)"
+  ],
+  "started_at": "2026-10-28T11:15:51.452522+00:00",
+  "ended_at": "2026-10-28T11:15:51.913856+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.461237334,
+  "auxiliary_max_rss_bytes": 36290560,
+  "auxiliary_max_rss_mib": 34.609375,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

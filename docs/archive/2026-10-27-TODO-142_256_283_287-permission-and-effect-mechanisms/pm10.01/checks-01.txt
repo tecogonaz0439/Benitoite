@@ -1,0 +1,24 @@
+== grep -nE 'sorry' pm10.01/lean-run-01.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm10.01/lean-run-01.log
+status=1
+== axioms other than none
+status=1
+== declarations in model
+22:def KindSet (Kind : Type) : Type := Kind → Prop
+29:def Subset (A B : KindSet Kind) : Prop := ∀ k : Kind, A k → B k
+32:theorem Subset.refl (A : KindSet Kind) : Subset A A :=
+36:theorem Subset.trans {A B C : KindSet Kind}
+49:def traceKinds (tr : List Ev) : KindSet Kind :=
+54:theorem mem_traceKinds {tr : List Ev} {e : Ev} (he : e ∈ tr) :
+59:theorem traceKinds_subset_iff (tr : List Ev) (S : KindSet Kind) :
+76:def KindCheck (declared policy : KindSet Kind) : Prop := Subset declared policy
+80:def WithinDeclared (declared : KindSet Kind) (tr : List Ev) : Prop :=
+84:theorem events_subset_policy {declared policy : KindSet Kind} {tr : List Ev}
+91:theorem event_kind_in_policy {declared policy : KindSet Kind} {tr : List Ev} {e : Ev}
+100:theorem all_runs_within_policy {declared policy : KindSet Kind} (runs : List Ev → Prop)
+== #print axioms count
+12
+12
+== sorry/axiom in source
+status=1

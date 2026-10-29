@@ -1,0 +1,41 @@
+== wait-for-lock start 08:55:43
+== lock acquired 08:55:43 after 0s
+⚠ [116/119] Built Benitoite.Exchange.Convert (1.2s)
+warning: Benitoite/Exchange/Convert.lean:216:10: This simp argument is unused:
+  List.contains_iff_mem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [this] at ha
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [117/119] Building Benitoite.Exchange.Builtins (764ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Exchange/Builtins.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Exchange/Builtins.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Exchange/Builtins.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Exchange/Builtins.c --setup <wt>/formal/.lake/build/ir/Benitoite/Exchange/Builtins.setup.json --json
+error: Benitoite/Exchange/Builtins.lean:272:90: unexpected identifier; expected '}'
+error: Benitoite/Exchange/Builtins.lean:279:15: Type mismatch
+  AdmitsEntry.admitsRDec_sound h
+has type
+  AdmitsEntry.admitsR b.admitsR x✝¹ x✝
+but is expected to have type
+  (b.withTableData B).admitsR x✝¹ x✝
+Some required targets logged failures:
+- Benitoite.Exchange.Builtins
+error: build failed
+        2.09 real         1.90 user         0.60 sys
+          1537540096  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              193318  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  13  voluntary context switches
+                7329  involuntary context switches
+          1070974301  instructions retired
+           316549805  cycles elapsed
+            23577560  peak memory footprint
+== exit 1

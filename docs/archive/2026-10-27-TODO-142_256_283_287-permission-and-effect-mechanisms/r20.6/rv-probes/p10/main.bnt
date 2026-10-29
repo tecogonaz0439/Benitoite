@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Scope
+function shadow_param(checkPathIn: function(pattern: String, path: String) -> Result[Scope.PathIn, Scope.ScopeError], path: String) -> Result[Scope.PathIn, Scope.ScopeError]
+ return checkPathIn(pattern: "/data/**", path: path)
+end function
+function caller(path: String) -> Result[Scope.PathIn, Scope.ScopeError]
+ return shadow_param(checkPathIn: Scope.checkPathIn, path: path)
+end function
+function main() -> Unit
+ ()
+end function

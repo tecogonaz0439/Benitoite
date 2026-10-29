@@ -323,7 +323,13 @@ impl<'ast> Flow<'_, 'ast, '_> {
                     .input
                     .interpolation_type(segment.expr.id())
                     .map_err(IdentityStop::Input)?;
-                if segment.format.is_some() || *ty != Ty::Con(TyCon::Builtin(B::STRING), Vec::new())
+                if segment.format.is_some()
+                    || *ty
+                        != Ty::Con(
+                            TyCon::Builtin(B::STRING),
+                            Vec::new(),
+                            crate::types::builtin::RangeIndex::TOP,
+                        )
                 {
                     remaining = remaining.checked_sub(1).ok_or(IdentityStop::Depth)?;
                     self.frame()?;

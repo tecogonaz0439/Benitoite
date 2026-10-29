@@ -126,6 +126,8 @@ theorem HasTypeVQ.notCont {Ψ Q C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) : a.
   | .V_Bytes => intro b t ε e; cases e
   | .V_Dict _ _ _ => intro b t ε e; cases e
   | .V_Super _ _ _ => intro b t ε e; cases e
+  | .V_Checked _ _ => intro b t ε e; cases e
+  | .V_CheckedRequest _ _ _ _ => intro b t ε e; cases e
   | .V_Sub h hle hw =>
       rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
       · exact HasTypeVQ.notCont h

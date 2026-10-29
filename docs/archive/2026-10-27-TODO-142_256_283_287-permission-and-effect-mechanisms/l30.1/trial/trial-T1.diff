@@ -1,0 +1,93 @@
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index a8dd1f29..ce087a1f 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -560,7 +560,7 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
+       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
+   /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
+   | K_Handle {R ε εc h k t b ε0 Re} :
+-      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ.hideBuilders [] [] R h t εc →
++      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ.hideBuilders [] [] R (Eff.union εc (handled P B h)) h t εc →
+       Ty.WF 0 0 t →
+       ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
+   /-- Fail節の出力を、捕捉する本体の上限へ混ぜない。 -/
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index f15756b1..cb77097e 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -156,6 +156,44 @@ def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
+           | none => none
+       | none => none
+ 
++/-- 捕捉した組み込みの操作の型を節の添字 S で具体化した操作の型（L30.1）。組み込みの操作では引数を
++`Ty.instTarget` で S の列（長さは範囲の変数の個数）に具体化し、結果は `s.ret` のままにする（組み込みの操作の結果の
++型は範囲の変数を持たない。`PrimSig.Scoped` の操作の結果の条件）。利用者の操作は `opSig` と同じで S によらない。
++`Ty.instTarget` だけで書くので計算できる。 -/
++def opSigAt (P : Program) (B : Builtins) (S : Scope.Domain.Range) : OpRef → Option OpSig
++  | .fail => none
++  | .user o => (P.ops o).map fun od => ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩
++  | .prim b =>
++      match B.sig b with
++      | some s =>
++          match s.opEff with
++          | some l => some ⟨s.tparams, s.names, s.params.map (Ty.instTarget (List.replicate s.nranges S)), s.ret, l⟩
++          | none => none
++      | none => none
++
++/-- 節の添字の規則の条件（判断 11）。保護本体の効果 e が行の変数を持たず、名前 l の原子をちょうど一つ持ち、
++その範囲の位置が閉じた範囲 r である。 -/
++def Eff.ClauseRangeIs (e : Eff) (l : EffName) (r : Scope.Domain.Range) : Prop :=
++  (∀ i, ¬ Eff.mem e (.rho i)) ∧ Eff.mem e (.name l (.fixed r)) ∧
++    ∀ ix, Eff.mem e (.name l ix) → ix = .fixed r
++
++open Classical in
++/-- 節の添字の規則（判断 11）。保護本体の効果 e に名前 l の閉じた原子がちょうど一つだけあればその範囲、
++複数の原子・同名の Top・未確定の行の変数・同名の原子なしの場合は Top とする。節の本体や期待される出力を読まない。 -/
++noncomputable def Eff.clauseRange (e : Eff) (l : EffName) : Scope.Domain.Range :=
++  if h : ∃ r, e.ClauseRangeIs l r then Classical.choose h else .top
++
++/-- 節の添字 S の許容（L30.1）。S は Top か、操作 o が組み込みの操作でエフェクトの名前 l を持ち、S が保護本体の
++効果 e についての規則の値（`Eff.ClauseRangeIs`）である。型付けは規則の値のほかに Top も許す。型の代入で行の
++変数を具体化すると規則の値が変わりうるので、代入の前に Top で型付けた節を代入の後も型付けるためである
++（`ClauseIxOk.substAt`）。 -/
++def ClauseIxOk (B : Builtins) (e : Eff) (o : OpRef) (S : Scope.Domain.Range) : Prop :=
++  S = .top ∨ ∃ b s l, o = .prim b ∧ B.sig b = some s ∧ s.opEff = some l ∧ e.ClauseRangeIs l S
++
++/-- 節の操作の型（L30.1）。保護本体の効果 e から許容される節の添字 S を選び、操作の型を S で具体化する。 -/
++def ClauseSig (P : Program) (B : Builtins) (e : Eff) (o : OpRef) (sg : OpSig) : Prop :=
++  ∃ S, ClauseIxOk B e o S ∧ opSigAt P B S o = some sg
++
+ /-- 操作の辞書数。組み込みの操作は辞書を持たない。 -/
+ def opDictCount (P : Program) : OpRef → Nat
+   | .user o => ((P.ops o).map fun d => d.dictParams.length).getD 0
+@@ -566,7 +604,7 @@ mutual
+     /-- C-Handle。 -/
+     | C_Handle {Δ Γ R m h t εm ε} :
+         HasTypeCQ P B Ψ Q C Γ R m t εm Δ → Eff.Sub εm (Eff.union ε (handled P B h)) →
+-        HasTypeClausesQ P B Ψ Q C Γ R h t ε Δ →
++        HasTypeClausesQ P B Ψ Q C Γ R εm h t ε Δ →
+         HasTypeCQ P B Ψ Q C Γ R (.handle m h) t ε Δ
+     | C_Handle_Fail {Δ Γ R m h t E eb Rest ec} :
+         HasTypeCQ P B Ψ Q C Γ R m t eb Δ →
+@@ -609,15 +647,15 @@ mutual
+   節の中の型の変数の番号 `0..k-1` に束縛した、宣言の制約を持つ、ほかの型とは等しくない型の変数である。
+   節の外側の Γ・T・R の型は、番号を k だけずらす。 -/
+   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+-      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+-    | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
+-    | cons {Δ Γ R o n k body cs t ε sg} :
+-        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF 0 C.length ε →
++      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → Eff → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
++    | nil {Δ Γ R εb t ε} : HasTypeClausesQ P B Ψ Q C Γ R εb [] t ε Δ
++    | cons {Δ Γ R εb o n k body cs t ε sg} :
++        ClauseSig P B εb o sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF 0 C.length ε →
+         HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
+           (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
+           (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) [] →
+-        HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δ →
+-        HasTypeClausesQ P B Ψ Q C Γ R (.mk o n k body :: cs) t ε Δ
++        HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δ →
++        HasTypeClausesQ P B Ψ Q C Γ R εb (.mk o n k body :: cs) t ε Δ
+ 
+   /-- Fail 節は一つだけであり、予約した継続の位置には型を与えない。 -/
+   inductive HasFailureClause (P : Program) (B : Builtins) :

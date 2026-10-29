@@ -1,0 +1,21 @@
+import Benitoite.Unofficial.IO.File
+
+function g() -> Unit uses File.Read["/a/**"], File.Read["/b/**"]
+  ()
+end function
+
+function f() -> Unit uses File.Read["/a/**", "/b/**"]
+  g()
+end function
+
+function h() -> Unit uses File.Read["/**"]
+  f()
+end function
+
+function k() -> Unit uses File.Read["/a/**", "/c/**"]
+  f()
+end function
+
+function main() -> Unit
+  ()
+end function

@@ -75,7 +75,7 @@ impl TypeBudget {
             self.enter(depth)?;
             let next = depth.saturating_add(1);
             match ty {
-                Ty::Con(_, ts) | Ty::App(_, ts) => {
+                Ty::Con(_, ts, _) | Ty::App(_, ts) => {
                     pending.extend(ts.iter().map(|t| (t, next, substitute)));
                 }
                 Ty::Fn(f) => {

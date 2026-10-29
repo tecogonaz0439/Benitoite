@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.IO.Console
+
+function parsePort(text: String) -> Result[Integer, String]
+  return match Integer.parse(text) with
+    case Option.Some(n) if n > 0 and n < 65536 -> Result.Ok(n)
+    case otherPort -> Result.Error("not a port: ${text}")
+  end match
+end function
+
+function main() -> Result[Unit, String] uses Console.Write
+  bind port <- try parsePort("8080") or return
+  Console.writeLine("port ${port}")
+  bind other <- try parsePort("http") or return
+  Console.writeLine("never printed ${other}")
+  return Result.Ok(())
+end function

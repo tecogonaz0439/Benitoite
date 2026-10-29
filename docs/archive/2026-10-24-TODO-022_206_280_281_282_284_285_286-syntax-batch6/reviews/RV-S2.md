@@ -43,7 +43,7 @@
 
 ### 中2. TODO-206 で、既定の書式でファイルへ書く手段がないことを扱っていない（読めば確定）
 
-- **場所:** riders.md「TODO-206」の「選択肢と推す案」、`work/m012/scratch/s2/file-sink.bnt`。
+- **場所:** riders.md「TODO-206」の「選択肢と推す案」、[file-sink.bnt](../study/riders-probes/file-sink.bnt)。
 - **問題:** ファイルの例は `Log.Record.message(record)` だけを書き、水準・位置・属性が抜けている。既定の書式を作る `formatRecord` は非公開である（Log.bnt:157–159）。既定と同じ書式でファイルへ書くには、利用者が整形とエスケープを書き直すしかない。riders が比べた Python の Formatter と tracing の fmt の層は、書式と出力先を別に選ぶ形であり、「`formatRecord` を公開の純粋な関数にする」案が選択肢 A〜C にない。
 - **修正案:** A'（A に加えて `formatRecord` を公開する。名前は要検討）と A（文書だけ。例でも水準と位置を書く）を並べる。A' では、生成参照を作り直すこと、交換の比較に響くか（07-04:330「標準宣言を本番交換の六入口へ渡し」）を確かめる。JSON 用の `Log.toJson` を標準に足す案は、prelude の Log が Json に依存することになり、構成で外せるモジュールの境界に反する理由で退けられる。その理由を B の評価に一文加える。
 

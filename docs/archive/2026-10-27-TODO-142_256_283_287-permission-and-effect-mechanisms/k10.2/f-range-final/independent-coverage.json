@@ -1,0 +1,67 @@
+{
+  "version": 7,
+  "seedXor": 0,
+  "randomCases": 0,
+  "boundaryCases": 1,
+  "kinds": {},
+  "cases": [
+    {
+      "name": "ranged-function",
+      "decls": [],
+      "ty": {
+        "kind": "function",
+        "names": [
+          "value"
+        ],
+        "params": [
+          {
+            "kind": "integer",
+            "args": []
+          }
+        ],
+        "ret": {
+          "kind": "integer",
+          "args": []
+        },
+        "eff": [
+          {
+            "name": {
+              "value": "File.Write",
+              "ix": {
+                "fixed": {
+                  "path": {
+                    "tree": [
+                      "data"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "arms": [
+        {
+          "guarded": false,
+          "alts": [
+            {
+              "kind": "wild"
+            }
+          ]
+        }
+      ],
+      "pattern": {
+        "kind": "wild"
+      },
+      "expected": {
+        "exhaustive": true,
+        "uncovered": null,
+        "unreachable": []
+      },
+      "irrefutable": true,
+      "irrefutableWitness": null,
+      "coverageView": [],
+      "package": "author"
+    }
+  ]
+}

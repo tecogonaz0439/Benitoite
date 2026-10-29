@@ -1,0 +1,27 @@
+[
+  {
+    "command": [
+      "target/bench/probe-worktree-r20.3/timing-probe",
+      "unused",
+      "irenv",
+      "0"
+    ],
+    "exit": 0,
+    "seconds": 0.803062083,
+    "stdout": "{\"ir_check\":0.002307875,\"ir_errors\":0,\"sibling_rejected\":1}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/bench/probe-worktree-r20.3/timing-probe",
+      "unused",
+      "bridge",
+      "shared",
+      "8"
+    ],
+    "exit": 0,
+    "seconds": 0.01171258399999997,
+    "stdout": "{\"bridge_from_heap\":9.083e-6,\"bridge_time\":0.000710833,\"bridge_to_heap\":0.00070175,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+    "stderr": ""
+  }
+]

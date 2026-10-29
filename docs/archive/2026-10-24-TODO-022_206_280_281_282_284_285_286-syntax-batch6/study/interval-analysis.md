@@ -108,7 +108,7 @@ E0457・E0458 は Regex の定数の構文不良・組み立て資源制限、E0
 | 同梱 Skill | 71 | `skill/references/stdlib/Range.md`。index は索引 | 3 / 1 / 1 |
 | Skill 評価の保存結果 | 24 | Range の名前も呼び出しも見つからない | 0 / 0 / 0 |
 
-検索時のパス・呼び出し数・該当ファイルの SHA-256 は `<repo>/work/m012/scratch/interval-analysis/usage-inventory.json` に保存した。これは一時的な調査の補助であり、本書の件数と読み分けを正式な記録とする。Rust のテストに埋め込まれた検査入力を利用者の実用例に数えていない。
+検索時のパス・呼び出し数・該当ファイルの SHA-256 は [usage-inventory.json](../work-copies/m012/scratch/interval-analysis/usage-inventory.json) に保存した。これは一時的な調査の補助であり、本書の件数と読み分けを正式な記録とする。Rust のテストに埋め込まれた検査入力を利用者の実用例に数えていない。
 
 `range.bnt` は境界・逆転・範囲外・射影からの再検査・`Result.ok` による成否への変換を確かめる。ほかの二つは内部欄全体の等値と辞書式の鍵順を確かめる。Skill の5呼び出しは Range.bnt の文書例の生成された写しであり、独立した利用実績ではない。特に範囲外の11と逆転範囲の Result.Error を観察する例がある。
 
@@ -387,7 +387,7 @@ Rust/Lean の解析結果の一致だけでは A1 の評価器と VM の一致�
 
 ### 10.1 S1でv0.0.11に確認した振る舞い
 
-以下はS1の実機確認を保持した記録である。ビルド済み `target/debug/benitoite` の版表示は0.0.11だった。小さな入力を `check` と `run` で確認した。入力・stdout・stderr・終了状態と外側の時間は `<repo>/work/m012/scratch/interval-analysis/` の各 `.bnt`・出力・`probes.json` に置いた。ビルド・cargo test・scripts/check・lake・ベンチマーク・LLM評価は実行していない。
+以下はS1の実機確認を保持した記録である。ビルド済み `target/debug/benitoite` の版表示は0.0.11だった。小さな入力を `check` と `run` で確認した。入力・stdout・stderr・終了状態と外側の時間は [interval-analysis/ の写し](../work-copies/m012/scratch/interval-analysis/) の各 `.bnt`・出力・`probes.json` に置いた。ビルド・cargo test・scripts/check・lake・ベンチマーク・LLM評価は実行していない。
 
 | 入力 | check | run | 判断への含意 |
 |---|---|---|---|
@@ -403,7 +403,7 @@ Rangeの実行だけは `--allow-effects=Console.Write` を付け、残りは純
 
 S1Rではビルド済み0.0.11で、第1・12.1節のコード片を関数に包んだ9入力を `check` した。全て終了0・診断なしだった。このうちHTTPとProcessを呼ばない7入力を `run` し、幅付きの加算・減算・負号・定数倍・合流後の加算の5入力はR0102、局所の除数0はR0101、シフト量64はR0701で終了1になった。未実装の解析の検証ではなく、現在は警告されず実行時に失敗する診断候補と、例の構文・型の確認である。
 
-HTTPの例はResponseの構築だけ、Processの例は終了状態を受け取る関数の宣言だけを `check` した。ネットワークとProcess.exitの実行はしていない。入力・標準出力・標準エラー・終了状態・コマンド・外側の時間は `<repo>/work/m012/scratch/s1r/probes.json` と同ディレクトリの `.bnt`・出力ファイルに保存した。ビルド・cargoのテスト・scripts/check・Lean・ベンチマーク・LLM評価は実行していない。
+HTTPの例はResponseの構築だけ、Processの例は終了状態を受け取る関数の宣言だけを `check` した。ネットワークとProcess.exitの実行はしていない。入力・標準出力・標準エラー・終了状態・コマンド・外側の時間は [probes.json](../work-copies/m012/scratch/s1r/probes.json) と同ディレクトリの `.bnt`・出力ファイルに保存した。ビルド・cargoのテスト・scripts/check・Lean・ベンチマーク・LLM評価は実行していない。
 
 ### 10.3 拒否を増やす場合の数
 

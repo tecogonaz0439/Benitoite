@@ -1,10 +1,13 @@
 //! 外部契約の型・署名を明示し、内部の番号と表示順へ依存させない（設計書 03-06「外部生成の宣言情報」）。
-use super::{Error, Output, kind, text, type_params, visibility};
+use super::{Error, Output, kind, ranges, text, type_params, visibility};
 use benitoite::{
     base::BindingId,
     resolve::BindingKind,
     syntax::ast::Item,
-    types::{EffectName, EffectSet, ParamKind, Scheme, Ty, TyCon, TyHead, TypeArg},
+    types::{
+        EffectName, EffectSet, ParamKind, Scheme, Ty, TyCon, TyHead, TypeArg,
+        signature::RangeSignature,
+    },
 };
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -48,15 +51,20 @@ impl Output<'_> {
             TyCon::External(_) => Ok(0),
         }
     }
-    pub(super) fn ty(&self, ty: &Ty, s: &Scheme) -> Result<Value, Error> {
+    pub(super) fn ty(&self, ty: &Ty, s: &Scheme, rs: &RangeSignature) -> Result<Value, Error> {
         match ty {
-            Ty::Con(con, args) => {
+            Ty::Con(con, args, ix) => {
+                let expected = match con {
+                    TyCon::Builtin(id) => id.value_kind(),
+                    TyCon::Adt(_) | TyCon::External(_) => None,
+                };
+                let ix = ranges::index(ix, expected, rs)?;
                 if self.con_arity(*con)? != args.len() {
                     return Err(text::INVALID_SCHEMA.into());
                 }
                 Ok(
                     json!({"tag":"application","head":{"tag":"named","name":self.con_name(*con)?},
-                    "arguments":args.iter().map(|t|self.ty(t,s)).collect::<Result<Vec<_>,_>>()?}),
+                    "ix":ix,"arguments":args.iter().map(|t|self.ty(t,s,rs)).collect::<Result<Vec<_>,_>>()?}),
                 )
             }
             Ty::App(index, args) => {
@@ -67,7 +75,7 @@ impl Output<'_> {
                 }
                 Ok(
                     json!({"tag":"application","head":{"tag":"parameter","index":index},
-                    "arguments":args.iter().map(|t|self.ty(t,s)).collect::<Result<Vec<_>,_>>()?}),
+                    "ix":{"fixed":"top"},"arguments":args.iter().map(|t|self.ty(t,s,rs)).collect::<Result<Vec<_>,_>>()?}),
                 )
             }
             Ty::Param(index) => {
@@ -78,7 +86,7 @@ impl Output<'_> {
                 }
                 Ok(json!({"tag":"parameter","index":index}))
             }
-            Ty::Fn(f) => self.function_type(&f.param_names, &f.params, &f.ret, &f.effects, s),
+            Ty::Fn(f) => self.function_type(&f.param_names, &f.params, &f.ret, &f.effects, s, rs),
             Ty::Rigid { .. } => Err(text::INVALID_SCHEMA.into()),
         }
     }
@@ -89,6 +97,7 @@ impl Output<'_> {
         ret: &Ty,
         effects: &EffectSet,
         s: &Scheme,
+        rs: &RangeSignature,
     ) -> Result<Value, Error> {
         if names.len() != params.len()
             || names
@@ -100,18 +109,20 @@ impl Output<'_> {
             return Err(text::INVALID_SCHEMA.into());
         }
         Ok(
-            json!({"tag":"function","params":names.iter().zip(params).map(|(n,t)|Ok(json!({"name":n,"type":self.ty(t,s)?}))).collect::<Result<Vec<_>,Error>>()?,
-            "returnType":self.ty(ret,s)?,"effects":self.effect_set(effects,s)?}),
+            json!({"tag":"function","params":names.iter().zip(params).map(|(n,t)|Ok(json!({"name":n,"type":self.ty(t,s,rs)?}))).collect::<Result<Vec<_>,Error>>()?,
+            "returnType":self.ty(ret,s,rs)?,"effects":self.effect_set(effects,s,rs)?}),
         )
     }
-    fn effect_set(&self, e: &EffectSet, s: &Scheme) -> Result<Value, Error> {
-        let mut names = e.names.iter().map(|n|match n {
-            EffectName::Builtin(id) => {
+    fn effect_set(&self, e: &EffectSet, s: &Scheme, rs: &RangeSignature) -> Result<Value, Error> {
+        let names = e.names.iter().map(|n|match n {
+            EffectName::Builtin(id, ix) => {
                 let d = id.def().ok_or(text::INVALID_SCHEMA)?;
-                Ok(json!({"tag":"builtin","name":d.module.iter().copied().chain(std::iter::once(d.name)).collect::<Vec<_>>().join(".")}))
+                Ok(json!({"tag":"builtin","name":d.module.iter().copied().chain(std::iter::once(d.name)).collect::<Vec<_>>().join("."),"ix":ranges::index(ix,id.scope_kind(),rs)?}))
             }
-            EffectName::User(id) => Ok(json!({"tag":"named","name":self.name(*id)})),
+            EffectName::User(id, ix) => Ok(json!({"tag":"named","name":self.name(*id),"ix":ranges::index(ix,None,rs)?})),
         }).collect::<Result<Vec<_>,Error>>()?;
+        // 同名の範囲と失敗型は、IPv6 も整数になる最終の JSON バイト順で比べる。
+        let mut names = ranges::sorted(names)?;
         names.sort_by_key(|v| {
             v.get("name")
                 .and_then(Value::as_str)
@@ -129,19 +140,28 @@ impl Output<'_> {
         }
         vars.sort();
         vars.dedup();
-        let mut failures = e
+        let failures = e
             .failures
             .iter()
-            .map(|t| self.ty(t, s))
+            .map(|t| self.ty(t, s, rs))
             .collect::<Result<Vec<_>, _>>()?;
-        failures.sort_by_key(Value::to_string);
+        let mut failures = ranges::sorted(failures)?;
         failures.dedup();
         Ok(json!({"names":names,"vars":vars,"failures":failures}))
     }
-    pub(super) fn signature(&self, s: &Scheme) -> Result<Value, Error> {
+    pub(super) fn signature(&self, s: &Scheme, id: BindingId) -> Result<Value, Error> {
         // 宣言収集の合併済みSchemeを渡し、元ASTの個別usesから作り直さない。
         // 入れ子の関数型と実装メソッドは追加対象ではない（設計書 03-06「外部生成の宣言情報」）。
-        let mut value = self.function_type(&s.param_names, &s.params, &s.ret, &s.effects, s)?;
+        let default = RangeSignature::default();
+        let rs = self.inv.types.range_signatures.get(id).unwrap_or(&default);
+        let operation = matches!(
+            self.inv.resolved.bindings.get(id).map(|b| b.kind),
+            Some(BindingKind::Op { .. })
+        );
+        if !rs.signature_valid(s, operation) {
+            return Err(text::INVALID_SCHEMA.into());
+        }
+        let mut value = self.function_type(&s.param_names, &s.params, &s.ret, &s.effects, s, rs)?;
         let obj = value.as_object_mut().ok_or(text::INVALID_SCHEMA)?;
         obj.remove("tag");
         let mut no_fail = s.no_fail.iter().map(|v| v.0).collect::<Vec<_>>();
@@ -154,6 +174,18 @@ impl Output<'_> {
         }
         no_fail.sort();
         no_fail.dedup();
+        obj.insert(
+            "rkinds".into(),
+            json!(
+                rs.kinds
+                    .iter()
+                    .copied()
+                    .map(ranges::kind)
+                    .collect::<Vec<_>>()
+            ),
+        );
+        obj.insert("admission".into(), ranges::admission(rs.admission));
+        obj.insert("shape".into(), ranges::shape(rs.shape));
         obj.insert("typeParams".into(), json!(type_params(&s.type_params)));
         obj.insert("effectParams".into(), json!(s.effect_params));
         obj.insert("noFail".into(), json!(no_fail));
@@ -203,19 +235,20 @@ impl Output<'_> {
                     .decl_types
                     .get(*id)
                     .ok_or(text::INVALID_SCHEMA)?;
-                Ok(json!({"name":b.name,"signature":self.signature(s)?}))
+                Ok(json!({"name":b.name,"signature":self.signature(s,*id)?}))
             })
             .collect()
     }
     pub(super) fn declaration_tables(&self) -> Result<(Value, Value, Vec<Value>), Error> {
         let mut types = BTreeMap::new();
         for (id, b) in self.inv.resolved.bindings.iter() {
-            let (name, tag, arity, extensible) = match b.kind {
+            let (name, tag, arity, extensible, range_kind) = match b.kind {
                 BindingKind::BuiltinType(t) => (
                     self.con_name(TyCon::Builtin(t))?,
                     "builtin",
                     self.con_arity(TyCon::Builtin(t))?,
                     false,
+                    t.value_kind().map(ranges::kind),
                 ),
                 BindingKind::Data | BindingKind::Record => {
                     let a = self.inv.types.adts.get(id).ok_or(text::INVALID_SCHEMA)?;
@@ -224,9 +257,10 @@ impl Output<'_> {
                         if a.record.is_some() { "record" } else { "data" },
                         a.type_params.len(),
                         a.extensible,
+                        None,
                     )
                 }
-                BindingKind::ExternalType => (self.name(id), "external", 0, false),
+                BindingKind::ExternalType => (self.name(id), "external", 0, false, None),
                 BindingKind::Fn
                 | BindingKind::BuiltinFn(_)
                 | BindingKind::ImplFn { .. }
@@ -247,7 +281,7 @@ impl Output<'_> {
             };
             types.entry(name.clone()).or_insert(json!({"name":name,"kind":tag,"arity":arity,
                 "module":self.inv.modules.get(b.module).map(|m|m.name.dotted()),"visibility":visibility(b)?,
-                "public":b.public,"package":b.package,"opaque":b.opaque,"extensible":extensible}));
+                "public":b.public,"package":b.package,"opaque":b.opaque,"extensible":extensible,"rangeKind":range_kind}));
         }
         let mut classes = BTreeMap::new();
         for (id, c) in self.inv.types.traits.iter() {
@@ -284,12 +318,13 @@ impl Output<'_> {
                     ret: Ty::Con(
                         TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::UNIT),
                         vec![],
+                        benitoite::types::builtin::RangeIndex::TOP,
                     ),
                     effects: EffectSet::empty(),
                     wrote_io_all: false,
                 };
                 let target = match &i.target {
-                    TypeArg::Ty(t) => self.ty(t, &s)?,
+                    TypeArg::Ty(t) => self.ty(t, &s, &RangeSignature::default())?,
                     TypeArg::Head(TyHead::Con(c)) => {
                         json!({"tag":"named","name":self.con_name(*c)?})
                     }

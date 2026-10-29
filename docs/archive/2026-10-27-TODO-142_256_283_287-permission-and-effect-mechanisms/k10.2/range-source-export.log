@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.57s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'range_sources::export_range_sources' (7734188) panicked at crates/benitoite/tests/desugar_export/range_sources.rs:22:9:
+assertion `left == right` failed: request-retained: [Diagnostic { kind: Check, severity: Error, code: Some(E0519), message: "the scope arguments of the annotated contract for projection `Http.requestInValue` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) (unknownSource)", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(462), end: BytePos(481) }, text: "`Http.requestInValue` is not covered by `the annotated scope contract (requiredUpperBound)`" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(361), end: BytePos(402) }, text: "the scope contract is required by this annotation" }], notes: ["the scope arguments of the annotated contract (requiredUpperBound) must cover the scope selected by the local Scope rule for this call (knownUpperBound); for widening, the destination must also cover the source contract", "reason: unknownSource", "requiredUpperBound: [\"**.example.com\", 80..443]", "knownUpperBound: Top (all targets)", "source: no local provenance for the same successful checked value at this call", "scope call: .sample at surface preorder 12"], helps: [Help { message: "If the call is nested in an expression, move it to the right-hand side of `bind` and use that name. If the value is a parameter or handler clause parameter with only a narrow type annotation, `bind` alone does not establish provenance. To keep the narrow contract, do not project or widen it here: pass it unchanged to a scoped entry that accepts the same narrow type, such as `File.readTextIn`, or widen it in the caller where the checked value is bound and declare the parameter with the wider type. To accept all targets instead, remove the parameter's scope arguments; callers must then widen to the unscoped type with `Scope.widenPathIn` or `Http.widenRequestIn`. Widening a Top input also requires a result without scope arguments. For a handler clause parameter, using Top also requires the protected body to select Top and may require a broader `uses` annotation.", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: Array [String("E0519")]
+ right: Array []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test range_sources::export_range_sources ... FAILED
+
+failures:
+
+failures:
+    range_sources::export_range_sources
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 47 filtered out; finished in 1.36s
+
+error: test failed, to rerun pass `--test desugar_export`
+real 3.98
+user 4.03
+sys 0.70

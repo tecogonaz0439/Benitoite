@@ -1,0 +1,80 @@
+{
+  "version": 7,
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "range-paths",
+      "matches": [
+        {
+          "node": 1,
+          "scrutineeTy": {
+            "data": {
+              "name": "Result",
+              "args": [
+                {
+                  "opaque": {
+                    "name": "101:[]",
+                    "ix": {
+                      "fixed": {
+                        "path": {
+                          "tree": [
+                            "data"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "opaque": {
+                    "name": "102:[]",
+                    "ix": {
+                      "fixed": "top"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "arms": [
+            {
+              "alts": [
+                {
+                  "con": {
+                    "name": "Ok",
+                    "args": [
+                      "wild"
+                    ]
+                  }
+                }
+              ],
+              "guarded": false
+            },
+            {
+              "alts": [
+                {
+                  "con": {
+                    "name": "Error",
+                    "args": [
+                      "wild"
+                    ]
+                  }
+                }
+              ],
+              "guarded": false
+            }
+          ],
+          "coverageView": [],
+          "package": "author"
+        }
+      ],
+      "bindings": []
+    },
+    {
+      "group": "golden",
+      "name": "range-budget",
+      "matches": [],
+      "bindings": []
+    }
+  ]
+}

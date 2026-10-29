@@ -1,0 +1,18 @@
+import Benitoite.Unofficial.IO.File
+
+function countWords(path: String) -> Result[Integer, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  return Result.Ok(List.length(List.filter(xs: String.split(s: text, separator: " "), p: lambda(value) return value <> "")))
+end function
+
+@test("countWords counts words separated by spaces")
+function countWordsCounts() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    countWords("notes.txt")
+  with
+    case File.readText(path) ->
+      Assert.equal(actual: path, expected: "notes.txt")
+      resume(Result.Ok("one two  three"))
+  end handle
+  Assert.equal(actual: result, expected: Result.Ok(3))
+end function

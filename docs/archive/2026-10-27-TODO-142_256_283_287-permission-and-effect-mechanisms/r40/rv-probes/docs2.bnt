@@ -1,0 +1,26 @@
+//! ```benitoite check
+//! import Benitoite.Unofficial.IO.File
+//! function main() -> Unit uses File.Read["/data/**"]
+//! end function
+//! @test
+//! function t() -> Unit uses File.Read["/data/a"]
+//! end function
+//! ```
+//!
+//! ```benitoite test
+//! import Benitoite.Unofficial.IO.File
+//! @test
+//! function t() -> Unit uses File.Write["/out/**"]
+//! end function
+//! ```
+//!
+//! ```benitoite
+//! import Benitoite.Unofficial.IO.File
+//! function main() -> Unit uses File.Read
+//! end function
+//! ```
+//!
+//! ```output
+//! ```
+function helper() -> Unit
+end function

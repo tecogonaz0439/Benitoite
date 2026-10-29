@@ -1,0 +1,67 @@
+$ /usr/bin/time -p sh -c 'scripts/check.sh --level work --base 2f9ce20734ed159591c9136c8b782187a5c0e994; check_code=$?; printf "%s\n" "$check_code" > docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.3/work-check-exit.txt; exit "$check_code"'
+== plan: level work against 2f9ce20734ed159591c9136c8b782187a5c0e994 (85 changed file(s))
+   [fmt] because of crates/benitoite/skill/references/diagnostics.md (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/skill/references/diagnostics.md (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/skill/references/diagnostics.md (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/skill/references/diagnostics.md (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/skill/references/diagnostics.md (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/skill/references/diagnostics.md (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/skill/references/diagnostics.md (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   omitted: spec_examples skill_docs (included by tests_related, default configuration)
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> crates/benitoite/src/syntax/parser/types.rs:159:6
+    |
+159 | ) -> PResult<(Option<Vec<TypeExpr>>, Option<Box<ScopeArgs>>)> {
+    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+    = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/benitoite/src/syntax/parser/types.rs:196:24
+    |
+196 |         && scope.items.chunks_exact(2).all(|pair| {
+    |                        ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<2>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+error: wildcard match will also match any future added variants
+  --> crates/benitoite/src/syntax/parser/scope.rs:37:17
+   |
+37 |                 _ => {}
+   |                 ^ help: try: `TokenKind::LowerIdent | TokenKind::UpperIdent | TokenKind::IntLit | TokenKind::FloatLit | TokenKind::DecimalLit | TokenKind::StringLit | TokenKind::StrMid | TokenKind::CharLit | TokenKind::KwAnd | TokenKind::KwBind | TokenKind::KwCase | TokenKind::KwConst | TokenKind::KwData | TokenKind::KwDie | TokenKind::KwDiv | TokenKind::KwDo | TokenKind::KwEffect | TokenKind::KwElse | TokenKind::KwEnd | TokenKind::KwFalse | TokenKind::KwFunction | TokenKind::KwHandle | TokenKind::KwIf | TokenKind::KwImplement | TokenKind::KwImport | TokenKind::KwLambda | TokenKind::KwBlock | TokenKind::KwLazy | TokenKind::KwMatch | TokenKind::KwMod | TokenKind::KwNot | TokenKind::KwOr | TokenKind::KwPublic | TokenKind::KwRecord | TokenKind::KwResume | TokenKind::KwReturn | TokenKind::KwShadow | TokenKind::KwThen | TokenKind::KwTrait | TokenKind::KwTrue | TokenKind::KwTry | TokenKind::KwType | TokenKind::KwUses | TokenKind::KwWith | TokenKind::Plus | TokenKind::Minus | TokenKind::Star | TokenKind::Slash | TokenKind::Eq | TokenKind::NotEq | TokenKind::Lt | TokenKind::Le | TokenKind::Gt | TokenKind::Ge | TokenKind::PipeGt | TokenKind::Arrow | TokenKind::LeftArrow | TokenKind::Colon | TokenKind::Comma | TokenKind::Dot | TokenKind::DotDot | TokenKind::Amp | TokenKind::At | TokenKind::LParen | TokenKind::RParen | TokenKind::LBracket | TokenKind::RBracket | TokenKind::Underscore | TokenKind::LineBreak | TokenKind::Newline | TokenKind::Error | TokenKind::BadSymbol | TokenKind::Eof`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+   = note: requested on the command line with `-D clippy::wildcard-enum-match-arm`
+
+error: wildcard match will also match any future added variants
+   --> crates/benitoite/src/syntax/parser/scope.rs:104:9
+    |
+104 |         _ => return None,
+    |         ^ help: try: `TokenValue::None | TokenValue::Ident(_) | TokenValue::Float(_) | TokenValue::WidthFloat { .. } | TokenValue::Decimal(_) | TokenValue::Str(_) | TokenValue::Char(_) | TokenValue::Symbol(_)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wildcard_enum_match_arm
+
+error: `benitoite` (lib) generated 2 warnings
+error: warnings are denied by `build.warnings` configuration
+warning: build failed, waiting for other jobs to finish...
+error: `benitoite` (lib test) generated 2 warnings (2 duplicates)
+error: warnings are denied by `build.warnings` configuration
+FAILED: lint_default
+real 13.73
+user 17.48
+sys 1.07

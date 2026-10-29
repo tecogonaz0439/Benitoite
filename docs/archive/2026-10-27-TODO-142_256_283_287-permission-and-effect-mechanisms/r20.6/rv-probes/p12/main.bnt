@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.Scope as S
+import Lib.Scope
+function sample(path: String) -> Result[S.PathIn["/data/**"], S.ScopeError]
+ bind user <- handle
+  Scope.checkPathIn(pattern: "/bad//path", path: path)
+ with
+ case Scope.checkPathIn(pattern, p) -> resume(p)
+ end handle
+ return S.checkPathIn(pattern: "/data/**", path: user)
+end function
+function main() -> Unit
+ ()
+end function

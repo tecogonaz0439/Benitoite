@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.IO.Console
+
+effect Log2
+  function emit2() -> Unit
+end effect
+
+function main() -> Unit uses Console.Write["x"]
+  ()
+end function
+
+function h() -> Unit uses Log2["x"]
+  ()
+end function

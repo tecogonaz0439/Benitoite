@@ -1,0 +1,74 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SA.lean:761:21: error: Type mismatch: After simplification, term
+  ht
+ has type
+  @Membership.mem Nat (List Nat) List.instMembership f.fails t
+but is expected to have type
+  @Membership.mem Nat (List Nat) List.instMembership f.2 t
+SA.lean:765:40: error: Type mismatch: After simplification, term
+  ht
+ has type
+  @Membership.mem Nat (List Nat) List.instMembership f.2 t
+but is expected to have type
+  @Membership.mem Nat (List Nat) List.instMembership f.fails t
+SA.lean:764:45: warning: This simp argument is unused:
+  Eff.memFail
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rowImage, hf, singleton, Eff.fails] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:764:58: warning: This simp argument is unused:
+  Eff.fails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rowImage, hf, singleton, Eff.memFail] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:777:2: error: unsolved goals
+case ht
+τ : Nat → Nat
+es : List Eff
+i t : Nat
+⊢ t ∈ (bind τ es (Eff.mk (fun x => decide (x = Atom.rho i)) [])).2 ↔ t ∈ (rowImage es i).2
+SA.lean:780:10: warning: This simp argument is unused:
+  memFail_bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [singleton, Eff.memFail, Eff.fails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:788:12: error: `simp` made no progress
+SA.lean:788:12: error: `simp` made no progress
+SA.lean:788:12: error: `simp` made no progress
+SA.lean:788:12: error: `simp` made no progress
+SA.lean:814:12: error: `simp` made no progress
+SA.lean:814:12: error: `simp` made no progress
+SA.lean:814:12: error: `simp` made no progress
+SA.lean:814:12: error: `simp` made no progress
+SA.lean:845:99: warning: This simp argument is unused:
+  sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [redundant, wide, singleton, Eff.memFail, Eff.fails, union, norm, rawUnion] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        0.91 real         1.36 user         0.30 sys
+           730251264  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47039  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               11487  involuntary context switches
+         11013661682  instructions retired
+          4887848217  cycles elapsed
+           179789304  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

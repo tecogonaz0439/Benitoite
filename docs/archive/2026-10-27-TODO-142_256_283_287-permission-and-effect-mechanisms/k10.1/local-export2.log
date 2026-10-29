@@ -1,0 +1,68 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.42s
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-be47fe0bf2506abf)
+
+running 4 tests
+test export_coverage ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_named_coverage ... ok
+test export_batch4_integer ... ok
+test scalar_source_arms_preserve_selection ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.05s
+
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 47 tests
+test exchange::atom_order::tests::exports_effect_atoms_in_lean_code_order ... ok
+test exchange::scope_export::rejects_range_index_equal_to_signature_bound - should panic ... ok
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch5::export_batch5_formats ... ok
+test batch3::export_batch3_solve ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test batch3::export_batch4_log_standard ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_batch2_character ... ok
+test export_independent_program_exchange ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_batch2_failure ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_preserves_float64_bits_and_numeric_strings ... ok
+test export_named_declarations_smoke ... ok
+test export_named_types_smoke ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_scope_tables_smoke ... ok
+test batch3::export_batch3_monad2 ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test export_known_scope_failures_as_excluded ... ok
+test named::export_extensible_package ... ok
+test export_batch2_op ... ok
+test export_width_smoke ... ok
+test named::export_extensible_source ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_calls_smoke ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test scope_tables::exports_closed_candidate_atoms_from_signatures_and_calls ... ok
+test scope_tables::exports_closed_type_and_atom_indices_without_losing_ip_precision ... ok
+test batch3::export_batch3_builders ... ok
+test named::export_named_static_calls_smoke ... ok
+test named::export_generated_record_property ... ok
+test scope_tables::exports_the_same_non_top_call_ranges_before_and_after_desugaring ... ok
+test scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices ... ok
+test scope_tables::exports_all_unused_operations_from_complete_stdlib ... ok
+test named::export_general_named_programs ... ok
+test scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures ... ok
+test scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures ... ok
+test interval::export_interval_range ... ok
+test interval::vm::export_interval_vm ... ok
+test export_interval_identity ... ok
+test export_interval_manifest ... ok
+
+test result: ok. 46 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 11.55s
+
+real 15.92
+user 61.41
+sys 1.31

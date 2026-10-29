@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Network.Http
+function accept(request: Http.RequestIn["api.example", 443]) -> Result[Http.Response, NetworkError]
+ return Result.Ok(Http.text(status: 200, s: "handled"))
+end function
+function sample(request: Http.RequestIn["api.example", 443]) -> Result[Http.Response, NetworkError] uses Http.Connect["api.example", 443]
+ return handle Http.sendIn(request: request) with
+ case Http.sendIn(captured) -> resume(accept(request: captured))
+ end handle
+end function
+function main() -> Unit
+end function

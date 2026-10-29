@@ -1,0 +1,30 @@
+== plan: level work against 2f9ce20734ed159591c9136c8b782187a5c0e994 (changed files not classified) (partial selection: --only release_stack)
+   [release_stack] because of --only (estimate: long: ~5 min plus builds)
+      command: python3 -B scripts/check/run_ignored.py --kind release-stack --configuration release
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== release_stack
++ cargo test --release -p benitoite --lib -- pipeline::tests::stages_fit_the_measured_stack_ --include-ignored
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `release` profile [optimized] target(s) in 1m 00s
+     Running unittests src/lib.rs (target/release/deps/benitoite-75ebea65efc3b7c6)
+
+running 10 tests
+test pipeline::tests::stages_fit_the_measured_stack_for_statement_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_guard_fallbacks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_operators ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_recursive_types ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_branches ... ok
+test pipeline::tests::stages_fit_the_measured_stack_for_flat_sequences ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_blocks ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_deep_records ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_patterns ... ok
+test pipeline::tests::stages_fit_the_measured_stack_through_nested_lists ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1365 filtered out; finished in 32.40s
+
+completed 10 release-stack tests
+selected checks passed
+check.sh exit 0
+real 93.09
+user 345.43
+sys 4.86

@@ -1,0 +1,9 @@
+function slugify(title: String) -> String
+  return String.join(xs: String.split(s: String.toLowercase(String.trim(title)), separator: " "), separator: "-")
+end function
+
+@test("slugify lowercases and joins words")
+function slugifyJoins() -> Unit uses Assert.Check
+  Assert.equal(actual: slugify(" Hello World "), expected: "hello-world")
+  Assert.isTrue(condition: String.contains(s: slugify("A B"), part: "-"), message: "the words are joined with -")
+end function

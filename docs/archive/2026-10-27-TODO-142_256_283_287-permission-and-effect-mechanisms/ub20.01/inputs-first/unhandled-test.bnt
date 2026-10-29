@@ -1,0 +1,10 @@
+effect Report
+ function save() -> Unit
+end effect
+@test
+function sample() -> Unit uses Report
+ save()
+end function
+function main() -> Unit
+ ()
+end function

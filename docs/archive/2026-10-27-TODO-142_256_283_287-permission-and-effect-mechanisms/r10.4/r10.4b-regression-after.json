@@ -1,0 +1,31 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "scope_annotations",
+    "effect_coverage",
+    "--",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "scope_annotations",
+    "effect_coverage",
+    "--",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T11:41:49.594691+00:00",
+  "ended_at": "2026-10-28T11:42:00.234418+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 10.639662541,
+  "auxiliary_max_rss_bytes": 2258681856,
+  "auxiliary_max_rss_mib": 2154.046875,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

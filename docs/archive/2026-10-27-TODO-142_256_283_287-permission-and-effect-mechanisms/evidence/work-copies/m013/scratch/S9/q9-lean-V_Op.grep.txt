@@ -1,0 +1,35 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Canonical.lean:27:    | .V_Op _ hnames _ => rw [fnTy_eq]; exact .fn
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Canonical.lean:230:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:35:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:50:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:68:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:84:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:102:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:113:  | .V_Op hod hnames hts => cases hv; exact ⟨_, hod, hts, hnames, Ty.Le.refl _⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:140:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:166:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:183:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:202:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Irrelevant.lean:79:    | .V_Const | .V_Fun .. | .V_Prim .. | .V_Op .. | .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes => rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Names.lean:138:    | .V_Op _ _ _ => trivial
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/NoFailContext.lean:16:    | .V_Op hod hn hts => exact .V_Op hod hn hts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:53:    | .V_Op hod hnames hts =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:55:        exact .V_Op hod hnames (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Regularity.lean:167:    | .V_Op hod hnames hts =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Rename.lean:188:    | .V_Op hod hn hts => simp only [Val.rename]; exact .V_Op hod hn hts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Rename.lean:344:    | .V_Op hod hn hts => exact .V_Op hod hn hts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Rename.lean:449:    | .V_Op hod hn hts => exact .V_Op hod hn hts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/StoreLemmas.lean:117:  | .V_Op _ _ _ => intro b t ε e; rw [fnTy_eq] at e; cases e
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/SubstTyping.lean:202:    | .V_Op hod hnames hts => simp only [Val.subst]; exact .V_Op hod hnames hts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:546:    | .V_Op hod hnames hsat' =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:559:        exact .V_Op hod hnames this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/LocalScope.lean:75:    | .V_Op _ _ _ => trivial
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:374:  | .V_Op _ _ _ => cases hv
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:393:    | V_Op {Γ o od ts} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:571:    | .V_Op ho hn ha => exact .V_Op ho hn ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:112:  | .V_Const | .V_Fun .. | .V_Prim .. | .V_Op .. | .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes => simp only [Val.Reads]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:214:    have hv := HasTypeVQ.V_Op (P := desugarProgram op p) (B := B)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Dict.lean:16:  have hv := HasTypeVQ.V_Op (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Dict.lean:48:      (HasTypeVQ.V_Op (P := desugarProgram op p) (B := B)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:337:          (HasTypeVQ.V_Op (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:453:    | .E_Op hd hn ht _ => exact .C_Return (.V_Op hd hn ht)

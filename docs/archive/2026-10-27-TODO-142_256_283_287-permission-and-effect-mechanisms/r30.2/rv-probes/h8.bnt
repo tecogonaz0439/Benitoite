@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+ ()
+end function
+function writeA(path: Scope.PathIn["/data/a"]) -> Result[Unit, IOError] uses File.Write["/data/a"]
+ return File.writeTextIn(path: path, text: "pwn")
+end function
+function sample(a: Scope.PathIn["/data/a"], b: Scope.PathIn["/logs/b"]) -> Result[Unit, IOError] uses File.Write["/data/a"], File.Write["/logs/b"]
+ return handle
+  bind _ <- File.appendTextIn(path: b, text: "1")
+  File.writeTextIn(path: a, text: "2")
+ with
+ case File.writeTextIn(captured, text) -> resume(writeA(path: captured))
+ end handle
+end function

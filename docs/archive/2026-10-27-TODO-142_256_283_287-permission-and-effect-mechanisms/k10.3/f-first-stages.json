@@ -1,0 +1,503 @@
+{
+  "command": "scripts/check-formal.sh",
+  "head": "d35557f93ca65e73a841a17d6f19f1b79cf04464",
+  "startedAt": "2026-10-29T13:25:49Z",
+  "endedAt": "2026-10-29T14:05:53Z",
+  "exit": 1,
+  "timeReal": 2403.15,
+  "timeUser": 1903.8,
+  "timeSys": 506.0,
+  "maxRssBytes": 14372323328,
+  "maxRssGiB": 13.385269165039062,
+  "stageRss": "未取得。全体の最大値を各段の値としない",
+  "logSha256": "507f528137c9730c5238edd8ab21d37f293efd49a3de32907d7bafa56e5216ce",
+  "stages": [
+    {
+      "stage": "lake build",
+      "startLine": 1,
+      "events": [
+        {
+          "line": 612,
+          "text": "Build completed successfully (573 jobs)."
+        },
+        {
+          "line": 613,
+          "text": "lake build: 0s"
+        }
+      ],
+      "endLine": 613
+    },
+    {
+      "stage": "lake build desugarDiff",
+      "startLine": 614,
+      "events": [
+        {
+          "line": 615,
+          "text": "Build completed successfully (362 jobs)."
+        },
+        {
+          "line": 616,
+          "text": "lake build desugarDiff: 0s"
+        }
+      ],
+      "endLine": 616
+    },
+    {
+      "stage": "lake build builtinCheck",
+      "startLine": 617,
+      "events": [
+        {
+          "line": 618,
+          "text": "Build completed successfully (364 jobs)."
+        },
+        {
+          "line": 619,
+          "text": "lake build builtinCheck: 0s"
+        }
+      ],
+      "endLine": 619
+    },
+    {
+      "stage": "lake build coverageDiff",
+      "startLine": 620,
+      "events": [
+        {
+          "line": 621,
+          "text": "Build completed successfully (364 jobs)."
+        },
+        {
+          "line": 622,
+          "text": "lake build coverageDiff: 0s"
+        }
+      ],
+      "endLine": 622
+    },
+    {
+      "stage": "Rust coverage export",
+      "startLine": 623,
+      "events": [
+        {
+          "line": 635,
+          "text": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.37s"
+        },
+        {
+          "line": 637,
+          "text": "Rust coverage export (including cargo): 17s"
+        }
+      ],
+      "endLine": 637
+    },
+    {
+      "stage": "coverageDiff",
+      "startLine": 638,
+      "events": [
+        {
+          "line": 640,
+          "text": "coverageDiff: 3s; report: <wt>/target/coverage-diff/k10.3/report.json"
+        }
+      ],
+      "endLine": 640
+    },
+    {
+      "stage": "coverageDiff with views",
+      "startLine": 641,
+      "events": [
+        {
+          "line": 643,
+          "text": "coverage stages: 23s"
+        }
+      ],
+      "endLine": 643
+    },
+    {
+      "stage": "lake build coverageProgramDiff",
+      "startLine": 644,
+      "events": [
+        {
+          "line": 645,
+          "text": "Build completed successfully (366 jobs)."
+        },
+        {
+          "line": 646,
+          "text": "lake build coverageProgramDiff: 0s"
+        }
+      ],
+      "endLine": 646
+    },
+    {
+      "stage": "lake build surfaceCheck",
+      "startLine": 647,
+      "events": [
+        {
+          "line": 648,
+          "text": "Build completed successfully (366 jobs)."
+        }
+      ],
+      "endLine": 648
+    },
+    {
+      "stage": "lake build surfaceCheckAll",
+      "startLine": 649,
+      "events": [
+        {
+          "line": 650,
+          "text": "Build completed successfully (372 jobs)."
+        },
+        {
+          "line": 651,
+          "text": "lake build surfaceCheckAll: 0s"
+        }
+      ],
+      "endLine": 651
+    },
+    {
+      "stage": "lake build intervalDiff",
+      "startLine": 652,
+      "events": [
+        {
+          "line": 1263,
+          "text": "Build completed successfully (452 jobs)."
+        },
+        {
+          "line": 1264,
+          "text": "lake build intervalDiff: 0s"
+        }
+      ],
+      "endLine": 1264
+    },
+    {
+      "stage": "width exchange",
+      "startLine": 1265,
+      "events": [
+        {
+          "line": 1268,
+          "text": "Ran 4 tests in 1.076s"
+        },
+        {
+          "line": 1270,
+          "text": "OK"
+        },
+        {
+          "line": 1271,
+          "text": "width exchange: 2s; reports: target/p3a-gate/width-exchange/"
+        }
+      ],
+      "endLine": 1271
+    },
+    {
+      "stage": "named exchange",
+      "startLine": 1272,
+      "events": [
+        {
+          "line": 1275,
+          "text": "Ran 13 tests in 2.293s"
+        },
+        {
+          "line": 1277,
+          "text": "OK"
+        },
+        {
+          "line": 1278,
+          "text": "named exchange: 2s"
+        }
+      ],
+      "endLine": 1278
+    },
+    {
+      "stage": "extensible exchange",
+      "startLine": 1279,
+      "events": [
+        {
+          "line": 1282,
+          "text": "Ran 22 tests in 5.941s"
+        },
+        {
+          "line": 1284,
+          "text": "OK"
+        },
+        {
+          "line": 1285,
+          "text": "extensible exchange: 6s"
+        }
+      ],
+      "endLine": 1285
+    },
+    {
+      "stage": "try exchange",
+      "startLine": 1286,
+      "events": [
+        {
+          "line": 1289,
+          "text": "Ran 8 tests in 3.558s"
+        },
+        {
+          "line": 1291,
+          "text": "OK"
+        },
+        {
+          "line": 1292,
+          "text": "try exchange: 4s"
+        }
+      ],
+      "endLine": 1292
+    },
+    {
+      "stage": "batch2 independent exchange",
+      "startLine": 1293,
+      "events": [
+        {
+          "line": 1296,
+          "text": "Ran 8 tests in 1.345s"
+        },
+        {
+          "line": 1298,
+          "text": "OK"
+        },
+        {
+          "line": 1299,
+          "text": "batch2 exchange: 1s"
+        }
+      ],
+      "endLine": 1299
+    },
+    {
+      "stage": "batch3 independent exchange",
+      "startLine": 1300,
+      "events": [
+        {
+          "line": 1303,
+          "text": "Ran 7 tests in 3.493s"
+        },
+        {
+          "line": 1305,
+          "text": "OK"
+        },
+        {
+          "line": 1306,
+          "text": "batch3 independent exchange: 4s"
+        }
+      ],
+      "endLine": 1306
+    },
+    {
+      "stage": "batch4 independent exchange",
+      "startLine": 1307,
+      "events": [
+        {
+          "line": 1310,
+          "text": "Ran 15 tests in 6.142s"
+        },
+        {
+          "line": 1312,
+          "text": "OK"
+        },
+        {
+          "line": 1313,
+          "text": "batch4 independent exchange: 6s"
+        }
+      ],
+      "endLine": 1313
+    },
+    {
+      "stage": "range independent exchange",
+      "startLine": 1314,
+      "events": [
+        {
+          "line": 1326,
+          "text": "Ran 9 tests in 1.182s"
+        },
+        {
+          "line": 1328,
+          "text": "OK"
+        },
+        {
+          "line": 1329,
+          "text": "range independent exchange: 1s"
+        }
+      ],
+      "endLine": 1329
+    },
+    {
+      "stage": "Rust export",
+      "startLine": 1330,
+      "events": [
+        {
+          "line": 1402,
+          "text": "test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1347.40s"
+        },
+        {
+          "line": 1404,
+          "text": "Rust export (including cargo): 1349s"
+        }
+      ],
+      "endLine": 1404
+    },
+    {
+      "stage": "Rust interval exports",
+      "startLine": 1405,
+      "events": [
+        {
+          "line": 1412,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 4.59s"
+        },
+        {
+          "line": 1420,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 8.75s"
+        },
+        {
+          "line": 1429,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 2.77s"
+        },
+        {
+          "line": 1440,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 48 filtered out; finished in 3.46s"
+        }
+      ],
+      "endLine": 1443
+    },
+    {
+      "stage": "independent range sources and rejection comparison",
+      "startLine": 1444,
+      "events": [
+        {
+          "line": 1446,
+          "text": "range source comparison: 10s"
+        }
+      ],
+      "endLine": 1446
+    },
+    {
+      "stage": "range numbering and analysis budgets",
+      "startLine": 1447,
+      "events": [
+        {
+          "line": 1449,
+          "text": "range budget comparison: 0s"
+        }
+      ],
+      "endLine": 1449
+    },
+    {
+      "stage": "named range exclusions and accepted controls",
+      "startLine": 1450,
+      "events": [
+        {
+          "line": 1452,
+          "text": "range known differences: 0s"
+        }
+      ],
+      "endLine": 1452
+    },
+    {
+      "stage": "interval independent/Rust/eval/VM comparison",
+      "startLine": 1453,
+      "events": [
+        {
+          "line": 1456,
+          "text": "interval comparison: 918s; reports: <wt>/target/interval-diff/k10.3/comparison/"
+        }
+      ],
+      "endLine": 1456
+    },
+    {
+      "stage": "batch3/batch4 Rust exchange",
+      "startLine": 1457,
+      "events": [
+        {
+          "line": 1460,
+          "text": "Ran 7 tests in 4.104s"
+        },
+        {
+          "line": 1462,
+          "text": "OK"
+        },
+        {
+          "line": 1467,
+          "text": "batch3/batch4 Rust exchange: 7s"
+        }
+      ],
+      "endLine": 1467
+    },
+    {
+      "stage": "batch5 independent/Rust exchange",
+      "startLine": 1468,
+      "events": [
+        {
+          "line": 1471,
+          "text": "Ran 8 tests in 2.083s"
+        },
+        {
+          "line": 1473,
+          "text": "OK"
+        },
+        {
+          "line": 1475,
+          "text": "batch5 independent/Rust exchange: 2s"
+        }
+      ],
+      "endLine": 1475
+    },
+    {
+      "stage": "desugarDiff",
+      "startLine": 1476,
+      "events": [
+        {
+          "line": 1477,
+          "text": "desugarDiff: property not found: scopeAcceptance"
+        },
+        {
+          "line": 1478,
+          "text": "desugarDiff: 9s; report: <wt>/target/desugar-diff/k10.3/report.json"
+        }
+      ],
+      "endLine": 1478
+    },
+    {
+      "stage": "builtinCheck",
+      "startLine": 1479,
+      "events": [
+        {
+          "line": 1480,
+          "text": "builtinCheck: property not found: scopeAcceptance"
+        },
+        {
+          "line": 1481,
+          "text": "builtinCheck: 8s; report: <wt>/target/desugar-diff/k10.3/builtin-report.json"
+        }
+      ],
+      "endLine": 1481
+    },
+    {
+      "stage": "coverageProgramDiff",
+      "startLine": 1482,
+      "events": [
+        {
+          "line": 1484,
+          "text": "coverageProgramDiff: 4s; report: <wt>/target/desugar-diff/k10.3/coverage/report.json"
+        }
+      ],
+      "endLine": 1484
+    },
+    {
+      "stage": "surfaceCheckAll",
+      "startLine": 1485,
+      "events": [
+        {
+          "line": 1486,
+          "text": "surfaceCheckAll: property not found: scopeAcceptance"
+        },
+        {
+          "line": 1487,
+          "text": "surfaceCheckAll: 8s; report: <wt>/target/desugar-diff/k10.3/surface-check/report.json"
+        }
+      ],
+      "endLine": 1487
+    },
+    {
+      "stage": "per-program final Rust exports",
+      "startLine": 1488,
+      "events": [],
+      "endLine": 1527
+    }
+  ]
+}

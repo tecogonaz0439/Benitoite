@@ -1,0 +1,122 @@
+{
+  "inputs": [
+    {
+      "id": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+      "group": "golden-or-fixture",
+      "path": "crates/benitoite/testdata/stdlib/width-bits-s8-invalid.bnt",
+      "sha256": "31d4e5d10109ad5c6a8f19940c521f83f2d31dcf8180fba9450b45f13e2772b9",
+      "command": "check",
+      "originalMode": "run",
+      "originalOptions": []
+    },
+    {
+      "id": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+      "group": "golden-or-fixture",
+      "path": "crates/benitoite/testdata/warnings/local-width-intervals.bnt",
+      "sha256": "1db31a573b2cef113294fd6db41ab4bd8241141267edeaf4b4fc6ef33567a0fd",
+      "command": "check",
+      "originalMode": "check",
+      "originalOptions": []
+    },
+    {
+      "id": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+      "group": "test-file",
+      "path": "crates/benitoite/tests/desugar_export/interval/range.bnt",
+      "sha256": "e8ac99d288f0c2ee9cfe130c3929dfcec3ae1cff1d6337e8ef3e03cf161daa5b",
+      "command": "test",
+      "originalMode": null,
+      "originalOptions": []
+    },
+    {
+      "id": "tools/bench/programs/cycle.bnt",
+      "group": "bench-input",
+      "path": "tools/bench/programs/cycle.bnt",
+      "sha256": "8d9087459431946895388cb13b30111a4977337393501346caeb92df873a0f0e",
+      "command": "check",
+      "originalMode": null,
+      "originalOptions": []
+    },
+    {
+      "id": "crates/benitoite/testdata/eval/k1-opaque/[package]",
+      "group": "golden-package",
+      "path": "crates/benitoite/testdata/eval/k1-opaque",
+      "sha256": "41953cd7753e5ef0b1d42c94f358d07405fc2c9b8acc1a597629d2b9afaf8f2a",
+      "command": "test",
+      "originalMode": "run",
+      "originalOptions": []
+    },
+    {
+      "id": "docs/reference/benitoite.md:1031:41",
+      "group": "reference",
+      "path": "work/m012/records/u01a/examples/113/main.bnt",
+      "sha256": "c2d08714ccbb56d0b0c2f18445e685612aa8f8bb6e690076e3ed30726bc92d97",
+      "support": [
+        {
+          "path": "input.txt",
+          "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+        }
+      ],
+      "host": "docs/reference/benitoite.md",
+      "line": 1031,
+      "command": "check",
+      "expectation": {
+        "exit": 0,
+        "mode": "run",
+        "stderr": "",
+        "stdout": "ready\n"
+      }
+    },
+    {
+      "id": "crates/benitoite/skill/SKILL.md:141:1",
+      "group": "skill-handwritten",
+      "path": "work/m012/records/u01a/examples/0/main.bnt",
+      "sha256": "80bb44fa2b8a34b194d76dbd3dc11622c173065008bbdc0ebb5d352b2578ec85",
+      "support": [
+        {
+          "path": "input.txt",
+          "sha256": "b6285c57e8797db5d4c51c80d6f11938afda9b11c6a003549709189e9b4b92a2"
+        }
+      ],
+      "host": "crates/benitoite/skill/SKILL.md",
+      "line": 141,
+      "command": "check",
+      "expectation": {
+        "exit": 0,
+        "mode": "run",
+        "stderr": "",
+        "stdout": "3 one\n3 two\n5 three\nfirst: one\n"
+      }
+    },
+    {
+      "id": "crates/benitoite/src/prelude/stdlib/Failure.bnt:19:1",
+      "group": "standard-doc",
+      "path": "work/m012/records/u01a/examples/79/main.bnt",
+      "sha256": "74de6636e7a3d6a787b444bc205beb5fc9d9bf06f0f09b66d19c4f697dc2c391",
+      "support": [],
+      "host": "crates/benitoite/src/prelude/stdlib/Failure.bnt",
+      "line": 19,
+      "command": "test",
+      "expectation": {
+        "mode": "test"
+      }
+    },
+    {
+      "id": "crates/benitoite/testdata/acceptance/adt_list_sum.bnt",
+      "group": "golden-or-fixture",
+      "path": "crates/benitoite/testdata/acceptance/adt_list_sum.bnt",
+      "sha256": "d7268bc48bc7ad3ecea495224fe58e6e08883f4395a486ea7d402d3dfd7d1ab1",
+      "command": "check",
+      "originalMode": "run",
+      "originalOptions": []
+    },
+    {
+      "id": "tools/derive/examples/Address.bnt",
+      "group": "tool-input",
+      "path": "tools/derive/examples/Address.bnt",
+      "sha256": "b003b5e8c5a4855a1dbe4a91f3d22d64e4365fd67bfc8a7b206ea8ca3a4837ed",
+      "command": "test",
+      "originalMode": null,
+      "originalOptions": []
+    }
+  ]
+}

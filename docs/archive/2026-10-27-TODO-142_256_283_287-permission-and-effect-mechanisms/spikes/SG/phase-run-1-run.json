@@ -1,0 +1,35 @@
+{
+  "command": [
+    "zsh",
+    "work/m013/remote-lean.sh",
+    "SG",
+    "Model.lean",
+    "6144",
+    "180"
+  ],
+  "started_utc": "2026-10-26T15:15:29.536017+00:00",
+  "finished_utc": "2026-10-26T15:15:35.137095+00:00",
+  "wall_seconds_including_sync_and_queue": 5.6,
+  "wrapper_process_exit": 0,
+  "remote_summary": "== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB ",
+  "remote_exit": 1,
+  "remote_elapsed_seconds": 5,
+  "sampled_peak_mb": 0,
+  "sampled_peak_note": "0 は5秒ごとの標本で捕捉しなかった意味。使用量0とはしない。",
+  "time_maximum_resident_bytes": 705118208,
+  "lean_version": "4.34.1",
+  "source_sha256_before": "4998e5021b2261f321d9d8d91f950787dd848496b07b6442d3a36a63dfb8055e",
+  "source_sha256_after": "4998e5021b2261f321d9d8d91f950787dd848496b07b6442d3a36a63dfb8055e",
+  "diagnostics": [
+    "Model.lean:296:37: error: Tactic `rcases` failed: `x✝ : ?m.186` is not an inductive datatype",
+    "Model.lean:345:6: error: Type mismatch: After simplification, term",
+    "Model.lean:349:8: error: Type mismatch: After simplification, term",
+    "Model.lean:350:8: error: Type mismatch: After simplification, term",
+    "Model.lean:353:6: error: Type mismatch: After simplification, term",
+    "Model.lean:361:6: error: Type mismatch: After simplification, term",
+    "Model.lean:365:8: error: Type mismatch: After simplification, term",
+    "Model.lean:366:8: error: Type mismatch: After simplification, term",
+    "Model.lean:369:6: error: Type mismatch: After simplification, term"
+  ],
+  "passed": false
+}

@@ -1,0 +1,58 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0425]: cannot find type `EffId` in this scope
+   --> crates/benitoite/src/typeck/solve.rs:527:63
+    |
+527 |     pub fn effect_inputs(&self, effect: &IEffect) -> BTreeSet<EffId> {
+    |                                                               ^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+104 | impl<EffId> Solver {
+    |     +++++++
+
+error[E0425]: cannot find type `EffId` in this scope
+   --> crates/benitoite/src/typeck/solve.rs:528:40
+    |
+528 |         let mut predecessors: BTreeMap<EffId, Vec<EffId>> = BTreeMap::new();
+    |                                        ^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+104 | impl<EffId> Solver {
+    |     +++++++
+
+error[E0425]: cannot find type `EffId` in this scope
+   --> crates/benitoite/src/typeck/solve.rs:528:51
+    |
+528 |         let mut predecessors: BTreeMap<EffId, Vec<EffId>> = BTreeMap::new();
+    |                                                   ^^^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+104 | impl<EffId> Solver {
+    |     +++++++
+
+error[E0277]: the trait bound `infer::EffInfer: std::cmp::Ord` is not satisfied
+   --> crates/benitoite/src/typeck/solve.rs:537:22
+    |
+537 |             if found.insert(row) && let Some(sources) = predecessors.get(&row) {
+    |                      ^^^^^^ the trait `std::cmp::Ord` is not implemented for `infer::EffInfer`
+    |
+note: required by a bound in `std::collections::BTreeSet::<T, A>::insert`
+   --> <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/collections/btree/set.rs:902:12
+    |
+900 |     pub fn insert(&mut self, value: T) -> bool
+    |            ------ required by a bound in this associated function
+901 |     where
+902 |         T: Ord,
+    |            ^^^ required by this bound in `BTreeSet::<T, A>::insert`
+help: consider annotating `infer::EffInfer` with `#[derive(Ord)]`
+   --> crates/benitoite/src/typeck/infer.rs:14:1
+    |
+ 14 + #[derive(Ord)]
+ 15 | pub struct EffInfer(pub u32);
+    |
+
+Some errors have detailed explanations: E0277, E0425.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `benitoite` (lib) due to 4 previous errors

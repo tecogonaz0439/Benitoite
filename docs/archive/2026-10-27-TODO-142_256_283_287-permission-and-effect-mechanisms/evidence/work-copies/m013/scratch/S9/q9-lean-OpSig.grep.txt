@@ -1,0 +1,23 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:16:theorem opSig_ne_fail {o sg} (h : opSig P B o = some sg) : o ≠ .fail := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresHelpers.lean:124:    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:545:        (by simp [opSig, hod]) hsat hargs hle hsplit hc hκ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:557:        (by simp [opSig, hsig, hop]) (hb.admits_sat b0 s0 [] ts hsig had) hargs hle hsplit hc hκ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:116:    (hsg : opSig P B o = some sg) (hsat : SatAll B [] ts sg.tparams)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:341:theorem opSig_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {o sg} (h : opSig P B o = some sg) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:348:      simp only [opSig, Option.map_eq_some_iff] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:352:      simp only [opSig] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:98:def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:537:        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:746:        let sg ← lookup path "unknown handler operation" (opSig q.D.patternProgram q.B o)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:770:        let sg ← lookup path "unknown handler operation" (opSig q.D.patternProgram q.B o)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:241:    (h : opSig q.D.patternProgram q.B o = some sg) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:246:      | none => simp [opSig, Declarations.patternProgram, ho] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:249:            simpa [opSig, Declarations.patternProgram, ho] using h.symm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:254:      | none => simp [opSig, hs] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:257:          | none => simp [opSig, hs, he] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:260:                simpa [opSig, hs, he] using h.symm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Invariants.lean:262:    (h : opSig p.declarations.patternProgram B o = some sg) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Invariants.lean:267:      simp only [opSig, Option.map_eq_some_iff] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Invariants.lean:273:      simp only [opSig] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Syntax.lean:548:/-- PatTy・Exhaustive・opSig・handled が読む宣言の表を備えたプログラム。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:495:        opSig D.patternProgram B o = some sg → NamesWF sg.names sg.params → (ndicts = opDictCount D.patternProgram o ∧ ndicts + n = sg.params.length) → ntys = sg.tparams.length → Eff.WF C.length ε →

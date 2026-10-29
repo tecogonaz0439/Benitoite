@@ -1,0 +1,161 @@
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:57:namespace Ty.Le
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:59:theorem refl (a : Ty) : Ty.Le a a := Or.inl rfl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:61:theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:70:theorem fn_left {ps r ε t} (h : Ty.Le (.fn ps r ε) t) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:77:theorem fn_right {a ps r ε} (h : Ty.Le a (.fn ps r ε)) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:84:theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ ps r ε, t ≠ .fn ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:90:theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ ps r ε, a ≠ .fn ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:95:theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:96:    Ty.Le (a.subst ts es) (b.subst ts es) := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Basic.lean:102:end Ty.Le
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:22:    ∃ a, Γ[i]? = some a ∧ Ty.Le a T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:24:  | .V_Var hi => cases hv; exact ⟨_, hi, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:36:    Ty.Le c.type T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:38:  | .V_Const => cases hv; exact Ty.Le.refl _
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:49:      Ty.Le (fnTy d.params d.ret d.eff ts es) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:51:  | .V_Fun hd hts hes => cases hv; exact ⟨_, hd, hts, hes, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:64:      Ty.Le (fnTy s.params s.ret s.eff ts es) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:66:  | .V_Prim hs hts hes had => cases hv; exact ⟨_, hs, hts, hes, had, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:78:    ∃ r ε, HasTypeC P B (ps.reverse ++ Γ) body r ε ∧ Ty.Le (.fn ps r ε) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:80:  | .V_Lam h => cases hv; exact ⟨_, _, h, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:123:    ∃ a, HasTypeV P B Γ v a ∧ Ty.Le a T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:125:  | .C_Return hv => cases hm; exact ⟨_, hv, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:135:    ∃ a b ε', HasTypeC P B Γ m a ε' ∧ HasTypeC P B (a :: Γ) n b ε' ∧ Ty.Le b T ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:138:  | .C_Let hm' hn => cases hm; exact ⟨_, _, _, hm', hn, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:148:    ∃ as b ε', HasTypeV P B Γ f (.fn as b ε') ∧ HasTypeVs P B Γ args as ∧ Ty.Le b T ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:151:  | .C_App hf hargs => cases hm; exact ⟨_, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:162:      Ty.Le a T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:164:  | .C_If hv h1 h2 => cases hm; exact ⟨_, _, hv, h1, h2, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:175:      Exhaustive P a (arms.map Prod.fst) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Inversion.lean:177:  | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:56:theorem Ty.Le.fn_fn {ps r ε as b ε'} (h : Ty.Le (.fn ps r ε) (.fn as b ε')) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Typing.lean:66:def Ty.Le (a a' : Ty) : Prop :=
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Typing.lean:142:        HasTypeV P B Γ v a → Ty.Le a a' → HasTypeV P B Γ v a'
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Typing.lean:160:        HasTypeC P B Γ m a ε → Ty.Le a a' → Eff.Sub ε ε' → HasTypeC P B Γ m a' ε'
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:61:namespace Ty.Le
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:63:theorem refl (a : Ty) : Ty.Le a a := Or.inl rfl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:65:theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:74:theorem fn_left {names ps r ε t} (h : Ty.Le (.fn names ps r ε) t) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:81:theorem fn_right {a names ps r ε} (h : Ty.Le a (.fn names ps r ε)) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:88:theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ names ps r ε, t ≠ .fn names ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:94:theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ names ps r ε, a ≠ .fn names ps r ε) : a = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:99:theorem substAt {a b : Ty} (c : Nat) (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:100:    Ty.Le (a.substAt c ts es) (b.substAt c ts es) := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:106:theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:107:    Ty.Le (a.subst ts es) (b.subst ts es) := substAt 0 ts es h
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:109:theorem shift {a b : Ty} (k c : Nat) (h : Ty.Le a b) : Ty.Le (a.shift k c) (b.shift k c) := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Basic.lean:115:end Ty.Le
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:81:    Ty.Le a b ∧ Eff.Sub ε ε0 ∧ R = Re ∧ Ty.WF 0 b := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:84:  | K_Empty hs hw => exact ⟨Ty.Le.refl _, hs, rfl, hw⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:89:    ∃ a' c ε1, Ty.Le a a' ∧ HasTypeC P B Ψ [] [some a'] R n c ε1 ∧ Eff.Sub ε1 ε ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:93:  | K_Let hn hw hs hrest _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, hn, hs, hrest, hw⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:100:    ∃ a' R', Ty.Le a a' ∧ R = some a' ∧ ContTy P B Ψ R' ε k a' b ε0 Re ∧ Ty.WF 0 a' := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:103:  | K_Mark hrest hw _ => cases hk; exact ⟨_, _, Ty.Le.refl _, rfl, hrest, hw⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:110:    ∃ a' R', Ty.Le a a' ∧ R = none ∧ Ψ l = some (.lazy a') ∧ ContTy P B Ψ R' ε k a' b ε0 Re := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:113:  | K_Update hl hrest _ => cases hk; exact ⟨_, _, Ty.Le.refl _, rfl, hl, hrest⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:133:    ∃ t εb εc, Ty.Le a t ∧ ε = Eff.union εc (handled P B hs) ∧ ContTy P B Ψ R εb k t b ε0 Re ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:137:  | K_Handle hrest hsub hc hw _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, rfl, hrest, hsub, hc.store (hideBuilders_sub _), hw⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:150:    ∃ t εb, Ty.Le a t ∧ ContTy P B Ψ R εb k t b ε0 Re ∧ Ty.WF 0 t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:155:      exact ⟨_, _, Ty.Le.refl _, ht, hw⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:175:    ∃ R' ε' ε1 c, R = none ∧ ε = Eff.empty ∧ Ty.Le a (.base .boolean) ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:183:      exact ⟨_, _, _, _, rfl, rfl, Ty.Le.refl _, hm, hs, hp, hb, ht⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/ContLemmas.lean:207:    (hend : EndsWithHandle k') {k t' c E Re ε2} (hle : Ty.Le t t')
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/EffectSound.lean:101:              obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/FailureCont.lean:242:    Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le (.fn ["error"] [E] T (Eff.singleFail E)) a := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/FailureCont.lean:245:  | .V_Raise ht he => cases heq; exact ⟨ht, he, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/FailureCont.lean:256:      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Sub (Eff.union Rest ec) ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/FailureCont.lean:260:      cases hm; exact ⟨_, _, _, _, _, ht, hs, hn, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/FailureCont.lean:272:    Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le T a ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:26:    ∃ a, Γ[i]? = some (some a) ∧ (∀ b t ε, a ≠ .cont b t ε) ∧ Ty.Le a T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:28:  | .V_Var hi hc => cases hv; exact ⟨_, hi, hc, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:43:    Ty.Le c.type T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:45:  | .V_Const => cases hv; exact Ty.Le.refl _
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:59:      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:61:  | .V_Fun hd hnames had => cases hv; exact ⟨_, hd, had.types, had.rowCount, hnames, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:93:      Ty.Le (fnTy s.names s.params s.ret s.eff ts es) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:95:  | .V_Prim hs hnames had => cases hv; exact ⟨_, hs, had.typeCount, had.rowCount, had.admits, hnames, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:111:      Ty.Le (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:113:  | .V_Op hod hnames hts => cases hv; exact ⟨_, hod, hts, hnames, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:130:      HasTypeCQ P B Ψ.hideBuilders Q C (binds ps ++ hideConts Γ) (some r) body r ε ∧ Ty.Le (.fn names ps r ε) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:132:  | .V_Lam hnames hw h => cases hv; exact ⟨_, _, hw, hnames, h, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:150:      Ty.Le (.fn names ps r ε) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:212:    ∃ a, HasTypeVQ P B Ψ Q C Γ v a ∧ Ty.Le a T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:214:  | .C_Return hv => cases hm; exact ⟨_, hv, Ty.Le.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:233:      Ty.Le b T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:235:  | .C_Let hm' hn => cases hm; exact ⟨_, _, _, hm', hn, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:255:    ∃ names as b ε', HasTypeVQ P B Ψ Q C Γ f (.fn names as b ε') ∧ HasTypeVsQ P B Ψ Q C Γ args as ∧ Ty.Le b T ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:258:  | .C_App hf hargs => cases hm; exact ⟨_, _, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:279:      HasTypeCQ P B Ψ Q C Γ R n a ε' Δl ∧ Ty.Le a T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:281:  | .C_If hv h1 h2 => cases hm; exact ⟨_, _, hv, h1, h2, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:303:      Exhaustive P a (unguardedPats arms) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:305:  | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:356:      HasTypeCQ P B Ψ Q C Γ R m b ε' Δl ∧ Eff.mem ε' (.name stateEff) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:358:  | .C_Use hv hr hm' hs => cases hm; exact ⟨_, _, _, hv, hr, hm', hs, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:380:      HasTypeClausesQ P B Ψ Q C Γ R h t ε' Δl ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:382:  | .C_Handle h1 hs hc => cases hm; exact ⟨_, _, _, h1, hs, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:407:    ∃ b t ε', Ψ l = some (.cont b t ε' R) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:409:  | .C_ResumeL hl hv => cases hm; exact ⟨_, _, _, hl, hv, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:430:    ∃ b t ε', Γ[i]? = some (some (.cont b t ε')) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:433:  | .C_Resume hi hv => cases hm; exact ⟨_, _, _, hi, hv, Ty.Le.refl _, Eff.Sub.refl _⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:507:      Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε ∧ MethodRowsAdmissible C Q ms es ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:511:      cases hm; exact ⟨_, _, _, _, hv, hc, hms, hsat, hes.1, hnames, hws, Ty.Le.refl _, Eff.Sub.refl _, hes, hscope⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:536:      Ty.Le a T ∧ Eff.Sub e ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Inversion.lean:551:      HasTypeVsQ P B Ψ Q C Γ args (op.params kind) ∧ Ty.Le (op.result kind) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresBase.lean:153:    (hle : Ty.Le a' a) (hk : ContTy P B Ψ R ε k a b Eb none) (hvc : Val.VarsIn 0 (fun _ => True) v)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresBase.lean:179:      Ty.Le (Ty.subst [t] [] s.ret) a ∧ Eff.Sub s.eff ε1 := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresHelpers.lean:111:theorem ContTy.markPush {Ψ R ε k a b E r} (hk : ContTy P B Ψ R ε k a b E none) (hle : Ty.Le r a)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:85:      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:106:      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:368:      exact stE_ret resultWF (hσ.set (x := .lazy a') hw (Or.inl hΨl) ⟨a', hΨ'l, hm1.store (hideBuilders_mono hsub)⟩) (.V_LocLazy hΨ'l) (Ty.Le.refl _)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:410:      exact stE_ret (LocTy.WF.lazy hσ.wf hΨl 0) (hσ.set_same hΨl ⟨a', hΨl, hv'⟩) hv' (Ty.Le.refl _) hk' hmc
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:438:      exact stE_ret hrw hσ hv (Ty.Le.refl _) hk' hmc (Cont.Closed.cons.mp hkc).2 hσc
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:568:      exact stE_ret (hσ.wf _ _ hΨκ).1 (hσ.set_same hΨκ ⟨_, _, _, _, hΨκ⟩) hv (Ty.Le.refl _) hk' hmc.2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:17:theorem Ty.Le.fn_fn' {names ps r ε names' as b ε'} (h : Ty.Le (.fn names ps r ε) (.fn names' as b ε')) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:27:      HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) ∧ Ty.Le (Ty.subst ts es s.ret) a ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:32:  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:39:      HasTypeVs P B Ψ [] [] ws (od.params.map (Ty.subst ts [])) ∧ Ty.Le (Ty.subst ts [] od.ret) a ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:44:  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:118:    (hle : Ty.Le (Ty.subst ts [] sg.ret) a)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:175:    have hcell := (ContTy.K_Sub hk1 hle).resume_append ⟨k1, h, rfl⟩ (Ty.Le.refl t)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:424:    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:428:    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Progress.lean:443:    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hfn
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/StepSound.lean:300:            obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:315:example : ¬ Ty.Le (.fn ["value"] [.base .integer] (.base .integer) Eff.empty)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:317:    ¬ Ty.Le (.fn ["left", "right"] [.base .integer, .base .integer] (.base .integer) Eff.empty)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:417:  have hps := (Ty.Le.fn_fn' hle).2.1
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:423:      have hn := (Ty.Le.fn_fn' hle).1
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Semantics.lean:583:      ContTy P B Ψ R ε k a' b ε0 Re → Ty.Le a a' → ContTy P B Ψ R ε k a b ε0 Re
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:63:theorem Ty.Le.wf {n a b} (h : Ty.Le a b) (w : Ty.WF n a) (wb : Ty.LatentWF n b) : Ty.WF n b := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:69:theorem Ty.Le.wf_rev {n a b} (h : Ty.Le a b) (w : Ty.WF n b) (wa : Ty.LatentWF n a) : Ty.WF n a := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Typing.lean:195:def Ty.Le (a a' : Ty) : Prop :=
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Typing.lean:432:        HasTypeVQ P B Ψ Q C Γ v a → Ty.Le a a' → Ty.WF C.length a' → HasTypeVQ P B Ψ Q C Γ v a'
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Typing.lean:459:        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckLemmas.lean:133:    (h : accept q n path expected actual = .ok ε) : Ty.Le actual.1 expected ∧ ε = actual.2 :=
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckLemmas.lean:156:    (h : join q n path a b = .ok j) : Ty.Le a j ∧ Ty.Le b j :=
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckSupport.lean:12:    (h : tyJoin atoms a b = some j) : Ty.Le a j ∧ Ty.Le b j := Finite.tyJoin_sound ha hb h
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckTools.lean:60:    (h : tyLe atoms a b = true) : Ty.Le a b := Finite.tyLe_sound ha hb h
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Examples.lean:275:  have hn := (Ty.Le.fn_fn' (hle.trans hl)).1
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/FiniteTools.lean:191:    (h : tyLe s a b = true) : Ty.Le a b := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/FiniteTools.lean:210:    (h : tyJoin s a b = some j) : Ty.Le a j ∧ Ty.Le b j := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:83:      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:95:      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) a)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:117:      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:129:      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) a)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:156:      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) T := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:172:      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) a)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:199:    obtain ⟨hn, hp, hr, hε⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:212:    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/CallHead.lean:221:    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Calls.lean:11:`meth` の引数の型の等式は、`Ty.Le` が最も外側の関数型のエフェクトだけを広げることに依る。
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Calls.lean:12:`Ty.Le` を深い部分型に広げるときは、C-Meth の型を `Ty.Le` で広げた形に直す。 -/
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Invariants.lean:31:theorem clean_le {n a b} (h : Ty.Le a b) (ha : TyOK n a)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Invariants.lean:39:theorem clean_data_le {n d ts b} (h : Ty.Le (.data d ts) b)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Typing.lean:177:    (hl : Ty.Le r0 r) (he : Eff.Sub (Eff.union εf (Eff.union εargs εcall)) ε)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Typing.lean:215:    (hl : Ty.Le (.data cd.data ts) r)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Typing.lean:16:型の包含は Release の `Ty.Le`、多相な使用は `SatAll` と `admits` を使う。
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Typing.lean:274:        Ty.Le r0 r → Eff.Sub (Eff.union εf (Eff.union εargs εcall)) ε →
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Typing.lean:284:        Ty.Le (.data cd.data ts) r → Eff.VarsIn C.length (fun _ => True) εargs →
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Typing.lean:442:        HasTypeQ D B opPrim Q Δ C Γ R p e a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn C.length (fun _ => True) a' →
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Typing.lean:470:        Ty.Le t a → Ty.VarsIn C.length (fun _ => True) a → HasHoleArgsQ D B opPrim Q Δ C Γ R args as ε →
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Typing.lean:551:        HasBlockQ D B opPrim Q Δ C Γ R p body a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn C.length (fun _ => True) a' →

@@ -1,0 +1,5 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Assumptions.lean:77:  io_op : ∀ b s, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/EffectSound.lean:55:    obtain ⟨l, bs, _, heff, _, hbs, hb0⟩ := hb.io_op b0 _ hsig hkd
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/PresMain.lean:550:      obtain ⟨l, bs, hop, _, hne, _, _⟩ := hb.io_op b0 _ hsig hkind
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:360:          obtain ⟨_, _, _, _, hne, _, _⟩ := hb.io_op _ _ hs hio
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Model.lean:89:  io_op := by

@@ -1,0 +1,5 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/ContLemmas.lean:64:  simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/EffectSound.lean:34:  simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hPl, hbs, Option.map_some]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:211:    simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hos]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:115:def effOps (P : Program) (B : Builtins) (l : EffName) : Option (List OpRef) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:127:      match effOps P B l with

@@ -1,0 +1,76 @@
+== wait-for-lock start 00:56:49
+== lock acquired 00:56:49 after 0s
+✔ [110/573] Built Benitoite.Release.Typing (1.4s)
+✔ [112/573] Built Benitoite.Release.BuilderContents (422ms)
+✔ [113/573] Built Benitoite.Release.LocalTyping (415ms)
+✔ [116/573] Built Benitoite.Release.TypeRegularity (625ms)
+✔ [117/573] Built Benitoite.Release.BuiltinTable (713ms)
+✔ [120/573] Built Benitoite.Release.BuilderExec (482ms)
+✔ [122/573] Built Benitoite.Release.Lemmas.Basic (345ms)
+✔ [124/573] Built Benitoite.Release.TypeBounds (756ms)
+✔ [126/573] Built Benitoite.Release.SubstEnv (655ms)
+✔ [128/573] Built Benitoite.Release.TypeCongruence (722ms)
+✔ [130/573] Built Benitoite.Release.TypeVariables (1.2s)
+✔ [132/573] Built Benitoite.Release.TypeScopedSubst (518ms)
+✔ [134/573] Built Benitoite.Release.WellFormed (555ms)
+✔ [136/573] Built Benitoite.Release.FailureEffects (780ms)
+✔ [138/573] Built Benitoite.Release.Lemmas.TyLemmas (898ms)
+✔ [139/573] Built Benitoite.Release.Admissible (825ms)
+✔ [142/573] Built Benitoite.Release.EffectCover (1.0s)
+✔ [144/573] Built Benitoite.Release.CoverCompat (488ms)
+✔ [145/573] Built Benitoite.Release.LocalScope (4.6s)
+✔ [146/573] Built Benitoite.Release.Semantics (2.1s)
+✔ [148/573] Built Benitoite.Release.RangeIxExamples (601ms)
+✔ [149/573] Built Benitoite.Release.Assumptions (793ms)
+✔ [151/573] Built Benitoite.Release.RangeWF (3.0s)
+✔ [153/573] Built Benitoite.Release.Examples (2.2s)
+✔ [154/573] Built Benitoite.Release.RangeInst (2.4s)
+✔ [156/573] Built Benitoite.Release.ShapeOk (397ms)
+✔ [158/573] Built Benitoite.Release.Lemmas.Rename (10s)
+✔ [159/573] Built Benitoite.Release.Lemmas.Names (8.5s)
+✔ [161/573] Built Benitoite.Release.Lemmas.Closed (8.2s)
+✔ [163/573] Built Benitoite.Release.Lemmas.Rename:c.o (1.0s)
+✔ [164/573] Built Benitoite.Surface.Lemmas.ScopedRename (546ms)
+✔ [166/573] Built Benitoite.Release.Lemmas.VariableBind (775ms)
+✔ [168/573] Built Benitoite.Surface.Lemmas.ShiftClean (1.9s)
+✖ [170/573] Building Benitoite.Release.Lemmas.NoFailContext (3.6s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/NoFailContext.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/NoFailContext.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/NoFailContext.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/NoFailContext.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/NoFailContext.setup.json --json
+error: Benitoite/Release/Lemmas/NoFailContext.lean:31:72: Application type mismatch: The argument
+  ht
+has type
+  HasTypeVQ P B Ψ Q [] [] req✝ T✝
+but is expected to have type
+  HasTypeVQ P B Ψ Q' [] [] req✝ T✝
+in the application
+  HasTypeVQ.V_CheckedRequest hk hm hc ht
+✔ [172/573] Built Benitoite.Release.Lemmas.Irrelevant (5.4s)
+✔ [173/573] Built Benitoite.Release.Lemmas.FailureBase (584ms)
+✔ [175/573] Built Benitoite.Release.Lemmas.Irrelevant:c.o (719ms)
+✔ [176/573] Built Benitoite.Release.Lemmas.ContLemmas (746ms)
+✔ [178/573] Built Benitoite.Release.Lemmas.Inversion (27s)
+✔ [180/573] Built Benitoite.Release.Lemmas.Regularity (1.9s)
+✔ [181/573] Built Benitoite.Release.Lemmas.Regularity:c.o (566ms)
+✔ [182/573] Built Benitoite.Release.Lemmas.OuterC (2.3s)
+✔ [363/573] Built Benitoite.Release.Lemmas.FailureCont (6.8s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.NoFailContext
+error: build failed
+       38.28 real       200.84 user        11.27 sys
+          3426779136  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             2142944  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 208  voluntary context switches
+              288083  involuntary context switches
+          2484984913  instructions retired
+          1324851097  cycles elapsed
+            73254208  peak memory footprint
+== exit 1

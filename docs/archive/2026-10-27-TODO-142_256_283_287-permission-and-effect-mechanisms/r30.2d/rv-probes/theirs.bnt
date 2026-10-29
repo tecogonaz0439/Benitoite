@@ -1,0 +1,37 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+
+function emit(error: Scope.ScopeError) -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show(error))
+end function
+
+function errors(pattern: String, target: String) -> Unit uses Console.Write
+  match Scope.checkPath(pattern: pattern, path: target) with
+    case Result.Error(error) -> emit(error)
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+  end match
+  match Scope.checkPathIn(pattern: pattern, path: target) with
+    case Result.Error(error) -> emit(error)
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  emit(Scope.ScopeError.InvalidPattern("a\"\n", "why"))
+  emit(Scope.ScopeError.InvalidTarget("\u{0}\r\t\\$あ😀", "bad target"))
+  emit(Scope.ScopeError.InvalidPortRange(65535, 0))
+  emit(Scope.ScopeError.InvalidPort(-1))
+  emit(Scope.ScopeError.OutsideScope("/data/**", "/other/a"))
+  emit(Scope.ScopeError.PortOutsideScope(0, 443, 65535))
+  emit(Scope.ScopeError.InvalidPattern("", ""))
+  emit(Scope.ScopeError.InvalidPattern(String.repeat(s: "x", n: 1998), "why"))
+  emit(Scope.ScopeError.InvalidPattern(String.repeat(s: "x", n: 1999), "why"))
+  emit(Scope.ScopeError.InvalidPattern(String.repeat(s: "x", n: 4096), "why"))
+  emit(Scope.ScopeError.InvalidPattern(String.repeat(s: "x", n: 4097), "why"))
+  emit(Scope.ScopeError.OutsideScope(String.repeat(s: "é", n: 5000), String.repeat(s: "\u{0}", n: 5000)))
+  emit(Scope.ScopeError.InvalidPattern(String.repeat(s: "\u{0}", n: 5000), String.repeat(s: "\\\"\nあ😀", n: 5000)))
+  errors(pattern: "relative/**", target: "relative")
+  errors(pattern: "/data/**", target: "relative")
+  errors(pattern: "/data/**", target: "/outside/a")
+end function

@@ -1,0 +1,81 @@
+diff --git a/formal/Benitoite/Surface/Check.lean b/formal/Benitoite/Surface/Check.lean
+index a697c25a..33b108f2 100644
+--- a/formal/Benitoite/Surface/Check.lean
++++ b/formal/Benitoite/Surface/Check.lean
+@@ -262,10 +262,10 @@ mutual
+         require path "method instantiation violates scope or NoFail"
+           (instantiationCheck q.atoms q.noFailRows C.length ms.neffs ms.params ms.ret ms.eff (ts ++ [τ]) es)
+         pure (.fn names ps (substTy q.atoms (ts ++ [τ]) es ms.ret) (substEffAt q.atoms 0 (ts ++ [τ]) es ms.eff), emptyEff)
+-    | .primName b ts es => do
++    | .primName b ts es rs => do
+         let s ← lookup path "unknown primitive" (q.B.sig b)
+           (fun _ => true)
+-        require path "primitive has range variables" (s.nranges == 0)
++        require path "primitive has range variables" (s.nranges == 0 && rs.isEmpty)
+         require path "primitive contract names are not well formed" (namesWF s.names s.params)
+         require path "primitive type argument count mismatch" (ts.length == s.ntys)
+         require path "primitive effect argument count mismatch" (es.length == s.neffs)
+diff --git a/formal/Benitoite/Surface/Desugar.lean b/formal/Benitoite/Surface/Desugar.lean
+index 26b795ba..96f4b03c 100644
+--- a/formal/Benitoite/Surface/Desugar.lean
++++ b/formal/Benitoite/Surface/Desugar.lean
+@@ -72,7 +72,7 @@ def directCallee : Expr → Option CallHead
+   | .funDicts f ts es ds _ _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
+   -- 同表第 1 行: メソッドの呼び出し。
+   | .methName d m ss es us _ _ => some (.meth d.toVal m ss es (DictEv.toValList us))
+-  | .primName b ts es => some (.app (.prim b ts es []) [])
++  | .primName b ts es rs => some (.app (.prim b ts es rs) [])
+   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
+   | .opName o ts => some (.app (.op o ts) [])
+   | .opDicts o ts ds _ _ => some (.app (.op o ts) (DictEv.toValList ds))
+@@ -207,7 +207,7 @@ mutual
+         (.meth (d.toVal.rename (· + ps.length)) m ss es
+           (Val.renameList (· + ps.length) (DictEv.toValList us) ++ boundVars ps.length)))
+     -- 同節: prelude の関数 M.g | return b[T̄; Ē]（Σ にあるものは関数の名前）
+-    | .primName b ts es => .ret (.prim b ts es [])
++    | .primName b ts es rs => .ret (.prim b ts es rs)
+     -- 01-12「ハンドラ」: 利用者の操作の名前 op を、呼ばずに値として使う | return op[T̄]
+     | .opName o ts => .ret (.op o ts)
+     -- 01-12「形式化した操作の制約と節の辞書」: 辞書を値の作成時に捕え、
+diff --git a/formal/Benitoite/Surface/Syntax.lean b/formal/Benitoite/Surface/Syntax.lean
+index 2b43cd09..9975905e 100644
+--- a/formal/Benitoite/Surface/Syntax.lean
++++ b/formal/Benitoite/Surface/Syntax.lean
+@@ -311,7 +311,9 @@ mutual
+     /-- 同表の第 2 行。dicts はメソッド自身の制約、params は辞書を除いた引数型。 -/
+     | methName (dict : DictEv) (m : MethName) (tys : List Ty) (effs : List Eff)
+         (dicts : List DictEv) (names : List String) (params : List Ty)
+-    | primName (b : PrimName) (tys : List Ty) (effs : List Eff)
++    /-- 組み込みの関数の名前。`ranges` は型検査器が選んだ範囲の変数の具体化（範囲の変数のない項目では空の列。
++    設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
++    | primName (b : PrimName) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
+     | opName (o : OpName) (tys : List Ty)
+     /-- 辞書は操作名を解決した位置で選ぶ。params と names は公開の値引数だけ。 -/
+     | opDicts (o : OpName) (tys : List Ty) (dicts : List DictEv)
+diff --git a/formal/Benitoite/Surface/Typing.lean b/formal/Benitoite/Surface/Typing.lean
+index c1a1c25c..d1a5ed13 100644
+--- a/formal/Benitoite/Surface/Typing.lean
++++ b/formal/Benitoite/Surface/Typing.lean
+@@ -131,13 +131,15 @@ mutual
+         SingleTy Q (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) →
+         HasTypeQ D B opPrim Q Δ C Γ R p (.methName d m ss es us names ps)
+           (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) Eff.empty
+-    -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じ admits を検査する。表層はまだ範囲の変数を持つ項目を
+-    -- 呼ばない（`s.nranges = 0`。脱糖は空の範囲の列を書く。表層に範囲を入れるまでの中間状態）。
+-    | E_Prim {Δ C Γ R p b s ts es} :
+-        B.sig b = some s → s.nranges = 0 → NamesWF s.names s.params → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
+-        PrimitiveAdmissible C s Q ts es →
+-        SingleTy Q (fnTy s.names s.params s.ret s.eff ts es) →
+-        HasTypeQ D B opPrim Q Δ C Γ R p (.primName b ts es) (fnTy s.names s.params s.ret s.eff ts es) Eff.empty
++    -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じく、型検査器が選んだ範囲の列 rs で具体化した署名
++    -- `s.inst rs` と、範囲の具体化の許容 `RangeAdmissible` で型付ける。
++    | E_Prim {Δ C Γ R p b s ts es rs} :
++        B.sig b = some s → B.RangeAdmissible b s rs → NamesWF (s.inst rs).names (s.inst rs).params →
++        ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
++        PrimitiveAdmissible C (s.inst rs) Q ts es →
++        SingleTy Q (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) →
++        HasTypeQ D B opPrim Q Δ C Γ R p (.primName b ts es rs)
++          (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) Eff.empty
+     -- 01-12「ハンドラ」: 操作を値として使う。V-Op と同じ宣言と制約を検査する。
+     | E_Raise {Δ C Γ R p t e} :
+         Ty.WF 0 C.length t → Ty.WF 0 C.length e →

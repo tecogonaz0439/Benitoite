@@ -1,0 +1,22 @@
+{
+  "command": [
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "startUtc": "2026-10-29T10:37:19.300037+00:00",
+  "endUtc": "2026-10-29T10:38:57.258828+00:00",
+  "exitCode": 0,
+  "checkExitCode": null,
+  "elapsedSeconds": 97.958483125,
+  "maxRssRaw": 2946498560,
+  "maxRssUnit": "bytes",
+  "measurement": "getrusage(RUSAGE_CHILDREN), 子孫の最大値。合計常駐量ではない"
+}

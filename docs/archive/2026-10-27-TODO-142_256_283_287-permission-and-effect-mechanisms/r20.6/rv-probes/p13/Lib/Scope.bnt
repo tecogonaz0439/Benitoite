@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Scope as S
+public function check(path: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+ return S.checkPathIn(pattern: "/data/a", path: path)
+end function

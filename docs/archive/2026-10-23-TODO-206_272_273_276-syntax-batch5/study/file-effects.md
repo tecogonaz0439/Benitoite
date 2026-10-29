@@ -322,7 +322,7 @@ B は、どの語を選んでも既存の意味へ解析できる限り、Lean �
 
 一方、`generate.rs:1398` の bind_stmt は、右辺と別にパターンの新しい型変数を作る。`solve.rs:1257` は Declared の制約を Normal より先に解く。後の `bind n: Integer <- f` が f を Integer に決めた後に Error と比較すると、`equal_with_outer` の zonk 後の型からは元の型変数が見えなくなる場合がある。poison があることだけでは、後の使用の診断を消せない。これはコードの処理順と、次の既存 CLI の観測を合わせた説明である。
 
-調査で `work/m011/scratch/s2-recovery.bnt` に次を置き、許可されたビルド済み CLI だけで確認した。
+調査で [s2-recovery.bnt](../work-copies/m011/scratch/s2-recovery.bnt) に次を置き、許可されたビルド済み CLI だけで確認した。
 
 ```text
 function main() -> Unit
@@ -336,7 +336,7 @@ function main() -> Unit
 end function
 ```
 
-コマンドは `target/debug/benitoite check work/m011/scratch/s2-recovery.bnt`、終了状態は2、外側の時間は約0.62秒であった。2行目に E0467、5行目に E0401（Integer と Option[_]）、8行目に独立した E0401（Integer と String）の3件が出た。実行ファイルの表示版は0.0.10、更新日時は2026-10-21 20:32である。開始 HEAD と同じソースから作られたというビルドの証跡は今回確認していないため、HEAD の新規ビルドの結果とは扱わない。現行ソースの読解と過去の記録も同じ問題を示す。
+コマンドは [target/debug/benitoite check s2-recovery.bnt](../work-copies/m011/scratch/s2-recovery.bnt)、終了状態は2、外側の時間は約0.62秒であった。2行目に E0467、5行目に E0401（Integer と Option[_]）、8行目に独立した E0401（Integer と String）の3件が出た。実行ファイルの表示版は0.0.10、更新日時は2026-10-21 20:32である。開始 HEAD と同じソースから作られたというビルドの証跡は今回確認していないため、HEAD の新規ビルドの結果とは扱わない。現行ソースの読解と過去の記録も同じ問題を示す。
 
 ### 5.2 他処理系の一次資料
 

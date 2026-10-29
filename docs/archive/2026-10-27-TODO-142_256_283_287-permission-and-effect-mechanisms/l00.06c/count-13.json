@@ -1,0 +1,77 @@
+{
+ "log": "build-13-trial.log",
+ "modules_in_default_closure": 274,
+ "failed_modules": [
+  "Benitoite.Surface.LogExamples"
+ ],
+ "unchecked_modules_count": 1,
+ "unchecked_modules": [
+  "Benitoite"
+ ],
+ "error_diagnostics": 11,
+ "error_files": [
+  "Benitoite/Surface/LogExamples.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "def operation",
+   "line": 46,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem console_pure_rejected",
+   "line": 137,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem console_remains_checked",
+   "line": 109,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem emit_checked",
+   "line": 100,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem enabled_checked",
+   "line": 101,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem forwarded_checked",
+   "line": 105,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem handled_checked",
+   "line": 102,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem incomplete_handler_retains_log",
+   "line": 113,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/LogExamples.lean",
+   "decl": "theorem program_checked",
+   "line": 132,
+   "errors": 1
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ]
+ ]
+}

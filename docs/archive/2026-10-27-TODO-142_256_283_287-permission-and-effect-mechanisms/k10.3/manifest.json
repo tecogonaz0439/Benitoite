@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "<wt>/scripts/check/formal_interval.py",
+    "manifest",
+    "--interval-dir",
+    "<wt>/target/interval-diff/k10.3",
+    "--desugar-dir",
+    "<wt>/target/desugar-diff/k10.3",
+    "--coverage-dir",
+    "<wt>/target/coverage-diff/k10.3"
+  ],
+  "startedAt": "2026-10-29T14:49:29.498297+00:00",
+  "exit": 0,
+  "outerSeconds": 416.780220916,
+  "maxRssBytesAuxiliary": 13951320064,
+  "maxRssMiB": 13305.015625,
+  "maxRssGiB": 12.993179321289062,
+  "environment": {},
+  "rssMethod": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; bytes; 子プロセス一つの最大値であり同時使用量の合計ではない"
+}

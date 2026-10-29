@@ -1,0 +1,96 @@
+$ cargo test -p benitoite --lib failure_types_require_well_formed_parameter_contracts
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0425]: cannot find value `NO_SCOPE` in module `super::text`
+  --> crates/benitoite/src/resolve/scope.rs:65:85
+   |
+65 |                 .arg("name", dotted(&t.path)).arg("expectedScopeKind", super::text::NO_SCOPE)
+   |                                                                                     ^^^^^^^^ not found in `super::text`
+
+error[E0425]: cannot find value `SCOPE_ARGUMENTS` in module `super::text`
+  --> crates/benitoite/src/resolve/scope.rs:66:44
+   |
+66 |                 .arg("found", super::text::SCOPE_ARGUMENTS).note("found").build());
+   |                                            ^^^^^^^^^^^^^^^ not found in `super::text`
+
+error[E0425]: cannot find value `SCOPE_INTERNAL` in module `super::text`
+  --> crates/benitoite/src/resolve/scope.rs:71:105
+   |
+71 | ...::internal_diagnostic("check", super::text::SCOPE_INTERNAL, None, crate::runtime::report::FaultThread::Stage));
+   |                                                ^^^^^^^^^^^^^^ not found in `super::text`
+
+error[E0425]: cannot find value `PATH_SCOPE` in module `super::text`
+  --> crates/benitoite/src/resolve/scope.rs:76:44
+   |
+76 |                 Kind::Path => super::text::PATH_SCOPE,
+   |                                            ^^^^^^^^^^ not found in `super::text`
+
+error[E0425]: cannot find value `ENDPOINT_SCOPE` in module `super::text`
+  --> crates/benitoite/src/resolve/scope.rs:77:48
+   |
+77 |                 Kind::Endpoint => super::text::ENDPOINT_SCOPE,
+   |                                                ^^^^^^^^^^^^^^ not found in `super::text`
+
+error[E0425]: cannot find value `HOST_SCOPE` in module `super::text`
+  --> crates/benitoite/src/resolve/scope.rs:78:44
+   |
+78 |                 Kind::Host => super::text::HOST_SCOPE,
+   |                                            ^^^^^^^^^^ not found in `super::text`
+
+error[E0599]: no associated function or constant named `from_integer` found for struct `types::scope::Port` in the current scope
+   --> crates/benitoite/src/resolve/scope.rs:89:46
+    |
+ 89 |             let ports = PortRange::new(Port::from_integer(lo)?, Port::from_integer(hi)?)?;
+    |                                              ^^^^^^^^^^^^ associated function or constant not found in `types::scope::Port`
+    |
+   ::: crates/benitoite/src/types/scope.rs:398:1
+    |
+398 | pub struct Port(u16);
+    | --------------- associated function or constant `from_integer` not found for this struct
+    |
+note: if you're trying to build a new `types::scope::Port` consider using one of the following associated functions:
+      types::scope::Port::new
+      types::scope::Port::from_int
+   --> crates/benitoite/src/types/scope.rs:402:5
+    |
+402 |     pub fn new(value: u16) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+407 |     pub fn from_int(value: i64) -> Option<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: there is an associated function `from_int` with a similar name
+    |
+ 89 -             let ports = PortRange::new(Port::from_integer(lo)?, Port::from_integer(hi)?)?;
+ 89 +             let ports = PortRange::new(Port::from_int(lo)?, Port::from_integer(hi)?)?;
+    |
+
+error[E0599]: no associated function or constant named `from_integer` found for struct `types::scope::Port` in the current scope
+   --> crates/benitoite/src/resolve/scope.rs:89:71
+    |
+ 89 |             let ports = PortRange::new(Port::from_integer(lo)?, Port::from_integer(hi)?)?;
+    |                                                                       ^^^^^^^^^^^^ associated function or constant not found in `types::scope::Port`
+    |
+   ::: crates/benitoite/src/types/scope.rs:398:1
+    |
+398 | pub struct Port(u16);
+    | --------------- associated function or constant `from_integer` not found for this struct
+    |
+note: if you're trying to build a new `types::scope::Port` consider using one of the following associated functions:
+      types::scope::Port::new
+      types::scope::Port::from_int
+   --> crates/benitoite/src/types/scope.rs:402:5
+    |
+402 |     pub fn new(value: u16) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+407 |     pub fn from_int(value: i64) -> Option<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: there is an associated function `from_int` with a similar name
+    |
+ 89 -             let ports = PortRange::new(Port::from_integer(lo)?, Port::from_integer(hi)?)?;
+ 89 +             let ports = PortRange::new(Port::from_integer(lo)?, Port::from_int(hi)?)?;
+    |
+
+Some errors have detailed explanations: E0425, E0599.
+For more information about an error, try `rustc --explain E0425`.
+error: could not compile `benitoite` (lib test) due to 8 previous errors

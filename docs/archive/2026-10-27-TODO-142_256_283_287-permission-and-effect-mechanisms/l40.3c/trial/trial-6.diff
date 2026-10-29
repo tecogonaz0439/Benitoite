@@ -1,0 +1,199 @@
+diff --git a/formal/Benitoite/Release/Lemmas/Inversion.lean b/formal/Benitoite/Release/Lemmas/Inversion.lean
+index 47ea0a6d..17c21c2f 100644
+--- a/formal/Benitoite/Release/Lemmas/Inversion.lean
++++ b/formal/Benitoite/Release/Lemmas/Inversion.lean
+@@ -508,11 +508,11 @@ theorem HasTypeVQ.inv_checked {C Γ v T t} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv
+       exact ⟨o, R, (hle.eq_of_not_fn_left (by intros; simp)).symm, hk, hm⟩
+ 
+ /-- 検査済みの要求の値の逆転（V-CheckedRequest）。型は範囲付きの値型 `opaque o (fixed R)` であり、対象の所属は
+-V-Checked と同じ。保持する要求は、表のデータ `valContent` が名前 o に与える型の名前 n の、範囲が Top の不透明型の
+-定数である。V-Sub は不透明型を広げないので、導出の型はちょうど葉の規則が与えた型である。 -/
++V-Checked と同じ。保持する要求は、表のデータ `valContent` が名前 o に与える型 A を、同じストアの型付けと空の文脈で
++持つ。V-Sub は不透明型を広げないので、導出の型はちょうど規則が与えた型である。 -/
+ theorem HasTypeVQ.inv_checkedRequest {C Γ v T t c} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .checkedRequest t c) :
+-    ∃ o R n, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some n ∧
+-      c.type = .opaqueTop n := by
++    ∃ o R A, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some A ∧
++      HasTypeVQ P B Ψ Qempty [] [] c A := by
+   match h with
+   | .V_Const => cases hv
+   | .V_CheckedRequest hk hm hc ht => cases hv; exact ⟨_, _, _, rfl, hk, hm, hc, ht⟩
+diff --git a/formal/Benitoite/Release/Lemmas/MembershipBase.lean b/formal/Benitoite/Release/Lemmas/MembershipBase.lean
+index 4f65a6c6..39c0286a 100644
+--- a/formal/Benitoite/Release/Lemmas/MembershipBase.lean
++++ b/formal/Benitoite/Release/Lemmas/MembershipBase.lean
+@@ -37,8 +37,8 @@ theorem HasTypeVQ.checked_widen {Ψ C Γ t o R R'}
+ /-- 検査済みの要求の値の型付けは、ちょうど V-CheckedRequest が与えるものである。 -/
+ theorem HasTypeVQ.checkedRequest_iff {Ψ C Γ t c T} :
+     HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) T ↔
+-      ∃ o R n, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some n ∧
+-        c.type = .opaqueTop n := by
++      ∃ o R A, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some A ∧
++        HasTypeVQ P B Ψ Qempty [] [] c A := by
+   constructor
+   · intro h; exact h.inv_checkedRequest rfl
+   · rintro ⟨o, R, n, rfl, hk, hm, hc, ht⟩; exact .V_CheckedRequest hk hm hc ht
+@@ -71,7 +71,7 @@ theorem HasTypeVQ.canonical_opaque {Ψ C v o ix} (h : HasTypeVQ P B Ψ Q C [] v
+     (∃ n, v = .const (.opaque o n) ∧ ix = .fixed .top) ∨
+       (∃ t R, v = .checked t ∧ ix = .fixed R ∧ B.valKind o = some t.kind ∧ R.Mem t) ∨
+       (∃ t R c n, v = .checkedRequest t c ∧ ix = .fixed R ∧ B.valKind o = some t.kind ∧ R.Mem t ∧
+-        B.valContent o = some n ∧ c.type = .opaqueTop n) := by
++        B.valContent o = some n ∧ HasTypeVQ P B Ψ Qempty [] [] c n) := by
+   have hnf : ∀ names ps r ε, (Ty.opaque o ix) ≠ .fn names ps r ε := by intros; simp
+   cases v with
+   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
+diff --git a/formal/Benitoite/Release/Lemmas/Rename.lean b/formal/Benitoite/Release/Lemmas/Rename.lean
+index 8c6521d9..449fbbe2 100644
+--- a/formal/Benitoite/Release/Lemmas/Rename.lean
++++ b/formal/Benitoite/Release/Lemmas/Rename.lean
+@@ -336,7 +336,7 @@ theorem hideBuilders_mono {Ψ Ψ' : StoreTy} (h : StoreTy.Sub Ψ Ψ') :
+   | _ => simp [StoreTy.hideBuilders, hy]
+ 
+ mutual
+-  theorem HasTypeVQ.store {Ψ Ψ' C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
++  theorem HasTypeVQ.store {Q : NoFailCtx} {Ψ Ψ' C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
+       HasTypeVQ P B Ψ' Q C Γ v a := by
+     match h with
+     | .V_Var hi hc => exact .V_Var hi hc
+@@ -358,21 +358,21 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.store hv hΨ) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.store h hΨ) hle hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
+-    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc (HasTypeVQ.store ht hΨ)
+ 
+-  theorem HasTypeVsQ.store {Ψ Ψ' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
++  theorem HasTypeVsQ.store {Q : NoFailCtx} {Ψ Ψ' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
+       HasTypeVsQ P B Ψ' Q C Γ vs as := by
+     match h with
+     | .nil => exact .nil
+     | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeVsQ.store hvs hΨ)
+ 
+-  theorem HasTypeEachQ.store {Ψ Ψ' C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
++  theorem HasTypeEachQ.store {Q : NoFailCtx} {Ψ Ψ' C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
+       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeEachQ P B Ψ' Q C Γ vs a := by
+     match h with
+     | .nil => exact .nil
+     | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeEachQ.store hvs hΨ)
+ 
+-  theorem HasTypeCQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
++  theorem HasTypeCQ.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeCQ P B Ψ' Q C Γ R m a ε Δl := by
+     match h with
+     | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.store hb hΨ)
+@@ -397,7 +397,7 @@ mutual
+     | .C_Meth hv hc hm hnames hts hscope hes hws =>
+         exact .C_Meth (HasTypeVQ.store hv hΨ) hc hm hnames hts hscope hes (HasTypeVsQ.store hws hΨ)
+ 
+-  theorem HasTypeArmsQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
++  theorem HasTypeArmsQ.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArmsQ P B Ψ' Q C Γ R arms a b ε Δl := by
+     match h with
+     | .nil hw => exact .nil hw
+@@ -405,13 +405,13 @@ mutual
+     | .guarded hp hg hm ht =>
+         exact .guarded hp (HasTypeCQ.store hg hΨ) (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
+ 
+-  theorem HasTypeClausesQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
++  theorem HasTypeClausesQ.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
+       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R εb h t ε Δl := by
+     match hc with
+     | .nil => exact .nil
+     | .cons hsg hnames hn hk hew hbody hrest =>
+         exact .cons hsg hnames hn hk hew (HasTypeCQ.store hbody (hideBuilders_mono hΨ)) (HasTypeClausesQ.store hrest hΨ)
+-  theorem HasFailureClause.store {Δl : LocalCtx} {Ψ Ψ' C Γ E R h t ε}
++  theorem HasFailureClause.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ E R h t ε}
+       (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hΨ : StoreTy.Sub Ψ Ψ') :
+       HasFailureClause P B Ψ' Q C Γ E R h t ε Δl := by
+     match hc with
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index a8535283..ac613275 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -262,9 +262,10 @@ mutual
+     この値を作るのは組み込みの表の δ（検査の項目）である。 -/
+     | checked (t : Scope.Domain.Target)
+     /-- 検査済みの要求の値（決定の判断 7）。`Http.RequestIn[H,P]` の値に当たり、検査した要求 `req` と、検査で得た実効の
+-    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は閉じた不透明型の値であり、不透明型の定数として
+-    持つ。型と値の変数を持たないので、代入・改名・shift で変わらない。型付けは葉の規則 V-CheckedRequest だけで行う。 -/
+-    | checkedRequest (t : Scope.Domain.Target) (req : Const)
++    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は `Http.ClientRequest` のレコードの閉じた値
++    （空の型の文脈と値の文脈で型を持ち、型の変数を含まない値）である。閉じた値なので、代入・改名・shift はこの値を
++    変えない（中へ下りない）。型付けは規則 V-CheckedRequest だけで行う。 -/
++    | checkedRequest (t : Scope.Domain.Target) (req : Val)
+ 
+   inductive Comp where
+     | builderLet (kind : BuilderKind) (body : Comp)
+diff --git a/formal/Benitoite/Release/TargetTable.lean b/formal/Benitoite/Release/TargetTable.lean
+index 9c0399b6..f9ddae16 100644
+--- a/formal/Benitoite/Release/TargetTable.lean
++++ b/formal/Benitoite/Release/TargetTable.lean
+@@ -48,7 +48,7 @@ def ioErrorTy : Ty := .opaqueTop "IOError"
+ def networkErrorTy : Ty := .opaqueTop "NetworkError"
+ def scopeErrorTy : Ty := .opaqueTop "Scope.ScopeError"
+ def responseTy : Ty := .opaqueTop "Http.Response"
+-def clientRequestTy : Ty := .opaqueTop "Http.ClientRequest"
++def clientRequestTy : Ty := .data "Http.ClientRequest" []
+ def requestCheckErrorTy : Ty := .data "Http.RequestCheckError" []
+ 
+ /-- `Http.RequestCheckError` の構成子（問 23 の DET-04）。 -/
+@@ -131,8 +131,8 @@ def valKind : OpaqueName → Option Kind
+   | _ => none
+ 
+ /-- 範囲付きの値型の名前の値が保持する要求の型の名前（表のデータ）。 -/
+-def valContent : OpaqueName → Option OpaqueName
+-  | "Http.RequestIn" => some "Http.ClientRequest"
++def valContent : OpaqueName → Option Ty
++  | "Http.RequestIn" => some clientRequestTy
+   | _ => none
+ 
+ /-- 範囲の具体化の制約（表のデータ）。拡大は戻りの範囲 S が入力の範囲 R を覆う組だけを許す。 -/
+@@ -248,7 +248,7 @@ example : effKind "File.Read" = some .path ∧ effKind "File.Write" = some .path
+     effKind "Http.Connect" = some .endpoint ∧ effKind "Console.Write" = none := ⟨rfl, rfl, rfl, rfl⟩
+ example : valKind "Scope.PathIn" = some .path ∧ valKind "Http.RequestIn" = some .endpoint ∧
+     valKind "IOError" = none := ⟨rfl, rfl, rfl⟩
+-example : valContent "Http.RequestIn" = some "Http.ClientRequest" ∧ valContent "Scope.PathIn" = none :=
++example : valContent "Http.RequestIn" = some clientRequestTy ∧ valContent "Scope.PathIn" = none :=
+   ⟨rfl, rfl⟩
+ 
+ /-- 拡大の項目の具体化: 戻りの範囲が入力の範囲を覆う組だけを許す。 -/
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 4286e483..80610bb5 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -108,9 +108,9 @@ structure Builtins where
+   この制約によらず許す（`Builtins.RangeAdmissible`）。表のデータであり、正しさは信頼の対象である。既定は何も
+   許さない（Top の列だけを許す）。 -/
+   admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
+-  /-- 範囲付きの値型の名前の値が保持する要求の型の名前（`Http.RequestIn` は `Http.ClientRequest`）。検査済みの要求の
+-  値の葉の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
+-  valContent : OpaqueName → Option OpaqueName := fun _ => none
++  /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
++  要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
++  valContent : OpaqueName → Option Ty := fun _ => none
+ 
+ /-! ## 署名の具体化と範囲の具体化の許容 -/
+ 
+@@ -584,9 +584,10 @@ mutual
+     /-- V-CheckedRequest（検査済みの要求の値の葉の規則）。V-Checked の所属に加え、名前 o の値が保持する要求の型の
+     名前（表のデータ `valContent`）が n のとき、保持する要求は型 `n`（範囲が Top の不透明型）の定数である
+     （設計書 01-12「型付け規則」）。 -/
+-    | V_CheckedRequest {Γ o R t c n} :
+-        B.valKind o = some t.kind → R.Mem t → B.valContent o = some n → c.type = .opaqueTop n →
+-        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))
++    | V_CheckedRequest {Γ o R t req T} :
++        B.valKind o = some t.kind → R.Mem t → B.valContent o = some T →
++        HasTypeVQ P B Ψ Qempty [] [] req T →
++        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t req) (.opaque o (.fixed R))
+ 
+   inductive HasTypeVsQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop
+@@ -741,7 +742,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (hideBuilders_strengthen_val hv) hc hs
+     | .V_Sub hv hl hw => exact .V_Sub (hideBuilders_strengthen_val hv) hl hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
+-    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
++    | .V_CheckedRequest hk hm hc hr => exact .V_CheckedRequest hk hm hc (hideBuilders_strengthen_val hr)
+ 
+   theorem hideBuilders_strengthen_vals {P B Ψ Q C Γ vs ts}
+       (h : HasTypeVsQ P B Ψ Q C Γ vs ts) : HasTypeVsQ P B Ψ.hideBuilders Q C Γ vs ts := by

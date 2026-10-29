@@ -1,0 +1,903 @@
+--- a/tools/derive/README.md
++++ b/tools/derive/README.md
+@@ -85,6 +85,20 @@
+ [inventory contract](../../crates/benitoite/examples/derive_inventory/README.md)
+ defines their exact structure. File, Scope and Http imports therefore retain
+ their ordinary functions and signatures without erasing range information.
++
++Maintenance: `effect_kind` inside `validate_inventory` in
++[derive.py](derive.py) copies Rust's `BuiltinEffectId::scope_kind` in
++[types/builtin.rs](../../crates/benitoite/src/types/builtin.rs). Effect atoms do
++not carry a separate range-kind field. When adding or changing a builtin effect,
++keep both mappings synchronized: `IO.File.Read` and `IO.File.Write` use `path`,
++`Network.Http.Connect` uses `endpoint`, and other effects accept only Top.
++A new non-Top effect index is rejected until the Python mapping is updated.
++
++The current declaration inventory emits only `"untargeted"` for `shape`.
++Effect operations are outside the declaration list, so `single` and
++`topTargeted` do not currently appear in reader output. Their schema and
++validation rules retain the existing exchange representation; they do not
++indicate that effect operations are included in the inventory.
+ 
+ Semantic hash 4 includes indices in types/effects and the signature's range
+ kinds, admission and shape. It continues to exclude source positions and display
+--- a/docs/design/03-interop/03-06-stdlib.md
++++ b/docs/design/03-interop/03-06-stdlib.md
+@@ -24,19 +24,795 @@
+ 
+ 【決定】prelude には、文字列とリストのよく使う操作と、`Option`・`Result` をつなぐ関数を入れる。文字を分類する関数のうち ASCII の範囲だけを扱うものは、名前にそれを示す（`Character.isASCIIDigit`）。Unicode の文字の性質に依る関数は、後述の「Character」で定める。
+ 
+-【決定】標準ライブラリの型と関数の名前は、省略しない英単語で書く（`Integer`、`Boolean`、`Character`、`Console.writeLine`、`Process.arguments`）。理由: スクリプトを主に書くのは LLM なので書く量を減らす利点は小さく、省略しない語のほうが、プログラマでない利用者にも意味を推測しやすい。ただし、`Float` と、利用者が頭字語…40894 tokens truncated… 1 | 3.810 | 262.312 | [JSON](work.json) |
+-| [derive-selftest-verified](derive-selftest-verified.log) | `python3 -B tools/derive/test_derive.py` | 0 | 88.516 | 198.000 | [JSON](derive-selftest-verified.json) |
+-| [work-recheck-dry](work-recheck-dry.log) | `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab --dry-run` | 0 | 0.135 | 11.281 | [JSON](work-recheck-dry.json) |
+-| [build-reader-current](build-reader-current.log) | `cargo build -p benitoite --example derive_inventory` | 0 | 0.644 | 510.625 | [JSON](build-reader-current.json) |
+-| [example-current-check](example-current-check.log) | `python3 -B tools/derive/derive.py check --root tools/derive/examples --config tools/derive/examples/derive.json` | 0 | 0.428 | 174.328 | [JSON](example-current-check.json) |
+-| [work-recheck](work-recheck.log) | `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab` | 1 | 299.032 | 1223.984 | [JSON](work-recheck.json) |
+-| [derive-selftest-current](derive-selftest-current.log) | `python3 -B tools/derive/test_derive.py` | 0 | 147.002 | 199.641 | [JSON](derive-selftest-current.json) |
+-| [golden-position](golden-position.log) | `env BENITOITE_GOLDEN_FILTER=todo178-orphan-standard cargo test -p benitoite --test golden golden_suite -- --exact --nocapture` | 0 | 0.599 | 74.641 | [JSON](golden-position.json) |
+-| [work-final-dry](work-final-dry.log) | `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab --dry-run` | 0 | 0.145 | 11.234 | [JSON](work-final-dry.json) |
+-| [work-final](work-final.log) | `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab` | 0 | 467.756 | 1357.391 | [JSON](work-final.json) |
+-
+-## 差分と時間
+-
+-[行数の記録](diff-counts.json)はB_WORKからの差分であり、引き継いだR30.2cも含む。今回のRust出力器は234行追加・32行削除（新モジュール164行を含む）、Python本番は141行追加・24行削除である。今回のRustの宣言情報テストは125行追加・5行削除、Pythonテストは141行追加・33行削除、goldenの位置は1行追加・1行削除であり、テスト契約の削除はない。処理系本体のRustの振る舞いは変えていない。
+-
+-最初に取得した時計は2026-10-29 06:08:24 UTC（15:08:24 JST）であり、その前にREADMEと依頼条件の読み込みを始めていた。最終W-Rは06:35:20 UTCに終わった。記録の最終確認を含めた外側は着手から概算35分、能動時間は概算25分である。読書開始時の厳密な時計と能動時間の分離計時は取っていない。Rust・Python・レビューの担当は並行していたため、その時間を親の外側へ加算しない。主要な待ち時間はW-Rの二回目299.032秒、最終467.756秒、最終バイナリのderive自己検査147.002秒であり、文書作成や他の検査との重なりがある。見込みの上端と4時間の停止条件は超えていない。
++【決定】標準ライブラリの型と関数の名前は、省略しない英単語で書く（`Integer`、`Boolean`、`Character`、`Console.writeLine`、`Process.arguments`）。理由: スクリプトを主に書くのは LLM なので書く量を減らす利点は小さく、省略しない語のほうが、プログラマでない利用者にも意味を推測しやすい。ただし、`Float` と、利用者が頭字語のまま見聞きする語（次の段落）は例外とする。
++
++【決定】標準ライブラリの名前の中の頭字語（IO、UTF-8、ASCII など）は、すべて大文字で書く（`IOError`、`IOErrorKind.InvalidUTF8`、`Character.isASCIIDigit`）。ただし、小文字で始まる名前の先頭に頭字語を置くときは、頭字語をすべて小文字で書く。利用者が付ける名前に対しては、処理系はこの規則を検査しない。
++
++【方針】標準ライブラリの型・関数・構成子・定数の説明は、利用者のモジュールと同じくドキュメントコメント（`///`）で持つ。
++
++【方針】関数の引数は、操作の対象（文字列、リスト、`Option` など）を第 1 引数に置く。パイプ（`xs |> List.map(f)`）で対象を渡せるようにするためである。
++
++【方針】以下の表の型の欄の `function[T, effect E](a1: A1, …) -> B uses E` は、型パラメータとエフェクト変数を持つ関数の型を表す本章の表記である。関数の宣言の型パラメータの並び（[構文](../01-spec/01-02-syntax.md)）と同じ意味を持つ。
++
++【方針】以下の表の「実装」の欄は、関数を組み込みの関数（Rust）として実装する（「組み込み」）か、標準ライブラリのソース（言語）で定める（「ソース」）かを示す。この区別は利用者からは見えない。「実行時エラー」の欄が空の関数は、実行時エラーを起こさない。
++
++### 名前空間と prelude（初回リリース版）
++
++【決定】標準ライブラリは、処理系と一緒に配るモジュールの全体であり、名前空間 `Benitoite` の下に置く。prelude は、標準ライブラリのうち import なしで使える部分である。
++
++| 部分 | モジュール・型・エフェクト | 使い方 |
++|---|---|---|
++| prelude | 基本型とその関数のモジュール（`Integer`・`Float`・`Decimal`・`Byte`・`Character`・`String`・`Boolean`、各幅の数とその別名）、`List`・`Map`・`Set`・`Bytes`・`ByteOrder`、`Option`・`Result`・`Pair`・`Triple`、`IOError`・`IOErrorKind`、`NetworkError`・`NetworkErrorKind`、`RoundingMode`、`Reference`、`Lazy`、`Task`・`TaskGroup`、`Assert`、`Log`・`SourceLocation`、エフェクト `State`、モジュール `IO` | import なしで `List.map` と書ける。`Benitoite.List.map` とも書ける |
++| 関数内の構築器 | `Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`（後述の「StringBuilder」） | 各モジュールを明示importし、専用の注釈付きbindと直接操作を使う |
++| 標準の型クラス | `Benitoite.Trait`（後述の「標準の型クラス（初回リリース版）」） | `import Benitoite.Trait` で取り込み、`Trait.Monad.flatMap` と書く |
++| 型付きの失敗 | `Benitoite.Failure`（[エラー処理](../01-spec/01-09-errors.md#型付きの失敗と-result-の変換)） | `import Benitoite.Unofficial.Failure` で取り込み、raise/fromResult/toResult を使う |
++| 条件と対象の保持 | `Benitoite.Scope`（後述の「Scope」） | `import Benitoite.Unofficial.Scope` で取り込み、`Scope.checkHost` と書く |
++| 整数の閉区間・Listの長さと添字の検査 | `Benitoite.Range`（後述の「Range」） | `import Benitoite.Unofficial.Range` で取り込み、`Range.checkInteger` と書く |
++| 非空Listの検査 | `Benitoite.NonEmptyList`（後述の「NonEmptyList」） | `import Benitoite.Unofficial.NonEmptyList` で明示的に取り込む |
++| 性質の試行 | `Benitoite.Test.Property`（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)） | `import Benitoite.Unofficial.Test.Property` で取り込み、`Property.check` と書く |
++| IO を行うモジュール | `Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`（[IO のモジュール](03-07-io-modules.md)） | `import Benitoite.Unofficial.IO.Console` で取り込み、`Console.writeLine` と書く |
++| ネットワークの操作を行うモジュール | `Benitoite.Network.Http`（[ネットワークのモジュール](03-09-network.md)） | `import Benitoite.Unofficial.Network.Http` で取り込み、`Http.get` と書く |
++| テキストとデータを扱うモジュール | `Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash`（[テキストとデータの処理](03-08-text-and-data.md)） | `import Benitoite.Unofficial.Json` で取り込み、`Json.parse` と書く |
++
++- prelude のモジュール `IO`（`Benitoite.IO`）は、`State` と `Benitoite.IO` の下のモジュールのエフェクトをまとめたエフェクト `IO.All` だけを持つ。ネットワークのエフェクトは `IO.All` に含まれない（[エフェクト](../01-spec/01-07-effects.md)）。理由: ネットワークの操作は、スクリプトを動かす機械の外の資源に触れ、機械の中の操作（コンソール、ファイル、プロセス、環境変数、時計、乱数）とは影響の及ぶ範囲が異なる。`uses IO.All` は import なしに書ける。`Benitoite.IO` の下のモジュールの関数を呼ぶには import が要る。
++- import なしに完全な名前で書けるのは prelude だけである。`Benitoite.IO.Console.writeLine` を import なしに書くことはできない。
++- 利用者の宣言や取り込みが prelude と同じ名前を持つときの扱いと、根の直下の `Benitoite` を取り込めないことは、[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)で定める。
++
++【決定】数の幅を示す標準モジュール `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`・`Float32` と、同じ型の別名・正の名前で使う `Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger` も prelude に入る。型名とモジュールで修飾した関数名は import なしで使える。型の同一性と既定の表示名は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「型の一覧」に従う。`Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger` の関数は、それぞれ `Integer`・`Float`・`Byte`・`UnsignedInteger64` の同名の関数を呼び、結果と停止条件を保つ。型クラスの実装も同じ型の一つの実装である。理由: 正の名前と別名で型と関数の名前を揃え、既存の関数の契約を保つ。
++
++初回リリース版では、表のモジュールのうち、IO・ネットワーク・テキストとデータのモジュールは非公式のモジュールであり、`Benitoite.Unofficial` の下の名前で取り込む（後述の「標準のモジュールと非公式のモジュール（初回リリース版）」）。上の表の「モジュール」の欄はモジュールの名前を、「使い方」の欄と次の例は取り込みの名前を書いている。
++
++```text
++import Benitoite.Unofficial.IO.Console
++
++function main() -> Unit uses Console.Write
++  bind doubled <- List.map(xs: [1, 2, 3], f: lambda(value) return value * 2)
++  Console.writeLine(Integer.toString(List.length(doubled)))
++end function
++```
++
++### 標準のモジュールと非公式のモジュール（初回リリース版）
++
++【決定】標準ライブラリのモジュールは、「標準」か「非公式」のどちらかの状態を持つ。非公式のモジュールは、設計者が実装を吟味する前のモジュールであり、吟味の結果で名前・型・振る舞いを改めうる。状態はモジュールを単位に決め、一つのモジュールの関数を二つの状態に分けない。初回リリース版は、標準ライブラリと別に配る公式のライブラリ（公式の追加のライブラリ）を持たない。
++
++| 状態 | モジュール | 取り込み方 |
++|---|---|---|
++| 標準 | LogとSourceLocationを除くpreludeのすべてのモジュール（前述の「名前空間と prelude（初回リリース版）」の表の prelude の行）と `Benitoite.Trait`・`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder` | prelude は import なしで使う。他はモジュールごとに明示importする |
++| 非公式 | `Benitoite.Log`・`Benitoite.SourceLocation`、`Benitoite.Scope`・`Benitoite.Range`・`Benitoite.NonEmptyList`、`Benitoite.Test.Property`、`Benitoite.Failure`、`Benitoite.IO.Console`・`Benitoite.IO.File`・`Benitoite.IO.Process`・`Benitoite.IO.Clock`・`Benitoite.IO.Random`、`Benitoite.Network.Http`、`Benitoite.Path`・`Benitoite.Json`・`Benitoite.Json.Codec`・`Benitoite.Regex`・`Benitoite.Csv`・`Benitoite.Time`・`Benitoite.Encoding`・`Benitoite.Hash` | `Benitoite` の後に `Unofficial` を挟んだ名前で取り込む（`import Benitoite.Unofficial.IO.Console`） |
++
++- 非公式のモジュールを取り込んだ後の書き方は、標準のモジュールと同じである。名前の最後の要素（`as` を書けばその名前）で修飾する（`Console.writeLine`、`uses Console.Write`、`File.Reader`）。非公式のモジュールは、LogとSourceLocationだけを例外としてpreludeに入れる。
++- 非公式のモジュールを `import Benitoite.IO.Console` と書くこと、標準のモジュールを `import Benitoite.Unofficial.Trait` と書くことは、どちらも標準ライブラリにないモジュールの取り込みの誤りである。診断は、その版で正しい取り込みの名前を修正案として示す（[名前・スコープ・モジュール](../01-spec/01-03-names-modules.md)の「標準ライブラリの名前空間と prelude（初回リリース版）」）。
++- 本章とほかの章（01-spec、03-01、03-07〜03-09 など）は、非公式のモジュールも `Unofficial` を挟まない名前（`Benitoite.IO.Console`）で書く。モジュールの同一性、処理系による組み込みの型とエフェクトの照合、標準ライブラリのソースの置き場所（後述の「標準ライブラリのソースの書き方」）も、この名前による。`Benitoite.Unofficial.IO.Console` は、非公式の間の取り込みの名前である。
++- 非公式のモジュールも、設計書が定める意味に従う。パッチの版で変えないことも、標準のモジュールと同じである（[配布形態](../05-platform/05-01-distribution.md)の「互換性の方針」）。
++- prelude の `Task` の関数（`Task.race`・`Task.withTimeout`）の型は、非公式のモジュール `Benitoite.IO.Clock` のエフェクト `Clock.Time` を含む（[並行処理](../01-spec/01-11-concurrency.md)）。標準のモジュールが非公式のモジュールに依存するのは、この一か所である。
++
++```text
++import Benitoite.Unofficial.IO.Console
++
++function main() -> Unit uses Console.Write
++  Console.writeLine(String.toUppercase("done"))
++end function
++```
++
++この例の `String.toUppercase` は prelude（標準）の関数、`Console.writeLine` は非公式のモジュールの関数である。
++
++### 関数を引数にとる関数の共通の規則
++
++【方針】関数を引数にとる関数は、次の規則に従う。
++
++- 受け取った関数を、要素を先頭から順に一つずつ渡して呼ぶ。同じ要素について二度呼ばない。受け取った関数が IO を行うとき、その IO はこの順に起こる。
++- `List.any`・`List.all`・`List.find` は、結果が決まった時点で残りの要素について関数を呼ばない。
++- 受け取った関数の呼び出しで実行時エラーが起きたら、そこで止まる（[評価意味論](../01-spec/01-08-evaluation.md)）。
++- 型は、受け取る関数のエフェクトをエフェクト変数 `E` で表し、同じ `E` を自身のエフェクトとする。
++
++【方針】標準ライブラリのソースの関数は、リストの長さに比例する深さの末尾でない再帰を使わない。長いリストを処理しても、呼び出しの入れ子が深くならないようにするためである。
++
++### 作る値の大きさの上限
++
++【決定】文字列かリストを新しく作る組み込みの関数（`String.repeat`・`String.join`・`String.replace`・`String.fromCharacters`・`String.split`・`String.lines`・`String.characters`・`String.toUppercase`・`String.toLowercase`・`List.range`・`List.prepend`・`List.append`・`List.concatenate` など）と、`String` の `+` は、結果の大きさを値を作る前に計算し、処理系の上限を超えるときは、値を作らずに資源の不足で停止する（[評価意味論](../01-spec/01-08-evaluation.md)）。理由: 実行環境のメモリが尽きると、評価意味論の停止の手順によらずに終わる。処理系が自ら設けた上限で止めれば、その手順で停止できる。
++
++【方針】上限は、文字列が 2^30 バイト、リストが 2^24 要素である。上限の値と、結果の大きさの計算の仕方は[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」で定める。
++
++### Scope
++
++【決定】`Scope.PathIn` は、パスの範囲を添字に持つ組み込みの不透明型であり、型注釈で利用できる。裸の `Scope.PathIn` は Top、`Scope.PathIn["/data/**"]` は一つのパスの範囲を表す。型引数と複数の範囲は持たない。利用者による構築・更新・表現のパターン・自動アクセサは認めない。添字の不変性と照合の制限は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
++
++【決定】`Benitoite.Scope` は、ホスト・パス・ポートの字面と、明示した条件への所属を検査する純粋な非公式モジュールである。既存の `CheckedHost`・`CheckedPath`・`CheckedEndpoint` の三つは不透明型の `@opaque public record` とし、構築・更新・パターン・自動アクセサは宣言モジュールの中だけで使う。公開関数のパラメータ名と型は次のとおりである。
++
++| 関数 | 型 |
++|---|---|
++| `checkHost` | `function(pattern: String, host: String) -> Result[CheckedHost, ScopeError]` |
++| `checkPath` | `function(pattern: String, path: String) -> Result[CheckedPath, ScopeError]` |
++| `checkEndpoint` | `function(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[CheckedEndpoint, ScopeError]` |
++| `host`・`hostPattern` | `function(value: CheckedHost) -> String` |
++| `path`・`pathPattern` | `function(value: CheckedPath) -> String` |
++| `endpointHost`・`endpointHostPattern` | `function(value: CheckedEndpoint) -> String` |
++| `endpointPort`・`endpointMinimumPort`・`endpointMaximumPort` | `function(value: CheckedEndpoint) -> Integer` |
++
++【決定】範囲付きのパスには、検査・射影・明示拡大の三つの純粋な入口を提供する。次の表の R と S は説明のための範囲であり、利用者が宣言する型引数ではない。標準署名の内部では、検査と射影は一つ、拡大は元と行き先の二つの範囲変数を持つ。
++
++| 関数 | 型 |
++|---|---|
++| `checkPathIn` | `function(pattern: String, path: String) -> Result[PathIn[R], ScopeError]` |
++| `pathInValue` | `function(path: PathIn[R]) -> String` |
++| `widenPathIn` | `function(path: PathIn[R]) -> PathIn[S]` |
++
++直接呼び出しの `checkPathIn` は、型の制約で R が決まらなければ、リテラルまたは const の直接参照から既知のパターンを R に選ぶ。未知なら Top を選ぶ。検査の Result を一度保存して同じ `Result.Ok` を照合した成功値と、その直接の射影では局所解析の事実を使う。未知の呼び出し・別名・再包装・本体の境界などで事実を忘れた位置、間接呼び出し・穴のある部分適用・パイプの右辺の呼び出しには、狭い範囲を与えない。期待する型の注釈だけから所属を得ることもない。詳しい選択と受理の条件は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
++
++たとえば、`checkPathIn(pattern: "/data/**", path: raw)` の成功型は、型の制約で決まらなければ `Scope.PathIn["/data/**"]` となる。成功値を裸の `Scope.PathIn`（Top）の引数へ直接渡すなど、型の制約から R が Top と決まれば、検査も Top へ具体化する。R が狭い範囲に確定した値を Top へ拡大する場合は、同じ成功値が分かる位置で `widenPathIn` を呼び、戻りの型を `Scope.PathIn` と明示する。S は戻りの注釈から一意に選び、S が R を覆う場合だけ受理する。拡大は同じ値を返し、保持したパスを変更しない。Top はパターンへの所属を静的に絞らないことを表し、実行時の検査の成功を表す値の代用ではない。
++
++`checkPathIn` は、後述のパスの字面とパターンの規則で動的な入力を検査し、選んだ静的な範囲への所属も確かめる。パターンの形式不良は `InvalidPattern`、対象の形式不良は `InvalidTarget`、所属不良は `OutsideScope` とし、この順で判定する。成功時は入力された同じパスを保持する `PathIn` を `Result.Ok` に入れる。`pathInValue` は、その同じパスを変更せず返す。既存の `CheckedPath` から検査を省いて変換する入口は持たない。
++
++CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhostPattern/host/minimumPort/maximumPort/portを宣言順に保存する。ホスト名の条件と対象は ASCII の小文字にそろえ、IP の条件と対象は範囲の共通の代数の正規形で保存する。最大 prefix の CIDR（IPv4 の `/32`、IPv6 の `/128`）は完全一致にそろえる。パスの条件と対象は受理した正規の字面を保つ。保存したパターンを再び検査へ渡したときも、静的と動的の判定は同じ条件を読む。整数は入力をそのまま保つ。変更する場合は公開の検査関数で再検査する。同じ型名の値でも、保存する条件は値ごとに異なる。
++
++ホストの対象は、ホスト名または正規形の IPv4・IPv6 アドレスとする。ホスト名は、ASCII の英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非 ASCII、NUL、URL、ポート付きを拒否する。四つの全数字ラベルはホスト名として扱わず、正規形の IPv4 として読める場合だけ IP の対象とする。`localhost` は認める。DNS の長さの規格への適合は保証しない。ホスト名のパターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）であり、後二者は幹自身を含まない。IP のパターンは完全一致と CIDR とする。IP の字面、host bits、prefix と正規化は[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)と同じ規則に従う。ホスト名と IP、IPv4 と IPv6 は互いに所属せず、IPv4 を射影した IPv6 も IPv6 のままとする。名前の解決や族の変換は行わない。
++
++パスはスラッシュ区切りの絶対形式であり、根 `/` を認める。根以外の末尾スラッシュ、空要素、`.`・`..`、NUL、逆斜線を拒否し、その他のUnicode文字を保つ。パターンは完全一致か末尾 `/**` の木だけであり、他の位置の `*` を拒否する。`/data/reports/**` は幹自身と任意段の子を含み、`/data/reports-old` を含まない。`/**` は根とすべての受理したパスを含む。対象側の `*` は普通の文字である。
++
++ポートは `0 ≤ minimumPort ≤ maximumPort ≤ 65535`、`0 ≤ port ≤ 65535` を満たさなければならない。所属は両端を含む `minimumPort ≤ port ≤ maximumPort` であり、一点区間も認める。失敗の優先順はパターンの形式、対象の形式、端点の妥当性、portの妥当性、ホスト・パスの所属、ポートの所属である。閉じた公開dataのScopeErrorには次の構成子を置く。
++
++| 構成子 | 保持する入力 |
++|---|---|
++| `InvalidPattern(String, String)` | 元のパターン、英語のreason |
++| `InvalidTarget(String, String)` | 元の対象、英語のreason |
++| `InvalidPortRange(Integer, Integer)` | minimumPort、maximumPort |
++| `InvalidPort(Integer)` | port |
++| `OutsideScope(String, String)` | 元のパターン、元の対象 |
++| `PortOutsideScope(Integer, Integer, Integer)` | minimumPort、maximumPort、port |
++
++`Scope.ScopeError` の `Show` の実装と、その引用・切り詰め用の私有関数は `Benitoite.Trait` に置く。Trait が Scope を import し、Scope は Trait を import しない。理由: 型クラスを使わない Scope や File の利用で、Trait の読み込みと型検査を避けるためである。
++
++ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のShowで引用・エスケープする。表示用の入力をUTF-8の境目で4096バイト以内へ省略し、引用後の各引数を2000バイト以内へ収める。引用後に長すぎる場合は、引用前の入力をUTF-8の境目で半分へ縮めて `...` を加え、引用し直す。構成子名・括弧・引用符・完成したエスケープを残し、省略時は閉じ括弧の後にも `...` を付ける。最終結果は4096バイト以内とする。保存した入力自体は切り詰めない。
++
++形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。ホストの判定と正規形には `types::scope` の共通の代数を使い、パスは受理した正規の字面を借用する。既存の三つの検査の実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。`checkPathIn` の実行本体も同じパスの判定を使い、成功時は入力の文字列の値を保持し、失敗時は既存の `ScopeError` の構成子を直接作る。`PathIn` 専用のVM値・構成子の固定タグは追加しない。
++
++`checkHost`・`checkPath`・`checkEndpoint`・`checkPathIn` と `Http.checkRequestIn` の直接呼び出しでは、リテラルまたは const の直接参照から既知の部分を本体の後に追加検査する。`checkPathIn` は `checkPath` と同じパターン・パスを検査し、`Http.checkRequestIn` はホストのパターンとポートの両端を検査する。要求内の URL の解析は実行時に残す。射影 `pathInValue`・`Http.requestInValue` は追加検査する条件を引数に持たない。この追加検査は、静的な範囲を選ぶ必須の判定から独立している。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
++
++成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
++
++要求の検査・射影・明示拡大は `Benitoite.Network.Http` の `checkRequestIn`・`requestInValue`・`widenRequestIn` に置く。三つとも純粋であり、標準署名の内部では、検査と射影は種類 endpoint の範囲変数を一つ、拡大は二つ持つ。検査は、同じ要求の `url` から得た端点と、ホストのパターン・ポートの閉区間を、共通の範囲の代数で照合する。型の制約で範囲が決まらなければ、既知の条件では規則が選ぶ範囲、未知なら Top へ具体化する。URL から端点を得られない失敗と Scope の失敗を `Http.RequestCheckError` で区別し、成功時には同じ `Http.ClientRequest` を保持して射影する。明示拡大は保持した要求と実効の端点を変えない。署名と URL の条件は[ネットワークのモジュール](03-09-network.md#クライアント)に従う。
++
++### Range
++
++【決定】`Benitoite.Range` は、整数の閉区間とListの長さ・添字を検査する純粋な非公式モジュールである。`import Benitoite.Unofficial.Range` で取り込む。`CheckedInteger` は不透明型の `@opaque public record` とし、`minimum: Integer`・`maximum: Integer`・`value: Integer` をこの順で保存する。外部での内部表現の使用は、[名前とモジュール](../01-spec/01-03-names-modules.md#公開初回リリース版)の規範に従って E0340 で拒否し、型注釈と通常の値の受け渡しを許す。
++
++| 公開関数 | 型 |
++|---|---|
++| `checkInteger` | `function(minimum: Integer, maximum: Integer, value: Integer) -> Result[CheckedInteger, RangeError]` |
++| `minimum` | `function(value: CheckedInteger) -> Integer` |
++| `maximum` | `function(value: CheckedInteger) -> Integer` |
++| `value` | `function(value: CheckedInteger) -> Integer` |
++
++`checkInteger` は、`minimum > maximum` なら `RangeError.InvalidBounds(minimum, maximum)` を返す。端点が逆転しておらず、`value < minimum` または `value > maximum` なら `RangeError.OutOfRange(minimum, maximum, value)` を返す。それ以外では三入力をそのまま保持したCheckedIntegerをOkで返し、各射影は対応する入力を返す。RangeErrorは、この二構成子を持つ閉じた公開dataである。手書きのShowは `InvalidBounds(10, 0)`・`OutOfRange(0, 10, 11)` のように構成子名と全入力を表示する。
++
++両端を含み、等しい端点は一点区間として認める。Integerの最小値・最大値も端点に使える。比較だけで検査し、上端に1を加えない。理由: 最大のIntegerを含む閉区間でも、端点の変換によるあふれを起こさず検査できるためである。
++
++成功が表すのは、保存した端点に値が収まることである。同じCheckedInteger型でも値ごとに端点が異なるので、特定の区間を要求する関数は端点を確認するか、`value` で取り出した整数を新しい端点で再検査する。Integerへの暗黙変換や範囲付きの演算は提供しない。成否だけ要る場合は `Result.ok` でOptionへ変換できる。
++
++【決定】局所の区間解析（interval analysis）は、標準 `checkInteger`・`value` の入力と結果の関係を function summary として使う。直接呼び出しを、解決済みの標準宣言と引数の対応で認定する。同じ宣言の import 別名を認め、利用者の同名関数・穴・パイプ・関数値を対象外とする。認定した call の頭は番号だけを辿り、引数は親と同じ環境でソース順に解析する。未認定の call の頭と引数は、外の事実を忘れた独立入力として解析する。標準の関数本体を呼び出しごとに再解析しない。用語の出典は[型検査器](../02-impl/02-05-typechecker.md#区間解析の範囲と保証)に記す。
++
++固定した Integer64 の端点を持つ `checkInteger` の直接 call と、その Result の一度の局所保存から、成功値の由来を認定する。認定した Result の match では Error・guard・Result 全体の変数・ワイルドカードを含む全腕を親の環境で解析し、単独の `Ok(var)` の同じ成功値の束縛番号にだけ端点と呼び出しキーを記録する。別の成功値、別名、再保存、再包装へ記録をコピーしない。解析の入口・予算・腕の形は[型検査器](../02-impl/02-05-typechecker.md#区間解析のmatchとguard)に従う。
++
++同じ成功値を直接渡した標準 `value` から、保存した閉区間を後続の算術へ伝える。成功値の番号と不透明型の所有元を照合し、動的端点・別名・再包装・別個体・値の合流では端点を仮定しない。条件環境の合流では、条件の外で束縛した成功値の記録も忘れる。Error・逆転・範囲外は新しい警告にせず、成功枝の射影後の算術が常にあふれる場合などに既存の区間解析の警告を出す。この解析は CheckedLength・CheckedIndex・NonEmptyList の成功値へ広げない。
++
++この解析の健全性は、対象構文の評価関係（evaluation relation for the target fragment）に定義した Range の規則について証明する。標準ソース・脱糖・Release・実 VM との意味の一致は、その証明に含めない。Range の固定端点と成功値の規則を採ること、および解決済みの標準束縛と出現を認定することは、A1 の信頼の範囲に含まれる。小さい閉じた入力では、成功時に保存した三入力、InvalidBounds の優先、同じ成功値の射影と後続算術、対象呼び出しへの到達を実 VM と比較する。一般の関数呼び出しと、引数で受ける別個体は、この評価関係との実行比較に含めない。有限の比較の成功は全入力の意味の一致の証明ではない。比較範囲と限界は[形式意味論と検証](../07-quality/07-04-formal-semantics.md#区間解析の対象構文の評価関係)に従う。
++
++定数引数が逆転または範囲外でも、通常のResult.Errorを返す。Scope・Regexの定数引数の追加拒否の対象には含めない。トップレベルconstに書ける式は従来の規則に従う。実装は標準ソースの通常の関数・レコード・data・比較・Callであり、新しいVM値や範囲付きの型・エフェクトは加えない。
++
++【決定】`CheckedLength[T]` はminimum・maximum・実長・元のListを、`CheckedIndex[T]` は元のList・添字・成功した要素を保持する不透明な公開レコードである。いずれも外部の構築・更新・表現パターン・自動アクセサをE0340で拒否する。
++
++| 公開関数 | 型 |
++|---|---|
++| `checkLength` | `function[T](minimum: Integer, maximum: Integer, values: List[T]) -> Result[CheckedLength[T], LengthError]` |
++| `lengthMinimum` | `function[T](value: CheckedLength[T]) -> Integer` |
++| `lengthMaximum` | `function[T](value: CheckedLength[T]) -> Integer` |
++| `checkedLength` | `function[T](value: CheckedLength[T]) -> Integer` |
++| `lengthValues` | `function[T](value: CheckedLength[T]) -> List[T]` |
++| `checkIndex` | `function[T](index: Integer, values: List[T]) -> Result[CheckedIndex[T], IndexError]` |
++| `indexValue` | `function[T](value: CheckedIndex[T]) -> Integer` |
++| `indexValues` | `function[T](value: CheckedIndex[T]) -> List[T]` |
++| `get` | `function[T](value: CheckedIndex[T]) -> T` |
++
++`checkLength` は負のminimumまたはmaximum < minimumを先に `LengthError.InvalidBounds(minimum, maximum)` で返す。次に実長が閉区間の外なら `LengthError.OutOfRange(minimum, maximum, length)` を返し、それ以外なら端点・実長・対象の四欄を保存する。minimum = maximumは完全一致、minimum = maximum = 0は空Listを認める。`lengthMinimum`・`lengthMaximum`・`checkedLength`・`lengthValues` はそれぞれ保存した下端・上端・実長・対象を返す。
++
++`checkIndex` は0から数える添字が負または実長以上なら `IndexError.OutOfBounds(index, length)` を返す。成功時には `indexValue`・`indexValues`・`get` が保存した添字・対象・要素を返す。別のListを `get` へ渡す引数はない。理由: 長さが同じでも別の対象への検査の流用を防ぐためである。別の対象は `checkIndex` で検査し直す。
++
++二つの失敗型は公開dataであり、上記のIntegerだけを保持し、Listを保持しない。通常のTrait.Showは `InvalidBounds(-1, 0)`・`OutOfRange(1, 2, 0)`・`OutOfBounds(1, 1)` のように構成子と数値を表示する。定数の不正な入力も通常のResult.Errorであり、追加のコンパイルエラーにしない。
++
++保存したListは不変であり、検査後も成功した要素と位置が対応する。包みが存在する間は長い元Listも保持する。要素内のReferenceは共有され、中身の変更は各射影からも見える。長さの数値だけを検査する場合はCheckedIntegerを使う。長さや添字を型引数へ入れず、独自の等値やkeyの規則、Trait.Showの実装を加えない。
++
++要素が等値の型なら、`CheckedLength[T]` と `CheckedIndex[T]` の `=` は保存した欄全体を構造の等値で比べる。元のListも比較に含め、CheckedLengthではminimum・maximum・length・valuesを、CheckedIndexではvalues・index・elementを比べる。Assertの失敗の表示は、これらの内部の欄名と値を示す。表示された欄名でも、外部からの自動アクセサの使用は許さない。
++
++要素が鍵の型なら、`CheckedLength[T]` と `CheckedIndex[T]` も鍵の型であり、Mapの鍵とSetの要素に使える。鍵の比較は保存した欄の宣言順による辞書式の順序で行う。CheckedLengthではminimum・maximum・length・valuesの順、CheckedIndexではvalues・index・elementの順に比べる。Map.keysとSet.toListは、この順序の昇順で返す。
++
++実装のListの長さの上限 `MAX_LIST_LEN = 16,777,216` はIntegerの最大値 `9,223,372,036,854,775,807` 以下である。`List.length` はu32の長さを `i64::from` で損失なくIntegerへ変換する。成功し得る添字も0以上かつ実長未満なのでIntegerに収まる。数学上のList/Intを用いる独立した小モデルとの照合は、この実装上の上限の内側で行う。小モデルの証明だけで標準ソースの実装を証明したとは扱わない（[形式化の範囲](../07-quality/07-04-formal-semantics.md#01-12-との対応)）。
++
++### NonEmptyList
++
++【決定】`Benitoite.NonEmptyList` は `import Benitoite.Unofficial.NonEmptyList` で明示的に取り込む非公式モジュールであり、preludeには加えない。`NonEmptyList[T]` は先頭と残りを保存する不透明な公開レコードである。外部の構築・更新・表現パターン・自動アクセサをE0340で拒否する。内部の欄名はfirst/restとし、同名のモジュール・型の名前空間で公開関数head/tailと衝突させない。
++
++| 公開関数 | 型 |
++|---|---|
++| `fromList` | `function[T](values: List[T]) -> Result[NonEmptyList[T], EmptyListError]` |
++| `toList` | `function[T](value: NonEmptyList[T]) -> List[T]` |
++| `head` | `function[T](value: NonEmptyList[T]) -> T` |
++| `tail` | `function[T](value: NonEmptyList[T]) -> List[T]` |
++| `map` | `function[T, U, effect E](value: NonEmptyList[T], f: function(value: T) -> U uses E) -> NonEmptyList[U] uses E` |
++
++`fromList` は空Listなら公開dataの `EmptyListError.EmptyList`、非空なら先頭と残りを保存した成功値を返す。EmptyListErrorの通常のTrait.Showは `EmptyList` を返す。定数の空ListもResult.Errorである。`toList` は元の順序のListを返し、`head` は先頭の要素をOptionで包まず返す。`tail` は空でもよい。これらは純粋である。
++
++`map` は先頭を変換してから残りを元の順序で一度ずつ変換し、成功した結果も非空にする。fのエフェクトEをそのまま宣言し、途中のFailや停止を成功値へ包まない。要素内のReferenceは通常のListと同じく共有し、包みは要素を保持する。通常のList.head/getのOptionを返す契約は維持する。
++
++要素が等値の型なら、`NonEmptyList[T]` の `=` は保存したfirst・restの両方を構造の等値で比べる。Assertの失敗の表示は、内部の欄名first・restと値を示す。これらの欄名から外部の自動アクセサは使えず、公開のhead・tailを使う。Trait.Showの実装は加えない。
++
++要素が鍵の型なら、`NonEmptyList[T]` も鍵の型であり、Mapの鍵とSetの要素に使える。鍵の比較はfirst・restの順による辞書式の順序で行い、Map.keysとSet.toListは、この順序の昇順で返す。
++
++### Integer
++
++| 関数 | 型 | 値 | 実行時エラー | 実装 |
++|---|---|---|---|---|
++| `Integer.toString(n)` | `function(n: Integer) -> String` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「型の変換」 | | 組み込み |
++| `Integer.parse(s)` | `function(s: String) -> Option[Integer]` | 同上 | | 組み込み |
++| `Integer.toFloat(n)` | `function(n: Integer) -> Float` | 同上 | | 組み込み |
++| `Integer.floorDivide(a, b)` | `function(a: Integer, b: Integer) -> Integer` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「Integer」 | 同左 | 組み込み |
++| `Integer.floorModulo(a, b)` | `function(a: Integer, b: Integer) -> Integer` | 同上 | 同左 | 組み込み |
++| `Integer.absolute(n)` | `function(n: Integer) -> Integer` | `n` の絶対値 | `n` が −2^63 | 組み込み |
++| `Integer.minimum(a, b)` | `function(a: Integer, b: Integer) -> Integer` | 小さいほう | | 組み込み |
++| `Integer.maximum(a, b)` | `function(a: Integer, b: Integer) -> Integer` | 大きいほう | | 組み込み |
++
++ビット演算の関数（`Integer.bitwiseAnd`・`bitwiseOr`・`bitwiseExclusiveOr`・`bitwiseNot`・`shiftLeft`・`shiftRight`・`shiftRightUnsigned`）を置く。意味は[基本型の意味論](../01-spec/01-04-types-basic.md)の「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
++
++【決定】新しい整数六種の標準関数を次の表に示す。U は `Integer8`・`Integer16`・`Integer32`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`、T はこのうち `UnsignedInteger64` を除く五種である。各関数は型と同名のモジュールに置き、すべて純粋な組み込みの関数である。
++
++| 関数 | 型 | 値 | 実行時エラー |
++|---|---|---|---|
++| `U.fromInteger(n)` | `function(n: Integer) -> Option[U]` | 範囲検査付きの変換（01-04「型の変換」） | |
++| `T.toInteger(n)` | `function(n: T) -> Integer` | 全域で正確な変換 | |
++| `UnsignedInteger64.toInteger(n)` | `function(n: UnsignedInteger64) -> Option[Integer]` | 範囲外は `None` | |
++| `U.parse(s)` | `function(s: String) -> Option[U]` | 01-04「型の変換」の十進の字句。接尾辞を受け付けず、符号なしは負号を拒否する | |
++| `U.toString(n)` | `function(n: U) -> String` | 接尾辞なしの十進表記 | |
++| `U.toFloat(n)` | `function(n: U) -> Float` | 最近接の binary64 の値。T では全域で正確 | |
++| `UnsignedInteger64.toDecimal(n)` | `function(n: UnsignedInteger64) -> Decimal` | 全域で正確な値 | |
++| `UnsignedInteger64.fromDecimal(x)` | `function(x: Decimal) -> Option[UnsignedInteger64]` | 数学的に整数で範囲内なら `Some`、それ以外は `None` | |
++| `U.absolute(n)` | `function(n: U) -> U` | 絶対値。符号なしでは元の値 | 符号付きの最小値 |
++| `U.minimum(a, b)`・`U.maximum(a, b)` | `function(a: U, b: U) -> U` | 小さいほう・大きいほう | |
++| `U.floorDivide(a, b)` | `function(a: U, b: U) -> U` | 負の無限大の方向の商。符号なしでは `div` と同じ | 除数 0、符号付きの最小値を −1 で割る場合 |
++| `U.floorModulo(a, b)` | `function(a: U, b: U) -> U` | 除数と同符号か 0 の剰余。符号なしでは `mod` と同じ | 除数 0。符号付きの最小値と −1 の場合は 0 を返す |
++| `U.bitwiseAnd`・`U.bitwiseOr`・`U.bitwiseExclusiveOr` | `function(a: U, b: U) -> U` | 各幅のビット演算（01-04「ビット演算（初回リリース版）」） | |
++| `U.bitwiseNot` | `function(a: U) -> U` | 各幅のすべてのビットを反転 | |
++| `U.shiftLeft`・`U.shiftRight` | `function(a: U, n: Integer) -> U` | 各幅のシフト | シフト量が負、または幅以上 |
++| 符号付き三種の `shiftRightUnsigned` | `function(a: T, n: Integer) -> T`（T は符号付き三種） | 上位を零で埋める右シフト | シフト量が負、または幅以上 |
++
++変換の `None` と、算術・シフトの実行時エラーは区別する。除算・最小値・シフトの規則は、[基本型の意味論](../01-spec/01-04-types-basic.md)と[評価意味論](../01-spec/01-08-evaluation.md)でも定める。
++
++【決定】局所の区間解析は、標準の `shiftLeft`・`shiftRight` と、符号付き四種の `shiftRightUnsigned` の直接呼び出しで、シフト量 `n` の正常区間を次の範囲と照合する。同じ型の別名のモジュールを含め、解決済みの標準宣言で同定する。
++
++| モジュール（同じ型の別名を含む） | 許されるシフト量 |
++|---|---|
++| `Byte`・`UnsignedInteger8` | `[0,7]` |
++| `Integer8` | `[0,7]` |
++| `Integer16`・`UnsignedInteger16` | `[0,15]` |
++| `Integer32`・`UnsignedInteger32` | `[0,31]` |
++| `Integer`・`Integer64`・`UnsignedInteger64`・`UnsignedInteger` | `[0,63]` |
++
++区間全体が許される範囲と交差しないときだけ W0404 を出す。警告は、その呼び出しに到達し、全引数の評価が正常に終わった場合に、シフト量が範囲外なので実行時に停止することを示す。推定区間が範囲と交わる場合、未知の場合、正常値のない場合には出さない。左シフトで捨てるビットはあふれとしない。
++
++import 別名と名前付き引数を認め、利用者の同名関数・穴・パイプ・関数値経由の呼び出しは認定しない。認定と予算の条件は[型検査器](../02-impl/02-05-typechecker.md#区間解析のシフトの直接引数)、診断の位置・注記・表示は[診断エンジン](../02-impl/02-10-diagnostics.md#警告の扱い)に従う。ハーネスは、検査報告の警告を確認し、警告がないことを安全性の保証として説明しない。実行時の範囲検査と、Option・Result による失敗の規則は保つ。
++
++W0404 はシフトの直接引数に限り、`Process.exit`・`Http.Listen.listen`・`Http.Listen.respond`・`Http.Connect.send` の操作と HTTP のレコード欄には出さない。理由: 操作は言語のハンドラで差し替えられるので、既定の実装の範囲外の値を渡しても、その呼び出しが実行時に停止するとは断定できない（[エフェクト](../01-spec/01-07-effects.md)の「利用者が定義するエフェクトとハンドラ」）。
++
++### Float
++
++| 関数 | 型 | 値 | 実行時エラー | 実装 |
++|---|---|---|---|---|
++| `Float.toString(x)` | `function(x: Float) -> String` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「型の変換」 | | 組み込み |
++| `Float.parse(s)` | `function(s: String) -> Option[Float]` | 同上 | | 組み込み |
++| `Float.truncate(x)` | `function(x: Float) -> Option[Integer]` | 同上 | | 組み込み |
++| `Float.isNaN(x)` | `function(x: Float) -> Boolean` | `x` が NaN か | | 組み込み |
++| `Float.absolute(x)` | `function(x: Float) -> Float` | 符号を正にした値。NaN は NaN | | 組み込み |
++| `Float.floor(x)` | `function(x: Float) -> Float` | `x` 以下の最大の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ | | 組み込み |
++| `Float.ceiling(x)` | `function(x: Float) -> Float` | `x` 以上の最小の整数値。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.ceiling(-0.5)` は `-0.0`） | | 組み込み |
++| `Float.round(x)` | `function(x: Float) -> Float` | 最も近い整数値。ちょうど中間なら 0 から遠いほう。NaN・無限大・±0 はそのまま。結果が 0 のとき、符号は `x` と同じ（`Float.round(-0.4)` は `-0.0`） | | 組み込み |
++| `Float.squareRoot(x)` | `function(x: Float) -> Float` | IEEE 754 の平方根。負の数は NaN | | 組み込み |
++
++【決定】`Float32` の標準関数は次のとおりであり、すべて純粋な組み込みの関数である。
++
++| 関数 | 型 | 値 | 実行時エラー |
++|---|---|---|---|
++| `Float32.fromFloat(n)` | `function(n: Float) -> Option[Float32]` | 最近接偶数丸めで縮小。有限値が無限大になる場合だけ `None`（01-04「型の変換」） | |
++| `Float32.toFloat(n)` | `function(n: Float32) -> Float` | 有限値の正確な拡大。零の符号を保つ | |
++| `Float32.parse(s)` | `function(s: String) -> Option[Float32]` | `Float.parse` と同じ字句を直接 binary32 で読む。不正な表記と無限大になる値は `None` | |
++| `Float32.toString(n)` | `function(n: Float32) -> String` | binary32 へ読み戻せる最短表記（01-04「型の変換」） | |
++| `Float32.truncate(n)` | `function(n: Float32) -> Option[Integer]` | 0 の方向へ切り捨てる。特殊値と範囲外は `None` | |
++| `Float32.isNaN(n)`・`Float32.isInfinite(n)` | `function(n: Float32) -> Boolean` | NaN・正負の無限大の判定 | |
++| `Float32.absolute(n)` | `function(n: Float32) -> Float32` | 符号を正にした値。NaN は NaN | |
++| `Float32.floor(n)`・`Float32.ceiling(n)` | `function(n: Float32) -> Float32` | 負・正の無限大の方向へ丸めた整数値。NaN・無限大・±0 はそのまま。結果が零なら元の符号を保つ | |
++| `Float32.round(n)` | `function(n: Float32) -> Float32` | 最も近い整数値。ちょうど半分なら零から遠い側。特殊値と零の符号の扱いは `Float.round` と同じ | |
++| `Float32.squareRoot(n)` | `function(n: Float32) -> Float32` | 単精度の平方根。負値は NaN | |
++
++丸め・平方根は binary32 の値に対して行い、倍精度の計算結果の縮小で代用しない。
++
++### 書式付き補間の内部書式化
++
++【決定】値の書式化（formatting）を行う内部の `%Format.<基本型名>` は14基本型の値と検査済みの七定数を受け、String を返す。シグネチャと符号化は [書式化の内部頭](../02-impl/02-06-ir-and-lowering.md#書式化の内部頭) に定める。標準ソースから呼ぶ公開関数ではない。型検査で適合した書式付き補間から型別の頭を呼び、定数評価も同じ書式化本体を使う。
++
++【決定】整数は符号なしの大きさから各基数の数字列を作り、負号はその前に置く。最小値を符号付きのまま反転しない。基数接頭辞は零にも付け、X の接頭辞は `0X` とする。符号・接頭辞の後へ零を補い、その後に共通の表示の幅と寄せを適用する。幅は最小値であり、内容を切らない。
++
++【決定】Float・Float32 の f は、各 binary64・binary32 の値を直接固定小数に書式化し、最近接偶数丸めを使う。最短表記を十進数として再解釈してから丸めない。精度省略時は6桁とする。実装は Rust の固定小数の書式化を上限付きの領域へ書く（出典: [std::fmt の精度と丸めの規則](https://doc.rust-lang.org/std/fmt/index.html#precision)、2026-10-23確認）。これは中間を零から遠い側へ丸める `Float.round`・`Float32.round` と異なる。例えば2.5の精度0は `2`、3.5は `4`、負値はそれぞれ `-2`・`-4` になる。
++
++【決定】Decimal の f は係数と scale から数字列を作り、減らす桁を最近接偶数丸めし、増やす桁は表示用の零として補う。精度省略時は元の scale を保つ。書式化のために有界な Decimal を作り直さないので、最大値にも `.00` を補える。丸めて零になった Decimal の負号は消し、Float系の負の零と負値から丸めた零の負号は保つ。NaN に符号は付けず、+ は正の Infinity にも適用する。非有限値のゼロ埋めは空白の右寄せにする。
++
++【決定】種類の省略は既存の型別の表記を保つ。寄せの省略は数が右、それ以外が左であり、中央の余りが奇数なら右へ一つ多く空白を置く。幅は String の既定の表示の幅と同じ算法で、一つの書式化した値について数える。ASCII の数字・小数点 `.`・固定の符号と接頭辞を使い、地域設定を参照しない。理由: 型別の数の意味と表示を保ち、端末や地域によって結果を変えないためである。
++
++### Character
++
++| 関数 | 型 | 値 | 実行時エラー | 実装 |
++|---|---|---|---|---|
++| `Character.toInteger(c)` | `function(c: Character) -> Integer` | [基本型の意味論](../01-spec/01-04-types-basic.md)の「Character」 | | 組み込み |
++| `Character.fromInteger(n)` | `function(n: Integer) -> Option[Character]` | 同上 | | 組み込み |
++| `Character.toString(c)` | `function(c: Character) -> String` | 同上 | | 組み込み |
++| `Character.isASCIIDigit(c)` | `function(c: Character) -> Boolean` | `c` が `'0'`〜`'9'` か | | 組み込み |
++| `Character.isASCIIWhitespace(c)` | `function(c: Character) -> Boolean` | `c` が ASCII の空白（U+0020、U+0009、U+000A、U+000D）か | | 組み込み |
++| `Character.isAlphabetic(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の Alphabetic の性質を持つか | | 組み込み |
++| `Character.isNumeric(c)` | `function(c: Character) -> Boolean` | `c` の Unicode の一般カテゴリが Nd・Nl・No のどれかか | | 組み込み |
++| `Character.isWhitespace(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の White_Space の性質を持つか | | 組み込み |
++| `Character.isUppercase(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の Uppercase の性質を持つか | | 組み込み |
++| `Character.isLowercase(c)` | `function(c: Character) -> Boolean` | `c` が Unicode の Lowercase の性質を持つか | | 組み込み |
++| `Character.toUppercase(c)` | `function(c: Character) -> String` | `c` を大文字にした文字列（後述） | | 組み込み |
++| `Character.toLowercase(c)` | `function(c: Character) -> String` | `c` を小文字にした文字列（後述） | | 組み込み |
++
++【決定】Unicode の文字の性質に依る分類と変換の関数は、次の規則に従う。
++
++- 変換は、Unicode の大文字と小文字の対応のうち、地域に依らないもの（特殊な対応を含む）に従う。一つの文字が複数の文字に変わることがあるので、`Character` の変換の結果は `String` である（`Character.toUppercase('ß')` は `"SS"`）。対応のない文字は、その文字だけの文字列になる。
++- 従う Unicode の版は、処理系を作った Rust の標準ライブラリが従う版である。処理系は、その版を `benitoite --version` の出力に示す（[CLI](../06-tooling/06-01-cli.md)）。ASCII の範囲だけを扱う関数（`Character.isASCIIDigit` など）の結果は、Unicode の版に依らない。
++
++### String
++
++位置と長さを扱う関数（`byteLength`・`byteSlice`・`characterCount`・`characterAt`・`characterSlice`）は[基本型の意味論](../01-spec/01-04-types-basic.md)で定め、すべて組み込みで実装する。
++
++【決定】`String.displayWidth`・`String.displayWidthCJK` は表示の幅を返す純粋な関数である。共通の本体 `base::display_width` は、表示の幅と、目標の幅に不足する U+0020 の個数を計算する。U+0000〜001F、U+007F〜009F、U+2028、U+2029 を幅 0 の境界とし、境界を除いた最大の連続部分ごとに `unicode-width` 0.2.2 の文字列の算法を適用して合計する。既定のモードと CJK のモードは、それぞれ同クレートの `width` と `width_cjk` に従い、文字列全体の例外を含む（出典: [0.2.2 の幅の規則](https://docs.rs/unicode-width/0.2.2/unicode_width/#rules-for-determining-width)）。ANSI 列の解釈や除去は行わず、幅はカーソルの移動量や行の最大幅を表さない。列を揃える用途は、制御文字のない一行を前提とする。理由: 任意の String に幅を定義し、値に依存する失敗や端末の状態への依存を加えないためである。
++
++【決定】U+0020 を前に n 個、後ろに m 個加えた幅は、両モードとも `n + 元の幅 + m` とする。一般の文字列の連結にはこの加法性を要求しない。理由: 固定版の `width_in_str`・`width_in_str_cjk` は U+0020 で幅 1 を加え、状態を `DEFAULT` に戻す。両集計関数は右から文字を走査し、U+0020 は絵文字の表示列を始めないためである（出典: [0.2.2 の生成済みソース](https://github.com/unicode-rs/unicode-width/blob/v0.2.2/src/tables.rs)）。空白の個数は目標が 0 以下、または元の幅以下なら 0 とし、それ以外は目標から元の幅を引く。幅の合計、空白の個数、元の UTF-8 バイト数に空白を加えた必要サイズは、検査付きの整数演算で求める。本体は確保を行わず、必要サイズを `u64` で返す。
++
++| 関数 | 型 | 値 | 実装 |
++|---|---|---|---|
++| `String.displayWidth(s)` | `function(s: String) -> Integer` | 上述の既定の表示の幅 | 組み込み |
++| `String.displayWidthCJK(s)` | `function(s: String) -> Integer` | 上述の CJK の表示の幅 | 組み込み |
++| `String.displayWidthPadStart(s, width)`・`String.displayWidthPadEnd(s, width)` | `function(s: String, width: Integer) -> String` | 既定の表示の幅が `width` に足りない個数の U+0020 を、それぞれ先頭・末尾へ補う | 組み込み |
++| `String.displayWidthPadStartCJK(s, width)`・`String.displayWidthPadEndCJK(s, width)` | `function(s: String, width: Integer) -> String` | CJK の表示の幅で同じ処理を行う | 組み込み |
++| `String.isEmpty(s)` | `function(s: String) -> Boolean` | `s` が空文字列か | 組み込み |
++| `String.contains(s, part)` | `function(s: String, part: String) -> Boolean` | `s` が `part` を部分文字列として含むか。`part` が空なら `true` | 組み込み |
++| `String.startsWith(s, prefix)` | `function(s: String, prefix: String) -> Boolean` | `s` が `prefix` で始まるか | 組み込み |
++| `String.endsWith(s, suffix)` | `function(s: String, suffix: String) -> Boolean` | `s` が `suffix` で終わるか | 組み込み |
++| `String.byteIndexOf(s, part)` | `function(s: String, part: String) -> Option[Integer]` | `part` が最初に現れるバイト位置。現れなければ `Option.None`。`part` が空なら `Option.Some(0)` | 組み込み |
++| `String.split(s, separator)` | `function(s: String, separator: String) -> List[String]` | 後述 | 組み込み |
++| `String.lines(s)` | `function(s: String) -> List[String]` | 後述 | 組み込み |
++| `String.join(xs, separator)` | `function(xs: List[String], separator: String) -> String` | `xs` の要素を、間に `separator` を挟んで順に連結した文字列。`xs` が空なら空文字列 | 組み込み |
++| `String.trim(s)` | `function(s: String) -> String` | 先頭と末尾の ASCII の空白（`Character.isASCIIWhitespace`）を取り除いた文字列 | 組み込み |
++| `String.replace(s, old, new)` | `function(s: String, old: String, new: String) -> String` | `s` の中の `old` の出現を、先頭から重ならないように順にすべて `new` に置き換えた文字列。`old` が空なら `s` | 組み込み |
++| `String.repeat(s, n)` | `function(s: String, n: Integer) -> String` | `s` を `n` 回連結した文字列。`n` が 0 以下なら空文字列 | 組み込み |
++| `String.characters(s)` | `function(s: String) -> List[Character]` | `s` のスカラー値を順に並べたリスト | 組み込み |
++| `String.fromCharacters(cs)` | `function(cs: List[Character]) -> String` | `cs` の文字を順に連結した文字列 | 組み込み |
++| `String.toUppercase(s)` | `function(s: String) -> String` | `s` の各文字を `Character.toUppercase` で変換して連結した文字列 | 組み込み |
++| `String.toLowercase(s)` | `function(s: String) -> String` | `s` を小文字にした文字列。ギリシャ文字のシグマは、語の終わりでは `ς` にする | 組み込み |
++
++【決定】表示の幅で埋める四関数は純粋であり、`width` が 0 以下、または元の幅以下なら元の値を返す。それ以外は U+0020 だけを補い、内容を切らない。確保に成功した結果の幅は、対応するモードで `max(元の幅, width)` となる。表示の幅は Unicode 17.0.0 に固定し、Character の分類・変換の Unicode の版とは区別する。端末や地域からモードを自動選択しない。必要な UTF-8 バイト数を論理上限で検査してから、`usize` への検査付きの変換と共通のヒープの計上・確保を行う。空白を一時文字列として確保しない。動的な `width` が巨大な場合まで成功する保証はない。理由: 元の内容の切断と、幅 0 の埋め文字の繰り返しを避けるためである。
++
++【方針】`String.split(s: s, separator: sep)` は次の値を返す。
++
++- `sep` が空でなければ、`s` を `sep` の出現（先頭から重ならないように探す）で区切った部分文字列の並び。区切りの前後や連続する区切りの間は空文字列になる。要素は常に 1 個以上であり、`s` が空なら `[""]` である（`String.split(s: "a,,b", separator: ",")` は `["a", "", "b"]`）。
++- `sep` が空なら、`s` の各スカラー値を 1 文字の文字列にした並び。`s` が空なら `[]` である。
++
++【方針】`String.lines(s)` は、`s` を行に分けた並びを返す。行は LF（U+000A）で区切り、各行の末尾に CR（U+000D）が一つあれば取り除く。`s` が LF で終わるとき、その後の空の行は含めない。`s` が空なら `[]` である（`String.lines("a\r\nb\n")` は `["a", "b"]`、`String.lines("a\n\nb")` は `["a", "", "b"]`）。
++
++### List
++
++【決定】`List[T]` は構成子を公開しない型であり、リストはリストリテラルと `List` モジュールの関数だけで作り、分解する。`List[T]` は、添字で引ける永続ベクタで表す。表現は後述の「List の内部の表現」で定める。
++
++| 関数 | 型 | 値 | 計算量 | 実装 |
++|---|---|---|---|---|
++| `List.length(xs)` | `function[T](xs: List[T]) -> Integer` | 要素の数 | O(1) | 組み込み |
++| `List.isEmpty(xs)` | `function[T](xs: List[T]) -> Boolean` | 空か | O(1) | 組み込み |
++| `List.head(xs)` | `function[T](xs: List[T]) -> Option[T]` | 先頭の要素。空なら `Option.None` | O(log n) | 組み込み |
++| `List.tail(xs)` | `function[T](xs: List[T]) -> Option[List[T]]` | 先頭を除いたリスト。空なら `Option.None` | O(log n) | 組み込み |
++| `List.get(xs, i)` | `function[T](xs: List[T], i: Integer) -> Option[T]` | 位置 `i`（0 から数える）の要素。`i` が範囲の外なら `Option.None` | O(log n) | 組み込み |
++| `List.prepend(xs, x)` | `function[T](xs: List[T], x: T) -> List[T]` | 先頭に `x` を加えたリスト | O(log n) | 組み込み |
++| `List.append(xs, x)` | `function[T](xs: List[T], x: T) -> List[T]` | 末尾に `x` を加えたリスト | O(log n) | 組み込み |
++| `List.concatenate(xs, ys)` | `function[T](xs: List[T], ys: List[T]) -> List[T]` | `xs` の後に `ys` を続けたリスト | O(log n) | 組み込み |
++| `List.reverse(xs)` | `function[T](xs: List[T]) -> List[T]` | 逆順のリスト | O(n) | 組み込み |
++| `List.take(xs, n)` | `function[T](xs: List[T], n: Integer) -> List[T]` | 先頭から `n` 個。`n` が 0 以下なら `[]`、長さ以上なら `xs` | O(log n) | 組み込み |
++| `List.drop(xs, n)` | `function[T](xs: List[T], n: Integer) -> List[T]` | 先頭の `n` 個を除いたリスト。`n` が 0 以下なら `xs`、長さ以上なら `[]` | O(log n) | 組み込み |
++| `List.range(start, stop)` | `function(start: Integer, stop: Integer) -> List[Integer]` | `start` 以上 `stop` 未満の整数を昇順に並べたリスト。`stop` が `start` 以下なら `[]` | O(stop − start) | 組み込み |
++| `List.contains(xs, x)` | `function[T: equality](xs: List[T], x: T) -> Boolean` | `x` と `=` で等しい要素があるか | O(n) | 組み込み |
++| `List.sort(xs)` | `function[T: ordered](xs: List[T]) -> List[T]` | 昇順に並べ替えたリスト（後述） | O(n log n) | 組み込み |
++| `List.map(xs, f)` | `function[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E` | 各要素に `f` を適用した値のリスト | O(n) | ソース |
++| `List.filter(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> List[T] uses E` | `p` が `true` を返す要素だけを、順序を保って並べたリスト | O(n) | ソース |
++| `List.fold(xs, initial, f)` | `function[T, A, effect E](xs: List[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E` | `initial` から始め、先頭の要素から順に `f(acc: acc, value: x)` で畳み込んだ値 | O(n) | ソース |
++| `List.forEach(xs, f)` | `function[T, effect E](xs: List[T], f: function(value: T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) | ソース |
++| `List.any(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E` | `p` が `true` を返す要素があるか | O(n) | ソース |
++| `List.all(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Boolean uses E` | すべての要素で `p` が `true` を返すか。空なら `true` | O(n) | ソース |
++| `List.find(xs, p)` | `function[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> Option[T] uses E` | `p` が `true` を返す最初の要素 | O(n) | ソース |
++
++計算量の n は `xs` の長さ（`List.concatenate` では二つのリストの長さの和）である。O(log n) の対数の底は木の分岐の数（32）であり、実用上の長さでは小さい定数になる。関数を引数にとる関数の計算量は、受け取った関数の呼び出しを 1 と数えたものである。
++
++`List.contains` の型の `equality` は、`T` が等値の型であるという組み込みの制約である。利用者も関数の型に書ける（[型システム](../01-spec/01-06-type-system.md)）。`List.sort` の型の `ordered` は、`T` が順序の比較演算子の型の集まり（[型システム](../01-spec/01-06-type-system.md)の「演算子の型付け」。`Byte`・`Decimal` を含む）のどれかであるという制約である。演算子の型の集まりの制約は、利用者は関数の型に書けず、標準ライブラリの関数だけが持てる。
++
++【方針】`List.sort` は安定な並べ替えであり、等しい要素の順序を保つ。順序は `<` に従う（[基本型の意味論](../01-spec/01-04-types-basic.md)）。ただし `Float`・`Float32` の NaN は、どの値よりも後に置き、NaN どうしは元の順序を保つ。`0.0` と `-0.0` は等しいものとして扱う。
++
++末尾への追加と添字での参照は対数時間なので、`List.append` で末尾に一つずつ加えてリストを作ってよく、添字で要素を順に読んでもよい。
++
++### Option
++
++`Option` の関数は、すべて標準ライブラリのソースで定める。
++
++【決定】関数の名前は Rust の名前を lowerCamelCase にしたものに合わせ、`Option.None` のときに実行時エラーになる `unwrap` などは設けない。ただし、`Result` の失敗の構成子を `Result.Error` としたので、Rust の名前の `err` に当たる部分は `Error` とする（`Result.mapError`、`Result.isError`）。
++
++| 関数 | 型 | 値 |
++|---|---|---|
++| `Option.map(o, f)` | `function[T, U, effect E](o: Option[T], f: function(value: T) -> U uses E) -> Option[U] uses E` | `Option.Some(x)` なら `Option.Some(f(x))`、`Option.None` なら `Option.None` |
++| `Option.andThen(o, f)` | `function[T, U, effect E](o: Option[T], f: function(value: T) -> Option[U] uses E) -> Option[U] uses E` | `Option.Some(x)` なら `f(x)`、`Option.None` なら `Option.None` |
++| `Option.unwrapOr(o, fallback)` | `function[T](o: Option[T], fallback: T) -> T` | `Option.Some(x)` なら `x`、`Option.None` なら `fallback` |
++| `Option.isSome(o)` | `function[T](o: Option[T]) -> Boolean` | `Option.Some` か |
++| `Option.isNone(o)` | `function[T](o: Option[T]) -> Boolean` | `Option.None` か |
++| `Option.okOr(o, error)` | `function[T, X](o: Option[T], error: X) -> Result[T, X]` | `Option.Some(x)` なら `Result.Ok(x)`、`Option.None` なら `Result.Error(error)` |
++
++### Result
++
++`Result` の関数は、すべて標準ライブラリのソースで定める。名前の付け方は `Option` と同じである。
++
++| 関数 | 型 | 値 |
++|---|---|---|
++| `Result.map(r, f)` | `function[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> U uses E) -> Result[U, X] uses E` | `Result.Ok(x)` なら `Result.Ok(f(x))`、`Result.Error(e)` なら `Result.Error(e)` |
++| `Result.mapError(r, f)` | `function[T, X, Y, effect E](r: Result[T, X], f: function(error: X) -> Y uses E) -> Result[T, Y] uses E` | `Result.Ok(x)` なら `Result.Ok(x)`、`Result.Error(e)` なら `Result.Error(f(e))` |
++| `Result.andThen(r, f)` | `function[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> Result[U, X] uses E) -> Result[U, X] uses E` | `Result.Ok(x)` なら `f(x)`、`Result.Error(e)` なら `Result.Error(e)` |
++| `Result.unwrapOr(r, fallback)` | `function[T, X](r: Result[T, X], fallback: T) -> T` | `Result.Ok(x)` なら `x`、`Result.Error` なら `fallback` |
++| `Result.isOk(r)` | `function[T, X](r: Result[T, X]) -> Boolean` | `Result.Ok` か |
++| `Result.isError(r)` | `function[T, X](r: Result[T, X]) -> Boolean` | `Result.Error` か |
++| `Result.ok(r)` | `function[T, X](r: Result[T, X]) -> Option[T]` | `Result.Ok(x)` なら `Option.Some(x)`、`Result.Error` なら `Option.None` |
++
++### Assert（初回リリース版）
++
++【決定】prelude のモジュール `Assert` は、テストの期待の確認を表すエフェクト `Assert.Check` を宣言する。その操作（`Assert.equal`・`Assert.notEqual`・`Assert.isTrue`・`Assert.fail`）は、[利用者プログラムのテスト](../06-tooling/06-04-test-runner.md)で定める。
++
++【方針】標準ライブラリの宣言は、非推奨にするときに `@deprecated` の属性を付ける（[構文](../01-spec/01-02-syntax.md)の「属性（初回リリース版）」）。
++
++### Task と TaskGroup（初回リリース版）
++
++【決定】タスクを起動して結果を待つ `Task` モジュールの関数と、タスクの集まりのリソースの型 `TaskGroup` は、[並行処理](../01-spec/01-11-concurrency.md)で定める。どれも組み込みで実装する。`Task` と `TaskGroup` は prelude に入る。`Task.await`・`TaskGroup.open`・`TaskGroup.spawn`・`Task.race`・`Task.withTimeout` の型は、prelude の `State` を含む。`Task.all`・`Task.allOk` の型は、受け取った関数のエフェクトだけを持つ。型は[並行処理](../01-spec/01-11-concurrency.md)で定める。これらはエフェクトの操作ではなく組み込みの関数であり、ハンドラで処理できない。`TaskGroup.open()` は `with` の束縛の式としてだけ書ける。時間の経過を待つ関数は `Benitoite.IO.Clock` の `Clock.sleep` である。`Task[T]` は不透明型であり、等値の型ではない。HTTP のサーバとクライアントは[ネットワークのモジュール](03-09-network.md)で定める。
++
++### Reference と Lazy（初回リリース版）
++
++【決定】可変のセルの型 `Reference[T]` と、明示遅延の型 `Lazy[T]` は prelude に入る。`Reference` の関数（`Reference.new`・`Reference.get`・`Reference.set`・`Reference.update`）は[エフェクト](../01-spec/01-07-effects.md)の「可変のセル（初回リリース版）」で、`Lazy.force` は[評価意味論](../01-spec/01-08-evaluation.md)の「明示遅延（初回リリース版）」と[型システム](../01-spec/01-06-type-system.md)の「明示遅延の型（初回リリース版）」で定める。どれも組み込みで実装する。`Reference.update` と `Lazy.force` は、受け取った関数を呼ぶので、専用の命令で実装する（[ランタイム](../02-impl/02-09-runtime.md)）。
++
++### Byte（初回リリース版）
++
++【決定】`Byte` は 0 以上 255 以下の整数の基本型である。変換の関数（`Byte.fromInteger`・`Byte.toInteger`・`Byte.toString`）とビット演算の関数は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「Byte（初回リリース版）」と「ビット演算（初回リリース版）」で定め、すべて組み込みで実装する。
++
++### Decimal と RoundingMode（初回リリース版）
++
++【決定】`Decimal` は 10 進の小数の基本型である。丸めの関数（`Decimal.round`・`Decimal.absolute`）と変換の関数（`Decimal.fromInteger`・`Decimal.truncate`・`Decimal.toFloat`・`Decimal.fromFloat`・`Decimal.toString`・`Decimal.parse`）は、[基本型の意味論](../01-spec/01-04-types-basic.md)の「Decimal（初回リリース版）」と「型の変換」で定め、すべて組み込みで実装する。丸め方を表す `RoundingMode` は、構成子を公開する代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
++
++### Pair と Triple（初回リリース版）
++
++【決定】組の型 `Pair[A, B]` と `Triple[A, B, C]` は、構成子が一つだけの代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。4 要素以上の組は、利用者が `record` を宣言して書く。
++
++| 関数 | 型 | 値 | 実装 |
++|---|---|---|---|
++| `Pair.first(p)` | `function[A, B](p: Pair[A, B]) -> A` | 1 番目の要素 | ソース |
++| `Pair.second(p)` | `function[A, B](p: Pair[A, B]) -> B` | 2 番目の要素 | ソース |
++| `Triple.first(t)` | `function[A, B, C](t: Triple[A, B, C]) -> A` | 1 番目の要素 | ソース |
++| `Triple.second(t)` | `function[A, B, C](t: Triple[A, B, C]) -> B` | 2 番目の要素 | ソース |
++| `Triple.third(t)` | `function[A, B, C](t: Triple[A, B, C]) -> C` | 3 番目の要素 | ソース |
++
++### Map と Set（初回リリース版）
++
++【決定】`Map[K, V]` と `Set[T]` は、構成子を公開しない永続コレクションである。更新する関数は新しい値を返し、元の値は変わらない。鍵と集合の要素の型は、鍵の型（[型システム](../01-spec/01-06-type-system.md)の「鍵の型（初回リリース版）」）でなければならない。反復の順序（`Map.toList` などが要素を並べる順序）は、後述の鍵の順序の昇順である。
++
++| 関数 | 型 | 値 | 計算量 |
++|---|---|---|---|
++| `Map.empty()` | `function[K: key, V]() -> Map[K, V]` | 空のマップ | O(1) |
++| `Map.fromList(pairs)` | `function[K: key, V](pairs: List[Pair[K, V]]) -> Map[K, V]` | 組を順に加えたマップ。同じ鍵があれば後の組の値を使う | O(n log n) |
++| `Map.toList(m)` | `function[K: key, V](m: Map[K, V]) -> List[Pair[K, V]]` | 鍵の順序で並べた組のリスト | O(n) |
++| `Map.get(m, k)` | `function[K: key, V](m: Map[K, V], k: K) -> Option[V]` | `k` の値。なければ `Option.None` | O(log n) |
++| `Map.set(m, k, value)` | `function[K: key, V](m: Map[K, V], k: K, value: V) -> Map[K, V]` | `k` の値を `value` にしたマップ | O(log n) |
++| `Map.remove(m, k)` | `function[K: key, V](m: Map[K, V], k: K) -> Map[K, V]` | `k` を除いたマップ。`k` がなければ `m` と等しい | O(log n) |
++| `Map.contains(m, k)` | `function[K: key, V](m: Map[K, V], k: K) -> Boolean` | `k` があるか | O(log n) |
++| `Map.size(m)` | `function[K: key, V](m: Map[K, V]) -> Integer` | 組の数 | O(1) |
++| `Map.keys(m)` | `function[K: key, V](m: Map[K, V]) -> List[K]` | 鍵の順序で並べた鍵のリスト | O(n) |
++| `Map.values(m)` | `function[K: key, V](m: Map[K, V]) -> List[V]` | 鍵の順序で並べた値のリスト | O(n) |
++
++| 関数 | 型 | 値 | 計算量 |
++|---|---|---|---|
++| `Set.empty()` | `function[T: key]() -> Set[T]` | 空の集合 | O(1) |
++| `Set.fromList(xs)` | `function[T: key](xs: List[T]) -> Set[T]` | `xs` の要素の集合 | O(n log n) |
++| `Set.toList(s)` | `function[T: key](s: Set[T]) -> List[T]` | 鍵の順序で並べた要素のリスト | O(n) |
++| `Set.contains(s, x)` | `function[T: key](s: Set[T], x: T) -> Boolean` | `x` を含むか | O(log n) |
++| `Set.add(s, x)` | `function[T: key](s: Set[T], x: T) -> Set[T]` | `x` を加えた集合 | O(log n) |
++| `Set.remove(s, x)` | `function[T: key](s: Set[T], x: T) -> Set[T]` | `x` を除いた集合 | O(log n) |
++| `Set.size(s)` | `function[T: key](s: Set[T]) -> Integer` | 要素の数 | O(1) |
++| `Set.union(a, b)`・`Set.intersection(a, b)`・`Set.difference(a, b)` | `function[T: key](a: Set[T], b: Set[T]) -> Set[T]` | 和集合・共通部分・差集合 | O(m log(n/m + 1))。m と n は小さいほうと大きいほうの要素の数 |
++
++表の型の `key` は、`K` と `T` が鍵の型であるという組み込みの制約である。利用者も関数の型に書けるので、`Map` と `Set` を使う汎用の関数（`function countBy[T, K: key](xs: List[T], f: function(value: T) -> K) -> Map[K, Integer]` など）を書ける（[型システム](../01-spec/01-06-type-system.md)）。
++
++【決定】`Map` と `Set` の関数を引数にとる関数は、次のとおりとする。どれも標準ライブラリのソースで書き、受け取った関数を鍵の順序で呼ぶ（前述の「関数を引数にとる関数の共通の規則」）。計算量は、受け取った関数の呼び出しを 1 と数えたものである。
++
++| 関数 | 型 | 値 | 計算量 |
++|---|---|---|---|
++| `Map.map(m, f)` | `function[K: key, V, U, effect E](m: Map[K, V], f: function(key: K, value: V) -> U uses E) -> Map[K, U] uses E` | 各組の値を `f(key: k, value: v)` に替えたマップ。鍵は変えない | O(n) |
++| `Map.filter(m, p)` | `function[K: key, V, effect E](m: Map[K, V], p: function(key: K, value: V) -> Boolean uses E) -> Map[K, V] uses E` | `p(key: k, value: v)` が `true` を返す組だけのマップ | O(n) |
++| `Map.fold(m, initial, f)` | `function[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(acc: A, key: K, value: V) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc: acc, key: k, value: v)` で畳み込んだ値 | O(n) |
++| `Map.forEach(m, f)` | `function[K: key, V, effect E](m: Map[K, V], f: function(key: K, value: V) -> Unit uses E) -> Unit uses E` | 各組に `f` を適用する | O(n) |
++| `Set.map(s, f)` | `function[T: key, U: key, effect E](s: Set[T], f: function(value: T) -> U uses E) -> Set[U] uses E` | 各要素に `f` を適用した値の集合。同じ値になった要素は一つにまとめる | O(n log n) |
++| `Set.filter(s, p)` | `function[T: key, effect E](s: Set[T], p: function(value: T) -> Boolean uses E) -> Set[T] uses E` | `p` が `true` を返す要素だけの集合 | O(n) |
++| `Set.fold(s, initial, f)` | `function[T: key, A, effect E](s: Set[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E` | `initial` から始め、鍵の順に `f(acc: acc, value: x)` で畳み込んだ値 | O(n) |
++| `Set.forEach(s, f)` | `function[T: key, effect E](s: Set[T], f: function(value: T) -> Unit uses E) -> Unit uses E` | 各要素に `f` を適用する | O(n) |
++
++【決定】`Map` と `Set` のリテラルの構文はない。`Map.fromList`・`Set.fromList`・`Map.empty()`・`Set.empty()` は、定数式に書ける（[構文](../01-spec/01-02-syntax.md)の「定数（初回リリース版）」）。定数式の外で、`Map.fromList` の引数のリストのリテラルに、鍵が定数式で同じ値になる組が二つ以上あるときは、処理系は警告を出す。`Set.fromList` の要素も同じである。警告は検査と実行を止めず、値は表のとおり後の組の値を使う。定数式の中では誤りとする。
++
++【方針】鍵の順序は、鍵の型の値に定める全順序であり、次のとおりとする。
++
++- 各幅の整数と `Decimal` は数の大小、`String` は `<` と同じ順序（スカラー値の列の辞書式）、`Character` はスカラー値の大小による。`Boolean` は `false` を `true` より前、`Unit` の値は一つである。
++- 代数的データ型の値は、まず構成子を型の宣言に書いた順で比べ、構成子が同じなら引数を前から順に比べる（辞書式）。レコードは、フィールドを宣言の順に並べた構成子が一つの型として比べる。`Pair` と `Triple` も同じである。
++- `List`・`Bytes` は、要素を前から順に比べ、一方が他方の先頭の部分に当たるときは短いほうを前とする（辞書式）。
++- `Set` は、要素を鍵の順序で並べたリストとして比べる。`Map` は、組を鍵の順序で並べたリストとして比べる。
++
++`Decimal` の値は、小数の桁数が違っても数が等しければ同じ鍵である（`1.0m` と `1.00m`）。`Map.set`・`Set.add`・`Map.fromList` などで、同じ鍵が既にあるマップや集合に鍵を加えるときは、元の鍵を保つ（`Map.set` は値だけを替える）。`Set.union` と `Set.intersection` は、両方の集合にある要素について、第一の集合の要素を保つ。`Set.difference` の結果の要素は、どれも第一の集合の要素である。
++
++【方針】`Map` と `Set` は、平衡二分木で表す。木の種類（重みで平衡させる木）とノードの持つものは[仮想機械](../02-impl/02-08-vm.md)の「値の表現」で定める。ノードは作った後に変更せず、更新は根から変わるノードまでの道筋だけを写す。処理系のテストでは、リストと同じく、操作の列を単純なモデル（Rust の `BTreeMap`・`BTreeSet`）と同時に適用し、内容と鍵の順序が一致することを確かめる。木の平衡の条件は、テストではなく、デバッグ用のビルドで実装の中の `debug_assert!` として確かめる。
++
++### Bytes と ByteOrder（初回リリース版）
++
++【決定】`Bytes` は、変更できないバイト列の型であり、要素は `Byte` である。`Bytes` は等値の型である。リテラルはなく、次の関数で作る。位置を指定する関数は、位置が正しくなければ `Option.None` を返す。
++
++| 関数 | 型 | 値 | 計算量 |
++|---|---|---|---|
++| `Bytes.empty()` | `function() -> Bytes` | 空のバイト列 | O(1) |
++| `Bytes.fromList(bs)` | `function(bs: List[Byte]) -> Bytes` | `bs` を並べたバイト列 | O(n) |
++| `Bytes.fromIntegers(ns)` | `function(ns: List[Integer]) -> Option[Bytes]` | `ns` の各値を `Byte` にして並べたバイト列。0〜255 の外の値があれば `Option.None` | O(n) |
++| `Bytes.fromHex(s)` | `function(s: String) -> Option[Bytes]` | 16 進の表記を 2 桁ずつ 1 バイトとして読んだバイト列。後述の規則に合わなければ `Option.None` | O(n) |
++| `Bytes.fromBinary(s)` | `function(s: String) -> Option[Bytes]` | 2 進の表記を 8 桁ずつ 1 バイトとして読んだバイト列。後述の規則に合わなければ `Option.None` | O(n) |
++| `Bytes.toList(b)` | `function(b: Bytes) -> List[Byte]` | 要素のリスト | O(n) |
++| `Bytes.toHex(b)` | `function(b: Bytes) -> String` | 各バイトを小文字の 16 進 2 桁で表し、区切りなしで並べた文字列 | O(n) |
++| `Bytes.toBinary(b)` | `function(b: Bytes) -> String` | 各バイトを 2 進 8 桁で表し、区切りなしで並べた文字列 | O(n) |
++| `Bytes.length(b)` | `function(b: Bytes) -> Integer` | バイト数 | O(1) |
++| `Bytes.get(b, i)` | `function(b: Bytes, i: Integer) -> Option[Byte]` | 位置 `i` のバイト | O(1) |
++| `Bytes.slice(b, start, stop)` | `function(b: Bytes, start: Integer, stop: Integer) -> Option[Bytes]` | 位置 `start` から `stop` の手前までのバイト列 | O(n) |
++| `Bytes.concatenate(a, b)` | `function(a: Bytes, b: Bytes) -> Bytes` | `a` の後に `b` を続けたバイト列 | O(n) |
++| `Bytes.readUnsigned(b, offset, count, order)` | `function(b: Bytes, offset: Integer, count: Integer, order: ByteOrder) -> Option[Integer]` | `offset` から `count` バイトを、符号なしの整数として `order` のバイト順で読んだ値 | O(count) |
++| `Bytes.readSigned(b, offset, count, order)` | `function(b: Bytes, offset: Integer, count: Integer, order: ByteOrder) -> Option[Integer]` | 同じく、2 の補数の符号付きの整数として読んだ値 | O(count) |
++| `Bytes.fromUnsigned(n, count, order)` | `function(n: Integer, count: Integer, order: ByteOrder) -> Option[Bytes]` | `n` を符号なしの `count` バイトで表したバイト列。収まらなければ `Option.None` | O(count) |
++| `Bytes.fromSigned(n, count, order)` | `function(n: Integer, count: Integer, order: ByteOrder) -> Option[Bytes]` | `n` を 2 の補数の符号付きの `count` バイトで表したバイト列。収まらなければ `Option.None` | O(count) |
++| `String.toUTF8(s)` | `function(s: String) -> Bytes` | `s` を UTF-8 で表したバイト列 | O(n) |
++| `String.fromUTF8(b)` | `function(b: Bytes) -> Option[String]` | `b` を UTF-8 として読んだ文字列。正しくない UTF-8 なら `Option.None` | O(n) |
++
++- `count` は 1 以上 8 以下でなければならず、外なら `Option.None` を返す。`Bytes.readUnsigned` の `count` が 8 で、値が `Integer` の範囲を超えるときも `Option.None` を返す。
++- `Bytes.fromHex` と `Bytes.fromBinary` は、区切りとして `_` と空白（U+0020）を読み飛ばす。16 進の数字は大文字と小文字のどちらも受け付ける。区切りを除いた桁の数が、16 進では 2 の倍数、2 進では 8 の倍数でなければならない。
++- `String.fromUTF8` は、正しくない UTF-8 を置き換えたり捨てたりしない（`File.readText` が正しくない UTF-8 を誤りとするのと同じ方針。[IO のモジュール](03-07-io-modules.md)の「共通の規則」）。先頭の BOM（U+FEFF）は取り除かない。
++- `ByteOrder` は構成子 `ByteOrder.BigEndian`（上位のバイトが先）と `ByteOrder.LittleEndian`（下位のバイトが先）を持つ代数的データ型である（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)）。
++- ファイルとの読み書きは `File.readBytes`・`File.writeBytes` で行う（[エフェクト](../01-spec/01-07-effects.md)）。Base64 との変換は `Benitoite.Encoding`（[テキストとデータの処理](03-08-text-and-data.md)）で行う。UTF-8 以外の文字コードとの変換と、Base64 以外の符号化は、初回リリース版に含めない。
++
++【方針】`Bytes` は、一つのヒープの対象にバイトの並びを連続して持つ形で表し、作った後に変更しない。`Bytes.slice` は、元の値と領域を共有せず、範囲のバイトを新しい値に写して作るので、計算量は結果のバイト数に比例する。元の領域を共有して開始位置と長さだけを変える表現は、初回リリース版に含めない（docs/todo の TODO-218）。
++
++### 標準の型クラス（初回リリース版）
++
++【決定】標準ライブラリのモジュール `Benitoite.Trait` に、標準の型クラスと、比較の結果を表す型 `Ordering` を置く。`Benitoite.Trait` は prelude に入らない。使うには `import Benitoite.Trait` と書き、型クラスは `Trait.Monad`、メソッドは `Trait.Monad.flatMap(x: x, f: f)`、制約は `[F: Trait.Monad]` と書く。型クラスの宣言と実装の規則（上位の型クラス、戻り値の型で実装を選ぶメソッドを含む）は、[型システム](../01-spec/01-06-type-system.md)の「型クラス（初回リリース版）」で定める。
++
++【決定】標準の型クラスのメソッドは、既存の関数と同じ役割を持つ（`Trait.Functor.map` と `Option.map`・`List.map`、`Trait.Foldable.fold` と `List.fold` など）。これは、学習の目的のために設けた原則 5（[目的と設計原則](../00-overview/00-01-goals.md)）の例外である。重複する既存の関数も残し、隠さない。
++
++```text
++import Benitoite.Trait
++
++function pairUp[F[_]: Trait.Monad, A, B](xs: F[A], ys: F[B]) -> F[Pair[A, B]]
++  return Trait.Monad.flatMap(x: xs, f: lambda(value) return pairWith(left: value, ys: ys))
++end function
++
++function pairWith[F[_]: Trait.Functor, A, B](left: A, ys: F[B]) -> F[Pair[A, B]]
++  return Trait.Functor.map(x: ys, f: lambda(value) return Pair(left, value))
++end function
++```
++
++`pairUp` の本体は、`F` の `Trait.Monad` の制約から、上位の型クラス `Trait.Functor` の制約も使える。`pairUp(xs: [1, 2], ys: ["a", "b"])` の値は、4 つの組のリストである。
++
++`Ordering` は、構成子 `Ordering.Less`・`Ordering.Equal`・`Ordering.Greater` を、この順に宣言した代数的データ型である。
++
++表の関数欄の `f(a, b)` は、宣言のパラメータ名と順を示す表記である。呼び出しの引数式の表記とは区別する。
++
++以下の表と説明では、`Benitoite.Trait` の中の名前を、`Trait.` を省いて書く（`Show.show`、`Ordering.Less`）。利用者のプログラムでは、`import Benitoite.Trait` と書いたうえで、`Trait.Show.show`、`Trait.Ordering.Less` のように `Trait.` を付けて書く。
++
++| 型クラス | 上位の型クラス | メソッド |
++|---|---|---|
++| `Show[T]` | — | `function show(x: T) -> String` |
++| `Order[T]` | — | `function compare(x: T, y: T) -> Ordering` |
++| `Semigroup[T]` | — | `function combine(x: T, y: T) -> T` |
++| `Monoid[T]` | `Semigroup` | `function empty() -> T` |
++| `Functor[F[_]]` | — | `function map[A, B, effect E](x: F[A], f: function(value: A) -> B uses E) -> F[B] uses E` |
++| `Applicative[F[_]]` | `Functor` | `function pure[A](x: A) -> F[A]`<br>`function apply[A, B, effect E](fs: F[function(value: A) -> B uses E], x: F[A]) -> F[B] uses E` |
++| `Monad[F[_]]` | `Applicative` | `function flatMap[A, B, effect E](x: F[A], f: function(value: A) -> F[B] uses E) -> F[B] uses E` |
++| `Functor2[F[_, _]]` | — | `function map[A, B, X, effect E](x: F[A, X], f: function(value: A) -> B uses E) -> F[B, X] uses E` |
++| `Applicative2[F[_, _]]` | `Functor2` | `function pure[A, X](x: A) -> F[A, X]`<br>`function apply[A, B, X, effect E](fs: F[(function(value: A) -> B uses E), X], x: F[A, X]) -> F[B, X] uses E` |
++| `Monad2[F[_, _]]` | `Applicative2` | `function flatMap[A, B, X, effect E](x: F[A, X], f: function(value: A) -> F[B, X] uses E) -> F[B, X] uses E` |
++| `Foldable[F[_]]` | — | `function fold[A, B, effect E](x: F[A], initial: B, f: function(acc: B, value: A) -> B uses E) -> B uses E` |
++| `Traversable[F[_]]` | `Functor`、`Foldable` | `function traverse[G[_]: Applicative, A, B, effect E](x: F[A], f: function(value: A) -> G[B] uses E) -> G[F[B]] uses E` |
++
++`Monoid.empty` と `Applicative.pure` は、型クラスの引数を戻り値の型にだけ含むので、呼び出した位置で求める型から実装を選ぶ。等値の型クラスは置かない。等値は `=` と組み込みの制約 `equality` で扱う（[型システム](../01-spec/01-06-type-system.md)）。
++
++【決定】標準ライブラリの型に、次の実装を置く。実装は、どれも標準ライブラリのソースで書く。`String` と `Character` の `Show.show` は、文字のエスケープを、ソースから非公開の組み込みの関数を呼んで行う。
++
++| 型クラス | 実装する型 |
++|---|---|
++| `Show`・`Order` | 基本型（各幅の数、`Decimal`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
++| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Scope.ScopeError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
++| `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
++| `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
++| `Functor2`・`Applicative2`・`Monad2` | `Result` |
++
++- `Result` は二引数版の三クラスを実装する。一引数版の `Functor`・`Applicative`・`Monad`・`Traversable` へは、型の部分適用がないので渡せない（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。
++- 利用者の型の実装は `implement` で書く。実装を導出する仕組みは設けない。
++- メソッドの既定の実装はない。型クラスから派生する関数も置かない。
++- 演算子と文字列補間は、型クラスを使わない。`Order` を実装した型に `<` は使えず、`Show` を実装した型の値を文字列補間に埋め込むことはできない。
++
++【決定】`Result` の `Functor2.map` は `Result.map`、`Monad2.flatMap` は `Result.andThen` に委ねる。`Applicative2.pure` は `Result.Ok` を返す。`Applicative2.apply` は、`fs` が `Error` ならそのエラーを返し、`fs` が `Ok` で `x` が `Error` なら `x` のエラーを返す。両方が `Ok` のときだけ中の関数を一度呼ぶ。引数式自体は通常の呼び出しと同じくソース順で両方を評価する。
++
++関数型の型引数を囲む括弧は、`uses E, X` をエフェクトの並びとして読む文法との区切りである。第二の型 `X` は各メソッドの型パラメータであり、クラスの対象は裸の `Result` である。`pure` の `X` が推論できない場合は結果に型注釈を付ける。利用者の二引数の型にも同じクラスを実装できる。実装の型が合うことだけでは任意の実装の法則は保証しない。
++
++【方針】`Show.show` は、次に定める失敗型を除き、値を式の書き方に近い文字列で表す。
++
++- 各幅の数と `Decimal` は、それぞれの `toString` と同じ文字列である。`Boolean` は `true` か `false`、`Unit` は `()` である。
++- `String` と `Character` は、リテラルの形で表す（`"a\"b"`、`'x'`）。引用符と、字句構造でエスケープが要る文字（[字句構造](../01-spec/01-01-lexical.md)）は、エスケープシーケンスで書く。`String` の `$` は `\$` で書く。
++- `Option` は `Option.Some(1)`・`Option.None`、`Pair` と `Triple` は `Pair(1, "a")`・`Triple(1, "a", true)` の形で表す。
++- `List` は `[1, 2, 3]` の形で表す。`Set` は `Set.fromList([1, 2])`、`Map` は `Map.fromList([Pair(1, "a")])` の形で、要素を鍵の順序で並べて表す。
++
++【決定】`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError` の `Show.show` は、各型の `message` が返す文字列をそのまま返す。引用符や位置などの情報は加えない。理由: 失敗値から人間が読める原因を取得し、既存の型クラスの仕組みで表示できるようにするためである。
++
++`IOError` と `NetworkError` の実装は `Benitoite.Trait` に置き、prelude の `IOError.message`・`NetworkError.message` を呼ぶ。二型のモジュールから Trait への import は置かない。理由: Trait を使わないプログラムで、標準の型クラスの読み込みと型検査を避けるためである。`Scope.ScopeError` の実装も Trait に置き、表示は本章「Scope」の規則に従う。`Json.ParseError` と `Csv.ParseError` の実装はそれぞれ Json・Csv のモジュールに置き、そこから Trait を import する。利用者が `Trait.Show.show` を名前で使う場合は、`import Benitoite.Trait` を必要とする。
++
++【方針】`Order.compare` は、次の順序で比べる。
++
++- 鍵の型の値は、鍵の順序（前節の「Map と Set（初回リリース版）」）と同じ順序で比べる。`Option` は構成子を宣言の順で比べるので、`Option.Some(x)` は `Option.None` より前（`Ordering.Less`）である。`List`・`Pair`・`Triple` は辞書式に比べる。
++- `Float`・`Float32` は、`<` の順序に、次の規則を加えた全順序で比べる。NaN はどの値よりも大きく、NaN どうしは `Ordering.Equal` とする。`0.0` と `-0.0` は `Ordering.Equal` とする。この結果は `=` と異なる（NaN は自分自身と `=` で等しくない）。`Float` または `Float32` を含む `List`・`Option` などは、要素をこの順序で比べる。
++
++【方針】`Semigroup.combine` と `Monoid.empty` は、次のとおりとする。
++
++| 型 | `combine(x, y)` | `empty()` |
++|---|---|---|
++| `String` | `x` の後に `y` を続けた文字列（`x + y`） | `""` |
++| `List[T]` | `List.concatenate(xs: x, ys: y)` | `[]` |
++| `Map[K, V]` | 両方の組を合わせたマップ。同じ鍵があれば `y` の値を使う | `Map.empty()` |
++| `Set[T]` | `Set.union(a: x, b: y)` | `Set.empty()` |
++
++【方針】`Option` と `List` の、型構成子を引数にとる型クラスのメソッドは、次のとおりとする。
++
++| メソッド | `Option` | `List` |
++|---|---|---|
++| `Functor.map(x, f)` | `Option.map(o: x, f: f)` | `List.map(xs: x, f: f)` |
++| `Applicative.pure(v)` | `Option.Some(v)` | `[v]` |
++| `Applicative.apply(fs, x)` | `fs` と `x` がどちらも `Option.Some` なら、関数を値に適用した値の `Option.Some`。そうでなければ `Option.None` | `fs` の各関数を、`x` の各要素に適用した値のリスト。`fs` の前の関数から順に、各関数について `x` の前の要素から順に並べる |
++| `Monad.flatMap(x, f)` | `Option.andThen(o: x, f: f)` | 各要素に `f` を適用したリストを、要素の順に連結したリスト |
++| `Foldable.fold(x, initial, f)` | `Option.Some(v)` なら `f(acc: initial, value: v)`、`Option.None` なら `initial` | `List.fold(xs: x, initial: initial, f: f)` |
++| `Traversable.traverse(x, f)` | `Option.None` なら `Applicative.pure(Option.None)`。`Option.Some(v)` なら、`f(v)` の値の中身を `Functor.map` で `Option.Some` に包んだ値 | 要素を前から順に `f` に渡し、`Applicative.apply` で結果を前から順に組み合わせる |
++
++関数を引数にとるメソッドは、受け取った関数を、表の値を作るのに必要な順に呼ぶ。`List` のメソッドは、要素を前から順に処理する。
++
++### IO を行うモジュール（初回リリース版）
++
++IO を行う関数は、`Benitoite.IO` の下のモジュールに置く。各モジュールの関数、エフェクト、要する権限、`IOError` の扱いは[IO のモジュール](03-07-io-modules.md)で定める。ネットワークの操作を行う関数は `Benitoite.Network` の下のモジュールに置き、[ネットワークのモジュール](03-09-network.md)で定める。
++
++### List の内部の表現
++
++【決定】`List[T]` は、添字で引ける永続ベクタ（persistent vector）で表す。理由: 単方向の連結リストでは、添字での参照（`List.get`）と末尾への追加が長さに比例する時間になり、LLM が添字のループの中で `List.get` を書くと要素の数の 2 乗の時間になる。この遅さは型の誤りにならないので、静的な検査でも見つけられない。
++
++【方針】永続ベクタは、分岐の数を 32 とする木（RRB 木、relaxed radix balanced tree）で表す。
++
++- 要素は葉に最大 32 個ずつ入れ、内部のノードは最大 32 個の子を持つ。木の高さは、要素の数を n として O(log n) である。
++- 末尾の葉は木とは別に持ち、末尾への追加をほとんどの場合に葉の写し一つで済ませる。
++- 連結と分割（`List.concatenate`・`List.take`・`List.drop`・`List.tail`）のために、子の要素の数が揃わないノード（緩和したノード）を許し、そのノードに子ごとの要素の数の累積の表を持たせる。
++- 連結は、各高さでノードの数が ⌈子の数 / 32⌉ + 2 を超えるときだけ、その高さのノードを詰め直す。理由: 添字の探索の余分な歩数を 2 までに抑え、連結で写す量を減らす。e = 2 は、Bagwell・Rompf 2011 の 2.5 節が分岐の数 32 で実験から選んだ値であり、証明した値ではない。
++- ノードと葉は、作った後に変更しない。更新は、根から変わる葉までの道筋のノードだけを写し、ほかのノードを共有する（構造共有、structural sharing）。
++- リストどうしの `=` と `List.contains`、`List.sort` の比較は、処理系の再帰に頼らずに要素を辿る（[仮想機械](../02-impl/02-08-vm.md)）。
++
++出典: Phil Bagwell, Tiark Rompf. “RRB-Trees: Efficient Immutable Vectors”. EPFL Technical Report, 2011（[Infoscience の記録](https://infoscience.epfl.ch/items/c11dbc7a-2601-4228-b42b-466aa313f589)、各ページの足に「2012/3/11」とある版）。
++
++【決定】リストの次の不変条件は、それぞれ次の方法で確かめる。
++
++| 不変条件 | 確かめ方 |
++|---|---|
++| 各ノードの要素の数の表は、子の要素の数の和と一致する。長さは、木と末尾の葉の要素の数の和である | 実装の中の `debug_assert!` で、デバッグビルドのときだけ確かめる。木の形の細部を変えるときは、この確認も一緒に書き直す |
++| どの関数も、引数のリストのノードと葉を変更しない | 処理系のテストで、関数を呼ぶ前後で引数のリストの要素の並びが変わらないことを確かめる |
++| 木の高さは、要素の数に対して O(log n) に収まる | [性能](../07-quality/07-02-performance.md)の測定で、大きなリストの添字の操作の時間として観察する |
++
++【決定】リストの処理系のテストは、無作為に選んだ操作の列を、リストと単純なモデル（Rust の `Vec`）の両方に同じ順に適用し、要素の並びと長さが一致することを確かめる（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。テストはデバッグビルドで実行するので、操作のたびに一つ目の不変条件も確かめられる。
++
++### Propertyの候補の合成
++
++【決定】明示importするTest.Propertyは、通常のdataである `ShrinkStep[T]` と、純粋な `mapSteps`・`appendSteps` を公開する。Done・Yield・Skipの続きはゼロ引数の関数で保持し、利用者が進めるまで呼ばない。mapStepsは候補の型を変えられ、appendStepsは左の終了後に右を呼ぶ段を返す。型へequalityを要求しない。標準専用のVM値やエフェクトを加えず、通常の関数と型・エフェクトの検査を通す。候補順・比較の段・Shrinker・checkの予算は[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)で定める。
++
++### 標準ライブラリのソースの書き方
++
++【決定】Failure.fromResult は通常の match、Failure.toResult は通常の handle として Failure.bnt に定義する。標準専用の表から得るのは Fail と raise の宣言であり、fromResult/toResult の型と NoFail の条件は通常の標準ソースのシグネチャから得る。
++
++【決定】標準ライブラリのソースは、利用者のモジュールと同じ構文のモジュールとして書く。モジュール `Benitoite.X.Y` のソースは、処理系に同梱する標準ライブラリの根の下の `X/Y.bnt` に置く。読み込みと名前解決は[名前解決とモジュール読込](../02-impl/02-04-resolver.md)で定める。
++
++- 利用者から見える関数・型・型クラス・エフェクトには `public` を付ける。補助の関数は `public` を付けずに書き、そのモジュールの中からだけ使う。
++- 組み込みの関数は、本体のない関数の宣言に属性 `@builtin("名前")` を付けて宣言する。名前は処理系の組み込みの関数の表の鍵であり、型は宣言のシグネチャで与える。`@builtin` は標準ライブラリのソースでだけ書ける。本体のない関数の宣言は、`@builtin` か `@external`（[外部の関数](03-10-external-functions.md)）を付けたときだけ書ける。
++- 順序の比較演算子の型の集まりの制約は、組み込みの制約 `ordered` として書く（[型システム](../01-spec/01-06-type-system.md)）。
++- 組み込みの型（`Integer`・`List`・`Map` など）、操作を持たないエフェクト `State`、まとめたエフェクト `IO.All` は、ソースに宣言を置かず、処理系の表で与える。
++- ほかのモジュールの関数は、利用者のモジュールと同じく import して使う。
++- リストを辿る処理は、添字を累積の引数に持つ末尾再帰で書き、結果のリストは `List.append` で末尾に加えて作る。
++
++```text
++/// リストの各要素に f を適用したリストを返す。
++public function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E
++  return mapFrom(xs: xs, f: f, i: 0, acc: [])
++end function
++
++function mapFrom[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E
++  return match get(xs: xs, i: i) with
++    case Option.None -> acc
++    case Option.Some(x) ->
++      bind y <- f(x)
++      mapFrom(xs: xs, f: f, i: i + 1, acc: append(xs: acc, x: y))
++  end match
++end function
++
++/// 添字 i の要素を返す。範囲の外なら Option.None を返す。
++@builtin("List.get")
++public function get[T](xs: List[T], i: Integer) -> Option[T]
++
++@builtin("List.sort")
++public function sort[T: ordered](xs: List[T]) -> List[T]
++```
++
++上の例は `List` のモジュールのソース（`List.bnt`）の一部であり、同じモジュールの関数は修飾せずに呼ぶ。
++
++この例は書き方を示すものであり、`List.get` の代わりに、標準ライブラリのソースの中だけで使える組み込みの関数（`Option` を作らずに要素を順に取り出すもの）を使ってよい。この例は O(n log n) であり、要素を順に取り出す組み込みの関数を使えば O(n) にできる。標準ライブラリのソースの関数の定義そのものは、処理系に同梱するソースが与える。
++
++
++### 外部生成の宣言情報
++
++【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 4 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。対象レコードの型パラメータを一律には拒否せず、再帰・型引数の対応範囲は機能ごとに生成道具が判定する。
++
++【決定】型の application と効果の名前の原子は、必須の `ix` に添字を保持する。Top は `{"fixed":"top"}`、閉じた範囲は `{"fixed":範囲}`、範囲変数は `{"rvar":番号}` とする。閉じた範囲の構造と IP の全幅の整数は、[交換の形式](../07-quality/07-04-formal-semantics.md#交換の形式の版)と同じ表現を使う。型の一覧の `rangeKind` は添字の種類または null とし、署名の `rkinds`・`admission`・`shape` は変数の種類、被覆の条件、IO の対象の形を保持する。通常の関数を省いたり、範囲変数を Top に置き換えたりしない。出力側と読取側で変数の番号と種類、閉じた範囲の構造、被覆と対象の位置の参照を検査する。理由: 宣言情報から生成と署名の照合を行うときに、型と効果の範囲の関係を失わないためである。
++
++【決定】可視性はprivate・package・publicへ正規化し、互換のpublic/package欄との不一致を拒否する。opaqueと生成先からのcanConstruct/canInspectを明示する。生成先は型の宣言元のモジュールであり、宣言情報に表現を保持していても、不透明型自身のJSON復号・Property生成器・縮小器の自動生成を認めない。通常のレコードの不透明型の欄には、欄全体を扱う手書きのカスタム関数を要求する。理由: 宣言元での構築可否だけでは、検査を伴う作成経路の不変条件を守れないためである。
++
++JSON 変換を要求する target では Json.Codec、Property を要求する target では Test.Property を仮想の入口に加え、依存先も含めて生成後に必要となる標準ソースを全入力へ含める。JSON にはモジュールの説明と先頭の宣言の終了バイト位置、既存の import の別名と解決先、生成名の衝突を調べるための宣言一覧も含める。ファイル単位の宣言の元の文字列とspanを`fileUses`、その開始バイト位置を`importInsertLimit`として必須で渡し、宣言がない場合は両方をnullにする。`preambleEnd`は説明とメタデータの末尾という意味を保つ。関数の署名は宣言収集で合併済みの最外側の効果行を使い、実装メソッドと入れ子の関数型には追加しない。詳しい欄と設定は [example の契約](../../../crates/benitoite/examples/derive_inventory/README.md)で定める。正常時は終了0、宣言・入力・対象の誤りは1、引数と設定の書式の誤りは2とし、失敗時には JSON を出さず標準エラー出力に説明を書く。この入口は宣言の情報を読むものであり、ソースの生成・編集は行わない。
++
++【決定】targetの`show`・`order`は独立した真偽値とし、trueの場合だけTraitを仮想の入口へ加える。省略とfalseは生成を要求しない。JSON・Propertyを指定せず、Show・Orderだけを要求してもよい。未知・重複のキーと真偽値以外は設定の誤りとして終了2にする。
++
++### 外部生成の管理と照合
++
++【決定】開発用の `tools/derive/derive.py` は、宣言情報を使う生成関数から本文を受け取り、`preview`・確認済み manifest の `apply`・再生成の `check` で管理する。CLI の引数・設定・記録の書式は [道具の契約](../../../tools/derive/README.md)で定める。JSON 変換の生成を提供する（[Json.Codec](03-08-text-and-data.md#jsoncodec)）。レコードの生成器・縮小器も提供する（[プロパティベーステスト](../06-tooling/06-04-test-runner.md#プロパティベーステスト)）。JSON と Property は単独でも、同じ領域へ合わせても生成できる。
++
++【決定】値の型パラメータを持つレコードと同一モジュール内の正則な自己再帰・相互再帰レコードに、明示したShow・Orderの通常のimplementを生成する（[対応範囲と制約](03-08-text-and-data.md#レコードのproperty生成器)）。Showは局所型名と宣言順の欄名を表示し、各値の引用・エスケープを欄のShowへ委ねる。Orderは宣言順に比較し、最初の非Equalで返り、それより後の欄は比較しない。すべてEqualならEqualを返す。表示の復元可能性、OrderのEqualから組み込み等値やkeyの成立は保証しない。空レコードの宣言は構文仕様どおりE0201で拒否する。
++
++【決定】欄に必要な辞書は、解決済みの実装の頭・型引数・クラス制約を辿って確認する。依存する生成対象には対応するShow・Orderの明示要求を必要とし、生成予定の署名を先に登録して制約を求め、依存先を先に生成する。dataや型パラメータのある欄も手書きの辞書があれば使える。辞書がなければderive.missing_implementation、既存の同じクラス・型の頭の実装と衝突すれば、位置を添えたderive.overlapping_implementationで拒否する。既に宣言が重複した入力は通常のE0702を保つ。本体・組み込みの制約は適用後の通常のcheck/testで検査する。
++
++【決定】生成先は型の宣言モジュールとし、private・package・publicの型に同じimplementを使う。不透明レコードのShow・Orderも、この場所での明示要求なら受理し、生成記録のtraitTargetにopaqueと選択したクラスを示す。JSON・Propertyも要求した場合は、無検査の構築を黙って除外せず要求全体を拒否する。同じ対象・クラスの、前回記録と本文のハッシュで認証した管理領域内の実装だけを置換できる。領域外・別領域の実装と手書きは保護する。
++
++【決定】型を宣言した `.bnt` の管理領域は、完全な行の `// benitoite-derive:begin <region>` と `// benitoite-derive:end <region>` で囲む。印のない初回は原則として末尾への追加を提案し、既存領域は印の内側だけを編集する。重複・入れ子・片方だけの印、記録のない既存領域、記録の出力ハッシュと異なる本文は拒否する。領域外のバイト列を保ち、必要な import も領域内に置く。既存の import は解決済みのモジュールの同一性で再利用し、関数名と別名の衝突は書き込み前に報告する。
++
++【決定】新たな import が必要な初回の領域は、モジュールの説明と先頭の宣言・既存の import の後、最初の通常の宣言の前へ置く。同じソースの新たな import は、この領域へ集める。既存領域がすべて宣言の後にあり、新規領域もない場合は import の追加を拒否し、利用者が宣言の前へ import を書いて再度 preview する。理由: 本番の parser は宣言の後の import を拒否するため、末尾への生成だけでは通常の検査を通らないからである。
++
++【決定】ファイル単位のエフェクトの宣言がある場合、新しいimportは既存のimportの後、その宣言の前に限る。領域はimportと通常宣言を一緒に持つため、必要なimportを含む新領域をファイルの宣言の前へ置けない場合は、必要なimportを示してpreviewを拒否する。利用者はそのimportをファイルの宣言の前へ書き、再度previewする。ファイルの宣言の後の既存領域へimportを足さず、前の既存領域へ通常宣言を生成することも拒否する。理由: ファイルの宣言の後にimportを置くことも、その前に通常宣言を置くことも、宣言順の規則に反するためである。
++
++【決定】生成対象のモジュールにファイル単位のエフェクトの宣言があり、JSONまたはPropertyを要求している場合、生成計画を作る前の共通入口でpreview・初回apply・checkをderive.file_effectsで拒否する。複数対象の一つでも該当すれば、ソース・記録・レビュー成果物を書き込まず全体を拒否する。診断には対象型・選択機能・宣言原文と元のUTF-8バイト位置・純粋さが必要な理由を示す。Show・Orderだけの要求はこの拒否の対象にしない。理由: JSONとPropertyが生成する直下の通常関数にはファイルの効果が加わり、純粋な関数を生成する契約に反するためである。Show・Orderが生成する実装のメソッドには、ファイルの効果を加えない。
++
++対処は、ファイル単位の宣言を外して必要な関数に個別の `uses` を書くか、型定義と生成対象をファイル単位の宣言のないモデル用モジュールへ移し、操作を行う側から import することである。設定の `source` は型の宣言元と一致する必要があり、生成先の指定だけでは分離できない。既存の管理領域がある型を移すときは、[derive の管理終了・移動の手順](../../../tools/derive/README.md#verification-and-recovery)に従って旧対象を整理し、新しい preview と記録を確認する。適用後はハーネスから通常の check/test と derive check を行い、報告を確認する。
++
++受理する入力の生成本文・意味ハッシュ・生成記録は保ち、この事前拒否を理由とする E0908 の登録を加えない。
++
++【決定】カスタムのJSON変換・Property関数の純粋さと単相性は、範囲変数を含む合併済みの有効な署名で照合する。範囲変数を持つ関数は理由を示して拒否する。非Topの添字を持つ型を含む生成注釈は対応範囲外として明示的に拒否し、範囲を省略した注釈を生成しない。deriveのcheckとは別に、ハーネスから通常のcheck/testで生成後の本体も検査する。
++
++【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版3・inventoryVersion 4・hashVersion 4・道具の版3.1.0-syntax-batch5、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。型と効果の添字、署名の範囲変数の種類・被覆の条件・対象の形も意味のハッシュに含める。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。宣言名順のグラフ・型引数付きの辺・強連結成分・有限基底の最小量・予算規則・生成する署名と制約・依存先の設定と指定関数・選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
++
++【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用後にreceiptへ版3・生成規則の版・新記録のSHA-256を保存してから生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
++
++【決定】旧inventoryは拒否する。生成器版3.0.0-syntax-batch4を含む旧記録のcheckは変更せずderive.migration_requiredを返し、旧manifestの新版applyはderive.incompatible_manifestで拒否する。未完の旧applyは旧道具で復旧してから、新previewで旧記録の出力ハッシュと現在の本文を照合する。不一致はderive.modified_regionで拒否する。一致した本文から新記録と差分を提案し、確認済みの新manifestを適用する。旧意味ハッシュを新版の承認として読み替えない。理由: 手書きの差分と確認した生成規則の対応を保つためである。
++
++生成器の版が同じでも、道具のソースや実行ファイルの入力ハッシュの照合で旧 manifest を拒否することがある。無条件で再利用せず、更新後に新しい preview を確認し、その manifest の確認済みハッシュで apply する。途中の適用・復旧に使う旧道具は、更新前に保存する。過去の版からの記録の移行は、[derive の移行手順](../../../tools/derive/README.md#markers-records-and-review-artifacts)に従う。
++
++管理の解除は本文を残し、印・設定の当該 target・記録の当該 target を手で除く。残る target の生成の `check` と通常の `check`・`test` を行う。上書きを強制する入口と専用の管理解除コマンドは設けない。
++
++### StringBuilder
++
++【決定】`Benitoite.StringBuilder`・`Benitoite.ListBuilder`・`Benitoite.BytesBuilder`はpreludeに含めず、明示importする標準モジュールである。ソースはモジュールのdocだけを持ち、通常の型や関数の宣言を偽造しない。分類名と五つの専用操作の契約は、ロード済みの標準ModuleIdと照合する私有の登録表から名前解決する。同じ表とdocからSkillの参照・索引・bundleを生成する。公開する操作は[関数内の構築器](../01-spec/01-06-type-system.md#関数内の構築器)で定める。
+--- a/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.2c/results.md
++++ b/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.2c/results.md
+@@ -39,6 +39,8 @@
+ 
+ 03-06 に実装の配置と依存の向き、Show の一覧を、03-07 に File が Scope を読むことと Trait を読まないことを反映した。Http の宣言・依存は変わらず、03-09 の変更は不要だった。R30.3 と並行する03-09の編集は加えていない。`gen_skill` は再生成したが、公開宣言と説明が同じなので Skill と bundle の生成物に差分はなかった。
+ 
++私有関数の移動に伴い、`Trait.limited` を名指ししたときは E0303「no member」から E0330「not public」へ変わり、`<benitoite>/Trait.bnt:99` を指す。`Scope.limited` は移動後に「no member」となる。これは私有関数への参照の診断の変化であり、公開の契約は変わらない（[独立レビュー](../reviews/RV-R30.2d.md)）。
++
+ ## import だけの check の費用
+ 
+ 既定構成の最適化したビルドを、同じ通常の `target/` を使って B_WORK、修正版の順に作った。基準版のソースを変更する前に CLI と共通探査を `target/r30.2c/before/` へ保存し、修正版を `target/r30.2c/after/` へ保存した。[ビルドとバイナリのハッシュ](snapshots.json)を残した。新しい `CARGO_TARGET_DIR` は設定していない。
+@@ -58,6 +60,18 @@
+ | `Benitoite.Unofficial.Network.Http` | 20.48 | 20.51 | +0.03 | +0.1% | 0.44 / 0.29 |
+ 
+ File の短縮は5.14 msであり、修正版の空入力との差は1.22 msである。R30.1 の既存記録12.57 msに対しては1.58 ms高い。ただし、その記録は今回と同時の交互測定ではない。File は引き続き Scope の検査・型の宣言を読むため、その費用は残る。Trait だけの利用には、Scope と ScopeError の表示を読む1.71 msの追加費用がある。この差は両版のIQRの和より大きい。Http はもともと Json 経由で Trait を読み、Scope も読むため、依存の向きだけが変わる。Http と空入力の小さい差は今回のばらつきの内側である。
++
++追加費用は Trait を直接 import する利用者だけに限られず、Trait を import する次の標準モジュールを使い、従来は Scope を読まなかったプログラムにも及ぶ。対象は `git grep -n '^import Benitoite.Trait' -- crates/benitoite/src/prelude/stdlib` の全5件である。レビューアの独立測定は各組31回の交互計測の中央値（ms）であり、上の担当の測定とは別に示す。
++
++| Trait を import する標準モジュール | レビューアの B_WORK | レビューアの修正版 | 差 | Scope の読み込み |
++|---|---:|---:|---:|---|
++| `Benitoite.Unofficial.Json` | 18.66 | 20.05 | +1.39 | 新たに読む |
++| `Benitoite.Unofficial.Json.Codec` | 未測定 | 未測定 | 未測定 | 新たに読む |
++| `Benitoite.Unofficial.Csv` | 18.22 | 19.64 | +1.42 | 新たに読む |
++| `Benitoite.Unofficial.Range` | 未測定 | 未測定 | 未測定 | 新たに読む |
++| `Benitoite.Unofficial.NonEmptyList` | 未測定 | 未測定 | 未測定 | 新たに読む |
++
++Trait から Scope を読むため、これらを使うプログラムも新たに Scope を読み、Json は +1.39 ms、Csv は +1.42 ms 遅くなる。残る3件も同じ依存による追加費用の対象だが、時間は実測していない。既に別の依存から Scope を読むプログラムに、この追加費用を重ねて見込まない。設計者はこの影響範囲を知ったうえで手当てを採った（2026-10-29）。測定と判断の根拠は[独立レビュー](../reviews/RV-R30.2d.md)、再現の入力と出力は [rv-probes](../r30.2d/rv-probes/) にある。
+ 
+ 共通探査の段別時間も、各版31回の交互計測の中央値である。単位は ms。表の各欄は「B_WORK → 修正版」を示す。
+ 
+--- a/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.2d/results.md
++++ b/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.2d/results.md
+@@ -105,6 +105,33 @@
+ | [work-final-dry](work-final-dry.log) | `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab --dry-run` | 0 | 0.145 | 11.234 | [JSON](work-final-dry.json) |
+ | [work-final](work-final.log) | `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab` | 0 | 467.756 | 1357.391 | [JSON](work-final.json) |
+ 
++## R30.2e: RV-R30.2d への対応
++
++2026-10-29。[独立レビュー](../reviews/RV-R30.2d.md)の中1・軽2・軽4・軽5・軽6に対応した。B_WORK は引き続き `42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab` である。今回の編集は、[R30.2cの結果](../r30.2c/results.md)、[deriveのREADME](../../../tools/derive/README.md)、03-06、本節の文書4件に限る。Rust・Python・標準ソース・テスト・生成物は変更していない。
++
++| 指摘 | 対応 |
++|---|---|
++| 中1 | R30.2cの「import だけの check の費用」に、標準ソースへの `git grep -n '^import Benitoite.Trait'` の全5件（Json・Json.Codec・Csv・Range・NonEmptyList）を表で加えた。レビューアのJson +1.39 ms・Csv +1.42 msと、残る3件の未測定を区別した。これらの利用者も新たにScopeを読むことと、設計者が影響範囲を知って採った日（2026-10-29）を記した。新しい測定は行っていない |
++| 軽2 | R30.2cの互換性の節に、`Trait.limited` がE0303「no member」からE0330「not public」へ変わり `<benitoite>/Trait.bnt:99` を指すこと、`Scope.limited` は「no member」となることを追記した。公開の契約は変わらない |
++| 軽4 | READMEに同期箇所を明記する案を採った。Pythonの `validate_inventory` 内の `effect_kind` がRustの `BuiltinEffectId::scope_kind` の写しであること、両ソースへのリンク、現在の対応表、組み込みのエフェクトを追加・変更するときの同期の必要を記した。原子のJSON構造は変えていない |
++| 軽5 | READMEに現在の出力の範囲を明記する案を採った。効果の操作は宣言一覧の外にあり、`shape` は現在 `untargeted` だけを出力し、`single`・`topTargeted` は出力に現れないと記した。テストは追加していない |
++| 軽6 | 03-06の「範囲パラメータ」を用語集の「範囲変数」にそろえた。追跡済みのファイルを `private/`・`docs/todo/`・スキルのディレクトリ・過去の保管文書を除いて検索し、現行設計書の該当はこの1件だけと確認した。ほかの6件は今回の編集範囲外の検討資料（`study/user-effect-scopes.md` の5件、`ub10/results.md` の1件）で、将来の宣言構文案のため変更していない |
++
++指定の `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab --dry-run` は終了0だった（[選択のログ](r30.2e-dry.log)・[終了と計時](r30.2e-dry.json)）。既存差分を含めて `fmt`・`lint_default`・`lib_default`・`tests_related`・`source_rules`・`skill_generated`・`spec_tally`・`python_syntax`・`migrate_selftests` が選ばれた。今回変えたREADMEにより選ばれたのは後二つである。文書だけの作業にRust全libを追加しない規約に従い、`--only python_syntax,migrate_selftests` でこの二つだけを実行した。これは文書変更の部分選択であり、W-R全体の再実行とは呼ばない。R30.2dのW-Rの結果は上に残す。
++
++| 検査 | check.sh自身の終了 | 外側の秒 | 結果・記録 |
++|---|---:|---:|---|
++| 指定のdry-run | 0 | 0.140 | [選択と理由](r30.2e-dry.log)、[計時](r30.2e-dry.json) |
++| `scripts/check.sh --level work --base 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab --only python_syntax,migrate_selftests` | 0 | 4.499 | Python構文検査、source-migrate 6件、try-actions-migrate 10件が成功。[ログ](r30.2e-doc-check.log)、[計時](r30.2e-doc-check.json)、[time出力](r30.2e-doc-check-time.log) |
++
++既存の `run-record.py` を使い、対象を `/usr/bin/time -p` の内側で起動してcheck.sh自身の戻り値を直接保存した。検査は一度で成功した。子の時間は4.476秒、外側のreal/user/sysは4.49/2.72/0.55秒だった。最大常駐量の補助値は `getrusage(RUSAGE_CHILDREN).ru_maxrss` の78,036,992バイト、74.421875 MiBであり、子孫の最大値であって並行プロセスの合計ではない。手元の絶対パスは保存前に伏せた。文書のリンク・空白と変更範囲も確認した。
++
++`private/`・そこを指すスキルのリンク・`docs/todo/` は読んでいない。レビュー記録と `rv-probes/` は変更せず、gitの状態を変える操作、`lake build`・`check-formal.sh`・shortは行っていない。target外への一時ビルドや展開、新しい `CARGO_TARGET_DIR` は作っていない。軽3の後の課題への転記は取りまとめの担当のままとする。
++
++開始時に取得した既存ファイルのSHA-256と終了時の値を照合し、上の文書4件以外の既存差分・ログ・レビュー記録・再現入力が不変であることを確認した。[今回だけの差分](r30.2e-changes.patch)と[変更範囲の照合](r30.2e-verification.json)を残した。
++
++2026-10-29 06:53:07 UTCに時計を取得して開始し、文書と検査結果の確認を含め外側は概算6分、能動時間も概算6分だった。検査の待ちは上の4.499秒である。見込みの20〜40分と停止条件の1時間半を超えていない。
++
+ ## 差分と時間
+ 
+ [行数の記録](diff-counts.json)はB_WORKからの差分であり、引き継いだR30.2cも含む。今回のRust出力器は234行追加・32行削除（新モジュール164行を含む）、Python本番は141行追加・24行削除である。今回のRustの宣言情報テストは125行追加・5行削除、Pythonテストは141行追加・33行削除、goldenの位置は1行追加・1行削除であり、テスト契約の削除はない。処理系本体のRustの振る舞いは変えていない。

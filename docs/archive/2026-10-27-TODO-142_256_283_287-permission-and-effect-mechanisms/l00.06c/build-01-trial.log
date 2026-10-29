@@ -1,0 +1,340 @@
+== wait-for-lock start 19:59:03
+== lock acquired 19:59:03 after 0s
+✔ [32/417] Built Benitoite.Release.Atom (216ms)
+✔ [33/417] Built Benitoite.Release.Atom:c.o (98ms)
+✔ [34/417] Built Benitoite.Release.Types (284ms)
+⚠ [35/417] Built Benitoite.Release.Order.Atoms (403ms)
+warning: Benitoite/Release/Order/Atoms.lean:61:8: declaration uses `sorry`
+✔ [36/417] Built Benitoite.Release.Types:c.o (140ms)
+✔ [37/417] Built Benitoite.Release.Order.Atoms:c.o (78ms)
+✖ [38/417] Building Benitoite.Scope.RepresentationExamplesII (433ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Scope/RepresentationExamplesII.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Scope/RepresentationExamplesII.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Scope/RepresentationExamplesII.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Scope/RepresentationExamplesII.c --setup <wt>/formal/.lake/build/ir/Benitoite/Scope/RepresentationExamplesII.setup.json --json
+error: Benitoite/Scope/RepresentationExamplesII.lean:83:22: Application type mismatch: The argument
+  l
+has type
+  Release.EffName
+but is expected to have type
+  String
+in the application
+  EffDesc.mk l
+error: Benitoite/Scope/RepresentationExamplesII.lean:88:35: Application type mismatch: The argument
+  l
+has type
+  String
+but is expected to have type
+  Release.EffName
+in the application
+  Release.Atom.name l
+error: Benitoite/Scope/RepresentationExamplesII.lean:93:14: Tactic `rfl` failed: The left-hand side
+  (ofRelease (Release.Atom.name l✝)).toRelease?
+is not definitionally equal to the right-hand side
+  some (Release.Atom.name l✝)
+
+case name
+l✝ : Release.EffName
+⊢ (ofRelease (Release.Atom.name l✝)).toRelease? = some (Release.Atom.name l✝)
+warning: Benitoite/Scope/RepresentationExamplesII.lean:100:8: declaration uses `sorry`
+warning: Benitoite/Scope/RepresentationExamplesII.lean:108:24: declaration uses `sorry`
+warning: Benitoite/Scope/RepresentationExamplesII.lean:108:24: declaration uses `sorry`
+error: Benitoite/Scope/RepresentationExamplesII.lean:126:75: Application type mismatch: The argument
+  o
+has type
+  Release.OpaqueName
+but is expected to have type
+  String
+in the application
+  OpaqueDesc.mk o
+error: Benitoite/Scope/RepresentationExamplesII.lean:130:34: Type mismatch
+  h
+has type
+  True
+but is expected to have type
+  o = p
+warning: Benitoite/Scope/RepresentationExamplesII.lean:130:8: declaration uses `sorry`
+error: Benitoite/Scope/RepresentationExamplesII.lean:280:35: Application type mismatch: The argument
+  "File.Write"
+has type
+  String
+but is expected to have type
+  Release.EffName
+in the application
+  Release.Atom.name "File.Write"
+error: Benitoite/Scope/RepresentationExamplesII.lean:284:35: Application type mismatch: The argument
+  "File.Write"
+has type
+  String
+but is expected to have type
+  Release.EffName
+in the application
+  Release.Atom.name "File.Write"
+error: Benitoite/Scope/RepresentationExamplesII.lean:284:72: Application type mismatch: The argument
+  "File.Write"
+has type
+  String
+but is expected to have type
+  Release.EffName
+in the application
+  Release.Atom.name "File.Write"
+✔ [39/417] Built Benitoite.Release.Order.FiniteAtoms (375ms)
+✔ [41/417] Built Benitoite.Release.Order.Labels (670ms)
+✔ [43/417] Built Benitoite.Release.Order.Types (1.5s)
+✔ [44/417] Built Benitoite.Release.Normalize (578ms)
+✔ [46/417] Built Benitoite.Release.Order.Types:c.o (616ms)
+✔ [47/417] Built Benitoite.Release.TypeShift (1.4s)
+✔ [49/417] Built Benitoite.Release.Effect (278ms)
+✔ [50/417] Built Benitoite.Release.Effect:c.o (56ms)
+✔ [51/417] Built Benitoite.Release.TypeSubst (379ms)
+✖ [53/417] Building Benitoite.Scope.RepresentationExamplesI (497ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Scope/RepresentationExamplesI.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Scope/RepresentationExamplesI.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Scope/RepresentationExamplesI.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Scope/RepresentationExamplesI.c --setup <wt>/formal/.lake/build/ir/Benitoite/Scope/RepresentationExamplesI.setup.json --json
+error: Benitoite/Scope/RepresentationExamplesI.lean:185:68: Invalid field `toList`: The environment does not contain `Benitoite.Release.EffName.toList`, so it is not possible to project the field `toList` from an expression
+  l
+of type `EffName`
+error: Benitoite/Scope/RepresentationExamplesI.lean:193:85: Invalid field `toList`: The environment does not contain `Benitoite.Release.EffName.toList`, so it is not possible to project the field `toList` from an expression
+  l
+of type `EffName`
+error: Benitoite/Scope/RepresentationExamplesI.lean:194:55: Invalid field `toList`: The environment does not contain `Benitoite.Release.EffName.toList`, so it is not possible to project the field `toList` from an expression
+  m
+of type `EffName`
+warning: Benitoite/Scope/RepresentationExamplesI.lean:194:84: declaration uses `sorry`
+error: Benitoite/Scope/RepresentationExamplesI.lean:254:31: Type mismatch
+  "Scope.PathIn"
+has type
+  String
+but is expected to have type
+  OpaqueName
+error: Benitoite/Scope/RepresentationExamplesI.lean:287:77: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+warning: Benitoite/Scope/RepresentationExamplesI.lean:292:8: declaration uses `sorry`
+error: Benitoite/Scope/RepresentationExamplesI.lean:311:21: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:311:46: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:311:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:312:21: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:312:47: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:312:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:313:22: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:313:48: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:313:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:314:22: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:314:48: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:314:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:315:22: Application type mismatch: The argument
+  "File.Write"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Write"
+error: Benitoite/Scope/RepresentationExamplesI.lean:315:48: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:315:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:316:42: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:316:0: cannot evaluate code because 'Benitoite.Scope.RepresentationExamples.CandidateI.pathInName' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:317:30: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:317:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:318:46: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Release.Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:318:75: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Release.Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:318:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:319:37: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:319:63: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:319:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/RepresentationExamplesI.lean:320:38: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:320:64: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "File.Read"
+error: Benitoite/Scope/RepresentationExamplesI.lean:320:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+✔ [54/417] Built Benitoite.Release.Syntax (655ms)
+✔ [56/417] Built Benitoite.Release.TypeSubstLemmas (822ms)
+✔ [58/417] Built Benitoite.Surface.BuilderSyntax (388ms)
+✔ [60/417] Built Benitoite.Release.Subst (589ms)
+✔ [62/417] Built Benitoite.Interval.Domain (645ms)
+✔ [64/417] Built Benitoite.Release.TypeRows (561ms)
+✔ [66/417] Built Benitoite.Release.SubstExamples (511ms)
+✔ [67/417] Built Benitoite.Release.Order.Shift (494ms)
+✔ [68/417] Built Benitoite.Surface.BuilderLower (510ms)
+✔ [70/417] Built Benitoite.Release.LocalRef (549ms)
+✔ [72/417] Built Benitoite.Release.TypeComposition (660ms)
+✔ [73/417] Built Benitoite.Surface.FormatSpec (1.4s)
+✔ [76/417] Built Benitoite.Interval.Budget (1.0s)
+✔ [78/417] Built Benitoite.Release.NoFail (585ms)
+✔ [79/417] Built Benitoite.Release.TypeSupport (639ms)
+✔ [80/417] Built Benitoite.Interval.BudgetExamples (328ms)
+✔ [83/417] Built Benitoite.Release.Finite (942ms)
+✖ [84/417] Building Benitoite.Release.Typing (1.2s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Typing.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.setup.json --json
+error: Benitoite/Release/Typing.lean:122:29: Application type mismatch: The argument
+  l
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single l
+error: Benitoite/Release/Typing.lean:469:85: Application type mismatch: The argument
+  od.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single od.eff
+error: Benitoite/Release/Typing.lean:560:59: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+warning: Benitoite/Release/Typing.lean:640:4: declaration uses `sorry`
+warning: Benitoite/Release/Typing.lean:638:10: declaration uses `sorry`
+warning: Benitoite/Release/Typing.lean:638:10: declaration uses `sorry`
+✔ [289/417] Built Benitoite.Release.Finite:c.o (533ms)
+✔ [290/417] Built Benitoite.Release.FiniteSupport (1.8s)
+✔ [292/417] Built Benitoite.Surface.SingleFail (281ms)
+Some required targets logged failures:
+- Benitoite.Scope.RepresentationExamplesII
+- Benitoite.Scope.RepresentationExamplesI
+- Benitoite.Release.Typing
+error: build failed
+       11.19 real        22.61 user         6.24 sys
+           789250048  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1452845  page reclaims
+                  35  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 112  voluntary context switches
+               89236  involuntary context switches
+          1719373342  instructions retired
+           786123381  cycles elapsed
+            36029688  peak memory footprint
+== exit 1

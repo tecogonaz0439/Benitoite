@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+function protected() -> Integer
+ return 1
+end function
+function main() -> Unit
+ bind _ <- handle protected() with
+ case Http.send(request) -> 0
+ end handle
+end function
+@test
+function upper() -> Unit
+ main()
+end function

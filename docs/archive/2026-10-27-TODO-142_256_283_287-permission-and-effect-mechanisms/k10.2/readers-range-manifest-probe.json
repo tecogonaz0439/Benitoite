@@ -1,0 +1,703 @@
+{
+  "rangeSources": {
+    "reportSubset": {
+      "inputs": 26,
+      "commands": 50,
+      "status": "passed"
+    },
+    "status": "passed",
+    "groups": 15,
+    "definitions": 18,
+    "rejections": 6,
+    "excluded": 8,
+    "nonTopRanges": {
+      "host-one": 3,
+      "host-many": 3,
+      "ipv4-exact": 3,
+      "ipv4-cidr": 3,
+      "ipv6-exact": 3,
+      "ipv6-cidr": 3,
+      "port-range": 3,
+      "path-tree": 3,
+      "request-retained": 12,
+      "path-widen": 10,
+      "shorthand-location": 8,
+      "request-errors": 3
+    },
+    "topCompatibility": {
+      "old-ip": 0,
+      "user-spelling": 0,
+      "all-top": 0
+    },
+    "sixEntries": [
+      "desugarDiff",
+      "builtinCheck",
+      "surfaceCheck",
+      "surfaceCheckAll",
+      "coverageDiff",
+      "coverageProgramDiff"
+    ],
+    "successes": [
+      {
+        "name": "host-one",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "host-many",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "ipv4-exact",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "ipv4-cidr",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "ipv6-exact",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "ipv6-cidr",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "port-range",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "path-tree",
+        "definitions": 1,
+        "nonTopRanges": 3,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "request-retained",
+        "definitions": 1,
+        "nonTopRanges": 12,
+        "coverageEntries": 1,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "path-widen",
+        "definitions": 1,
+        "nonTopRanges": 10,
+        "coverageEntries": 1,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "shorthand-location",
+        "definitions": 1,
+        "nonTopRanges": 8,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "old-ip",
+        "definitions": 2,
+        "nonTopRanges": 0,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "user-spelling",
+        "definitions": 2,
+        "nonTopRanges": 0,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "all-top",
+        "definitions": 1,
+        "nonTopRanges": 0,
+        "coverageEntries": 0,
+        "allDefinitionsChecked": true
+      },
+      {
+        "name": "request-errors",
+        "definitions": 2,
+        "nonTopRanges": 3,
+        "coverageEntries": 1,
+        "allDefinitionsChecked": true
+      }
+    ],
+    "exclusions": [
+      {
+        "name": "old-invalid-pattern",
+        "codes": [
+          "E0459"
+        ],
+        "excluded": [
+          "Some(E0459)"
+        ]
+      },
+      {
+        "name": "old-invalid-target",
+        "codes": [
+          "E0460"
+        ],
+        "excluded": [
+          "Some(E0460)"
+        ]
+      },
+      {
+        "name": "old-invalid-ports",
+        "codes": [
+          "E0461"
+        ],
+        "excluded": [
+          "Some(E0461)"
+        ]
+      },
+      {
+        "name": "old-outside",
+        "codes": [
+          "E0462"
+        ],
+        "excluded": [
+          "Some(E0462)"
+        ]
+      },
+      {
+        "name": "new-invalid-pattern",
+        "codes": [
+          "E0459"
+        ],
+        "excluded": [
+          "Some(E0459)"
+        ]
+      },
+      {
+        "name": "new-invalid-target",
+        "codes": [
+          "E0460"
+        ],
+        "excluded": [
+          "Some(E0460)"
+        ]
+      },
+      {
+        "name": "new-invalid-ports",
+        "codes": [
+          "E0461"
+        ],
+        "excluded": [
+          "Some(E0461)"
+        ]
+      },
+      {
+        "name": "new-outside",
+        "codes": [
+          "E0462"
+        ],
+        "excluded": [
+          "Some(E0462)"
+        ]
+      }
+    ],
+    "programCoverageEntries": 3,
+    "rejectionReport": {
+      "status": "passed",
+      "groups": 15,
+      "sourceRejections": 6,
+      "requiredDirectComparisons": 3,
+      "typingRejectionComparisons": 3,
+      "independentAtomicUnionRejections": 1,
+      "acceptedCounterparts": 8,
+      "definitions": 24,
+      "nonTopRanges": 54,
+      "outcomes": [
+        {
+          "name": "required-not-covered",
+          "comparison": "required",
+          "lean": {
+            "ok": false,
+            "cover": {
+              "reason": "notCovered",
+              "key": {
+                "surfacePreorder": 0,
+                "definition": "fn:901"
+              }
+            }
+          },
+          "definitions": 1,
+          "nonTopRanges": 3,
+          "seconds": {
+            "desugarDiff": 0.02154437499999995,
+            "surfaceCheckAll": 0.021199250000000003,
+            "surfaceCheck": 0.021405166000000087
+          },
+          "rustReason": "notCovered",
+          "rustCode": "E0519",
+          "sourceKey": {
+            "definition": "sample",
+            "surfacePreorder": 0
+          },
+          "requiredIndex": {
+            "path": {
+              "tree": [
+                "data"
+              ]
+            }
+          },
+          "contract": {
+            "path": {
+              "exact": [
+                "data",
+                "a"
+              ]
+            }
+          }
+        },
+        {
+          "name": "required-unknown",
+          "comparison": "required",
+          "lean": {
+            "ok": false,
+            "cover": {
+              "reason": "unknownSource",
+              "key": {
+                "surfacePreorder": 0,
+                "definition": "fn:901"
+              }
+            }
+          },
+          "definitions": 1,
+          "nonTopRanges": 3,
+          "seconds": {
+            "desugarDiff": 0.022276750000000067,
+            "surfaceCheckAll": 0.02255683399999997,
+            "surfaceCheck": 0.02274749999999992
+          },
+          "rustReason": "unknownSource",
+          "rustCode": "E0519",
+          "sourceKey": {
+            "definition": "sample",
+            "surfacePreorder": 0
+          },
+          "requiredIndex": "top",
+          "contract": {
+            "path": {
+              "tree": [
+                "data"
+              ]
+            }
+          }
+        },
+        {
+          "name": "request-widen-rejected",
+          "comparison": "required",
+          "lean": {
+            "ok": false,
+            "cover": {
+              "reason": "unknownSource",
+              "key": {
+                "surfacePreorder": 0,
+                "definition": "fn:901"
+              }
+            }
+          },
+          "definitions": 1,
+          "nonTopRanges": 7,
+          "seconds": {
+            "desugarDiff": 0.02246637500000004,
+            "surfaceCheckAll": 0.02546804199999997,
+            "surfaceCheck": 0.02554912499999995
+          },
+          "rustReason": "unknownSource",
+          "rustCode": "E0519",
+          "sourceKey": {
+            "definition": "sample",
+            "surfacePreorder": 0
+          },
+          "requiredIndex": "top",
+          "contract": {
+            "endpoint": {
+              "host": {
+                "name": {
+                  "exact": [
+                    "api",
+                    "example",
+                    "com"
+                  ]
+                }
+              },
+              "ports": {
+                "lo": 443,
+                "hi": 443
+              }
+            }
+          }
+        },
+        {
+          "name": "effect-not-covered",
+          "comparison": "typing",
+          "lean": {
+            "ok": false,
+            "error": {
+              "reason": "effect exceeds the allowed effect",
+              "path": [
+                0
+              ]
+            }
+          },
+          "definitions": 2,
+          "nonTopRanges": 4,
+          "seconds": {
+            "desugarDiff": 0.035380125000000096,
+            "surfaceCheckAll": 0.024481000000000197,
+            "surfaceCheck": 0.021314292000000012
+          },
+          "rustReason": "notCovered",
+          "rustCode": "E0519",
+          "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない"
+        },
+        {
+          "name": "effect-atomic",
+          "comparison": "typing",
+          "lean": {
+            "ok": false,
+            "error": {
+              "reason": "effect exceeds the allowed effect",
+              "path": [
+                0
+              ]
+            }
+          },
+          "definitions": 2,
+          "nonTopRanges": 6,
+          "seconds": {
+            "desugarDiff": 0.02096616600000001,
+            "surfaceCheckAll": 0.021218417000000045,
+            "surfaceCheck": 0.021264875000000405
+          },
+          "rustReason": "atomicCoverOnly",
+          "rustCode": "E0519",
+          "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない"
+        },
+        {
+          "name": "effect-top",
+          "comparison": "typing",
+          "lean": {
+            "ok": false,
+            "error": {
+              "reason": "effect exceeds the allowed effect",
+              "path": [
+                0
+              ]
+            }
+          },
+          "definitions": 2,
+          "nonTopRanges": 2,
+          "seconds": {
+            "desugarDiff": 0.02089945800000015,
+            "surfaceCheckAll": 0.020747291999999806,
+            "surfaceCheck": 0.020910333000000225
+          },
+          "rustReason": "unknownSource",
+          "rustCode": "E0519",
+          "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない",
+          "leanAtomReasonExpected": "unknownSource",
+          "leanAtomReasonObserved": null,
+          "reasonNote": "入口はtypingだけを報告する。原子の理由をcoverへ変換しない"
+        },
+        {
+          "name": "required-not-covered-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 1,
+          "nonTopRanges": 3,
+          "seconds": {
+            "desugarDiff": 0.020412125000000003,
+            "surfaceCheckAll": 0.020657334000000027,
+            "surfaceCheck": 0.020505875000000007
+          }
+        },
+        {
+          "name": "required-unknown-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 1,
+          "nonTopRanges": 0,
+          "seconds": {
+            "desugarDiff": 0.020552125000000032,
+            "surfaceCheckAll": 0.020866250000000086,
+            "surfaceCheck": 0.02073283299999984
+          }
+        },
+        {
+          "name": "request-widen-rejected-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 1,
+          "nonTopRanges": 0,
+          "seconds": {
+            "desugarDiff": 0.020804333000000064,
+            "surfaceCheckAll": 0.020596874999999848,
+            "surfaceCheck": 0.02176308299999974
+          }
+        },
+        {
+          "name": "effect-not-covered-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 2,
+          "nonTopRanges": 4,
+          "seconds": {
+            "desugarDiff": 0.021608708000000032,
+            "surfaceCheckAll": 0.02198062500000031,
+            "surfaceCheck": 0.021131249999999824
+          }
+        },
+        {
+          "name": "effect-atomic-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 2,
+          "nonTopRanges": 4,
+          "seconds": {
+            "desugarDiff": 0.020626000000000033,
+            "surfaceCheckAll": 0.022193999999999825,
+            "surfaceCheck": 0.021665915999999896
+          }
+        },
+        {
+          "name": "effect-top-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 2,
+          "nonTopRanges": 0,
+          "seconds": {
+            "desugarDiff": 0.020844708999999906,
+            "surfaceCheckAll": 0.021660250000000048,
+            "surfaceCheck": 0.022040916999999993
+          }
+        },
+        {
+          "name": "atomic-union-rejected",
+          "comparison": "typing",
+          "lean": {
+            "ok": false,
+            "error": {
+              "reason": "effect exceeds the allowed effect",
+              "path": [
+                0
+              ]
+            }
+          },
+          "definitions": 2,
+          "nonTopRanges": 6,
+          "seconds": {
+            "desugarDiff": 0.02249462499999977,
+            "surfaceCheckAll": 0.022913124999999646,
+            "surfaceCheck": 0.022736957999999863
+          }
+        },
+        {
+          "name": "atomic-left-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 2,
+          "nonTopRanges": 6,
+          "seconds": {
+            "desugarDiff": 0.022603624999999905,
+            "surfaceCheckAll": 0.023556791999999938,
+            "surfaceCheck": 0.022474749999999766
+          }
+        },
+        {
+          "name": "atomic-right-accepted",
+          "comparison": "accepted",
+          "lean": {
+            "ok": true
+          },
+          "definitions": 2,
+          "nonTopRanges": 6,
+          "seconds": {
+            "desugarDiff": 0.023509957999999997,
+            "surfaceCheckAll": 0.024351416000000015,
+            "surfaceCheck": 0.024302583000000322
+          }
+        }
+      ]
+    }
+  },
+  "rangeSourceExpectedHashes": {
+    "sources": "86b619ba3726a82e4e191a945886ceb45250816d1d3c9ade5572e838f25893a9",
+    "reports": "c8bfe176ea31e0098f29063424f722845f3193b7c7106b11a033d88cef1254bc"
+  },
+  "rangeBudgets": {
+    "version": 1,
+    "success": true,
+    "cases": [
+      {
+        "name": "numbering-stop",
+        "rustRules": 6,
+        "lean": "notApplicable-numbering-limit"
+      },
+      {
+        "name": "last-run-exceeded",
+        "rustRules": 2,
+        "key": {
+          "definition": "fn:43",
+          "surfacePreorder": 6
+        },
+        "reason": "budgetExceeded",
+        "nonTopRangesWithoutCandidates": 5,
+        "definitions": 1,
+        "reports": [
+          {
+            "tool": "surfaceCheck",
+            "returncode": 1,
+            "outerSeconds": 0.02730575
+          },
+          {
+            "tool": "surfaceCheckAll",
+            "returncode": 1,
+            "outerSeconds": 0.026237457999999998
+          },
+          {
+            "tool": "desugarDiff",
+            "returncode": 0,
+            "outerSeconds": 0.022747917000000006
+          },
+          {
+            "tool": "builtinCheck",
+            "returncode": 0,
+            "outerSeconds": 0.02369850000000001
+          }
+        ]
+      },
+      {
+        "name": "inner-exceeded-outer-recovered",
+        "rustRules": 6,
+        "key": {
+          "definition": "fn:43",
+          "surfacePreorder": 19
+        },
+        "reason": "unknownSource",
+        "nonTopRangesWithoutCandidates": 16,
+        "definitions": 1,
+        "reports": [
+          {
+            "tool": "surfaceCheck",
+            "returncode": 1,
+            "outerSeconds": 0.02744350000000001
+          },
+          {
+            "tool": "surfaceCheckAll",
+            "returncode": 1,
+            "outerSeconds": 0.026051040999999997
+          },
+          {
+            "tool": "desugarDiff",
+            "returncode": 0,
+            "outerSeconds": 0.022562166999999994
+          },
+          {
+            "tool": "builtinCheck",
+            "returncode": 0,
+            "outerSeconds": 0.024420458000000006
+          }
+        ]
+      }
+    ],
+    "rustOnlyCases": 1,
+    "auxiliaryExpectedMismatches": [
+      {
+        "name": "last-run-exceeded",
+        "expected": 6,
+        "actual": 4
+      }
+    ],
+    "auxiliaryExpectedMismatchCount": 1,
+    "successScope": "Required keys, indices and reasons; auxiliary metric expectation has one recorded mismatch",
+    "leanComparedCases": 2,
+    "requiredReasonComparisons": 2,
+    "maxRssBytesAuxiliary": 42221568
+  },
+  "rangeKnownDifferences": {
+    "success": true,
+    "scope": "名指ししたRustの結果と除外理由。Rust/Leanの同じ受理や理由の一致へ算入しない",
+    "cases": [
+      {
+        "name": "class-structural",
+        "returncode": 2,
+        "codes": [
+          "E0711"
+        ],
+        "outerSeconds": 0.070851375,
+        "exclusion": "E0711",
+        "target": "trait versus implementation effect declaration of class-structural",
+        "reason": "Rust compares implementation and trait effect declarations structurally; Lean checks method body coverage under the trait declaration"
+      },
+      {
+        "name": "nul-direct",
+        "returncode": 2,
+        "codes": [
+          "E0459"
+        ],
+        "outerSeconds": 0.10929966700000002,
+        "exclusion": "leanStringPrecision",
+        "target": "the direct hostPattern literal of nul-direct only",
+        "reason": "Only the condition literal beginning U+0000 and followed by integer spelling; Rust retains a String argument and rejects its host spelling, while Lean absArg forgets that literal"
+      },
+      {
+        "name": "nul-dynamic",
+        "returncode": 0,
+        "codes": [],
+        "outerSeconds": 0.11033537500000001,
+        "exclusion": null,
+        "target": null,
+        "reason": "Local string condition is statically unknown and accepted at Top; runtime spelling check remains"
+      }
+    ],
+    "exclusions": {
+      "E0711": 1,
+      "leanStringPrecision": 1
+    },
+    "outsideExclusions": [
+      "ordinary integer ports",
+      "ordinary string conditions",
+      "whole Http.ClientRequest records",
+      "all dynamic host patterns"
+    ]
+  }
+}

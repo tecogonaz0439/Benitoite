@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope
+function sample(path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ bind checkPathIn <- lambda(pattern: String, p: String) return Scope.checkPathIn(pattern: "/data/**", path: p)
+ return checkPathIn(pattern: "/data/**", p: path)
+end function
+function main() -> Unit
+ ()
+end function

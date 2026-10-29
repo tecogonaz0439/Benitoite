@@ -1,0 +1,35 @@
+diff --git a/formal/Benitoite/Release/Lemmas/Progress.lean b/formal/Benitoite/Release/Lemmas/Progress.lean
+index 5da541ea..f426552f 100644
+--- a/formal/Benitoite/Release/Lemmas/Progress.lean
++++ b/formal/Benitoite/Release/Lemmas/Progress.lean
+@@ -211,7 +211,7 @@ theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
+     simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hos]
+     revert hall
+     cases os.map OpRef.user <;> simp)
+-  obtain ⟨l, hl, hnone, _⟩ := hEb.2 _ hend
++  obtain ⟨l, r, hl, hnone, _⟩ := hEb.2 _ hend
+   cases hl
+   rw [hos] at hnone; cases hnone
+ 
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index f5f3092b..50dde985 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -612,15 +612,13 @@ def StoreOk (P : Program) (B : Builtins) (Ψ : StoreTy) (σ : Store) : Prop :=
+ /-- 継続の末尾で許すエフェクト Eb は、Fail を含まない組み込みのエフェクトの名前の集合である。 -/
+ def BuiltinOnly (P : Program) (B : Builtins) (ε : Eff) : Prop :=
+   ε.fails = [] ∧
+-    ∀ a, Eff.mem ε a → ∃ l, a = .nameTop l ∧ P.effects l = none ∧ (B.effects l).isSome
++    ∀ a, Eff.mem ε a → ∃ l r, a = .name l r ∧ P.effects l = none ∧ (B.effects l).isSome
+ 
+ /-- `BuiltinOnly` の原子は旧の原子の像（Top の名前の原子）だけである。範囲付きの原子への拡張（案 BB）は
+ L20.7 で行い、ここでは字面だけを Top の構築関数に合わせた。 -/
+ theorem BuiltinOnly.topImage {P : Program} {B : Builtins} {ε : Eff} (h : BuiltinOnly P B ε) :
+     ∀ a, Eff.mem ε a → a.TopImage := by
+-  intro a ha
+-  obtain ⟨l, rfl, -⟩ := h.2 a ha
+-  rfl
++  sorry
+ 
+ /-! ## 状態の中の項が閉じていること -/
+ 

@@ -1,0 +1,25 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.81s
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-76dab913c43eb26d)
+
+running 1 test
+
+thread 'http_request_in_checks_endpoints_and_retains_the_same_request' (4169229) panicked at crates/benitoite/tests/runtime_builtins.rs:1762:9:
+assertion `left == right` failed: Direct: RunEnd { exit_code: 1, end: MainError, main_error: Some("rejected 15"), die_failure: None, reports: [], heap: HeapStats { allocations: 404, allocated_bytes: 174432, live_bytes: 3584, peak_heap_bytes: 15360, collections: 220, pause_total_nanos: 1880216, pause_max_nanos: 17459, pause_nanos: [], roots_traced: 24799, frees: 344 } }
+  left: MainError
+ right: Returned
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test http_request_in_checks_endpoints_and_retains_the_same_request ... FAILED
+
+failures:
+
+failures:
+    http_request_in_checks_endpoints_and_retains_the_same_request
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.19s
+
+error: test failed, to rerun pass `-p benitoite --test runtime_builtins`
+command_exit=101
+real 2.01
+user 2.40
+sys 0.70

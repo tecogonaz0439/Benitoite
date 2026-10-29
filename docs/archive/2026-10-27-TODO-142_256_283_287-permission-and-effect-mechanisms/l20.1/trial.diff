@@ -1,0 +1,302 @@
+diff --git a/formal/Benitoite.lean b/formal/Benitoite.lean
+index 80d866eb..09f4f138 100644
+--- a/formal/Benitoite.lean
++++ b/formal/Benitoite.lean
+@@ -236,3 +236,4 @@ import Benitoite.Scope.SignatureExamples
+ import Benitoite.Scope.InferenceExamples
+ import Benitoite.Scope.CompatExamples
+ import Benitoite.Scope.SwitchExamples
++import Benitoite.Release.Lemmas.WidenTrial
+--- /dev/null
++++ b/formal/Benitoite/Release/Lemmas/WidenTrial.lean
+@@ -0,0 +1,290 @@
++import Benitoite.Release.Model
++import Benitoite.Release.RangeIxExamples
++
++/-!
++# L20.1 の試行: BB の拡大の補題（コミットしない）
++
++`StateTyE` の継続の末尾の添字についての単調性と、範囲付きの原子を持つ状態を末尾を Top の像へ広げて
++公開の `StateTy` に入れる補題が、構造上の `Eff.Sub` のもとで成り立つかを確かめる。
++-/
++
++namespace Benitoite.Release.WidenTrial
++
++open Benitoite.Release
++
++variable {P : Program} {B : Builtins}
++
++/-! ## 1. 末尾の添字についての単調性 -/
++
++/-- 継続の型付けは、末尾の添字 ε0 を包含で大きくしても成り立つ。ε0 を読むのは `K_Empty` の `Eff.Sub ε ε0`
++だけである。 -/
++theorem _root_.Benitoite.Release.ContTy.mono_end {Ψ R ε k a b ε0 ε0' Re} (h : ContTy P B Ψ R ε k a b ε0 Re)
++    (hs : Eff.Sub ε0 ε0') : ContTy P B Ψ R ε k a b ε0' Re := by
++  induction h with
++  | K_Empty h1 hw => exact .K_Empty (h1.trans hs) hw
++  | K_Let hn hw h1 _ ih => exact .K_Let hn hw h1 (ih hs)
++  | K_Mark _ hw ih => exact .K_Mark (ih hs) hw
++  | K_Update hl _ ih => exact .K_Update hl (ih hs)
++  | K_Release hv hr h1 _ ih => exact .K_Release hv hr h1 (ih hs)
++  | K_Handle _ h1 hc hw ih => exact .K_Handle (ih hs) h1 hc hw
++  | K_Handle_Fail _ hr hn hc he hw ih => exact .K_Handle_Fail (ih hs) hr hn hc he hw
++  | K_Drop hl h1 _ ih => exact .K_Drop hl h1 (ih hs)
++  | K_Guard hm h1 hp hb _ ih => exact .K_Guard hm h1 hp hb (ih hs)
++  | K_Sub _ hle ih => exact .K_Sub (ih hs) hle
++
++/-- `StateTyE` は末尾の添字 Eb について単調である。 -/
++theorem _root_.Benitoite.Release.StateTyE.mono {Eb Eb' : Eff} {s : State} (h : StateTyE P B Eb s) (hs : Eff.Sub Eb Eb') :
++    StateTyE P B Eb' s := by
++  cases s with
++  | run m k σ =>
++      simp only [StateTyE] at h ⊢
++      obtain ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h5, h6, h7⟩ := h
++      exact ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4.mono_end hs, h5, h6, h7⟩
++  | matchRun v arms next k σ =>
++      simp only [StateTyE] at h ⊢
++      obtain ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h5, h6, h7, h8⟩ := h
++      exact ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4.mono_end hs, h5, h6, h7, h8⟩
++  | error rs k σ =>
++      simp only [StateTyE] at h ⊢
++      obtain ⟨Ψ, R, a, b, ε, h1, h2, h3, h4⟩ := h
++      exact ⟨Ψ, R, a, b, ε, h1, h2.mono_end hs, h3, h4⟩
++  | exit n rs k σ =>
++      simp only [StateTyE] at h ⊢
++      obtain ⟨Ψ, R, a, b, ε, h1, h2, h3, h4⟩ := h
++      exact ⟨Ψ, R, a, b, ε, h1, h2.mono_end hs, h3, h4⟩
++
++/-- 単調性からの拡大: 末尾の添字を `BuiltinOnly` を満たす上界へ広げられるなら、公開の `StateTy` に入る。 -/
++theorem stateTy_of_stateTyE_sub {Eb Eb' : Eff} {s : State} (h : StateTyE P B Eb s)
++    (hs : Eff.Sub Eb Eb') (hb : BuiltinOnly P B Eb') : StateTy P B s :=
++  stateTy_iff.mpr ⟨Eb', hb, h.mono hs⟩
++
++/-! ## 2. `K_Empty` の `Eff.Sub` が壁になること -/
++
++/-- 範囲の位置が Top でない名前の原子を含む効果は、`BuiltinOnly` を満たすどの効果にも含まれない
++（`Eff.Sub` は原子ごとの所属の包含で、`BuiltinOnly` の原子は Top の名前の原子だけ）。 -/
++theorem not_builtinOnly_of_sub {Eb Eb' : Eff} {l : EffName} {r : Scope.Signature.Ix}
++    (hmem : Eff.mem Eb (.name l r)) (hr : r ≠ Scope.Signature.Ix.top) (hs : Eff.Sub Eb Eb') :
++    ¬ BuiltinOnly P B Eb' := by
++  intro hb
++  obtain ⟨l', he, -⟩ := hb.2 _ (hs.1 _ hmem)
++  cases he
++  exact hr rfl
++
++/-- `ContTy.name_end` の範囲付きの版。範囲の位置 r を持つ名前の原子 l は、l を処理する `handle` の枠がなければ、
++同じ範囲の位置のまま継続の末尾に届く（`handled` は範囲の位置を見ない）。 -/
++theorem _root_.Benitoite.Release.ContTy.name_end_ix {Ψ R ε k a b ε0 Re l r} (h : ContTy P B Ψ R ε k a b ε0 Re)
++    (hl : Eff.mem ε (.name l r))
++    (hno : ∀ hs, Frame.handleF hs ∈ k → Eff.test (handled P B hs) (.nameTop l) = false) :
++    Eff.mem ε0 (.name l r) := by
++  induction h with
++  | K_Empty hs _ => exact hs.1 _ hl
++  | K_Let _ _ _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
++  | K_Mark _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
++  | K_Update _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
++  | K_Release _ _ _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
++  | @K_Handle R ε εc hs k t b ε0 Re _ hsub _ _ ih =>
++      have hh := hno hs (by simp)
++      rw [Eff.mem_union] at hl
++      have hl' := hl.resolve_right (fun hm => by
++        change Eff.test (handled P B hs) (.name l r) = true at hm
++        rw [handled_name, hh] at hm
++        cases hm)
++      exact ih (hsub.1 _ hl') (fun hs' hm => hno hs' (by simp [hm]))
++  | K_Handle_Fail _ hr _ _ _ _ ih =>
++      have ha : Eff.mem _ (.name l r) := (Eff.mem_union _ _ _).mp hl |>.resolve_left (by
++        simp [Eff.mem, Eff.test, Eff.singleFail, Eff.atoms])
++      exact ih (hr.1 _ ha) (fun hs hm => hno hs (by simp [hm]))
++  | K_Drop _ _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
++  | K_Guard => simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at hl
++  | K_Sub _ _ ih => exact ih hl hno
++
++/-- 壁の一般形: 計算 m のどの型付けの効果も範囲の位置が Top でない原子 `l[r]` を含み、継続に l を処理する枠が
++なければ、状態 `⟨m, k, σ⟩` は公開の `StateTy` に入らない。 -/
++theorem not_stateTy_run {m : Comp} {k : Cont} {σ : Store} {l : EffName} {r : Scope.Signature.Ix}
++    (hr : r ≠ Scope.Signature.Ix.top)
++    (hforce : ∀ Ψ R a ε1, HasTypeC P B Ψ [] [] R m a ε1 → Eff.mem ε1 (.name l r))
++    (hno : ∀ hs, Frame.handleF hs ∈ k → Eff.test (handled P B hs) (.nameTop l) = false) :
++    ¬ StateTy P B (.run m k σ) := by
++  intro h
++  simp only [StateTy] at h
++  obtain ⟨Ψ, R, a, b, ε, ε1, Eb, -, hm, h1, hk, hEb, -⟩ := h
++  have hend := hk.name_end_ix (h1.1 _ (hforce _ _ _ _ hm)) hno
++  exact not_builtinOnly_of_sub hend hr (Eff.Sub.refl _) hEb
++
++/-! ## 3. 具体の反例
++
++組み込みのエフェクト `File.Write`（操作なし）を足した組み込みの関数の模型 `wB` と、効果 `{File.Write[ix]}` を
++宣言した定義 `f`（本体は `return ()`）だけを持つプログラム `progOf ix` を使う。`ix = /data/**` のとき、
++`⟨f(), [], ∅⟩` は `StateTyE`（末尾 = 初期の計算の効果）に入るが、公開の `StateTy` に入らない。`ix = Top` の
++ときは入る。四主定理の前提（`WellFormed`・`WellTyped`・`EffectsOk`・`Assumptions`）はどちらでも成り立つ。 -/
++
++/-- `Model.builtins` に、操作を持たない組み込みのエフェクト `File.Write` を足したもの。 -/
++def wB : Builtins :=
++  { Model.builtins with
++    effects := fun l => if l = stateEff then some [] else if l = "File.Write" then some [] else none }
++
++theorem wB_assumptions (P : Program) : wB.Assumptions P :=
++  { Model.assumptions P with
++    delta_typed := by
++      intro Ψ b s ts es ws h hk
++      rcases Model.sig_cases h with rfl | rfl <;> simp [Model.refGetSig, Model.refSetSig] at hk
++    io_kind := fun _ _ _ _ _ _ _ h => h.elim
++    io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
++    io_exists := by
++      intro Ψ b s ts es ws h hk
++      rcases Model.sig_cases h with rfl | rfl <;> simp [Model.refGetSig, Model.refSetSig] at hk
++    release_exists := fun _ _ _ _ _ => ⟨none, rfl⟩
++    io_op := by
++      intro b s h hk
++      rcases Model.sig_cases h with rfl | rfl <;> simp [Model.refGetSig, Model.refSetSig] at hk
++    effect_ops := by
++      intro l bs b h hb
++      simp only [wB] at h
++      split at h
++      · cases h; simp at hb
++      · split at h
++        · cases h; simp at hb
++        · cases h
++    state_effect := by simp [wB] }
++
++def dataTree : Scope.Signature.Ix := .fixed (.path (.tree ["data"]))
++
++/-- 効果 `{File.Write[ix]}`。 -/
++def writeEff (ix : Scope.Signature.Ix) : Eff := Eff.ofAtoms (fun a => a == .name "File.Write" ix)
++
++def writeDef (ix : Scope.Signature.Ix) : Def where
++  tparams := []
++  neffs := 0
++  names := []
++  params := []
++  ret := .base .unit
++  eff := writeEff ix
++  body := .ret (.const .unit)
++
++def progOf (ix : Scope.Signature.Ix) : Program :=
++  ⟨fun f => if f = "f" then some (writeDef ix) else none, fun _ => none, fun _ => none, fun _ => none,
++    fun _ => none, fun _ => none⟩
++
++theorem dataTree_ne_top : dataTree ≠ Scope.Signature.Ix.top := by
++  simp [dataTree, Scope.Signature.Ix.top]
++
++theorem mem_writeEff (ix : Scope.Signature.Ix) : Eff.mem (writeEff ix) (.name "File.Write" ix) := by
++  simp [writeEff, Eff.mem, Eff.test, Eff.atoms]
++
++theorem progOf_defs {ix f d} (h : (progOf ix).defs f = some d) : d = writeDef ix := by
++  simp only [progOf] at h
++  split at h
++  · cases h; rfl
++  · cases h
++
++theorem empty_sub_writeEff (ix : Scope.Signature.Ix) : Eff.Sub Eff.empty (writeEff ix) :=
++  ⟨fun a h => by simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at h,
++    fun t h => by simp [Eff.memFail, Eff.empty, Eff.fails] at h⟩
++
++theorem progOf_wellFormed (ix : Scope.Signature.Ix) : (progOf ix).WellFormed := by
++  refine ⟨?_, fun _ _ h => (by cases h), fun _ _ h => (by cases h), fun _ _ h => (by cases h),
++    fun _ _ h => (by cases h)⟩
++  intro f d h
++  rw [progOf_defs h]
++  refine ⟨by simp [NamesWF, writeDef], by simp [writeDef, Ty.VarsInList], by simp [writeDef, Ty.VarsIn], ?_,
++    by simp [writeDef, Comp.VarsIn, Val.VarsIn]⟩
++  simp only [writeDef, writeEff, Eff.ofAtoms, Eff.VarsIn, Ty.VarsInList]
++  refine ⟨fun i h => ?_, trivial⟩
++  simp at h
++
++theorem progOf_wellTyped (ix : Scope.Signature.Ix) : (progOf ix).WellTyped wB := by
++  refine ⟨?_, fun _ _ h => (by cases h)⟩
++  intro f d h
++  rw [progOf_defs h]
++  exact ⟨by simp [NamesWF, writeDef], .C_Eff (.C_Return .V_Const) (empty_sub_writeEff ix)⟩
++
++theorem progOf_effectsOk (ix : Scope.Signature.Ix) : (progOf ix).EffectsOk wB :=
++  ⟨fun _ _ _ h => (by cases h), fun _ _ h => (by cases h), fun _ _ h => (by cases h)⟩
++
++/-- 呼び出し `f()`。 -/
++def callF : Comp := .app (.fnRef "f" [] []) []
++
++theorem writeDef_admissible (ix : Scope.Signature.Ix) :
++    Admissible wB [] [] 0 (Qsig [] (.base .unit) (writeEff ix)) Qempty [] [] (writeEff ix) where
++  types := ⟨rfl, fun i _ _ h => by simp at h⟩
++  typeScope := fun t h => by simp at h
++  rowCount := rfl
++  rowScope := fun f h => by simp at h
++  sourceRows := by
++    simp only [writeEff, Eff.ofAtoms, Eff.RowsIn, Ty.RowsInList]
++    refine ⟨fun i h => ?_, trivial⟩
++    simp at h
++  sourceQ := fun i h => by
++    simp [Qsig, QTys, QTy, QEff, writeEff, Eff.ofAtoms, Qempty] at h
++  noFailRows := fun i h => by
++    simp [Qsig, QTys, QTy, QEff, writeEff, Eff.ofAtoms, Qempty] at h
++
++/-- `f()` は、`f` の宣言した効果の型代入の像で型付く。 -/
++theorem callF_typed (ix : Scope.Signature.Ix) :
++    HasTypeC (progOf ix) wB StoreTy.empty [] [] none callF (.base .unit)
++      (Eff.substAt 0 [] [] (writeEff ix)) :=
++  .C_App (.V_Fun (d := writeDef ix) (by simp [progOf]) (by simp [NamesWF, writeDef])
++    (writeDef_admissible ix)) .nil
++
++theorem callF_closed : callF.ClosedNoEffVars := by
++  simp [callF, Comp.ClosedNoEffVars, Comp.VarsIn, Val.VarsIn, Ty.VarsInList, Eff.VarsInList, Val.VarsInList]
++
++/-- 状態 `⟨f(), [], ∅⟩`。 -/
++def s0 : State := .run callF [] Store.empty
++
++/-- 末尾を初期の計算の効果に固定すれば、内部の状態の型付けに入る。 -/
++theorem s0_stateTyE (ix : Scope.Signature.Ix) :
++    StateTyE (progOf ix) wB (Eff.substAt 0 [] [] (writeEff ix)) s0 :=
++  stateTyE_init_eff (progOf_wellFormed ix) (wB_assumptions _) (callF_typed ix) callF_closed
++
++/-- `f()` のどの型付けの効果も `File.Write[ix]` を含む。 -/
++theorem callF_forces {ix Ψ R a ε1} (h : HasTypeC (progOf ix) wB Ψ [] [] R callF a ε1) :
++    Eff.mem ε1 (.name "File.Write" ix) := by
++  obtain ⟨names, as, b, ε', hf, -, -, hsub⟩ := h.inv_app rfl
++  obtain ⟨d, hd, -, -, -, hle⟩ := hf.inv_fnRef rfl
++  rw [progOf_defs hd] at hle
++  obtain ⟨-, -, -, hε⟩ := Ty.Le.fn_fn' hle
++  exact hsub.1 _ (hε.1 _ (Eff.substAt_name (mem_writeEff ix)))
++
++/-- 反例: 範囲付き（`/data/**`）のとき、`⟨f(), [], ∅⟩` は公開の `StateTy` に入らない。 -/
++theorem s0_not_stateTy : ¬ StateTy (progOf dataTree) wB s0 :=
++  not_stateTy_run dataTree_ne_top (fun _ _ _ _ h => callF_forces h) (fun _ h => by simp at h)
++
++/-- 対照: Top の像へ広げた末尾 `{File.Write}` は `BuiltinOnly` を満たす。壁は範囲の位置だけである。 -/
++theorem topWiden_builtinOnly : BuiltinOnly (progOf dataTree) wB (Eff.single "File.Write") :=
++  ⟨rfl, fun a h => ⟨"File.Write", (Eff.mem_single _ _).mp h, rfl, by simp [wB, stateEff]⟩⟩
++
++/-- 対照: しかし初期の効果は Top の像に構造上含まれない（`File.Write[/data/**] ∉ {File.Write[Top]}`）。 -/
++theorem not_sub_topWiden : ¬ Eff.Sub (Eff.substAt 0 [] [] (writeEff dataTree)) (Eff.single "File.Write") :=
++  fun hs => not_builtinOnly_of_sub (Eff.substAt_name (mem_writeEff dataTree)) dataTree_ne_top hs
++    topWiden_builtinOnly
++
++/-- 対照: Top のとき、同じ状態は公開の `StateTy` に入る（`Eff.substAt` の像を単調性で `{File.Write}` へ広げる）。 -/
++theorem substAt_writeEff (ix : Scope.Signature.Ix) : Eff.substAt 0 [] [] (writeEff ix) = writeEff ix :=
++  Eff.substAt_nil_of_wf [] (writeEff ix) (by simp [writeEff, Eff.ofAtoms, Eff.WF, Ty.WFList])
++    (Eff.canonical_ofAtoms _)
++
++theorem s0_top_stateTy : StateTy (progOf Scope.Signature.Ix.top) wB s0 := by
++  have h := s0_stateTyE Scope.Signature.Ix.top
++  rw [substAt_writeEff] at h
++  refine stateTy_iff.mpr ⟨_, ⟨rfl, fun a ha => ?_⟩, h⟩
++  have ha' : a = .nameTop "File.Write" := by simpa [writeEff, Eff.mem, Eff.test, Eff.atoms] using ha
++  exact ⟨"File.Write", ha', rfl, by simp [wB, stateEff]⟩
++
++/-- L00.04 の模型の `stTy_widenTop` の本番版の一般の言明は偽である。 -/
++theorem widen_statement_false :
++    ¬ (∀ (P : Program) (B : Builtins), P.WellFormed → P.WellTyped B → P.EffectsOk B → B.Assumptions P →
++        ∀ Eb s, StateTyE P B Eb s → StateTy P B s) := by
++  intro h
++  exact s0_not_stateTy (h _ wB (progOf_wellFormed _) (progOf_wellTyped _) (progOf_effectsOk _)
++    (wB_assumptions _) _ _ (s0_stateTyE dataTree))
++
++/-- 内部の保存は末尾の添字によらず成り立つので、`s0` から到達した状態は全て同じ末尾で `StateTyE` に入る
++（`preservationE`・`step_soundE` は `BuiltinOnly` を使わない）。公開の `progress`・`preservation`・
++`step_sound` は前提 `StateTy` が偽なので、これらの状態について何も言わない。 -/
++theorem s0_reachable_stateTyE {s : State} (hs : Steps (progOf dataTree) wB s0 s) :
++    StateTyE (progOf dataTree) wB (Eff.substAt 0 [] [] (writeEff dataTree)) s :=
++  steps_preserve (progOf_wellFormed _) (progOf_wellTyped _) (progOf_effectsOk _) (wB_assumptions _) hs
++    (s0_stateTyE dataTree)
++
++end Benitoite.Release.WidenTrial

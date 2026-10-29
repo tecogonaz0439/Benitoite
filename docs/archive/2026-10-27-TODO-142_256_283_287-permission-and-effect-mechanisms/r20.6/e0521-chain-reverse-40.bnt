@@ -1,0 +1,739 @@
+import Benitoite.Unofficial.IO.File
+effect Tick
+ function tick() -> Integer
+end effect
+function protected() -> Integer uses File.Read["/data/a"]
+ return 1
+end function
+function sample() -> Integer uses File.Read["/data/a"]
+ bind run0 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run1 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run2 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run3 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run4 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run5 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run6 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run7 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run8 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run9 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run10 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run11 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run12 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run13 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run14 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run15 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run16 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run17 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run18 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run19 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run20 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run21 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run22 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run23 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run24 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run25 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run26 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run27 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run28 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run29 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run30 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run31 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run32 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run33 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run34 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run35 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run36 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run37 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run38 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind run39 <- lambda(f)
+ return handle f() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+ end lambda
+ bind call <- lambda()
+ return protected()
+ end lambda
+ bind call39 <- lambda()
+ return run39(call)
+ end lambda
+ bind call38 <- lambda()
+ return run38(call39)
+ end lambda
+ bind call37 <- lambda()
+ return run37(call38)
+ end lambda
+ bind call36 <- lambda()
+ return run36(call37)
+ end lambda
+ bind call35 <- lambda()
+ return run35(call36)
+ end lambda
+ bind call34 <- lambda()
+ return run34(call35)
+ end lambda
+ bind call33 <- lambda()
+ return run33(call34)
+ end lambda
+ bind call32 <- lambda()
+ return run32(call33)
+ end lambda
+ bind call31 <- lambda()
+ return run31(call32)
+ end lambda
+ bind call30 <- lambda()
+ return run30(call31)
+ end lambda
+ bind call29 <- lambda()
+ return run29(call30)
+ end lambda
+ bind call28 <- lambda()
+ return run28(call29)
+ end lambda
+ bind call27 <- lambda()
+ return run27(call28)
+ end lambda
+ bind call26 <- lambda()
+ return run26(call27)
+ end lambda
+ bind call25 <- lambda()
+ return run25(call26)
+ end lambda
+ bind call24 <- lambda()
+ return run24(call25)
+ end lambda
+ bind call23 <- lambda()
+ return run23(call24)
+ end lambda
+ bind call22 <- lambda()
+ return run22(call23)
+ end lambda
+ bind call21 <- lambda()
+ return run21(call22)
+ end lambda
+ bind call20 <- lambda()
+ return run20(call21)
+ end lambda
+ bind call19 <- lambda()
+ return run19(call20)
+ end lambda
+ bind call18 <- lambda()
+ return run18(call19)
+ end lambda
+ bind call17 <- lambda()
+ return run17(call18)
+ end lambda
+ bind call16 <- lambda()
+ return run16(call17)
+ end lambda
+ bind call15 <- lambda()
+ return run15(call16)
+ end lambda
+ bind call14 <- lambda()
+ return run14(call15)
+ end lambda
+ bind call13 <- lambda()
+ return run13(call14)
+ end lambda
+ bind call12 <- lambda()
+ return run12(call13)
+ end lambda
+ bind call11 <- lambda()
+ return run11(call12)
+ end lambda
+ bind call10 <- lambda()
+ return run10(call11)
+ end lambda
+ bind call9 <- lambda()
+ return run9(call10)
+ end lambda
+ bind call8 <- lambda()
+ return run8(call9)
+ end lambda
+ bind call7 <- lambda()
+ return run7(call8)
+ end lambda
+ bind call6 <- lambda()
+ return run6(call7)
+ end lambda
+ bind call5 <- lambda()
+ return run5(call6)
+ end lambda
+ bind call4 <- lambda()
+ return run4(call5)
+ end lambda
+ bind call3 <- lambda()
+ return run3(call4)
+ end lambda
+ bind call2 <- lambda()
+ return run2(call3)
+ end lambda
+ bind call1 <- lambda()
+ return run1(call2)
+ end lambda
+ bind call0 <- lambda()
+ return run0(call1)
+ end lambda
+ return handle tick() with
+ case tick() ->
+ resume(call0())
+ end handle
+end function
+function main() -> Unit uses File.Read["/data/a"]
+ bind _ <- sample()
+end function

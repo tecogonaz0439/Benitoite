@@ -1,0 +1,10 @@
+language "0.0.14"
+import Benitoite.Unofficial.Network.Http
+function protected() -> Integer uses Http.Connect["api.example", 443]
+ return 1
+end function
+function main() -> Unit
+ bind _ <- handle protected() with
+ case Http.send(request) -> 0
+ end handle
+end function

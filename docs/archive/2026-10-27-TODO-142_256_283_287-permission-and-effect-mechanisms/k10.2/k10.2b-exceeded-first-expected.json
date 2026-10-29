@@ -1,0 +1,19 @@
+{
+  "name": "effect-top-exceeded",
+  "file": "effect-top-exceeded.bnt",
+  "sha256": "645e1b0ea6c70ef917bf873314f6ce4de6a4f9da9e08d74aa030e0ed976f9b1c",
+  "exit": 2,
+  "codes": [
+    "E0519"
+  ],
+  "reason": "unknownSource",
+  "comparison": "typing",
+  "leanCase": "effect-top-exceeded",
+  "leanReason": "effect exceeds the allowed effect",
+  "leanAtomReason": "budgetExceeded",
+  "addition": {
+    "date": "2026-10-29",
+    "decisionBy": "K10.2b担当",
+    "reason": "16385個のUnit文で本体operations上限16384を必ず超えた後、Topの効果原子を狭い宣言へ渡す。Rustは原子の由来を問わずunknownSource、Lean入口はtypingを報告する期待"
+  }
+}

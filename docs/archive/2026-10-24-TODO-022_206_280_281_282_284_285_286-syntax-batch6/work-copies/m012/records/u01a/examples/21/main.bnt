@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Write, Console.Write, Process.Exit
+  bind _ <- try File.writeText(path: "out.txt", text: "data") or die
+  Console.writeLine("written")
+  return ()
+end function

@@ -1,0 +1,1432 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.68s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 4 tests
+
+thread 'typeck::scope::local_tests::request_ok_keeps_its_own_origin_and_projection_has_no_result_fact' (4575587) panicked at crates/benitoite/src/typeck/scope/local_tests.rs:23:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        232,
+                    ),
+                    end: BytePos(
+                        245,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                232,
+                            ),
+                            end: BytePos(
+                                232,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                247,
+                            ),
+                            end: BytePos(
+                                247,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                251,
+                            ),
+                            end: BytePos(
+                                251,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                256,
+                            ),
+                            end: BytePos(
+                                256,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        502,
+                    ),
+                    end: BytePos(
+                        517,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                502,
+                            ),
+                            end: BytePos(
+                                502,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                519,
+                            ),
+                            end: BytePos(
+                                519,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                524,
+                            ),
+                            end: BytePos(
+                                524,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                529,
+                            ),
+                            end: BytePos(
+                                529,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::local_tests::saved_result_ok_and_error_match_independent_scope_lower_records ... ok
+
+thread 'typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers' (4575585) panicked at crates/benitoite/src/typeck/scope/local_tests.rs:23:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        567,
+                    ),
+                    end: BytePos(
+                        572,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                567,
+                            ),
+                            end: BytePos(
+                                567,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                574,
+                            ),
+                            end: BytePos(
+                                574,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        609,
+                    ),
+                    end: BytePos(
+                        617,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                609,
+                            ),
+                            end: BytePos(
+                                609,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                619,
+                            ),
+                            end: BytePos(
+                                619,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        654,
+                    ),
+                    end: BytePos(
+                        659,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                654,
+                            ),
+                            end: BytePos(
+                                654,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                661,
+                            ),
+                            end: BytePos(
+                                661,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        696,
+                    ),
+                    end: BytePos(
+                        702,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                696,
+                            ),
+                            end: BytePos(
+                                696,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                704,
+                            ),
+                            end: BytePos(
+                                704,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        739,
+                    ),
+                    end: BytePos(
+                        748,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                739,
+                            ),
+                            end: BytePos(
+                                739,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                750,
+                            ),
+                            end: BytePos(
+                                750,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        785,
+                    ),
+                    end: BytePos(
+                        797,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                785,
+                            ),
+                            end: BytePos(
+                                785,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                799,
+                            ),
+                            end: BytePos(
+                                799,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        942,
+                    ),
+                    end: BytePos(
+                        954,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                942,
+                            ),
+                            end: BytePos(
+                                942,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                956,
+                            ),
+                            end: BytePos(
+                                956,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                960,
+                            ),
+                            end: BytePos(
+                                960,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                965,
+                            ),
+                            end: BytePos(
+                                965,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1001,
+                    ),
+                    end: BytePos(
+                        1014,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1001,
+                            ),
+                            end: BytePos(
+                                1001,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1016,
+                            ),
+                            end: BytePos(
+                                1016,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1020,
+                            ),
+                            end: BytePos(
+                                1020,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1027,
+                            ),
+                            end: BytePos(
+                                1027,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1063,
+                    ),
+                    end: BytePos(
+                        1076,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1063,
+                            ),
+                            end: BytePos(
+                                1063,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1078,
+                            ),
+                            end: BytePos(
+                                1078,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1083,
+                            ),
+                            end: BytePos(
+                                1083,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1087,
+                            ),
+                            end: BytePos(
+                                1087,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1123,
+                    ),
+                    end: BytePos(
+                        1136,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1123,
+                            ),
+                            end: BytePos(
+                                1123,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1138,
+                            ),
+                            end: BytePos(
+                                1138,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1142,
+                            ),
+                            end: BytePos(
+                                1142,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1156,
+                            ),
+                            end: BytePos(
+                                1156,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1210,
+                    ),
+                    end: BytePos(
+                        1223,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1210,
+                            ),
+                            end: BytePos(
+                                1210,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1225,
+                            ),
+                            end: BytePos(
+                                1225,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1229,
+                            ),
+                            end: BytePos(
+                                1229,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1235,
+                            ),
+                            end: BytePos(
+                                1235,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1271,
+                    ),
+                    end: BytePos(
+                        1281,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `hostPattern`, `minimumPort`, `maximumPort`, `request`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1271,
+                            ),
+                            end: BytePos(
+                                1271,
+                            ),
+                        },
+                        replacement: "hostPattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1283,
+                            ),
+                            end: BytePos(
+                                1283,
+                            ),
+                        },
+                        replacement: "minimumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1287,
+                            ),
+                            end: BytePos(
+                                1287,
+                            ),
+                        },
+                        replacement: "maximumPort: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                1292,
+                            ),
+                            end: BytePos(
+                                1292,
+                            ),
+                        },
+                        replacement: "request: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::scope::local_tests::request_ok_keeps_its_own_origin_and_projection_has_no_result_fact ... FAILED
+
+thread 'typeck::scope::local_tests::direct_projections_distinguish_instances_aliases_rewrap_and_unknown_calls' (4575586) panicked at crates/benitoite/src/typeck/scope/local_tests.rs:23:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        284,
+                    ),
+                    end: BytePos(
+                        291,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                284,
+                            ),
+                            end: BytePos(
+                                284,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                293,
+                            ),
+                            end: BytePos(
+                                293,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        333,
+                    ),
+                    end: BytePos(
+                        340,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                333,
+                            ),
+                            end: BytePos(
+                                333,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                342,
+                            ),
+                            end: BytePos(
+                                342,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0449,
+        ),
+        message: "this function requires named arguments",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        664,
+                    ),
+                    end: BytePos(
+                        673,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [
+            "available parameters, in declaration order: `pattern`, `path`",
+        ],
+        helps: [
+            Help {
+                message: "add the parameter names in declaration order",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                664,
+                            ),
+                            end: BytePos(
+                                664,
+                            ),
+                        },
+                        replacement: "pattern: ",
+                    },
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                675,
+                            ),
+                            end: BytePos(
+                                675,
+                            ),
+                        },
+                        replacement: "path: ",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0601,
+        ),
+        message: "`match` does not cover every value",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        1062,
+                    ),
+                    end: BytePos(
+                        1069,
+                    ),
+                },
+                text: "`Result.Error(_)` is not matched",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "add a branch `case Result.Error(_) ->`, or `case _ ->`",
+                edits: [],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers ... FAILED
+test typeck::scope::local_tests::direct_projections_distinguish_instances_aliases_rewrap_and_unknown_calls ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers
+    typeck::scope::local_tests::direct_projections_distinguish_instances_aliases_rewrap_and_unknown_calls
+    typeck::scope::local_tests::request_ok_keeps_its_own_origin_and_projection_has_no_result_fact
+
+test result: FAILED. 1 passed; 3 failed; 0 ignored; 0 measured; 1389 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p benitoite --lib`

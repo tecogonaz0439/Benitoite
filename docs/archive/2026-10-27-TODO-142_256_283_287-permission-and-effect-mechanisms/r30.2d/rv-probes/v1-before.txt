@@ -1,0 +1,13 @@
+error[E0332]: the module `Scope` is not imported
+  --> v1.bnt:3:13
+   |
+ 3 |   bind x <- Scope.ScopeError.InvalidPort(1)
+   |             ^^^^^
+   |
+   = help: add `import Benitoite.Unofficial.Scope` at the start of the file
+   |
+ 1 | import Benitoite.Unofficial.Scope
+   | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 2 | import Benitoite.Trait
+
+error: could not run v1.bnt due to 1 previous error

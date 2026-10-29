@@ -1,0 +1,17 @@
+import Benitoite.Unofficial.IO.Console
+
+function subtract(a: Integer, b: Integer) -> Integer
+  return a - b
+end function
+
+function main() -> Unit uses Console.Write
+  bind xs <- [1, 2, 3]
+  bind doubled <- List.map(xs: xs, f: lambda(value) return value * 2)
+  bind labels <- doubled |> List.map(f: lambda(value) return Integer.toString(value))
+  Console.writeLine(labels |> String.join(separator: ","))
+  bind swapped: function(b: Integer, a: Integer) -> Integer <- subtract(b: _, a: _)
+  Console.writeLine("${swapped(b: 2, a: 9)}")
+  bind make <- Pair
+  bind pair <- make(arg1: 4, arg2: "four")
+  Console.writeLine("${Pair.first(pair)} ${Pair.second(pair)}")
+end function

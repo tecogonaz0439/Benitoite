@@ -61,9 +61,9 @@ private def env : AbstractEnv :=
     standards := [binding]
     apiAt := fun site => if site = key then some binding.declaration else none }
 private def call (declaration : FunName) : Expr :=
-  .call (.primName declaration [] []) ["a", "n"] [0, 1] (.cons (.local 1) (.cons (.local 0) .nil))
+  .call (.primName declaration [] [] []) ["a", "n"] [0, 1] (.cons (.local 1) (.cons (.local 0) .nil))
 private def operationCall : Expr :=
-  .call (.primName "resolved:Console.writeLine" [] []) [some "text"] [0]
+  .call (.primName "resolved:Console.writeLine" [] [] []) [some "text"] [0]
     (.cons (.literal (.string "x")) .nil)
 private def target (environment : AbstractEnv) (site : OperationKey) (source : Expr) : Option String :=
   (targetOperationAt environment site source).map fun operation => match operation with

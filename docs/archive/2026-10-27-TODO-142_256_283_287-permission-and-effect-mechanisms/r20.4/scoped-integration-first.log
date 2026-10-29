@@ -1,0 +1,88 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0631]: type mismatch in closure arguments
+    --> crates/benitoite/src/typeck/decls.rs:115:58
+     |
+ 106 |         let mut collect = |expression| {
+     |                           ------------ found signature defined here
+...
+ 115 |                         super::consts::visit_block(body, &mut collect);
+     |                         --------------------------       ^^^^^^^^^^^^ expected due to this
+     |                         |
+     |                         required by a bound introduced by this call
+     |
+     = note: expected closure signature `fn(&syntax::ast::Expr) -> _`
+                found closure signature `fn(syntax::ast::Expr) -> _`
+note: required by a bound in `typeck::consts::visit_block`
+    --> crates/benitoite/src/typeck/consts.rs:1301:58
+     |
+1301 | pub(super) fn visit_block<'a>(b: &'a Block, f: &mut impl FnMut(&'a Expr)) {
+     |                                                          ^^^^^^^^^^^^^^^ required by this bound in `visit_block`
+help: consider adjusting the signature so it borrows its argument
+     |
+ 106 |         let mut collect = |&expression| {
+     |                            +
+
+error[E0631]: type mismatch in closure arguments
+    --> crates/benitoite/src/typeck/decls.rs:121:62
+     |
+ 106 |         let mut collect = |expression| {
+     |                           ------------ found signature defined here
+...
+ 121 |                             super::consts::visit_block(body, &mut collect);
+     |                             --------------------------       ^^^^^^^^^^^^ expected due to this
+     |                             |
+     |                             required by a bound introduced by this call
+     |
+     = note: expected closure signature `fn(&syntax::ast::Expr) -> _`
+                found closure signature `fn(syntax::ast::Expr) -> _`
+note: required by a bound in `typeck::consts::visit_block`
+    --> crates/benitoite/src/typeck/consts.rs:1301:58
+     |
+1301 | pub(super) fn visit_block<'a>(b: &'a Block, f: &mut impl FnMut(&'a Expr)) {
+     |                                                          ^^^^^^^^^^^^^^^ required by this bound in `visit_block`
+help: consider adjusting the signature so it borrows its argument
+     |
+ 106 |         let mut collect = |&expression| {
+     |                            +
+
+error[E0631]: type mismatch in closure arguments
+    --> crates/benitoite/src/typeck/decls.rs:125:85
+     |
+ 106 |         let mut collect = |expression| {
+     |                           ------------ found signature defined here
+...
+ 125 |                 Item::Const(constant) => super::consts::visit_expr(&constant.value, &mut collect),
+     |                                          -------------------------                  ^^^^^^^^^^^^ expected due to this
+     |                                          |
+     |                                          required by a bound introduced by this call
+     |
+     = note: expected closure signature `fn(&syntax::ast::Expr) -> _`
+                found closure signature `fn(syntax::ast::Expr) -> _`
+note: required by a bound in `typeck::consts::visit_expr`
+    --> crates/benitoite/src/typeck/consts.rs:1322:56
+     |
+1322 | pub(super) fn visit_expr<'a>(e: &'a Expr, f: &mut impl FnMut(&'a Expr)) {
+     |                                                        ^^^^^^^^^^^^^^^ required by this bound in `visit_expr`
+help: consider adjusting the signature so it borrows its argument
+     |
+ 106 |         let mut collect = |&expression| {
+     |                            +
+
+error[E0308]: mismatched types
+   --> crates/benitoite/src/typeck/decls.rs:133:13
+    |
+105 |         let mut handler_syntax = crate::base::NodeMap::default();
+    |                                  ------------------------------- here the type of `handler_syntax` is inferred to be `base::NodeMap<syntax::ast::HandleExpr>`
+...
+133 |             handler_syntax,
+    |             ^^^^^^^^^^^^^^ expected `NodeMap<&HandleExpr>`, found `NodeMap<HandleExpr>`
+    |
+    = note: expected struct `base::NodeMap<&'a syntax::ast::HandleExpr>`
+               found struct `base::NodeMap<syntax::ast::HandleExpr>`
+
+Some errors have detailed explanations: E0308, E0631.
+For more information about an error, try `rustc --explain E0308`.
+error: could not compile `benitoite` (lib) due to 4 previous errors
+real 2.81
+user 1.73
+sys 0.38

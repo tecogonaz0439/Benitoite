@@ -1,0 +1,19 @@
+{"j2": null, "h31": [{"name": "h31-user-signature", "operationSignatureIndex": {"path": {"tree": ["srv", "audit"]}}, "definitions": 1, "nonTopRanges": 3, "effects": ["Audit"], "prim": null, "allDefinitionsChecked": true, "expectationMatched": true}, {"name": "h31-user-forward", "operationSignatureIndex": {"path": {"tree": ["srv", "audit"]}}, "definitions": 1, "nonTopRanges": 7, "effects": ["File.Write[\"/srv/audit/**\"]"], "prim": "File.writeTextIn", "allDefinitionsChecked": true, "expectationMatched": true}], "groups": 17, "definitions": 20, "nonTopRanges": 67, "topCompatibility": {"old-ip": 0, "user-spelling": 0, "all-top": 0}, "rejections": 8, "excluded": 8, "reportSubset": {"inputs": 26, "commands": 50, "status": "passed"}, "obligation35": "版上げ後の書き出しと範囲の実ソースの比較で、固定した期待値に一致した"}
+        0.05 real         0.04 user         0.00 sys
+            16302080  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1819  page reclaims
+                  38  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+                  30  involuntary context switches
+           818226342  instructions retired
+           238270920  cycles elapsed
+            12714344  peak memory footprint

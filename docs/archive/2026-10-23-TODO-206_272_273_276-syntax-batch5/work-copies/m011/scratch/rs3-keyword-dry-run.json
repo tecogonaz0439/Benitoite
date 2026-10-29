@@ -1,0 +1,762 @@
+{
+  "method": "source_extract.snippets + source_migrate.proposed, no apply",
+  "samples": [
+    {
+      "sample": "effects/map_with_io.bnt",
+      "input_sha256": "9a922b91e51f87dd444d83cbe23cf8a6e39bdbe425139dc04dfaeb374da403c8",
+      "annotation_edits": 1,
+      "diagnostic_positions": 0,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "72ede3d77aec9a124341befff309751feca2c82c99515e76c7b33f942f0bbc6d"
+        },
+        "can": {
+          "byte_delta": -1,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "2fb7853ebe0c500005cf3e0b21c343cf4f1ea8a433583da71f8be6675781f06b"
+        },
+        "effects": {
+          "byte_delta": 3,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "a93a99818f1963971bf42c9b1712a73c555d629d35aab9a4d37209f81d75480d"
+        }
+      }
+    },
+    {
+      "sample": "effects/effect_var_rigid.bnt",
+      "input_sha256": "dacc11b7a4a9c4f69ce8ef5a4c42264d65d6d5d77e3a88d0eaac4d604f0e7493",
+      "annotation_edits": 4,
+      "diagnostic_positions": 4,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [
+            {
+              "before": {
+                "line": 3,
+                "column": 48,
+                "offset": 216
+              },
+              "after": {
+                "line": 3,
+                "column": 48,
+                "offset": 216
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 57,
+                "offset": 225
+              },
+              "after": {
+                "line": 3,
+                "column": 57,
+                "offset": 225
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 19,
+                "offset": 187
+              },
+              "after": {
+                "line": 3,
+                "column": 19,
+                "offset": 187
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 44,
+                "offset": 212
+              },
+              "after": {
+                "line": 3,
+                "column": 44,
+                "offset": 212
+              }
+            }
+          ],
+          "output_sha256": "2a2883fea248734f1b887badade90ff7cd001350fa8e2d383315ca744a3705d2"
+        },
+        "can": {
+          "byte_delta": -4,
+          "changed_columns": 3,
+          "changed_offsets": 4,
+          "positions": [
+            {
+              "before": {
+                "line": 3,
+                "column": 48,
+                "offset": 216
+              },
+              "after": {
+                "line": 3,
+                "column": 47,
+                "offset": 212
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 57,
+                "offset": 225
+              },
+              "after": {
+                "line": 3,
+                "column": 56,
+                "offset": 221
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 19,
+                "offset": 187
+              },
+              "after": {
+                "line": 3,
+                "column": 19,
+                "offset": 184
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 44,
+                "offset": 212
+              },
+              "after": {
+                "line": 3,
+                "column": 43,
+                "offset": 208
+              }
+            }
+          ],
+          "output_sha256": "f9b9fa866fc7e788dfd027fd9a911e3767b9e3ec4280068809ff4772f6a3fb40"
+        },
+        "effects": {
+          "byte_delta": 12,
+          "changed_columns": 3,
+          "changed_offsets": 4,
+          "positions": [
+            {
+              "before": {
+                "line": 3,
+                "column": 48,
+                "offset": 216
+              },
+              "after": {
+                "line": 3,
+                "column": 51,
+                "offset": 228
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 57,
+                "offset": 225
+              },
+              "after": {
+                "line": 3,
+                "column": 60,
+                "offset": 237
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 19,
+                "offset": 187
+              },
+              "after": {
+                "line": 3,
+                "column": 19,
+                "offset": 196
+              }
+            },
+            {
+              "before": {
+                "line": 3,
+                "column": 44,
+                "offset": 212
+              },
+              "after": {
+                "line": 3,
+                "column": 47,
+                "offset": 224
+              }
+            }
+          ],
+          "output_sha256": "79dd3fd2f32a394f7765a46ad800896285364dc759399fe1fb7c030ae6033294"
+        }
+      }
+    },
+    {
+      "sample": "effects/lambda_uses_violation.bnt",
+      "input_sha256": "d3f0813fa4fd8340991192ec3b653a316127e1541e8f22b6a692a012f94cbcad",
+      "annotation_edits": 3,
+      "diagnostic_positions": 4,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [
+            {
+              "before": {
+                "line": 6,
+                "column": 16,
+                "offset": 220
+              },
+              "after": {
+                "line": 6,
+                "column": 16,
+                "offset": 220
+              }
+            },
+            {
+              "before": {
+                "line": 6,
+                "column": 48,
+                "offset": 252
+              },
+              "after": {
+                "line": 6,
+                "column": 48,
+                "offset": 252
+              }
+            },
+            {
+              "before": {
+                "line": 5,
+                "column": 38,
+                "offset": 198
+              },
+              "after": {
+                "line": 5,
+                "column": 38,
+                "offset": 198
+              }
+            },
+            {
+              "before": {
+                "line": 5,
+                "column": 44,
+                "offset": 204
+              },
+              "after": {
+                "line": 5,
+                "column": 44,
+                "offset": 204
+              }
+            }
+          ],
+          "output_sha256": "fdbad61babac52fb3fea66fb358fdabaa2575d7e9fd68c1e91e0b1af5d353971"
+        },
+        "can": {
+          "byte_delta": -3,
+          "changed_columns": 1,
+          "changed_offsets": 4,
+          "positions": [
+            {
+              "before": {
+                "line": 6,
+                "column": 16,
+                "offset": 220
+              },
+              "after": {
+                "line": 6,
+                "column": 16,
+                "offset": 217
+              }
+            },
+            {
+              "before": {
+                "line": 6,
+                "column": 48,
+                "offset": 252
+              },
+              "after": {
+                "line": 6,
+                "column": 48,
+                "offset": 249
+              }
+            },
+            {
+              "before": {
+                "line": 5,
+                "column": 38,
+                "offset": 198
+              },
+              "after": {
+                "line": 5,
+                "column": 38,
+                "offset": 196
+              }
+            },
+            {
+              "before": {
+                "line": 5,
+                "column": 44,
+                "offset": 204
+              },
+              "after": {
+                "line": 5,
+                "column": 43,
+                "offset": 201
+              }
+            }
+          ],
+          "output_sha256": "e6b115734aa85837f4ee186dca363a727155583186054de90b8900df3f3a6109"
+        },
+        "effects": {
+          "byte_delta": 9,
+          "changed_columns": 1,
+          "changed_offsets": 4,
+          "positions": [
+            {
+              "before": {
+                "line": 6,
+                "column": 16,
+                "offset": 220
+              },
+              "after": {
+                "line": 6,
+                "column": 16,
+                "offset": 229
+              }
+            },
+            {
+              "before": {
+                "line": 6,
+                "column": 48,
+                "offset": 252
+              },
+              "after": {
+                "line": 6,
+                "column": 48,
+                "offset": 261
+              }
+            },
+            {
+              "before": {
+                "line": 5,
+                "column": 38,
+                "offset": 198
+              },
+              "after": {
+                "line": 5,
+                "column": 38,
+                "offset": 204
+              }
+            },
+            {
+              "before": {
+                "line": 5,
+                "column": 44,
+                "offset": 204
+              },
+              "after": {
+                "line": 5,
+                "column": 47,
+                "offset": 213
+              }
+            }
+          ],
+          "output_sha256": "2da352c984aaf89b24e1dd9c4536028b707a7d6ac6dfa852756a11b5147696d1"
+        }
+      }
+    },
+    {
+      "sample": "types/too_many_effect_vars.bnt",
+      "input_sha256": "dc8f2e12859c8633cbc0f7d619e5f7d7137356e7e926ec134d6a667f786b3f4e",
+      "annotation_edits": 3,
+      "diagnostic_positions": 2,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [
+            {
+              "before": {
+                "line": 2,
+                "column": 113,
+                "offset": 158
+              },
+              "after": {
+                "line": 2,
+                "column": 113,
+                "offset": 158
+              }
+            },
+            {
+              "before": {
+                "line": 2,
+                "column": 122,
+                "offset": 167
+              },
+              "after": {
+                "line": 2,
+                "column": 122,
+                "offset": 167
+              }
+            }
+          ],
+          "output_sha256": "b3499bf17d9f97b4c68a17a74d1b7949cbbcfc9755fc450fdad07c0e8e10a4a3"
+        },
+        "can": {
+          "byte_delta": -3,
+          "changed_columns": 2,
+          "changed_offsets": 2,
+          "positions": [
+            {
+              "before": {
+                "line": 2,
+                "column": 113,
+                "offset": 158
+              },
+              "after": {
+                "line": 2,
+                "column": 111,
+                "offset": 156
+              }
+            },
+            {
+              "before": {
+                "line": 2,
+                "column": 122,
+                "offset": 167
+              },
+              "after": {
+                "line": 2,
+                "column": 119,
+                "offset": 164
+              }
+            }
+          ],
+          "output_sha256": "f79c6e706a501e0bc4be85bf1d438c8c39f5ab26af8ecfdbacf7146641a56ae2"
+        },
+        "effects": {
+          "byte_delta": 9,
+          "changed_columns": 2,
+          "changed_offsets": 2,
+          "positions": [
+            {
+              "before": {
+                "line": 2,
+                "column": 113,
+                "offset": 158
+              },
+              "after": {
+                "line": 2,
+                "column": 119,
+                "offset": 164
+              }
+            },
+            {
+              "before": {
+                "line": 2,
+                "column": 122,
+                "offset": 167
+              },
+              "after": {
+                "line": 2,
+                "column": 131,
+                "offset": 176
+              }
+            }
+          ],
+          "output_sha256": "74f3437670f1116c9ddc327b891012ef31576d5a7dc4470baa2d4b8249fa91db"
+        }
+      }
+    },
+    {
+      "sample": "names/uses_not_effect_first.bnt",
+      "input_sha256": "fa2e2700d3e11bebf5adf1e36eccaac6f18bbb733a4cb01561b869f094b37631",
+      "annotation_edits": 1,
+      "diagnostic_positions": 2,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [
+            {
+              "before": {
+                "line": 2,
+                "column": 33,
+                "offset": 78
+              },
+              "after": {
+                "line": 2,
+                "column": 33,
+                "offset": 78
+              }
+            },
+            {
+              "before": {
+                "line": 2,
+                "column": 40,
+                "offset": 85
+              },
+              "after": {
+                "line": 2,
+                "column": 40,
+                "offset": 85
+              }
+            }
+          ],
+          "output_sha256": "9c7c3b70d179080309b8b210eaf5297285641f8ed9cf3fd93fba4115fc8f9f1b"
+        },
+        "can": {
+          "byte_delta": -1,
+          "changed_columns": 2,
+          "changed_offsets": 2,
+          "positions": [
+            {
+              "before": {
+                "line": 2,
+                "column": 33,
+                "offset": 78
+              },
+              "after": {
+                "line": 2,
+                "column": 32,
+                "offset": 77
+              }
+            },
+            {
+              "before": {
+                "line": 2,
+                "column": 40,
+                "offset": 85
+              },
+              "after": {
+                "line": 2,
+                "column": 39,
+                "offset": 84
+              }
+            }
+          ],
+          "output_sha256": "f77f3843b40da27f046f6733fcc03d8ec00b7d6e69aa8cbc5076f7438f4df7ed"
+        },
+        "effects": {
+          "byte_delta": 3,
+          "changed_columns": 2,
+          "changed_offsets": 2,
+          "positions": [
+            {
+              "before": {
+                "line": 2,
+                "column": 33,
+                "offset": 78
+              },
+              "after": {
+                "line": 2,
+                "column": 36,
+                "offset": 81
+              }
+            },
+            {
+              "before": {
+                "line": 2,
+                "column": 40,
+                "offset": 85
+              },
+              "after": {
+                "line": 2,
+                "column": 43,
+                "offset": 88
+              }
+            }
+          ],
+          "output_sha256": "0939fc157ee600f4137856d8bad8a3275a75fb9280ed9b9fc500cc4b5a601812"
+        }
+      }
+    },
+    {
+      "sample": "names/uses_not_effect_later.bnt",
+      "input_sha256": "4a138922579b2c63f3f354740ee7e60ce4dcbb27b75ca33c7e84cae5eded0c98",
+      "annotation_edits": 1,
+      "diagnostic_positions": 2,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [
+            {
+              "before": {
+                "line": 4,
+                "column": 48,
+                "offset": 133
+              },
+              "after": {
+                "line": 4,
+                "column": 48,
+                "offset": 133
+              }
+            },
+            {
+              "before": {
+                "line": 4,
+                "column": 55,
+                "offset": 140
+              },
+              "after": {
+                "line": 4,
+                "column": 55,
+                "offset": 140
+              }
+            }
+          ],
+          "output_sha256": "cd3e3aec1eb0fae03cf9e8b61a5414a52f0dde007e9a2306f624d2d96177d1fa"
+        },
+        "can": {
+          "byte_delta": -1,
+          "changed_columns": 2,
+          "changed_offsets": 2,
+          "positions": [
+            {
+              "before": {
+                "line": 4,
+                "column": 48,
+                "offset": 133
+              },
+              "after": {
+                "line": 4,
+                "column": 47,
+                "offset": 132
+              }
+            },
+            {
+              "before": {
+                "line": 4,
+                "column": 55,
+                "offset": 140
+              },
+              "after": {
+                "line": 4,
+                "column": 54,
+                "offset": 139
+              }
+            }
+          ],
+          "output_sha256": "af3f9ac654869d3164a51308fc2a660e9202caaa7baf9783207e70582e19282c"
+        },
+        "effects": {
+          "byte_delta": 3,
+          "changed_columns": 2,
+          "changed_offsets": 2,
+          "positions": [
+            {
+              "before": {
+                "line": 4,
+                "column": 48,
+                "offset": 133
+              },
+              "after": {
+                "line": 4,
+                "column": 51,
+                "offset": 136
+              }
+            },
+            {
+              "before": {
+                "line": 4,
+                "column": 55,
+                "offset": 140
+              },
+              "after": {
+                "line": 4,
+                "column": 58,
+                "offset": 143
+              }
+            }
+          ],
+          "output_sha256": "afb85fdd37d737911ae815b982970150d67aa58bfa3cdc6e76eef2f901e934ce"
+        }
+      }
+    },
+    {
+      "sample": "fmt/example.bnt",
+      "input_sha256": "6439bf3c571d7d91e9418e29ffb2cbd22074b4915c55cb74ae65fee24031fd7e",
+      "annotation_edits": 1,
+      "diagnostic_positions": 0,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "cbf43d1bc429a71ebce4f40e6ed2331483de75546326cf389ea899c103778887"
+        },
+        "can": {
+          "byte_delta": -1,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "dff61226687a2d4cf8ac10b9a1b8130f6e1c66d0729e1ae64260761bcae1a52f"
+        },
+        "effects": {
+          "byte_delta": 3,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "ba2a461af76e5e56441e32f72333fc54736f52c30614d0dfd24bb0f2040f4da8"
+        }
+      }
+    },
+    {
+      "sample": "fmt/spaces.bnt",
+      "input_sha256": "f02ee24a52d516edff12a37d257c1559131ff7f181981d8aaa23a80f579d321c",
+      "annotation_edits": 1,
+      "diagnostic_positions": 0,
+      "variants": {
+        "with": {
+          "byte_delta": 0,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "50905b2f4ade162d9b501ef13e23a86a969ee3827c6c899fc3297fb5deaed1fd"
+        },
+        "can": {
+          "byte_delta": -1,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "735c024c319254c768f3f8018576e635a51f2a812a1b64643ffff03482710bae"
+        },
+        "effects": {
+          "byte_delta": 3,
+          "changed_columns": 0,
+          "changed_offsets": 0,
+          "positions": [],
+          "output_sha256": "4d9d55a0914aec399fe791420e3fdec7d936c8f33b7bca761e6181726c8f38a3"
+        }
+      }
+    }
+  ],
+  "elapsed_seconds": 0.0021458339999999992,
+  "limitations": [
+    "No new lexer/parser/formatter execution",
+    "Position mapping only, no new diagnostic output",
+    "Eight manually selected fixtures, not the whole corpus"
+  ]
+}

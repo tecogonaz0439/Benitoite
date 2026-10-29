@@ -46,12 +46,34 @@ import Benitoite.Release.Lemmas.Progress
 import Benitoite.Release.Lemmas.StepSound
 import Benitoite.Release.Lemmas.EffectSound
 import Benitoite.Release.Theorems
+import Benitoite.Release.RangeIxExamples
+import Benitoite.Release.RangeInstDef
+import Benitoite.Release.RangeInst
+import Benitoite.Release.ShapeOk
+import Benitoite.Release.Lemmas.MembershipBase
+import Benitoite.Release.Lemmas.Membership
+import Benitoite.Release.Lemmas.PrimRanges
 import Benitoite.Release.Lemmas.LocalInvariant
 import Benitoite.Release.Examples
+import Benitoite.Release.Lemmas.Observation
+import Benitoite.Release.Lemmas.TargetSound
+import Benitoite.Release.TargetTable
+import Benitoite.Release.ModelTargets
+import Benitoite.Release.Lemmas.ClauseIx
+import Benitoite.Release.Lemmas.TargetPropagation
+import Benitoite.Release.HandlerTargetExamples
+import Benitoite.Release.Lemmas.TargetStep
+import Benitoite.Release.TargetStepExamples
+import Benitoite.Release.TargetReachExamples
+import Benitoite.Release.CoverExamples
+import Benitoite.Release.ModelHttp
 import Benitoite.Release.BuiltinTable
 import Benitoite.Surface.Syntax
 import Benitoite.Surface.Desugar
 import Benitoite.Surface.Typing
+import Benitoite.Surface.RangeFree
+import Benitoite.Surface.PrimRange
+import Benitoite.Surface.CheckRanges
 import Benitoite.Surface.WellFormed
 import Benitoite.Surface.Lemmas.ShiftClean
 import Benitoite.Surface.Lemmas.Invariants
@@ -98,11 +120,16 @@ import Benitoite.Surface.CheckTablesSound
 import Benitoite.Surface.CheckProgramSound
 import Benitoite.Surface.CheckExamples
 import Benitoite.Surface.CheckCounterexamples
+import Benitoite.Exchange.Range
 import Benitoite.Exchange.Syntax
+import Benitoite.Exchange.Version
 import Benitoite.Exchange.Convert
 import Benitoite.Exchange.IntegerExamples
 import Benitoite.Exchange.Builtins
 import Benitoite.Exchange.CheckInput
+import Benitoite.Exchange.RangeExamples
+import Benitoite.Exchange.Observe
+import Benitoite.Exchange.ObserveExamples
 
 import Benitoite.Release.CoverageExtension
 
@@ -157,6 +184,7 @@ import Benitoite.Exchange.FormatExamples
 
 import Benitoite.Interval.Domain
 import Benitoite.Interval.Identity
+import Benitoite.Interval.BindingScope
 import Benitoite.Interval.Eval
 import Benitoite.Interval.Range
 import Benitoite.Interval.FixedDomain
@@ -221,3 +249,38 @@ import Benitoite.Interval.BudgetWholeExamples
 
 import Benitoite.Interval.Exchange
 import Benitoite.Interval.ExchangeExamples
+
+import Benitoite.Scope.RepresentationExamplesI
+import Benitoite.Scope.Domain
+import Benitoite.Scope.Signature
+import Benitoite.Scope.Inference
+import Benitoite.Scope.TopCompat
+import Benitoite.Scope.Cover
+import Benitoite.Scope.IPCover
+import Benitoite.Scope.RangeCover
+import Benitoite.Release.RangeNormalize
+import Benitoite.Release.EffectCoverDef
+import Benitoite.Release.EffectCover
+import Benitoite.Release.CoverCompat
+import Benitoite.Release.RangeWF
+import Benitoite.Release.Order.Range
+import Benitoite.Scope.SignatureExamples
+import Benitoite.Scope.InferenceExamples
+import Benitoite.Scope.CompatExamples
+import Benitoite.Scope.SwitchExamples
+
+import Benitoite.Surface.ScopeState
+import Benitoite.Surface.ScopeStateExamples
+import Benitoite.Surface.ScopeLower
+import Benitoite.Surface.ScopeLowerExamples
+import Benitoite.Surface.ScopeAccept
+import Benitoite.Surface.ScopeAcceptExamples
+import Benitoite.Surface.ScopeOccurrence
+import Benitoite.Surface.ClauseIxRule
+import Benitoite.Surface.DesugarRange
+import Benitoite.Surface.ClauseIxExamples
+import Benitoite.Surface.CoverExamples
+import Benitoite.Surface.CheckAccept
+import Benitoite.Surface.CheckAcceptExamples
+import Benitoite.Surface.ScopeSound
+import Benitoite.Surface.ScopeSoundExamples

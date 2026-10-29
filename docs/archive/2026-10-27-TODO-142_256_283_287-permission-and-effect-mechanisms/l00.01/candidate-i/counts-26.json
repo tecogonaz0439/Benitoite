@@ -1,0 +1,173 @@
+{
+ "affected_modules": 243,
+ "checked_affected": 178,
+ "failed_modules": [
+  "Benitoite.Interval.BudgetChildrenExamples",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Surface.CheckSupport"
+ ],
+ "error_diagnostics": 7,
+ "sorry_warnings_from_errors": 0,
+ "broken_declarations": 4,
+ "broken_files": 3,
+ "declarations": [
+  {
+   "file": "Benitoite/Interval/BudgetChildrenExamples.lean",
+   "decl": "def output",
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+   "decl": "theorem ContTy.end_of_noHandler",
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+   "decl": "theorem no_event",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckSupport.lean",
+   "decl": "theorem singleEff_eq_contains",
+   "errors": 2
+  }
+ ],
+ "files": [
+  "Benitoite/Interval/BudgetChildrenExamples.lean",
+  "Benitoite/Release/Lemmas/EffectSound.lean",
+  "Benitoite/Surface/CheckSupport.lean"
+ ],
+ "unchecked_count": 65,
+ "unchecked": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.BuilderCheck",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.Check",
+  "Benitoite.Surface.CheckComputeAtoms",
+  "Benitoite.Surface.CheckComputeCalls",
+  "Benitoite.Surface.CheckComputeCases",
+  "Benitoite.Surface.CheckComputeControl",
+  "Benitoite.Surface.CheckComputePipe",
+  "Benitoite.Surface.CheckComputeSound",
+  "Benitoite.Surface.CheckCounterexamples",
+  "Benitoite.Surface.CheckDictSupport",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckInduction",
+  "Benitoite.Surface.CheckLemmas",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundBasicExpr",
+  "Benitoite.Surface.CheckSoundCalls",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckSoundDie",
+  "Benitoite.Surface.CheckSoundSequence",
+  "Benitoite.Surface.CheckTables",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BlockSequence",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderLower",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Builders",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Lemmas.Scoped",
+  "Benitoite.Surface.Lemmas.Typing",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "diagnostics": [
+  {
+   "kind": "error",
+   "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+   "line": 22,
+   "col": 20,
+   "decl": "theorem ContTy.end_of_noHandler",
+   "decl_line": 20,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+   "line": 22,
+   "col": 75,
+   "decl": "theorem ContTy.end_of_noHandler",
+   "decl_line": 20,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+   "line": 56,
+   "col": 24,
+   "decl": "theorem no_event",
+   "decl_line": 39,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/CheckSupport.lean",
+   "line": 29,
+   "col": 24,
+   "decl": "theorem singleEff_eq_contains",
+   "decl_line": 28,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/CheckSupport.lean",
+   "line": 29,
+   "col": 60,
+   "decl": "theorem singleEff_eq_contains",
+   "decl_line": 28,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Interval/BudgetChildrenExamples.lean",
+   "line": 107,
+   "col": 30,
+   "decl": "def output",
+   "decl_line": 25,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Interval/BudgetChildrenExamples.lean",
+   "line": 97,
+   "col": 0,
+   "decl": "def output",
+   "decl_line": 25,
+   "msg": "cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors"
+  }
+ ]
+}

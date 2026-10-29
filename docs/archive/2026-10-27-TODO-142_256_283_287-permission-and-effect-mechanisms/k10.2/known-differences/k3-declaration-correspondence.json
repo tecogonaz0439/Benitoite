@@ -1,0 +1,522 @@
+{
+  "success": true,
+  "scope": "five k3 comparison function declarations plus validation of the original R10.5 identity mapping; no raw hash equality of different exchange generations",
+  "beforeDeclarations": 506,
+  "r105AfterDeclarations": 507,
+  "currentDeclarations": 471,
+  "priorMappingValidated": true,
+  "allComparedFunctionIdentitiesRetained": true,
+  "currentAddedIdentities": [
+    [
+      "Benitoite.Scope",
+      "builtin-fn",
+      "",
+      "checkPathIn"
+    ],
+    [
+      "Benitoite.Scope",
+      "builtin-fn",
+      "",
+      "pathInValue"
+    ],
+    [
+      "Benitoite.Scope",
+      "builtin-fn",
+      "",
+      "widenPathIn"
+    ]
+  ],
+  "currentMissingIdentities": [
+    [
+      "Benitoite.Scope",
+      "fn",
+      "",
+      "fitQuoted"
+    ],
+    [
+      "Benitoite.Scope",
+      "fn",
+      "",
+      "limited"
+    ],
+    [
+      "Benitoite.Scope",
+      "fn",
+      "",
+      "prefix"
+    ],
+    [
+      "Benitoite.Scope",
+      "fn",
+      "",
+      "quoted"
+    ],
+    [
+      "Benitoite.Scope",
+      "fn",
+      "",
+      "renderStrings"
+    ],
+    [
+      "Benitoite.Trait",
+      "builtin-fn",
+      "",
+      "showCharacter"
+    ],
+    [
+      "Benitoite.Trait",
+      "builtin-fn",
+      "",
+      "showString"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Applicative"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Applicative2"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Foldable"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Functor"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Functor2"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Monad"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Monad2"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Monoid"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Order"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Semigroup"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Show"
+    ],
+    [
+      "Benitoite.Trait",
+      "class",
+      "",
+      "Traversable"
+    ],
+    [
+      "Benitoite.Trait",
+      "data",
+      "",
+      "Ordering"
+    ],
+    [
+      "Benitoite.Trait",
+      "fn",
+      "",
+      "appendToList"
+    ],
+    [
+      "Benitoite.Trait",
+      "fn",
+      "",
+      "applyFrom"
+    ],
+    [
+      "Benitoite.Trait",
+      "fn",
+      "",
+      "compareListsFrom"
+    ],
+    [
+      "Benitoite.Trait",
+      "fn",
+      "",
+      "flatMapFrom"
+    ],
+    [
+      "Benitoite.Trait",
+      "fn",
+      "",
+      "traverseFrom"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Applicative",
+      "apply"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Applicative",
+      "pure"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Applicative2",
+      "apply"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Applicative2",
+      "pure"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Foldable",
+      "fold"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Functor",
+      "map"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Functor2",
+      "map"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Monad",
+      "flatMap"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Monad2",
+      "flatMap"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Monoid",
+      "empty"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Order",
+      "compare"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Semigroup",
+      "combine"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Show",
+      "show"
+    ],
+    [
+      "Benitoite.Trait",
+      "method",
+      "Traversable",
+      "traverse"
+    ]
+  ],
+  "functions": [
+    {
+      "name": "checkedHost (fn:43)",
+      "identity": [
+        "",
+        "fn",
+        "",
+        "checkedHost"
+      ],
+      "before": 43,
+      "r105After": 43,
+      "current": 43,
+      "inScope": true
+    },
+    {
+      "name": "checkedPath (fn:44)",
+      "identity": [
+        "",
+        "fn",
+        "",
+        "checkedPath"
+      ],
+      "before": 44,
+      "r105After": 44,
+      "current": 44,
+      "inScope": true
+    },
+    {
+      "name": "checkedEndpoint (fn:45)",
+      "identity": [
+        "",
+        "fn",
+        "",
+        "checkedEndpoint"
+      ],
+      "before": 45,
+      "r105After": 45,
+      "current": 45,
+      "inScope": true
+    },
+    {
+      "name": "endpointPort (fn:46)",
+      "identity": [
+        "",
+        "fn",
+        "",
+        "endpointPort"
+      ],
+      "before": 46,
+      "r105After": 46,
+      "current": 46,
+      "inScope": true
+    },
+    {
+      "name": "dynamicHost (fn:47)",
+      "identity": [
+        "",
+        "fn",
+        "",
+        "dynamicHost"
+      ],
+      "before": 47,
+      "r105After": 47,
+      "current": 47,
+      "inScope": true
+    }
+  ],
+  "supplementalData": [
+    {
+      "qualified": "Benitoite.Csv.ParseError",
+      "before": 1930,
+      "after": 1931,
+      "current": 1490
+    },
+    {
+      "qualified": "Benitoite.IO.File.EntryKind",
+      "before": 1924,
+      "after": 1925,
+      "current": 1483
+    },
+    {
+      "qualified": "Benitoite.IO.File.Info",
+      "before": 1923,
+      "after": 1924,
+      "current": 1482
+    },
+    {
+      "qualified": "Benitoite.IO.File.WriteMode",
+      "before": 1925,
+      "after": 1926,
+      "current": 1484
+    },
+    {
+      "qualified": "Benitoite.IO.Process.Command",
+      "before": 1926,
+      "after": 1927,
+      "current": 1485
+    },
+    {
+      "qualified": "Benitoite.IO.Process.Output",
+      "before": 1927,
+      "after": 1928,
+      "current": 1486
+    },
+    {
+      "qualified": "Benitoite.Json.Codec.ConversionError",
+      "before": 1935,
+      "after": 1936,
+      "current": 1496
+    },
+    {
+      "qualified": "Benitoite.Json.Codec.PathPart",
+      "before": 1934,
+      "after": 1935,
+      "current": 1495
+    },
+    {
+      "qualified": "Benitoite.Json.ParseError",
+      "before": 1929,
+      "after": 1930,
+      "current": 1489
+    },
+    {
+      "qualified": "Benitoite.Json.Value",
+      "before": 1928,
+      "after": 1929,
+      "current": 1488
+    },
+    {
+      "qualified": "Benitoite.Network.Http.ClientRequest",
+      "before": 1933,
+      "after": 1934,
+      "current": 1493
+    },
+    {
+      "qualified": "Benitoite.Network.Http.Request",
+      "before": 1931,
+      "after": 1932,
+      "current": 1491
+    },
+    {
+      "qualified": "Benitoite.Network.Http.Response",
+      "before": 1932,
+      "after": 1933,
+      "current": 1492
+    },
+    {
+      "qualified": "Benitoite.NonEmptyList.EmptyListError",
+      "before": 1949,
+      "after": 1950,
+      "current": 1510
+    },
+    {
+      "qualified": "Benitoite.NonEmptyList.NonEmptyList",
+      "before": 1948,
+      "after": 1949,
+      "current": 1509
+    },
+    {
+      "qualified": "Benitoite.Range.CheckedIndex",
+      "before": 1946,
+      "after": 1947,
+      "current": 1507
+    },
+    {
+      "qualified": "Benitoite.Range.CheckedInteger",
+      "before": 1942,
+      "after": 1943,
+      "current": 1503
+    },
+    {
+      "qualified": "Benitoite.Range.CheckedLength",
+      "before": 1944,
+      "after": 1945,
+      "current": 1505
+    },
+    {
+      "qualified": "Benitoite.Range.IndexError",
+      "before": 1947,
+      "after": 1948,
+      "current": 1508
+    },
+    {
+      "qualified": "Benitoite.Range.LengthError",
+      "before": 1945,
+      "after": 1946,
+      "current": 1506
+    },
+    {
+      "qualified": "Benitoite.Range.RangeError",
+      "before": 1943,
+      "after": 1944,
+      "current": 1504
+    },
+    {
+      "qualified": "Benitoite.Test.Property.CheckFailure",
+      "before": 1941,
+      "after": 1942,
+      "current": 1502
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Config",
+      "before": 1939,
+      "after": 1940,
+      "current": 1500
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Counterexample",
+      "before": 1940,
+      "after": 1941,
+      "current": 1501
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Gen",
+      "before": 1936,
+      "after": 1937,
+      "current": 1497
+    },
+    {
+      "qualified": "Benitoite.Test.Property.ShrinkStep",
+      "before": 1938,
+      "after": 1939,
+      "current": 1499
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Shrinker",
+      "before": 1937,
+      "after": 1938,
+      "current": 1498
+    }
+  ],
+  "inputs": [
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/bindings-before.tsv",
+      "sha256": "585ce258ea230f8b46666a295d5a558d2b6d174cdc2f62f27b821d7f97ba6a1a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/bindings-after.tsv",
+      "sha256": "79313cdcb091712262c03e454eef66d0056eee1cb887566e1652179a722f3a91"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/binding-renumbering.json",
+      "sha256": "baf7f5e7927851743ff2a8b2657102446a7c9f4bb6154602c303ceaeee4ca6ad"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/known-differences/bindings-current.tsv",
+      "sha256": "130373b57845584c8d42e4d601a59a484872c7fe30f99e1ac70966817cfc45dc"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/readers-batch3-inputs/k3/corpus.json",
+      "sha256": "d6515bcf375b661268b9758144941eb8c0dd27f19daa6ff081a4a0879ac6cefe"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/readers-batch3-inputs/k3/builtins.json",
+      "sha256": "6f776483fb5585bcd1e125ca989d4e7142e38229f1815f671685581fa30f91aa"
+    }
+  ]
+}

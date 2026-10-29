@@ -1,0 +1,41 @@
+== wait-for-lock start 02:12:00
+== lock acquired 02:12:00 after 0s
+⚠ [63/438] Replayed Benitoite.Release.RangeWF
+warning: Benitoite/Release/RangeWF.lean:400:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeWF.lean:404:8: declaration uses `sorry`
+⚠ [64/438] Replayed Benitoite.Release.RangeInst
+warning: Benitoite/Release/RangeInst.lean:639:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeInst.lean:697:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeInst.lean:881:0: declaration uses `sorry`
+✖ [163/438] Building Benitoite.Release.Lemmas.OuterC (1.6s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/OuterC.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.setup.json --json
+error: Benitoite/Release/Lemmas/OuterC.lean:37:40: Application type mismatch: The argument
+  hs
+has type
+  B.sig b = some s
+but is expected to have type
+  B.sig ?m.22 = some (PrimSig.inst rs s)
+in the application
+  hb.admits_local ?m.22 (PrimSig.inst rs s) C1 C0 ts hs
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.OuterC
+error: build failed
+        1.75 real         1.87 user         0.20 sys
+           799145984  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               56753  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   4  voluntary context switches
+                4777  involuntary context switches
+          1390816933  instructions retired
+           540470029  cycles elapsed
+            21890176  peak memory footprint
+== exit 1

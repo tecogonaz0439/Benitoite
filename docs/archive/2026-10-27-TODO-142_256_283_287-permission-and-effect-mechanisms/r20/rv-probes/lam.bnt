@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> function() -> Result[S.PathIn["/data/a"], S.ScopeError]
+ bind r <- S.checkPathIn(pattern: "/etc/**", path: p)
+ return lambda() return r
+end function

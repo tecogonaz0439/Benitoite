@@ -1,0 +1,128 @@
+$ rustc --edition=2024 --test <tmp>/probe.rs -o <tmp>/probe
+warning: constant `ELLIPSIS` is never used
+ --> <tmp>/base/literal.rs:7:15
+  |
+7 |     pub const ELLIPSIS: &str = "…";
+  |               ^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `TRUE` is never used
+ --> <tmp>/base/literal.rs:8:15
+  |
+8 |     pub const TRUE: &str = "true";
+  |               ^^^^
+
+warning: constant `FALSE` is never used
+ --> <tmp>/base/literal.rs:9:15
+  |
+9 |     pub const FALSE: &str = "false";
+  |               ^^^^^
+
+warning: constant `UNIT` is never used
+  --> <tmp>/base/literal.rs:10:15
+   |
+10 |     pub const UNIT: &str = "()";
+   |               ^^^^
+
+warning: constant `LIST_OPEN` is never used
+  --> <tmp>/base/literal.rs:11:15
+   |
+11 |     pub const LIST_OPEN: &str = "[";
+   |               ^^^^^^^^^
+
+warning: constant `LIST_CLOSE` is never used
+  --> <tmp>/base/literal.rs:12:15
+   |
+12 |     pub const LIST_CLOSE: &str = "]";
+   |               ^^^^^^^^^^
+
+warning: constant `MAP_OPEN` is never used
+  --> <tmp>/base/literal.rs:13:15
+   |
+13 |     pub const MAP_OPEN: &str = "Map.fromList([";
+   |               ^^^^^^^^
+
+warning: constant `SET_OPEN` is never used
+  --> <tmp>/base/literal.rs:14:15
+   |
+14 |     pub const SET_OPEN: &str = "Set.fromList([";
+   |               ^^^^^^^^
+
+warning: constant `BYTES_OPEN` is never used
+  --> <tmp>/base/literal.rs:15:15
+   |
+15 |     pub const BYTES_OPEN: &str = "Bytes.fromList([";
+   |               ^^^^^^^^^^
+
+warning: constant `FROM_LIST_CLOSE` is never used
+  --> <tmp>/base/literal.rs:16:15
+   |
+16 |     pub const FROM_LIST_CLOSE: &str = "])";
+   |               ^^^^^^^^^^^^^^^
+
+warning: constant `PAIR_OPEN` is never used
+  --> <tmp>/base/literal.rs:17:15
+   |
+17 |     pub const PAIR_OPEN: &str = "Pair(";
+   |               ^^^^^^^^^
+
+warning: constant `ARGS_OPEN` is never used
+  --> <tmp>/base/literal.rs:18:15
+   |
+18 |     pub const ARGS_OPEN: &str = "(";
+   |               ^^^^^^^^^
+
+warning: constant `ARGS_CLOSE` is never used
+  --> <tmp>/base/literal.rs:19:15
+   |
+19 |     pub const ARGS_CLOSE: &str = ")";
+   |               ^^^^^^^^^^
+
+warning: constant `SEPARATOR` is never used
+  --> <tmp>/base/literal.rs:20:15
+   |
+20 |     pub const SEPARATOR: &str = ", ";
+   |               ^^^^^^^^^
+
+warning: constant `FIELD_SEPARATOR` is never used
+  --> <tmp>/base/literal.rs:21:15
+   |
+21 |     pub const FIELD_SEPARATOR: &str = ": ";
+   |               ^^^^^^^^^^^^^^^
+
+warning: constant `QUALIFIER` is never used
+  --> <tmp>/base/literal.rs:22:15
+   |
+22 |     pub const QUALIFIER: &str = ".";
+   |               ^^^^^^^^^
+
+warning: constant `UNKNOWN_CONSTRUCTOR` is never used
+  --> <tmp>/base/literal.rs:24:15
+   |
+24 |     pub const UNKNOWN_CONSTRUCTOR: &str = "<constructor #{tag}>";
+   |               ^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Path` is never constructed
+   --> <tmp>/types/scope.rs:495:5
+    |
+494 | pub enum Target {
+    |          ------ variant in this enum
+495 |     Path(Path),
+    |     ^^^^
+    |
+    = note: `Target` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: 18 warnings emitted
+
+
+exit=0, elapsed=0.220s
+$ <tmp>/probe scope_suffix_uses_language_literals
+
+running 1 test
+test types::scope::tests::scope_suffix_uses_language_literals ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s
+
+
+exit=0, elapsed=0.221s

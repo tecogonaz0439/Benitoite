@@ -1,0 +1,21 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:53:  exact .step .E_Handle (.step .E_Let (.step .E_Return (.step .E_HRet .refl)))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:63:  refine .step .E_Handle (.step .E_Let (.step (.E_OpFail (κ := 0) (k1 := [.letF (.ret (okValue T E (.var 0)))])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresMain.lean:510:  | @E_Handle m h k σ =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Progress.lean:494:  | handle m h => exact Or.inr ⟨_, _, .E_Handle⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/StepSound.lean:359:          obtain ⟨rfl, rfl⟩ := h; exact .E_Handle
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Semantics.lean:272:  | E_Handle {m h k σ} : Step P B (.run (.handle m h) k σ) none (.run m (.handleF h :: k) σ)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSoundControl.lean:330:  exact ⟨.E_Handle (.B_Sub bs.1 (tyLe_sound bs.2.1 tAtoms (Bool.and_eq_true_iff.mp (require_ok htype).1).2)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:104:  apply HasType.E_Handle (HasBlock.B_Last (by simpa [union_empty_left, union_empty_right] using hb))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:576:  | .E_Handle .. => intro _ _ he; cases he
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:646:  | .E_Handle .. => intro _ _ he; cases he
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:296:  | .E_Handle h0 h1 h2 => simp only [Expr.EmitsClosure] at site
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean:201:    | .E_Handle hb _ hc =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Invariants.lean:406:    | .E_Handle hb _ _ => exact HasBlockQ.clean hΔ hwf hsig hb sc.1 hΓ hR
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Scoped.lean:242:    | .E_Handle hb _ hc =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:776:    | .E_Handle hb he hc =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:431:    | E_Handle {Δ C Γ R p body cs t εbody ε} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:689:    | .E_Handle h0 h1 h2 =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:690:        exact .E_Handle (HasBlockQ.congrΔ h0 hΔ) h1 (HasClausesQ.congrΔ h2 hΔ)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:889:    | .E_Handle h0 h1 h2 =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:890:        exact .E_Handle (HasBlockQ.of_builderFree h0 (by simp_all only [Expr.BuilderFree])) h1 (HasClausesQ.of_builderFree h2 (by simp_all only [Expr.BuilderFree]))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1009:export HasTypeQ (E_BuilderOp E_Local E_Const E_Fun E_FunDicts E_MethName E_Prim E_Op E_OpDicts E_Raise E_HandleFail E_NullCon E_ConValue E_Literal E_NegInt E_NegFloat E_NegDecimal E_NegInteger8 E_NegInteger16 E_NegInteger32 E_NegFloat32 E_Unit E_Paren E_Block E_Record E_RecordUpdate E_ConCall E_Call E_PipeCall E_PipeConCall E_PipeConValue E_PipeApply E_PartialCall E_PartialCon E_Binary E_Neg E_Not E_And E_Or E_List E_ListSpread E_Interpolation E_Lam E_If E_ElseIf E_IfOnly E_Match E_ReturnTail E_ReturnOther E_TryResult E_TryOption E_TryResultDie E_TryOptionDie E_With E_Lazy E_Handle E_Resume E_Sub)

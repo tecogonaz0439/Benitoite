@@ -1,0 +1,23 @@
+import Benitoite.Unofficial.Scope
+function sample(path: String) -> Unit
+ bind outer <- Scope.checkPathIn(pattern: "/outer/**", path: "/outer/a")
+ bind nested <- lambda() -> Unit
+  bind a <- Scope.checkPathIn(pattern: "/inner/**", path: "/inner/a")
+  bind b <- Scope.checkPathIn(pattern: "/inner/**", path: "/inner/b")
+  bind c <- Scope.checkPathIn(pattern: "/inner/**", path: "/inner/c")
+  match a with
+  case Result.Ok(p) ->
+   bind _ <- Scope.pathInValue(path: p)
+   ()
+  case Result.Error(_) -> ()
+  end match
+  ()
+ end lambda
+ match outer with
+ case Result.Ok(p) ->
+  bind _ <- Scope.pathInValue(path: p)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+end function

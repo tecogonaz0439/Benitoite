@@ -1282,12 +1282,18 @@ impl Resolver<'_> {
 
     pub(super) fn uses(&mut self, ctx: &mut Ctx, uses: &UsesList, fn_span: Option<Span>) {
         let mut prefix_valid = true;
+        // 略記は同じ名前の原子を連続して持つ。群の最初だけで名前と種類を検査し、
+        // 診断と修正編集を重ねず、成功した束縛を各原子へ記録する（設計書 02-04「範囲引数の解決」）。
+        let mut group_binding = None;
         for (index, effect) in uses.effects.iter().enumerate() {
-            if let Some(args) = &effect.args {
-                for ty in args {
-                    self.ty(ctx, ty);
+            if effect.scope.as_deref().is_some_and(|s| s.element.start > 0) {
+                if let Some(id) = group_binding {
+                    self.record_ref(ctx, effect.id, id, effect.span);
+                    self.effect_arguments(ctx, effect, id);
                 }
+                continue;
             }
+            group_binding = None;
             let Some(id) = self.raw_name(ctx, effect.id, &effect.path, Position::Effect) else {
                 prefix_valid = false;
                 continue;
@@ -1296,7 +1302,9 @@ impl Resolver<'_> {
                 continue;
             };
             if Position::Effect.accepts(binding.kind) {
+                group_binding = Some(id);
                 self.record_ref(ctx, effect.id, id, effect.span);
+                self.effect_arguments(ctx, effect, id);
                 continue;
             }
             let io = matches!(binding.kind, BindingKind::Module(module) if self.modules.get(module).is_some_and(|m| m.name.dotted() == "Benitoite.IO"));

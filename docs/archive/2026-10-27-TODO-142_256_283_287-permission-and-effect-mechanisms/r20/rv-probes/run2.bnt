@@ -1,0 +1,31 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+function show(r: Result[S.PathIn["/data/a"], S.ScopeError]) -> String
+ return match r with
+ case Result.Ok(v) -> "ok"
+ case Result.Error(e) -> "err ${Trait.Show.show(e)}"
+ end match
+end function
+function one(p: String) -> Unit uses Console.Write
+ bind a: Result[S.PathIn["/data/**"], S.ScopeError] <- S.checkPathIn(pattern: "/data/**", path: p)
+ match a with
+ case Result.Ok(v) ->
+  bind s <- S.pathInValue(path: v)
+  bind w: S.PathIn["/**"] <- S.widenPathIn(path: v)
+  Console.writeLine("ok ${s}")
+ case Result.Error(e) -> Console.writeLine("err ${Trait.Show.show(e)}")
+ end match
+end function
+function main() -> Unit uses Console.Write
+ one(p: "/data")
+ one(p: "/data/x/../../etc/passwd")
+ one(p: "/data/./x")
+ one(p: "/data//x")
+ one(p: "data/x")
+ one(p: "/data/x/")
+ one(p: "/DATA/x")
+ one(p: "/data/\u{0}x")
+ Console.writeLine(show(S.checkPathIn(pattern: "/data/a", path: "/data/a")))
+ Console.writeLine(show(S.checkPathIn(pattern: "/data/a", path: "/data/b")))
+end function

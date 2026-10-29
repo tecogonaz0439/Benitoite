@@ -94,7 +94,8 @@ class Batch3ExchangeTests(unittest.TestCase):
             result, _ = self.run_tool('surfaceCheck', data)
             self.assertEqual(result.returncode, 2, result.stdout)
         for f in FILES:
-            for v in ((0, 1, 5, 6, 7, 15) if f == 'corpus' else (0, 1, 7, 8, 13)):
+            # corpus 15・sidecar 7 は受理する版になった（L50.1）。受理しない版の一覧はその次の版を使う。
+            for v in ((0, 1, 5, 6, 7, 16) if f == 'corpus' else (0, 1, 8, 13)):
                 data = copy.deepcopy(self.data)
                 data[f]['version'] = v
                 tool = next(t for t, fs in TOOLS.items() if f in fs)
@@ -149,6 +150,19 @@ class Batch3ExchangeTests(unittest.TestCase):
                 if mutation == 'none':
                     _, expected = rust_inputs(self.directory, 't3')
                     self.assertEqual(expected['definitions'], 9)
+                    # 旧版は corpus/sidecar の対応を保つ。今の Rust 出力の15/7も同じ件数契約で読む。
+                    for version, sidecar in ((12, 4), (13, 5), (14, 6), (15, 7)):
+                        compatible = copy.deepcopy(changed)
+                        for f, doc in compatible.items():
+                            doc['version'] = version if f == 'corpus' else sidecar
+                            (self.directory / f'{f}.json').write_text(json.dumps(doc))
+                        self.assertEqual(rust_inputs(self.directory, 't3')[1]['definitions'], 9)
+                        compatible['stdlib']['version'] = sidecar + 1
+                        (self.directory / 'stdlib.json').write_text(json.dumps(compatible['stdlib']))
+                        with self.assertRaisesRegex(AssertionError, 'corpus/sidecar version mismatch'):
+                            rust_inputs(self.directory, 't3')
+                    for f, doc in changed.items():
+                        (self.directory / f'{f}.json').write_text(json.dumps(doc))
                     with self.assertRaisesRegex(AssertionError, 'manifest'):
                         rust_inputs(self.directory, 'b3')
                 else:
@@ -160,10 +174,10 @@ def rust_inputs(directory, profile=None):
     """五形式と、実ソースごとの固定した期待件数を照合する。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
     version = data['corpus']['version']
-    if version not in (12, 13, 14):
-        raise AssertionError('expected corpus12, corpus13 or corpus14')
+    if version not in (12, 13, 14, 15):
+        raise AssertionError('expected corpus12, corpus13, corpus14 or corpus15')
     for f, doc in data.items():
-        if doc['version'] != (version if f == 'corpus' else (6 if version == 14 else 5 if version == 13 else 4)):
+        if doc['version'] != (version if f == 'corpus' else ({12: 4, 13: 5, 14: 6, 15: 7}[version])):
             raise AssertionError(f'{f}: corpus/sidecar version mismatch')
     inputs = data['corpus']['inputs']
     if not inputs or not any(i['definitions'] for i in inputs):
@@ -212,7 +226,8 @@ def check_rust(directory):
                     case.assertEqual(report['result'], {'ok': True})
                 continue
             result, report = case.run_tool(tool, data)
-            case.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
+            empty_coverage = tool == 'coverageProgramDiff' and expected['programCoverageCases'] == 0
+            case.assertEqual(result.returncode, 1 if empty_coverage else 0, result.stderr + result.stdout + json.dumps(report))
             if tool == 'desugarDiff':
                 case.assertGreater(report['golden']['definitions']['matched'], 0)
                 case.assertEqual(report['golden']['definitions']['matched'], expected['definitions'])
@@ -223,7 +238,8 @@ def check_rust(directory):
                 case.assertEqual(report['errors'], [])
                 case.assertEqual(report['summaryMismatchCount'], 0)
             elif tool.startswith('coverage'):
-                case.assertGreater(report['matched'], 0)
+                if not empty_coverage:
+                    case.assertGreater(report['matched'], 0)
                 case.assertEqual(report['matched'], expected['coverageCases' if tool == 'coverageDiff' else 'programCoverageCases'])
                 case.assertEqual((report['mismatched'], report['fuelExhausted']), (0, 0))
             else:

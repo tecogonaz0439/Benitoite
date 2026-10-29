@@ -1,0 +1,144 @@
+{
+  "test": "CommonProbeCompilationTests.test_both_revisions_compile_through_the_common_builder",
+  "evidence": "selftest.log",
+  "states": {
+    "before": "c31e64b03d2810343e1779926bea4ebc958b6164",
+    "start": "6124775788579e60530f55fb85570f26ef7fa900",
+    "after": "b1d2f30e99fb37d1a4ea02f647174528b8477c82"
+  },
+  "cases": [
+    {
+      "id": "codegen-irenv-empty",
+      "states": [
+        "before",
+        "start",
+        "after"
+      ],
+      "params": {
+        "ir_errors": 0,
+        "sibling_rejected": 1
+      },
+      "metrics": [
+        "ir_check"
+      ]
+    },
+    {
+      "id": "codegen-irenv-4",
+      "states": [
+        "before",
+        "start",
+        "after"
+      ],
+      "params": {
+        "ir_errors": 0,
+        "sibling_rejected": 1
+      },
+      "metrics": [
+        "ir_check"
+      ]
+    },
+    {
+      "id": "bridge-empty",
+      "states": [
+        "before",
+        "start",
+        "after"
+      ],
+      "params": {
+        "shape": "empty",
+        "unique_nodes": 0,
+        "edges": 0,
+        "observation": 0
+      },
+      "metrics": [
+        "bridge_to_heap",
+        "bridge_from_heap",
+        "bridge_time",
+        "allocated_bytes",
+        "unique_nodes"
+      ]
+    },
+    {
+      "id": "bridge-shared-4",
+      "states": [
+        "before",
+        "start",
+        "after"
+      ],
+      "params": {
+        "shape": "shared",
+        "unique_nodes": 5,
+        "edges": 8,
+        "observation": 7
+      },
+      "metrics": [
+        "bridge_to_heap",
+        "bridge_from_heap",
+        "bridge_time",
+        "allocated_bytes",
+        "unique_nodes"
+      ]
+    },
+    {
+      "id": "bridge-nodes-4",
+      "states": [
+        "after"
+      ],
+      "params": {
+        "shape": "nodes",
+        "unique_nodes": 4,
+        "edges": 6,
+        "observation": 7
+      },
+      "metrics": [
+        "bridge_to_heap",
+        "bridge_from_heap",
+        "bridge_time",
+        "allocated_bytes",
+        "unique_nodes"
+      ]
+    },
+    {
+      "id": "bridge-nodes-8",
+      "states": [
+        "after"
+      ],
+      "params": {
+        "shape": "nodes",
+        "unique_nodes": 8,
+        "edges": 14,
+        "observation": 7
+      },
+      "metrics": [
+        "bridge_to_heap",
+        "bridge_from_heap",
+        "bridge_time",
+        "allocated_bytes",
+        "unique_nodes"
+      ]
+    },
+    {
+      "id": "bridge-shared-8",
+      "states": [
+        "before",
+        "start",
+        "after"
+      ],
+      "params": {
+        "shape": "shared",
+        "unique_nodes": 9,
+        "edges": 16,
+        "observation": 7
+      },
+      "metrics": [
+        "bridge_to_heap",
+        "bridge_from_heap",
+        "bridge_time",
+        "allocated_bytes",
+        "unique_nodes"
+      ]
+    }
+  ],
+  "probe_point_executions": 17,
+  "note": "Successful unittest execution covers each listed case/state once; this file describes coverage and does not collect performance samples."
+}

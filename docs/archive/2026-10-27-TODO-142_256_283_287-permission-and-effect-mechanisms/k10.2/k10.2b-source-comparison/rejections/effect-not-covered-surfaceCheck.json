@@ -1,0 +1,24 @@
+{"trustedImplementations": 0,
+ "trustedFunctions": 0,
+ "result":
+ {"ok": false,
+  "error": {"reason": "effect exceeds the allowed effect", "path": [0]}},
+ "recordsOk": true,
+ "preparationNanos": 885750,
+ "input": "effect-not-covered",
+ "implementations": 0,
+ "implNamesOk": true,
+ "group": "golden",
+ "definitions": 2,
+ "definition": "fn:901",
+ "constructorsOk": true,
+ "checkNanos": [39875],
+ "atoms":
+ [{"name": {"value": "File.Read", "ix": {"fixed": {"path": {"tree": []}}}}},
+  {"name":
+   {"value": "File.Read", "ix": {"fixed": {"path": {"tree": ["data"]}}}}},
+  {"name": {"value": "File.Write", "ix": {"rvar": 0}}},
+  {"name": {"value": "State", "ix": {"fixed": "top"}}},
+  {"name": {"value": "File.Write", "ix": {"fixed": "top"}}},
+  {"name": {"value": "File.Read", "ix": {"fixed": "top"}}},
+  {"name": {"value": "Http.Connect", "ix": {"fixed": "top"}}}]}

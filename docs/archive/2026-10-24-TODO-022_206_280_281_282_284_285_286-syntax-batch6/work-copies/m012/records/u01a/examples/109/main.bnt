@@ -1,0 +1,17 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Json
+
+function describe(result: Result[Json.Value, Json.ParseError]) -> String
+  return match result with
+    case Result.Ok(_) -> "parsed"
+    case Result.Error(Json.ParseError(message: text, ..)) -> text
+    case Result.Error(otherError) -> "another JSON error"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind original <- Json.ParseError(line: 1, column: 2, message: "expected a value")
+  bind revised <- Json.ParseError(..original, message: "invalid input")
+  Console.writeLine(describe(Result.Error(original)))
+  Console.writeLine(Json.ParseError.message(revised))
+end function

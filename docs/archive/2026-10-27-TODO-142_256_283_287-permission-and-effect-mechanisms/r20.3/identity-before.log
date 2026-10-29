@@ -1,0 +1,19 @@
+    Blocking waiting for file lock on build directory
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.12s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::interval::identity::tests::scope_and_interval_preorders_share_origins_without_lambdas_or_clauses' (4811967) panicked at crates/benitoite/src/typeck/interval/identity/tests.rs:626:5:
+[Diagnostic { kind: Check, severity: Error, code: Some(E0401), message: "mismatched types", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(294), end: BytePos(311) }, text: "expected `Scope.PathIn[\"/tmp/**\"]`, found `Scope.PathIn[\"/**\"]`" }), secondary: [], notes: ["argument 1 must match the parameter type of the called function"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::interval::identity::tests::scope_and_interval_preorders_share_origins_without_lambdas_or_clauses ... FAILED
+
+failures:
+
+failures:
+    typeck::interval::identity::tests::scope_and_interval_preorders_share_origins_without_lambdas_or_clauses
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1402 filtered out; finished in 0.14s
+
+error: test failed, to rerun pass `-p benitoite --lib`

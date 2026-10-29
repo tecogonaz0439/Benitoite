@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+const p: String = "/da" + "ta/**"
+function f(q: String) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: p, path: "/etc/x")
+end function

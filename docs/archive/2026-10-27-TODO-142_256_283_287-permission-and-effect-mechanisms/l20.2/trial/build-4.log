@@ -1,0 +1,109 @@
+== wait-for-lock start 23:39:33
+== lock acquired 23:39:33 after 0s
+✔ [124/431] Built Benitoite.Release.TypeCongruence (415ms)
+✔ [126/431] Built Benitoite.Release.TypeVariables (516ms)
+✔ [127/431] Built Benitoite.Release.TypeVariables:c.o (204ms)
+✔ [128/431] Built Benitoite.Release.WellFormed (368ms)
+✔ [130/431] Built Benitoite.Release.TypeScopedSubst (422ms)
+✔ [132/431] Built Benitoite.Release.Admissible (506ms)
+✔ [134/431] Built Benitoite.Release.Lemmas.TyLemmas (586ms)
+✔ [135/431] Built Benitoite.Release.FailureEffects (510ms)
+✔ [137/431] Built Benitoite.Release.EffectCover (760ms)
+✔ [138/431] Built Benitoite.Release.Semantics (1.2s)
+✔ [140/431] Built Benitoite.Release.RangeIxExamples (483ms)
+✔ [141/431] Built Benitoite.Release.Assumptions (529ms)
+✔ [142/431] Built Benitoite.Release.Lemmas.FailureBase (613ms)
+✔ [144/431] Built Benitoite.Release.Examples (1.2s)
+✔ [145/431] Built Benitoite.Release.Lemmas.NoFailContext (2.2s)
+✖ [147/431] Building Benitoite.Release.Lemmas.Regularity (1.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Regularity.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.setup.json --json
+error: Benitoite/Release/Lemmas/Regularity.lean:68:66: unsolved goals
+case opaque
+n : Nat
+o✝ : OpaqueName
+id✝ : Nat
+⊢ Scope.Signature.Ix.WF 0 (Scope.Signature.Ix.fixed Scope.Domain.Range.top)
+error: Benitoite/Release/Lemmas/Regularity.lean:173:102: unsolved goals
+Q : NoFailCtx
+P : Program
+B : Builtins
+depth : Nat
+hwf : P.WellFormed
+hb : Builtins.Assumptions P B
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+v : Val
+a : Ty
+h : HasTypeVQ P B Ψ Q C Γ v a
+hΓ : EnvWF C.length Γ
+hΨ : Ψ.WF
+o✝ : OpName
+od✝ : OpDecl
+ts✝ : List Ty
+hod : P.ops o✝ = some od✝
+hnames : NamesWF od✝.names od✝.params
+hts : SatAll B C ts✝ od✝.tparams
+hv : Ty.VarsInList 0 C.length (fun x => True) ts✝
+left✝ : NamesWF od✝.names od✝.params
+hsc :
+  Ty.VarsInList 0 od✝.tparams.length (fun x => False) od✝.params ∧
+    Ty.VarsIn 0 od✝.tparams.length (fun x => False) od✝.ret
+hl : ts✝.length = od✝.tparams.length
+⊢ Scope.Signature.Ix.WF 0 (Scope.Signature.Ix.fixed Scope.Domain.Range.top)
+error: Benitoite/Release/Lemmas/Regularity.lean:178:11: Application type mismatch: The argument
+  Ty.norm_WF E✝ he
+has type
+  Ty.WF 0 C.length E✝.norm
+but is expected to have type
+  Ty.WFList 0 C.length [E✝.norm]
+in the application
+  And.intro (Ty.norm_WF E✝ he)
+✖ [280/431] Building Benitoite.Release.Lemmas.Closed (3.3s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Closed.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.setup.json --json
+error: Benitoite/Release/Lemmas/Closed.lean:34:24: unsolved goals
+c : Nat
+ts : List Ty
+es : List Eff
+hts : ∀ (u : Ty), u ∈ ts → TyOK 0 u
+hes : ∀ (e : Eff), e ∈ es → Eff.VarsIn 0 0 (fun x => True) e
+o✝ : OpaqueName
+ix✝ : Scope.Signature.Ix
+x✝ : TyOK (c + ts.length) (Ty.opaque o✝ ix✝)
+⊢ Scope.Signature.Ix.WF 0 ix✝
+error: Benitoite/Release/Lemmas/Closed.lean:96:34: Application type mismatch: The argument
+  Ty.VarsInList.iff.mpr ?m.550
+has type
+  Ty.VarsInList ?m.544 ?m.545 ?m.546 ?m.547
+but is expected to have type
+  Ty.VarsInList 0 c (fun x => True)
+      (Order.sortUnique tyCompare
+        (Ty.normTys (Ty.rawBindTys (SubstEnv.at c ts es) fs ++ Eff.rowFails (SubstEnv.at c ts es).rows a))) ∧
+    ∀ (x : Atom), Eff.substAtoms (SubstEnv.at c ts es).rows a x = true → Atom.WF 0 x
+in the application
+  ⟨fun x x_1 => trivial, Ty.VarsInList.iff.mpr ?m.550⟩
+error: Benitoite/Release/Lemmas/Closed.lean:97:12: No goals to be solved
+✔ [295/431] Built Benitoite.Release.Lemmas.Names (3.9s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Regularity
+- Benitoite.Release.Lemmas.Closed
+error: build failed
+        4.92 real        19.41 user         4.50 sys
+           849002496  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              814691  page reclaims
+                   6  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  78  voluntary context switches
+               63954  involuntary context switches
+          1622549767  instructions retired
+           715132222  cycles elapsed
+            35947768  peak memory footprint
+== exit 1

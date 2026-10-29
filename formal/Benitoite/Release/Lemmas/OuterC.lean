@@ -17,12 +17,12 @@ variable {Q : NoFailCtx}
 
 variable {P : Program} {B : Builtins}
 
-theorem SatAll.local (hb : B.Assumptions P) {C1 C0 : List TParam} {ts tps}
-    (hts : ∀ t ∈ ts, Ty.WF C1.length t) (h : SatAll B C1 ts tps) : SatAll B (C1 ++ C0) ts tps :=
+theorem SatAll.local (hb : B.CoreAssumptions P) {C1 C0 : List TParam} {ts tps}
+    (hts : ∀ t ∈ ts, Ty.WF 0 C1.length t) (h : SatAll B C1 ts tps) : SatAll B (C1 ++ C0) ts tps :=
   ⟨h.1, fun i t p hi hp => hb.sat_local _ _ _ _ (hts _ (List.mem_of_getElem? hi)) (h.2 i t p hi hp)⟩
 
 
-theorem Admissible.outer (hb : B.Assumptions P) {C1 C0 tps ne Qs Qt ts es e}
+theorem Admissible.outer (hb : B.CoreAssumptions P) {C1 C0 tps ne Qs Qt ts es e}
     (h : Admissible B C1 tps ne Qs Qt ts es e) :
     Admissible B (C1 ++ C0) tps ne Qs Qt ts es e :=
   { h with
@@ -30,11 +30,11 @@ theorem Admissible.outer (hb : B.Assumptions P) {C1 C0 tps ne Qs Qt ts es e}
     typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
     rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
 
-theorem PrimitiveAdmissible.outer (hb : B.Assumptions P) {C1 C0 b s Q ts es}
-    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 s Q ts es) :
-    PrimitiveAdmissible (C1 ++ C0) s Q ts es :=
+theorem PrimitiveAdmissible.outer (hb : B.CoreAssumptions P) {C1 C0 b s rs Q ts es}
+    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 (s.inst rs) Q ts es) :
+    PrimitiveAdmissible (C1 ++ C0) (s.inst rs) Q ts es :=
   { h with
-    admits := hb.admits_local _ _ _ _ _ hs (fun t ht => (h.typeScope t ht).1) h.admits
+    admits := hb.admits_local _ s _ _ _ hs (fun t ht => (h.typeScope t ht).1) h.admits
     typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
     rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
 
@@ -43,13 +43,13 @@ theorem MethodRowsAdmissible.outer {C1 C0 Q ms es}
   ⟨h.1, fun f hf => Eff.WF.mono (by simp) f (h.2.1 f hf), h.2.2⟩
 
 mutual
-  theorem HasTypeVQ.outer {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ v a} (h : HasTypeVQ P B Ψ Q C1 Γ v a)
+  theorem HasTypeVQ.outer {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ v a} (h : HasTypeVQ P B Ψ Q C1 Γ v a)
       (hv : Val.VarsIn C1.length (fun _ => True) v depth) : HasTypeVQ P B Ψ Q (C1 ++ C0) Γ v a := by
     match h with
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
     | .V_Fun hd hnames had => exact .V_Fun hd hnames (had.outer hb)
-    | .V_Prim hs hnames had => exact .V_Prim hs hnames (had.outer hb hs)
+    | .V_Prim hs hrs hnames had => exact .V_Prim hs hrs hnames (had.outer hb hs)
     | .V_Op hod hnames hts =>
         simp only [Val.VarsIn] at hv
         exact .V_Op hod hnames (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv)))
@@ -80,8 +80,10 @@ mutual
         simp only [Val.VarsIn] at hv
         exact .V_Super (HasTypeVQ.outer (depth := _) hb hv' hv) hc hs
     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.outer (depth := _) hb h hv) hle (Ty.WF.mono (by simp) _ hw)
+    | .V_Checked hk hm => exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
 
-  theorem HasTypeVsQ.outer {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ vs as} (h : HasTypeVsQ P B Ψ Q C1 Γ vs as)
+  theorem HasTypeVsQ.outer {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ vs as} (h : HasTypeVsQ P B Ψ Q C1 Γ vs as)
       (hv : Val.VarsInList C1.length (fun _ => True) vs depth) : HasTypeVsQ P B Ψ Q (C1 ++ C0) Γ vs as := by
     match h with
     | .nil => exact .nil
@@ -89,7 +91,7 @@ mutual
         simp only [Val.VarsInList] at hv
         exact .cons (HasTypeVQ.outer (depth := _) hb hx hv.1) (HasTypeVsQ.outer (depth := _) hb hxs hv.2)
 
-  theorem HasTypeEachQ.outer {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ vs a} (h : HasTypeEachQ P B Ψ Q C1 Γ vs a)
+  theorem HasTypeEachQ.outer {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ vs a} (h : HasTypeEachQ P B Ψ Q C1 Γ vs a)
       (hv : Val.VarsInList C1.length (fun _ => True) vs depth) : HasTypeEachQ P B Ψ Q (C1 ++ C0) Γ vs a := by
     match h with
     | .nil => exact .nil
@@ -97,7 +99,7 @@ mutual
         simp only [Val.VarsInList] at hv
         exact .cons (HasTypeVQ.outer (depth := _) hb hx hv.1) (HasTypeEachQ.outer (depth := _) hb hxs hv.2)
 
-  theorem HasTypeCQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ R m a ε} (h : HasTypeCQ P B Ψ Q C1 Γ R m a ε Δl)
+  theorem HasTypeCQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ R m a ε} (h : HasTypeCQ P B Ψ Q C1 Γ R m a ε Δl)
       (hm : Comp.VarsIn C1.length (fun _ => True) m depth) : HasTypeCQ P B Ψ Q (C1 ++ C0) Γ R m a ε Δl := by
     match h with
     | .C_BuilderLet hw hbody =>
@@ -145,7 +147,7 @@ mutual
           (hts.local hb (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hm.2.1)))
           (fun t ht => ⟨Ty.WF.mono (by simp) t (hscope t ht).1, (hscope t ht).2⟩) hes.outer (HasTypeVsQ.outer (depth := _) hb hws hm.2.2.2)
 
-  theorem HasTypeArmsQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ R arms a b ε}
+  theorem HasTypeArmsQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ R arms a b ε}
       (h : HasTypeArmsQ P B Ψ Q C1 Γ R arms a b ε Δl) (hm : Arm.VarsInList C1.length (fun _ => True) arms depth) :
       HasTypeArmsQ P B Ψ Q (C1 ++ C0) Γ R arms a b ε Δl := by
     match h with
@@ -158,9 +160,9 @@ mutual
         exact .guarded hp (HasTypeCQ.outer (depth := _) hb hg hm.1) (HasTypeCQ.outer (depth := _) hb hbody hm.2.1)
           (HasTypeArmsQ.outer (depth := _) hb hrest hm.2.2)
 
-  theorem HasTypeClausesQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ R h t ε}
-      (hc : HasTypeClausesQ P B Ψ Q C1 Γ R h t ε Δl) (hm : Clause.VarsInList C1.length (fun _ => True) h depth) :
-      HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ R h t ε Δl := by
+  theorem HasTypeClausesQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ R εb h t ε}
+      (hc : HasTypeClausesQ P B Ψ Q C1 Γ R εb h t ε Δl) (hm : Clause.VarsInList C1.length (fun _ => True) h depth) :
+      HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ R εb h t ε Δl := by
     match hc with
     | .cons (sg := sg) hsg hnames hn hk hew hbody hrest =>
         simp only [Clause.VarsInList] at hm
@@ -169,7 +171,7 @@ mutual
           simp only [List.length_append]; rw [hk] at hm; simpa [Nat.add_comm] using hm.1)
         simpa [List.append_assoc] using this
     | .nil => exact .nil
-  theorem HasFailureClause.outer {Δl : LocalCtx} {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ E R h t ε}
+  theorem HasFailureClause.outer {Δl : LocalCtx} {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ E R h t ε}
       (hc : HasFailureClause P B Ψ Q C1 Γ E R h t ε Δl)
       (hm : Clause.VarsInList C1.length (fun _ => True) h depth) :
       HasFailureClause P B Ψ Q (C1 ++ C0) Γ E R h t ε Δl := by

@@ -1,0 +1,77 @@
+== wait-for-lock start 23:38:53
+== lock acquired 23:38:53 after 0s
+✔ [120/431] Built Benitoite.Release.TypeBounds (549ms)
+✔ [121/431] Built Benitoite.Release.SubstEnv (326ms)
+✖ [122/431] Building Benitoite.Release.TypeVariables (346ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeVariables.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeVariables.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeVariables.setup.json --json
+error: Benitoite/Release/TypeVariables.lean:40:51: Application type mismatch: The argument
+  pe
+has type
+  Nat → Prop
+but is expected to have type
+  Nat
+in the application
+  VarsIn n pe
+error: Benitoite/Release/TypeVariables.lean:42:8: unsolved goals
+case nil
+n : Nat
+pe : Nat → Prop
+⊢ ∀ (a : Ty), sorry ()
+error: Benitoite/Release/TypeVariables.lean:43:17: unsolved goals
+case cons
+n : Nat
+pe : Nat → Prop
+a : Ty
+as : List Ty
+ih : VarsInList 0 n pe as ↔ ∀ (a : Ty), sorry
+⊢ (∀ (a : Ty), sorry ()) → VarsIn 0 n pe a
+error: Benitoite/Release/TypeVariables.lean:47:44: type expected, got
+  (fun pe_1 => Ty.VarsIn n pe pe_1 t : (Nat → Prop) → Prop)
+error: Benitoite/Release/TypeVariables.lean:71:46: type expected, got
+  (fun pe_1 => Ty.VarsIn n pe pe_1 t : (Nat → Prop) → Prop)
+error: Benitoite/Release/TypeVariables.lean:104:55: Application type mismatch: The argument
+  pe
+has type
+  Nat → Prop
+but is expected to have type
+  Nat
+in the application
+  Ty.VarsIn n pe
+error: Benitoite/Release/TypeVariables.lean:131:44: type expected, got
+  (fun pe_1 => VarsIn n pe pe_1 t : (Nat → Prop) → Prop)
+error: Benitoite/Release/TypeVariables.lean:140:10: No goals to be solved
+error: Benitoite/Release/TypeVariables.lean:159:8: Unknown constant `Benitoite.Release.Eff.VarsIn.mono`
+✖ [138/431] Building Benitoite.Release.TypeCongruence (390ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeCongruence.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeCongruence.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeCongruence.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeCongruence.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeCongruence.setup.json --json
+error: Benitoite/Release/TypeCongruence.lean:58:52: Application type mismatch: The argument
+  hw
+has type
+  Eff.RawWF nr n (EffR.mk atoms fs)
+but is expected to have type
+  Ty.RawWFList ?m.510 n fs
+in the application
+  Ty.bindTys_congr_scoped θ φ ht fs hw
+✔ [328/431] Built Benitoite.Release.TypeBounds:c.o (373ms)
+Some required targets logged failures:
+- Benitoite.Release.TypeVariables
+- Benitoite.Release.TypeCongruence
+error: build failed
+        1.07 real         1.47 user         0.74 sys
+           732266496  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              189499  page reclaims
+                2776  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  42  voluntary context switches
+               11291  involuntary context switches
+          1362706463  instructions retired
+           496698966  cycles elapsed
+            23430344  peak memory footprint
+== exit 1

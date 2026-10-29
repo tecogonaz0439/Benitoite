@@ -1,0 +1,165 @@
+[
+  {
+    "root": "crates/benitoite/src/prelude/stdlib",
+    "text_files": 63,
+    "matching_files": [
+      {
+        "path": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+        "calls": {
+          "checkInteger": 3,
+          "checkLength": 1,
+          "checkIndex": 1
+        },
+        "sha256": "22a5aace831fae40770a296250d5f26c09eab99c080e25ec9fbb331080ba8016"
+      },
+      {
+        "path": "crates/benitoite/src/prelude/stdlib/Scope.bnt",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e"
+      }
+    ]
+  },
+  {
+    "root": "crates/benitoite/testdata",
+    "text_files": 3429,
+    "matching_files": [
+      {
+        "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/rust/src/lib.rs",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "f69cea87d560254dd5e8e52a655d7f1f66e2de29b6a55e26432144f88c78e1c6"
+      },
+      {
+        "path": "crates/benitoite/testdata/stdlib/range.bnt",
+        "calls": {
+          "checkInteger": 19,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "49dadd1a5baecdfb14fd23a2df408c50d06c40d33c61f8b14e2e31b13d3b1205"
+      },
+      {
+        "path": "crates/benitoite/testdata/stdlib/range.stdout",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "24ab9e07cf4730064c564304a7c43f7810c9cf2cabd791ced99fa86dda2f3517"
+      },
+      {
+        "path": "crates/benitoite/testdata/syntax/placeholder_rules.bnt",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "5e7b4a4d1f0fd3c353076afc71c18bae8908188cbdcd6fbf8911bb7e54718b2b"
+      },
+      {
+        "path": "crates/benitoite/testdata/test/opaque-wrapper-equality.bnt",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 10,
+          "checkIndex": 8
+        },
+        "sha256": "7aa6b6a2dc2d16f906d2556e170c88acdab123299cb7caa57543d40a65d9c6a5"
+      },
+      {
+        "path": "crates/benitoite/testdata/test/opaque-wrapper-key.bnt",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 5,
+          "checkIndex": 4
+        },
+        "sha256": "87c870ee03f8fbe3bfdef0b547904b0e49b3e948c57353c51dd4dd789e5b717e"
+      }
+    ]
+  },
+  {
+    "root": "crates/benitoite/examples",
+    "text_files": 17,
+    "matching_files": []
+  },
+  {
+    "root": "crates/benitoite/skill",
+    "text_files": 71,
+    "matching_files": [
+      {
+        "path": "crates/benitoite/skill/SKILL.md",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "97cda7436bcd1d6fdd44072c3d3168fc3b8bc44785c94162fddcca20db55574e"
+      },
+      {
+        "path": "crates/benitoite/skill/references/common-mistakes.md",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "2c1cb69c1fdb1fa24fe738a2f7d2601a0db29daf122c75e6653aafab318a8fc6"
+      },
+      {
+        "path": "crates/benitoite/skill/references/diagnostics.md",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "bcf246a9e6ec3d4365608783f7b727ccfe0924231250b57874a45b1ec8018c24"
+      },
+      {
+        "path": "crates/benitoite/skill/references/idioms.md",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "7b7ecd9e66d6c3e5314d7259ef1e1b7836ec9efc45d95cef1a50ae3da4a31499"
+      },
+      {
+        "path": "crates/benitoite/skill/references/stdlib/Range.md",
+        "calls": {
+          "checkInteger": 3,
+          "checkLength": 1,
+          "checkIndex": 1
+        },
+        "sha256": "1c90717f9021584f160607e2867805c1f441e7a1911e292358b5e665a86c5713"
+      },
+      {
+        "path": "crates/benitoite/skill/references/stdlib/Scope.md",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "e076a860b3883c5fdf3e520c203200c467c8e349a17a447b39295dcae9d04b66"
+      },
+      {
+        "path": "crates/benitoite/skill/references/stdlib/index.md",
+        "calls": {
+          "checkInteger": 0,
+          "checkLength": 0,
+          "checkIndex": 0
+        },
+        "sha256": "02df5c00c9779546b9de1e49f17c4c74ccd0851ee3ffa62a6104c0408711c7d1"
+      }
+    ]
+  },
+  {
+    "root": "tools/skill-eval/results",
+    "text_files": 24,
+    "matching_files": []
+  }
+]

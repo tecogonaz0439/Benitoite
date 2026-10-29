@@ -1,0 +1,227 @@
+diff --git a/crates/benitoite/src/modules/tests.rs b/crates/benitoite/src/modules/tests.rs
+index ed63504f..054fea38 100644
+--- a/crates/benitoite/src/modules/tests.rs
++++ b/crates/benitoite/src/modules/tests.rs
+@@ -20,6 +20,31 @@ use memfs::{MemFs, load_files};
+ 
+ const MAIN: &str = "function main() -> Unit\n  return ()\nend function\n";
+ 
++// 関門: File と Scope だけの利用では標準の型クラスを読み込まない。
++// Scope の表示のために Trait への依存を戻す退行を、公開 loader の出力で捕まえる。
++// 既存の表示の実行検査は、余分に読み込んでも成功する。差し込み口は増やさない。
++#[test]
++fn file_and_scope_do_not_load_standard_traits() {
++    for imported in ["Benitoite.Unofficial.IO.File", "Benitoite.Unofficial.Scope"] {
++        let source = format!("import {imported}\n{MAIN}");
++        let (output, _) = load_files(&[("main.bnt", &source)]);
++        assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
++        assert!(
++            output
++                .modules
++                .find(&module_path("Benitoite.Scope"))
++                .is_some()
++        );
++        assert!(
++            output
++                .modules
++                .find(&module_path("Benitoite.Trait"))
++                .is_none(),
++            "{imported} loaded Trait"
++        );
++    }
++}
++
+ // spec: 01-03 依存の記述と `package.bnt`
+ #[test]
+ fn language_versions_check_the_release_boundary_in_each_header_location() {
+diff --git a/crates/benitoite/src/prelude/stdlib/Scope.bnt b/crates/benitoite/src/prelude/stdlib/Scope.bnt
+index c7da75d5..446197ff 100644
+--- a/crates/benitoite/src/prelude/stdlib/Scope.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Scope.bnt
+@@ -44,8 +44,6 @@
+ //! E0462
+ //! ```
+ 
+-import Benitoite.Trait
+-
+ /// A host name or IP address and the host or CIDR pattern it satisfies, stored in normalized form.
+ @opaque
+ public record CheckedHost
+@@ -179,47 +177,3 @@ function stringError(number: Integer, reason: String, pattern: String, target: S
+   else if number = 2 then ScopeError.InvalidTarget(target, reason)
+   else ScopeError.OutsideScope(pattern, target) end if
+ end function
+-
+-// 表示用の入力を4096バイトに収め、引用後は一引数2000バイト以内にする。
+-// 切り詰めは引用前に行い、完成したエスケープ・引用符・括弧を残す。UTF-8の境目を最大三バイト戻す
+-// （設計書 03-06「Scope」）。保存した入力そのものは変えない。
+-function limited(text: String) -> String
+-  return if String.byteLength(text) <= 4096 then text else prefix(text: text, stop: 4093) + "..." end if
+-end function
+-
+-function prefix(text: String, stop: Integer) -> String
+-  return match String.byteSlice(s: text, start: 0, stop: stop) with
+-    case Option.Some(value) -> value
+-    case Option.None -> prefix(text: text, stop: stop - 1)
+-  end match
+-end function
+-
+-function quoted(text: String) -> String
+-  return fitQuoted(limited(text))
+-end function
+-
+-function fitQuoted(text: String) -> String
+-  bind shown <- Trait.Show.show(text)
+-  return if String.byteLength(shown) <= 2000 then shown
+-  else fitQuoted(prefix(text: text, stop: String.byteLength(text) div 2) + "...") end if
+-end function
+-
+-function renderStrings(name: String, first: String, second: String) -> String
+-  bind a <- quoted(first)
+-  bind b <- quoted(second)
+-  bind omitted <- String.byteLength(first) > 4096 or String.byteLength(second) > 4096 or a <> Trait.Show.show(limited(first)) or b <> Trait.Show.show(limited(second))
+-  return "${name}(${a}, ${b})" + if omitted then "..." else "" end if
+-end function
+-
+-implement Trait.Show[ScopeError]
+-  function show(x: ScopeError) -> String
+-    return match x with
+-      case ScopeError.InvalidPattern(pattern, reason) -> renderStrings(name: "InvalidPattern", first: pattern, second: reason)
+-      case ScopeError.InvalidTarget(target, reason) -> renderStrings(name: "InvalidTarget", first: target, second: reason)
+-      case ScopeError.InvalidPortRange(minimum, maximum) -> "InvalidPortRange(${minimum}, ${maximum})"
+-      case ScopeError.InvalidPort(port) -> "InvalidPort(${port})"
+-      case ScopeError.OutsideScope(pattern, target) -> renderStrings(name: "OutsideScope", first: pattern, second: target)
+-      case ScopeError.PortOutsideScope(minimum, maximum, port) -> "PortOutsideScope(${minimum}, ${maximum}, ${port})"
+-    end match
+-  end function
+-end implement
+diff --git a/crates/benitoite/src/prelude/stdlib/Trait.bnt b/crates/benitoite/src/prelude/stdlib/Trait.bnt
+index cd3808dc..0ff6a60c 100644
+--- a/crates/benitoite/src/prelude/stdlib/Trait.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Trait.bnt
+@@ -1,5 +1,7 @@
+ //! Standard type classes. Import `Benitoite.Trait` and write `Trait.Show.show(x)`.
+ 
++import Benitoite.Unofficial.Scope
++
+ /// The result of comparing two values.
+ public data Ordering
+   Less
+@@ -91,6 +93,50 @@ function showCharacter(c: Character) -> String
+ 
+ // Show
+ 
++// 表示用の入力を4096バイトに収め、引用後は一引数2000バイト以内にする。
++// 切り詰めは引用前に行い、完成したエスケープ・引用符・括弧を残す。UTF-8の境目を最大三バイト戻す
++// （設計書 03-06「Scope」）。保存した入力そのものは変えない。
++function limited(text: String) -> String
++  return if String.byteLength(text) <= 4096 then text else prefix(text: text, stop: 4093) + "..." end if
++end function
++
++function prefix(text: String, stop: Integer) -> String
++  return match String.byteSlice(s: text, start: 0, stop: stop) with
++    case Option.Some(value) -> value
++    case Option.None -> prefix(text: text, stop: stop - 1)
++  end match
++end function
++
++function quoted(text: String) -> String
++  return fitQuoted(limited(text))
++end function
++
++function fitQuoted(text: String) -> String
++  bind shown <- Show.show(text)
++  return if String.byteLength(shown) <= 2000 then shown
++  else fitQuoted(prefix(text: text, stop: String.byteLength(text) div 2) + "...") end if
++end function
++
++function renderStrings(name: String, first: String, second: String) -> String
++  bind a <- quoted(first)
++  bind b <- quoted(second)
++  bind omitted <- String.byteLength(first) > 4096 or String.byteLength(second) > 4096 or a <> Show.show(limited(first)) or b <> Show.show(limited(second))
++  return "${name}(${a}, ${b})" + if omitted then "..." else "" end if
++end function
++
++implement Show[Scope.ScopeError]
++  function show(x: Scope.ScopeError) -> String
++    return match x with
++      case Scope.ScopeError.InvalidPattern(pattern, reason) -> renderStrings(name: "InvalidPattern", first: pattern, second: reason)
++      case Scope.ScopeError.InvalidTarget(target, reason) -> renderStrings(name: "InvalidTarget", first: target, second: reason)
++      case Scope.ScopeError.InvalidPortRange(minimum, maximum) -> "InvalidPortRange(${minimum}, ${maximum})"
++      case Scope.ScopeError.InvalidPort(port) -> "InvalidPort(${port})"
++      case Scope.ScopeError.OutsideScope(pattern, target) -> renderStrings(name: "OutsideScope", first: pattern, second: target)
++      case Scope.ScopeError.PortOutsideScope(minimum, maximum, port) -> "PortOutsideScope(${minimum}, ${maximum}, ${port})"
++    end match
++  end function
++end implement
++
+ implement Show[IOError]
+   function show(x: IOError) -> String
+     return IOError.message(x)
+diff --git a/crates/benitoite/src/typeck/traits/tests.rs b/crates/benitoite/src/typeck/traits/tests.rs
+index 718c449d..47b7d2c4 100644
+--- a/crates/benitoite/src/typeck/traits/tests.rs
++++ b/crates/benitoite/src/typeck/traits/tests.rs
+@@ -58,7 +58,8 @@ fn standard_library_sources_and_dictionary_contracts() {
+             }
+         })
+         .collect();
+-    assert_eq!(impls.len(), 63);
++    // ScopeError の Show も Trait に置き、Scope の型を読み込む。
++    assert_eq!(impls.len(), 64);
+     // 型自身のモジュールに置いた標準実装も、同じ辞書の契約で検査する。
+     for ast in l.asts.iter().filter(|ast| ast.file != module.id.file()) {
+         impls.extend(ast.decls.iter().filter_map(|top| {
+@@ -69,7 +70,7 @@ fn standard_library_sources_and_dictionary_contracts() {
+             }
+         }));
+     }
+-    assert_eq!(impls.len(), 77);
++    assert_eq!(impls.len(), 78);
+     assert_eq!(t.impls.iter().count(), impls.len());
+     for source in impls {
+         let imp = t.impls.get(source.id).unwrap();
+diff --git a/docs/design/03-interop/03-06-stdlib.md b/docs/design/03-interop/03-06-stdlib.md
+index 6205e441..f272b46e 100644
+--- a/docs/design/03-interop/03-06-stdlib.md
++++ b/docs/design/03-interop/03-06-stdlib.md
+@@ -160,6 +160,8 @@ CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhost
+ | `OutsideScope(String, String)` | 元のパターン、元の対象 |
+ | `PortOutsideScope(Integer, Integer, Integer)` | minimumPort、maximumPort、port |
+ 
++`Scope.ScopeError` の `Show` の実装と、その引用・切り詰め用の私有関数は `Benitoite.Trait` に置く。Trait が Scope を import し、Scope は Trait を import しない。理由: 型クラスを使わない Scope や File の利用で、Trait の読み込みと型検査を避けるためである。
++
+ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のShowで引用・エスケープする。表示用の入力をUTF-8の境目で4096バイト以内へ省略し、引用後の各引数を2000バイト以内へ収める。引用後に長すぎる場合は、引用前の入力をUTF-8の境目で半分へ縮めて `...` を加え、引用し直す。構成子名・括弧・引用符・完成したエスケープを残し、省略時は閉じ括弧の後にも `...` を付ける。最終結果は4096バイト以内とする。保存した入力自体は切り詰めない。
+ 
+ 形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。ホストの判定と正規形には `types::scope` の共通の代数を使い、パスは受理した正規の字面を借用する。既存の三つの検査の実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。`checkPathIn` の実行本体も同じパスの判定を使い、成功時は入力の文字列の値を保持し、失敗時は既存の `ScopeError` の構成子を直接作る。`PathIn` 専用のVM値・構成子の固定タグは追加しない。
+@@ -639,7 +641,7 @@ end function
+ | 型クラス | 実装する型 |
+ |---|---|
+ | `Show`・`Order` | 基本型（各幅の数、`Decimal`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
+-| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
++| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Scope.ScopeError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
+ | `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
+ | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
+ | `Functor2`・`Applicative2`・`Monad2` | `Result` |
+@@ -662,7 +664,7 @@ end function
+ 
+ 【決定】`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError` の `Show.show` は、各型の `message` が返す文字列をそのまま返す。引用符や位置などの情報は加えない。理由: 失敗値から人間が読める原因を取得し、既存の型クラスの仕組みで表示できるようにするためである。
+ 
+-`IOError` と `NetworkError` の実装は `Benitoite.Trait` に置き、prelude の `IOError.message`・`NetworkError.message` を呼ぶ。二型のモジュールから Trait への import は置かない。理由: Trait を使わないプログラムで、標準の型クラスの読み込みと型検査を避けるためである。`Json.ParseError` と `Csv.ParseError` の実装はそれぞれ Json・Csv のモジュールに置き、そこから Trait を import する。利用者が `Trait.Show.show` を名前で使う場合は、`import Benitoite.Trait` を必要とする。
++`IOError` と `NetworkError` の実装は `Benitoite.Trait` に置き、prelude の `IOError.message`・`NetworkError.message` を呼ぶ。二型のモジュールから Trait への import は置かない。理由: Trait を使わないプログラムで、標準の型クラスの読み込みと型検査を避けるためである。`Scope.ScopeError` の実装も Trait に置き、表示は本章「Scope」の規則に従う。`Json.ParseError` と `Csv.ParseError` の実装はそれぞれ Json・Csv のモジュールに置き、そこから Trait を import する。利用者が `Trait.Show.show` を名前で使う場合は、`import Benitoite.Trait` を必要とする。
+ 
+ 【方針】`Order.compare` は、次の順序で比べる。
+ 
+diff --git a/docs/design/03-interop/03-07-io-modules.md b/docs/design/03-interop/03-07-io-modules.md
+index 415b2215..6c1f2175 100644
+--- a/docs/design/03-interop/03-07-io-modules.md
++++ b/docs/design/03-interop/03-07-io-modules.md
+@@ -144,7 +144,7 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
+ | `File.rename(from, to)` | `function(from: String, to: String) -> Result[Unit, IOError] uses File.Write` | `from` を `to` に移す。`to` にファイルがあれば置き換える |
+ | `File.copy(from, to)` | `function(from: String, to: String) -> Result[Unit, IOError] uses File.Read, File.Write` | 普通のファイル `from` の内容を `to` に写す。`to` があれば置き換える |
+ 
+-【決定】検査済みのパスを受け取る操作は次のとおりである。表の R は、対象の引数の型から決まる同じ範囲を表す。利用者が範囲変数 R を宣言する構文ではない。
++【決定】検査済みのパスを受け取る操作は次のとおりである。表の R は、対象の引数の型から決まる同じ範囲を表す。利用者が範囲変数 R を宣言する構文ではない。File は署名のために Scope を import するが、File と Scope だけの利用では Trait を読み込まない（[標準ライブラリ](03-06-stdlib.md#scope)）。
+ 
+ | 操作 | 型 | 振る舞い |
+ |---|---|---|

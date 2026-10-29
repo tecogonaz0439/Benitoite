@@ -1,0 +1,10 @@
+function sign(n: Integer) -> Integer
+  return match n with
+    case -9223372036854775808..-1 -> -1
+    case 0..9223372036854775807 -> 1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- sign(0)
+end function

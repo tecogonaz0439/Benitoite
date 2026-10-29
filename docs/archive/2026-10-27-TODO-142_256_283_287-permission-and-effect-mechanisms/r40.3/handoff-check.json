@@ -1,0 +1,1164 @@
+{
+  "manifestSha256": "fa21295bcbca5261ff485eb5654ae2364cbb1a60eaf2d4aeeb3d34a43b55f4a8",
+  "cliSha256": "87cbc6e352607197c6ed096b3eeedb0324b8f8569a4f4bd751804b309a32819a",
+  "commands": 53,
+  "successes": 53,
+  "failures": [],
+  "records": [
+    {
+      "file": "inputs/pure.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.115246917,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/pure.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/pure.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.108681792,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/top.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.107432,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "all"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Read"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/top.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/top.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10826233400000002,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "all"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Read"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/non-top.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10749620900000006,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Write",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Write"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/non-top.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10906066700000006,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Write",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Write"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/redundant.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10843000000000003,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "all"
+            }
+          },
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "pathExact",
+              "path": "/data/a"
+            }
+          },
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Read"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/redundant.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/redundant.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10842700000000005,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "all"
+            }
+          },
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "pathExact",
+              "path": "/data/a"
+            }
+          },
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Read"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/handled-user-pure.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.05940845800000005,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/handled-user-pure.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-user-pure.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.05819837499999991,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/handled-scoped-write.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.06795795800000004,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Write",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data/reports"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Write"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/handled-scoped-write.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/handled-scoped-write.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.06860470799999985,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Write",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data/reports"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Write"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/not-covered.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06721000000000021,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "notCovered",
+      "matched": true
+    },
+    {
+      "file": "inputs/not-covered.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06758900000000012,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "notCovered",
+      "matched": true
+    },
+    {
+      "file": "inputs/not-covered.bnt",
+      "mode": "diagnostics",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--diagnostics=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/not-covered.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.0655709579999999,
+      "diagnosticCode": "E0519",
+      "reason": "notCovered",
+      "matched": true
+    },
+    {
+      "file": "inputs/atomic-cover-only.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06703779200000004,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "atomicCoverOnly",
+      "matched": true
+    },
+    {
+      "file": "inputs/atomic-cover-only.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06737987499999987,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "atomicCoverOnly",
+      "matched": true
+    },
+    {
+      "file": "inputs/atomic-cover-only.bnt",
+      "mode": "diagnostics",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--diagnostics=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/atomic-cover-only.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06554066599999997,
+      "diagnosticCode": "E0519",
+      "reason": "atomicCoverOnly",
+      "matched": true
+    },
+    {
+      "file": "inputs/unknown-source.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06490695899999999,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "unknownSource",
+      "matched": true
+    },
+    {
+      "file": "inputs/unknown-source.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06487533300000003,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "unknownSource",
+      "matched": true
+    },
+    {
+      "file": "inputs/unknown-source.bnt",
+      "mode": "diagnostics",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--diagnostics=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/unknown-source.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.06672120799999992,
+      "diagnosticCode": "E0519",
+      "reason": "unknownSource",
+      "matched": true
+    },
+    {
+      "file": "inputs/budget-exceeded.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.1758557919999999,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "budgetExceeded",
+      "matched": true
+    },
+    {
+      "file": "inputs/budget-exceeded.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.17316958299999996,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0519",
+      "reason": "budgetExceeded",
+      "matched": true
+    },
+    {
+      "file": "inputs/budget-exceeded.bnt",
+      "mode": "diagnostics",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--diagnostics=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/budget-exceeded.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.17384916699999975,
+      "diagnosticCode": "E0519",
+      "reason": "budgetExceeded",
+      "matched": true
+    },
+    {
+      "file": "inputs/show-rejected.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.10661695800000004,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0705",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/show-rejected.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-rejected.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.10526758299999983,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0705",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/projection-repaired.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.06561533299999978,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/projection-repaired.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/projection-repaired.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.06534533400000031,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/show-match.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10490624999999998,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/show-match.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/show-match.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10599704100000018,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/user-unhandled.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.05944079200000019,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0506",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/user-unhandled.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-unhandled.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.05960949999999965,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0506",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/user-scope-rejected.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.026846917000000303,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0513",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/user-scope-rejected.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.026802375000000378,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0513",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/read-complete.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10952129100000008,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/read-complete.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-complete.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10835612500000025,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/read-partial.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10788874999999987,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Read"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/read-partial.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-partial.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.11020258299999997,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Read",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Read"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/read-missing-upper.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.11017487500000023,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0501",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/read-missing-upper.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/read-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.10720762500000003,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0501",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/write-complete.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10828541699999983,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/write-complete.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-complete.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10813799999999985,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/write-partial.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10864412500000009,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Write",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Write"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/write-partial.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-partial.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.1096886669999999,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "File.Write",
+            "scope": {
+              "kind": "pathTree",
+              "path": "/data"
+            }
+          }
+        ],
+        "expanded": [
+          "File.Write"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/write-missing-upper.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.11038304099999952,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0501",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/write-missing-upper.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/write-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.11034862500000031,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0501",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/connect-complete.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10818062500000014,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/connect-complete.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-complete.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10785212499999997,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/connect-partial.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.10941408399999997,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "Http.Connect",
+            "scope": {
+              "host": {
+                "kind": "exact",
+                "name": "api.example"
+              },
+              "kind": "endpoint",
+              "ports": {
+                "maximum": 443,
+                "minimum": 443
+              }
+            }
+          }
+        ],
+        "expanded": [
+          "Http.Connect"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/connect-partial.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-partial.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.11025304200000008,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [
+          {
+            "name": "Http.Connect",
+            "scope": {
+              "host": {
+                "kind": "exact",
+                "name": "api.example"
+              },
+              "kind": "endpoint",
+              "ports": {
+                "maximum": 443,
+                "minimum": 443
+              }
+            }
+          }
+        ],
+        "expanded": [
+          "Http.Connect"
+        ]
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    },
+    {
+      "file": "inputs/connect-missing-upper.bnt",
+      "mode": "main",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.11280624999999933,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0501",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/connect-missing-upper.bnt",
+      "mode": "test",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/connect-missing-upper.bnt"
+      ],
+      "exit": 2,
+      "elapsedSeconds": 0.11188120899999987,
+      "aggregateEffects": null,
+      "sourceHashMatched": true,
+      "diagnosticCode": "E0501",
+      "reason": null,
+      "matched": true
+    },
+    {
+      "file": "inputs/doc-error.bnt",
+      "mode": "doc",
+      "command": [
+        "<wt>/target/debug/benitoite",
+        "test",
+        "--doc",
+        "--check",
+        "--report=json",
+        "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/doc-error.bnt"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.12286866599999957,
+      "aggregateEffects": {
+        "basis": "declaredUpperBound",
+        "bounds": [],
+        "expanded": []
+      },
+      "sourceHashMatched": true,
+      "matched": true
+    }
+  ]
+}

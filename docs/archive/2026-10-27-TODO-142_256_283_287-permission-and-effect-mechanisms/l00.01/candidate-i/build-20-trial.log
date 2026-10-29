@@ -1,0 +1,42 @@
+== wait-for-lock start 18:14:39
+== lock acquired 18:14:39 after 0s
+✔ [46/410] Built Benitoite.Release.Effect (276ms)
+✔ [48/410] Built Benitoite.Release.TypeSubst (317ms)
+✖ [50/410] Building Benitoite.Release.Syntax (584ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Syntax.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Syntax.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Syntax.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Syntax.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Syntax.setup.json --json
+error: Benitoite/Release/Syntax.lean:174:2: Type mismatch
+  Ty.opaque o
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+✔ [69/410] Built Benitoite.Release.TypeSubstLemmas (772ms)
+✔ [71/410] Built Benitoite.Release.TypeRows (414ms)
+✔ [73/410] Built Benitoite.Release.TypeComposition (450ms)
+✔ [75/410] Built Benitoite.Release.NoFail (522ms)
+✔ [280/410] Built Benitoite.Release.TypeSupport (585ms)
+✔ [282/410] Built Benitoite.Release.Finite (908ms)
+✔ [284/410] Built Benitoite.Release.FiniteSupport (1.8s)
+✔ [286/410] Built Benitoite.Surface.SingleFail (275ms)
+Some required targets logged failures:
+- Benitoite.Release.Syntax
+error: build failed
+        5.87 real         7.03 user         1.64 sys
+           742916096  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              504748  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  34  voluntary context switches
+               32103  involuntary context switches
+          1308853249  instructions retired
+           472289622  cycles elapsed
+            25003160  peak memory footprint
+== exit 1

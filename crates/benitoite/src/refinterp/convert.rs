@@ -13,7 +13,7 @@ use super::value::{Value, Values};
 use crate::builtins::iface::{
     BuiltinDecl, CallCtx, Capability, IoServices, IoWait, Reply, StateServices, WaitRequest,
 };
-use crate::builtins::table::call_builtin;
+use crate::builtins::table::call_builtin_scoped;
 use crate::builtins::{BuiltinId, builtin_decl};
 use crate::runtime::Stop;
 use crate::runtime::heap::{
@@ -73,6 +73,7 @@ impl BuiltinBridge {
     }
 
     /// 番号から表を引いて呼ぶ。状態の口は評価器から受け取る。
+    #[cfg(test)]
     pub(super) fn call(
         &mut self,
         id: BuiltinId,
@@ -84,6 +85,21 @@ impl BuiltinBridge {
             return BuiltinOutcome::Stopped(Stop::Internal("unknown builtin number".into()));
         };
         self.call_decl(decl, args, io, state)
+    }
+
+    /// コア IR が保持した範囲の列を実行本体へ渡す（設計書 02-08「参照インタプリタ」）。
+    pub(super) fn call_scoped(
+        &mut self,
+        id: BuiltinId,
+        ranges: &[crate::types::scope::Range],
+        args: &[Value],
+        io: &mut dyn IoServices,
+        state: Option<&mut dyn StateServices>,
+    ) -> BuiltinOutcome {
+        let Some(decl) = self.declaration(id) else {
+            return BuiltinOutcome::Stopped(Stop::Internal("unknown builtin number".into()));
+        };
+        self.call_decl_scoped(decl, ranges, args, io, state)
     }
 
     pub(super) fn external(
@@ -177,9 +193,21 @@ impl BuiltinBridge {
         builtin_decl(id)
     }
 
+    #[cfg(test)]
     fn call_decl(
         &mut self,
         decl: &BuiltinDecl,
+        args: &[Value],
+        io: &mut dyn IoServices,
+        state: Option<&mut dyn StateServices>,
+    ) -> BuiltinOutcome {
+        self.call_decl_scoped(decl, &[], args, io, state)
+    }
+
+    fn call_decl_scoped(
+        &mut self,
+        decl: &BuiltinDecl,
+        ranges: &[crate::types::scope::Range],
         args: &[Value],
         io: &mut dyn IoServices,
         state: Option<&mut dyn StateServices>,
@@ -204,8 +232,9 @@ impl BuiltinBridge {
                 .iter()
                 .map(|v| session.convert(ctx, v, decl.name, roots, &mut references, generation))
                 .collect::<Result<Vec<_>, _>>()?;
-            let reply = call_builtin(
+            let reply = call_builtin_scoped(
                 decl,
+                ranges,
                 ctx,
                 if decl.capability == Capability::Io {
                     Some(&mut io)
@@ -225,7 +254,9 @@ impl BuiltinBridge {
                         .map_err(|_| resources::fault())?
                         .worker(wait)?;
                     done.complete(
-                        &mut CallCtx::new(ctx, Some(&mut io), None, None).io_ctx()?,
+                        &mut CallCtx::new(ctx, Some(&mut io), None, None)
+                            .with_ranges(ranges)
+                            .io_ctx()?,
                         &args,
                     )?
                 }

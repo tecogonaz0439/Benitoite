@@ -1,0 +1,28 @@
+$ cargo test -p benitoite --lib nesting_and_sequence_limits_use_the_default_test_thread_stack -- --nocapture
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.29s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+depth case: parentheses
+depth case: if
+depth case: block
+depth case: lambda
+depth case: short lambda
+depth case: statements
+depth case: list elements
+depth case: operator chain
+depth case: nested patterns
+depth case: nested lists
+depth case: unary
+depth case: call chain
+depth case: pattern nodes
+depth case: parenthesized types
+depth case: named types
+depth case: function types
+depth case: call arguments
+depth case: patterns across arms
+test syntax::parser::tests::nesting_and_sequence_limits_use_the_default_test_thread_stack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1374 filtered out; finished in 0.19s
+

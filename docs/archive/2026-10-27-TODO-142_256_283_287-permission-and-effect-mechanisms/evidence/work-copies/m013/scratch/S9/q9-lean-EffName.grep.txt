@@ -1,0 +1,25 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Atom.lean:12:abbrev EffName := String
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Atom.lean:15:def stateEff : EffName := "State"
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Atom.lean:19:  | name (l : EffName)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:18:def single (l : EffName) : Eff := ofAtoms (fun a => a == .name l)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:35:theorem mem_single (l : EffName) (a : Atom) : mem (single l) a ↔ a = .name l := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:47:theorem memFail_single (l : EffName) (t : Ty) : memFail (single l) t ↔ False := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Examples.lean:19:    (op : Option EffName := none) : PrimSig :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:51:theorem substRho_name {es : List Eff} {ε : Eff} {l : EffName} (h : Eff.mem ε (.name l)) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:345:  eff : EffName
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Syntax.lean:404:  effects : EffName → Option (List OpName)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:261:theorem Eff.substAt_single (c : Nat) (ts : List Ty) (es : List Eff) (l : EffName) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:57:  opEff : Option EffName
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:73:  effects : EffName → Option (List PrimName)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:96:  eff : EffName
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:115:def effOps (P : Program) (B : Builtins) (l : EffName) : Option (List OpRef) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:28:theorem singleEff_eq_contains {atoms : List Atom} {l : EffName}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:42:  opEff : Option EffName
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:53:  effects : List (EffName × List PrimName)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:59:def BuiltinMaterial.effectOps (b : BuiltinMaterial) (name : EffName) : Option (List PrimName) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:146:  effects : List (EffName × List OpName)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:192:  effects : List EffName
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:45:theorem singleEff_eq {atoms : List Atom} {l : EffName} (_h : Atom.name l ∈ atoms) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:11:@[local simp] private theorem canonical_single (l : EffName) : Eff.Canonical (Eff.single l) := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Syntax.lean:544:  effects : EffName → Option (List OpName) := fun _ => none
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Syntax.lean:625:  effects : EffName → Option (List OpName) := fun _ => none

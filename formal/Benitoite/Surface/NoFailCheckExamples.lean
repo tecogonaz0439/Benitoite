@@ -28,7 +28,7 @@ example :
     [rowTransportCheck [.rho 0] [true] [] [failString],
      rowTransportCheck [] [true] [] [],
      rowTransportCheck [.rho 0] [true] [] [rowOnly],
-     rowTransportCheck [.name stateEff] [true] [] [Eff.single stateEff],
+     rowTransportCheck [.nameTop stateEff] [true] [] [Eff.single stateEff],
      rowTransportCheck [.rho 0] [true] [true] [rowOnly],
      rowTransportCheck [] [false] [] [failInt]] =
       [false, false, false, true, true, true] := by

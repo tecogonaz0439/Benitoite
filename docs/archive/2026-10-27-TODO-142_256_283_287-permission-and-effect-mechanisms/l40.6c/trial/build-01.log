@@ -1,0 +1,94 @@
+== wait-for-lock start 09:25:54
+== lock acquired 09:25:55 after 1s
+✔ [107/506] Built Benitoite.Release.EffectCoverDef (346ms)
+✔ [108/506] Built Benitoite.Release.EffectCoverDef:c.o (87ms)
+✔ [109/506] Built Benitoite.Release.Typing (1.4s)
+✔ [110/506] Built Benitoite.Release.Typing:c.o (189ms)
+✔ [111/506] Built Benitoite.Release.BuilderContents (420ms)
+✔ [112/506] Built Benitoite.Release.LocalTyping (405ms)
+✔ [115/506] Built Benitoite.Release.TypeRegularity (605ms)
+✔ [117/506] Built Benitoite.Release.BuiltinTable (684ms)
+✔ [119/506] Built Benitoite.Release.BuilderExec (509ms)
+✖ [120/506] Building Benitoite.Release.Lemmas.Basic (336ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Basic.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Basic.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Basic.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Basic.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Basic.setup.json --json
+error: Benitoite/Release/Lemmas/Basic.lean:71:60: Application type mismatch: The argument
+  hs'
+has type
+  Eff.Covers ε₂ ε'
+but is expected to have type
+  Eff.Covers ε ?m.267
+in the application
+  Eff.Covers.trans hs hs'
+error: Benitoite/Release/Lemmas/Basic.lean:78:29: Application type mismatch: The argument
+  hs
+has type
+  Eff.Covers ε₂ ε
+but is expected to have type
+  Eff.Sub ε ε₂
+in the application
+  ⟨rfl, hs⟩
+error: Benitoite/Release/Lemmas/Basic.lean:85:29: Application type mismatch: The argument
+  hs
+has type
+  Eff.Covers ε ε₁
+but is expected to have type
+  Eff.Sub ε₁ ε
+in the application
+  ⟨rfl, hs⟩
+error: Benitoite/Release/Lemmas/Basic.lean:104:68: Application type mismatch: The argument
+  hs
+has type
+  Eff.Covers ε' ε
+but is expected to have type
+  Eff.Sub ?m.108 ?m.109
+in the application
+  Eff.substAt_mono c ts es hs
+error: Benitoite/Release/Lemmas/Basic.lean:113:62: Application type mismatch: The argument
+  hs
+has type
+  Eff.Covers ε' ε
+but is expected to have type
+  Eff.Sub ?m.108 ?m.109
+in the application
+  Eff.shift_mono k c hs
+✔ [129/506] Built Benitoite.Release.TypeBounds (652ms)
+✔ [131/506] Built Benitoite.Release.SubstEnv (339ms)
+✔ [133/506] Built Benitoite.Release.TypeVariables (543ms)
+✔ [134/506] Built Benitoite.Release.TypeCongruence (543ms)
+✔ [137/506] Built Benitoite.Release.WellFormed (384ms)
+✔ [139/506] Built Benitoite.Release.TypeScopedSubst (474ms)
+✔ [148/506] Built Benitoite.Release.Admissible (490ms)
+✔ [152/506] Built Benitoite.Release.FailureEffects (462ms)
+✔ [154/506] Built Benitoite.Release.EffectCover (595ms)
+✔ [155/506] Built Benitoite.Release.LocalScope (2.5s)
+✔ [156/506] Built Benitoite.Release.EffectCover:c.o (66ms)
+✔ [157/506] Built Benitoite.Release.Semantics (1.0s)
+✔ [161/506] Built Benitoite.Release.RangeWF (1.2s)
+✔ [163/506] Built Benitoite.Release.Assumptions (436ms)
+✔ [165/506] Built Benitoite.Release.RangeIxExamples (366ms)
+✔ [168/506] Built Benitoite.Release.Examples (899ms)
+✔ [169/506] Built Benitoite.Release.RangeInst (1.1s)
+✔ [340/506] Built Benitoite.Release.ShapeOk (297ms)
+✔ [386/506] Built Benitoite.Release.Lemmas.Names (3.3s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Basic
+error: build failed
+        7.30 real        20.14 user         5.70 sys
+           852574208  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1247923  page reclaims
+                  28  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 125  voluntary context switches
+               77310  involuntary context switches
+          1929209652  instructions retired
+           867766218  cycles elapsed
+            40371616  peak memory footprint
+== exit 1

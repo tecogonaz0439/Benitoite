@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.Process
+function f(code: Integer) -> Unit uses Process.Exit
+  if code > 255 then return Process.exit(code) else return () end if
+end function
+
+function main() -> Unit
+  
+  return ()
+end function

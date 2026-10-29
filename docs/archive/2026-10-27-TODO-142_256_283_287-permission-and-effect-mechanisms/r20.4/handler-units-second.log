@@ -1,0 +1,30 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.37s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 10 tests
+test syntax::newline::tests::with_scopes_and_handler_arms ... ok
+test syntax::parser::effects::tests::legacy_handler_clause_is_reported_without_secondary_errors ... ok
+test syntax::parser::effects::tests::resource_bindings_do_not_end_the_handler_body ... ok
+test vm::dispatch::handlers::tests::io_operations_use_the_handler_before_invoking_external_services ... ok
+test typeck::scoped_calls_tests::handler_index_waits_for_surrounding_inference ... ok
+test typeck::scope::tests::dedicated_bindings_and_handler_clauses_follow_surface_preorder ... ok
+
+thread 'typeck::scoped_calls_tests::handler_defaults_follow_effect_dependencies_and_children_finish_first' (5125254) panicked at crates/benitoite/src/typeck/scoped_calls_tests.rs:266:9:
+assertion `left == right` failed: outside operation value
+  left: [Con(Builtin(BuiltinTypeId(32)), [], RangeIndex(None))]
+ right: [Con(Builtin(BuiltinTypeId(32)), [], RangeIndex(Some(Fixed(Path(PathPattern { kind: Tree, stem: Path(["data"]) })))))]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scoped_calls_tests::handler_defaults_follow_effect_dependencies_and_children_finish_first ... FAILED
+test vm::dispatch::tasks::tests::inherited_handler_waits_for_grandchild_and_preserves_wrapped_return ... ok
+test vm::dispatch::tasks::tests::cancellation::a_non_resuming_clause_cancels_handler_members_before_returning ... ok
+test typeck::scoped_calls_tests::handler_clause_index_comes_from_inferred_protected_body ... ok
+
+failures:
+
+failures:
+    typeck::scoped_calls_tests::handler_defaults_follow_effect_dependencies_and_children_finish_first
+
+test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 1398 filtered out; finished in 0.24s
+
+error: test failed, to rerun pass `-p benitoite --lib`

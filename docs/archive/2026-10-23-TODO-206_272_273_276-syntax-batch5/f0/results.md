@@ -5,7 +5,7 @@
 ## 基準と変更範囲
 
 - B_WORK・開始時HEAD: `a9f03e118f6d71b206107f6b926c45b1312c546d`。ブランチは取りまとめが用意した`mod011/F0`。
-- 取り込み対象の変更は本記録だけである。試作用のコピー、入力、観測器、パッチ、ログは、無視対象の`work/m011/scratch/`に置いた。plan.md・decisions.md・設計書・処理系・本番のテスト・生成物は変更していない。
+- 当時の取り込み対象は本記録だけである。試作用のコピー、入力、観測器、パッチ、ログは git の外の作業用領域に置いた。2026-10-28 に、下記の小さな証拠を [work-copies/](../work-copies/README.md) へ保管した。plan.md・decisions.md・設計書・処理系・本番のテスト・生成物は当時変更していない。
 - 開始時に、追跡対象の`crates/`・`formal/`・`scripts/`・`tools/`・`licenses/`とCargo等の入力4888ファイルのSHA-256を採取した。終了時に本文の一致を確認した。baselineの`src/`も開始時の本番と一致した。
 - `private/`とそれを指すリンクは読んでいない。gitは状態・HEAD・追跡ファイル一覧・差分の読み取りだけに用いた。add・commit・ブランチ操作・取り込み・push等は行っていない。
 - 環境: macOS/aarch64、`rustc 1.98.1 (48a229cea 2026-09-01)`、`cargo 1.98.1 (797e8a9bc 2026-08-05)`、既定のgc-mark-sweep。Lean・特殊なヒープ構成・性能測定は、この作業では対象外である。
@@ -81,23 +81,23 @@ end function
 | `cargo build -p benitoite --bin benitoite`、その後の`--version=json` | 0 | 外側は独立計測していない。Cargo表示37.67秒。再ビルド後はB_WORK由来を確認した。dirtyは未採取なので、その値を本文一致の証拠にせずSHA-256で別に確認した |
 | scratchのbaselineの最初の`cargo build --manifest-path …/baseline/Cargo.toml --example f0_probe` | 101 | rootのLICENSE-MIT/APACHEの複写不足。二ファイルを両コピーへ加えて修正。本番の不具合ではない。再実行は0、Cargo表示17.38秒、外側未計測 |
 | 同じパッケージ名と共有targetによる最初のprototypeビルド | 0、ただし無効な観測として除外 | 0.06秒で成果物が再利用されたため、変更後の観測として採用しなかった。scratchのパッケージ名を分け、以後は正しいコピーのコンパイル表示と新しい観測器を確認した。baseline再ビルドは0、Cargo表示17.69秒、初回prototypeは0、17.59秒、いずれも外側未計測 |
-| `python3 work/m011/scratch/setup_probe.py`、`python3 work/m011/scratch/prepare_inputs.py` | 0 | srcの試作差分とパッチ、観測器と94入力を生成。外側の単独計測なし |
-| `python3 work/m011/scratch/run_probe.py baseline`（最終94入力） | 0 | 0.025秒、94行の観測を保存 |
-| `python3 work/m011/scratch/run_probe.py prototype --build`（最終版） | 0 | ビルド8.235秒、94入力の実行0.089秒。commands.jsonlはsubprocessの開始から終了までを計測 |
+| [python3 setup_probe.py](../work-copies/m011/scratch/setup_probe.py)、[python3 prepare_inputs.py](../work-copies/m011/scratch/prepare_inputs.py) | 0 | srcの試作差分とパッチ、観測器と94入力を生成。外側の単独計測なし |
+| [python3 run_probe.py baseline](../work-copies/m011/scratch/run_probe.py)（最終94入力） | 0 | 0.025秒、94行の観測を保存 |
+| [python3 run_probe.py prototype --build](../work-copies/m011/scratch/run_probe.py)（最終版） | 0 | ビルド8.235秒、94入力の実行0.089秒。commands.jsonlはsubprocessの開始から終了までを計測 |
 | 同一行のラムダ終端確定の中間試作 | 観測器は0、対照不一致を検出 | 複数行の旧ラムダにE0201が出た。生のNEWLINEの行を本体の行と誤認したため、境界走査が持つ実際の本体の行へ判定を修正した。修正後のビルドは0、外側3.359秒。最終版の15対照でも一致を確認した |
 | `target/debug/benitoite check --diagnostics=json <入力>`（11入力） | 期待した0または2 | 名前を定義したmainの書式なしの対照は0、新書式側は2/E0201。残る9件は構文の負例または未定義名を含むため2。JSONはcli-observations.jsonへ保存。全11回のsubprocess計測値の合計は約0.2秒 |
-| `python3 work/m011/scratch/verify_observations.py` | 0 | 本文4888件、15対照、保留診断・元位置・上限等の照合に成功。最終の外側計測値は下の作業末の記録に示す |
+| [python3 verify_observations.py](../work-copies/m011/scratch/verify_observations.py) | 0 | 本文4888件、15対照、保留診断・元位置・上限等の照合に成功。最終の外側計測値は下の作業末の記録に示す |
 | work F0のdry-runと本実行、文書の静的確認 | 0 | dry-run 0.062秒、本実行0.062秒。変更1件を文書だけと分類し、検査対象なし。本文・観測の照合は別に0.243秒で成功し、文書の静的確認も成功した |
 
 `check --help`は未対応のオプションとして終了1になったため、正式な`--help`で指定を確認した。検査や試行の成功には数えていない。中間の観測器は、入力のエラーをJSONへ出してプロセス自体は0で終えるため、終了0だけでは成立の判定にしていない。保存した診断と対照の照合を用いた。
 
 ## 保存した試行の入力と証拠
 
-すべて`work/m011/scratch/`内に置いた。開始時本文の一覧は`start.json`、試作のソース差分は`prototype.patch`、二つの局所コピーは`baseline/`・`prototype/`、入力は`inputs/`と`case-list.json`、観測器の生成は`prepare_inputs.py`、実行は`run_probe.py`である。`setup_probe.py`はbaselineのsrcをprototypeへ複写し直してから試作を適用し、パッチを再生成する。
+当時の試行は git の外の作業用領域で行った。小さな証拠は [scratch/ の写し](../work-copies/m011/scratch/)へ保管した。開始時本文の一覧は [start.json](../work-copies/m011/scratch/start.json)、試作のソース差分は [prototype.patch](../work-copies/m011/scratch/prototype.patch)、入力は [inputs/](../work-copies/m011/scratch/inputs/) と [case-list.json](../work-copies/m011/scratch/case-list.json)、観測器の生成は [prepare_inputs.py](../work-copies/m011/scratch/prepare_inputs.py)、実行の台本は [run_probe.py](../work-copies/m011/scratch/run_probe.py)である。[setup_probe.py](../work-copies/m011/scratch/setup_probe.py)は当時の試作の構築手順である。局所コピーの baseline/・prototype/ と二つの実行ファイルは保管していない。大きさ・ハッシュと扱いは [対応表](../work-copies/README.md#分類と元の対応)に残した。
 
-観測は`baseline.jsonl`・`prototype.jsonl`、ビルドと標準エラーは`*-build.log`・`*.stderr`、外側の計時は`commands.jsonl`、CLIは`cli-version.json`・`cli-observations.json`、照合結果は`verification.json`に保存した。最終パッチのSHA-256は`14e8d1e5724dd8649756ef410e91b0d225f90029a3f2cf8fb6f02eb36230c231`である。
+観測は [baseline.jsonl](../work-copies/m011/scratch/baseline.jsonl)・[prototype.jsonl](../work-copies/m011/scratch/prototype.jsonl)、ビルドの出力は [prototype-build.log](../work-copies/m011/scratch/prototype-build.log)、標準エラーは [baseline.stderr](../work-copies/m011/scratch/baseline.stderr)・[prototype.stderr](../work-copies/m011/scratch/prototype.stderr)、外側の計時は [commands.jsonl](../work-copies/m011/scratch/commands.jsonl)、CLI は [cli-version.json](../work-copies/m011/scratch/cli-version.json)・[cli-observations.json](../work-copies/m011/scratch/cli-observations.json)、照合結果は [verification.json](../work-copies/m011/scratch/verification.json)に保存した。最終パッチの SHA-256 は `14e8d1e5724dd8649756ef410e91b0d225f90029a3f2cf8f02eb36230c231` である。写しで伏せた絶対パスと前後のハッシュは対応表に示す。
 
-scratchは無視対象であり、取り込みに含まれる永続の要約は本記録である。後続の本番検査の成功の引用元にはせず、F1/F2で実装した状態に対して検査を実行する。処理系のテストの恒久追加は0件、本番のコードとテストの行数の増減はいずれも0行である。試行入力はtest-auditの作成時の関門に従い、公開境界の診断・位置・上限を確かめるための一つの表に集めた。新書式と保留列を現行のテストは扱わず、観測用に本番の公開範囲を広げてはいない。
+当時の scratch は無視対象であり、当時の取り込みに含まれた永続の要約は本記録である。台本は当時の配置と処理系を前提とする記録であり、この写しからの再実行は保証しない。後続の本番検査の成功の引用元にはせず、F1/F2で実装した状態に対して検査を実行する。処理系のテストの恒久追加は0件、本番のコードとテストの行数の増減はいずれも0行である。試行入力はtest-auditの作成時の関門に従い、公開境界の診断・位置・上限を確かめるための一つの表に集めた。新書式と保留列を現行のテストは扱わず、観測用に本番の公開範囲を広げてはいない。
 
 ## F0後の見積もりと未確認の範囲
 
@@ -145,6 +145,6 @@ scripts/check.sh --level work --base a9f03e118f6d71b206107f6b926c45b1312c546d
 
 両方とも変更1ファイルを文書だけと分類し、`nothing to check: only documents changed`となった。本実行は`selected checks passed`で終わった。これはRustの全libや形式化の検査を実行した結果ではない。F0に割り当てられた文書だけのworkとして、対象がないことを確認した結果である。
 
-`python3 work/m011/scratch/verify_observations.py`は終了0、外側0.243216秒である。94入力の保存した観測、15対照の同一性、保留診断・元位置・上限、開始時本文4888ファイルの一致、baselineのsrcの一致、保存パッチと試作差分の一致を確認した。同じ読み取り用Pythonから本記録の相対リンク・コードフェンス・末尾空白・末尾改行も確認し、`git diff --check`も終了0だった。要約は`work/m011/scratch/final-verification.json`へ保存した。
+[python3 verify_observations.py](../work-copies/m011/scratch/verify_observations.py)は終了0、外側0.243216秒である。94入力の保存した観測、15対照の同一性、保留診断・元位置・上限、開始時本文4888ファイルの一致、baselineのsrcの一致、保存パッチと試作差分の一致を確認した。同じ読み取り用Pythonから本記録の相対リンク・コードフェンス・末尾空白・末尾改行も確認し、`git diff --check`も終了0だった。要約は[final-verification.json](../work-copies/m011/scratch/final-verification.json)へ保存した。
 
 作業末の検査は2026-10-23 13:39 JSTまでに終了した。13:24:16のsnapshotから約15分の外側の時間であり、その中には試作・入力の追加・ビルド・観測・修正・記録・検査を含む。初読を始めた時刻と、実装だけ・記録だけの時間は独立計測していないため、作業全体の正確な実時間は不明である。F0の30〜45分の仮予算を超過していないが、この一例で後続作業の時間を短縮しない。F0の残りは、取りまとめによる本記録と試作のレビュー・受け入れである。

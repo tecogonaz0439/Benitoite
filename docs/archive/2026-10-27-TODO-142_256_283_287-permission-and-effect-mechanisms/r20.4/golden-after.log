@@ -1,0 +1,73 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.65s
+     Running tests/golden.rs (target/debug/deps/golden-8a0e491c4a5c4dd5)
+
+running 2 tests
+test testdata_components_match_their_text ... ok
+BENITOITE_GOLDEN_FILTER=""
+golden: 806 cases; differential (golden run and bench): 286 matched
+check mode core IR: 67 matched
+gc-stress excluded: 0
+differential excluded: clock/random: 1
+  testdata/io/l40-clock-sleep.bnt
+differential excluded: network (tasks and runtime view): 10
+  testdata/network/address-in-use.bnt
+  testdata/network/redirect.bnt
+  testdata/network/respond-twice.bnt
+  testdata/network/routes-and-post.bnt
+  testdata/network/status-above-range.bnt
+  testdata/network/status-below-range.bnt
+  testdata/network/status-informational.bnt
+  testdata/network/todo194-json-parse-server.bnt
+  testdata/network/todo198-cancelled-accept-reregisters.bnt
+  testdata/network/unanswered-exchange.bnt
+differential excluded: reference list conversion cost: 1
+  testdata/eval/list_hof_long.bnt
+differential excluded: resource exhaustion: 4
+  testdata/eval/call_stack_limit.bnt
+  testdata/eval/value_too_large.bnt
+  testdata/external/large-table
+  testdata/external/memory
+differential excluded: runtime view (Process.runAttached): 1
+  testdata/io/l40-process-attached.bnt
+differential excluded: stdin: 5
+  testdata/io/c12-stdin-invalid-utf8.bnt
+  testdata/io/c12-stdin-lines.bnt
+  testdata/io/c12-stdin-remaining.bnt
+  testdata/io/l40-console-bytes.bnt
+  testdata/io/l40-console-lines.bnt
+differential excluded: unsupported builtin: 17
+  testdata/concurrency/c12-all-results.bnt
+  testdata/concurrency/c12-allok-results.bnt
+  testdata/concurrency/c12-cancelled-await.bnt
+  testdata/concurrency/c12-cancelled-reader.bnt
+  testdata/concurrency/c12-deadlock.bnt
+  testdata/concurrency/c12-group-join-await.bnt
+  testdata/concurrency/c12-group-released.bnt
+  testdata/concurrency/c12-inherited-handler.bnt
+  testdata/concurrency/c12-race-and-timeout.bnt
+  testdata/concurrency/inherited_operation_task_location.bnt
+  testdata/concurrency/r41-inherited-non-tail.bnt
+  testdata/concurrency/r41-task-error.bnt
+  testdata/external/resource
+  testdata/external/wit-docs-declarations
+  testdata/packages/json-wasm-same
+  testdata/packages/wasm-regex-same
+  ../../tools/bench/programs/tasks.bnt
+formatter properties: 652 checked, 100 excluded
+formatter properties excluded: command line error: 1
+formatter properties excluded: directory without main.bnt: 1
+formatter properties excluded: syntax error: 98
+testdata/handlers/secf1-early-return.bnt (Direct) .diag.json:
+- expected: {"kind":"check","severity":"error","code":"E0401","message":"mismatched types","primary":{"file":"testdata/handlers/secf1-early-return.bnt","start":{"line":13,"column":31,"offset":403},"end":{"line":13,"column":45,"offset":417},"label":"expected `Option[_]`, found `Option[T]`"},"secondary":[{"file":"testdata/handlers/secf1-early-return.bnt","start":{"line":13,"column":12,"offset":384},"end":{"line":13,"column":17,"offset":389},"label":"the clause of `store`"}],"notes":["`T` is a type parameter of the operation `store`; a value of this type cannot leave the clause","the returned value must match the declared return type"],"helps":[]}
++ actual: {"kind":"check","severity":"error","code":"E0401","message":"mismatched types","primary":{"file":"testdata/handlers/secf1-early-return.bnt","start":{"line":13,"column":43,"offset":415},"end":{"line":13,"column":44,"offset":416},"label":"expected `_`, found `T`"},"secondary":[{"file":"testdata/handlers/secf1-early-return.bnt","start":{"line":13,"column":12,"offset":384},"end":{"line":13,"column":17,"offset":389},"label":"the clause of `store`"},{"file":"<benitoite>/Option.bnt","start":{"line":13,"column":8,"offset":465},"end":{"line":13,"column":9,"offset":466},"label":"expected because of this"}],"notes":["`T` is a type parameter of the operation `store`; a value of this type cannot leave the clause","argument 1 must match the parameter type of the called function"],"helps":[]}
+test golden_suite ... FAILED
+
+failures:
+
+failures:
+    golden_suite
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.54s
+
+error: test failed, to rerun pass `-p benitoite --test golden`

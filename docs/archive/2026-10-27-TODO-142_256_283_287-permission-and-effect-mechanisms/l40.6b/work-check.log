@@ -1,0 +1,115 @@
+== plan: level work against 36829a7b7bb81a0aee2a3e25e763339d3061d90e (20 changed file(s))
+   [spec_tally] because of docs/design/01-spec/01-12-core-calculus.md (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of docs/design/01-spec/01-12-core-calculus.md (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   [formal_build] because of formal/Benitoite/Surface/ClauseIxExamples.lean (estimate: several min (cache dependent))
+      command: (cd formal && lake build); reject declarations using sorry
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-03 位置の式
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-07 ファイル単位のエフェクトの宣言
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Logの通常宣言とハンドラの具体例
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 Scope の局所解析の予算と忘却
+  01-12 Scope の局所解析の接続定理
+  01-12 Scope の局所解析の状態と規則の表
+  01-12 Scope の局所解析の表層からの対応
+  01-12 Scope の必須の判定の受理と拒否の理由
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 区間解析のInteger64の減算・乗算・一般の負号の接続
+  01-12 区間解析のInteger64加算
+  01-12 区間解析のInteger64除算と剰余
+  01-12 区間解析のIntegerパターンと腕入口
+  01-12 区間解析のRangeの表層評価とResultの腕選択
+  01-12 区間解析のRangeの評価規則と小モデル
+  01-12 区間解析のResultの保存とOk束縛
+  01-12 区間解析のguardとreturnの局所規則
+  01-12 区間解析の予算の状態と計上
+  01-12 区間解析の予算付きの別本体の発見
+  01-12 区間解析の予算付きの局所走査
+  01-12 区間解析の予算付きの式とフロー
+  01-12 区間解析の単一ifと正常値の合流
+  01-12 区間解析の同じ成功値の直接射影
+  01-12 区間解析の土台の解析と健全性
+  01-12 区間解析の定数倍
+  01-12 区間解析の対象構文の評価関係
+  01-12 区間解析の局所環境と本体境界
+  01-12 区間解析の本体の識別と元の出現の対応
+  01-12 区間解析の束縛保存と単一比較
+  01-12 区間解析の検査全体の駆動
+  01-12 区間解析の減算と符号付き負号
+  01-12 区間解析の独立交換の読者
+  01-12 区間解析の独立入力の保存と保証
+  01-12 区間解析の直接引数と固定の定義域
+  01-12 区間解析の短絡と複合条件
+  01-12 区間解析の閉じた対象入力の評価
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 操作の対象の範囲の領域と被覆
+  01-12 整数の閉区間の領域
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層のブロック式
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+== spec_examples
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.95s
+
+== formal_build
+selected checks passed

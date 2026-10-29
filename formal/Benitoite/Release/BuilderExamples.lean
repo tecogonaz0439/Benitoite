@@ -16,7 +16,7 @@ variable (P : Program) (B : Builtins)
 
 /-- String は文字数ではなく UTF-8 のバイト数を返す。 -/
 theorem unicode_length :
-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
+    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
       (.run (.builderOp .string .length (.loc 3) []) []
         (Store.empty.set 3 (.builder (.string "あ")))) =
     some (none, .run (.ret (.const (.integer ⟨3, by decide⟩))) []
@@ -24,7 +24,7 @@ theorem unicode_length :
 
 /-- appendAll は要素のソース順を保つ。 -/
 theorem string_appendAll :
-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
+    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
       (.run (.builderOp .string .appendAll (.loc 3)
         [.list [.const (.string "あ"), .const (.string "b")]]) []
         (Store.empty.set 3 (.builder (.string "a")))) =
@@ -33,7 +33,7 @@ theorem string_appendAll :
 
 /-- List の追記も要素を逆転しない。 -/
 theorem list_appendAll :
-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
+    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
       (.run (.builderOp (.list (.base .byte)) .appendAll (.loc 3)
         [.list [.const (.byte 2), .const (.byte 3)]]) []
         (Store.empty.set 3 (.builder (.list (.base .byte) [.const (.byte 1)])))) =
@@ -43,7 +43,7 @@ theorem list_appendAll :
 
 /-- Byte の最大値は追記できる。 -/
 theorem byte_append :
-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
+    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
       (.run (.builderOp .bytes .append (.loc 3) [.const (.byte 255)]) []
         (Store.empty.set 3 (.builder (.bytes [0])))) =
     some (none, .run (.ret (.const .unit)) []
@@ -51,7 +51,7 @@ theorem byte_append :
 
 /-- Nat の抽象 Byte の範囲外は、元のセル内容を保持して失敗する。 -/
 theorem invalid_byte_atomic :
-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
+    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
       (.run (.builderOp .bytes .append (.loc 3) [.const (.byte 256)]) []
         (Store.empty.set 3 (.builder (.bytes [7])))) =
     some (none, .error [rBuilderInvalidByte] [] (Store.empty.set 3 (.builder (.bytes [7])))) := rfl
@@ -79,7 +79,7 @@ theorem dedicatedProgram_typed {R} :
 
 /-- 専用 new・通常 let・copy を通し、値と専用セルの内容を確認する。 -/
 theorem dedicatedProgram_run :
-    (match run P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0) 5
+    (match run P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0) 5
         (.run dedicatedProgram [] Store.empty) [] with
       | (.run (.ret (.const (.string s))) [] σ, evs) => some (s, σ 0, evs)
       | _ => none) = some ("あ", some (.builder (.string "あ")), []) := rfl
@@ -91,11 +91,11 @@ theorem dedicatedProgram_prefixes {s}
       (∀ ev s', ¬ Step Model.emptyProgram Model.builtins s (some ev) s') := by
   have hc : dedicatedProgram.ClosedNoEffVars := by
     simp [dedicatedProgram, Comp.ClosedNoEffVars, Comp.VarsIn, Val.VarsIn, Val.VarsInList, LocalRef.Scoped]
-  have hinit := stateTyE_init Model.emptyProgram_wellFormed (Model.assumptions _) (dedicatedProgram_typed _ _) hc
+  have hinit := stateTyE_init Model.emptyProgram_wellFormed (Model.assumptions _).core (dedicatedProgram_typed _ _) hc
   have hs := local_steps_invariant Model.emptyProgram_wellFormed Model.emptyProgram_wellTyped
-    Model.emptyProgram_effectsOk (Model.assumptions _) (stateTy_iff.mpr ⟨_, builtinOnly_empty, hinit⟩) hsteps
+    Model.emptyProgram_effectsOk (Model.assumptions _).core (stateTy_iff.mpr ⟨_, builtinOnly_empty, hinit⟩) hsteps
   exact ⟨hs.1, hs.2, (effect_soundness Model.emptyProgram_wellFormed Model.emptyProgram_wellTyped
-    Model.emptyProgram_effectsOk (Model.assumptions _) (dedicatedProgram_typed _ _) hc s hsteps).1⟩
+    Model.emptyProgram_effectsOk (Model.assumptions _).core (dedicatedProgram_typed _ _) hc s hsteps).1⟩
 
 /-- 捕捉した継続の外側と節の内側で、別々の専用セルを使う。 -/
 def resumedProgram : Comp :=

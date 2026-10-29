@@ -1,0 +1,32 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.59s
+     Running tests/checked_args.rs (target/debug/deps/checked_args-4548f59f5fa349d7)
+
+running 1 test
+test scoped_value_checks_report_known_bad_arguments_after_body_checking ... FAILED
+
+failures:
+
+---- scoped_value_checks_report_known_bad_arguments_after_body_checking stdout ----
+
+thread 'scoped_value_checks_report_known_bad_arguments_after_body_checking' (6035922) panicked at crates/benitoite/tests/checked_args.rs:357:9:
+assertion `left == right` failed: import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: "relative/**", path: p)
+end function
+: []
+  left: []
+ right: [E0459]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scoped_value_checks_report_known_bad_arguments_after_body_checking
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.13s
+
+error: test failed, to rerun pass `-p benitoite --test checked_args`

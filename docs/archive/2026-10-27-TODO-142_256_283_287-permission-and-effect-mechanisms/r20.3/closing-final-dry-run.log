@@ -1,0 +1,6 @@
+== plan: level work against d8a640adad54aa13ff0baaebebab91b6cad59f85 (changed files not classified) (partial selection: --only fmt,tests_related)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test scoped_calls --test scope_annotations
+   later: stage checks named connections; change covers full regression; release checks the candidate

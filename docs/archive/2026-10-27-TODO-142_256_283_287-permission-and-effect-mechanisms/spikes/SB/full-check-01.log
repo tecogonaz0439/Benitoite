@@ -1,0 +1,77 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+FullTypes.lean:253:8: error: fail to show termination for
+  SBFull.Ty.Le.eq_of_rigid_right
+with errors
+failed to infer structural recursion:
+Not considering parameter hb of SBFull.Ty.Le.eq_of_rigid_right:
+  its type is not an inductive
+Cannot use parameter h:
+  failed to eliminate recursive application
+    eq_of_rigid_right hab hb
+Cannot use parameter a:
+  failed to eliminate recursive application
+    eq_of_rigid_right hbc hb
+Cannot use parameter b:
+  failed to eliminate recursive application
+    eq_of_rigid_right hbc hb
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+             a b
+1) 260:18-42 ? =
+2) 262:12-36 _ =
+Please use `termination_by` to specify a decreasing measure.
+FullTypes.lean:264:8: error: fail to show termination for
+  SBFull.Ty.Le.eq_of_rigid_left
+with errors
+failed to infer structural recursion:
+Not considering parameter ha of SBFull.Ty.Le.eq_of_rigid_left:
+  its type is not an inductive
+Cannot use parameter h:
+  failed to eliminate recursive application
+    eq_of_rigid_left hbc ha
+Cannot use parameter a:
+  failed to eliminate recursive application
+    eq_of_rigid_left hab ha
+Cannot use parameter b:
+  failed to eliminate recursive application
+    eq_of_rigid_left hab ha
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+             a b
+1) 271:18-41 = ?
+2) 273:12-35 = _
+Please use `termination_by` to specify a decreasing measure.
+'SBFull.Ty.Le.fn_left' does not depend on any axioms
+'SBFull.Ty.Le.fn_right' does not depend on any axioms
+'SBFull.Ty.Le.fn_fn' does not depend on any axioms
+'SBFull.Ty.Le.eq_of_rigid_left' depends on axioms: [propext, sorryAx]
+'SBFull.Ty.Le.eq_of_rigid_right' depends on axioms: [propext, sorryAx]
+'SBFull.fn_arity_preserved' does not depend on any axioms
+'SBFull.call_with_subtypes' does not depend on any axioms
+'SBFull.arguments_for_native_contract' does not depend on any axioms
+'SBFull.reference_stays_invariant' depends on axioms: [propext, sorryAx]
+        0.70 real         0.89 user         0.23 sys
+           712196096  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45887  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                4410  involuntary context switches
+          8846154943  instructions retired
+          3370773924  cycles elapsed
+           163880344  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

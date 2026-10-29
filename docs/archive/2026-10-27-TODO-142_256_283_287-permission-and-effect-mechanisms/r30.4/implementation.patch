@@ -1,0 +1,1340 @@
+diff --git a/crates/benitoite/skill/SKILL.md b/crates/benitoite/skill/SKILL.md
+index 2fe06b56..946278a1 100644
+--- a/crates/benitoite/skill/SKILL.md
++++ b/crates/benitoite/skill/SKILL.md
+@@ -167,7 +167,9 @@ Use public construction and inspection functions for opaque types; constructors,
+ 
+ `File.readTextIn`, `readBytesIn`, `writeTextIn`, `appendTextIn`, `writeBytesIn`, and `appendBytesIn` take a checked `Scope.PathIn`. Their `File.Read` or `File.Write` effect uses the same range as that input type. They operate on the path retained by the check; the range describes path strings and does not isolate symbolic-link targets or special files.
+ 
+-Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow handler argument has no local check provenance, so this form still cannot project or widen that argument. Forward it with the same narrow input type, or use a bare `Scope.PathIn` input when projection is needed; IO through the bare type has a Top range.
++`Http.sendIn` takes a checked `Http.RequestIn` and has `Http.Connect` at that input's endpoint range. It sends the retained request without following redirects or automatically using a proxy; 3xx responses are returned. An explicit Host header must have the same effective host and port as the URI and retained endpoint; a mismatch returns `NetworkErrorKind.InvalidInput`. `Http.send` keeps its automatic redirect behavior and Top effect. A complete `Http.Connect` handler needs both `send` and `sendIn`; a handler for `send` alone leaves `Http.Connect`. Endpoint ranges cover host/IP strings and ports before DNS and OS conversion, and do not constrain schemes, fixed origins, message contents, or runtime permission. See the checked examples in `references/idioms.md`.
++
++Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow handler argument has no local check provenance, so this form still cannot project or widen that argument. Forward it with the same narrow input type, or use a bare `Scope.PathIn` or `Http.RequestIn` input when projection is needed; IO through the bare type has a Top range.
+ 
+ Import `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. Declarations and dedicated operations add no State; ordinary argument effects remain. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies allocate immutable snapshots; referenced element cells remain shared. Repeated intermediate copies have proportional cost. There is no clear/reserve/finish operation; ordinary Reference/task/resource effects remain. See the corresponding generated builder module reference for signatures.
+ 
+diff --git a/crates/benitoite/skill/references/idioms.md b/crates/benitoite/skill/references/idioms.md
+index 27496b84..37148c7e 100644
+--- a/crates/benitoite/skill/references/idioms.md
++++ b/crates/benitoite/skill/references/idioms.md
+@@ -551,6 +551,40 @@ end function
+ 404 not found
+ ```
+ 
++`Http.checkRequestIn` retains the same five-field request and its effective endpoint. `Http.sendIn` uses that retained request, returns 3xx without following the redirect, and does not automatically connect through a proxy. An explicit Host header must match the URI and retained endpoint's effective host and port; a mismatch returns `NetworkErrorKind.InvalidInput`. Send preparation or communication errors are `NetworkError`, separate from `RequestCheckError`. A changed request needs another check. The endpoint range is a static upper bound on host/IP and port strings before DNS and OS conversion; it does not grant runtime permission or constrain the scheme or message contents.
++
++Use a direct `bind` for projection and explicit widening. The annotation below selects the checked value's endpoint range; widening preserves its request and endpoint. This example is checked without making a connection.
++
++```benitoite check
++import Benitoite.Unofficial.Network.Http
++
++function sendToApi(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect["**.example", 400..500]
++  bind checked: Result[Http.RequestIn["api.example", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
++  return match checked with
++    case Result.Ok(value) ->
++      bind wider: Http.RequestIn["**.example", 400..500] <- Http.widenRequestIn(request: value)
++      Http.sendIn(request: wider)
++    case Result.Error(_) -> Result.Ok(Http.text(status: 400, s: "request check failed"))
++  end match
++end function
++
++function previewUrl(request: Http.ClientRequest) -> Option[String]
++  bind checked <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
++  return match checked with
++    case Result.Ok(value) ->
++      bind original <- Http.requestInValue(request: value)
++      Option.Some(Http.ClientRequest.url(original))
++    case Result.Error(_) -> Option.None
++  end match
++end function
++
++function main() -> Unit
++  ()
++end function
++```
++
++A narrow handler parameter or narrow function parameter has no local check provenance: even a direct `bind` cannot project or widen it. Forward it to the same narrow input type, or accept the bare `Http.RequestIn` when projection is needed. IO through the bare type has Top scope. `Http.Connect` contains both `send` and `sendIn`; handling only `send` leaves that effect on the enclosing function.
++
+ A server that runs until it is stopped is simplest with `Http.serve`, which calls the handler for every request. (This example is only checked, not run, because it never ends.)
+ 
+ ```benitoite check
+diff --git a/crates/benitoite/skill/references/stdlib/Network.Http.md b/crates/benitoite/skill/references/stdlib/Network.Http.md
+index 6a8f6150..5e407b8e 100644
+--- a/crates/benitoite/skill/references/stdlib/Network.Http.md
++++ b/crates/benitoite/skill/references/stdlib/Network.Http.md
+@@ -31,6 +31,10 @@ Listening for connections, accepting requests, and responding.
+ public effect Connect
+   /// Sends the request and returns the response, including 4xx and 5xx responses.
+   function send(request: ClientRequest) -> Result[Response, NetworkError]
++  /// Sends the same checked request to its retained endpoint. Returns 3xx responses without following redirects and does not use environment proxies.
++  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkError.InvalidInput.
++  /// Protocol and communication failures are NetworkError, separate from the pure check's RequestCheckError.
++  function sendIn(request: RequestIn) -> Result[Response, NetworkError]
+ end effect
+ ```
+ 
+diff --git a/crates/benitoite/src/builtins/funcs/http_client.rs b/crates/benitoite/src/builtins/funcs/http_client.rs
+index b327aeca..ffa3126b 100644
+--- a/crates/benitoite/src/builtins/funcs/http_client.rs
++++ b/crates/benitoite/src/builtins/funcs/http_client.rs
+@@ -5,6 +5,7 @@ use crate::builtins::table::tags;
+ use crate::runtime::heap::{CheckedLen, FieldsKind, Value, ValueCtx};
+ use crate::runtime::sched::parts::NetworkFault;
+ use crate::runtime::{ResourceError, RuntimeError, SizeUnit, Stop};
++use crate::types::scope::Endpoint;
+ use std::io::{self, Read};
+ use std::time::Duration;
+ use ureq::http::{Request, Uri};
+@@ -17,6 +18,9 @@ mod redirect_body;
+ /// 既存の組み込み番号を保つため、純粋な入口は表の末尾へ登録する。
+ pub const PURE_DECLS: &[BuiltinDecl] = checked_request::DECLS;
+ 
++/// 既存の組み込み番号を保つため、新しい送信は表の末尾へ登録する。
++pub const SCOPED_DECLS: &[BuiltinDecl] = &[send_in::DECL];
++
+ // ureq は Instant + Duration で期限を計算し、標準ライブラリは溢れると panic する。
+ // 2^40 ミリ秒（約 34.8 年）で頭打ちにして、足し算が溢れない大きさに収める。これより長い上限は
+ // 実行の時間として区別できない（設計書 03-09「クライアント」）。
+@@ -26,47 +30,97 @@ builtin! {
+     /// `Benitoite.Network.Http.send` の本体（設計書 03-09「クライアント」）。
+     name = "Benitoite.Network.Http.send",
+     io fn send(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
+-        let mut ctx = ctx;
+-        let (request, timeout) = match read_request(&ctx, arg0)? {
+-            Ok(request) => request,
+-            Err(failure) => return Ok(IoReply::Done(complete(&ctx, Err(failure))?)),
+-        };
+-        let host = request.uri().host().ok_or_else(|| internal("validated URL has no host"))?;
+-        // Uri::host は IPv6 を角括弧付きで返す。失敗の表は `::1` の形で引くので、照合のためだけに
+-        // 角括弧を除き、要求そのものは変えない（設計書 02-09「組み込みの操作とハンドラ表」）。
+-        let host = host.strip_prefix('[').and_then(|host| host.strip_suffix(']')).unwrap_or(host);
+-        let fault = ctx.services().runtime_view()
+-            .ok_or_else(|| internal("HTTP runtime unavailable"))?
+-            .rt.parts.network_faults.lookup(host);
+-        if let Some(fault) = fault {
+-            let kind = match fault {
+-                NetworkFault::HostNotFound => tags::NETWORK_ERROR_KIND_HOST_NOT_FOUND,
+-                NetworkFault::ConnectionRefused => tags::NETWORK_ERROR_KIND_CONNECTION_REFUSED,
+-                NetworkFault::ConnectionReset => tags::NETWORK_ERROR_KIND_CONNECTION_RESET,
+-                NetworkFault::TimedOut => tags::NETWORK_ERROR_KIND_TIMED_OUT,
+-            };
+-            return Ok(IoReply::Done(complete(&ctx, Err(Failure::Network(kind, text::INJECTED.into())))?));
++        start_send(ctx, arg0, None, send::DECL.name)
++    }
++}
++
++builtin! {
++    /// 保持した要求と endpoint を使い、3xx を追従しない（設計書 03-09「クライアント」）。
++    name = "Benitoite.Network.Http.sendIn",
++    io fn send_in(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
++        let (request, endpoint) = checked_request::retained_request(&ctx, arg0)?;
++        start_send(ctx, request, Some(endpoint), send_in::DECL.name)
++    }
++}
++
++fn start_send<'c, 'e>(
++    mut ctx: IoCtx<'c, 'e>,
++    value: Value<'e>,
++    endpoint: Option<Endpoint>,
++    function: &'static str,
++) -> Result<IoReply<'e>, Stop> {
++    let (request, timeout) = match read_request(&ctx, value, function)? {
++        Ok(request) => request,
++        Err(failure) => return Ok(IoReply::Done(complete(&ctx, Err(failure), function)?)),
++    };
++    if let Some(endpoint) = &endpoint {
++        if !checked_request::matches_endpoint(&request.uri().to_string(), endpoint) {
++            return Err(internal(
++                "HTTP retained endpoint differs from the request URI",
++            ));
+         }
+-        let missing = missing_cpu_features();
+-        if request.uri().scheme_str() == Some("https") && let Some(failure) = tls_failure(&missing) {
+-            return Ok(IoReply::Done(complete(&ctx, Err(failure))?));
++        if let Err(failure) = validate_host(&request, endpoint) {
++            return Ok(IoReply::Done(complete(&ctx, Err(failure), function)?));
+         }
+-        // スレッドに渡す要求・応答は Rust の所有する値だけにする（設計書 02-09「IO 実行器」）。
+-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
+-            Lend::Nothing, move |_| execute(request, timeout, missing), send_done,
+-        ))))
+     }
++    let host = request
++        .uri()
++        .host()
++        .ok_or_else(|| internal("validated URL has no host"))?;
++    // Uri::host は IPv6 を角括弧付きで返す。失敗の表は `::1` の形で引くので、照合のためだけに
++    // 角括弧を除き、要求そのものは変えない（設計書 02-09「組み込みの操作とハンドラ表」）。
++    let host = host
++        .strip_prefix('[')
++        .and_then(|host| host.strip_suffix(']'))
++        .unwrap_or(host);
++    let fault = ctx
++        .services()
++        .runtime_view()
++        .ok_or_else(|| internal("HTTP runtime unavailable"))?
++        .rt
++        .parts
++        .network_faults
++        .lookup(host);
++    if let Some(fault) = fault {
++        let kind = match fault {
++            NetworkFault::HostNotFound => tags::NETWORK_ERROR_KIND_HOST_NOT_FOUND,
++            NetworkFault::ConnectionRefused => tags::NETWORK_ERROR_KIND_CONNECTION_REFUSED,
++            NetworkFault::ConnectionReset => tags::NETWORK_ERROR_KIND_CONNECTION_RESET,
++            NetworkFault::TimedOut => tags::NETWORK_ERROR_KIND_TIMED_OUT,
++        };
++        return Ok(IoReply::Done(complete(
++            &ctx,
++            Err(Failure::Network(kind, text::INJECTED.into())),
++            function,
++        )?));
++    }
++    let missing = missing_cpu_features();
++    if request.uri().scheme_str() == Some("https")
++        && let Some(failure) = tls_failure(&missing)
++    {
++        return Ok(IoReply::Done(complete(&ctx, Err(failure), function)?));
++    }
++    // スレッドに渡す要求・応答は Rust の所有する値だけにする（設計書 02-09「IO 実行器」）。
++    Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
++        Lend::Nothing,
++        move |_| (execute(request, timeout, missing, endpoint), function),
++        send_done,
++    ))))
+ }
+ 
+ /// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
+ pub const DECLS: &[BuiltinDecl] = &[send::DECL];
+ 
+ // provider を大域に登録せず、Agent ごとに渡す（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」、03-09「実装に使うクレート」）。
+-fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent {
++fn make_agent(
++    timeout: std::time::Duration,
++    tls_available: bool,
++    endpoint: Option<Endpoint>,
++) -> ureq::Agent {
+     let config = ureq::Agent::config_builder()
+         .proxy(None)
+         .http_status_as_error(false)
+-        .max_redirects(10)
++        .max_redirects(if endpoint.is_some() { 0 } else { 10 })
+         .timeout_global(Some(timeout));
+     if tls_available {
+         let provider: rustls::crypto::CryptoProvider = rustls_graviola::default_provider();
+@@ -79,14 +133,14 @@ fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent
+             redirect_body::CheckedConnector(
+                 ureq::unversioned::transport::DefaultConnector::default(),
+             ),
+-            NetworkResolver(DefaultResolver::default()),
++            NetworkResolver(DefaultResolver::default(), endpoint),
+         )
+     } else {
+         // HTTP から HTTPS へのリダイレクトも暗号の入口に到達させない（設計書 03-09「クライアント」）。
+         ureq::Agent::with_parts(
+             config.build(),
+             redirect_body::CheckedConnector(ureq::unversioned::transport::TcpConnector::default()),
+-            NetworkResolver(DefaultResolver::default()),
++            NetworkResolver(DefaultResolver::default(), endpoint),
+         )
+     }
+ }
+@@ -94,7 +148,7 @@ fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent
+ // DefaultResolver は OS の解決の失敗を Io で返す。接続の失敗と区別できるこの段で
+ // HostNotFound に揃え、解決の時間切れはそのまま通す（設計書 03-09「失敗の種類」）。
+ #[derive(Debug)]
+-struct NetworkResolver<R>(R);
++struct NetworkResolver<R>(R, Option<Endpoint>);
+ 
+ impl<R: Resolver> Resolver for NetworkResolver<R> {
+     fn resolve(
+@@ -103,6 +157,13 @@ impl<R: Resolver> Resolver for NetworkResolver<R> {
+         config: &ureq::config::Config,
+         timeout: NextTimeout,
+     ) -> Result<ResolvedSocketAddrs, ureq::Error> {
++        // 接続先は保持 endpoint と同じ対象だけにする。名前の解決先やソケットの
++        // アドレスの族は、この対象の単位に含めない（設計書 03-09「クライアント」）。
++        if let Some(endpoint) = &self.1
++            && !checked_request::matches_endpoint(&uri.to_string(), endpoint)
++        {
++            return Err(ureq::Error::BadUri(text::ENDPOINT_MISMATCH.into()));
++        }
+         self.0.resolve(uri, config, timeout).map_err(|error| {
+             if matches!(error, ureq::Error::Io(_)) {
+                 ureq::Error::HostNotFound
+@@ -134,7 +195,11 @@ struct ResponseData {
+ }
+ type PreparedRequest = Result<(Request<Vec<u8>>, Duration), Failure>;
+ 
+-fn read_request<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<PreparedRequest, Stop> {
++fn read_request<'e>(
++    ctx: &ValueCtx<'e>,
++    value: Value<'e>,
++    function: &'static str,
++) -> Result<PreparedRequest, Stop> {
+     if ctx.fields_header(value) != Some((FieldsKind::Ctor, tags::RECORD))
+         || ctx.fields_len(value) != Some(5)
+     {
+@@ -162,7 +227,7 @@ fn read_request<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<PreparedRequ
+             .iter()
+             .any(|(name, value)| !valid_header(name, value))
+     {
+-        return Err(domain());
++        return Err(domain(function));
+     }
+     let timeout =
+         u64::try_from(timeout).map_err(|_| internal("validated HTTP timeout overflow"))?;
+@@ -243,13 +308,40 @@ fn read_pairs<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<Vec<(String, S
+     Ok(pairs)
+ }
+ 
++// Host は URI の対象を変更しないが、異なる仮想ホストへ要求を送らないよう、
++// sendIn では同じ実効 endpoint だけを許す。省略時は送信器が補う
++// （設計書 03-09「クライアント」）。
++fn validate_host(request: &Request<Vec<u8>>, endpoint: &Endpoint) -> Result<(), Failure> {
++    let mut hosts = request.headers().get_all(ureq::http::header::HOST).iter();
++    let Some(host) = hosts.next() else {
++        return Ok(());
++    };
++    let matches = hosts.next().is_none()
++        && host
++            .to_str()
++            .ok()
++            .and_then(|host| host.parse::<ureq::http::uri::Authority>().ok())
++            .is_some_and(|host| {
++                let scheme = request.uri().scheme_str().unwrap_or_default();
++                checked_request::matches_endpoint(&format!("{scheme}://{host}/"), endpoint)
++            });
++    if !matches {
++        return Err(Failure::Network(
++            tags::NETWORK_ERROR_KIND_INVALID_INPUT,
++            text::HOST_MISMATCH.into(),
++        ));
++    }
++    Ok(())
++}
++
+ fn execute(
+     request: Request<Vec<u8>>,
+     timeout: Duration,
+     missing: Vec<&'static str>,
++    endpoint: Option<Endpoint>,
+ ) -> Result<ResponseData, Failure> {
+     let request = validate_request(request)?;
+-    let agent = make_agent(timeout, missing.is_empty());
++    let agent = make_agent(timeout, missing.is_empty(), endpoint);
+     let mut response = agent
+         .run(request)
+         .map_err(|error| classify(error, &missing))?;
+@@ -486,36 +578,37 @@ fn tls_failure(missing: &[&str]) -> Option<Failure> {
+ 
+ fn send_done<'c, 'e>(
+     ctx: &mut IoCtx<'c, 'e>,
+-    output: Result<ResponseData, Failure>,
++    output: (Result<ResponseData, Failure>, &'static str),
+     _args: &[Value<'e>],
+ ) -> Result<Value<'e>, Stop> {
+-    complete(ctx, output)
++    complete(ctx, output.0, output.1)
+ }
+ fn complete<'e>(
+     ctx: &ValueCtx<'e>,
+     output: Result<ResponseData, Failure>,
++    function: &'static str,
+ ) -> Result<Value<'e>, Stop> {
+     match output {
+         Err(Failure::InputTooLarge(limit)) => Err(Stop::Resource(ResourceError::InputTooLarge {
+-            function: send::DECL.name,
++            function,
+             unit: SizeUnit::Bytes,
+             limit,
+         })),
+         Err(Failure::Network(kind, reason)) => {
+-            let reason = ctx.alloc_str(&reason, send::DECL.name)?;
++            let reason = ctx.alloc_str(&reason, function)?;
+             let error = ctx.alloc_fields(FieldsKind::NetworkError, kind, &[reason])?;
+             ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_ERROR, &[error])
+         }
+         Ok(output) => {
+-            CheckedLen::elements(super::count(output.headers.len())?, send::DECL.name)?;
++            CheckedLen::elements(super::count(output.headers.len())?, function)?;
+             let mut headers = Vec::with_capacity(output.headers.len());
+             for (name, value) in output.headers {
+-                let name = ctx.alloc_str(&name, send::DECL.name)?;
+-                let value = ctx.alloc_str(&value, send::DECL.name)?;
++                let name = ctx.alloc_str(&name, function)?;
++                let value = ctx.alloc_str(&value, function)?;
+                 headers.push(ctx.alloc_fields(FieldsKind::Ctor, tags::PAIR, &[name, value])?);
+             }
+-            let headers = crate::runtime::list::from_values(ctx, &headers, send::DECL.name)?;
+-            let body = ctx.alloc_bytes(&output.body, send::DECL.name)?;
++            let headers = crate::runtime::list::from_values(ctx, &headers, function)?;
++            let body = ctx.alloc_bytes(&output.body, function)?;
+             let response = ctx.alloc_fields(
+                 FieldsKind::Ctor,
+                 tags::RECORD,
+@@ -528,9 +621,9 @@ fn complete<'e>(
+ fn internal(message: &str) -> Stop {
+     Stop::Internal(message.into())
+ }
+-fn domain() -> Stop {
++fn domain(function: &'static str) -> Stop {
+     Stop::Runtime(RuntimeError::ArgumentOutOfDomain {
+-        function: send::DECL.name,
++        function,
+         argument: 0,
+     })
+ }
+@@ -541,6 +634,8 @@ mod text {
+     pub const INJECTED: &str = "injected network failure";
+     pub const INVALID_HEADER_UTF8: &str = "HTTP response header is not valid UTF-8";
+     pub const MISSING_CPU: &str = "HTTPS requires unavailable CPU features: ";
++    pub const ENDPOINT_MISMATCH: &str = "HTTP URI differs from the retained endpoint";
++    pub const HOST_MISMATCH: &str = "Host header must name the retained request endpoint";
+ }
+ 
+ #[cfg(test)]
+diff --git a/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs b/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs
+index 97a71b21..89526ee5 100644
+--- a/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs
++++ b/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs
+@@ -131,6 +131,45 @@ fn request_url<'e>(ctx: &ValueCtx<'e>, request: Value<'e>) -> Result<Value<'e>,
+         .ok_or_else(|| Stop::Internal("HTTP ClientRequest lost its URL".into()))
+ }
+ 
++// 射影と送信が同じ欄0を読む。送信だけが保持 endpoint も読むが、どちらも
++// レコードを再構築しない（設計書 03-09「クライアント」）。
++fn request_value<'e>(ctx: &ValueCtx<'e>, request: Value<'e>) -> Result<Value<'e>, Stop> {
++    if ctx.fields_header(request) != Some((FieldsKind::Ctor, tags::RECORD))
++        || ctx.fields_len(request) != Some(3)
++    {
++        return Err(Stop::Internal("HTTP expected RequestIn".into()));
++    }
++    let value = ctx
++        .field(request, 0)
++        .ok_or_else(|| Stop::Internal("HTTP RequestIn lost its request".into()))?;
++    request_url(ctx, value)?;
++    Ok(value)
++}
++
++/// 送信に使う同じ要求と、検査の成功時に保持した endpoint を読む。
++pub(super) fn retained_request<'e>(
++    ctx: &ValueCtx<'e>,
++    request: Value<'e>,
++) -> Result<(Value<'e>, Endpoint), Stop> {
++    let value = request_value(ctx, request)?;
++    let host = ctx
++        .field(request, 1)
++        .and_then(|host| ctx.str(host))
++        .and_then(|host| HostTarget::parse(host).ok())
++        .ok_or_else(|| Stop::Internal("HTTP RequestIn lost its host".into()))?;
++    let port = ctx
++        .field(request, 2)
++        .and_then(Value::as_int)
++        .and_then(Port::from_int)
++        .ok_or_else(|| Stop::Internal("HTTP RequestIn lost its port".into()))?;
++    Ok((value, Endpoint { host, port }))
++}
++
++/// 純粋な検査と同じ解析で、送信用 URI の対象を保持 endpoint と照合する。
++pub(super) fn matches_endpoint(url: &str, retained: &Endpoint) -> bool {
++    endpoint(url).is_ok_and(|(actual, _)| &actual == retained)
++}
++
+ fn scope_error<'e>(
+     ctx: &ValueCtx<'e>,
+     failure: Failure,
+@@ -274,15 +313,7 @@ builtin! {
+     /// 保持した要求を作り直さず返す（設計書 03-09「クライアント」）。
+     name = "Http.requestInValue",
+     pure fn request_in_value(ctx, request: Value<'e>) -> Value<'e> {
+-        if ctx.fields_header(request) != Some((FieldsKind::Ctor, tags::RECORD))
+-            || ctx.fields_len(request) != Some(3)
+-        {
+-            return Err(Stop::Internal("HTTP expected RequestIn".into()));
+-        }
+-        let value = ctx.field(request, 0)
+-            .ok_or_else(|| Stop::Internal("HTTP RequestIn lost its request".into()))?;
+-        request_url(&ctx, value)?;
+-        Ok(value)
++        request_value(&ctx, request)
+     }
+ }
+ 
+diff --git a/crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs b/crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs
+index 0a5ea065..681640ab 100644
+--- a/crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs
++++ b/crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs
+@@ -31,6 +31,7 @@ impl<C: Connector> Connector for CheckedConnector<C> {
+                 pending: Vec::new(),
+                 size: 0,
+                 header_limit: details.config.max_response_header_size(),
++                check_redirects: details.config.max_redirects() > 0,
+             }))
+     }
+ }
+@@ -42,6 +43,7 @@ pub(super) struct CheckedTransport<T> {
+     pending: Vec<u8>,
+     size: u64,
+     header_limit: usize,
++    check_redirects: bool,
+ }
+ 
+ #[derive(Debug)]
+@@ -57,7 +59,7 @@ impl<T: Transport> Transport for CheckedTransport<T> {
+     }
+ 
+     fn transmit_output(&mut self, amount: usize, timeout: NextTimeout) -> Result<(), ureq::Error> {
+-        if matches!(self.check, BodyCheck::Idle) {
++        if self.check_redirects && matches!(self.check, BodyCheck::Idle) {
+             // 3xx の本体の有無に関係する方法は HEAD だけである。要求を変更せず、
+             // 検査用の解析器だけを同じ本体の受信規則で初期化する。
+             let method = if self.inner.buffers().output().starts_with(b"HEAD ") {
+@@ -73,6 +75,11 @@ impl<T: Transport> Transport for CheckedTransport<T> {
+     }
+ 
+     fn await_input(&mut self, timeout: NextTimeout) -> Result<bool, ureq::Error> {
++        // 非追従の応答は通常の本体の読取りが検査する。読み捨てる追従応答に
++        // 特有の失敗・上限へ変えない（設計書 03-09「クライアント」）。
++        if !self.check_redirects {
++            return self.inner.await_input(timeout);
++        }
+         let started = Instant::now();
+         loop {
+             // 頭が分割されても、この呼び出しに渡された時間の上限を延ばさない。
+diff --git a/crates/benitoite/src/builtins/funcs/http_client/tests.rs b/crates/benitoite/src/builtins/funcs/http_client/tests.rs
+index 34b03bd7..0d92ea73 100644
+--- a/crates/benitoite/src/builtins/funcs/http_client/tests.rs
++++ b/crates/benitoite/src/builtins/funcs/http_client/tests.rs
+@@ -37,7 +37,7 @@ fn resolver_io_becomes_host_not_found_and_timeout_is_preserved() {
+         reason: ureq::Timeout::Resolve,
+     };
+     for timed_out in [false, true] {
+-        let error = NetworkResolver(FailedResolver(timed_out))
++        let error = NetworkResolver(FailedResolver(timed_out), None)
+             .resolve(&uri, &config, timeout)
+             .unwrap_err();
+         if timed_out {
+@@ -47,7 +47,7 @@ fn resolver_io_becomes_host_not_found_and_timeout_is_preserved() {
+             ));
+         }
+         Heap::new(HeapConfig::default()).epoch(|ctx| {
+-            let result = complete(ctx, Err(classify(error, &[]))).unwrap();
++            let result = complete(ctx, Err(classify(error, &[])), send::DECL.name).unwrap();
+             assert_eq!(
+                 network_kind(ctx, result),
+                 if timed_out {
+@@ -191,12 +191,17 @@ fn configured_network_faults_return_without_worker() {
+ fn missing_cpu_features_return_other_with_names() {
+     Heap::new(HeapConfig::default()).epoch(|ctx| {
+         let failure = tls_failure(&["aes", "pmull"]).unwrap();
+-        let result = complete(ctx, Err(failure)).unwrap();
++        let result = complete(ctx, Err(failure), send::DECL.name).unwrap();
+         assert_eq!(network_kind(ctx, result), tags::NETWORK_ERROR_KIND_OTHER);
+         let error = payload(ctx, result, tags::RESULT_ERROR);
+         let reason = ctx.str(ctx.field(error, 0).unwrap()).unwrap();
+         assert!(reason.contains("aes") && reason.contains("pmull"));
+-        let redirected = complete(ctx, Err(classify(ureq::Error::TlsRequired, &["aes"]))).unwrap();
++        let redirected = complete(
++            ctx,
++            Err(classify(ureq::Error::TlsRequired, &["aes"])),
++            send::DECL.name,
++        )
++        .unwrap();
+         assert_eq!(
+             network_kind(ctx, redirected),
+             tags::NETWORK_ERROR_KIND_OTHER
+@@ -216,7 +221,7 @@ fn body_limit_reads_at_most_one_extra_byte_and_stops() {
+     let failure = read_limited(&mut reader, 4, &[]).unwrap_err();
+     assert_eq!(reader.position(), 5);
+     Heap::new(HeapConfig::default()).epoch(|ctx| {
+-        assert!(matches!(complete(ctx, Err(failure)), Err(Stop::Resource(ResourceError::InputTooLarge { function, unit: SizeUnit::Bytes, limit: 4 })) if function == send::DECL.name));
++        assert!(matches!(complete(ctx, Err(failure), send::DECL.name), Err(Stop::Resource(ResourceError::InputTooLarge { function, unit: SizeUnit::Bytes, limit: 4 })) if function == send::DECL.name));
+     });
+ }
+ 
+@@ -229,7 +234,12 @@ fn wrapped_certificate_failure_is_other_not_invalid_http_data() {
+         rustls::Error::InvalidCertificate(rustls::CertificateError::UnknownIssuer),
+     );
+     Heap::new(HeapConfig::default()).epoch(|ctx| {
+-        let result = complete(ctx, Err(classify(ureq::Error::from(error), &[]))).unwrap();
++        let result = complete(
++            ctx,
++            Err(classify(ureq::Error::from(error), &[])),
++            send::DECL.name,
++        )
++        .unwrap();
+         assert_eq!(network_kind(ctx, result), tags::NETWORK_ERROR_KIND_OTHER);
+     });
+ }
+diff --git a/crates/benitoite/src/builtins/funcs/mod.rs b/crates/benitoite/src/builtins/funcs/mod.rs
+index 2e2f2eab..8fb5bcc9 100644
+--- a/crates/benitoite/src/builtins/funcs/mod.rs
++++ b/crates/benitoite/src/builtins/funcs/mod.rs
+@@ -162,6 +162,7 @@ pub const PARTS: &[&[BuiltinDecl]] = &[
+     format::DECLS,
+     http_client::PURE_DECLS,
+     file::SCOPED_DECLS,
++    http_client::SCOPED_DECLS,
+ ];
+ 
+ #[cfg(test)]
+diff --git a/crates/benitoite/src/builtins/table.rs b/crates/benitoite/src/builtins/table.rs
+index dbfca828..815a3299 100644
+--- a/crates/benitoite/src/builtins/table.rs
++++ b/crates/benitoite/src/builtins/table.rs
+@@ -815,6 +815,9 @@ fn builtin_range_positions(id: BuiltinId) -> Option<&'static [(RangePosition, Bu
+         name if FILE_IN_OPERATIONS.contains(&name) => {
+             Some(&[(RangePosition::Parameter(0), BuiltinTypeId::PATH_IN)])
+         }
++        "Benitoite.Network.Http.sendIn" => {
++            Some(&[(RangePosition::Parameter(0), BuiltinTypeId::REQUEST_IN)])
++        }
+         "Scope.checkPathIn" => Some(&[(RangePosition::ReturnArgument(0), BuiltinTypeId::PATH_IN)]),
+         "Scope.pathInValue" => Some(&[(RangePosition::Parameter(0), BuiltinTypeId::PATH_IN)]),
+         "Scope.widenPathIn" => Some(&[
+@@ -897,6 +900,11 @@ pub fn builtin_range_signature(id: BuiltinId) -> Option<crate::types::signature:
+             kind: Kind::Path,
+             position: 0,
+         }
++    } else if decl.name == "Benitoite.Network.Http.sendIn" {
++        IoShape::Single {
++            kind: Kind::Endpoint,
++            position: 0,
++        }
+     } else if decl.capability == Capability::Io && decl.name.starts_with("Benitoite.IO.File.") {
+         IoShape::TopTargeted(Kind::Path)
+     } else if decl.capability == Capability::Io && decl.name == "Benitoite.Network.Http.send" {
+@@ -1099,7 +1107,7 @@ mod tests {
+         let lengths = [
+             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
+             16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
+-            11, 39, 6, 4, 6, 14, 3, 6,
++            11, 39, 6, 4, 6, 14, 3, 6, 1,
+         ];
+         assert_eq!(
+             super::super::funcs::PARTS
+@@ -1188,9 +1196,9 @@ mod tests {
+                 !decl.name.starts_with('%') && !decl.name.starts_with("Benitoite.")
+             );
+         }
+-        assert_eq!(lengths.len(), 60);
+-        assert_eq!(names.len(), 522);
+-        assert_eq!(capabilities, [441, 16, 65]);
++        assert_eq!(lengths.len(), 61);
++        assert_eq!(names.len(), 523);
++        assert_eq!(capabilities, [441, 16, 66]);
+         assert!(lookup_builtin("missing.name").is_none());
+         let invalid = BuiltinId(u16::MAX);
+         assert!(builtin_decl(invalid).is_none());
+diff --git a/crates/benitoite/src/prelude/stdlib/Network/Http.bnt b/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
+index 812cec1d..c31e84a7 100644
+--- a/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
++++ b/crates/benitoite/src/prelude/stdlib/Network/Http.bnt
+@@ -25,6 +25,10 @@ end effect
+ public effect Connect
+   /// Sends the request and returns the response, including 4xx and 5xx responses.
+   function send(request: ClientRequest) -> Result[Response, NetworkError]
++  /// Sends the same checked request to its retained endpoint. Returns 3xx responses without following redirects and does not use environment proxies.
++  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkError.InvalidInput.
++  /// Protocol and communication failures are NetworkError, separate from the pure check's RequestCheckError.
++  function sendIn(request: RequestIn) -> Result[Response, NetworkError]
+ end effect
+ 
+ /// A request received by a server. Header names are in lowercase, in the order received.
+diff --git a/crates/benitoite/tests/io_modes.rs b/crates/benitoite/tests/io_modes.rs
+index 1e024f41..46184374 100644
+--- a/crates/benitoite/tests/io_modes.rs
++++ b/crates/benitoite/tests/io_modes.rs
+@@ -437,6 +437,73 @@ end function
+     assert!(result.files.contains(&("b.txt".into(), b"B!?".to_vec())));
+ }
+ 
++// 関門: RequestInのworkerが別対象の要求や完了へ取り違えられないことを、
++// 本物の二endpointと既存の完了順の筋書きで守る。単独送信では順序の退行を捕まえない。
++#[test]
++fn concurrent_send_in_operations_keep_each_endpoint_and_result() {
++    fn server(label: &'static str) -> (u16, std::thread::JoinHandle<()>) {
++        use std::io::{Read, Write};
++        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
++        let port = listener.local_addr().unwrap().port();
++        listener.set_nonblocking(true).unwrap();
++        let thread = std::thread::spawn(move || {
++            for _ in 0..6 {
++                let deadline = std::time::Instant::now().checked_add(LIMIT).unwrap();
++                let mut stream = loop {
++                    match listener.accept() {
++                        Ok((stream, _)) => break stream,
++                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
++                            assert!(
++                                std::time::Instant::now() < deadline,
++                                "HTTP endpoint {label} was not called"
++                            );
++                            std::thread::yield_now();
++                        }
++                        Err(error) => panic!("HTTP endpoint {label}: {error}"),
++                    }
++                };
++                stream.set_nonblocking(false).unwrap();
++                stream.set_read_timeout(Some(LIMIT)).unwrap();
++                stream.set_write_timeout(Some(LIMIT)).unwrap();
++                let mut request = Vec::new();
++                while !request.ends_with(b"\r\n\r\n") {
++                    let mut byte = [0];
++                    stream.read_exact(&mut byte).unwrap();
++                    request.extend_from_slice(&byte);
++                    assert!(request.len() < 4096);
++                }
++                assert!(request.starts_with(format!("GET /{label} HTTP/1.1\r\n").as_bytes()));
++                stream.write_all(format!("HTTP/1.1 200 OK\r\nContent-Length: 1\r\nConnection: close\r\n\r\n{label}").as_bytes()).unwrap();
++            }
++        });
++        (port, thread)
++    }
++    let (a, first) = server("A");
++    let (b, second) = server("B");
++    let source = format!(
++        r#"
++import Benitoite.Unofficial.Network.Http
++function send(port: Integer, label: String) -> Result[String, String] uses Http.Connect
++ bind checked <- try Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: port, maximumPort: port, request: Http.clientRequest(method: "GET", url: "http://127.0.0.1:" + Integer.toString(port) + "/" + label)) |> Result.mapError(r: _, f: lambda(error) return "request check failed" end lambda) or return
++ bind retained <- String.repeat(s: label, n: 4000)
++ if String.byteLength(retained) <> 4000 then return Result.Error("retained label") end if
++ bind response <- try Http.sendIn(request: checked) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
++ return Result.Ok(Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "invalid"))
++end function
++function main() -> Result[Unit, String] uses Http.Connect, Console.Write
++ bind values <- Task.all([lambda() return send(port: {a}, label: "A") end lambda,
++                          lambda() return send(port: {b}, label: "B") end lambda])
++ if values <> [Result.Ok("A"), Result.Ok("B")] then return Result.Error("response order") end if
++ Console.writeLine("A,B")
++ return Result.Ok(())
++end function
++"#
++    );
++    let _result = compare(&source, b"", false, b"A,B\n", b"", false);
++    first.join().unwrap();
++    second.join().unwrap();
++}
++
+ #[test]
+ fn reader_waits_alongside_computation() {
+     compare(
+diff --git a/crates/benitoite/tests/l32_http_client.rs b/crates/benitoite/tests/l32_http_client.rs
+index 9b5fd060..0081a099 100644
+--- a/crates/benitoite/tests/l32_http_client.rs
++++ b/crates/benitoite/tests/l32_http_client.rs
+@@ -222,6 +222,297 @@ fn raw_server(responses: Vec<Vec<u8>>) -> (u16, std::thread::JoinHandle<Vec<Vec<
+     raw_server_at("127.0.0.1", responses)
+ }
+ 
++fn checked_send(request: &str, host: &str, port: u16) -> String {
++    format!(
++        r#"Http.sendIn(request: try Http.checkRequestIn(hostPattern: {host:?}, minimumPort: {port}, maximumPort: {port}, request: {request}) |> Result.mapError(r: _, f: lambda(error) return "check failed" end lambda))"#
++    )
++}
++
++// 関門: 新入口の非追従と五欄の引渡しは、旧sendの追従試験や純粋な射影では
++// 守れない。外部の相手だけをループバックで置き換え、追従先への未接続を直接観察する。
++// 射影した別レコードの更新、GCを挟む保持、query・重複header・本体も同じ境界で守る。
++#[test]
++fn send_in_returns_redirects_without_connecting_to_location() {
++    for mode in [ExecMode::Direct, ExecMode::Request] {
++        for (status, location) in [
++            (301, true),
++            (302, true),
++            (303, true),
++            (307, true),
++            (308, true),
++            (302, false),
++            (304, false),
++        ] {
++            let outside = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++            outside.set_nonblocking(true).unwrap();
++            let outside_port = outside.local_addr().unwrap().port();
++            let location = if location {
++                format!("Location: http://127.0.0.1:{outside_port}/outside\r\n")
++            } else {
++                String::new()
++            };
++            let (port, server) = raw_server(vec![format!(
++                "HTTP/1.1 {status} Response\r\n{location}Content-Length: 8\r\nConnection: close\r\n\r\nredirect"
++            )
++            .into_bytes()]);
++            let source = format!(
++                r#"
++function main() -> Result[Unit, String] uses Http.Connect["127.0.0.1", {port}], Console.Write
++ bind original <- Http.ClientRequest(..Http.clientRequest(method: "POST", url: "http://127.0.0.1:{port}/original?q=%2F#fragment"), headers: [Pair("X-Probe", "one"), Pair("x-probe", "two")], body: String.toUTF8("posted猫"), timeoutMilliseconds: 2000)
++ bind checked: Result[Http.RequestIn["127.0.0.1", {port}], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: {port}, maximumPort: {port}, request: original)
++ return match checked with
++  case Result.Error(_) -> Result.Error("check failed")
++  case Result.Ok(request) ->
++   bind projected <- Http.requestInValue(request: request)
++   bind changed <- Http.ClientRequest(..projected, method: "DELETE", url: "http://127.0.0.1:{outside_port}/changed", body: Bytes.empty())
++   bind unused <- String.repeat(s: "猫", n: 4000)
++   if Http.ClientRequest.method(changed) <> "DELETE" or String.byteLength(unused) <> 12000 then return Result.Error("preparation") end if
++   match Http.sendIn(request: request) with
++    case Result.Error(error) -> Result.Error(NetworkError.message(error))
++    case Result.Ok(response) ->
++     if Http.Response.status(response) <> {status} or Http.Response.body(response) <> String.toUTF8("{response_body}") then return Result.Error("response fields") end if
++     Console.writeLine(Integer.toString(Http.Response.status(response)))
++     Result.Ok(())
++   end match
++ end match
++end function
++"#,
++                response_body = if status == 304 { "" } else { "redirect" }
++            );
++            assert_eq!(run_script(&source, mode), format!("{status}\n"));
++            let requests = server.join().unwrap();
++            assert_eq!(requests.len(), 1);
++            let request = String::from_utf8(requests.first().unwrap().clone()).unwrap();
++            assert!(
++                request.starts_with("POST /original?q=%2F HTTP/1.1\r\n"),
++                "{request}"
++            );
++            let headers = request.to_ascii_lowercase();
++            assert!(
++                headers.contains(&format!("host: 127.0.0.1:{port}\r\n")),
++                "{request}"
++            );
++            assert!(headers.contains("x-probe: one\r\n"), "{request}");
++            assert!(headers.contains("x-probe: two\r\n"), "{request}");
++            assert!(request.ends_with("posted猫"), "{request}");
++            assert!(!request.contains("fragment"), "{request}");
++            assert!(
++                matches!(outside.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
++                "connected to the redirect target"
++            );
++        }
++    }
++}
++
++// 関門: URIの字面が異なっても実効endpointが同じなら送れ、Hostだけで別の
++// 対象へ取り替えられない。名前の大小・IPv6の表記・先頭0付きportをwireで照合する。
++#[test]
++fn send_in_matches_effective_endpoint_and_explicit_host() {
++    for mode in [ExecMode::Direct, ExecMode::Request] {
++        for (listen, url_host, pattern, host_header) in [
++            ("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1"),
++            ("127.0.0.1", "LoCaLhOsT", "localhost", "LOCALHOST"),
++            ("::1", "[0:0:0:0:0:0:0:1]", "::1", "[::1]"),
++        ] {
++            let (port, server) = raw_server_at(
++                listen,
++                vec![
++                    b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec(),
++                ],
++            );
++            let request = format!(
++                r#"Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://{url_host}:0{port}/endpoint"), headers: [Pair("Host", "{host_header}:{port}")])"#
++            );
++            let send = checked_send(&request, pattern, port);
++            let source = format!(
++                r#"
++function main() -> Result[Unit, String] uses Http.Connect, Console.Write
++ return match {send} with
++  case Result.Error(error) -> Result.Error(NetworkError.message(error))
++  case Result.Ok(response) ->
++   if Http.Response.status(response) <> 200 then return Result.Error("status") end if
++   Console.writeLine("sent")
++   Result.Ok(())
++ end match
++end function
++"#
++            );
++            assert_eq!(run_script(&source, mode), "sent\n");
++            let requests = server.join().unwrap();
++            assert_eq!(requests.len(), 1);
++            let wire = String::from_utf8(requests.first().unwrap().clone()).unwrap();
++            assert!(wire.starts_with("GET /endpoint HTTP/1.1\r\n"), "{wire}");
++            assert!(
++                wire.to_ascii_lowercase().contains(&format!(
++                    "host: {}:{port}\r\n",
++                    host_header.to_ascii_lowercase()
++                )),
++                "{wire}"
++            );
++        }
++
++        let actual = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++        actual.set_nonblocking(true).unwrap();
++        let port = actual.local_addr().unwrap().port();
++        let other = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++        other.set_nonblocking(true).unwrap();
++        let other_port = other.local_addr().unwrap().port();
++        for host_header in [
++            format!("127.0.0.1:{other_port}"),
++            "other.invalid".into(),
++            "[invalid".into(),
++        ] {
++            let request = format!(
++                r#"Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:{port}/endpoint"), headers: [Pair("Host", {host_header:?})], timeoutMilliseconds: 100)"#
++            );
++            let send = checked_send(&request, "127.0.0.1", port);
++            let source = format!(
++                r#"
++function main() -> Result[Unit, String] uses Http.Connect
++ return match {send} with
++  case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.InvalidInput then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
++  case Result.Ok(_) -> Result.Error("mismatched Host succeeded")
++ end match
++end function
++"#
++            );
++            assert!(run_script(&source, mode).is_empty(), "{host_header}");
++        }
++        assert!(
++            matches!(actual.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
++        );
++        assert!(
++            matches!(other.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
++        );
++    }
++}
++
++// 関門: RequestCheckErrorはURL/所属の検査に限り、送信準備・通信の失敗は
++// NetworkErrorである。旧sendの失敗試験では新入口の準備・timeoutの渡し忘れに届かない。
++#[test]
++fn send_in_reports_preparation_and_transport_failures_as_network_errors() {
++    for mode in [ExecMode::Direct, ExecMode::Request] {
++        let waiting = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++        let waiting_port = waiting.local_addr().unwrap().port();
++        let closed = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++        let closed_port = closed.local_addr().unwrap().port();
++        drop(closed);
++        let source = format!(
++            r#"
++function expect(request: Http.ClientRequest, kind: NetworkErrorKind) -> Result[Unit, String] uses Http.Connect
++ bind checked <- Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: 0, maximumPort: 65535, request: request)
++ return match checked with
++ case Result.Error(_) -> Result.Error("preparation was reported as RequestCheckError")
++ case Result.Ok(value) ->
++  match Http.sendIn(request: value) with
++  case Result.Error(error) -> if NetworkError.kind(error) = kind then Result.Ok(()) else Result.Error(NetworkError.message(error)) end if
++  case Result.Ok(_) -> Result.Error("invalid request or failed transport succeeded")
++  end match
++ end match
++end function
++function main() -> Result[Unit, String] uses Http.Connect
++ bind base <- Http.clientRequest(method: "GET", url: "http://127.0.0.1:{waiting_port}/failure")
++ bind _ <- try expect(request: Http.ClientRequest(..base, body: String.toUTF8("bad GET body")), kind: NetworkErrorKind.InvalidInput)
++ bind _ <- try expect(request: Http.ClientRequest(..base, method: "PURGE"), kind: NetworkErrorKind.InvalidInput)
++ bind _ <- try expect(request: Http.ClientRequest(..base, timeoutMilliseconds: 100), kind: NetworkErrorKind.TimedOut)
++ return expect(request: Http.ClientRequest(..base, url: "http://127.0.0.1:{closed_port}/failure", timeoutMilliseconds: 2000), kind: NetworkErrorKind.ConnectionRefused)
++end function
++"#
++        );
++        assert!(run_script(&source, mode).is_empty(), "{mode:?}");
++        for fields in [
++            "headers: [Pair(\"Bad Header\", \"value\")]",
++            "timeoutMilliseconds: 0",
++        ] {
++            let request = format!(
++                r#"Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:{waiting_port}/failure"), {fields})"#
++            );
++            let send = checked_send(&request, "127.0.0.1", waiting_port);
++            let source = format!(
++                r#"
++function main() -> Result[Unit, String] uses Http.Connect
++ bind response <- {send}
++ return Result.Ok(())
++end function
++"#
++            );
++            let (end, output, errors) = run_script_end(&source, mode);
++            assert_eq!(end.end, EndKind::Stopped, "{fields}: {end:?}");
++            assert!(end.main_error.is_none(), "{end:?}");
++            assert!(output.is_empty(), "{output}");
++            assert!(
++                end.reports
++                    .iter()
++                    .any(|report| report.message.contains("Benitoite.Network.Http.sendIn")),
++                "{fields}: {end:?} {errors:?}"
++            );
++        }
++    }
++}
++
++// 関門: proxy(None)を外す退行を、環境変数の影響が他テストへ漏れない子プロセスで
++// 捕まえる。送信先とproxyは別のループバックの待ち受けとし、追加接続を直接観察する。
++#[test]
++fn send_in_ignores_proxy_environment() {
++    const CHILD_PORT: &str = "BENITOITE_R30_SEND_IN_PROXY_TARGET";
++    if let Some(port) = std::env::var_os(CHILD_PORT) {
++        let port: u16 = port.to_str().unwrap().parse().unwrap();
++        let request =
++            format!(r#"Http.clientRequest(method: "GET", url: "http://127.0.0.1:{port}/direct")"#);
++        let send = checked_send(&request, "127.0.0.1", port);
++        let source = format!(
++            r#"
++function main() -> Result[Unit, String] uses Http.Connect
++ return match {send} with
++ case Result.Error(error) -> Result.Error(NetworkError.message(error))
++ case Result.Ok(response) -> if Http.Response.status(response) = 200 and Http.Response.body(response) = String.toUTF8("ok") then Result.Ok(()) else Result.Error("wrong response") end if
++ end match
++end function
++"#
++        );
++        for mode in [ExecMode::Direct, ExecMode::Request] {
++            assert!(run_script(&source, mode).is_empty());
++        }
++        return;
++    }
++    let proxy = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++    proxy.set_nonblocking(true).unwrap();
++    let proxy_port = proxy.local_addr().unwrap().port();
++    let (port, server) = raw_server(
++        vec![b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec(); 2],
++    );
++    let mut child = std::process::Command::new(std::env::current_exe().unwrap());
++    child
++        .arg("--exact")
++        .arg("send_in_ignores_proxy_environment")
++        .arg("--nocapture")
++        .env(CHILD_PORT, port.to_string());
++    for name in [
++        "HTTP_PROXY",
++        "http_proxy",
++        "HTTPS_PROXY",
++        "https_proxy",
++        "ALL_PROXY",
++        "all_proxy",
++    ] {
++        child.env(name, format!("http://127.0.0.1:{proxy_port}"));
++    }
++    child.env("NO_PROXY", "").env("no_proxy", "");
++    let output = child.output().unwrap();
++    assert!(
++        output.status.success(),
++        "child status {:?}\n{}\n{}",
++        output.status,
++        String::from_utf8_lossy(&output.stdout),
++        String::from_utf8_lossy(&output.stderr)
++    );
++    assert_eq!(server.join().unwrap().len(), 2);
++    assert!(
++        matches!(proxy.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
++        "connected to proxy"
++    );
++}
++
+ fn raw_server_at(
+     host: &str,
+     responses: Vec<Vec<u8>>,
+@@ -283,8 +574,8 @@ fn checked_requests_reject_mapped_ipv6_before_loopback_send() {
+     for mode in [ExecMode::Direct, ExecMode::Request] {
+         let response =
+             b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec();
+-        let (v4_port, v4_server) = raw_server(vec![response.clone()]);
+-        let (v6_port, v6_server) = raw_server_at("::1", vec![response]);
++        let (v4_port, v4_server) = raw_server(vec![response.clone(); 2]);
++        let (v6_port, v6_server) = raw_server_at("::1", vec![response; 2]);
+         let mut source = String::from(
+             r#"
+ import Benitoite.Unofficial.Scope
+@@ -335,8 +626,10 @@ end function
+         ));
+         expected.push_str("sent\nsent\n");
+         assert_eq!(run_script(&source, mode), expected, "{mode:?}");
+-        assert_eq!(v4_server.join().unwrap().len(), 1);
+-        assert_eq!(v6_server.join().unwrap().len(), 1);
++        let scoped = source.replace("Http.send(projected)", "Http.sendIn(request: value)");
++        assert_eq!(run_script(&scoped, mode), expected, "sendIn {mode:?}");
++        assert_eq!(v4_server.join().unwrap().len(), 2);
++        assert_eq!(v6_server.join().unwrap().len(), 2);
+     }
+ }
+ 
+diff --git a/crates/benitoite/tests/network_faults.rs b/crates/benitoite/tests/network_faults.rs
+index e22753f3..57f33b54 100644
+--- a/crates/benitoite/tests/network_faults.rs
++++ b/crates/benitoite/tests/network_faults.rs
+@@ -138,12 +138,12 @@ fn execute_injected(source: &str, mode: ExecMode, through_cli: bool) -> String {
+     String::from_utf8(stdout.lock().unwrap().clone()).unwrap()
+ }
+ 
+-// 関門: ソースの get/send とエラーのアクセサを含む、二つの parts の引き渡しの契約。
++// 関門: ソースの get/send/sendIn とエラーのアクセサを含む、二つの parts の引き渡しの契約。
+ // クライアントの関数単体のテストでは CLI と RunEnv の引き渡し忘れ・名前の大小文字を捕まえない。
+ // IPv6 の角括弧を除き忘れると、表の ::1 に当たらず筋書きにない仕事の待ちで失敗する。
+ // 注入は既存の外部依存の表だけを使い、本番の差し込み口を増やさない。
+ #[test]
+-fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
++fn get_send_and_send_in_expose_all_four_fault_kinds_through_run_and_cli() {
+     let mut body =
+         String::from("function main() -> Result[Unit, String] uses Http.Connect, Console.Write\n");
+     let mut expected = String::new();
+@@ -157,9 +157,17 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
+         let mut hosts = vec![host.to_owned(), host.to_ascii_uppercase()];
+         hosts.dedup();
+         for host in hosts {
++            let (pattern, port) = if host.starts_with('[') {
++                ("::1".to_owned(), 1)
++            } else {
++                (host.to_ascii_lowercase(), 80)
++            };
+             for call in [
+                 format!("Http.get(\"http://{host}/\")"),
+                 format!("Http.send(Http.clientRequest(method: \"POST\", url: \"http://{host}/\"))"),
++                format!(
++                    r#"Http.sendIn(request: try Http.checkRequestIn(hostPattern: {pattern:?}, minimumPort: {port}, maximumPort: {port}, request: Http.clientRequest(method: "POST", url: "http://{host}/")) |> Result.mapError(r: _, f: lambda(error) return "request check failed" end lambda))"#
++                ),
+             ] {
+                 body.push_str(&format!(r#"
+   Console.writeLine(match {call} with
+@@ -171,6 +179,24 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
+             }
+         }
+     }
++    // 同じ対象の照合は、port の字面でなく scheme の既定値と数値を使う。
++    // 固定の失敗表を使い、省略・空・0・先頭0と Host の照合を通信前の本番経路で確かめる。
++    for (url, port, host_header) in [
++        ("http://missing.invalid/", 80, "missing.invalid"),
++        ("http://missing.invalid:/", 80, "missing.invalid:"),
++        ("http://missing.invalid:0/", 0, "missing.invalid:0"),
++        ("http://missing.invalid:00080/", 80, "MISSING.INVALID:80"),
++        ("https://missing.invalid/", 443, "missing.invalid"),
++        ("https://missing.invalid:/", 443, "missing.invalid:443"),
++    ] {
++        body.push_str(&format!(r#"
++  Console.writeLine(match Http.sendIn(request: try Http.checkRequestIn(hostPattern: "missing.invalid", minimumPort: {port}, maximumPort: {port}, request: Http.ClientRequest(..Http.clientRequest(method: "POST", url: "{url}"), headers: [Pair("Host", "{host_header}")])) |> Result.mapError(r: _, f: lambda(error) return "request check failed" end lambda)) with
++    case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.HostNotFound then "HostNotFound" else "wrong kind" end if
++    case Result.Ok(_response) -> "unexpected success"
++  end match)
++"#));
++        expected.push_str("HostNotFound\n");
++    }
+     body.push_str("return Result.Ok(())\nend function\n");
+     for mode in [ExecMode::Direct, ExecMode::Request] {
+         for through_cli in [false, true] {
+diff --git a/crates/benitoite/tests/scoped_calls.rs b/crates/benitoite/tests/scoped_calls.rs
+index 54321818..fef74f3d 100644
+--- a/crates/benitoite/tests/scoped_calls.rs
++++ b/crates/benitoite/tests/scoped_calls.rs
+@@ -11,6 +11,8 @@ mod closure;
+ mod file_io;
+ #[path = "scoped_calls/handler_selection.rs"]
+ mod handler_selection;
++#[path = "scoped_calls/http_io.rs"]
++mod http_io;
+ #[path = "scoped_calls/resolution.rs"]
+ mod resolution;
+ 
+diff --git a/docs/design/01-spec/01-06-type-system.md b/docs/design/01-spec/01-06-type-system.md
+index 4de2ff4e..83566bf1 100644
+--- a/docs/design/01-spec/01-06-type-system.md
++++ b/docs/design/01-spec/01-06-type-system.md
+@@ -66,9 +66,9 @@
+ 
+ これら六宣言の認定は、解決した標準の宣言に限る。import の別名で参照しても同じ宣言なら認定し、同じ綴りの利用者の関数にはこの認定を与えない。名前付き引数でも宣言の引数の位置を保ち、ソースに書いた順によって契約を変えない。
+ 
+-【決定】`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn` は、対象の引数 `path: Scope.PathIn[R]` の型から範囲 R を決め、潜在効果も同じ R を用いた `File.Read[R]` または `File.Write[R]` とする。操作を関数値として使うときも、期待する入力の型や後の呼び出しの入力型の制約から R を具体化する。入力型の制約が最後までなければ Top とする。戻り値の型から対象の範囲を逆算しない。これらは[IO のモジュール](../03-interop/03-07-io-modules.md#file)で定めるエフェクトの操作であり、上の六つの純粋な宣言の局所規則とは区別する。
++【決定】`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn` は、対象の引数 `path: Scope.PathIn[R]` の型から範囲 R を決め、潜在効果も同じ R を用いた `File.Read[R]` または `File.Write[R]` とする。`Http.sendIn` も対象の引数 `request: Http.RequestIn[H,P]` の型から端点の範囲を決め、潜在効果を同じ範囲の `Http.Connect[H,P]` とする。操作を関数値として使うときも、期待する入力の型や後の呼び出しの入力型の制約から範囲を具体化する。入力型の制約が最後までなければ Top とする。戻り値の型から対象の範囲を逆算しない。これらは[IO のモジュール](../03-interop/03-07-io-modules.md#file)と[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)で定めるエフェクトの操作であり、上の六つの純粋な宣言の局所規則とは区別する。
+ 
+-【決定】ハンドラの節の引数も入口で局所の由来を持たない。節の添字が狭い範囲 S でも、捕えた `Scope.PathIn[S]` に `pathInValue`・`widenPathIn` を直接呼ぶと、`bind` の右辺に置いても `unknownSource` で拒否する。捕えた値は同じ狭い型の引数へそのまま渡せるが、広い不変の引数へ暗黙に変換できない。射影を必要とする関数は引数を裸の `Scope.PathIn` とすれば書けるが、その型を使う IO の範囲は Top になる。節の引数が Top のときの射影と Top への拡大は受理する。Top から狭い範囲への拡大は受理しない。
++【決定】ハンドラの節の引数も入口で局所の由来を持たない。節の添字が狭い範囲 S でも、捕えた `Scope.PathIn[S]` に `pathInValue`・`widenPathIn` を直接呼ぶと、`bind` の右辺に置いても `unknownSource` で拒否する。`Http.sendIn` の節で捕えた狭い `Http.RequestIn` の `requestInValue`・`widenRequestIn` も同じである。捕えた値は同じ狭い型の引数へそのまま渡せるが、広い不変の引数へ暗黙に変換できない。射影を必要とする関数は引数を裸の `Scope.PathIn` または `Http.RequestIn` とすれば書けるが、その型を使う IO の範囲は Top になる。節の引数が Top のときの射影と Top への拡大は受理する。Top から狭い範囲への拡大は受理しない。
+ 
+ ### 名前を持つ関数型の適合と推論
+ 
+diff --git a/docs/design/01-spec/01-07-effects.md b/docs/design/01-spec/01-07-effects.md
+index 4892b395..70ae9489 100644
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -51,6 +51,8 @@ end function
+ 
+ 【決定】`File.readTextIn`・`readBytesIn` は `File.Read`、`File.writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn` は `File.Write` の操作である。六操作は第 1 引数の `Scope.PathIn[R]` が保持する同じパスに作用し、その型の範囲 R を操作の効果にも用いる。文字列を受け取る既存の File の操作は、範囲を Top とする。`File.Read` を完全に処理するには新しい二操作を含む全 13 操作、`File.Write` を完全に処理するには新しい四操作を含む全 16 操作の節が要る。旧操作だけを処理した部分ハンドラは、そのエフェクトを残す。
+ 
++【決定】`Http.sendIn` は `Http.Connect` の操作であり、第 1 引数の `Http.RequestIn[H,P]` が保持する同じ要求と端点を使い、効果にも同じ端点の範囲を用いる。リダイレクトを追わず、3xx の応答を返す。`Http.get`・`Http.send` は範囲を Top とし、自動追従の意味を保つ。`Http.Connect` を完全に処理するには `send`・`sendIn` の二操作の節が要る。`get` は `send` を呼ぶ通常の関数である。旧 `send` だけの節を含む部分ハンドラは `Http.Connect` を残す。
++
+ ### ファイル単位のエフェクトの宣言
+ 
+ 【決定】[ファイルの先頭の部分](01-02-syntax.md#ファイルの先頭の部分)に書いた `uses` の効果を、そのファイルの直下の関数宣言すべての最外側の効果行へ合併する。公開関数、`main`、`@test`、`@external`、`@builtin` の関数も対象とする。宣言できる効果の種類を制限しない。理由: 一律の追加を関数の型に残し、個別の入口や属性による例外を設けないためである。
+diff --git a/docs/design/02-impl/02-08-vm.md b/docs/design/02-impl/02-08-vm.md
+index 0b07b85a..b9b1f459 100644
+--- a/docs/design/02-impl/02-08-vm.md
++++ b/docs/design/02-impl/02-08-vm.md
+@@ -217,6 +217,8 @@ IO を行わない組み込みの関数は、実行ごとの状態のうち IO 
+ 
+ 【決定】`Http.checkRequestIn`・`Http.requestInValue` も純粋な組み込みの関数として `PRIM` で呼ぶ。検査は、要求の `url` から実効の端点を得て共通のホスト・ポートの判定に通し、成功時に同じ要求のレコードと端点を構成子に保存する。射影は保存したレコードの値を直接返す。二つの標準署名は端点の範囲変数を一つ持ち、パスの二入口と同じ登録・確定した列の具体化の経路を使う。要求の五欄を作り直したり、検査後に別の端点へ取り替えたりしない。`Scope.widenPathIn`・`Http.widenRequestIn` は二要素の列の被覆を確かめて同じ値を返す。組み込み参照は範囲の列も保持し、VM と参照実行器はその列を実行文脈へ渡す。
+ 
++【決定】`Http.sendIn` は `Http.Connect` の操作として `IO` で呼び、引数の `RequestIn` の三欄から同じ要求と端点を読む。対象位置0の入力型と潜在効果を同じ一要素の範囲の列で具体化する。要求の五欄は旧 `send` と共通の読取りでホスト所有の要求へ変換し、URI と保持した端点、明示された Host を照合してから、非追従の通信処理へ渡す。Direct と Request の両方式、および参照実行器は同じ登録と実処理を使う。ハンドラの節を実行する場合は通常どおりその節へ引数を渡す。
++
+ 【決定】`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn` は、パスの種類・対象位置 0 の単一対象の IO として登録し、`IO` で呼ぶ。対象引数の `Scope.PathIn` と効果の原子は、同じ一つの範囲変数で具体化する。実行本体は `PathIn` の欄から保持した文字列を借り、対応する既存の File の Rust の処理へ渡す。言語のソースの関数から旧操作を呼んで効果を消す実装にはしない。操作を待たせる処理・完了の処理・言語のハンドラの選択は、既存の IO と同じ経路を使う。
+ 
+ 【決定】構造の `=`（`EQV`）など、値の構造を辿る組み込みの処理は、Rust の再帰に頼らず、明示の積み重ねを使って辿る。長いリストや深い木の値でも、処理系のスタックを使い果たさないようにするためである。値の解放と回収の印付けも同じく明示の積み重ねで行う。
+diff --git a/docs/design/02-impl/02-09-runtime.md b/docs/design/02-impl/02-09-runtime.md
+index bc06c29c..2fe6b29e 100644
+--- a/docs/design/02-impl/02-09-runtime.md
++++ b/docs/design/02-impl/02-09-runtime.md
+@@ -28,7 +28,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し
+ 
+ 【決定】六つの `File.*In` の実行本体は、同じ回収しない区間の中で `PathIn` の一欄から保持したパスを借りる。既存の File の処理がホスト側の `PathBuf` と書き込みの内容を所有する仕事を作ってから待つため、作業用のスレッドへ言語の値や借用を渡さない。`PathIn` の表現、根の列挙、書き込みの障壁、安全点を増やさない。
+ 
+-【決定】`Http.checkRequestIn` は、渡された同じ要求のレコードの値と、その URL から得た実効の端点を既存の構成子の欄に保持する。`RequestIn` と `Result.Ok` の構築は一つの回収しない区間の中で行い、結果をレジスタへ保存した後は、構成子の既存の子の走査で要求の五欄まで辿る。`requestInValue` は保持したレコードの値を返し、新しいレコードを確保しない。`widenRequestIn` も同じ三欄の値を返す。旧 `Http.send` は渡されたレコードの五欄をホスト側の要求と時間上限へ読み取るが、`RequestIn` の host・port の欄は受け取らない。作業用のスレッドには Rust が所有する要求・本体・時間上限を渡し、完了処理では応答だけを言語の値へ変換する。ホスト側の領域に言語の値を保存せず、確保器・根・書き込みの障壁・安全点の不変条件は変えない。
++【決定】`Http.checkRequestIn` は、渡された同じ要求のレコードの値と、その URL から得た実効の端点を既存の構成子の欄に保持する。`RequestIn` と `Result.Ok` の構築は一つの回収しない区間の中で行い、結果をレジスタへ保存した後は、構成子の既存の子の走査で要求の五欄まで辿る。`requestInValue` は保持したレコードの値を返し、新しいレコードを確保しない。`widenRequestIn` も同じ三欄の値を返す。`Http.sendIn` は保持した同じレコードの五欄をホスト側の要求と時間上限へ読み取り、保持した host・port と送信用 URI の端点を照合する。旧 `Http.send` は任意のレコードの五欄を読むが、`RequestIn` の host・port の欄は受け取らない。作業用のスレッドには Rust が所有する要求・本体・時間上限・端点だけを渡し、完了処理では応答だけを言語の値へ変換する。言語の要求は待つ間も VM の引数の根に残す。ホスト側の領域に言語の値を保存せず、確保器・根・書き込みの障壁・安全点の不変条件は変えない。
+ 
+ 【決定】根の列挙の漏れにより解放された対象への参照は、機能 `heap-verify` の構成では確保の世代の照合で見つけるが、既定の構成（`gc-mark-sweep` だけ）では見つけない。理由: 既定の構成で読み出しのたびに領域の外の表を引く費用を避けるためである。
+ 
+@@ -94,7 +94,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し
+ | 次に進めるタスクを選ぶ部品 | 待ち行列の先頭から選ぶ | テストが与えた順序で選ぶ（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)の「順序を与えるスケジューラと仮想の時間（初回リリース版）」） |
+ | 時計 | OS の時計を読む | テストが進める仮想の時計を読む |
+ | 作業用のスレッドの仕事の実行 | 作業用のスレッドで行う | テストが完了の順序を決める |
+-| ネットワークの失敗の表 | 空 | 名前（`Http.send`・`Http.get` の URL の host と、`Http.listen` の `host`）ごとに、ループバックの通信では起こしにくい失敗（名前の解決の失敗、接続の拒否、接続のリセット、時間切れ）を当てる。URL の IPv6 の名前は、角括弧を除いた形（`::1`）で引く。表にない名前への操作は実際に行う（同「HTTP のテスト（初回リリース版）」） |
++| ネットワークの失敗の表 | 空 | 名前（`Http.send`・`Http.sendIn`・`Http.get` の URL の host と、`Http.listen` の `host`）ごとに、ループバックの通信では起こしにくい失敗（名前の解決の失敗、接続の拒否、接続のリセット、時間切れ）を当てる。URL の IPv6 の名前は、角括弧を除いた形（`::1`）で引く。表にない名前への操作は実際に行う（同「HTTP のテスト（初回リリース版）」） |
+ 
+ ファイル、プロセスの起動、乱数は、部品を差し替えた実行でも本番と同じ実装で行う。隠れた乱数の生成器にも OS の種を入れる。ゴールデンテストは部品を差し替えず、本番の部品で実行する。処理系のテストは、部品とは別に、実行の入力（コマンドライン引数の並びと基準のディレクトリ）、標準入力に与えるバイト列、出力先（メモリに捕らえる出力先）を実行ごとに与える（[スクリプト実行と埋め込み](02-11-embedding.md)の「実行の入力と結果」）。テストが読むファイルは、テストごとの一時ディレクトリに実際に置く。
+ 
+@@ -106,7 +106,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し
+ |---|---|
+ | VM のスレッドで、すぐに完了する | `Console.write`・`Console.writeLine`・`Console.writeError`・`Console.writeErrorLine`（出力のバッファに書く。転送していない量の上限で受け付けられなければ待つ。後述の「出力のバッファ」）、`Process.arguments`・`Process.scriptDirectory`・`Process.workingDirectory`・`Process.environmentVariable`、`Process.exit`（応答の「終了」を返し、[仮想機械](02-08-vm.md)の「止める手順」を始める）、`Http.listenerPort`、`Clock.now`・`Clock.localOffsetMinutes`・`Clock.monotonicMilliseconds`、`Random` の操作 |
+ | イベントループで待つ | `Clock.sleep`、`Http.listenerPort` を除く `Http.Listen` の操作（`Http.listen`・`Http.accept`・`Http.respond`） |
+-| 作業用のスレッドで行う | `Console.readLine`・`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`File.Read`・`File.Write` のすべての操作（`File.Reader`・`File.Writer` の読み書きを含む）、`Process.run`・`Process.runAttached`・`Process.shell`、`Http.Connect` の操作（`Http.get`・`Http.send`）、`Http.listen` の名前の解決 |
++| 作業用のスレッドで行う | `Console.readLine`・`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`File.Read`・`File.Write` のすべての操作（`File.Reader`・`File.Writer` の読み書きを含む）、`Process.run`・`Process.runAttached`・`Process.shell`、`Http.Connect` の操作（`Http.send`・`Http.sendIn`。`Http.get` は `send` を呼ぶ）、`Http.listen` の名前の解決 |
+ 
+ - `Process.workingDirectory` は基準のディレクトリの絶対パスを返し、相対パスは基準のディレクトリから解決する。外部コマンドは、`Process.Command` の `workingDirectory` が `Option.None` なら基準のディレクトリを作業ディレクトリとして起動し、相対パスで指定されていれば基準のディレクトリから解決する。
+ - `Process.scriptDirectory` は、実行を始めたときに解決した値を実行の入力から返す。
+@@ -273,7 +273,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し
+ 【方針】上限を確かめる対象は、結果として `String`・`Bytes`・`List` の値を新しく作る組み込みの関数（組み込みの操作を含む）と、`CONCAT` の命令のすべてである。上限を超えたときは、資源の不足の種類「作る値が大きすぎる」を返す（[仮想機械](02-08-vm.md)の「組み込みの関数の呼び出し」）。報告には、値を作ろうとした関数、計算した結果の大きさ、上限を含める。
+ 
+ - 結果の大きさは、値を作り始める前に、引数から計算する。計算は Rust の `i64` の溢れを検査する演算（`checked_mul` など）で行う（`String.repeat(s: s, n: n)` では、`n` が「上限 ÷ `s` のバイト数」を超えるかで判定する、など）。`String.replace` のように、引数から大きさを求めるのに走査が要る関数は、先に出現を数えてから大きさを計算する。
+-- 読む大きさが決まっていない入力を読む操作（`File.readText`・`File.readBytes`・`File.readLines`、`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`Process.run`・`Process.shell` と、出力を集めるテストの実行器の `Process.runAttached` の標準出力と標準エラー出力、`Http.get`・`Http.send` の応答の本体）は、上限より 1 バイト多い分まで読み、上限を超えたら資源の不足とする。行やディレクトリの項目を並べる操作（`File.readLines`・`Console.readAllLines`・`File.listDirectory`・`File.walk`）は、リストの長さも確かめる。
++- 読む大きさが決まっていない入力を読む操作（`File.readText`・`File.readBytes`・`File.readLines`、`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`Process.run`・`Process.shell` と、出力を集めるテストの実行器の `Process.runAttached` の標準出力と標準エラー出力、`Http.get`・`Http.send`・`Http.sendIn` の応答の本体）は、上限より 1 バイト多い分まで読み、上限を超えたら資源の不足とする。行やディレクトリの項目を並べる操作（`File.readLines`・`Console.readAllLines`・`File.listDirectory`・`File.walk`）は、リストの長さも確かめる。
+ - 一行ずつ読む関数（`File.readLine`・`Console.readLine`）は、上限に行末の 2 バイトを加えた分まで読み、行末（末尾の LF と、その直前にあれば CR 一つ。LF がなければ末尾の CR 一つ）を除いた内容の長さで上限を確かめる。理由: 作る値に行末は含まれないためである。
+ - 行やディレクトリの項目を並べる操作のリストの長さの超過も、入力を読む操作の資源の不足（[診断](02-10-diagnostics.md)の `R0903`）とする。理由: 大きさが決まっていない外部の入力を読む操作の失敗を、一つの規則で分類するためである。
+ - `File.readChunk(reader: reader, maximumBytes: maximumBytes)` は、`maximumBytes` が上限を超えるときは、上限までを読む。
+diff --git a/docs/design/03-interop/03-09-network.md b/docs/design/03-interop/03-09-network.md
+index 18a33eaa..1ae58883 100644
+--- a/docs/design/03-interop/03-09-network.md
++++ b/docs/design/03-interop/03-09-network.md
+@@ -195,6 +195,9 @@ end function
+ | `Http.get(url)` | `function(url: String) -> Result[Http.Response, NetworkError] uses Http.Connect` | `url` に `GET` の要求を送り、応答を返す。`Http.send(Http.clientRequest(method: "GET", url: url))` と同じ |
+ | `Http.clientRequest(method: method, url: url)` | `function(method: String, url: String) -> Http.ClientRequest` | 後述の既定の値を入れた `Http.ClientRequest` を作る。純粋な関数である |
+ | `Http.send(request)` | `function(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect` | 要求を送り、応答を返す |
++| `Http.sendIn(request)` | `function(request: Http.RequestIn[H,P]) -> Result[Http.Response, NetworkError] uses Http.Connect[H,P]` | 保持した同じ要求を、保持した端点へ送り、3xx を含む応答を返す。リダイレクトを追わない |
++
++【決定】`sendIn` の署名の H/P は説明のためのホストとポートの範囲であり、その組が一つの端点の範囲を表す。標準署名の内部では端点の範囲変数を一つ持ち、対象位置は第 1 引数である。対象入力の型から範囲を決め、同じ列で潜在効果を具体化する。関数値も期待する入力型や後の呼び出しから具体化し、入力型の制約が最後までなければ Top とする。戻り値から範囲を逆算しない。
+ 
+ 【決定】要求の検査・射影・明示拡大には、次の純粋な入口を提供する。次の表の H/P と H'/P' は説明のためのホストとポートの範囲であり、それぞれの組が一つの端点の範囲を表す。利用者が宣言する型引数ではない。標準署名の内部では、検査と射影は端点の範囲変数を一つ、拡大は元と行き先の二つを持つ。
+ 
+@@ -214,7 +217,11 @@ end function
+ 
+ 成功値は、渡された同じ `ClientRequest` のレコード（`method`・`url`・`headers`・`body`・`timeoutMilliseconds` の五欄）と、その `url` から得た実効の端点を保持する。クエリは `url` の一部として保つ。射影では欄を作り直さず、保持したレコードをそのまま返す。射影したレコードを更新しても元の成功値は変わらず、URL を変えた要求を検査済みとして扱うには再検査を要する。静的な範囲が Top でも、動的な条件と端点の所属を検査し、成功した場合だけ `Result.Ok` を作る。
+ 
+-【決定】要求の純粋な検査は、送信のための要求の妥当性検査とは分ける。検査済みの値を作る段では `url` と端点の所属を調べ、`method`・`headers`・`body`・`timeoutMilliseconds` は元の値のまま保持する。これらの欄が送信に使えるかは `Http.send` の送信準備とプロトコルの検査で判断する。`requestInValue` で取り出したレコードを `Http.send` に渡すことはできるが、この旧入口は保持した端点を受け取らず、リダイレクトも追従するため、検査した端点一つへの送信を保証しない。理由: 要求の保持と、実際の通信が作用する対象の一致は、別々に確認する必要があるためである。
++【決定】要求の純粋な検査は、送信のための要求の妥当性検査とは分ける。検査済みの値を作る段では `url` と端点の所属を調べ、`method`・`headers`・`body`・`timeoutMilliseconds` は元の値のまま保持する。これらの欄が送信に使えるかは `Http.send`・`sendIn` の送信準備とプロトコルの検査で判断する。`sendIn` は保持した同じ五欄のレコードを読み、送信用 URI の実効 host/port と保持した端点を共通の代数で照合する。利用者指定の `Host` 欄も同じ実効 host/port を指す場合だけ受理し、不正・不一致なら送信前に `NetworkErrorKind.InvalidInput` を返す。省略時は URI から補完する。名前の大小、IPv6 の等価な表記、scheme に応じた既定ポートは、字面の等号でなく実効の端点で比べる。
++
++【決定】`sendIn` は 3xx を追わず、環境変数の proxy に自動接続しない。対象の観測の単位は、保持した名前または IP とポートの組（DNS と OS による変換前）一つである。名前を解決した複数のアドレスへの接続試行の回数やソケットの相手のアドレスの族と同一視しない。通信の失敗と送信準備の失敗は `NetworkError` または既存の実行時エラーであり、純粋な検査の `RequestCheckError` に混ぜない。`requestInValue` で取り出したレコードを旧 `Http.send` に渡すことはできるが、この旧入口は保持した端点を受け取らず、リダイレクトも追従する。理由: 要求の保持と、実際の通信が作用する対象の一致は、別々に確認する必要があるためである。
++
++【決定】射影と拡大は、同じ成功値の由来を記録する `bind` の右辺の直接呼び出しとして書く。`sendIn` の節の引数は、狭い型を持っても入口でその由来を持たないため、狭い型のまま射影・拡大すると拒否する。同じ狭い型への転送、Top の引数の射影と Top への拡大は受理する（[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)）。
+ 
+ ホストのパターンとポートの読取り・所属には、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)で定める範囲の共通の代数を使う。ホスト名の完全一致・一段・任意の正の段数のパターン、IP の完全一致と CIDR、ポートの閉区間を扱い、IP をホスト名へ変換しない。旧 `Scope.checkHost`・`checkEndpoint` も、同じ共通の代数で IP と CIDR を検査し、保存するパターンを正規化する。端点の範囲には scheme を含めず、ホストとポートの組だけを入れる。したがって、同じホストとポートの範囲は `http` と `https` の両方を覆い、固定した origin や通信内容の制限を表さない。
+ 
+@@ -222,7 +229,7 @@ end function
+ 
+ URL の角括弧で囲んだ IPv6 は数値として読み、実効のホストを採択した正規形へそろえる。ただし、IPv4 射影の IPv6（`::ffff:0:0/96`）は数値で判定し、`Http.RequestCheckError.Scope` の中の `Scope.ScopeError.InvalidTarget` として拒否する。大文字、ゼロの省略、末尾の IPv4 の点の形と16進数の形のいずれでも同じ判定とする。URL から host と port を取り出せるこの場合は `InvalidUrl` にしない。IPv4 射影の範囲だけを指すパターンは受理するが、有効な対象には一致しない。IPv4 は正規形の四つの十進要素に限り、先頭0と不正な四要素を拒否する。名前として読めるホストでも、ドットで分けた全ての要素が ASCII の数字で始まり、`[0-9a-fA-FxX]` だけからなる場合は、数値風のホストとして拒否する。この判定は、省略形（`127.1` など）、整数（`2130706433` など）、十六進（`0x7f000001` など）、`0x`・`0X` だけの要素を含む形（`127.0x.0.1` など）を含む。英字で始まるラベルを含む正当なホスト名（`a0x.example` など）は、この判定では拒否しない。zone ID と IPvFuture も受理しない。URL から取り出したホストのこの不良は `Scope` の `InvalidTarget` とする。URL の元の字面は、要求のレコードの `url` にそのまま保持する。
+ 
+-- 【決定】`Http.send` の要求の `headers` も、`Http.respond` と同じく、名前が token の文字以外を含むか値が制御文字（水平タブを除く 0x00〜0x1F と 0x7F）を含むときは、送る前に実行時エラーとする。
++- 【決定】`Http.send`・`sendIn` の要求の `headers` も、`Http.respond` と同じく、名前が token の文字以外を含むか値が制御文字（水平タブを除く 0x00〜0x1F と 0x7F）を含むときは、送る前に実行時エラーとする。
+ - `Http.clientRequest(method: method, url: url)` は、`headers` を空のリスト、`body` を空のバイト列、`timeoutMilliseconds` を 30000 にする。ほかの値にするときは、レコードの更新で変える。
+ - 状態コードが 4xx や 5xx の応答でも `Result.Ok` を返す。`Result.Error` は、名前を解決できない、接続できない、時間切れになるなど、応答を得られなかったときに返す。
+ - `timeoutMilliseconds` は、要求を送り始めてから応答の本体を読み終えるまでの時間の上限である。1 未満なら実行時エラーとする。【方針】2^40 ミリ秒を超える値は 2^40 ミリ秒（約 34.8 年）として扱う。理由: 期限は現在の時刻に上限を足して計算するので、足し算が溢れない大きさに収めるためである。約 34.8 年を超える上限は、実行の時間として区別できない。
+@@ -232,7 +239,7 @@ URL の角括弧で囲んだ IPv6 は数値として読み、実効のホスト
+ - `https` の URL では、OS のルート証明書でサーバの証明書を検証する。検証に失敗したら `Result.Error` を返す。
+ - 【方針】初回リリース版のクライアントは、環境変数のプロキシ（`HTTPS_PROXY`・`HTTP_PROXY`・`ALL_PROXY`・`NO_PROXY`）に従わず、接続先に直接つなぐ。
+ - 【方針】`https` の URL への接続（リダイレクトで `https` に移る場合を含む）では、TLS を組み立てる前に、`graviola` が要する CPU の機能があるかを確かめる。足りなければ、`NetworkErrorKind.Other` と理由の文字列の `Result.Error` を返す。確かめる機能は、`x86_64` では `aes`・`pclmulqdq`・`bmi1`・`adx`・`avx`・`avx2`、`aarch64` では `neon`・`aes`・`pmull`・`sha2` である。`http` の URL は、機能が足りない計算機でも使える。
+-- リダイレクトの応答（3xx）は、最大 10 回まで辿る。
++- `Http.get`・`send` はリダイレクトの応答（3xx）を最大 10 回まで辿る。`sendIn` は追従せず、3xx の status・headers・body を返す。
+ - 応答の本体は `Bytes` で返すので、1 GiB を超える本体は受け取れない（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」）。
+ - スクリプトが組み立てたヘッダを送れるので、Basic や Bearer の認証のトークンは `headers` に書いて送れる。初回リリース版は、認証のための仕組み（秘密を渡す受け取り口、OAuth の手順、パスキーなど）を持たない。
+ 
+@@ -244,13 +251,13 @@ URL の角括弧で囲んだ IPv6 は数値として読み、実効のホスト
+ 
+ | `NetworkErrorKind` | 返す主な関数 |
+ |---|---|
+-| `HostNotFound` | `Http.get`・`Http.send`、`Http.listen`・`Http.serve`（待ち受ける名前を解決できない） |
+-| `ConnectionRefused` | `Http.get`・`Http.send` |
+-| `ConnectionReset` | `Http.get`・`Http.send`・`Http.respond` |
+-| `TimedOut` | `Http.get`・`Http.send` |
++| `HostNotFound` | `Http.get`・`Http.send`・`Http.sendIn`、`Http.listen`・`Http.serve`（待ち受ける名前を解決できない） |
++| `ConnectionRefused` | `Http.get`・`Http.send`・`Http.sendIn` |
++| `ConnectionReset` | `Http.get`・`Http.send`・`Http.sendIn`・`Http.respond` |
++| `TimedOut` | `Http.get`・`Http.send`・`Http.sendIn` |
+ | `AddressInUse` | `Http.listen`・`Http.serve` |
+-| `InvalidHTTPData` | `Http.get`・`Http.send`（応答が HTTP として正しくない） |
+-| `InvalidInput` | `Http.get`・`Http.send`（URL の形式、標準でない方法、方法と本体の組み合わせ）、`Http.listen`・`Http.serve`（アドレスの形式） |
++| `InvalidHTTPData` | `Http.get`・`Http.send`・`Http.sendIn`（応答が HTTP として正しくない） |
++| `InvalidInput` | `Http.get`・`Http.send`・`Http.sendIn`（URL の形式、標準でない方法、方法と本体の組み合わせ、`sendIn` の Host の不一致）、`Http.listen`・`Http.serve`（アドレスの形式） |
+ | `PermissionDenied` | `Http.listen`・`Http.serve`（OS が待ち受けを拒んだ） |
+ 
+ - `https` の URL で、サーバの証明書の検証に失敗したときは `NetworkErrorKind.Other` を返し、理由を `NetworkError.message` で示す。
+diff --git a/docs/design/07-quality/07-01-security-model.md b/docs/design/07-quality/07-01-security-model.md
+index 786aa7bb..4586ba1e 100644
+--- a/docs/design/07-quality/07-01-security-model.md
++++ b/docs/design/07-quality/07-01-security-model.md
+@@ -59,6 +59,8 @@
+ 
+ 【決定】純粋な `Http.checkRequestIn` は、渡された要求の URL から実効のホストとポートを得て、明示した条件への所属を検査する。成功値は同じ要求のレコードと端点を保持し、`Http.requestInValue` は同じレコードを返す。Top は動的な検査を省く理由にはしない。この検査は、操作の許可、DNS の解決先、網に依るアドレスやポートの変換（NAT64 など）、通信の成功、送る内容の制限を保証しない。端点の範囲に scheme を含めないため、固定した origin の制限も保証しない（[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)）。射影したレコードの更新は元の成功値を変えず、URL の変更には再検査を要する。
+ 
++【決定】`Http.sendIn` は保持した要求と端点を読み、送信用 URI と明示された Host の実効 host/port を照合し、リダイレクトも環境 proxy への自動接続も行わない。3xx は応答として返す。対象の観測の単位は、DNS と OS による変換前の名前または IP とポートの組一つである。名前の解決で得た複数のアドレスへの接続試行の数や、ソケットの相手のアドレスの族は、この一対象の数え方とは別である。旧 `Http.send` の自動追従は保ち、検査済みの要求を射影して旧入口へ渡すだけでは一対象への通信にならない。
++
+ 【決定】IPv4 射影の IPv6（`::ffff:0:0/96`）は対象の検査で拒否する。これは IPv4 のノードを表すソケット API の形であり（[RFC 4291 §2.5.5.2](https://www.rfc-editor.org/rfc/rfc4291.html#section-2.5.5.2)、[RFC 3493 §3.7](https://www.rfc-editor.org/rfc/rfc3493.html#section-3.7)）、網に配置された変換器の動作とは分ける。NAT64 の既知の prefix `64:ff9b::/96` と網ごとの prefix は追加拒否せず、検査した IPv6 の endpoint と変換後の IPv4 の宛先との一致を保証しない（[RFC 6052 §2](https://www.rfc-editor.org/rfc/rfc6052.html#section-2)、[RFC 6146 §1.2.1](https://www.rfc-editor.org/rfc/rfc6146.html#section-1.2.1)）。IPv4 互換の IPv6 は非推奨であり、新しい実装に対応を要求しない形であるため、IPv4 射影の形と同じ追加拒否には含めない（[RFC 4291 §2.5.5.1](https://www.rfc-editor.org/rfc/rfc4291.html#section-2.5.5.1)）。直接入力では既存の正規形の条件を保つ。
+ 
+ 【決定】`run` と `test` の `--allow-effects` は、検査に成功した実行対象の宣言上限が、許す組み込みエフェクトの集合に含まれるかを実行前に照合する。不足は E0512・終了状態2で拒否し、上限付き `test` は全入口の準備が成功するまで一つも開始しない。run は照合した検査済みプログラムをコンパイルし、test は照合・コンパイルした成果物を保持してそのまま実行する。理由: 照合した契約と実行する成果物を一致させ、後の入口の拒否までに先のテストが外部操作を行うことを防ぐためである。引数と開始条件は [CLI](../06-tooling/06-01-cli.md#実行前のエフェクト上限の照合)で定める。
+diff --git a/docs/design/07-quality/07-04-formal-semantics.md b/docs/design/07-quality/07-04-formal-semantics.md
+index 0d4695ef..51d7fd89 100644
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -51,7 +51,7 @@
+ 
+ 【決定】形式化した Release の C-Sub・C-Eff と関数の型の効果の包含 `Ty.Le` は、効果を一原子の被覆 `Eff.Covers` で広げ、表層の型付けの E_Sub・B_Sub も同じ被覆で広げる（01-12「型付け規則」「型の情報を付けた表層の構文と型付け」）。継続の型付けの K-Handle の「節の効果は枠の下の継続の効果に含まれる」と K-Handle-Fail の同じ前提も被覆で判定する（01-12「ハンドラ」）。次の位置は構造上の包含のまま保つ。Release の C-Handle の `εM ⊆ ε ∪ handled(H)`、C-Handle-Fail の保護本体の前提、K-Handle の保護本体の `εb ⊆ εc ∪ handled(H)`、K-Empty の `ε ⊆ ε0`、K-Let・K-Guard の `ε1 ⊆ ε`、状態の型付けの計算の効果と継続の関係 `ε1 ⊆ ε`、表層の E_Handle・E_HandleFail の保護本体の前提、部分適用 E_PartialCall の効果の前提、`HasMain` の `d.eff ⊆ allowed` である。理由: 計算・ブロック・式の効果は、その前に C-Eff・E_Sub・B_Sub の被覆で広げられ、部分適用が作る関数の型の潜在効果は `Ty.Le` の被覆で広げられるので、包含の側を構造上に保っても型付く集合は狭まらない。`handle` の保護本体を構造上に保つのは、節の添字を保護本体の効果の規則の値で選び、L30.1 の S ≠ Top の保存がその効果の同名の原子に依るためである。`HasMain` の上限 ε は表層の対象健全性の言明の中で選べ（ε = d.eff でよい）、被覆で広げた上限への移しは許可の単調性（`Builtins.Allows.of_covers`）で得られる。このため、性質 2・3 の前提の `Program.WellTyped` と状態の型付け、性質 1 の前提の表層の型付けと結論の型付けは、被覆で広げた効果の上限で型付く計算・関数の値・`handle` の枠を含むように広がる（上限 `{File.Write[/data/**]}` を宣言した関数の本体が `/data/a.txt` へ書く場合と、狭い効果の関数を広い上限の関数から呼ぶ場合）。`progress` と `step_sound` の前提が弱まり、`preservation` は前提と結論の両方が広がる。性質 1 は前提と結論の両方が広がり、脱糖は E_Sub・B_Sub をそのまま C-Sub に写す。対象健全性（`step_target_sound`・`reachable_target_sound`・`surface_target_sound`）も同じ広い集合について述べ、被覆が許可の包含を与える（`Eff.Covers.sound`）ので結論は変わらない。主定理の言明の字面は変えていない。内側の効果の原子がすべて範囲の位置が Top の名前の原子か行の原子なら、被覆は構造上の包含と同値であり（`Release/CoverCompat.lean` の `Eff.covers_iff_sub_old`）、関数の型の潜在効果がそうなら `Ty.Le` は以前の包含 `Ty.LeOld` と同値である（`Ty.le_iff_leOld`）。以前の規則で型付く導出は新しい規則でも型付く（`Eff.Sub.covers`・`Ty.LeOld.le`）。同値は規則の前提の水準の補題であり、型付けの関係全体の同値は示していない。S が規則の値の場合の保存は、構造の等号による以前の閉じ方を、呼び出しの範囲 r への所属と S による r の被覆から S への所属を得る拡大（`Release/Lemmas/MembershipBase.lean` の `HasTypeVsQ.widen_covers`）に替えた。`Builtins.Assumptions` の欄 `delta_typed`・`io_typed`・`io_exists` は、字面と量化を変えずに、値の型付けを通じて意味が変わる（入力の型付けが広がる欄は表への要求が強まり、出力が広がる欄は弱まる。後述の「形式化で仮定するもの」）。この前提の変更は、三つの欄の意味の変化を含めて、設計者が受け入れた停止条件の例外（表層の側の前提と、節の添字 S と継続の型。L40.6c の案 α）として扱う。表層の検査器（段階 E2）は、ラムダの本体、`resume` の引数、関数とメソッドの本体の効果の上限と、関数の型の潜在効果の比較を、同じ一原子の被覆で受け入れる（`Surface/Check.lean` の `acceptEffCover`、`Surface/FiniteTools.lean` の `effCovers`。Top を覆うのは Top だけで、和では覆わない）。受理した効果は上限に覆われる（`acceptEffCover_sound`・`effCovers_sound`）ので、検査の健全性は保たれる。`handle` の保護本体と節、Fail の節、純粋の要求、部分適用の潜在効果は構造上の包含で受け入れる（C-Handle・C-Handle-Fail・E_PartialCall の前提は構造上の包含である）。被覆だけで型付く関数の本体を検査器が受理することは `Surface/CheckAcceptExamples.lean` で確かめる。`handle` の保護本体の処理しない原子は `handle` の式の効果へそのまま移るので、保護本体の構造上の包含はどの本体でも成り立ち、上限 `{File.Write[/data/**]}` の関数の中の、`File.Write` を処理しない `handle` の保護本体で `/data/a.txt` へ書くプログラムを検査器は受理する（同じファイルの例）。検査器が型付けより狭いのは、捕捉した組み込みの操作の節の添字の選び方である。検査器は保護本体の推論した効果から規則の値を選び（判断 11）、型付けは保護本体の効果を B_Sub の被覆で広げてから規則の値を選べるので、節が広い添字の範囲付きの値型を求めるプログラム（保護本体が `/data/a.txt` へ書き、`File.writeTextIn` の節が捕えたパスを `Scope.PathIn[/data/**]` の引数の関数へ渡す）を検査器は拒否する（同じファイルの例）。Rust の型検査器が同じ被覆で上限を受理することは Lean では示さず、Rust の型検査器との照合に置く（本番の必須欄が未接続であり、Rust との全比較は未実施）。例は、被覆だけで型付く閉じたプログラムから到達した書き込みの事象の観測が上限に許されること（`Release/CoverExamples.lean` の `callF_reach_target_sound`・`callH_reach_target_sound`）と、被覆だけで型付く定義を含む表層のプログラムに表層の対象健全性が当たること（`Surface/CoverExamples.lean` の `program_target_sound`）である。表層の構文は検査済みの対象の値を書けないので、この例の main は `Scope.checkPathIn` の結果を照合し、`Ok` の腕で得た値を被覆だけで型付く関数 `f` へ渡す。脱糖したプログラムの開始状態から書き込みの事象（観測 `[/data/a.txt]`）に到達し（`main_reach`）、到達した事象の観測を上限が許し（`main_reach_allowed`）、到達したどの IO の事象の観測にも `/etc/passwd` は現れない（`main_never_passwd`）。到達は、遷移を計算する関数 `step` をカーネルで評価し、`step_sound` で遷移の関係へ移して示す。理由: 型検査器が受理する範囲付きの効果の上限のプログラムに、主定理と対象健全性が当たるようにするためである。
+ 
+-【決定】形式化した Release で、一段の対象健全性を証明する（`Release/Lemmas/TargetStep.lean` の `step_target_sound`）。継続の末尾の効果 Eb を固定した状態の型付け `StateTyE P B Eb s` のもとで、状態が IO の事象 `b(W̄) ↦ o @ obs` を伴って遷移するなら、b は署名 e と操作の名前 l（`e.opEff = some l`）を持ち、obs のどの対象も Eb の名前 l の原子が許す。許可は、許可の関係 `Eff.Allows` の名前の種類を表の `effKind` で読む `Builtins.Allows` であり、Top の原子は名前の種類の全対象を許す。前提の信頼条件は `CoreAssumptions` と `TargetAgreement` だけであり、ほかの前提はプログラムの宣言の条件 `P.EffectsOk B`（性質 2・3 の主定理と同じ）である。対象健全性そのものは仮定しない。事象の観測は観測の欄の射影 `Event.obs` で読み、解放の事象は観測を持たない（`step_target_sound_event`）。結論は事象の操作の名前を通すので、上限に別の名前の原子を足しても許可は増えない（`Eff.allows_union_other_name`）。例えば上限 `{File.Write[/data/**], File.Read}` は `File.Read` の名前で `/etc/passwd` を許すが、この上限を末尾に持つ型の付いた状態から `/etc/passwd` を観測に含む書き込みの事象は出ない（`Release/TargetStepExamples.lean` の `no_write_event_passwd`）。観測を持つ遷移は E-IO・E-IOErr・E-Exit だけであり、呼び出しの型付けの反転、対象一致の条件からの観測の許可（`TargetAgreement.obs_allowed`）、処理する枠のない継続を通した伝播（`ContTy.allows_end_of_prim_call`）で閉じる。E-OpPrim・E-Op は事象を伴わない。節の本体の効果が許す対象は、処理する枠が枠の下の継続になければ Eb が許し（`StateTyE.clause_allows`。節の型付けの反転 `HasTypeClausesQ.find` と `ContTy.allows_clause_end` から）、捕捉した組み込みの呼び出しの対象は節の添字を選ぶ枠の上の効果が許す（`StateTyE.opPrim_clause_allows`）。節が実行する IO は、保存の定理で同じ Eb を末尾に持つ状態から出る E-IO の事象として、上の場合に入る。公開の状態の型付け `StateTy` は末尾の効果を存在量化して末尾の範囲について何も言わないので、この定理は `StateTyE` で述べる。初期状態から到達した状態についての言明は、後述の到達先の対象健全性である。二つの信頼条件を満たし `Http.sendIn` の項目を持つ表として、後述の「形式化で仮定するもの」の実例 `Release.ModelHttp.assumptions` がある。その表で、`api.example.com:443` の検査済みの要求の値を送る E-IO の事象の観測 `api.example.com:443` は、末尾の効果 `{Http.Connect[api.example.com:443]}` の `Http.Connect` の原子が許す（`Release/ModelHttp.lean` の `Examples.sendState_target_sound`）。形式化した `Http.RequestIn` の値は検査した要求と実効の endpoint を保持する（01-12「型付け規則」の V-CheckedRequest）。実例の表では、検査の δ の成功値が渡された要求をそのまま保持し、射影がその要求を返し、その値を送る応答の関係の観測は検査した endpoint だけである（`check_send_preserves`）。保持する要求は `Http.ClientRequest` のレコードの値（五つの欄）であるが、要求から実効の endpoint を得る処理（`url` の欄の取り出しと URL の解析）は形式化の外側の関数とし、通信は応答の関係で表すので、この定理は送った要求の中身と実際の通信の一致については何も言わない。形式化は要求を持たない検査済みの対象の値（V-Checked）も `Http.RequestIn` の型に許すので、到達した `Http.RequestIn` の値が検査した要求を保持することは示さない。処理系の純粋な検査・射影・明示拡大は同じ要求を保持するが、実通信への引渡しは未実装であり、Rust との全比較は未実施である。Lean は対象だけを保証する。理由: 性質 3 は効果が空の実行だけを扱うので、効果の上限が実際の事象の作用した対象を覆うことは別の定理で示す必要があるためである。
++【決定】形式化した Release で、一段の対象健全性を証明する（`Release/Lemmas/TargetStep.lean` の `step_target_sound`）。継続の末尾の効果 Eb を固定した状態の型付け `StateTyE P B Eb s` のもとで、状態が IO の事象 `b(W̄) ↦ o @ obs` を伴って遷移するなら、b は署名 e と操作の名前 l（`e.opEff = some l`）を持ち、obs のどの対象も Eb の名前 l の原子が許す。許可は、許可の関係 `Eff.Allows` の名前の種類を表の `effKind` で読む `Builtins.Allows` であり、Top の原子は名前の種類の全対象を許す。前提の信頼条件は `CoreAssumptions` と `TargetAgreement` だけであり、ほかの前提はプログラムの宣言の条件 `P.EffectsOk B`（性質 2・3 の主定理と同じ）である。対象健全性そのものは仮定しない。事象の観測は観測の欄の射影 `Event.obs` で読み、解放の事象は観測を持たない（`step_target_sound_event`）。結論は事象の操作の名前を通すので、上限に別の名前の原子を足しても許可は増えない（`Eff.allows_union_other_name`）。例えば上限 `{File.Write[/data/**], File.Read}` は `File.Read` の名前で `/etc/passwd` を許すが、この上限を末尾に持つ型の付いた状態から `/etc/passwd` を観測に含む書き込みの事象は出ない（`Release/TargetStepExamples.lean` の `no_write_event_passwd`）。観測を持つ遷移は E-IO・E-IOErr・E-Exit だけであり、呼び出しの型付けの反転、対象一致の条件からの観測の許可（`TargetAgreement.obs_allowed`）、処理する枠のない継続を通した伝播（`ContTy.allows_end_of_prim_call`）で閉じる。E-OpPrim・E-Op は事象を伴わない。節の本体の効果が許す対象は、処理する枠が枠の下の継続になければ Eb が許し（`StateTyE.clause_allows`。節の型付けの反転 `HasTypeClausesQ.find` と `ContTy.allows_clause_end` から）、捕捉した組み込みの呼び出しの対象は節の添字を選ぶ枠の上の効果が許す（`StateTyE.opPrim_clause_allows`）。節が実行する IO は、保存の定理で同じ Eb を末尾に持つ状態から出る E-IO の事象として、上の場合に入る。公開の状態の型付け `StateTy` は末尾の効果を存在量化して末尾の範囲について何も言わないので、この定理は `StateTyE` で述べる。初期状態から到達した状態についての言明は、後述の到達先の対象健全性である。二つの信頼条件を満たし `Http.sendIn` の項目を持つ表として、後述の「形式化で仮定するもの」の実例 `Release.ModelHttp.assumptions` がある。その表で、`api.example.com:443` の検査済みの要求の値を送る E-IO の事象の観測 `api.example.com:443` は、末尾の効果 `{Http.Connect[api.example.com:443]}` の `Http.Connect` の原子が許す（`Release/ModelHttp.lean` の `Examples.sendState_target_sound`）。形式化した `Http.RequestIn` の値は検査した要求と実効の endpoint を保持する（01-12「型付け規則」の V-CheckedRequest）。実例の表では、検査の δ の成功値が渡された要求をそのまま保持し、射影がその要求を返し、その値を送る応答の関係の観測は検査した endpoint だけである（`check_send_preserves`）。保持する要求は `Http.ClientRequest` のレコードの値（五つの欄）であるが、要求から実効の endpoint を得る処理（`url` の欄の取り出しと URL の解析）は形式化の外側の関数とし、通信は応答の関係で表すので、この定理は送った要求の中身と実際の通信の一致については何も言わない。形式化は要求を持たない検査済みの対象の値（V-Checked）も `Http.RequestIn` の型に許すので、到達した `Http.RequestIn` の値が検査した要求を保持することは示さない。処理系の純粋な検査・射影・明示拡大は同じ要求を保持し、`Http.sendIn` は保持した endpoint 一つへの非追従の実通信へ接続する。Rust との全比較は未実施である。Lean は対象だけを保証する。理由: 性質 3 は効果が空の実行だけを扱うので、効果の上限が実際の事象の作用した対象を覆うことは別の定理で示す必要があるためである。
+ 
+ 【決定】形式化した Release で、到達先の対象健全性を証明する（`Release/Theorems.lean` の `reachable_target_sound`）。`· ⊢c M : A ! ε` が成り立ち、M がエフェクト変数を含まないとき、`⟨M, [], ∅⟩` から到達した状態が IO の事象 `b(W̄) ↦ o @ obs` を伴って遷移するなら、b は署名 e と操作の名前 l（`e.opEff = some l`）を持ち、obs のどの対象も初期の ε の名前 l の原子が許す（許可は一段の対象健全性と同じ `Builtins.Allows`）。前提は、性質 3 の主定理と同じプログラムの条件（`P.WellFormed`・`P.WellTyped B`・`P.EffectsOk B`）、初期の計算の型付けとエフェクト変数を含まない条件、信頼条件 `CoreAssumptions` と `TargetAgreement` だけである。証明は、初期の ε を継続の末尾に固定した状態の型付け（`stateTyE_init_eff`）、同じ末尾を保つ保存（`steps_preserve`）、一段の対象健全性（`step_target_sound`）の合成であり、公開の `StateTy` を通さない。事象の種類によらない形（`reachable_target_sound_event`）と、全体の信頼条件のもとでの形（`reachable_target_sound_of_assumptions`）も置く。`Release/TargetReachExamples.lean` は、L20.7 の実例の表で次の例を置く。範囲付きの IO の呼び出しを `{File.Write[/data/**]}` で型付けると、到達したどの書き込みの事象も `/etc/passwd` を観測しない（`ioCall_no_passwd`）。保護本体が `/data/**` へ書き、節が `/logs/**` へ書く `handle` を `{File.Write[/logs/**]}` で型付けると、到達した節の IO の観測は初期の上限に許され（`handleLog_reach_target_sound`）、到達したどの書き込みの事象も保護本体の対象を観測しない（`handleLog_never_observes_data`）。誤った節の規則の反例として、本番の規則が節の添字に Top と規則の値だけを許すこと（`clauseIxOk_bodyData_iff`・`etc_not_clauseIxOk`）、添字の許容を問わない規則（`WrongHandleTyped`）は捕捉した引数を別の範囲の書き込みへ渡す節を誤った上限で型付けて、その上限が許さない対象を観測する事象へ到達すること（`wrong_rule_unsound`）、本番の型付けはその型付けを認めないこと（`handleEtc_rejected`）を置く。`Http` の項目について言うこと・言わないことは一段の対象健全性と同じである。実例の表 `ModelHttp` の初期状態（`Http.sendIn` の呼び出し）から起こる送信の事象に当て、観測した endpoint が初期の効果の `Http.Connect` の原子に許されることを確かめた（`Examples.sendState_reachable_target_sound`）。理由: 一段の対象健全性は継続の末尾の効果を前提に取るので、利用者が確認する初期の上限との関係は、保存が同じ末尾を保つことを通して別に示す必要があるためである。
+ 
+@@ -282,9 +282,9 @@ Releaseの七判断と表層の七判断はQをパラメータに持ち、従来
+ 
+ 【決定】要求を持たない V-Checked の値を Rust の `RequestIn` として作らない保証は、形式化の一般の値の型付けではなく、処理系の構築経路に置く。純粋な検査の成功は既存の構成子の三欄 `[同じ ClientRequest の値, 正規化した host の文字列, 実効 port の整数]` を全て埋める。射影は三欄の形と欄0の五欄のレコードを調べて同じレコードを返し、明示拡大は同じ不透明値を返す。利用者には構成子を公開しない。これは型検査を通った通常のプログラムの経路の保証であり、ホストが内部の raw 呼び出しへ不正な値を渡した場合まで正当化しない。交換の `valContents` は、保持するレコードの型を `dataDecls` と検査の第4引数・射影の戻り値と同じデータ型の名前で記録する。型の対応だけでは実通信先との一致は得られない。
+ 
+-【決定】旧 `Http.send` の読取りは、要求の五欄からホスト側の `http::Request<Vec<u8>>` と `Duration` を作り、worker へ所有値として渡す。完了処理は応答だけを言語の値に戻す。この経路は `RequestIn` の保持した host・port を読まず、旧入口のリダイレクトも許す。したがって、純粋な検査・射影・拡大の保持の照合と、実通信が保持した端点一つだけに作用することの照合を区別する。Rust の処理系は、保持した endpoint を受け取る送信の操作を持たない。この経路の読解を実通信の一致や Rust/Lean の全比較の成功として扱わない。
++【決定】`Http.sendIn` の読取りは、三欄から同じ五欄の要求と保持した endpoint を得る。旧 `Http.send` と共通の読取りで `http::Request<Vec<u8>>` と `Duration` を作り、送信用 URI と保持 endpoint、明示された Host の実効 host/port を共通の代数で照合する。worker へ渡すのは Rust が所有するデータだけであり、完了処理は応答だけを言語の値に戻す。非追従と proxy への自動接続なしにより、実通信の対象は保持した endpoint 一つとする。観測の単位は DNS と OS による変換前の名前または IP と port の組であり、名前の解決結果ごとの接続試行やアドレスの族ではない。旧 `send` は保持 endpoint を読まず、リダイレクトを許す。この実装と制御したローカルの相手による照合は、URL parser と実通信を Lean が証明したことや、Rust/Lean の全比較の成功を意味しない。
+ 
+-パスと要求の二つの接続だけで、非 Top の局所解析、範囲付き IO、Rust と Lean の全比較の完了とはしない。
++パスと要求の保持、および七つの範囲付き IO は Rust の通常の検査と実行に接続している。交換の本番の必須欄と Rust/Lean の全比較は未接続であり、この接続だけで比較全体の完了とはしない。
+ 
+ 範囲付きの項目の表（決定の判断 8、DET-03 の問 22、DET-04 の問 23）を `Release/TargetTable.lean` に置いた。七つの IO（`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・`writeBytesIn`・`appendBytesIn`、`Http.sendIn`）は単一の対象の形（`File.*In` は種類 path、`Http.sendIn` は種類 endpoint、引数の位置 0）、検査・射影・拡大（`Scope.checkPathIn`・`Http.checkRequestIn`・`Scope.pathInValue`・`Http.requestInValue`・`Scope.widenPathIn`・`Http.widenRequestIn`）は純粋な項目である。表のデータは、`effKind` が `File.Read`・`File.Write` で path、`Http.Connect` で endpoint、`valKind` が `Scope.PathIn` で path、`Http.RequestIn` で endpoint、`admitsR` が検査・射影・IO の一つの範囲と、拡大の入力の範囲 R を戻りの範囲 S が覆う組（`Range.Covers`）である。範囲付きの値型は資源の型にしない（`release_exists` の量化は以前と同じ）。全ての項目は `sig_scoped` の内容を満たし（`TargetTable.entries_scoped`）、七つの IO は形の検査を通る（`TargetTable.io_op`）。表のデータの `valContent` は `Http.RequestIn` に `Http.ClientRequest` のレコードの型 `TargetTable.clientRequestTy`（データ型 `Http.ClientRequest`）を与え、`Http.checkRequestIn` の第 4 引数と `Http.requestInValue` の戻り値も同じ型である。δ と応答の関係はこの表の引数である。
+ 
+@@ -472,7 +472,7 @@ Surface の読者が表せない外部型を含む元定義は、理由 `externa
+ 
+ 【決定】処理系の静的な接続は、純粋六宣言の標準認定・構造入力・局所解析・範囲の具体化・必須の受理と、ハンドラの節の添字の選択および最終確認までである。Scope と区間警告は予算・状態を分け、通常の型検査入口で、Scope の超過前に得た Range の警告の保存、区間解析の停止後も確定した範囲の列を保つこと、旧 Scope の拒否が別の正常な本体の警告を妨げないことを検査する。PathIn は同じ文字列、RequestIn は同じ要求のレコードと実効の端点を保持し、明示拡大は同じ不透明値を返す。
+ 
+-【決定】六つの File の単一対象の IO は、`TargetTable` と同じ一つのパスの範囲変数を対象位置 0 の `Scope.PathIn` と効果の原子へ具体化して登録する。実行本体は、成功値に保持した同じパス文字列を、対応する旧 File の Rust の実処理へ渡す。旧 File の入口は Top の形を保つ。`Http.sendIn` の登録・実行と、保持した要求から実通信への引渡しは未実装である。Scope の本番の受理入力と limits の交換、全書き出し元と読者は未接続であり、Rust との全比較は未実施である。通常検査の成功を、`io_target` の証明や全比較の成功として扱わない。
++【決定】六つの File の単一対象の IO は、`TargetTable` と同じ一つのパスの範囲変数を対象位置 0 の `Scope.PathIn` と効果の原子へ具体化して登録する。実行本体は、成功値に保持した同じパス文字列を、対応する旧 File の Rust の実処理へ渡す。旧 File の入口は Top の形を保つ。`Http.sendIn` は単一対象の IO として登録し、保持した要求と endpoint を非追従の実通信へ渡す。Scope の本番の受理入力と limits の交換、全書き出し元と読者は未接続であり、Rust との全比較は未実施である。通常検査の成功を、`io_target` の証明や全比較の成功として扱わない。
+ 
+ Rust の Scope 入力は、`Surface.CheckAccept` の `bodyKey`・`entryScope`・`primResolve` と、`ScopeAccept.occurrences` の番号に対応させる。標準の所有元と宣言の同一性で六宣言だけを認定し、名前付き引数のソース順と契約位置を別に保持する。パイプ右辺の標準の直接呼び出しも規則の出現に含め、契約位置 0 の供給元をパイプの左辺として保持する。Lean では `contractOrder` がこの位置を欠く場合に未知を返すので、この情報から Top を要求できる。範囲の選択はまだ接続していない。本体の最初の右辺を 0 とし、文の始まりにも同じ番号を使う。これは `Interval.preorderBlock` の走査であり、区間解析の `bodyRoot` の根 0 は含めない。関数と実装メソッドの命名は共通の変換を使い、入口の位置は、辞書引数を前置した引数列に `Release.binds` と同じ逆順の対応を付け、最後の値引数を位置 0 とする。メソッドでは `MethodInput.names` と同じくメソッド自身の辞書だけを前置し、実装自身の辞書を入口数に加えない。複数束縛の `with` も `Block.last (withE …)` に対応する文の始まりを含める。Rust の `statements` は構文上の全文の一覧であり、`ScopeLower.analyzeExpr` が辿る範囲に限った事実の記録とは区別する。普通のソースから得る番号を、Lean の定義から手で数えた独立期待値と照合する。ラムダと節を含まない本体では、区間解析の番号が Scope の番号に 1 を足した値で、由来の NodeId も一致することを照合する。この入力の対応の照合は、Scope の局所解析や狭い契約の受理、Rust と Lean の全比較の完了を意味しない。入力と番号の実装は [型検査器](../02-impl/02-05-typechecker.md) に定める。
+ 
+@@ -689,7 +689,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の
+ | 区間解析の対象構文の評価関係 | 本体の主定理の外の評価関係と中心定理の言明 | `Interval.Identity` は全53構成子と全相互帰納容器の先行順、連続する番号と子のキーを定義し、子の列挙との一致とキーの一意性を示す。`Interval.Eval` はこの子のキーと容器を数えない Block の進み方を使い、`EvalPartial`・`EvalArguments`・`EvalBlock`・`EvalArms`・`EvalWidthArms`・`EvalResultArms` の相互帰納で trace のキーの範囲と一意性を証明する。Integer64 の整数・範囲のパターンを保ち、六種の match は widthPatternMatch による束縛・ワイルドカードと guard の具体評価を使う。matchOtherNormal・matchOtherFailed は七種すべての整数と認定した Result の腕を未知の対象から除く。七種の整数の対象二項演算・符号付き四種の一般の負号・not・and・or・全 Block 形・単一 if の評価と、正常な子・選択枝からの条件付きの導出存在を含む。パターンの構造の照合と全入力の導出存在は含めない。全構成子の分類、normal/failed/returned、正常引数と結果を持つ到達trace、未知の型内任意値と失敗を定義する。未知の正常整数のTop所属・任意整数の許容・空trace・共通解析規則の健全性を証明する。Rangeと固定域APIの規則は解決済み標準束縛の表に付ける定義とし、三入力の保存・逆転優先・Resultの成否と実行時の失敗の区別を保つ。警告の原因は除数0・あふれ・固定域外の三種類に限定する。任意の環境・予算に対する正常値所属と、警告の原因に対応する拒否（`event.result = .rejected warning.cause.toFailure`）の二命題を定義する。土台の解析に対する証明は `Interval.Sound` が担う。Range の call と単純な Result の腕は表層評価に接続する。純粋なシフトの固定域 call の表層評価も中心二定理へ接続する。元のASTとの対応・Rust/VMとの一致は対象外である |
+ | 検査済みの値の独立した小モデル | 本体の主定理の外のAPI固有の小証明。IP と CIDR を含む Rust の公開入口との独立期待値の照合は実施済みであり、Rust との全比較は未実施 | `Checked.Access`は解決済み所有元の比較と別名の保存を定義する。`Checked.Scope`は、`Scope.Domain` の対象・パターン・所属・整形式性の述語をそのまま使い（同じ述語を定義し直さない）、ホストの対象を IP アドレスへ、ホストのパターンを IP の完全一致と CIDR へ広げた解析済み入力の妥当性、一段／多段とパスの所属、Intのポート、成功・失敗・入力保存・証拠消去を示す。ホスト名だけの入力では広げる前と同じ結果になること（`rawMakeHost_name`・`rawMakeEndpoint_name` と、Host/Endpoint の成功・失敗・消去の定理の `_name` の系）、ホスト名と IP の組・族の違うアドレスの不所属、パターンの正規化で成否が変わらないこと、覆うパターンでも成功すること、検査済みの値が `Range` の種類に相対的な所属を満たし覆う範囲に所属することも示す。Rust の旧 Scope の公開入口も共通の代数で IP と CIDR を受け付け、保存するパターンを正規化する。IP の同族・異族、IPv4 を射影した IPv6、ホスト名との組、host bits、最大 prefix と完全一致、数値風のラベル、保存したパターンの再利用は、静的検査と実行時の公開入口へ独立入力を渡して照合する。`Checked.Range`は閉区間、逆転／範囲外の二つの失敗と保存・証拠消去を示す。`Checked.ListLength`・`ListIndex`・`NonEmptyList`はList/Intの成功・失敗の同値、優先順、保存・射影・要素と純粋なmapの一致を示す。Scopeの失敗は解析済みパターンと対象を持ち、元の字面とreasonは持たない。名前解決・文字列parser・Rust／標準ソースとの全体一致・IOの対象の安全性は証明の対象外である |
+ | 操作の対象の範囲の領域と被覆 | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Scope.Domain` は解析済みのパス・ホスト名・IP アドレスと CIDR・ポート・エンドポイントの対象とパターン、`Range`（`top` と三種）の所属・種類に相対的な所属・正規化・整形式性を定義する。`Scope/Cover.lean` はパスとホスト名の一原子の被覆の判定と、健全性・反射・推移・任意の要素の列についての完全性を示す。`Scope/IPCover.lean` は、IP アドレスの値と固定幅の組の往復、IPv4 を射影した IPv6 アドレスが族 `v6` を保つこと、整形式の CIDR での区間と prefix による所属の一致、同族の区間の包含による IP のパターンの被覆の判定と、健全性・反射・推移・内側が整形式のときの完全性、異族の IP どうしとホスト名と IP の非包含を示す。`Scope/RangeCover.lean` は、ポートの区間・ホストのパターン・エンドポイントのパターン・`Range` 全体の一原子の被覆の判定と、健全性・反射・推移・内側が整形式のときの完全性、種類に相対的な所属による健全性と内側が非 Top のときの完全性、和による被覆を判定しない例、正規化の前後で被覆が変わらないこと、正規形の範囲どうしの相互の被覆から構造の等号が従うことを示す。`Release/RangeNormalize.lean` は、原子の範囲の正規化と原子の固定順序による列の整列・重複除去について、整列の前後どちらで範囲を正規化しても結果が同じであることを示す。効果の正規化 `Eff.norm` は変えていない。`Release/Order/Range.lean` は範囲と範囲の位置 `Ix` の単射な符号と、符号による全順序の比較を定義する。範囲の位置 `Ix` と `Release/Order/Range.lean` の符号は、次の行の名前の原子と不透明型の範囲の位置が使う。`Checked.Scope` は本行の定義を import して使う。被覆の定義は型付け・主定理と `Builtins.Assumptions` から使わない。Rust の処理系はこれらの定義に接続しておらず、解析器との一致は証明の対象外である |
+-| Scope の局所解析の状態と規則の表、Scope の局所解析の予算と忘却 | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Scope.Inference` は規則の表・一つの評価関係 `EvalScope`（構成子は `apply` だけ）・抽象値・局所状態の骨格と、表の健全性から適用の健全性を導く `apply_sound` を定義する。`Surface.ScopeState` は、それを本番の値 `Release.Val`（成功値は対象を保持する値。`Val.target?` が対象を返す検査済みの対象の値と検査済みの要求の値）と `Scope.Domain` の範囲で具体化し、検査・射影・拡大の六つの標準の宣言の規則と各 `RuleSound`、検査の δ が動的なパターンと具体化した範囲の両方を確かめる契約、拡大の δ が被覆（`Scope/RangeCover.lean`）のもとで同じ値と範囲付きの値型を保つこと、出現の同定が標準の所有元に解決した宣言だけを返し同じ綴りの利用者の関数に規則を付けないこと、一段・多段の健全性、必須の判定の添字が本番の値の型付けで値に付くことを示す。必須の判定の予算は区間解析の警告の予算と別の状態に持ち、上限は既定値のない引数とし、計上点・保持の数え方・忘却の費用・超過の理由（本体か全体か、操作数か保持数か）を定める。超過で全ての由来を忘れて Top を返すことの健全性は上限の値によらず、上限内で終わった解析は予算のない解析と同じ状態を返し、必須の判定と Scope の予算は区間解析の成分と予算を読まない。`Interval.RangeState` は変えていない。型付け・脱糖・主定理と `Builtins.Assumptions` はこれらの定義を使わない。Rust の局所解析は `ScopeLimits` で本体・全体の操作数・保持数を明示し、位置と番号を残して事実を忘れる。同定・局所の読み取り・再照合・射影・事実の書き込み・Ok の由来の写し・別名を各 1、忘却を事実のある位置数で計上する。整数とその他の引数、受理の再照合、合流と本体の入口・出口は計上しない。上限の判定は本体の操作数、全体の操作数、本体の保持数、全体の保持数の順であり、`stepCost`・`Budget.admit` と対応する。型・警告・区間の状態は読まない。純粋六宣言の型への具体化と受理を接続した。ハンドラの節の選択と最終確認は型検査器へ接続済みである。六つの File の単一対象の IO は登録・実行まで接続し、`Http.sendIn` は未実装である。表層の構文との対応は次の行である。Lean の整数のリテラルは先頭に U+0000 を置いた綴りで抽象の引数に載せ、`Http.checkRequestIn` のポートをリテラルから読む（`requestLitBound` とその健全性）。読み取りは、得たポートの区間が整形式（最小 ≤ 最大）のときだけ既知の範囲を返し、最小が最大より大きい組は未知（Top）にする（`requestLitBound_known_ports_wf`・`requestLitBound_known_wf`。L40.3d）。文字列・URL の解析器は引数に取る関数であり、処理系の解析器・名前解決との一致は証明の対象外である。本番の必須欄が未接続なので、Rust の処理系とこれらの定義の全比較は行っていない |
++| Scope の局所解析の状態と規則の表、Scope の局所解析の予算と忘却 | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Scope.Inference` は規則の表・一つの評価関係 `EvalScope`（構成子は `apply` だけ）・抽象値・局所状態の骨格と、表の健全性から適用の健全性を導く `apply_sound` を定義する。`Surface.ScopeState` は、それを本番の値 `Release.Val`（成功値は対象を保持する値。`Val.target?` が対象を返す検査済みの対象の値と検査済みの要求の値）と `Scope.Domain` の範囲で具体化し、検査・射影・拡大の六つの標準の宣言の規則と各 `RuleSound`、検査の δ が動的なパターンと具体化した範囲の両方を確かめる契約、拡大の δ が被覆（`Scope/RangeCover.lean`）のもとで同じ値と範囲付きの値型を保つこと、出現の同定が標準の所有元に解決した宣言だけを返し同じ綴りの利用者の関数に規則を付けないこと、一段・多段の健全性、必須の判定の添字が本番の値の型付けで値に付くことを示す。必須の判定の予算は区間解析の警告の予算と別の状態に持ち、上限は既定値のない引数とし、計上点・保持の数え方・忘却の費用・超過の理由（本体か全体か、操作数か保持数か）を定める。超過で全ての由来を忘れて Top を返すことの健全性は上限の値によらず、上限内で終わった解析は予算のない解析と同じ状態を返し、必須の判定と Scope の予算は区間解析の成分と予算を読まない。`Interval.RangeState` は変えていない。型付け・脱糖・主定理と `Builtins.Assumptions` はこれらの定義を使わない。Rust の局所解析は `ScopeLimits` で本体・全体の操作数・保持数を明示し、位置と番号を残して事実を忘れる。同定・局所の読み取り・再照合・射影・事実の書き込み・Ok の由来の写し・別名を各 1、忘却を事実のある位置数で計上する。整数とその他の引数、受理の再照合、合流と本体の入口・出口は計上しない。上限の判定は本体の操作数、全体の操作数、本体の保持数、全体の保持数の順であり、`stepCost`・`Budget.admit` と対応する。型・警告・区間の状態は読まない。純粋六宣言の型への具体化と受理を接続した。ハンドラの節の選択と最終確認は型検査器へ接続済みである。六つの File と `Http.sendIn` の単一対象の IO は登録・実行まで接続している。表層の構文との対応は次の行である。Lean の整数のリテラルは先頭に U+0000 を置いた綴りで抽象の引数に載せ、`Http.checkRequestIn` のポートをリテラルから読む（`requestLitBound` とその健全性）。読み取りは、得たポートの区間が整形式（最小 ≤ 最大）のときだけ既知の範囲を返し、最小が最大より大きい組は未知（Top）にする（`requestLitBound_known_ports_wf`・`requestLitBound_known_wf`。L40.3d）。文字列・URL の解析器は引数に取る関数であり、処理系の解析器・名前解決との一致は証明の対象外である。本番の必須欄が未接続なので、Rust の処理系とこれらの定義の全比較は行っていない |
+ | Scope の局所解析の表層からの対応 | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Surface.ScopeLower` は、型の情報を付けた表層の構文の直接の標準呼び出し・一度の保存・`case Result.Ok`・別名・未知の呼び出しを一段の `call`・`okArm`・`alias`・`unknown` へ、引数を文字列と整数のリテラル（`const` の直接参照を含む）・局所の読み取り・射影・それ以外へ対応させ、ソース順の引数を契約の位置の順に並べる。分岐は外側の状態から始めて合流で外側の状態へ戻り、ラムダ（Task の入口）・遅延・handle の保護本体と節は `Run.enter`・`Run.leave` で区切る。表層の具体の評価（`RhsEval`・`ArmEnter` と、文の始まりへの到達 `ReachBlock` ほか）は一段の具体の評価に対応し（`rhsEval_step`・`armEnter_steps`）、解析が到達した文の始まりに記録した状態はその地点の具体の局所に対応する（`analyzeBody_sound`・`analyzeBody_requiredIndex`）。記録は束縛番号の新規性の不変条件を満たす（`analyzeBody_numbered`）。表層の具体の評価は脱糖と Release の実行とは独立の関係であり、両者の一致、記録の番号の一意性、定数の埋め込み本体と辿らない式の内側の地点は結論しない。Rust の `ScopeBodyInput::analyze` は、共有した番号付き入力から同じ辿り方の記録と局所の事実を作る。保存した Result と同じ Ok の成功値を区別し、射影の結果・別名・再包装・未知の呼び出し・try の結果へ事実を伝えず、合流で外側の事実を残す。本体の入口では位置を保って事実を消す。本体の操作数を 0 に戻し、外側の保持数を加える。本体の出口では外側の操作数と保持に戻し、全体の操作数を引き継ぐ。本体だけの超過は外側へ伝えず、全体の超過だけを伝える。パイプの中には transfer の事実も記録も作らず、記録のない呼び出しの引数は `ScopeAccept.factFree` 相当の状態で読む。Rust の整数は型付きの値であり、U+0000 の文字列を整数へ読み替えない。通常ソースの独立期待値で局所の対応を確かめる。型検査器の受理の条件への接続は次の行である。本番の必須欄が未接続なので、Rust の処理系とこれらの定義の全比較は行っていない。Rust は `analyze_pending` で一度解析し、`renumber` で記録と全ての由来の番号を確定する。番号付けが予算で止まった本体だけは、実装固有の資源制限として未採番の全規則一覧に Top を要求する。番号付けを完了して最後の Run だけが止まった場合は、記録済みの非 Top の範囲とリテラルの既知の範囲を保ち、Top の位置の理由だけを地点によらず `budgetExceeded` とする（`Required.ofIndex`）。パイプ右辺も Top を要求する。この純粋六宣言の型制約と受理、保護本体からの節の添字の選択と最終確認を接続した。六つの File の単一対象の IO は登録・実行まで接続したが、`Http.sendIn` と Rust/Lean の全比較は含めない。 |
+ | Scope の必須の判定の受理と拒否の理由 | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Surface.ScopeAccept` は、拒否の理由 `CoverFailure`（DET-05 の `notCovered`・`atomicCoverOnly`・`unknownSource`・`budgetExceeded`）、範囲の受理 `acceptRange`（既知の範囲を被覆で覆う契約だけ、未知・予算の超過の位置は Top だけを受理し、Top を覆うのは Top だけ）、原子の受理 `acceptAtom`（上限の一原子による被覆。和は判定しない。構造上の包含なら受理する）、呼び出しと本体の受理 `acceptCall`・`acceptBody`（Scope の規則を持つ出現の範囲の列を、その出現の全ての記録の状態で規則の `index` が選ぶ範囲と照らす。記録のない出現は外側の文の記録を使わず事実を持たない状態で選ぶ）、明示拡大の行き先を戻り値の注釈から決める `widenRanges` と一意性を定め、健全性を示す（`acceptCall_sound`・`acceptBody_sound`・`widenPathIn_target_unique` ほか）。記録の番号の重複を仮定しない全称の形で述べる。受理の判定は Scope の局所解析の記録だけを読み、区間解析の評価と警告の結果を読まない。型付け・脱糖・主定理と `Builtins.Assumptions` はこれらの受理の定義を使わない。Release の `Eff.Sub` は構造上の包含のままであり、C-Sub などの効果の上限の一原子の被覆 `Eff.Covers`（「初回リリース版の拡張: エフェクトの名前と開始状態（構造上の包含・被覆・許可の関係）」の行）は、型付けの規則の側の関係である。受理した範囲の列と脱糖・コアの範囲の関係は「表層の節の添字と脱糖の範囲」の行、受理した値が推論した範囲に属する接続定理は「Scope の局所解析の接続定理」の行にある。規則が範囲を選ぶ位置に契約の範囲がない短い列は `notCovered` で拒否し、受理した列は規則が選ぶ全ての位置に範囲を持つ（`acceptRanges_iff`・`acceptRanges_some`・`acceptCall_some`・`acceptBody_some`）。`acceptCall` の経路では既知の Top は作られず、Top の位置の拒否の理由は、最後の Run が予算を超えていれば地点によらず `budgetExceeded`、そうでなければ（引数の型に明示した Top から来た場合も）`unknownSource` である。非 Top の既知の範囲は超過によって変わらず、リテラルは超過後も読めるが局所の文字列のパターンは未知である。`atomicCoverOnly` は同名の非 Top の閉じた原子が二つ以上ある場合の保守的な分類であり、実際の和の被覆を証明した理由ではない。型検査器の入口への組み込みとプログラム全体の受理の述語は「初回リリース版の拡張: 型検査器の入口の必須の判定の受理」の行にある。本番の必須欄が未接続なので、Rust の処理系とこれらの定義の全比較は行っていない |
+ | 型の情報を付けた表層の構文と型付けの組み込みの名前の範囲の列 | 段階 C・E2 の構文・型付け・検査の関数を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Surface.Expr.primName b ts es rs` は型検査器が選んだ範囲の列を持ち、`Surface.HasTypeQ.E_Prim` は V-Prim と同じく `B.RangeAdmissible b s rs` を前提に `s.inst rs` で型付け、脱糖は範囲の列を写す（`desugar_primName`）。演算子・負号・連結・die の終了は `s.nranges = 0` のままである。旧の像での同値は `ePrim_premises_iff_old`、空の列での形は `HasTypeQ.E_PrimNil`、表層の整形式性がプログラムの関数の型に範囲の変数を置かせないこと（問 3 の P1）は `Def.Scoped.rangeFree`・`Program.WellFormed.rangeFree`（`Surface/PrimRange.lean`）。検査の関数は、表と合う判定 `admitsRDec`（`Check.Input` の欄。契約は `Input.Sound.admitsR`）と、候補の原子の集合の上の計算できる具体化 `CheckRanges.instSig`（`instSig_eq`）で範囲付きの項目を型付ける。交換の入口の準備（`Exchange.CheckInput.prepare`）が作る検査の入力は、型表（sidecar 7）の表のデータの判定 `AdmitsEntry.admitsRDec` を持つ（`BuiltinInput.admitsRDec_sound`。表のデータのない旧版は全て Top の列だけを通す）。区間解析の対象構文の照合は空の範囲の列の組み込みの名前だけを標準の呼び出しの頭として読む。小例は `Surface/ScopeAcceptExamples.lean`（`checkPathIn_typed` ほか）。交換形式は corpus 15 で範囲の列を持つ（「交換の形式の版」）。Rust の処理系は型検査出力からコアと実行器まで確定した範囲の列を保持する。交換の本番の受理入力・limits と全比較は未接続である |
+@@ -701,11 +701,11 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の
+ | 構文・型付け規則（検査済みの要求の値と規則 V-CheckedRequest）と Http の項目の実例 | 段階 B・C・E の共有型の構成子・型付けの規則・組み込みの表を拡張。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Val.checkedRequest t c` は、実効の endpoint の対象 t と `Http.ClientRequest` のレコードの閉じた値 c（`c : Val`）を保持する検査済みの要求の値であり、代入・改名・移動で変わらない（中へ下りない）。`Release.Builtins.valContent : OpaqueName → Option Ty`（既定は全て none）は範囲付きの値型の名前の値が保持する要求の型であり、`Release/TargetTable.lean` の表は `Http.RequestIn` に `clientRequestTy = .data "Http.ClientRequest" []` を与える。`Release.HasTypeVQ.V_CheckedRequest` は、`B.valKind o = some t.kind`・`R.Mem t`・`B.valContent o = some T`・`HasTypeVQ P B Ψ Qempty [] [] c T` を前提に `Ty.opaque o (.fixed R)` を与える（L40.3c。それより前は c を不透明型の定数とし、`c.type = .opaqueTop n` を前提にしていた）。ストアの拡大の補題 `HasTypeVQ.store` は NoFail の文脈を各定理の束縛に移し、前提の導出を空の NoFail の文脈のまま移す。網羅性の値の形 `Inhabits` に `checkedRequest` を加えた。`Release/Lemmas/Inversion.lean` の `inv_checkedRequest`、`Release/Lemmas/MembershipBase.lean` の `checkedRequest_iff`・`checkedRequest_widen` と三つの場合の `canonical_opaque`、`Release/Lemmas/Membership.lean` の旧の像での同値（`not_checkedRequest_of_noValKind`・`not_checkedRequest_of_noValContent`・`Exhaustive.opaque_iff_noRequest`）を示す。`Release/ModelHttp.lean` は `Http.checkRequestIn`・`Http.requestInValue`・`Http.sendIn` の δ と応答を持ち二つの信頼条件を満たす実例の表（`assumptions`。`HasHttp` は `Http.ClientRequest` の構成子の宣言を含む）、型の変数を含まない要求の判定 `groundVal` とその健全性 `groundVal_varsIn`、検査した要求のレコードが送信まで保たれること（`check_send_preserves`）、一段・到達先の対象健全性を Http の項目に当てる例、射影の後に `url` の欄を読む例（`read_url_steps`・`projected_url_typed`）、構成子を宣言しないプログラムで型を持たないこと（`checkedReq_not_typed_empty`）を置く。`Surface.ScopeState` の成功値の対応と検査の契約は `Val.target?` で述べ、検査済みの要求の値を含む（「Scope の局所解析の接続定理」の行）。Rust の処理系は同じ要求のレコードと実効の端点を既存の構成子で保持し、純粋な検査・射影・拡大を局所解析と型制約で確定した列で具体化する。拡大は同じレコードと endpoint を保持する（`ModelHttp` は拡大の δ を持たず、この点の証明は含まない）。交換形式は検査済みの要求の値を持たない（交換の書き出しは `unsupported` にする） |
+ | 型付け規則・実行の規則（組み込みの呼び出しの範囲の列と V-Prim の具体化） | 段階 B・C・E の構文・型付け・実行の規則と仮定の欄を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Val.prim b ts es rs` は具体化した範囲の列を持つ。`Release.HasTypeVQ.V_Prim` は `B.RangeAdmissible b s rs` を前提に `s.inst rs` で型付ける（具体化の定義は `Release/RangeInstDef.lean`、`PrimSig.inst`・`Builtins.RangeAdmissible` は `Release/Typing.lean`）。`Builtins.delta` は範囲の列を受け取り、`delta_typed`・`io_typed`・`io_exists` は範囲の列で量化する。`PrimSig.Scoped` は範囲の変数の個数の文脈で読み、引数の位置の条件と操作の結果の条件を含む。`PrimSig.StoreShape` は `rkinds = []` を含む。`opSig` は引数を `Ty.instTarget s.topRanges` で具体化する（計算できる形）。正則性は `PrimSig.Scoped.inst_wf_zero`、型代入との交換は `PrimSig.Scoped.inst_varsIn_zero`（`Ty.instR_varsIn_zero`）、`E_OpPrim` の保存は `HasTypeVsQ.widen_topRanges`（`Release/Lemmas/MembershipBase.lean`）と `PrimSig.Scoped.inst_ret_of_opEff` で閉じる。交換の旧版の読み込みは空の範囲の列を書き、corpus 15 は範囲の列を読み書きする。表層の組み込みの関数の名前は範囲の列を持ち、脱糖はそれを写す（後述の表層の組み込みの名前の範囲の列の行）。表層の `E_Binary`・`E_Neg`・`StringAddOk`・`DieExitOk` は `s.nranges = 0` を求める（`HasTypeVQ.V_PrimNil`）。旧の像での同値は `Release/Lemmas/PrimRanges.lean` と `Surface/RangeFree.lean`、閉じた非 Top の値が組み込みへ渡る小例（E-Prim・E-IO・E-OpPrim）は `PrimRangeExamples` にある。小例の表は `Builtins.Assumptions` を満たす実例ではない。Rust の処理系は型検査出力・コア・下位 IR・実行器まで確定した範囲の列を保持し、通常の交換の項にも同じ列を書く。交換の本番の受理入力・limits と全比較は未接続である |
+ | 実行の規則（IO の事象の観測） | 段階 B の事象・遷移の規則・`Oracle`・`step` と仮定の欄を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.Event.io` は観測 `obs : List Scope.Domain.Target` を持ち、`Builtins.ioResponse` は応答とともに観測を受け取り、`Oracle` は応答と観測の組を返す。E-IO・E-IOErr・E-Exit と `step` は応答の関係（`step` では `Oracle`）が与えた観測を事象に記録する。`io_kind`・`io_typed`・`io_exists` は観測を量化する。`Release/Lemmas/Observation.lean` は、観測を捨てた欄と以前の欄の同値（`Builtins.ioKind_iff_noObs`・`ioTyped_iff_noObs`・`ioExists_iff_noObs`・`ioFields_iff_old_of_liftNoObs`、範囲の量化との合成 `ioTyped_iff_oldNoObs`・`ioExists_iff_oldNoObs`）、`horacle` の新旧の関係（`horacle_noObs`・`horacle_of_noObs`）、観測を持つ遷移の逆転（`Step.io_inv`・`Step.io_noObs`）、旧 Top の HTTP の操作がリダイレクトの追従先を観測に含められる小例（`ObservationExamples.redirect_step`・`redirect_only_step`・`not_requires_first`）を示す。Rust の処理系と交換形式は観測を持たない |
+-| 初回リリース版の拡張: エフェクトの名前と開始状態（`BuiltinOnly` の案 BA）・信頼条件の分離 | 段階 B の状態の型付けと仮定の構造体を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.BuiltinOnly` は範囲の位置によらず組み込みのエフェクトの名前の原子を許し、旧の像では以前の定義 `BuiltinOnlyOld` と同値である（`BuiltinOnly.iff_old`）。以前の定義で型の付く状態は新しい定義でも型が付く（`stateTy_of_old`）。継続と内部の状態の型付けの末尾の単調性（`ContTy.mono_end`・`StateTyE.mono`・`stateTy_of_stateTyE_sub`）と、範囲付きの名前の原子が末尾に届く補題（`ContTy.name_end_ix`・`ContTy.end_of_noHandler_ix`）を置いた。信頼条件は `Builtins.CoreAssumptions`（`io_op` の内容を形の検査 `Builtins.ShapeOk` に変えた）と `Builtins.TargetAgreement`（`io_target`）に分け、全体の `Builtins.Assumptions` は両方を含む。項目の形は `PrimSig.shape`（`Scope.Signature.IOShape`）、呼び出しの引数に照らした形は `PrimSig.shapeAt` である。`Release/ShapeOk.lean` は形の検査と以前の `io_op` の対応、`Release/Lemmas/TargetSound.lean` は κ を `effKind` で読む `Builtins.Allows` と一回の呼び出しの観測の許可（`Builtins.TargetAgreement.obs_allowed`）、`Release/TargetTable.lean` は範囲付きの 13 項目の表、`Release/ModelTargets.lean` は二つの信頼条件を満たす実例と範囲付きのプログラムへの主定理の適用例を置く。Rust の処理系は標準署名の表に形と範囲の許容を持ち、通常の書き出しに認定元と表のデータを含める。六つの File の単一対象の IO は、保持した同じパス文字列を実処理へ渡す。`Http.sendIn` の登録・実行と観測の対応は未接続であり、処理系は観測を報告しない |
++| 初回リリース版の拡張: エフェクトの名前と開始状態（`BuiltinOnly` の案 BA）・信頼条件の分離 | 段階 B の状態の型付けと仮定の構造体を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.BuiltinOnly` は範囲の位置によらず組み込みのエフェクトの名前の原子を許し、旧の像では以前の定義 `BuiltinOnlyOld` と同値である（`BuiltinOnly.iff_old`）。以前の定義で型の付く状態は新しい定義でも型が付く（`stateTy_of_old`）。継続と内部の状態の型付けの末尾の単調性（`ContTy.mono_end`・`StateTyE.mono`・`stateTy_of_stateTyE_sub`）と、範囲付きの名前の原子が末尾に届く補題（`ContTy.name_end_ix`・`ContTy.end_of_noHandler_ix`）を置いた。信頼条件は `Builtins.CoreAssumptions`（`io_op` の内容を形の検査 `Builtins.ShapeOk` に変えた）と `Builtins.TargetAgreement`（`io_target`）に分け、全体の `Builtins.Assumptions` は両方を含む。項目の形は `PrimSig.shape`（`Scope.Signature.IOShape`）、呼び出しの引数に照らした形は `PrimSig.shapeAt` である。`Release/ShapeOk.lean` は形の検査と以前の `io_op` の対応、`Release/Lemmas/TargetSound.lean` は κ を `effKind` で読む `Builtins.Allows` と一回の呼び出しの観測の許可（`Builtins.TargetAgreement.obs_allowed`）、`Release/TargetTable.lean` は範囲付きの 13 項目の表、`Release/ModelTargets.lean` は二つの信頼条件を満たす実例と範囲付きのプログラムへの主定理の適用例を置く。Rust の処理系は標準署名の表に形と範囲の許容を持ち、通常の書き出しに認定元と表のデータを含める。六つの File の単一対象の IO は、保持した同じパス文字列を実処理へ渡す。`Http.sendIn` の登録・実行は接続している。観測一対象との対応は実装レビューと制御した実通信で照合し、処理系は形式化の観測を報告しない |
+ | 初回リリース版の拡張: エフェクトの名前と開始状態（構造上の包含・被覆・許可の関係） | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/EffectCover.lean` は、原子の被覆 `Atom.Covers`（同じ名前の閉じた範囲の原子どうしは `Range.Covers`、範囲の変数の原子と行の原子は同じ原子だけ）、効果の被覆 `Eff.Covers`、名前から対象の種類への関数 κ を引数に取る許可の関係 `Eff.Allows` を定義する。被覆の反射・推移、構造上の包含からの被覆、被覆による許可の包含（`Eff.Covers.sound`）、和・空・正規化・代入（`Eff.Covers.bind`・`substAt`・`substRho`）での被覆の保存、Top の許可が名前の種類に相対的であること、代入が閉じた範囲と許可を変えないこと（`Eff.allows_bind`・`allows_bind_of_rows_nil`・`allows_substAt_nil`・`allows_substRho`・`allows_bind_comp`）、旧の効果（`Eff.TopAtoms`）では被覆が構造上の包含と同じであり（`Eff.covers_iff_sub_of_topAtoms`）、所属の一致と構造上の包含が旧の原子だけの所属で決まること（`Eff.mem_iff_of_topAtoms`・`Eff.sub_iff_of_topAtoms`）を示す。`Eff.eq_of_sub_of_sub`・`Eff.norm_ext`・`Eff.ext_canonical` を旧の原子の所属で述べた系は、利用側がないので L50.3 で除いた（旧の言明はこの二つの補題との合成で得る）。採用定義 `Scope.TopCompat`（`TopEmbedding`・`GEff`・`old_*`）は、本番の原子で具体化すると恒等になるので本番では使わず、L00 のモデル（`Scope.CompatExamples`・`Scope.SwitchExamples`）だけが使う。反例として、相互に覆う正規形の効果が等しくないこと（`Eff.no_eq_of_semCovers`・`no_eq_of_allows_iff`）、内側が Top の原子を `/**` の原子が覆わないこと、和による被覆を判定しないことを示す。`Eff.Sub` と `Eff.eq_of_sub_of_sub` は構造上の包含のまま変えない。被覆の定義と型付けが使う基本の補題は `Release/EffectCoverDef.lean` にあり、被覆は型付けの効果の包含が使う（「初回リリース版の拡張: 効果の上限の被覆による包含」の行）。許可の関係は対象健全性の言明が使い、型付けと `Builtins.Assumptions` からは使わない。本番の必須欄が未接続なので、Rust の処理系とこれらの定義の全比較は行っていない |
+ | 初回リリース版の拡張: 効果の上限の被覆による包含 | 段階 B の型付けと継続の型付け、段階 C の表層の型付けを変更し、補題と例を追加。本番の必須欄が未接続であり、Rust との全比較は未実施 | `HasTypeCQ.C_Sub`・`C_Eff` と `Ty.Le` は効果を `Eff.Covers` で広げ（`Release/Typing.lean`）、`ContTy.K_Handle` の節の効果の前提と `K_Handle_Fail` の前提は被覆である（`Release/Semantics.lean`）。C-Handle・C-Handle-Fail と K-Handle の保護本体の効果の前提は構造上の包含のままである。表層の `HasTypeQ.E_Sub`・`HasBlockQ.B_Sub` も被覆で広げる（`Surface/Typing.lean`）。逆転の補題は被覆を返し（`Release/Lemmas/Inversion.lean` ほか）、`ContTy.name_end_ix`・`ContTy.split`・`end_of_noHandler_ix` は範囲付きの原子が覆う原子として届くことを返す。型の変数の移動での保存 `Eff.Covers.shift`、原子だけの効果の被覆と構造上の包含の一致 `Eff.Covers.sub_of_noAtoms`、被覆による許可 `Eff.allows_of_mem_covers`、捕捉した引数の被覆による拡大 `HasTypeVsQ.widen_covers`、旧の像での同値（`Release/CoverCompat.lean` の `Eff.covers_iff_sub_old`・`Ty.le_iff_leOld`・`Ty.LeOld.le`）を置く。例は `Release/CoverExamples.lean`（被覆だけで型付く関数の本体と利用者の関数の呼び出しから到達した書き込みの事象の観測が上限に許される）と `Surface/CoverExamples.lean`（被覆だけで型付く定義を含む表層のプログラムの `program_wellTyped`・`program_target_sound`。main が `Scope.checkPathIn` の結果を照合して書き込みの事象へ到達する `main_reach`・`main_reach_allowed`・`main_never_passwd`）にある。表層の検査器は、ラムダの本体、`resume` の引数、関数とメソッドの本体の効果の上限と関数の型の潜在効果を被覆で受け入れ（`Check.acceptEffCover`・`Finite.effCovers`・`tyLe`。健全性は `acceptEffCover_sound`）、`handle` の保護本体と節、Fail の節、純粋の要求、部分適用の潜在効果を構造上の包含で受け入れる。`handle` の節の添字は保護本体の推論した効果から選ぶので、検査器は型付けより狭い（`Surface/CheckAcceptExamples.lean` の例）。Rust の型検査器も効果の上限を同じ一原子の被覆で受理する。処理しない `File.Write` を含む `handle` は受理し、狭い一原子から捕えた `PathIn` を広い不変の引数へ渡す節は拒否する。型付けと検査器の節の添字の選択の差は保つ。Rust/Lean の全比較は未実施である |
+ | 初回リリース版の拡張: 型検査器の入口の必須の判定の受理 | 段階 E2 の入口の追加。主定理の前提に入れない。Rust の全定義・実装メソッドの純粋六宣言の受理を接続済み。必須の判定の入力の交換と Rust との全比較は未実施 | `Surface.CheckAccept` は、本体の出現の解決 `primResolve`、本体の表 `tableFor`、本体の始まり `bodyKey`・`entryScope`、定義とメソッドの本体の受理 `acceptDef`・`acceptMethod`、全体の受理 `acceptProgram` と述語 `Accepted`、入口 `checkProgramAccepted` と失敗 `EntryError`（型付けの誤りか、出現の鍵と DET-05 の理由）を定め、`acceptProgram_sound`・`checkProgramAccepted_sound`・`checkProgramAccepted_empty`・`checkProgramAccepted_noRules`・`acceptProgram_noRules`・`tableFor_sound`・`accepted_check_connection` を示す。例は `Surface/CheckAcceptExamples.lean`（受理、`notCovered`・`unknownSource`・`budgetExceeded`、型付けの誤りの先行、規則のない入力の同値、被覆だけの効果の上限の受理）。交換の入口（`surfaceCheck`・`surfaceCheckAll`）はこの入口を使う。コアの実行と表層の評価の対応の補題は置かない。Rust は局所解析を型制約前に一度行い、補間の確定後に番号ラベルだけを更新する。通常定義の後に実装メソッドを受理し、最初の拒否の定義名・番号・DET-05 の理由を E0519 に記す。 |
+-| 初回リリース版の拡張: ハンドラ（節の添字と枠の上の効果） | 段階 B の型付けと継続の型付けを変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.opSigAt` は組み込みの操作の型を節の添字の列で具体化し（引数は `Ty.instTarget`、結果は署名のまま。計算できる形）、`Release.Eff.clauseRange` は保護本体の効果から節の添字を選ぶ規則、`ClauseIxOk` は許す添字（Top と規則の値）、`ClauseSig` は節の型付けの前提である（`Release/Typing.lean`）。`HasTypeClausesQ` は選択の効果（保護本体の効果）を添字に持ち、C-Handle は保護本体の効果を渡す。`ContTy.K_Handle` は枠の上で許すエフェクトを保護本体の効果 εb とし、`εb ⊆ εc ∪ handled(H)` を前提に持つ。`ContTy.split` は枠の上の効果へ届く名前の原子（呼び出しの原子を覆う原子）を返し、`pres_op_common` は、節の操作の型について引数と結果を型付ける証明を呼び出し側から受け取る（`E_OpPrim` の S が規則の値の場合は、S が呼び出しの範囲を覆うことを `Builtins.ShapeOk.eff_cases` と `NoHandler.handled_false` から導き、捕捉した引数を `HasTypeVsQ.widen_covers` で広げる）。規則の性質（`Eff.clauseRange_of`・`clauseRange_of_rho`・`clauseRange_of_two`・`clauseRange_of_top`・`clauseRange_of_none`・`ClauseIxOk.iff`）、型の代入での保存（`ClauseSig.substAt`）、旧の像での同値（`ClauseSig.iff_opSig_of_rangeFree`・`HasTypeClausesQ.sel_congr_of_rangeFree`・`ContTy.toOld`・`ContTyOld.toNew`・`contTy_exists_iff_old`）と、`File.writeTextIn` の節の添字の例（`ClauseIxExamples`）は `Release/Lemmas/ClauseIx.lean` にある。脱糖が作る節は表層の型付けが選んだ規則の値の添字で型付ける（「表層の節の添字と脱糖の範囲」の行）。Rust の型検査器とコア IR の検査器は、推論した保護本体の効果から節の添字を選ぶ機構を持つ（「表層の節の添字と脱糖の範囲」の行）。範囲変数を持つ操作の本番の登録はまだない |
++| 初回リリース版の拡張: ハンドラ（節の添字と枠の上の効果） | 段階 B の型付けと継続の型付けを変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.opSigAt` は組み込みの操作の型を節の添字の列で具体化し（引数は `Ty.instTarget`、結果は署名のまま。計算できる形）、`Release.Eff.clauseRange` は保護本体の効果から節の添字を選ぶ規則、`ClauseIxOk` は許す添字（Top と規則の値）、`ClauseSig` は節の型付けの前提である（`Release/Typing.lean`）。`HasTypeClausesQ` は選択の効果（保護本体の効果）を添字に持ち、C-Handle は保護本体の効果を渡す。`ContTy.K_Handle` は枠の上で許すエフェクトを保護本体の効果 εb とし、`εb ⊆ εc ∪ handled(H)` を前提に持つ。`ContTy.split` は枠の上の効果へ届く名前の原子（呼び出しの原子を覆う原子）を返し、`pres_op_common` は、節の操作の型について引数と結果を型付ける証明を呼び出し側から受け取る（`E_OpPrim` の S が規則の値の場合は、S が呼び出しの範囲を覆うことを `Builtins.ShapeOk.eff_cases` と `NoHandler.handled_false` から導き、捕捉した引数を `HasTypeVsQ.widen_covers` で広げる）。規則の性質（`Eff.clauseRange_of`・`clauseRange_of_rho`・`clauseRange_of_two`・`clauseRange_of_top`・`clauseRange_of_none`・`ClauseIxOk.iff`）、型の代入での保存（`ClauseSig.substAt`）、旧の像での同値（`ClauseSig.iff_opSig_of_rangeFree`・`HasTypeClausesQ.sel_congr_of_rangeFree`・`ContTy.toOld`・`ContTyOld.toNew`・`contTy_exists_iff_old`）と、`File.writeTextIn` の節の添字の例（`ClauseIxExamples`）は `Release/Lemmas/ClauseIx.lean` にある。脱糖が作る節は表層の型付けが選んだ規則の値の添字で型付ける（「表層の節の添字と脱糖の範囲」の行）。Rust の型検査器とコア IR の検査器は、推論した保護本体の効果から節の添字を選ぶ機構を持つ（「表層の節の添字と脱糖の範囲」の行）。六つの `File.*In` と `Http.sendIn` を範囲変数を持つ操作として登録し、対象入力型から同じ列で潜在効果を具体化する。節の引数もこの署名を用い、推論した保護本体の効果だけから添字を選ぶ |
+ | 初回リリース版の拡張: ハンドラ（継続を通した対象の伝播） | 本体の主定理の外の補題と例。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/Lemmas/TargetPropagation.lean` は `ContTy.end_of_noHandler` の対象版を置く。許可の関係 `Eff.Allows κ`（κ は任意。対象健全性では表の `effKind`）で、計算の効果が許す名前 L の対象は、L を処理する枠が継続になければ継続の末尾の効果も許す（`ContTy.allows_end`）。処理されない組み込みの呼び出し（`ContTy.allows_end_of_noHandler`・`ContTy.allows_end_of_prim_call`）、捕捉の枠（`ContTy.allows_hole_of_split` は枠の上の効果への伝播、`ContTy.allows_clause_end` は節自身の IO の、枠の下の継続の末尾への伝播）、名前全体の除去と外側の上限に残る原子（`mem_handled_of_nameTop`・`Eff.mem_outer_of_not_handled`・`Eff.allows_outer_of_not_handled`）、解放の枠（`releases_no_handle`・`NoHandler.releases_append`・`ContTy.allows_end_release`・`ContTy.allows_end_releases`）の場合に分ける。型付けと遷移の規則は変えていない。`Release/HandlerTargetExamples.lean` は、L20.7 の実例の表で、別の対象へ書く節（初期状態から E-Handle・E-OpPrim で到達した節の IO の状態の観測が初期の上限に許され、捕捉した呼び出しの対象は許されない。`sIO_obs_allowed`・`logsBound_not_allows_data`・`s1_hole_allows`）、捕捉した引数を転送する節（`handleFwd_typed`）、利用者の操作の節（`handleSave_typed`・`reportsBound_no_report`・`opSigAt_save`）を本番の型付けで置く |
+ | 初回リリース版の拡張: 一段の対象健全性 | 性質 2・3 の主定理とは別の定理と例。型付けと遷移の規則は変えていない。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/Lemmas/TargetStep.lean` は、事象の観測の射影 `Event.obs`（解放の事象は空）、上限に別の名前の原子を足しても許可が増えないこと（`Eff.allows_union_other_name`）、一段の対象健全性（`step_target_sound`。前提の信頼条件は `CoreAssumptions` と `TargetAgreement`。全体の信頼条件のもとでの `step_target_sound_of_assumptions`、事象の種類によらない形の `step_target_sound_event`）、節の型付けの反転による節自身の IO の伝播（`StateTyE.clause_allows`・`StateTyE.opPrim_clause_allows`）を置く。`Release/TargetStepExamples.lean` は、L20.7 の実例の表で、範囲付きの IO の事象（`ioState_target_sound`）、例 3a の節の IO の事象（`sIO_target_sound`）、保存の定理を通さない節の型付けからの伝播（`s1_clause_allows_log`・`s1_captured_allows`）、名前を落とした言明の反例（`readBound_exists_name_allows_passwd`・`readBound_not_allows_write_passwd`・`no_write_event_passwd`）を置く |
+ | 初回リリース版の拡張: 到達先の対象健全性 | 性質 2・3 の主定理とは別の定理と例。型付けと遷移の規則は変えていない。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/Theorems.lean` は、初期の計算の型付けから到達した状態の IO の事象の観測が初期の ε に許されること（`reachable_target_sound`。前提の信頼条件は `CoreAssumptions` と `TargetAgreement`。事象の種類によらない形の `reachable_target_sound_event`、全体の信頼条件のもとでの `reachable_target_sound_of_assumptions`）を置く。`Release/TargetReachExamples.lean` は、L20.7 の実例の表で、範囲付きの IO（`ioCall_reach_target_sound`・`ioCall_no_passwd`）、例 3a の別の対象の節（`handleLog_reach_target_sound`・`handleLog_never_observes_data`）、誤った節の規則の反例（`clauseIxOk_bodyData_iff`・`etc_not_clauseIxOk`・`WrongHandleTyped`・`wrong_rule_unsound`・`handleEtc_typed_allows`・`handleEtc_rejected`）を置く |

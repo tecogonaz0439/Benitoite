@@ -2,6 +2,7 @@
 import copy
 from collections import Counter
 import json
+import re
 import runpy
 from pathlib import Path
 import subprocess
@@ -31,6 +32,48 @@ def run(tool, args, report, status=0):
     require(process.returncode == status,
             f"{tool}: expected {status}, got {process.returncode}: {process.stdout}{process.stderr}")
     return read(report) if report.exists() else None
+
+
+def explicit_top_ranges(value):
+    """旧版の独立期待値を、同じ意味の版15の明示Topと空の範囲の列へ移す。"""
+    if isinstance(value, list):
+        return [explicit_top_ranges(v) for v in value]
+    if not isinstance(value, dict):
+        return value
+    out = {k: explicit_top_ranges(v) for k, v in value.items()}
+    for key, field in (("name", "value"), ("opaque", "name")):
+        if list(out) == [key] and isinstance(out[key], dict) and field in out[key]:
+            out[key] = {**out[key], "ix": {"fixed": "top"}}
+    for key in ("prim", "primName"):
+        if list(out) == [key] and isinstance(out[key], dict) and "tys" in out[key]:
+            out[key] = {**out[key], "ranges": []}
+    return out
+
+
+def non_top_ranges(value):
+    """候補の欄を除き、比較する型・項に現れる非Topの範囲を数える。"""
+    if isinstance(value, list):
+        return sum(non_top_ranges(v) for v in value)
+    if not isinstance(value, dict):
+        return 0
+    total = 0
+    for key, child in value.items():
+        if key == "candidates":
+            continue
+        if key == "ix" and isinstance(child, dict) and child.get("fixed", "top") != "top":
+            total += 1
+        if key == "ranges":
+            total += sum(r != "top" for r in child)
+        total += non_top_ranges(child)
+    return total
+
+
+def without_candidates(value):
+    if isinstance(value, list):
+        return [without_candidates(v) for v in value]
+    if isinstance(value, dict):
+        return {k: without_candidates(v) for k, v in value.items() if k != "candidates"}
+    return value
 
 
 def keyed(items, name="name"):
@@ -65,8 +108,24 @@ def routing_entries(directory):
     return entries
 
 
+def relocation_independent_routing(entry):
+    """NoMainFileが指す同じ入力の場所だけを、リポジトリの移動に依存しない形にする。"""
+    excluded = []
+    for reason in entry["excluded"]:
+        found = re.fullmatch(r'entry: NoMainFile \{ dir: (".*") \}', reason)
+        if found:
+            directory = json.loads(found[1])
+            suffix = (Path("crates/benitoite") / entry["name"]).as_posix()
+            require(directory == suffix or (Path(directory).is_absolute() and directory.endswith("/" + suffix)),
+                    f"{entry['name']}: NoMainFile does not refer to the input directory")
+            reason = 'entry: NoMainFile { dir: ' + json.dumps(suffix) + ' }'
+        excluded.append(reason)
+    return {**entry, "excluded": excluded}
+
+
 def compare_routing(actual, expected):
-    actual, expected = keyed(actual), keyed(expected)
+    actual = keyed([relocation_independent_routing(entry) for entry in actual])
+    expected = keyed([relocation_independent_routing(entry) for entry in expected])
     require(actual.keys() == expected.keys(),
             f"routing identifiers: missing {sorted(expected.keys() - actual.keys())}, extra {sorted(actual.keys() - expected.keys())}")
     for key, entry in expected.items():
@@ -135,6 +194,14 @@ def check_named(directory, entry, versions):
         table = read(path)
         require(table["version"] == versions["table"], str(path))
         require([(i["group"], i["name"]) for i in table["inputs"]] == [("golden", stem)], str(path))
+    range_count = None
+    if entry.get("rangeComparison"):
+        # 候補だけに非Topが残る退行も拒む。報告の件数は候補を除いた実際の入力で得る。
+        range_corpus = without_candidates(corpus)
+        range_count = non_top_ranges(range_corpus)
+        require(range_count > 0, f"{stem}: all-Top range comparison")
+        corpus_path = directory / f"{stem}-ranges-corpus.json"
+        corpus_path.write_text(json.dumps(range_corpus) + "\n")
     tools = {
         "desugarDiff": [corpus_path],
         "builtinCheck": [corpus_path, builtins],
@@ -146,6 +213,10 @@ def check_named(directory, entry, versions):
         reports[tool] = run(tool, args, directory / f"{stem}-{tool}-report.json")
     require(reports["desugarDiff"]["golden"]["definitions"] == {
         "matched": entry["definitions"], "mismatched": 0, "outside": 0, "excluded": 0}, stem)
+    if range_count is not None:
+        for tool in ("desugarDiff", "surfaceCheckAll"):
+            require(reports[tool]["nonTopRanges"] == range_count > 0,
+                    f"{stem}: {tool}: range count differs or all Top")
     require(reports["builtinCheck"]["errors"] == [], stem)
     require(reports["surfaceCheck"]["result"] == {"ok": True}, stem)
     # 実装のメソッドと上位辞書は表層では実装一件として検査するので、実装を含む例は surfaceChecks で数える。
@@ -175,7 +246,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 14, "width corpus version")
+    require(corpus["version"] == 15, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -232,7 +303,9 @@ def check_programs(directory, manifest):
         if index % 100 == 0:
             print(f"single surface checks: {index}/{len(keys)} inputs", flush=True)
         entry = expected[item["group"], item["name"]]
-        require(item["excluded"] == entry.get("excluded", []), item["name"])
+        expected_entry = {**entry, "excluded": entry.get("excluded", [])}
+        require(relocation_independent_routing(item)["excluded"] ==
+                relocation_independent_routing(expected_entry)["excluded"], item["name"])
         if item["excluded"]:
             require(item["definitions"] == [], item["name"])
             continue
@@ -478,6 +551,15 @@ def check_extensible_package(directory):
     print('external package export: IOErrorKind view and constant declaration package agree')
 
 
+def check_remaining_batch3(directory):
+    # シェルの既存4入口に加え、残る旧Scope/Range/辞書/解決の4群を最終読者で照合する。
+    # 外側の失敗を握りつぶさず、同じcheck_batch3の六入口とmanifestを再利用する。
+    batch3 = runpy.run_path(str(Path(__file__).with_name("check_batch3.py")))
+    for profile in ("k3", "k4", "m1", "t3"):
+        batch3["check"](directory / "batch3" / profile,
+                        directory / "batch3" / f"{profile}-exchange-results.json")
+
+
 def main():
     directory, coverage_dir = map(Path, sys.argv[1:])
     manifest = read(MANIFEST)
@@ -488,6 +570,7 @@ def main():
     failure["check"](ROOT / "target/formal-batch2-failure")
     character = read(ROOT / "target/formal-batch2-character/corpus.json")
     require({i["name"]: len(i["definitions"]) for i in character["inputs"]} == manifest["batch2Character"]["definitions"], "batch2 character definitions")
+    check_remaining_batch3(directory)
     check_routing(directory, manifest)
     check_coverage_exports(coverage_dir, manifest["coverageExports"])
     check_width(directory, manifest["width"])
@@ -496,7 +579,7 @@ def main():
                for entry in manifest["named"]}
     coverage = coverage_dir / "named-corpus.json"
     data = read(coverage)
-    # 独立Coverageの版4と、corpus14に付くプログラムsidecarの版6は別契約。
+    # 独立Coverageの版4と、corpus15に付くプログラムsidecarの版7は別契約。
     require(data["version"] == manifest["coverageExports"]["named-"]["version"], "coverage version")
     require(len(data["cases"]) == manifest["namedCoverageCases"], "coverage cases")
     report = run("coverageDiff", [coverage], coverage_dir / "named-report.json")
@@ -513,7 +596,7 @@ def main():
     future = read(coverage_dir / "future-report.json")
     require({k: future[k] for k in manifest["futureCoverageReport"]} == manifest["futureCoverageReport"],
             "all independent coverage with views")
-    print("named export: manifest agrees; corpus 14, tables/program coverage 6 and independent coverage 4 match all six entries")
+    print("named export: manifest agrees; corpus 15, tables/program coverage 7 and independent coverage 4 match all six entries")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Scope
+function sample(raw: Scope.PathIn["/data/**"]) -> Scope.PathIn
+ return Scope.widenPathIn(path: raw)
+end function

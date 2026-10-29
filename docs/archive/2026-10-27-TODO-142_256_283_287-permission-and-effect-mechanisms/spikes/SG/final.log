@@ -1,0 +1,35 @@
+"4.34.1"
+'SG.arbitrary_lattice_noninterference' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SG.lattice_noninterference' depends on axioms: [propext]
+'SG.FiniteSecrets.phase_iff_generic' depends on axioms: [propext, Quot.sound]
+'SG.FiniteSecrets.phase_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.integrity_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsement_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsement_preserves_confidentiality' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsement_env_typed' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsed_command_approved' depends on axioms: [propext]
+'SG.Integrity.unconditional_endorsement_NI_false' depends on axioms: [propext, Quot.sound]
+'SG.Compatibility.phase1_lifts_to_product' depends on axioms: [propext, Quot.sound]
+'SG.FlowLattice.join_assoc' does not depend on any axioms
+'SG.Failure.noninterference' depends on axioms: [propext]
+'SG.Failure.Examples.rejects_secret_failure' depends on axioms: [propext, Quot.sound]
+'SG.Failure.Examples.accepts_public_failure' depends on axioms: [propext, Quot.sound]
+        1.08 real         1.40 user         0.29 sys
+           735789056  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47653  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+               11244  involuntary context switches
+         12450632843  instructions retired
+          5131472154  cycles elapsed
+           185834952  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

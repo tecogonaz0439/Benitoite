@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Scope
+
+function main() -> Unit
+  bind x <- Scope.checkHost(pattern: "2130706433", host: "2130706433")
+  ()
+end function

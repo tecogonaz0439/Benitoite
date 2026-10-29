@@ -1,0 +1,20 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--no-default-features",
+    "--features",
+    "gc-mark-sweep,heap-verify",
+    "--test",
+    "runtime_builtins",
+    "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "outer_seconds": 1.8053525419999998,
+  "maxrss_getrusage_bytes": 679575552
+}

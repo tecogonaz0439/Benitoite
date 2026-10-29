@@ -1,0 +1,28 @@
+{
+  "command": [
+    "zsh",
+    "work/m013/remote-lean.sh",
+    "SG",
+    "Model.lean",
+    "6144",
+    "180"
+  ],
+  "started_utc": "2026-10-26T15:19:25.092601+00:00",
+  "finished_utc": "2026-10-26T15:19:30.701419+00:00",
+  "wall_seconds_including_sync_and_queue": 5.608,
+  "wrapper_process_exit": 0,
+  "remote_summary": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB ",
+  "remote_exit": 0,
+  "remote_elapsed_seconds": 5,
+  "sampled_peak_mb": 0,
+  "sampled_peak_note": "0 は5秒ごとの標本で捕捉しなかった意味。使用量0とはしない。",
+  "time_maximum_resident_bytes": 722239488,
+  "lean_version": "4.34.1",
+  "source_sha256_before": "c2311d50e7086e4956bb165e9aca15cd3c67daec343fb016cb1e4f2329d7187c",
+  "source_sha256_after": "c2311d50e7086e4956bb165e9aca15cd3c67daec343fb016cb1e4f2329d7187c",
+  "diagnostics": [
+    "Model.lean:544:6: warning: Try `simp at hk` instead of `simpa using hk`",
+    "Model.lean:652:21: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead"
+  ],
+  "passed": false
+}

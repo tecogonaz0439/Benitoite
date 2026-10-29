@@ -1,0 +1,336 @@
+{
+  "lean": {
+    "rows": [
+      {
+        "id": "L00",
+        "hours": [
+          4,
+          8
+        ],
+        "slots_at_lower_hours": [
+          4,
+          8
+        ],
+        "slots_at_upper_hours": [
+          8,
+          16
+        ],
+        "reserved": 16,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "L10",
+        "hours": [
+          6,
+          13
+        ],
+        "slots_at_lower_hours": [
+          6,
+          12
+        ],
+        "slots_at_upper_hours": [
+          13,
+          26
+        ],
+        "reserved": 26,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "L20",
+        "hours": [
+          5,
+          12
+        ],
+        "slots_at_lower_hours": [
+          5,
+          10
+        ],
+        "slots_at_upper_hours": [
+          12,
+          24
+        ],
+        "reserved": 24,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "L30",
+        "hours": [
+          11,
+          26
+        ],
+        "slots_at_lower_hours": [
+          11,
+          22
+        ],
+        "slots_at_upper_hours": [
+          26,
+          52
+        ],
+        "reserved": 52,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "L40",
+        "hours": [
+          11,
+          26
+        ],
+        "slots_at_lower_hours": [
+          11,
+          22
+        ],
+        "slots_at_upper_hours": [
+          26,
+          52
+        ],
+        "reserved": 52,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "L50",
+        "hours": [
+          9,
+          25
+        ],
+        "slots_at_lower_hours": [
+          9,
+          18
+        ],
+        "slots_at_upper_hours": [
+          25,
+          50
+        ],
+        "reserved": 50,
+        "capacity_for_all_half_hour_slots": true
+      }
+    ],
+    "total_hours": [
+      46,
+      110
+    ],
+    "reserved": 220
+  },
+  "implementation": {
+    "rows": [
+      {
+        "id": "R10",
+        "hours": [
+          10,
+          24
+        ],
+        "slots_at_lower_hours": [
+          10,
+          20
+        ],
+        "slots_at_upper_hours": [
+          24,
+          48
+        ],
+        "reserved": 48,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "R20",
+        "hours": [
+          12,
+          28
+        ],
+        "slots_at_lower_hours": [
+          12,
+          24
+        ],
+        "slots_at_upper_hours": [
+          28,
+          56
+        ],
+        "reserved": 56,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "R30",
+        "hours": [
+          10,
+          26
+        ],
+        "slots_at_lower_hours": [
+          10,
+          20
+        ],
+        "slots_at_upper_hours": [
+          26,
+          52
+        ],
+        "reserved": 52,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "R40",
+        "hours": [
+          6,
+          14
+        ],
+        "slots_at_lower_hours": [
+          6,
+          12
+        ],
+        "slots_at_upper_hours": [
+          14,
+          28
+        ],
+        "reserved": 28,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "K10",
+        "hours": [
+          5,
+          12
+        ],
+        "slots_at_lower_hours": [
+          5,
+          10
+        ],
+        "slots_at_upper_hours": [
+          12,
+          24
+        ],
+        "reserved": 24,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "V10",
+        "hours": [
+          5,
+          14
+        ],
+        "slots_at_lower_hours": [
+          5,
+          10
+        ],
+        "slots_at_upper_hours": [
+          14,
+          28
+        ],
+        "reserved": 28,
+        "capacity_for_all_half_hour_slots": true
+      }
+    ],
+    "total_hours": [
+      48,
+      118
+    ],
+    "reserved": 236
+  },
+  "parallel": {
+    "rows": [
+      {
+        "id": "P10",
+        "hours": [
+          1,
+          3
+        ],
+        "slots_at_lower_hours": [
+          1,
+          2
+        ],
+        "slots_at_upper_hours": [
+          3,
+          6
+        ],
+        "reserved": 6,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "P20",
+        "hours": [
+          3,
+          6
+        ],
+        "slots_at_lower_hours": [
+          3,
+          6
+        ],
+        "slots_at_upper_hours": [
+          6,
+          12
+        ],
+        "reserved": 12,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "P30",
+        "hours": [
+          2,
+          5
+        ],
+        "slots_at_lower_hours": [
+          2,
+          4
+        ],
+        "slots_at_upper_hours": [
+          5,
+          10
+        ],
+        "reserved": 10,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "F10",
+        "hours": [
+          4,
+          8
+        ],
+        "slots_at_lower_hours": [
+          4,
+          8
+        ],
+        "slots_at_upper_hours": [
+          8,
+          16
+        ],
+        "reserved": 16,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "F20",
+        "hours": [
+          3,
+          6
+        ],
+        "slots_at_lower_hours": [
+          3,
+          6
+        ],
+        "slots_at_upper_hours": [
+          6,
+          12
+        ],
+        "reserved": 12,
+        "capacity_for_all_half_hour_slots": true
+      },
+      {
+        "id": "F30",
+        "hours": [
+          2,
+          4
+        ],
+        "slots_at_lower_hours": [
+          2,
+          4
+        ],
+        "slots_at_upper_hours": [
+          4,
+          8
+        ],
+        "reserved": 8,
+        "capacity_for_all_half_hour_slots": true
+      }
+    ],
+    "total_hours": [
+      15,
+      32
+    ],
+    "reserved": 64
+  },
+  "limits": "予約容量と算術の照合であり実際の証明・実装時間の測定ではない。枠は30〜60分、使わない予約番号は欠番。L00とL50のレビューはB6の8〜21時間の分割。待ち時間は含めない。"
+}

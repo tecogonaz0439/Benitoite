@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope as S
+function sample(raw: String) -> Result[S.CheckedHost, S.ScopeError]
+ return S.checkHost(pattern: "192.0.2.0/24", host: raw)
+end function
+function endpoint(raw: String) -> Result[S.CheckedEndpoint, S.ScopeError]
+ return S.checkEndpoint(hostPattern: "2001:db8::/32", minimumPort: 80, maximumPort: 443, host: raw, port: 443)
+end function

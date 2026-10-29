@@ -1,0 +1,364 @@
+{
+  "base_commit": "0414065298d373cdb83838749eaeb1bb256d292e",
+  "method": "固定コミットの git show と git grep -l -E。作業ツリーの formal/ は読まない。",
+  "sources": {
+    "formal/lean-toolchain": {
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+      "lines": 1
+    },
+    "formal/Benitoite/Release/Syntax.lean": {
+      "sha256": "2f70d5983a0f969ac6b5ef3c538efca13983e8c19da0a5b58464b520a961d781",
+      "lines": 408
+    },
+    "formal/Benitoite/Release/Typing.lean": {
+      "sha256": "5a4bffafe9886c03582aafc3737512d6e91bb6c83ef62eb2cdcec4c1ac83e894",
+      "lines": 640
+    },
+    "formal/Benitoite/Release/Semantics.lean": {
+      "sha256": "1a680563a9b3745c59f954c5e4b11fbb38589242aa791d761ddc5d7dbd1fb47d",
+      "lines": 664
+    },
+    "formal/Benitoite/Release/Assumptions.lean": {
+      "sha256": "784d842d6f692d538d0c903c272b91dcc1891831ece5dcb4405fae3d0ac3762a",
+      "lines": 102
+    },
+    "formal/Benitoite/Release/Theorems.lean": {
+      "sha256": "9d99ca03debaceb3c71dc86808b21a1278fb9a5550e66a411339378936681a12",
+      "lines": 72
+    },
+    "formal/Benitoite/Surface/Theorems.lean": {
+      "sha256": "acc6012252e8941e5c614d41d71db6cc33da05116fad8ac6414826d7795cf23a",
+      "lines": 42
+    }
+  },
+  "toolchain_file": "leanprover/lean4:v4.34.1",
+  "constructor_groups": {
+    "Val": {
+      "count": 15,
+      "names": [
+        "var",
+        "const",
+        "fnRef",
+        "prim",
+        "lam",
+        "con",
+        "list",
+        "op",
+        "raise",
+        "loc",
+        "mapV",
+        "setV",
+        "bytesV",
+        "dict",
+        "super"
+      ]
+    },
+    "Comp": {
+      "count": 13,
+      "names": [
+        "builderLet",
+        "builderOp",
+        "ret",
+        "letIn",
+        "app",
+        "ite",
+        "«match»",
+        "lazyC",
+        "escape",
+        "use",
+        "handle",
+        "resume",
+        "meth"
+      ]
+    },
+    "Clause": {
+      "count": 2,
+      "names": [
+        "mk",
+        "fail"
+      ]
+    },
+    "HasTypeVQ": {
+      "count": 17,
+      "names": [
+        "V_Bytes",
+        "V_Con",
+        "V_Const",
+        "V_Dict",
+        "V_Fun",
+        "V_Lam",
+        "V_List",
+        "V_LocLazy",
+        "V_LocRef",
+        "V_Map",
+        "V_Op",
+        "V_Prim",
+        "V_Raise",
+        "V_Set",
+        "V_Sub",
+        "V_Super",
+        "V_Var"
+      ]
+    },
+    "HasTypeCQ": {
+      "count": 17,
+      "names": [
+        "C_App",
+        "C_BuilderLet",
+        "C_BuilderOp",
+        "C_Eff",
+        "C_Escape",
+        "C_Handle",
+        "C_Handle_Fail",
+        "C_If",
+        "C_Lazy",
+        "C_Let",
+        "C_Match",
+        "C_Meth",
+        "C_Resume",
+        "C_ResumeL",
+        "C_Return",
+        "C_Sub",
+        "C_Use"
+      ]
+    },
+    "Frame": {
+      "count": 7,
+      "names": [
+        "letF",
+        "mark",
+        "update",
+        "release",
+        "handleF",
+        "drop",
+        "guardF"
+      ]
+    },
+    "Cell": {
+      "count": 6,
+      "names": [
+        "builder",
+        "val",
+        "thunk",
+        "done",
+        "cont",
+        "used"
+      ]
+    },
+    "State": {
+      "count": 4,
+      "names": [
+        "run",
+        "error",
+        "exit",
+        "matchRun"
+      ]
+    },
+    "Event": {
+      "count": 2,
+      "names": [
+        "io",
+        "release"
+      ]
+    },
+    "Step": {
+      "count": 68,
+      "names": [
+        "E_BuilderErr",
+        "E_BuilderNew",
+        "E_BuilderOp",
+        "E_Drop",
+        "E_DropRel",
+        "E_Err",
+        "E_ErrDrop",
+        "E_ErrDropRel",
+        "E_ErrPopGuard",
+        "E_ErrPopHandle",
+        "E_ErrPopLet",
+        "E_ErrPopMark",
+        "E_ErrPopUpdate",
+        "E_ErrRel",
+        "E_ErrRelErr",
+        "E_EscDrop",
+        "E_EscDropRel",
+        "E_EscHandle",
+        "E_EscLet",
+        "E_EscMark",
+        "E_EscRel",
+        "E_EscRelErr",
+        "E_Exit",
+        "E_ExitDrop",
+        "E_ExitDropRel",
+        "E_ExitPopGuard",
+        "E_ExitPopHandle",
+        "E_ExitPopLet",
+        "E_ExitPopMark",
+        "E_ExitPopUpdate",
+        "E_ExitRel",
+        "E_ExitRelErr",
+        "E_Force",
+        "E_ForceDone",
+        "E_Fun",
+        "E_GuardF",
+        "E_GuardT",
+        "E_HRet",
+        "E_Handle",
+        "E_IO",
+        "E_IOErr",
+        "E_IfF",
+        "E_IfT",
+        "E_Lam",
+        "E_Lazy",
+        "E_Let",
+        "E_Mark",
+        "E_Match",
+        "E_MatchBody",
+        "E_MatchGuard",
+        "E_MatchSkip",
+        "E_Meth",
+        "E_Op",
+        "E_OpFail",
+        "E_OpPrim",
+        "E_Prim",
+        "E_RefGet",
+        "E_RefNew",
+        "E_RefSet",
+        "E_RefUpdate",
+        "E_RelErr",
+        "E_Release",
+        "E_Resume",
+        "E_ResumeErr",
+        "E_Return",
+        "E_Super",
+        "E_Update",
+        "E_Use"
+      ]
+    },
+    "ContTy": {
+      "count": 10,
+      "names": [
+        "K_Drop",
+        "K_Empty",
+        "K_Guard",
+        "K_Handle",
+        "K_Handle_Fail",
+        "K_Let",
+        "K_Mark",
+        "K_Release",
+        "K_Sub",
+        "K_Update"
+      ]
+    }
+  },
+  "references": {
+    "value_and_computation_typing": {
+      "pattern": "HasTypeVQ|HasTypeCQ",
+      "files": [
+        "formal/Benitoite/Release/BuilderExamples.lean",
+        "formal/Benitoite/Release/Examples.lean",
+        "formal/Benitoite/Release/FailureExamples.lean",
+        "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "formal/Benitoite/Release/Lemmas/Dict.lean",
+        "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+        "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "formal/Benitoite/Release/Lemmas/Irrelevant.lean",
+        "formal/Benitoite/Release/Lemmas/LocalInvariant.lean",
+        "formal/Benitoite/Release/Lemmas/Names.lean",
+        "formal/Benitoite/Release/Lemmas/NoFailContext.lean",
+        "formal/Benitoite/Release/Lemmas/OuterC.lean",
+        "formal/Benitoite/Release/Lemmas/PresBase.lean",
+        "formal/Benitoite/Release/Lemmas/PresFailure.lean",
+        "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "formal/Benitoite/Release/Lemmas/Regularity.lean",
+        "formal/Benitoite/Release/Lemmas/Rename.lean",
+        "formal/Benitoite/Release/Lemmas/StoreLemmas.lean",
+        "formal/Benitoite/Release/Lemmas/SubstTyping.lean",
+        "formal/Benitoite/Release/Lemmas/TySubstMain.lean",
+        "formal/Benitoite/Release/LocalScope.lean",
+        "formal/Benitoite/Release/Model.lean",
+        "formal/Benitoite/Release/Typing.lean",
+        "formal/Benitoite/Surface/Lemmas/BlockSequence.lean",
+        "formal/Benitoite/Surface/Lemmas/BuilderCapture.lean",
+        "formal/Benitoite/Surface/Lemmas/BuilderLower.lean",
+        "formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean",
+        "formal/Benitoite/Surface/Lemmas/Builders.lean",
+        "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "formal/Benitoite/Surface/Lemmas/Calls.lean",
+        "formal/Benitoite/Surface/Lemmas/Dict.lean",
+        "formal/Benitoite/Surface/Lemmas/Extensions.lean",
+        "formal/Benitoite/Surface/Lemmas/PatternSupport.lean",
+        "formal/Benitoite/Surface/Lemmas/Patterns.lean",
+        "formal/Benitoite/Surface/Lemmas/Program.lean",
+        "formal/Benitoite/Surface/Lemmas/Records.lean",
+        "formal/Benitoite/Surface/Lemmas/ReturnTry.lean",
+        "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+        "formal/Benitoite/Surface/Lemmas/Typing.lean"
+      ],
+      "count": 43,
+      "meaning": "字句上の参照。変更が必要なファイルの数とは限らない。"
+    },
+    "handler_and_continuation": {
+      "pattern": "HasTypeClausesQ|ContTy|E_OpPrim|E_Resume",
+      "files": [
+        "formal/Benitoite/Release/Lemmas/BuilderStore.lean",
+        "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+        "formal/Benitoite/Release/Lemmas/FailureBase.lean",
+        "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "formal/Benitoite/Release/Lemmas/Irrelevant.lean",
+        "formal/Benitoite/Release/Lemmas/LocalInvariant.lean",
+        "formal/Benitoite/Release/Lemmas/Names.lean",
+        "formal/Benitoite/Release/Lemmas/NoFailContext.lean",
+        "formal/Benitoite/Release/Lemmas/OuterC.lean",
+        "formal/Benitoite/Release/Lemmas/PresBase.lean",
+        "formal/Benitoite/Release/Lemmas/PresFailure.lean",
+        "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+        "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "formal/Benitoite/Release/Lemmas/Rename.lean",
+        "formal/Benitoite/Release/Lemmas/StepSound.lean",
+        "formal/Benitoite/Release/Lemmas/SubstTyping.lean",
+        "formal/Benitoite/Release/Lemmas/TySubstMain.lean",
+        "formal/Benitoite/Release/LocalScope.lean",
+        "formal/Benitoite/Release/Semantics.lean",
+        "formal/Benitoite/Release/Typing.lean",
+        "formal/Benitoite/Surface/CheckSoundControl.lean",
+        "formal/Benitoite/Surface/Examples.lean",
+        "formal/Benitoite/Surface/Lemmas/BuilderCapture.lean",
+        "formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean",
+        "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+        "formal/Benitoite/Surface/Lemmas/ReturnTry.lean",
+        "formal/Benitoite/Surface/Lemmas/Scoped.lean",
+        "formal/Benitoite/Surface/Lemmas/Typing.lean",
+        "formal/Benitoite/Surface/Typing.lean"
+      ],
+      "count": 33,
+      "meaning": "字句上の参照。変更が必要なファイルの数とは限らない。"
+    }
+  },
+  "spike": {
+    "file": "Model.lean",
+    "sha256": "2113c4f42598b1aef5999b5017e5a63a43a3da065bc43f915ee7834b168c1eb2",
+    "lines": 1024,
+    "named_theorems": 53,
+    "guards": 11,
+    "axiom_reports": 15,
+    "imports": [
+      "Std"
+    ],
+    "forbidden_declarations": []
+  },
+  "sf_proof_bodies_unchanged": {
+    "expr_low_eq": true,
+    "lowEq_push": true,
+    "high_pc": true,
+    "noninterference": true
+  },
+  "proof_counts_note": "名前付き定理の数は変更箇所数・本番工数ではない。"
+}

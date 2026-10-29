@@ -1,0 +1,144 @@
+{
+  "6124775788579e60530f55fb85570f26ef7fa900": {
+    "key": {
+      "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+      "mode": "default",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+      "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+    },
+    "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+    "binary": "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+    "sha256": "9d02c10dc23f8eb43131a38769f0b36510c706f49b99f3aa1a74296e03c3aa5c",
+    "archive": "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/source",
+    "features": [
+      "default"
+    ],
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "benitoite",
+      "--manifest-path",
+      "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/source/Cargo.toml",
+      "--target-dir",
+      "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default"
+    ],
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+    "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "log": "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/build.log",
+    "reused": false,
+    "seconds": 75.07799479199998,
+    "build_invocation_seconds": 75.07799587499998,
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "d2df47e23ecae22342f4a3b76cd7c55a1e0f847d89c46735b952dbab7c2118c2",
+      "range_index": false,
+      "types_sha256": "a8d25a6452521157508223529c218d242e5bc5ed9601fa7f36ecf008d0510bf3",
+      "range_signatures": false,
+      "core_ir_sha256": "bb3fa3189542c88316cb707fa529e1d678865e02e705e0df10f2d4e5875798c1"
+    },
+    "probe_key": "912fc681398363ab08bc5799a8c840b889b9b450fac5caf6ca7f3bde3f9609e8f158d086be43224903389cfa7d77deb08961f17e47689dde06ede2eb9f768977",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+      "-o",
+      "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending"
+    ],
+    "bridge_sources": {
+      "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "1577dac3d8e42ef93eb1e06f192864a09c6d1e47ce6e3ba26c64e9426e8284c9",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    },
+    "probe": "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+    "probe_sha256": "6b112757296e3373f683968ed79f25daa91a61f59e3a9dd166be1b2e7d11a9c0"
+  },
+  "42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab": {
+    "key": {
+      "commit": "42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab",
+      "mode": "default",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+      "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+    },
+    "commit": "42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab",
+    "binary": "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/release/benitoite",
+    "sha256": "fc8c46310bab6070040ececbc19c1a2b247153abb83881c694a9e58d52f4b1be",
+    "archive": "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/source",
+    "features": [
+      "default"
+    ],
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "benitoite",
+      "--manifest-path",
+      "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/source/Cargo.toml",
+      "--target-dir",
+      "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default"
+    ],
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+    "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "log": "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/build.log",
+    "reused": false,
+    "seconds": 99.882571625,
+    "build_invocation_seconds": 99.88257266600002,
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+      "range_index": true,
+      "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+      "range_signatures": true,
+      "core_ir_sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2"
+    },
+    "probe_key": "912fc681398363ab08bc5799a8c840b889b9b450fac5caf6ca7f3bde3f9609e8d7576ecdd176a74eba6c1e46a235723096114d8ee4aa41d8e25a6eff0c00772b",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/release/deps",
+      "-o",
+      "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/timing-probe",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending",
+      "--cfg",
+      "benitoite_range_index",
+      "--cfg",
+      "benitoite_range_signatures"
+    ],
+    "bridge_sources": {
+      "original_convert": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917",
+      "original_value": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "6f693ecc0662552c9eeba499a7ea32c4e7a8bbb2122a5c36a18ab80b611beed0",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    },
+    "probe": "<wt>/target/bench/builds/42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab-default/timing-probe",
+    "probe_sha256": "d507c4567bd3b61a6b630f8413739d746f4649dde7232772f1b4496f3a769f34"
+  }
+}

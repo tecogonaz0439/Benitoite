@@ -17,7 +17,7 @@ theorem CompTypesQ.append {R ε ms ns as bs} (h : CompTypesQ P B Q C Γ R ε ms 
   | cons hm _ ih => exact .cons hm (ih hn)
 
 theorem replicate_clean {n a} (ha : TyOK n a) (k : Nat) :
-    Ty.VarsInList n (fun _ => True) (List.replicate k a) := by
+    Ty.VarsInList 0 n (fun _ => True) (List.replicate k a) := by
   induction k with
   | zero => trivial
   | succ k ih => exact ⟨ha, ih⟩
@@ -36,7 +36,7 @@ theorem spreadFinish_typed {R h before s after a}
     (hh : CallHead.HasTypeQ P B Q C Γ h ["xs", "ys"] [.list a, .list a] (.list a) Eff.empty)
     (hb : HasTypeEachQ P B StoreTy.empty Q C Γ before a)
     (hs : HasTypeVQ P B StoreTy.empty Q C Γ s (.list a))
-    (ha : HasTypeEachQ P B StoreTy.empty Q C Γ after a) (hw : Ty.WF C.length a) :
+    (ha : HasTypeEachQ P B StoreTy.empty Q C Γ after a) (hw : Ty.WF 0 C.length a) :
     HasTypeCQ P B StoreTy.empty Q C Γ R (spreadFinish h before s after) (.list a) Eff.empty Δl := by
   cases before <;> cases after <;> simp only [spreadFinish]
   · exact .C_Return hs
@@ -50,7 +50,7 @@ theorem spreadFinish_typed {R h before s after a}
 theorem spreadValues_typed {R h vs a n k}
     (hh : CallHead.HasTypeQ P B Q C Γ h ["xs", "ys"] [.list a, .list a] (.list a) Eff.empty)
     (hv : HasTypeVsQ P B StoreTy.empty Q C Γ vs
-      (List.replicate n a ++ .list a :: List.replicate k a)) (hw : Ty.WF C.length a) :
+      (List.replicate n a ++ .list a :: List.replicate k a)) (hw : Ty.WF 0 C.length a) :
     HasTypeCQ P B StoreTy.empty Q C Γ R (spreadValues h n vs) (.list a) Eff.empty Δl := by
   obtain ⟨hb, hs⟩ := HasTypeVsQ.takeDrop hv n
   simp only [List.take_append, List.drop_append, List.length_replicate,
@@ -121,7 +121,7 @@ theorem stringAdd_typed {op R v w} (hsig : ∀ b s, B.sig b = some s → s.Scope
     (hv : HasTypeVQ P B StoreTy.empty Q C Γ v (.base .string))
     (hw : HasTypeVQ P B StoreTy.empty Q C Γ w (.base .string)) :
     ∃ b ts, op (.binary .add) (.base .string) = some (b, ts) ∧
-      HasTypeCQ P B StoreTy.empty Q C Γ R (.app (.prim b ts []) [v,w]) (.base .string) Eff.empty Δl := by
+      HasTypeCQ P B StoreTy.empty Q C Γ R (.app (.prim b ts [] []) [v,w]) (.base .string) Eff.empty Δl := by
   obtain ⟨b, ts, s, hop, hts, hs, ht, he, ha, hfn⟩ := h
   refine ⟨b, ts, hop, HasTypeCQ.C_App (names := ["left", "right"]) ?_ (.cons hv (.cons hw .nil))⟩
   have hn : NamesWF s.names s.params := by
@@ -136,9 +136,9 @@ theorem stringAdd_typed {op R v w} (hsig : ∀ b s, B.sig b = some s → s.Scope
     · rw [heq.1]
       decide
   rw [← hfn]
-  apply HasTypeVQ.V_Prim hs hn
+  apply HasTypeVQ.V_PrimNil hs (hsig _ _ hs) he.2 hn
   subst ts
-  exact PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha (by simp)
+  exact PrimitiveAdmissible.of_noRows (hsig _ _ hs) he.1 ht ha (by simp)
 
 theorem joinStringFrom_typed {op R left rest depth} (hsig : ∀ b s, B.sig b = some s → s.Scoped) (xs : List (Option Ty))
     (hd : xs.length = depth)

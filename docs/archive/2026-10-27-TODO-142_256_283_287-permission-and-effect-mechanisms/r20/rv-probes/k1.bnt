@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: "relative/**", path: p)
+end function

@@ -1,0 +1,326 @@
+== wait-for-lock start 18:02:37
+== lock acquired 18:02:37 after 0s
+⚠ [35/410] Replayed Benitoite.Release.Typing
+warning: Benitoite/Release/Typing.lean:126:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [126/410] Built Benitoite.Release.TypeScopedSubst (362ms)
+✔ [128/410] Built Benitoite.Release.FailureEffects (320ms)
+✔ [129/410] Built Benitoite.Release.Lemmas.TyLemmas (371ms)
+✔ [131/410] Built Benitoite.Release.Lemmas.Regularity (1.8s)
+✖ [133/410] Building Benitoite.Release.Lemmas.Closed (2.7s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Closed.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.setup.json --json
+error: Benitoite/Release/Lemmas/Closed.lean:33:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _)), True.intro
+✔ [140/410] Built Benitoite.Release.Lemmas.OuterC (1.8s)
+✔ [142/410] Built Benitoite.Release.Lemmas.SubstTyping (2.3s)
+✔ [144/410] Built Benitoite.Release.Lemmas.TySubst (336ms)
+✔ [148/410] Built Benitoite.Release.Lemmas.TySubst:c.o (106ms)
+✖ [149/410] Building Benitoite.Release.CoverageTypes (803ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/CoverageTypes.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/CoverageTypes.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/CoverageTypes.setup.json --json
+error: Benitoite/Release/CoverageTypes.lean:13:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/CoverageTypes.lean:55:68: unsolved goals
+case opaque
+ts : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ erase (Ty.opaque o✝ r✝) =
+    match erase (Ty.opaque o✝ r✝) with
+    | Ty.ctor c => c.rawApply (eraseTys ts)
+    | Ty.tvar i => Ty.tapp i (eraseTys ts)
+    | t => t
+error: Benitoite/Release/CoverageTypes.lean:64:14: `simp` made no progress
+error: Benitoite/Release/CoverageTypes.lean:100:31: unsolved goals
+case integer.opaque
+P : Program
+n✝ : Integer64Value
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.integer = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case float.opaque
+P : Program
+x✝ : Float
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.float = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case string.opaque
+P : Program
+s✝ : String
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.string = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case character.opaque
+P : Program
+c✝ : Char
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.character = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case boolean.opaque
+P : Program
+b✝ : Bool
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.boolean = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case unit.opaque
+P : Program
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.unit = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case byte.opaque
+P : Program
+n✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.byte = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case decimal.opaque
+P : Program
+n✝ : Int
+scale✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.decimal = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case opaque.opaque
+P : Program
+o✝¹ : OpaqueName
+id✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.opaque o✝¹ = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case integer8.opaque
+P : Program
+n✝ : Int
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.integer8 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case integer16.opaque
+P : Program
+n✝ : Int
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.integer16 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case integer32.opaque
+P : Program
+n✝ : Int
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.integer32 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case unsignedInteger16.opaque
+P : Program
+n✝ : Int
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.unsignedInteger16 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case unsignedInteger32.opaque
+P : Program
+n✝ : Int
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.unsignedInteger32 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case unsignedInteger64.opaque
+P : Program
+n✝ : Int
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.unsignedInteger64 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+
+case float32.opaque
+P : Program
+bits✝ : UInt32
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.base BaseTy.float32 = erase (Ty.opaque o✝ r✝)
+⊢ erase (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+error: Benitoite/Release/CoverageTypes.lean:108:29: Application type mismatch: The argument
+  he
+has type
+  Ty.data cd.data (eraseTys ts) = erase (Ty.opaque d us)
+but is expected to have type
+  Ty.data ?m.4070 ?m.4071 = Ty.data ?m.4072 ?m.4073
+in the application
+  Ty.data.inj he
+error: Benitoite/Release/CoverageTypes.lean:118:63: Application type mismatch: The argument
+  he
+has type
+  (erase a✝).list = erase (Ty.opaque o✝ r✝)
+but is expected to have type
+  (erase a✝).list = (erase ?m.4348).list
+in the application
+  Ty.list.inj he
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case fn.opaque
+P : Program
+v : Val
+names✝ : List String
+ps✝ : List Ty
+r✝¹ : Ty
+ε✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.fn names✝ (eraseTys ps✝) (erase r✝¹) Eff.empty = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case tvar.opaque
+P : Program
+v : Val
+i✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.tvar i✝ = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case reference.opaque
+P : Program
+v : Val
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : (erase a✝).reference = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case lazy.opaque
+P : Program
+v : Val
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : (erase a✝).lazy = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case cont.opaque
+P : Program
+v : Val
+b✝ t✝ : Ty
+ε✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : (erase b✝).cont (erase t✝) Eff.empty = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case map.opaque
+P : Program
+v : Val
+a✝ b✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : (erase a✝).map (erase b✝) = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case set.opaque
+P : Program
+v : Val
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : (erase a✝).set = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case bytes.opaque
+P : Program
+v : Val
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.bytes = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case dict.opaque
+P : Program
+v : Val
+cl✝ : ClassName
+τ✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.dict cl✝ (erase τ✝) = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case tapp.opaque
+P : Program
+v : Val
+i✝ : Nat
+as✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.tapp i✝ (eraseTys as✝) = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:122:16: Tactic `constructor` failed: no applicable constructor found
+
+case ctor.opaque
+P : Program
+v : Val
+φ✝ : TyCon
+o✝ : OpaqueName
+r✝ : ScopeRange
+he : Ty.ctor φ✝ = erase (Ty.opaque o✝ r✝)
+⊢ Inhabits P (Ty.opaque o✝ r✝) v
+error: Benitoite/Release/CoverageTypes.lean:134:10: (kernel) application type mismatch
+  @x✝.1 hs
+argument has type
+  InhabitsEach P a vs✝
+but function has type
+  InhabitsEach P a✝ vs✝ → ∀ {b : Ty}, erase a✝ = erase b → InhabitsEach P b vs✝
+✔ [364/410] Built Benitoite.Release.Lemmas.TySubstMain (3.3s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Closed
+- Benitoite.Release.CoverageTypes
+error: build failed
+       10.52 real        16.59 user         1.84 sys
+           946651136  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              511118  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  32  voluntary context switches
+               36364  involuntary context switches
+          1504544100  instructions retired
+           600822025  cycles elapsed
+            37192904  peak memory footprint
+== exit 1

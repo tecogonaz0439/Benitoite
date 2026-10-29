@@ -1,0 +1,55 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SA.lean:764:45: warning: This simp argument is unused:
+  Eff.memFail
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rowImage, hf, singleton, Eff.fails] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:764:58: warning: This simp argument is unused:
+  Eff.fails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rowImage, hf, singleton, Eff.memFail] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:777:2: error: unsolved goals
+case ht
+τ : Nat → Nat
+es : List Eff
+i t : Nat
+⊢ (∃ i_1, (Eff.mk (fun x => decide (x = Atom.rho i)) []).mem (Atom.rho i_1) ∧ t ∈ (rowImage es i_1).2) ↔
+    t ∈ (rowImage es i).2
+SA.lean:781:45: warning: This simp argument is unused:
+  mem_singleton
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [singleton, Eff.memFail, Eff.fails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:848:99: warning: This simp argument is unused:
+  sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [redundant, wide, singleton, Eff.memFail, Eff.fails, union, norm, rawUnion] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        0.98 real         1.56 user         0.30 sys
+           735903744  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47385  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+               12183  involuntary context switches
+         12313620897  instructions retired
+          5506365724  cycles elapsed
+           182345136  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

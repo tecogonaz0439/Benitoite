@@ -1,0 +1,29 @@
+import Benitoite.Unofficial.IO.Console
+
+trait Describe[T]
+  function describe(x: T) -> String
+end trait
+
+implement Describe[Integer]
+  function describe(x: Integer) -> String
+    return "the number ${x}"
+  end function
+end implement
+
+implement[T: Describe] Describe[List[T]]
+  function describe(x: List[T]) -> String
+    return "[" + String.join(xs: List.map(xs: x, f: lambda(value) return Describe.describe(value)), separator: ", ") + "]"
+  end function
+end implement
+
+function describeIfSame[T: Describe & equality](a: T, b: T) -> String
+  return match a = b with
+    case true -> Describe.describe(a)
+    case false -> "different"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Describe.describe([1, 2]))
+  Console.writeLine(describeIfSame(a: 3, b: 3))
+end function

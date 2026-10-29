@@ -1,0 +1,80 @@
+== wait-for-lock start 01:31:30
+== lock acquired 01:31:30 after 0s
+✔ [100/433] Built Benitoite.Release.Typing (1.3s)
+✔ [102/433] Built Benitoite.Release.BuilderContents (404ms)
+✔ [103/433] Built Benitoite.Release.LocalTyping (401ms)
+✔ [106/433] Built Benitoite.Release.TypeRegularity (592ms)
+✔ [108/433] Built Benitoite.Release.BuiltinTable (669ms)
+✔ [110/433] Built Benitoite.Release.BuilderExec (476ms)
+✔ [112/433] Built Benitoite.Release.Lemmas.Basic (336ms)
+✔ [114/433] Built Benitoite.Release.TypeBounds (722ms)
+✔ [116/433] Built Benitoite.Release.SubstEnv (596ms)
+✔ [118/433] Built Benitoite.Release.TypeVariables (972ms)
+✔ [119/433] Built Benitoite.Release.TypeCongruence (913ms)
+✔ [122/433] Built Benitoite.Release.WellFormed (497ms)
+✔ [124/433] Built Benitoite.Release.TypeScopedSubst (544ms)
+✔ [126/433] Built Benitoite.Release.Admissible (808ms)
+✔ [127/433] Built Benitoite.Release.FailureEffects (847ms)
+✔ [129/433] Built Benitoite.Release.Lemmas.TyLemmas (957ms)
+✔ [131/433] Built Benitoite.Release.EffectCover (1.2s)
+✔ [132/433] Built Benitoite.Release.LocalScope (4.3s)
+✔ [133/433] Built Benitoite.Release.Semantics (2.2s)
+✔ [135/433] Built Benitoite.Release.Assumptions (579ms)
+✔ [136/433] Built Benitoite.Release.RangeWF (2.8s)
+✔ [138/433] Built Benitoite.Release.RangeIxExamples (607ms)
+✔ [139/433] Built Benitoite.Release.Examples (1.8s)
+✔ [140/433] Built Benitoite.Release.RangeInst (1.9s)
+✔ [141/433] Built Benitoite.Release.Lemmas.Names (7.8s)
+✔ [142/433] Built Benitoite.Release.Lemmas.Closed (7.1s)
+✔ [143/433] Built Benitoite.Release.Lemmas.Rename (9.9s)
+✔ [146/433] Built Benitoite.Surface.Lemmas.ScopedRename (551ms)
+✔ [147/433] Built Benitoite.Release.Lemmas.VariableBind (849ms)
+✔ [148/433] Built Benitoite.Surface.Lemmas.ShiftClean (1.7s)
+✔ [149/433] Built Benitoite.Release.Lemmas.NoFailContext (3.3s)
+✔ [151/433] Built Benitoite.Release.Lemmas.Irrelevant (4.0s)
+✔ [152/433] Built Benitoite.Release.Lemmas.FailureBase (374ms)
+✔ [153/433] Built Benitoite.Release.Lemmas.ContLemmas (470ms)
+✔ [154/433] Built Benitoite.Release.Lemmas.Inversion (16s)
+✔ [156/433] Built Benitoite.Release.Lemmas.Regularity (1.6s)
+✔ [158/433] Built Benitoite.Release.Lemmas.OuterC (1.0s)
+✔ [160/433] Built Benitoite.Release.Lemmas.SubstTyping (2.4s)
+✔ [162/433] Built Benitoite.Release.Lemmas.TySubst (390ms)
+✔ [164/433] Built Benitoite.Release.Lemmas.StoreLemmas (650ms)
+✖ [165/433] Building Benitoite.Release.CoverageTypes (957ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/CoverageTypes.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/CoverageTypes.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/CoverageTypes.setup.json --json
+error: Benitoite/Release/CoverageTypes.lean:97:4: Alternative `checked` has not been provided
+✔ [382/433] Built Benitoite.Release.Lemmas.PresHelpers (504ms)
+✔ [383/433] Built Benitoite.Release.Lemmas.BuilderStore (587ms)
+✔ [384/433] Built Benitoite.Release.Lemmas.FailureCont (6.2s)
+✖ [385/433] Building Benitoite.Release.Lemmas.TySubstMain (3.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/TySubstMain.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.setup.json --json
+error: Benitoite/Release/Lemmas/TySubstMain.lean:95:4: Missing cases:
+_, _, (Inhabits.checked (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.path _)), _, _
+_, _, (Inhabits.checked (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.name _))), _, _
+_, _, (Inhabits.checked (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v4 (Fin.mk _ _))))), _, _
+_, _, (Inhabits.checked (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v6 (Fin.mk _ _))))), _, _
+_, _, (Inhabits.checked (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.endpoint (Scope.Domain.Endpoint.mk (Scope.Domain.HostTarget.name _) (Fin.mk _ _)))), _, _
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+Some required targets logged failures:
+- Benitoite.Release.CoverageTypes
+- Benitoite.Release.Lemmas.TySubstMain
+error: build failed
+       28.59 real       150.44 user        11.02 sys
+          2140520448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             2289684  page reclaims
+                  15  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 118  voluntary context switches
+              215082  involuntary context switches
+          2356615464  instructions retired
+          1122767075  cycles elapsed
+            74237296  peak memory footprint
+== exit 1

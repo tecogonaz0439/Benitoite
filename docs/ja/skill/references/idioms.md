@@ -1,6 +1,6 @@
 # Benitoite の定番の書き方
 
-> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.13 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の方法（tests/skill_examples.rs）:
@@ -540,6 +540,49 @@ end function
 404 not found
 ```
 
+`Http.checkRequestIn` は、同じ五フィールドの要求と有効な endpoint を保持する。`Http.sendIn` はその要求を使い、リダイレクトを追わずに 3xx を返し、プロキシへ自動では接続しない。明示した Host ヘッダは、URI と保持した endpoint の有効なホスト・ポートに一致しなければならず、不一致なら `NetworkErrorKind.InvalidInput` を返す。送信の準備と通信のエラーは `NetworkError` であり、`RequestCheckError` とは異なる。要求を変えたら、もう一度検査する。endpoint の範囲は DNS と OS の変換前のホスト/IP・ポートの表記の静的な上限であり、実行時の権限を与えず、scheme やメッセージの内容を制約しない。TLS 証明書の検証中に、OS が別の宛先から中間証明書や失効の情報を取得することがある。endpoint の範囲は、この副次的な通信の宛先を保証しない。
+
+射影と明示的な拡大は、直接の `bind` で行う。下の注釈は検査済みの値の endpoint の範囲を選び、拡大は要求と endpoint を保つ。この例は接続せずに検査する。
+
+`Http.RequestCheckError` は標準の Show の実装を持たない。`InvalidUrl(message)` と `Scope(error)` を明示的に照合する。内側の ScopeError は、必要なら Show を使える。送信のエラーには NetworkError を使う。URL の受け入れとこれらのエラーは、処理系の[検査済みの HTTP 要求](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#checked-http-requests)で定める。
+
+```benitoite check
+import Benitoite.Unofficial.Network.Http
+
+function sendToApi(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect["**.example", 400..500]
+  bind checked: Result[Http.RequestIn["api.example", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
+  return match checked with
+    case Result.Ok(value) ->
+      bind wider: Http.RequestIn["**.example", 400..500] <- Http.widenRequestIn(request: value)
+      Http.sendIn(request: wider)
+    case Result.Error(_) -> Result.Ok(Http.text(status: 400, s: "request check failed"))
+  end match
+end function
+
+function previewUrl(request: Http.ClientRequest) -> Option[String]
+  bind checked <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
+  return match checked with
+    case Result.Ok(value) ->
+      bind original <- Http.requestInValue(request: value)
+      Option.Some(Http.ClientRequest.url(original))
+    case Result.Error(_) -> Option.None
+  end match
+end function
+
+function describeRequestError(error: Http.RequestCheckError) -> String
+  return match error with
+    case Http.RequestCheckError.InvalidUrl(message) -> message
+    case Http.RequestCheckError.Scope(_) -> "endpoint check failed"
+  end match
+end function
+
+function main() -> Unit
+  ()
+end function
+```
+
+狭いハンドラ引数、狭い関数引数、狭い戻り値型の宣言を経た値は、検査した値の局所の由来を持たない。直接の `bind` でも射影や拡大はできない。狭い契約を保つには、同じ値をそのまま `Http.sendIn` などの範囲付きの入口へ転送する。関数引数では、検査した値の由来が分かる呼び出し元で束縛した検査済みの値を拡大し、その広い型を仮引数に使う。ハンドラ節の引数では、操作の宣言の引数型を変える。Top の節引数には保護する本体も Top が必要であり、囲む `uses` の契約の拡大も必要な場合がある。引数のない `Http.RequestIn` を受け付けることは、すべての対象を受け付けることを意味する。その型を通した IO の範囲は Top になる。これらは、現在の射影と拡大の精度の制限である。`Http.Connect` は `send` と `sendIn` の両方を含むため、`send` だけを処理しても、囲む関数にそのエフェクトが残る。
+
 止められるまで動き続けるサーバは、`Http.serve` を使うのがいちばん簡単である。`Http.serve` は要求ごとにハンドラを呼ぶ。（この例は終わらないので、実行せず検査だけを行う。）
 
 ```benitoite check
@@ -698,6 +741,8 @@ end function
 ```
 
 テストでは、組み込みの操作を `handle ... with case Op(args) -> ...` で置き換える。本物の操作の代わりにハンドラが動くので、テストはファイルに触れず、コマンドも起動しない。`resume(value)` は、操作を呼んだコードへ `value` を返す。エフェクトの一部の操作を扱っても、型からそのエフェクトは消えない。そのため、テストは `uses` に `File.Read` と `Process.Run` をなお並べる。型に `State` を持つ関数（`Reference`、`TaskGroup`、`Task.await`、`close...` の関数）は、`case` で扱えない。
+
+File.Read は13操作、File.Write は16操作を持つ。`readText` の節だけでは、残り12の Read 操作は未処理のままである。完全ハンドラには範囲付きの操作も必要である。すべての操作の集合と節のエフェクトは、処理系の[完全ハンドラと部分ハンドラ](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#complete-and-partial-handlers)を参照する。
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File

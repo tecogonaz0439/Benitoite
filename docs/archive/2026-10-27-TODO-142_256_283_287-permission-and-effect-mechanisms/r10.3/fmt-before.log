@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.23s
+     Running tests/fmt_command.rs (target/debug/deps/fmt_command-496b046a5eed825e)
+
+running 1 test
+test scope_arguments_keep_lexemes_and_grouping ... FAILED
+
+failures:
+
+---- scope_arguments_keep_lexemes_and_grouping stdout ----
+
+thread 'scope_arguments_keep_lexemes_and_grouping' (2620859) panicked at crates/benitoite/tests/fmt_command.rs:713:9:
+assertion `left == right` failed
+  left: "uses File.Write [r\"/data/a/**\", \"/data/b/\\u{61}\",], Http.Connect [\"EXAMPLE.COM\", 0x1_bb..4_45, \"192.0.2.1/32\", 0x50], Failure.Fail[List[String]]\n\nfunction main() -> Unit\n  ()\nend function\n"
+ right: "uses File.Write[r\"/data/a/**\", \"/data/b/\\u{61}\",], Http.Connect[\"EXAMPLE.COM\", 0x1_bb..4_45, \"192.0.2.1/32\", 0x50], Failure.Fail[List[String]]\n\nfunction main() -> Unit\n  ()\nend function\n"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scope_arguments_keep_lexemes_and_grouping
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 21 filtered out; finished in 1.11s
+
+error: test failed, to rerun pass `-p benitoite --test fmt_command`

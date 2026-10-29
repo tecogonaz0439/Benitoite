@@ -41,7 +41,7 @@ theorem eff_right (ε δ : Eff) : Eff.Sub δ (Eff.union ε δ) := by
 
 theorem HasTypeCQ.weakenEff {R m a ε δ} (h : HasTypeCQ P B StoreTy.empty Q C Γ R m a ε Δl)
     (hs : Eff.Sub ε δ) : HasTypeCQ P B StoreTy.empty Q C Γ R m a δ Δl :=
-  .C_Eff h hs
+  .C_Eff h hs.covers
 
 theorem HasTypeCQ.shiftOne {R m a ε t} (h : HasTypeCQ P B StoreTy.empty Q C Γ R m a ε Δl) :
     HasTypeCQ P B StoreTy.empty Q C (some t :: Γ) R (m.rename (· + 1)) a ε (LocalCtx.extend 1 Δl) := by
@@ -111,7 +111,7 @@ theorem HasTypeArmsQ.weakenEff {R arms a b ε δ}
 theorem boundVars_succ (n : Nat) : boundVars (n + 1) = .var n :: boundVars n := by
   simp [boundVars, List.range_succ]
 
-theorem boundVars_typed {as : List Ty} (hc : Ty.VarsInList C.length (fun _ => True) as) :
+theorem boundVars_typed {as : List Ty} (hc : Ty.VarsInList 0 C.length (fun _ => True) as) :
     HasTypeVsQ P B StoreTy.empty Q C (Release.binds as ++ Γ) (boundVars as.length) as := by
   induction as generalizing Γ with
   | nil => exact .nil
@@ -161,7 +161,7 @@ theorem letChain_typed {R ε ms as body a} (h : CompTypesQ P B Q C Γ R ε ms as
       simpa only [LocalCtx.extend_add, List.length_cons, List.cons_append, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hh
 
 theorem sequence_typed {R ε ms as finish a} (h : CompTypesQ P B Q C Γ R ε ms as Δl)
-    (hc : Ty.VarsInList C.length (fun _ => True) as)
+    (hc : Ty.VarsInList 0 C.length (fun _ => True) as)
     (hf : ∀ vs, HasTypeVsQ P B StoreTy.empty Q C (Release.binds as ++ Γ) vs as →
       HasTypeCQ P B StoreTy.empty Q C (Release.binds as ++ Γ) R (finish vs) a ε (LocalCtx.extend as.length Δl)) :
     HasTypeCQ P B StoreTy.empty Q C Γ R (sequence ms finish) a ε Δl := by
@@ -202,7 +202,7 @@ theorem ArgTypesQ.weaken {R ε δ plans ts} (h : ArgTypesQ P B Q C Γ R ε Δl p
   | evaluate hm _ ih => exact .evaluate (HasTypeCQ.weakenEff hm hs) ih
 
 theorem ArgTypesQ.values {R ε plans ts} (h : ArgTypesQ P B Q C Γ R ε Δl plans ts)
-    (hc : Ty.VarsInList C.length (fun _ => True) ts) (xs : List (Option Ty)) :
+    (hc : Ty.VarsInList 0 C.length (fun _ => True) ts) (xs : List (Option Ty)) :
     HasTypeVsQ P B StoreTy.empty Q C (binds (argEvalTypes plans ts) ++ xs ++ Γ)
       (argValues (xs.length + (argEvals plans).length) plans) ts := by
   induction h generalizing xs with
@@ -225,7 +225,7 @@ theorem ArgTypesQ.values {R ε plans ts} (h : ArgTypesQ P B Q C Γ R ε Δl plan
 /-- 計算だけを束縛し、全引数の参照を最終環境で渡す。 -/
 theorem sequenceArgs_typed {R ε plans ts finish a}
     (h : ArgTypesQ P B Q C Γ R ε Δl plans ts)
-    (hc : Ty.VarsInList C.length (fun _ => True) ts) (xs : List (Option Ty))
+    (hc : Ty.VarsInList 0 C.length (fun _ => True) ts) (xs : List (Option Ty))
     (hf : ∀ vs, HasTypeVsQ P B StoreTy.empty Q C
       (binds (argEvalTypes plans ts) ++ xs ++ Γ) vs ts →
       HasTypeCQ P B StoreTy.empty Q C (binds (argEvalTypes plans ts) ++ xs ++ Γ) R

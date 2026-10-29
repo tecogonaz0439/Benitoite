@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses Process.Run, Console.Write, Process.Exit
+  bind piped <- try Process.shell("printf 'b\\na\\nc\\n' | LC_ALL=C sort | tr 'a-z' 'A-Z'") or die
+  Console.write(Process.Output.standardOutput(piped))
+  bind checked <- try Process.shell("if [ -d / ]; then echo root; fi; echo oops >&2; exit 2") or die
+  Console.write(Process.Output.standardOutput(checked))
+  Console.write("stderr: ${Process.Output.standardError(checked)}")
+  Console.writeLine("exit code: ${Process.Output.exitCode(checked)}")
+  return ()
+end function

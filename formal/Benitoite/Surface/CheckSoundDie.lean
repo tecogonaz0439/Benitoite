@@ -41,7 +41,7 @@ theorem checkDieShow_sound {q C Γ path dict method errorTy u}
 
 theorem checkDieExit_sound {q C path exit t u} (hq : q.Sound) (ht : t.AtomsIn q.atoms)
     (h : checkDieExit q C path exit t = .ok u) :
-    DieExitOk q.B C exit t ∧ q.atoms.contains (.name "Process.Exit") = true := by
+    DieExitOk q.B C exit t ∧ q.atoms.contains (.nameTop "Process.Exit") = true := by
   obtain ⟨sg, hs, h⟩ := bind_ok h
   obtain ⟨u1, hv, h⟩ := bind_ok h
   obtain ⟨u2, ha, h⟩ := bind_ok h
@@ -52,7 +52,7 @@ theorem checkDieExit_sound {q C path exit t u} (hq : q.Sound) (ht : t.AtomsIn q.
   have sa := hq.builtins exit sg (lookup_ok hs)
   have eq := tyEq_sound (fnTyCheck_atoms (ts := [t]) (es := []) sa.1 sa.2.1 sa.2.2 ⟨ht, trivial⟩ (by simp))
     (show Ty.AtomsIn q.atoms (.fn ["code"] [.base .integer] t
-      (singleEff q.atoms (.name "Process.Exit"))) from ⟨⟨trivial, trivial⟩, ht, singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok he).1)⟩)
+      (singleEff q.atoms (.nameTop "Process.Exit"))) from ⟨⟨trivial, trivial⟩, ht, singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok he).1)⟩)
     (require_ok h).1
   rw [fnTyCheck_eq sg.names sg.params sg.ret sg.eff [t] []
     (by intro u hu; simp only [List.mem_singleton] at hu; subst u; exact ht) (by simp)
@@ -72,7 +72,7 @@ theorem checkDieMessageR_sound {q Δ C Γ path message s s' u}
     (fun _ _ _ _ h => ih m rfl Δ _ _ _ _ _ _ _ _ _ hB.hide hq (hm m rfl)
       (Env.atoms_hideConts hΓ) (by intro t ht; cases ht) h) (by trivial) h
   have hacc := (checking_lift_ok h).1
-  exact .E_Sub ht (Or.inl rfl) (acceptEff_sound ha (emptyEff_atoms _) hacc) haClean
+  exact .E_Sub ht (Or.inl rfl) (acceptEff_sound ha (emptyEff_atoms _) hacc).covers haClean
 
 theorem tryResultDie_case {q t ok err dict method exit e message} :
     CaseSound q (.expr (.tryResultDie t ok err dict method exit e message)) := by

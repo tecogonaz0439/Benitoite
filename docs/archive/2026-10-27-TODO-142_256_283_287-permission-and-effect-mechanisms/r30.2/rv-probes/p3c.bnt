@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+ ()
+end function
+function sample(b: Scope.PathIn["/logs/b"]) -> List[Result[Unit, IOError]] uses File.Write["/data/a"]
+ return List.map(xs: [b], f: File.writeTextIn(path: _, text: "x"))
+end function

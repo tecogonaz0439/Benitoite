@@ -16,7 +16,7 @@ use crate::runtime::report::{self, FaultThread};
 use crate::runtime::run::{EXIT_CHECK, EXIT_INTERNAL, EXIT_OK};
 use crate::typeck::{IntervalAnalysis, IntervalBudgetStops, IntervalCoverage};
 
-use super::inspection::{ProgramInspection, ShellReference, effect_name};
+use super::inspection::{ProgramInspection, ShellReference};
 use super::{CliEnv, DevPanic, Options, build_info, pipeline, prelude_error};
 
 // 入口とソースを報告の境界で保持し、失敗しても読み直して補わない
@@ -102,14 +102,9 @@ fn main_value(
             stage: "check",
             message: format!("invalid rendered location JSON: {error}"),
         })?;
-    let expanded = main
-        .effects
-        .iter()
-        .map(|id| effect_name(*id))
-        .collect::<Result<Vec<_>, _>>()?;
     Ok(json!({
         "symbol": main.name, "location": location,
-        "effects": { "basis": "declaredUpperBound", "expanded": expanded },
+        "effects": main.bounds.value()?,
         "processShellReference": match inspection.process_shell_reference {
             ShellReference::Present => "present", ShellReference::Absent => "absent",
             ShellReference::Unknown => "unknown",

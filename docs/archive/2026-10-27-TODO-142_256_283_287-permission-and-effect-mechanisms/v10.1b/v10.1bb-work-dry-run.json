@@ -1,0 +1,22 @@
+{
+  "command": "scripts/check.sh --level work --base bae86164de063a9807784513e8960e46536d9f4b --test golden --test desugar_export --dry-run",
+  "timeMode": "/usr/bin/time -l",
+  "startedAt": "2026-10-29T17:52:47.955910+00:00",
+  "finishedAt": "2026-10-29T17:52:48.066134+00:00",
+  "elapsedSeconds": 0.110180125,
+  "selected": [
+    "fmt",
+    "lint_default",
+    "lib_default",
+    "tests_related",
+    "source_rules",
+    "skill_generated",
+    "spec_tally"
+  ],
+  "maximumResidentBytes": null,
+  "executedTests": false,
+  "timeExit": 1,
+  "checkShExit": null,
+  "measurementFailure": "time -lのsysctl kern.clockrateがsandboxに拒否された。check.shの直接の終了値は分けて取得していない",
+  "rss": "取得不能。0とはしない"
+}

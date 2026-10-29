@@ -5,7 +5,7 @@ def recursive_steps(target, graph, prop, template, component, generic, params, a
     """通常のShrinkStepだけを生成し、再帰するfactoryは候補を要求するまで作らない。"""
     name = template.type_name({'tag': 'application', 'head': {'tag': 'named', 'name': target['type']},
                                'arguments': [{'tag': 'parameter', 'index': i}
-                                             for i in range(len(target['typeParams']))]})
+                                             for i in range(len(target['typeParams']))], 'ix': {'fixed': 'top'}})
     constructor = target['name']
     shrink_name = target['config']['property']['shrinker']
     prefix = 'derive_' + shrink_name

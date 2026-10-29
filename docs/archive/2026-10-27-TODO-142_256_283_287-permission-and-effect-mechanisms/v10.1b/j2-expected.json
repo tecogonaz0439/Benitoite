@@ -1,0 +1,25 @@
+{
+  "basis": "公開契約とソース位置から実行前に手書き。処理系出力を使わない",
+  "cases": [
+    {
+      "file": "j2-send-only.bnt",
+      "exit": 2,
+      "codes": [
+        "E0501"
+      ],
+      "primary": {
+        "start": 194,
+        "end": 205,
+        "line": 7,
+        "column": 19,
+        "text": "protected()"
+      },
+      "remaining": "Http.Connect[\"api.example\", 443]"
+    },
+    {
+      "file": "j2-complete.bnt",
+      "exit": 0,
+      "codes": []
+    }
+  ]
+}

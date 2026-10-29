@@ -1,0 +1,153 @@
+== wait-for-lock start 20:03:05
+== lock acquired 20:03:05 after 0s
+✔ [36/417] Built Benitoite.Release.Order.Atoms (449ms)
+✔ [37/417] Built Benitoite.Scope.RepresentationExamplesII (442ms)
+✔ [38/417] Built Benitoite.Release.Order.Atoms:c.o (87ms)
+✔ [39/417] Built Benitoite.Release.Order.FiniteAtoms (318ms)
+✔ [41/417] Built Benitoite.Release.Order.Labels (606ms)
+✔ [43/417] Built Benitoite.Release.Order.Types (1.4s)
+✔ [45/417] Built Benitoite.Release.Normalize (553ms)
+✔ [47/417] Built Benitoite.Release.TypeShift (1.3s)
+✔ [49/417] Built Benitoite.Release.Effect (267ms)
+✔ [51/417] Built Benitoite.Release.TypeSubst (354ms)
+✔ [53/417] Built Benitoite.Scope.RepresentationExamplesI (486ms)
+✔ [54/417] Built Benitoite.Release.Syntax (617ms)
+✔ [56/417] Built Benitoite.Release.TypeSubstLemmas (784ms)
+✔ [58/417] Built Benitoite.Surface.BuilderSyntax (352ms)
+✔ [60/417] Built Benitoite.Release.Subst (576ms)
+✔ [61/417] Built Benitoite.Interval.Domain (596ms)
+✔ [64/417] Built Benitoite.Release.TypeRows (576ms)
+✔ [66/417] Built Benitoite.Release.SubstExamples (484ms)
+✔ [67/417] Built Benitoite.Release.Order.Shift (520ms)
+✔ [68/417] Built Benitoite.Release.LocalRef (520ms)
+✔ [69/417] Built Benitoite.Surface.BuilderLower (464ms)
+✔ [72/417] Built Benitoite.Release.TypeComposition (617ms)
+✔ [73/417] Built Benitoite.Surface.FormatSpec (1.4s)
+✔ [76/417] Built Benitoite.Interval.Budget (993ms)
+✔ [78/417] Built Benitoite.Release.NoFail (539ms)
+✔ [79/417] Built Benitoite.Release.TypeSupport (595ms)
+✔ [80/417] Built Benitoite.Interval.BudgetExamples (291ms)
+✔ [83/417] Built Benitoite.Release.Finite (907ms)
+✔ [85/417] Built Benitoite.Release.Typing (1.4s)
+✔ [86/417] Built Benitoite.Release.Typing:c.o (208ms)
+✔ [87/417] Built Benitoite.Release.LocalTyping (442ms)
+✔ [89/417] Built Benitoite.Release.BuilderContents (455ms)
+✔ [91/417] Built Benitoite.Release.TypeRegularity (645ms)
+✖ [93/417] Building Benitoite.Release.BuiltinTable (778ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/BuiltinTable.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/BuiltinTable.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/BuiltinTable.setup.json --json
+error: Benitoite/Release/BuiltinTable.lean:187:32: Application type mismatch: The argument
+  "IOError"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Ty.opaque "IOError"
+error: Benitoite/Release/BuiltinTable.lean:230:39: Application type mismatch: The argument
+  "IOError"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Ty.opaque "IOError"
+error: Benitoite/Release/BuiltinTable.lean:238:21: Application type mismatch: The argument
+  "IOError"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Ty.opaque "IOError"
+✔ [95/417] Built Benitoite.Release.BuilderExec (581ms)
+✔ [96/417] Built Benitoite.Release.Lemmas.Basic (389ms)
+✔ [99/417] Built Benitoite.Release.TypeBounds (807ms)
+✔ [101/417] Built Benitoite.Release.SubstEnv (754ms)
+✔ [103/417] Built Benitoite.Release.TypeCongruence (881ms)
+✔ [105/417] Built Benitoite.Release.TypeVariables (1.0s)
+✔ [107/417] Built Benitoite.Release.FiniteSupport (3.0s)
+✔ [109/417] Built Benitoite.Surface.SingleFail (378ms)
+✔ [111/417] Built Benitoite.Release.WellFormed (639ms)
+✔ [112/417] Built Benitoite.Release.TypeScopedSubst (579ms)
+✔ [114/417] Built Benitoite.Release.WellFormed:c.o (63ms)
+✔ [115/417] Built Benitoite.Release.FailureEffects (683ms)
+✔ [116/417] Built Benitoite.Release.Lemmas.TyLemmas (716ms)
+✔ [117/417] Built Benitoite.Release.Admissible (731ms)
+✔ [120/417] Built Benitoite.Release.LocalScope (4.4s)
+✖ [121/417] Building Benitoite.Release.Semantics (1.8s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Semantics.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Semantics.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Semantics.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Semantics.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Semantics.setup.json --json
+error: Benitoite/Release/Semantics.lean:557:91: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Semantics.lean:572:58: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Semantics.lean:572:87: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+✔ [126/417] Built Benitoite.Release.Lemmas.Rename (8.6s)
+✔ [127/417] Built Benitoite.Release.Lemmas.Closed (6.0s)
+✔ [129/417] Built Benitoite.Release.Lemmas.Names (6.8s)
+✔ [130/417] Built Benitoite.Surface.Lemmas.ScopedRename (502ms)
+✔ [131/417] Built Benitoite.Release.Lemmas.Rename:c.o (659ms)
+✔ [132/417] Built Benitoite.Release.Lemmas.VariableBind (599ms)
+✔ [133/417] Built Benitoite.Surface.Lemmas.ShiftClean (1.2s)
+✖ [134/417] Building Benitoite.Release.Lemmas.Inversion (10s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.setup.json --json
+error: Benitoite/Release/Lemmas/Inversion.lean:115:56: Application type mismatch: The argument
+  od.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single od.eff
+error: Benitoite/Release/Lemmas/Inversion.lean:360:60: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+✔ [140/417] Built Benitoite.Release.Lemmas.NoFailContext (1.0s)
+✔ [369/417] Built Benitoite.Release.Lemmas.Irrelevant (2.7s)
+Some required targets logged failures:
+- Benitoite.Release.BuiltinTable
+- Benitoite.Release.Semantics
+- Benitoite.Release.Lemmas.Inversion
+error: build failed
+       21.41 real       112.75 user        12.21 sys
+          1498562560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             2673309  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 218  voluntary context switches
+              200010  involuntary context switches
+          2277832920  instructions retired
+          1120046146  cycles elapsed
+            50251168  peak memory footprint
+== exit 1

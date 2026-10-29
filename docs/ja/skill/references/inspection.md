@@ -1,6 +1,6 @@
 # 実行前の検査
 
-> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.13 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 ハーネスは検査報告を使い、実行前に宣言したエフェクトを利用者へ説明する。編集中は通常の `benitoite check main.bnt` または実行しない `benitoite test --check tests/` を使い、診断を直す。検査を通ったら、確認の直前に一つの JSON 報告を得る。報告を調べ、Skill の確認の規則に従って宣言したエフェクトを利用者へ説明し、受理した集合を実行へ渡す。
 
@@ -39,11 +39,19 @@ benitoite test --allow-effects=Assert.Check,File.Read tests/
 | `diagnostics`, `diagnosticTargets` | 診断のオブジェクトと対象への対応。探索全体の誤りと使い方の誤りには対象がない。 |
 | 報告と各対象の `intervalAnalysis` | 後述の局所の区間解析の追加集計。`complete` や報告の受理と独立である。 |
 
-Effects オブジェクトは `basis: "declaredUpperBound"` と `expanded` を持つ。`expanded` は、原子的な正規名を辞書順に並べた重複なしの配列である。本体の実行で到達するエフェクトだけでなく、使わない宣言も含む。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` に展開する。HTTP のエフェクトと `Assert.Check` は `IO.All` に含まれない。テストの契約・その和・許す集合には `Assert.Check` を残す。`main` では禁じる（E0415）。処理されない `or die` には `Process.Exit` が必要であり、完全に処理して宣言上限から取り除いた終了は含まれない。裸の `try` と `or return` は終了のエフェクトを加えない。
+Effects は任意の `bounds` 配列も持ち、その要素は `{name, scope}` である。`expanded` と同じ宣言上限を表し、`expanded` は引き続き範囲の構文を含まない名前の集合である。main、選択したテスト、文書の例、集計は同じ構造を使う。Top や未知の対象は `{kind: "all"}` であり、空配列ではない。既知の純粋な契約では、`expanded` と `bounds` の両配列が空になる。選んだ入口によらず、文書の `check` と `error` の例は、main や `@test` 関数にエフェクトを宣言していても、同じ空の Effects オブジェクトと `tests: []` を返す。この空の報告は、例の契約が純粋であることを意味しない。`check` と `error` の例は、実行の集計に加えない。
+
+この実装は Effects オブジェクトを出力するときは常に `bounds` を含め、契約の解析が未完なら Effects を null にする。古い実装の報告など、`bounds` を持たない Effects は、`expanded` の各名前について、その種類のすべての対象を宣言しているものとして読む。この任意の情報は、既存の形式の版と報告の受理条件を保つ。完全に処理した利用者エフェクトが、上限や権限として再び現れることはない。追加の契約は処理系の[宣言した対象の上限](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#declared-target-bounds)、保証は[範囲付きのエフェクト](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#scoped-effects)で定める。
+
+診断の注記は、宣言した上限とは別に検査した値の局所の由来を説明する。説明に挙げた利用者エフェクトを `expanded`、`bounds`、許可集合へ足したり、説明から上限を推論したりしない。ソース ID と内容のハッシュは検査したソースを識別するものであり、権限を追加せず、後の実行のソースを固定しない。
+
+範囲の種類には、`path` を持つ `pathExact` と `pathTree`（ツリーの幹は `/**` を除く）、および `host` と `ports: {minimum, maximum}` を持つ `endpoint` がある。名前のホストには `kind: "exact"`、`"one"`、`"many"` と、ワイルドカードの接頭部を除いた `name` を使う。IP のホストには `kind: "exact"` または `"cidr"`、`family: "v4"` または `"v6"`、正規形の `address`、CIDR の `prefixLength` を使う。endpoint はホストとポートを制約し、HTTP と HTTPS の両方を含む。scheme、URL のパス、送信する内容は定めない。宣言した異なる原子は、ほかの原子に被覆されても `bounds` に残る。これらは静的に宣言した上限であり、推論した最小のエフェクト、実際の操作の観測、実行時の権限、情報フロー制御ではない。
+
+Effects オブジェクトは `basis: "declaredUpperBound"` と `expanded` を持つ。`expanded` は、原子的な正規名を辞書順に並べた重複なしの配列である。本体の実行で到達するエフェクトだけでなく、使わない宣言も含む。`IO.All` は `Clock.Time`、`Console.Read`、`Console.Write`、`File.Read`、`File.Write`、`Process.Environment`、`Process.Exit`、`Process.Run`、`Random.Generate`、`State` に展開する。Log、HTTP のエフェクト、`Assert.Check` は `IO.All` に含まれない。Log は --allow-effects が受け付ける原子的な正規名である。無効なログのレベルから宣言上限の Log を取り除くことはない。テストの契約・その和・許す集合には `Assert.Check` を残す。`main` では禁じる（E0415）。処理されない `or die` には `Process.Exit` が必要であり、完全に処理して宣言上限から取り除いた終了は含まれない。裸の `try` と `or return` は終了のエフェクトを加えない。
 
 純粋な成功は `expanded: []`、不明なエフェクトは `[]` ではなく `null` である。検査したテストなしのファイルは `tests: []`、不明なテストの一覧は `null` となる。空ディレクトリは、対象がなく集計が空である完全な成功となる。失敗したファイルがあっても、ほかの成功した契約は残すが、全体の `complete` は false、集計は null となる。探索に失敗したらどの入口も検査せずに止まり、探索済みの入口は不完全な参考情報として残る。使い方の誤りには検査した対象もソースもない。その中の診断だけは、`kind: "check"` と `code: null` を使う。この組み合わせは、通常の診断の JSON Lines を拡張しない。テストの説明を省略した場合は `null`、明示的に空の説明を書いた場合は `""` となる。
 
-ファイル単位の `uses` は、検査済みの Scheme で個別の宣言と合併する。前述の規則で報告全体を受理した後、main では `targets[0].main.effects.expanded`、テストでは選択した各テストのエフェクトとその集計を、宣言上限として示す。空の本体にも共有の Console.Write や Log は残る。main のソースの行だけを読むと上限を見落としうる。報告を自動の許可に変えない。通常の `check` は標準出力に何も書かない。既存の必須欄と受理条件の正は処理系にあり、[v0.0.12 の英語リファレンス](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)を参照する。checkReport 1・testCheckReport 1/2 を使う。後述の追加の `intervalAnalysis` 欄は、これらの版と規則を保つ。
+ファイル単位の `uses` は、検査済みの Scheme で個別の宣言と合併する。前述の規則で報告全体を受理した後、main では `targets[0].main.effects.expanded` と、存在すれば `bounds` を、テストでは選択した各テストのエフェクトとその集計を、宣言上限として示す。`bounds` がなければ、各名前を、そのすべての対象の上限として読む。空の本体にも共有の Console.Write や Log は残る。main のソースの行だけを読むと上限を見落としうる。報告を自動の許可に変えない。通常の `check` は標準出力に何も書かない。既存の必須欄と受理条件の正は処理系にあり、[v0.0.12 の英語リファレンス](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)を参照する。checkReport 1・testCheckReport 1/2 を使う。上で参照した v0.0.13 のリファレンスは追加の上限を定める。旧版の固定参照は、既存の必須欄と受理条件だけに使う。後述の追加の `intervalAnalysis` 欄は、これらの版と規則を保つ。
 
 未承認のエフェクトがファイルの宣言から加わった場合、E0512 はその位置も副ラベルに含める。共有の IO.All の W0501 は各関数と共有の由来を示し、ファイルの宣言への自動編集は付けない。個別の IO.All の編集はファイルが供給するエフェクトも考慮する。doc の例は独自の取り込みと契約を持ち、外側の宣言は適用しない。
 
@@ -53,7 +61,7 @@ Effects オブジェクトは `basis: "declaredUpperBound"` と `expanded` を�
 
 検査は外部の関数の照合まで行う。検査報告の終了状態は `ok` なら 0、`checkError` または `usageError` なら 2、`internalError` なら 3、テストの検査で中断を観測したら 130 となる。`--deny-warnings` は警告を検査の誤りに昇格する。テストの検査は各ファイルの前に中断を確認するため、最後のファイルの検査中の要求は報告されない場合がある。main の検査は OS 既定のシグナル処理を保つ。テストの検査の状態は、中断、処理系の不具合、使い方の誤り、検査の誤りの順で優先する。書き込みや flush の失敗は 1 で終わり、出力が不完全な場合もある。初期化の失敗、abort、強制終了、報告の境界の外の失敗も、報告を返すとは限らない。不完全な応答を受理しない。
 
-`--allow-effects` は、`State` と `Assert.Check` を含む原子的な正規名のカンマ区切りの集合を一回受け付ける。`--allow-effects=<names>` と `--allow-effects <names>` のどちらも使える。オプションや名前の重複、空要素、空白、未知の名前や利用者定義名、取り込みの別名、`IO.All`、`*` は使い方の誤りとなる。改めて検査した宣言上限は了承済みの集合に含まれなければならず、余分な許可はあってよい。先に生じた検査の誤りは比較より優先する。不足するエフェクトがあれば、違反する関数ごとに、不足するエフェクト・許す集合・位置を持つ E0512 を一つ出し、実行前に 2 で終わる。通常の診断は標準エラー出力に書き、`--diagnostics=json` では JSON Lines となる。
+`--allow-effects` は、`State`、`Log`、`Assert.Check` を含む原子的な正規名のカンマ区切りの集合を一回受け付ける。`--allow-effects=<names>` と `--allow-effects <names>` のどちらも使える。オプションや名前の重複、空要素、空白、未知の名前や利用者定義名、取り込みの別名、`IO.All`、`*`、`File.Read["/data/**"]` などの範囲の引数は使い方の誤りとなる。許す各名前は、その名前の範囲付き原子も含め、その種類のすべての対象を許す。改めて検査した宣言上限は了承済みの集合に含まれなければならず、余分な許可はあってよい。先に生じた検査の誤りは比較より優先する。不足するエフェクトがあれば、違反する関数ごとに、不足するエフェクト・許す集合・位置を持つ E0512 を一つ出し、実行前に 2 で終わる。通常の診断は標準エラー出力に書き、`--diagnostics=json` では JSON Lines となる。
 
 `run` は、上限を比較したものと同じ検査済みのプログラムを実行する。上限付き `test` は、すべての入口を準備・比較・コンパイルするまで、どのテストも開始しない。一つでも入口の準備に失敗すれば、一つも実行しない。探索が完了している場合、実行するテストの JSON Lines は `testSummary` だけを持ち、成功数と失敗数はゼロ、`filesNotRun` は開始しなかった全入口数（重複やテストなしのファイルも含む）、検査による拒否の `interrupted` は `false` となる。観測した中断は `interrupted: true` と終了状態 130、処理系の不具合は終了状態 3 を使う。探索・使い方の誤りや対象数が不明な外側の失敗では集計を書かない。成功数と失敗数だけでなく、終了状態、集計の有無、`filesNotRun`、`interrupted` を確かめる。実行するテストの終了状態は 130、3、2、1、0 の順で優先し、出力の失敗は 1 で終わる。非実行の検査は、テストの結果や集計の行を一切書かない。
 

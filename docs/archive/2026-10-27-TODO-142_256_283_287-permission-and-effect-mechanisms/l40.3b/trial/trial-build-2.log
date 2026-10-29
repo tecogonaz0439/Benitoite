@@ -1,0 +1,697 @@
+== wait-for-lock start 06:51:03
+== lock acquired 06:51:03 after 0s
+✔ [94/461] Built Benitoite.Release.Subst (410ms)
+✔ [96/461] Built Benitoite.Surface.BuilderLower (402ms)
+✔ [98/461] Built Benitoite.Release.SubstExamples (418ms)
+✔ [99/461] Built Benitoite.Release.Order.Shift (415ms)
+✔ [100/461] Built Benitoite.Release.Typing (1.5s)
+✔ [101/461] Built Benitoite.Release.LocalRef (1.5s)
+✔ [103/461] Built Benitoite.Release.Typing:c.o (189ms)
+✔ [104/461] Built Benitoite.Release.BuilderContents (420ms)
+✔ [105/461] Built Benitoite.Release.LocalTyping (420ms)
+✔ [108/461] Built Benitoite.Release.TypeRegularity (595ms)
+✔ [110/461] Built Benitoite.Release.BuiltinTable (721ms)
+✔ [112/461] Built Benitoite.Release.BuilderExec (482ms)
+✖ [113/461] Building Benitoite.Release.LocalScope (422ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/LocalScope.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/LocalScope.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/LocalScope.setup.json --json
+error: Benitoite/Release/LocalScope.lean:26:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/LocalScope.lean:58:51: Unknown constant `Benitoite.Release.Comp.LocalRefs`
+error: Benitoite/Release/LocalScope.lean:60:40: Unknown constant `Benitoite.Release.Comp.LocalRefs`
+error: Benitoite/Release/LocalScope.lean:62:43: Unknown constant `Benitoite.Release.Val.LocalRefs`
+error: Benitoite/Release/LocalScope.lean:69:6: Unknown constant `Benitoite.Release.Val.LocalRefs`
+error: Benitoite/Release/LocalScope.lean:92:6: Unknown constant `Benitoite.Release.Val.LocalRefsList`
+error: Benitoite/Release/LocalScope.lean:98:6: Unknown constant `Benitoite.Release.Val.LocalRefsList`
+error: Benitoite/Release/LocalScope.lean:105:6: Unknown constant `Benitoite.Release.Comp.LocalRefs`
+error: Benitoite/Release/LocalScope.lean:130:6: Unknown constant `Benitoite.Release.Arm.LocalRefsList`
+error: Benitoite/Release/LocalScope.lean:138:6: Unknown constant `Benitoite.Release.Clause.LocalRefsList`
+error: Benitoite/Release/LocalScope.lean:144:63: Unknown constant `Benitoite.Release.Clause.LocalRefsList`
+error: Benitoite/Release/LocalScope.lean:70:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasTypeVQ.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+a✝⁶ : Ty
+v✝ : Val
+h✝¹ : HasTypeVQ P B Ψ Q C Γ v✝ a✝⁶
+motive : (a : Ty) → (v : Val) → HasTypeVQ P B Ψ Q C Γ v a → Sort ?u.116
+h_1 :
+  (a : Ty) →
+    (i : Nat) → (a_1 : Γ[i]? = some (some a)) → (a_2 : ∀ (b t : Ty) (ε : EffR), a ≠ b.cont t ε) → motive a (Val.var i) ⋯
+h_2 : (c : Const) → motive c.type (Val.const c) ⋯
+h_3 :
+  (f : FunName) →
+    (d : Def) →
+      (ts : List Ty) →
+        (es : List Eff) →
+          (a : P.defs f = some d) →
+            (a_1 : NamesWF d.names d.params) →
+              (a_2 : Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff) →
+                motive (fnTy d.names d.params d.ret d.eff ts es) (Val.fnRef f ts es) ⋯
+h_4 :
+  (b : PrimName) →
+    (s : PrimSig) →
+      (rs : List Scope.Domain.Range) →
+        (ts : List Ty) →
+          (es : List Eff) →
+            (a : B.sig b = some s) →
+              (a_1 : B.RangeAdmissible b s rs) →
+                (a_2 : NamesWF (PrimSig.inst rs s).names (PrimSig.inst rs s).params) →
+                  (a_3 : PrimitiveAdmissible C (PrimSig.inst rs s) Q ts es) →
+                    motive
+                      (fnTy (PrimSig.inst rs s).names (PrimSig.inst rs s).params (PrimSig.inst rs s).ret
+                        (PrimSig.inst rs s).eff ts es)
+                      (Val.prim b ts es rs) ⋯
+h_5 :
+  (o : OpName) →
+    (od : OpDecl) →
+      (ts : List Ty) →
+        (a : P.ops o = some od) →
+          (a_1 : NamesWF od.names od.params) →
+            (a_2 : SatAll B C ts od.tparams) →
+              motive (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) (Val.op o ts) ⋯
+h_6 :
+  (T E : Ty) →
+    (a : Ty.WF 0 C.length T) →
+      (a_1 : Ty.WF 0 C.length E) → motive (Ty.fn ["error"] [E] T (Eff.singleFail E)) (Val.raise T E) ⋯
+h_7 :
+  (names : List String) →
+    (ps : List Ty) →
+      (body : Comp) →
+        (r : Ty) →
+          (ε : EffR) →
+            (hn : NamesWF names ps) →
+              (hw : Ty.WF 0 C.length (Ty.fn names ps r ε)) →
+                (hb : HasTypeCQ P B Ψ.hideBuilders Q C (binds ps ++ hideConts Γ) (some r) body r ε) →
+                  motive (Ty.fn names ps r ε) (Val.lam names ps body) ⋯
+h_8 :
+  (c : ConName) →
+    (ts : List Ty) →
+      (args : List Val) →
+        (cd : ConDecl) →
+          (a : P.cons c = some cd) →
+            (a_1 : ts.length = cd.ntys) →
+              (hs : HasTypeVsQ P B Ψ Q C Γ args (List.map (Ty.subst ts []) cd.args)) →
+                motive (Ty.data cd.data ts) (Val.con c ts args) ⋯
+h_9 :
+  (elems : List Val) →
+    (a : Ty) → (hs : HasTypeEachQ P B Ψ Q C Γ elems a) → (a_1 : Ty.WF 0 C.length a) → motive a.list (Val.list elems) ⋯
+h_10 : (l : Nat) → (a : Ty) → (a_1 : Ψ l = some (LocTy.ref a)) → motive a.reference (Val.loc l) ⋯
+h_11 : (l : Nat) → (a : Ty) → (a_1 : Ψ l = some (LocTy.lazy a)) → motive a.lazy (Val.loc l) ⋯
+h_12 :
+  (ks vs : List Val) →
+    (a b : Ty) →
+      (hk : HasTypeEachQ P B Ψ Q C Γ ks a) →
+        (hv : HasTypeEachQ P B Ψ Q C Γ vs b) →
+          (a_1 : ks.length = vs.length) →
+            (a_2 : B.sat C a TParam.keyC) →
+              (a_3 : Ty.WF 0 C.length a) → (a_4 : Ty.WF 0 C.length b) → motive (a.map b) (Val.mapV ks vs) ⋯
+h_13 :
+  (elems : List Val) →
+    (a : Ty) →
+      (hs : HasTypeEachQ P B Ψ Q C Γ elems a) →
+        (a_1 : B.sat C a TParam.keyC) → (a_2 : Ty.WF 0 C.length a) → motive a.set (Val.setV elems) ⋯
+h_14 : (bs : List Nat) → motive Ty.bytes (Val.bytesV bs) ⋯
+h_15 :
+  (i : ImplName) →
+    (ts : List Ty) →
+      (vs : List Val) →
+        (id : ImplDecl) →
+          (a : P.impls i = some id) →
+            (a_1 : SatAll B C ts id.tparams) →
+              (hs : HasTypeVsQ P B Ψ Q C Γ vs (List.map (Ty.subst ts []) id.dictTys)) →
+                motive (Ty.dict id.cls (Ty.subst ts [] id.target)) (Val.dict i ts vs) ⋯
+h_16 :
+  (v : Val) →
+    (cl : ClassName) →
+      (τ : Ty) →
+        (cd : ClassDecl) →
+          (s : ClassName) →
+            (hv : HasTypeVQ P B Ψ Q C Γ v (Ty.dict cl τ)) →
+              (a : P.classes cl = some cd) → (a_1 : s ∈ cd.supers) → motive (Ty.dict s τ) (v.super s) ⋯
+h_17 :
+  (a : Ty) →
+    (v : Val) →
+      (a_1 : Ty) → (hv : HasTypeVQ P B Ψ Q C Γ v a_1) → (a_2 : a_1.Le a) → (hw : Ty.WF 0 C.length a) → motive a v ⋯
+h_18 :
+  (o : OpaqueName) →
+    (R : Scope.Domain.Range) →
+      (t : Scope.Domain.Target) →
+        (a : B.valKind o = some t.kind) →
+          (a_1 : R.Mem t) → motive (Ty.opaque o (Scope.Signature.Ix.fixed R)) (Val.checked t) ⋯
+a✝⁵ : StoreTy
+a✝⁴ : NoFailCtx
+a✝³ : List TParam
+a✝² : List (Option Ty)
+a✝¹ : Val
+a✝ : Ty
+h✝ : HasTypeVQ P B a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝
+⊢ Ψ = a✝⁵ → Q = a✝⁴ → C = a✝³ → Γ = a✝² → v✝ = a✝¹ → a✝⁶ = a✝ → h✝¹ ≍ h✝ → motive a✝⁶ v✝ h✝¹ after processing
+  _, _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:70:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:93:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasTypeVsQ.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+as✝ : List Ty
+vs✝ : List Val
+h✝¹ : HasTypeVsQ P B Ψ Q C Γ vs✝ as✝
+motive : (as : List Ty) → (vs : List Val) → HasTypeVsQ P B Ψ Q C Γ vs as → Sort ?u.119
+h_1 : Unit → motive [] [] ⋯
+h_2 :
+  (v : Val) →
+    (vs : List Val) →
+      (a : Ty) →
+        (as : List Ty) →
+          (hv : HasTypeVQ P B Ψ Q C Γ v a) → (hs : HasTypeVsQ P B Ψ Q C Γ vs as) → motive (a :: as) (v :: vs) ⋯
+a✝⁵ : StoreTy
+a✝⁴ : NoFailCtx
+a✝³ : List TParam
+a✝² : List (Option Ty)
+a✝¹ : List Val
+a✝ : List Ty
+h✝ : HasTypeVsQ P B a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝
+⊢ Ψ = a✝⁵ → Q = a✝⁴ → C = a✝³ → Γ = a✝² → vs✝ = a✝¹ → as✝ = a✝ → h✝¹ ≍ h✝ → motive as✝ vs✝ h✝¹ after processing
+  _, _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:93:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:99:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasTypeEachQ.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+a : Ty
+vs✝ : List Val
+h✝¹ : HasTypeEachQ P B Ψ Q C Γ vs✝ a
+motive : (vs : List Val) → HasTypeEachQ P B Ψ Q C Γ vs a → Sort ?u.122
+h_1 : Unit → motive [] ⋯
+h_2 :
+  (v : Val) →
+    (vs : List Val) → (hv : HasTypeVQ P B Ψ Q C Γ v a) → (hs : HasTypeEachQ P B Ψ Q C Γ vs a) → motive (v :: vs) ⋯
+a✝⁵ : StoreTy
+a✝⁴ : NoFailCtx
+a✝³ : List TParam
+a✝² : List (Option Ty)
+a✝¹ : List Val
+a✝ : Ty
+h✝ : HasTypeEachQ P B a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝
+⊢ Ψ = a✝⁵ → Q = a✝⁴ → C = a✝³ → Γ = a✝² → vs✝ = a✝¹ → a = a✝ → h✝¹ ≍ h✝ → motive vs✝ h✝¹ after processing
+  _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:99:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:106:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasTypeCQ.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R✝ : Option Ty
+ε✝ : Eff
+a✝⁸ : Ty
+m✝ : Comp
+h✝¹ : HasTypeCQ P B Ψ Q C Γ R✝ m✝ a✝⁸ ε✝ Δl
+motive : (R : Option Ty) → (ε : Eff) → (a : Ty) → (m : Comp) → HasTypeCQ P B Ψ Q C Γ R m a ε Δl → Sort ?u.153
+h_1 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (kind : BuilderKind) →
+          (body : Comp) →
+            (hw : Ty.WF 0 C.length kind.contents) →
+              (hb : HasTypeCQ P B Ψ Q C (none :: Γ) R body a ε (some kind :: Δl)) →
+                motive R ε a (Comp.builderLet kind body) ⋯
+h_2 :
+  (R : Option Ty) →
+    (kind : BuilderKind) →
+      (op : BuilderOp) →
+        (ref : LocalRef) →
+          (args : List Val) →
+            (hw : Ty.WF 0 C.length kind.contents) →
+              (hr : LocalRef.HasKind Ψ Δl ref kind) →
+                (ha : HasTypeVsQ P B Ψ Q C Γ args (op.params kind)) →
+                  motive R Eff.empty (op.result kind) (Comp.builderOp kind op ref args) ⋯
+h_3 : (R : Option Ty) → (a : Ty) → (v : Val) → (hv : HasTypeVQ P B Ψ Q C Γ v a) → motive R Eff.empty a (Comp.ret v) ⋯
+h_4 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (m : Comp) →
+          (a_1 : Ty) →
+            (ε_1 : Eff) →
+              (hm : HasTypeCQ P B Ψ Q C Γ R m a_1 ε_1 Δl) →
+                (a_2 : a_1.Le a) → (a_3 : ε_1.Sub ε) → (hw : Ty.WF 0 C.length a) → motive R ε a m ⋯
+h_5 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (m : Comp) → (ε_1 : Eff) → (hm : HasTypeCQ P B Ψ Q C Γ R m a ε_1 Δl) → (a_1 : ε_1.Sub ε) → motive R ε a m ⋯
+h_6 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (m n : Comp) →
+          (a_1 : Ty) →
+            (hm : HasTypeCQ P B Ψ Q C Γ R m a_1 ε Δl) →
+              (hn : HasTypeCQ P B Ψ Q C (some a_1 :: Γ) R n a ε (LocalCtx.extend 1 Δl)) → motive R ε a (m.letIn n) ⋯
+h_7 :
+  (R : Option Ty) →
+    (ε : EffR) →
+      (a : Ty) →
+        (f : Val) →
+          (args : List Val) →
+            (names : List String) →
+              (as : List Ty) →
+                (hf : HasTypeVQ P B Ψ Q C Γ f (Ty.fn names as a ε)) →
+                  (hs : HasTypeVsQ P B Ψ Q C Γ args as) → motive R ε a (Comp.app f args) ⋯
+h_8 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (v : Val) →
+          (m n : Comp) →
+            (hv : HasTypeVQ P B Ψ Q C Γ v (Ty.base BaseTy.boolean)) →
+              (hm : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) →
+                (hn : HasTypeCQ P B Ψ Q C Γ R n a ε Δl) → motive R ε a (Comp.ite v m n) ⋯
+h_9 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (v : Val) →
+          (arms : List Arm) →
+            (a_1 : Ty) →
+              (hv : HasTypeVQ P B Ψ Q C Γ v a_1) →
+                (hs : HasTypeArmsQ P B Ψ Q C Γ R arms a_1 a ε Δl) →
+                  (a_2 : Exhaustive P a_1 (unguardedPats arms)) → motive R ε a (Comp.match v arms) ⋯
+h_10 :
+  (R : Option Ty) →
+    (m : Comp) →
+      (a : Ty) →
+        (hm : HasTypeCQ P B Ψ.hideBuilders Q C (hideConts Γ) none m a Eff.empty) → motive R Eff.empty a.lazy m.lazyC ⋯
+h_11 :
+  (ε : Eff) →
+    (a r : Ty) →
+      (v : Val) → (hv : HasTypeVQ P B Ψ Q C Γ v r) → (a_1 : Ty.WF 0 C.length a) → motive (some r) ε a (Comp.escape v) ⋯
+h_12 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (v : Val) →
+          (o : OpaqueName) →
+            (m : Comp) →
+              (hv : HasTypeVQ P B Ψ Q C Γ v (Ty.opaqueTop o)) →
+                (a_1 : B.isResource o = true) →
+                  (hm : HasTypeCQ P B Ψ Q C Γ R m a ε Δl) →
+                    (a_2 : ε.mem (Atom.nameTop stateEff)) → motive R ε a (Comp.use v m) ⋯
+h_13 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (m : Comp) →
+          (h : List Clause) →
+            (εm : Eff) →
+              (hm : HasTypeCQ P B Ψ Q C Γ R m a εm Δl) →
+                (a_1 : εm.Sub (ε.union (handled P B h))) →
+                  (hs : HasTypeClausesQ P B Ψ Q C Γ R εm h a ε Δl) → motive R ε a (m.handle h) ⋯
+h_14 :
+  (R : Option Ty) →
+    (a : Ty) →
+      (m : Comp) →
+        (h : List Clause) →
+          (E : Ty) →
+            (eb Rest ec : Eff) →
+              (hm : HasTypeCQ P B Ψ Q C Γ R m a eb Δl) →
+                (a_1 : eb.Sub ((Eff.singleFail E).union Rest)) →
+                  (a_2 : NoFail Q Rest) →
+                    (hc : HasFailureClause P B Ψ Q C Γ E R h a ec Δl) → motive R (Rest.union ec) a (m.handle h) ⋯
+h_15 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (i : Nat) →
+          (v : Val) →
+            (b : Ty) →
+              (a_1 : Γ[i]? = some (some (b.cont a ε))) →
+                (hv : HasTypeVQ P B Ψ Q C Γ v b) → motive R ε a (Comp.resume (Val.var i) v) ⋯
+h_16 :
+  (R : Option Ty) →
+    (ε : Eff) →
+      (a : Ty) →
+        (l : Nat) →
+          (v : Val) →
+            (b : Ty) →
+              (a_1 : Ψ l = some (LocTy.cont b a ε R)) →
+                (hv : HasTypeVQ P B Ψ Q C Γ v b) → motive R ε a (Comp.resume (Val.loc l) v) ⋯
+h_17 :
+  (R : Option Ty) →
+    (v : Val) →
+      (cl : ClassName) →
+        (τ : Ty) →
+          (cd : ClassDecl) →
+            (m : MethName) →
+              (ms : MethSig) →
+                (ss : List Ty) →
+                  (es : List Eff) →
+                    (ws : List Val) →
+                      (hv : HasTypeVQ P B Ψ Q C Γ v (Ty.dict cl τ)) →
+                        (a : P.classes cl = some cd) →
+                          (a_1 : cd.methods m = some ms) →
+                            (a_2 : NamesWF ms.names ms.params) →
+                              (a_3 : SatAll B C ss ms.tparams) →
+                                (a_4 :
+                                    ∀ (t : Ty),
+                                      t ∈ ss ++ [τ] → Ty.WF 0 C.length t ∧ ∀ (b r : Ty) (e : EffR), t ≠ b.cont r e) →
+                                  (a_5 : MethodRowsAdmissible C Q ms es) →
+                                    (hs : HasTypeVsQ P B Ψ Q C Γ ws (List.map (Ty.subst (ss ++ [τ]) es) ms.params)) →
+                                      motive R (Eff.substAt 0 (ss ++ [τ]) es ms.eff) (Ty.subst (ss ++ [τ]) es ms.ret)
+                                        (Comp.meth v m ss es ws) ⋯
+a✝⁷ : StoreTy
+a✝⁶ : NoFailCtx
+a✝⁵ : List TParam
+a✝⁴ : List (Option Ty)
+a✝³ : Option Ty
+a✝² : Comp
+a✝¹ : Ty
+a✝ : Eff
+Δ : optParam LocalCtx []
+h✝ : HasTypeCQ P B a✝⁷ a✝⁶ a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝ Δ
+⊢ Ψ = a✝⁷ →
+    Q = a✝⁶ →
+      C = a✝⁵ →
+        Γ = a✝⁴ →
+          R✝ = a✝³ → m✝ = a✝² → a✝⁸ = a✝¹ → ε✝ = a✝ → Δl = Δ → h✝¹ ≍ h✝ → motive R✝ ε✝ a✝⁸ m✝ h✝¹ after processing
+  _, _, _, _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:106:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:131:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasTypeArmsQ.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+a b : Ty
+ε : Eff
+arms✝ : List Arm
+h✝¹ : HasTypeArmsQ P B Ψ Q C Γ R arms✝ a b ε Δl
+motive : (arms : List Arm) → HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl → Sort ?u.161
+h_1 : (a_1 : Ty.WF 0 C.length b) → motive [] ⋯
+h_2 :
+  (alts : List Alt) →
+    (body : Comp) →
+      (arms : List Arm) →
+        (δ : List Ty) →
+          (hp : AltsTy P alts a δ) →
+            (hm : HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε (LocalCtx.extend δ.length Δl)) →
+              (hs : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) → motive (Arm.mk alts none body :: arms) ⋯
+h_3 :
+  (alts : List Alt) →
+    (guard body : Comp) →
+      (arms : List Arm) →
+        (δ : List Ty) →
+          (hp : AltsTy P alts a δ) →
+            (hg :
+                HasTypeCQ P B Ψ Q C (hideConts (binds δ ++ Γ)) none guard (Ty.base BaseTy.boolean) Eff.empty
+                  (LocalCtx.extend δ.length Δl)) →
+              (hm : HasTypeCQ P B Ψ Q C (binds δ ++ Γ) R body b ε (LocalCtx.extend δ.length Δl)) →
+                (hs : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl) → motive (Arm.mk alts (some guard) body :: arms) ⋯
+a✝⁸ : StoreTy
+a✝⁷ : NoFailCtx
+a✝⁶ : List TParam
+a✝⁵ : List (Option Ty)
+a✝⁴ : Option Ty
+a✝³ : List Arm
+a✝² a✝¹ : Ty
+a✝ : Eff
+Δ : optParam LocalCtx []
+h✝ : HasTypeArmsQ P B a✝⁸ a✝⁷ a✝⁶ a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝ Δ
+⊢ Ψ = a✝⁸ →
+    Q = a✝⁷ →
+      C = a✝⁶ →
+        Γ = a✝⁵ →
+          R = a✝⁴ → arms✝ = a✝³ → a = a✝² → b = a✝¹ → ε = a✝ → Δl = Δ → h✝¹ ≍ h✝ → motive arms✝ h✝¹ after processing
+  _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:131:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:139:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasTypeClausesQ.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+εb : Eff
+t : Ty
+ε : Eff
+cs✝ : List Clause
+h✝¹ : HasTypeClausesQ P B Ψ Q C Γ R εb cs✝ t ε Δl
+motive : (cs : List Clause) → HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl → Sort ?u.164
+h_1 : Unit → motive [] ⋯
+h_2 :
+  (o : OpRef) →
+    (n k : Nat) →
+      (body : Comp) →
+        (cs : List Clause) →
+          (sg : OpSig) →
+            (a : ClauseSig P B εb o sg) →
+              (a_1 : NamesWF sg.names sg.params) →
+                (a_2 : n = sg.params.length) →
+                  (a_3 : k = sg.tparams.length) →
+                    (a_4 : Eff.WF 0 C.length ε) →
+                      (hm :
+                          HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
+                            (some (sg.ret.cont (Ty.shift k 0 t) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
+                            (Option.map (Ty.shift k 0) R) body (Ty.shift k 0 t) (Eff.shift k 0 ε)) →
+                        (hs : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl) → motive (Clause.mk o n k body :: cs) ⋯
+a✝⁸ : StoreTy
+a✝⁷ : NoFailCtx
+a✝⁶ : List TParam
+a✝⁵ : List (Option Ty)
+a✝⁴ : Option Ty
+a✝³ : Eff
+a✝² : List Clause
+a✝¹ : Ty
+a✝ : Eff
+Δ : optParam LocalCtx []
+h✝ : HasTypeClausesQ P B a✝⁸ a✝⁷ a✝⁶ a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝ Δ
+⊢ Ψ = a✝⁸ →
+    Q = a✝⁷ →
+      C = a✝⁶ →
+        Γ = a✝⁵ →
+          R = a✝⁴ → εb = a✝³ → cs✝ = a✝² → t = a✝¹ → ε = a✝ → Δl = Δ → h✝¹ ≍ h✝ → motive cs✝ h✝¹ after processing
+  _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:139:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:145:4: Tactic `cases` failed with a nested error:
+Tactic `induction` failed: recursor `Benitoite.Release.HasFailureClause.casesOn` can only eliminate into `Prop`
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+E : Ty
+R : Option Ty
+t : Ty
+ε : Eff
+h✝ : List Clause
+hc✝¹ : HasFailureClause P B Ψ Q C Γ E R h✝ t ε Δl
+motive : (h : List Clause) → HasFailureClause P B Ψ Q C Γ E R h t ε Δl → Sort ?u.166
+h_1 :
+  (body : Comp) →
+    (a : Ty.WF 0 C.length E) →
+      (a_1 : Ty.WF 0 C.length t) →
+        (a_2 : Eff.WF 0 C.length ε) →
+          (hb :
+              HasTypeCQ P B Ψ.hideBuilders Q ({ } :: C) (none :: some (Ty.shift 1 0 E) :: shiftEnv 1 Γ)
+                (Option.map (Ty.shift 1 0) R) body (Ty.shift 1 0 t) (Eff.shift 1 0 ε)) →
+            motive [Clause.fail E body] ⋯
+a✝⁸ : StoreTy
+a✝⁷ : NoFailCtx
+a✝⁶ : List TParam
+a✝⁵ : List (Option Ty)
+a✝⁴ : Ty
+a✝³ : Option Ty
+a✝² : List Clause
+a✝¹ : Ty
+a✝ : Eff
+Δ : optParam LocalCtx []
+hc✝ : HasFailureClause P B a✝⁸ a✝⁷ a✝⁶ a✝⁵ a✝⁴ a✝³ a✝² a✝¹ a✝ Δ
+⊢ Ψ = a✝⁸ →
+    Q = a✝⁷ →
+      C = a✝⁶ →
+        Γ = a✝⁵ →
+          E = a✝⁴ → R = a✝³ → h✝ = a✝² → t = a✝¹ → ε = a✝ → Δl = Δ → hc✝¹ ≍ hc✝ → motive h✝ hc✝¹ after processing
+  _, _
+the dependent pattern matcher can solve the following kinds of equations
+- <var> = <term> and <term> = <var>
+- <term> = <term> where the terms are definitionally equal
+- <constructor> = <constructor>, examples: List.cons x xs = List.cons y ys, and List.cons x xs = List.nil
+error: Benitoite/Release/LocalScope.lean:145:4: Case tag `rhs` not found.
+
+Note: There are no cases to select.
+error: Benitoite/Release/LocalScope.lean:152:26: Invalid field `localRefs`: The environment does not contain `Benitoite.Release.HasTypeVQ.localRefs`, so it is not possible to project the field `localRefs` from an expression
+  h
+of type `HasTypeVQ P B Ψ Q C Γ v a`
+✔ [114/461] Built Benitoite.Release.Lemmas.Basic (327ms)
+✔ [116/461] Built Benitoite.Release.BuilderExec:c.o (185ms)
+✔ [117/461] Built Benitoite.Release.TypeBounds (696ms)
+✔ [119/461] Built Benitoite.Release.SubstEnv (671ms)
+✔ [121/461] Built Benitoite.Release.TypeCongruence (865ms)
+✔ [123/461] Built Benitoite.Release.TypeVariables (1.2s)
+✖ [125/461] Building Benitoite.Release.WellFormed (416ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/WellFormed.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/WellFormed.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/WellFormed.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/WellFormed.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/WellFormed.setup.json --json
+error: Benitoite/Release/WellFormed.lean:26:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/WellFormed.lean:90:46: Unknown constant `Benitoite.Release.Comp.VarsIn`
+error: Benitoite/Release/WellFormed.lean:141:35: Unknown constant `Benitoite.Release.Val.VarsIn`
+error: Benitoite/Release/WellFormed.lean:143:6: Unknown constant `Benitoite.Release.Comp.VarsIn`
+error: Benitoite/Release/WellFormed.lean:152:2: Unknown constant `Benitoite.Release.Comp.VarsIn`
+✔ [140/461] Built Benitoite.Release.TypeScopedSubst (501ms)
+✔ [150/461] Built Benitoite.Release.FailureEffects (315ms)
+✔ [151/461] Built Benitoite.Release.EffectCover (582ms)
+✖ [152/461] Building Benitoite.Release.Lemmas.Rename (5.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Rename.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Rename.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Rename.setup.json --json
+error: Benitoite/Release/Lemmas/Rename.lean:183:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Rename.lean:340:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Rename.lean:446:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+✖ [159/461] Building Benitoite.Release.Lemmas.Inversion (8.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.setup.json --json
+error: Benitoite/Release/Lemmas/Inversion.lean:27:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:44:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:60:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:78:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:95:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:114:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:133:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:159:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:176:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:193:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:458:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:467:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:476:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:489:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:499:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Lemmas/Inversion.lean:509:2: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Some required targets logged failures:
+- Benitoite.Release.LocalScope
+- Benitoite.Release.WellFormed
+- Benitoite.Release.Lemmas.Rename
+- Benitoite.Release.Lemmas.Inversion
+error: build failed
+       11.00 real        67.98 user         5.36 sys
+          1721204736  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1141936  page reclaims
+                   5  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 116  voluntary context switches
+               87967  involuntary context switches
+          1742009832  instructions retired
+           749219680  cycles elapsed
+            32900392  peak memory footprint
+== exit 1

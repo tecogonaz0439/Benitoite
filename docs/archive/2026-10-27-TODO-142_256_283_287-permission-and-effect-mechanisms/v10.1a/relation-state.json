@@ -1,0 +1,106 @@
+{
+  "checkedAtUtc": "2026-10-29T16:47:36.479848+00:00",
+  "base": "e4843058669262a4bf4bfbea9cfbe368a29a1e7b",
+  "head": "e4843058669262a4bf4bfbea9cfbe368a29a1e7b",
+  "branch": "m013/v10.1a",
+  "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "trackedDiffBytes": 0,
+  "indexDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "indexDiffBytes": 0,
+  "untrackedAtAuditStart": [],
+  "untrackedComparisonInputs": [],
+  "sourceState": "../k10.3/source-state.json.gz",
+  "finalState": "../k10.3/k10.3b-final-state.json.gz",
+  "comparedFiles": 4680,
+  "matchedFiles": 4680,
+  "mismatches": [],
+  "hashesReusedFromFinalState": true,
+  "k103bChanges": [
+    {
+      "path": "crates/benitoite/tests/desugar_export.rs",
+      "k103Sha256": "775b6481b6065ad8a6c2c5188433e067bb71489f8dd427fa80727d17e36e8426",
+      "k103bSha256": "733d7ab8d01a16007e83b0b8e60ca656ef8cc936fab9f52b3e447a6393837b53"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "k103Sha256": "a1919f3572ab6b92c05e567680c610283a6bd2d874876323bc1cc51a36440a23",
+      "k103bSha256": "39b86eaab32e5ea214f3d29d1c5de99181fa9ae7c9f0fde7640c6c81efa6345c"
+    },
+    {
+      "path": "scripts/check/test_policy.py",
+      "k103Sha256": "fbd381f5557a0919be9b3a88786e6202bcc1b041fe5986bdadfee30a15fa5a62",
+      "k103bSha256": "bc59853dc9005a8d951b52edb0c68137b1d63e307529175aaa7945e70af3bde2"
+    }
+  ],
+  "committedPatchSha256": "f2beae4f0a2abdc21960746bebb4aabde9e3e2cda56a4ee80d359ca0f5498749",
+  "recordedK103bPatchSha256": "f2beae4f0a2abdc21960746bebb4aabde9e3e2cda56a4ee80d359ca0f5498749",
+  "patchMatches": true,
+  "executables": [
+    {
+      "path": "formal/.lake/build/bin/builtinCheck",
+      "recordedSha256": "be56b7e8ed17f3aad50d0bc7d2040afda6e5d0b571abce441966a558fc1b001b",
+      "exists": true,
+      "bytes": 105558528,
+      "sha256": "be56b7e8ed17f3aad50d0bc7d2040afda6e5d0b571abce441966a558fc1b001b",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/coverageDiff",
+      "recordedSha256": "414952573e6aef85dd141019289cdf618e628534d923d787bc0ce0265aa0f40f",
+      "exists": true,
+      "bytes": 104979488,
+      "sha256": "414952573e6aef85dd141019289cdf618e628534d923d787bc0ce0265aa0f40f",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/coverageProgramDiff",
+      "recordedSha256": "87644040a5cfd2ec5615ae98399a691ba298e4ce01498dc7228856881809e021",
+      "exists": true,
+      "bytes": 105121184,
+      "sha256": "87644040a5cfd2ec5615ae98399a691ba298e4ce01498dc7228856881809e021",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/desugarDiff",
+      "recordedSha256": "3150df168046e6c4a69d63ddde07e3ef558e2e30ffbd7228cfb3f275bad24e7f",
+      "exists": true,
+      "bytes": 105931152,
+      "sha256": "3150df168046e6c4a69d63ddde07e3ef558e2e30ffbd7228cfb3f275bad24e7f",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/intervalDiff",
+      "recordedSha256": "8d136d3ec816c2c46ac9910d32d711c7b7f4100e082ecb989b58aea305fd6b52",
+      "exists": true,
+      "bytes": 106504256,
+      "sha256": "8d136d3ec816c2c46ac9910d32d711c7b7f4100e082ecb989b58aea305fd6b52",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/surfaceCheck",
+      "recordedSha256": "967c8a654ba88a24ef8b52d984c2387d867c8ac81a07ed59da2627aef3e9e18e",
+      "exists": true,
+      "bytes": 107025072,
+      "sha256": "967c8a654ba88a24ef8b52d984c2387d867c8ac81a07ed59da2627aef3e9e18e",
+      "matches": true
+    },
+    {
+      "path": "formal/.lake/build/bin/surfaceCheckAll",
+      "recordedSha256": "adc9328681838baf58053cff432a84a8cd287acda36f0136bc8fb1014030936e",
+      "exists": true,
+      "bytes": 107149696,
+      "sha256": "adc9328681838baf58053cff432a84a8cd287acda36f0136bc8fb1014030936e",
+      "matches": true
+    }
+  ],
+  "additionalConfigurationHashes": {
+    ".cargo/config.toml": {
+      "bytes": 26,
+      "sha256": "cfa18b92df6134d8b83cbdd1527a08ad31a913cd17b6eac019cc362207e92254"
+    },
+    "deny.toml": {
+      "bytes": 303,
+      "sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31"
+    }
+  }
+}

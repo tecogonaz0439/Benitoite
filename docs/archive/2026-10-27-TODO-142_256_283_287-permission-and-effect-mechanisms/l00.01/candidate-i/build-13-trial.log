@@ -1,0 +1,61 @@
+== wait-for-lock start 18:01:45
+== lock acquired 18:02:07 after 22s
+⚠ [35/410] Replayed Benitoite.Release.Typing
+warning: Benitoite/Release/Typing.lean:126:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [103/410] Built Benitoite.Release.BuiltinTable (569ms)
+✔ [104/410] Built Benitoite.Release.TypeBounds (605ms)
+✔ [105/410] Built Benitoite.Release.BuiltinTable:c.o (244ms)
+✔ [106/410] Built Benitoite.Release.TypeBounds:c.o (257ms)
+✔ [107/410] Built Benitoite.Release.SubstEnv (377ms)
+✖ [109/410] Building Benitoite.Release.TypeVariables (491ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeVariables.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeVariables.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeVariables.setup.json --json
+error: Benitoite/Release/TypeVariables.lean:18:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeVariables.lean:47:16: `simp` made no progress
+error: Benitoite/Release/TypeVariables.lean:46:74: unsolved goals
+case ctor
+n : Nat
+pe : Nat → Prop
+φ✝ : TyCon
+h : True
+⊢ Ty.WF n (Ty.ctor φ✝)
+error: Benitoite/Release/TypeVariables.lean:46:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.VarsIn.wf'
+error: Benitoite/Release/TypeVariables.lean:71:16: `simp` made no progress
+error: Benitoite/Release/TypeVariables.lean:70:78: unsolved goals
+case ctor
+n : Nat
+pe : Nat → Prop
+φ✝ : TyCon
+h : True
+⊢ Ty.RowsIn pe (Ty.ctor φ✝)
+error: Benitoite/Release/TypeVariables.lean:70:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.VarsIn.rows'
+error: Benitoite/Release/TypeVariables.lean:104:16: `simp` made no progress
+error: Benitoite/Release/TypeVariables.lean:102:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.VarsIn.mono'
+✔ [113/410] Built Benitoite.Release.TypeCongruence (463ms)
+Some required targets logged failures:
+- Benitoite.Release.TypeVariables
+error: build failed
+        1.19 real         2.50 user         1.03 sys
+           734052352  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              245072  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  20  voluntary context switches
+               12371  involuntary context switches
+          1346256971  instructions retired
+           537104630  cycles elapsed
+            24413504  peak memory footprint
+== exit 1

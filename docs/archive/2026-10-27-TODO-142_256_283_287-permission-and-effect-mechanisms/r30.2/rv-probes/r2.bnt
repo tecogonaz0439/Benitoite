@@ -1,0 +1,20 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit uses File.Read["<probes>/allowed/**"], File.Read, Console.Write
+ bind checked <- Scope.checkPathIn(pattern: "<probes>/allowed/**", path: "<probes>/allowed/in3.txt")
+ match checked with
+ case Result.Ok(p) ->
+  bind a <- handle File.readTextIn(path: p) with
+   case File.readText(path) -> resume(Result.Ok("old clause"))
+  end handle
+  bind b <- handle File.readText(path: "<probes>/allowed/in3.txt") with
+   case File.readTextIn(path) -> resume(Result.Ok("new clause"))
+  end handle
+  bind c <- handle File.readTextIn(path: p) with
+   case File.readTextIn(path) -> resume(Result.Ok("new clause"))
+  end handle
+  Console.writeLine("${Result.unwrapOr(r: a, fallback: "E")} ${Result.unwrapOr(r: b, fallback: "E")} ${Result.unwrapOr(r: c, fallback: "E")}")
+ case Result.Error(e) -> Console.writeLine("rejected")
+ end match
+end function

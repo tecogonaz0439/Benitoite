@@ -25,6 +25,9 @@ structure BuiltinEntry where
   opEff : Option String
   classConstraints : List (String × Nat)
   unconvertibleTypes : List String
+  /-- 範囲の変数ごとの対象の種類（`PrimSig.rkinds`）と IO の形（`PrimSig.shape`）。sidecar 7 で加えた。 -/
+  rkinds : List Scope.Domain.Kind
+  shape : Scope.Signature.IOShape
   deriving ToJson, FromJson
 
 structure DataCtorEntry where
@@ -57,6 +60,23 @@ structure DataSummary where
   key : TypeSummary
   deriving ToJson, FromJson
 
+/-- 名前ごとの保持する要求の型（`valContent` の有限の表）。内容は交換の型（`Exchange.Ty`）であり、`Http.RequestIn` には
+`Http.ClientRequest` のレコードの型（`{"data":{"name":…,"args":[]}}`）を書く（L40.3c。それより前の sidecar 7 の入力は
+型の名前の文字列を書いていたが、型として読めないので拒否する）。 -/
+structure ContentEntry where
+  name : String
+  content : Ty
+  deriving ToJson, FromJson
+
+/-- 表の項目の内容の型を Release の型へ変換した有限の表。 -/
+def ContentEntry.table (xs : List ContentEntry) : Except String (List (String × Benitoite.Release.Ty)) :=
+  xs.mapM fun e => return (e.name, ← e.content.toRelease)
+
+/-- 有限の表の先頭の項目を引く。同じ名前の重複は `readBuiltins` が拒否し、変換できない内容は `readBuiltins` が拒否する
+（変換に失敗した項目は、ここでは項目がないものとして読む）。 -/
+def ContentEntry.lookup (xs : List ContentEntry) (n : String) : Option Benitoite.Release.Ty :=
+  (xs.find? (·.name == n)).bind fun e => e.content.toRelease.toOption
+
 structure BuiltinInput where
   group : String
   name : String
@@ -69,6 +89,12 @@ structure BuiltinInput where
   /-- 元の入力が import していない標準ライブラリの宣言。名前は入力の表へ移してある。 -/
   supplementalData : List (String × String)
   supplementalPrims : List String
+  /-- 表のデータ（`Builtins.effKind`・`valKind`・`admitsR`・`valContent`）。sidecar 7 で加えた。旧版は空の表
+  （`Builtins` の既定の値）で読む。正しさは信頼の対象である（設計書 07-04「形式化で仮定するもの」）。 -/
+  effKinds : List KindEntry
+  valKinds : List KindEntry
+  admitsR : List AdmitsEntry
+  valContents : List ContentEntry
   deriving ToJson, FromJson
 
 structure BuiltinCorpus where
@@ -88,7 +114,7 @@ abbrev DataMaterial := Benitoite.Surface.CheckTables.DataMaterial
 
 /-- opaque の型引数を文字列に埋め込む旧交換形式は、型の置き換えに対応しない。 -/
 partial def Ty.hasOpaqueArguments : Ty → Except String Bool
-  | .opaque n => do
+  | .opaque n _ => do
       let pieces := n.splitOn ":"
       let some id := pieces.head? | throw s!"invalid opaque name: {n}"
       if id.toNat?.isNone then throw s!"invalid opaque type id: {n}"
@@ -159,12 +185,23 @@ def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := d
     kind := ← primKind b.kind
     opEff := b.opEff }
 
+/-- 署名に範囲の変数の種類と IO の形を入れる（材料 `PrimMaterial` は持たないので、署名を作った後に入れる）。 -/
+def BuiltinEntry.withRanges (b : BuiltinEntry) (sg : Benitoite.Release.PrimSig) : Benitoite.Release.PrimSig :=
+  { sg with rkinds := b.rkinds, shape := b.shape }
+
 def DataEntry.info (d : DataEntry) : DataTypeInfo :=
   ⟨d.builtin, d.package, d.name, d.typeName, d.isRecord, d.extensible⟩
 
 def readBuiltins (j : Json) : Except String BuiltinCorpus := do
   let c : BuiltinCorpus ← fromJson? (← exchangeJson "builtins" j)
   for i in c.inputs do
+    -- 表のデータは名前ごとに一つ。同じ名前の二つの項目のどちらかを黙って選ばない。
+    let unique := fun (ns : List String) => ns.eraseDups.length == ns.length
+    if !unique (i.effKinds.map (·.name)) || !unique (i.valKinds.map (·.name)) ||
+        !unique (i.admitsR.map (·.name)) || !unique (i.valContents.map (·.name)) then
+      throw "duplicate table data entry"
+    -- 保持する要求の型は Release の型へ変換できなければならない（変換できない項目を黙って欠かさない）。
+    let _ ← ContentEntry.table i.valContents
     i.prims.forM BuiltinEntry.validateFormat
     validateDataTypes (i.dataDecls.map DataEntry.info)
     for d in i.dataDecls do
@@ -228,7 +265,7 @@ def BuiltinInput.primSignatures (b : BuiltinInput) (S : Benitoite.Release.Summar
     if p.unconvertibleTypes.isEmpty && p.classConstraints.isEmpty then
       let m ← p.toMaterial
       let cs := m.constraints
-      sigs := sigs ++ [(p.name, m.toPrimSig (fun C ts => Benitoite.Release.admitsB S cs C ts = true))]
+      sigs := sigs ++ [(p.name, p.withRanges (m.toPrimSig (fun C ts => Benitoite.Release.admitsB S cs C ts = true)))]
   return sigs
 
 /-- 入力ごとの具体的な組み込みの表。宣言の検査では実行の欄を使わない。
@@ -238,13 +275,31 @@ def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Builtins := 
   let sigs ← b.primSignatures S
   return {
     sig := fun name => (sigs.find? (fun p => p.1 == name)).map Prod.snd
-    delta := fun _ _ _ _ => none
-    ioResponse := fun _ _ _ _ _ => False
+    delta := fun _ _ _ _ _ => none
+    ioResponse := fun _ _ _ _ _ _ => False
     releaseResponse := fun _ _ => False
     isResource := b.isResource
     effects := b.effectOps
     sat := fun C t p => Benitoite.Release.satB S C t p = true
     refGet := ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get"
-    refSet := ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set" }
+    refSet := ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"
+    effKind := KindEntry.lookup b.effKinds
+    valKind := KindEntry.lookup b.valKinds
+    admitsR := AdmitsEntry.admitsR b.admitsR
+    valContent := ContentEntry.lookup b.valContents }
+
+/-- 表の組み込みの表に、交換した表のデータを入れる（`CheckTables.builtins` は表のデータを持たない）。 -/
+def BuiltinInput.withTableData (b : BuiltinInput) (B : Benitoite.Release.Builtins) : Benitoite.Release.Builtins :=
+  { B with
+    effKind := KindEntry.lookup b.effKinds
+    valKind := KindEntry.lookup b.valKinds
+    admitsR := AdmitsEntry.admitsR b.admitsR
+    valContent := ContentEntry.lookup b.valContents }
+
+/-- 検査の入力の判定 `admitsRDec` は、表のデータを入れた組み込みの表の `admitsR` と合う
+（`Check.Input.Sound` の欄 `admitsR` の内容）。 -/
+theorem BuiltinInput.admitsRDec_sound (b : BuiltinInput) (B : Benitoite.Release.Builtins) :
+    Benitoite.Surface.CheckRanges.AdmitsRDecSound (b.withTableData B) (AdmitsEntry.admitsRDec b.admitsR) :=
+  fun _ _ h => AdmitsEntry.admitsRDec_sound h
 
 end Benitoite.Exchange

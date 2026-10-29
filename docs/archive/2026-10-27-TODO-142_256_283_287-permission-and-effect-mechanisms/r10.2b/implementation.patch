@@ -1,0 +1,3568 @@
+diff --git a/crates/benitoite/examples/derive_inventory/mod.rs b/crates/benitoite/examples/derive_inventory/mod.rs
+index 41418171..a4e99305 100644
+--- a/crates/benitoite/examples/derive_inventory/mod.rs
++++ b/crates/benitoite/examples/derive_inventory/mod.rs
+@@ -112,7 +112,7 @@ impl Output<'_> {
+     }
+     fn dependencies(&self, ty: &Ty, out: &mut Vec<String>) {
+         match ty {
+-            Ty::Con(con, args) => {
++            Ty::Con(con, args, _) => {
+                 if let TyCon::Adt(id) | TyCon::External(id) = con {
+                     let name = self.name(*id);
+                     if !out.contains(&name) {
+diff --git a/crates/benitoite/examples/derive_inventory/schema.rs b/crates/benitoite/examples/derive_inventory/schema.rs
+index 34771eb1..b061b8e2 100644
+--- a/crates/benitoite/examples/derive_inventory/schema.rs
++++ b/crates/benitoite/examples/derive_inventory/schema.rs
+@@ -50,7 +50,10 @@ impl Output<'_> {
+     }
+     pub(super) fn ty(&self, ty: &Ty, s: &Scheme) -> Result<Value, Error> {
+         match ty {
+-            Ty::Con(con, args) => {
++            Ty::Con(con, args, ix) => {
++                if *ix != benitoite::types::builtin::RangeIndex::TOP {
++                    return Err(text::INVALID_SCHEMA.into());
++                }
+                 if self.con_arity(*con)? != args.len() {
+                     return Err(text::INVALID_SCHEMA.into());
+                 }
+@@ -285,6 +288,7 @@ impl Output<'_> {
+                     ret: Ty::Con(
+                         TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::UNIT),
+                         vec![],
++                        benitoite::types::builtin::RangeIndex::TOP,
+                     ),
+                     effects: EffectSet::empty(),
+                     wrote_io_all: false,
+diff --git a/crates/benitoite/src/builtins/table.rs b/crates/benitoite/src/builtins/table.rs
+index 972aa5f8..b3b152d8 100644
+--- a/crates/benitoite/src/builtins/table.rs
++++ b/crates/benitoite/src/builtins/table.rs
+@@ -766,11 +766,21 @@ pub fn list_pattern_builtin(op: ListPatternOp) -> Option<BuiltinId> {
+ /// 型パラメータは `T` 一つ（`Equality` は組み込みの制約 `equality` を持つ）か、ない。エフェクトは空集合である。
+ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
+     use crate::types::{BuiltinConstraint, EffectSet, ParamKind, Ty, TyCon, TypeParamInfo};
+-    let basic = |id| Ty::Con(TyCon::Builtin(id), Vec::new());
++    let basic = |id| {
++        Ty::Con(
++            TyCon::Builtin(id),
++            Vec::new(),
++            crate::types::builtin::RangeIndex::TOP,
++        )
++    };
+     let integer = basic(BuiltinTypeId::INTEGER);
+     let boolean = basic(BuiltinTypeId::BOOLEAN);
+     let string = basic(BuiltinTypeId::STRING);
+-    let list = Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![Ty::Param(0)]);
++    let list = Ty::Con(
++        TyCon::Builtin(BuiltinTypeId::LIST),
++        vec![Ty::Param(0)],
++        crate::types::builtin::RangeIndex::TOP,
++    );
+     let mut type_params = Vec::new();
+     let (params, ret) = match builtin_kind(id)? {
+         EntryKind::Declared | EntryKind::EffectOp => return None,
+@@ -892,7 +902,11 @@ mod tests {
+     use crate::types::{BuiltinConstraint, EffectSet, ParamKind, Ty, TyCon, TypeParamInfo};
+ 
+     fn basic(id: BuiltinTypeId) -> Ty {
+-        Ty::Con(TyCon::Builtin(id), vec![])
++        Ty::Con(
++            TyCon::Builtin(id),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP,
++        )
+     }
+ 
+     #[test]
+@@ -1275,7 +1289,11 @@ mod tests {
+             }
+         }
+         assert!(interpolation_builtin(BuiltinTypeId::STRING).is_none());
+-        let list = Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![Ty::Param(0)]);
++        let list = Ty::Con(
++            TyCon::Builtin(BuiltinTypeId::LIST),
++            vec![Ty::Param(0)],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let integer = basic(BuiltinTypeId::INTEGER);
+         for &(op, name) in LIST_PATTERN {
+             let id = list_pattern_builtin(op).unwrap();
+diff --git a/crates/benitoite/src/bytecode/codegen/emit.rs b/crates/benitoite/src/bytecode/codegen/emit.rs
+index 33cd0e82..99906030 100644
+--- a/crates/benitoite/src/bytecode/codegen/emit.rs
++++ b/crates/benitoite/src/bytecode/codegen/emit.rs
+@@ -298,7 +298,13 @@ impl<'p> Gen<'p> {
+                 )
+                 || std::iter::once(&report.cause)
+                     .chain(report.message.iter())
+-                    .any(|v| v.ty != Ty::Con(TyCon::Builtin(BuiltinTypeId::STRING), vec![]))
++                    .any(|v| {
++                        v.ty != Ty::Con(
++                            TyCon::Builtin(BuiltinTypeId::STRING),
++                            vec![],
++                            crate::types::builtin::RangeIndex::TOP,
++                        )
++                    })
+             {
+                 return Err(internal("invalid exit report call"));
+             }
+@@ -659,7 +665,7 @@ fn plan(intrinsic: Intrinsic, types: &TypeArgs) -> CgResult<Plan> {
+ fn equality(ty: &Ty, negate: bool) -> CgResult<Plan> {
+     use BuiltinTypeId as T;
+     let op = match ty {
+-        Ty::Con(TyCon::Builtin(id), _) => match *id {
++        Ty::Con(TyCon::Builtin(id), _, _) => match *id {
+             T::INTEGER => Opcode::EqI,
+             T::FLOAT => Opcode::EqF,
+             T::DECIMAL => Opcode::EqD,
+@@ -681,7 +687,7 @@ fn equality(ty: &Ty, negate: bool) -> CgResult<Plan> {
+             | T::FLOAT32 => Opcode::EqV,
+             _ => return Err(internal("equality on an opaque type")),
+         },
+-        Ty::Con(TyCon::Adt(_) | TyCon::External(_), _)
++        Ty::Con(TyCon::Adt(_) | TyCon::External(_), _, _)
+         | Ty::Param(_)
+         | Ty::App(_, _)
+         | Ty::Rigid { .. } => Opcode::EqV,
+@@ -1672,6 +1678,7 @@ fn const_ty(c: &Const) -> Ty {
+             Const::Decimal(_) => T::DECIMAL,
+         }),
+         Vec::new(),
++        crate::types::builtin::RangeIndex::TOP,
+     )
+ }
+ 
+diff --git a/crates/benitoite/src/bytecode/codegen/tests.rs b/crates/benitoite/src/bytecode/codegen/tests.rs
+index 6246be28..10dcfa01 100644
+--- a/crates/benitoite/src/bytecode/codegen/tests.rs
++++ b/crates/benitoite/src/bytecode/codegen/tests.rs
+@@ -878,7 +878,11 @@ pub(super) fn over_limit_program(items: usize, two: bool) -> (LowerProgram, Arc<
+                 (0..items)
+                     .map(|i| LowVal {
+                         kind: ValKind::Const(Const::Int(i64::try_from(i).unwrap())),
+-                        ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]),
++                        ty: Ty::Con(
++                            TyCon::Builtin(BuiltinTypeId::INTEGER),
++                            vec![],
++                            crate::types::builtin::RangeIndex::TOP,
++                        ),
+                         origin: def.span,
+                     })
+                     .collect(),
+@@ -985,7 +989,11 @@ fn builtin_value_prototypes_respect_type_dependent_instructions() {
+                 kind: ValKind::Builtin {
+                     id,
+                     targs: TypeArgs {
+-                        tys: vec![TypeArg::Ty(Ty::Con(TyCon::Builtin(ty), vec![]))],
++                        tys: vec![TypeArg::Ty(Ty::Con(
++                            TyCon::Builtin(ty),
++                            vec![],
++                            crate::types::builtin::RangeIndex::TOP,
++                        ))],
+                         effects: vec![],
+                     },
+                     info: BuiltinInfo {
+@@ -1030,7 +1038,11 @@ fn nested_prototype_limits_are_reported_once_per_definition() {
+                 *items = (0..70000)
+                     .map(|i| LowVal {
+                         kind: ValKind::Const(Const::Int(i)),
+-                        ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]),
++                        ty: Ty::Con(
++                            TyCon::Builtin(BuiltinTypeId::INTEGER),
++                            vec![],
++                            crate::types::builtin::RangeIndex::TOP,
++                        ),
+                         origin: value.origin,
+                     })
+                     .collect();
+@@ -1112,7 +1124,12 @@ fn malformed_length_cases_are_internal_errors() {
+                 kind: ValKind::List(vec![]),
+                 ty: Ty::Con(
+                     TyCon::Builtin(BuiltinTypeId::LIST),
+-                    vec![Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![])],
++                    vec![Ty::Con(
++                        TyCon::Builtin(BuiltinTypeId::INTEGER),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP,
++                    )],
++                    crate::types::builtin::RangeIndex::TOP,
+                 ),
+                 origin: def.span,
+             },
+diff --git a/crates/benitoite/src/cli/inspection.rs b/crates/benitoite/src/cli/inspection.rs
+index 7fc83449..86a1574c 100644
+--- a/crates/benitoite/src/cli/inspection.rs
++++ b/crates/benitoite/src/cli/inspection.rs
+@@ -90,14 +90,19 @@ pub(super) fn function_contract(
+             .flat_map(|effective| &effective.origins)
+             .filter(|origin| origin.file)
+             .flat_map(|origin| {
+-                origin.effects.names.iter().map(|effect| match effect {
+-                    EffectName::Builtin(id, crate::types::scope::Range::Top) => {
+-                        Ok((*id, origin.span))
+-                    }
+-                    EffectName::Builtin(..) | EffectName::User(..) => {
+-                        Err(internal("user or scoped effect in checked file contract"))
+-                    }
+-                })
++                origin
++                    .effects
++                    .names
++                    .iter()
++                    .filter_map(|effect| match effect {
++                        EffectName::Builtin(id, crate::types::scope::Range::Top) => {
++                            Some(Ok((*id, origin.span)))
++                        }
++                        EffectName::User(_, crate::types::scope::Range::Top) => None,
++                        EffectName::Builtin(..) | EffectName::User(..) => {
++                            Some(Err(internal("scoped effect in checked file contract")))
++                        }
++                    })
+             })
+             .collect::<Result<Vec<_>, InternalError>>()?,
+     })
+diff --git a/crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs b/crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs
+index 263a4249..ce7d7667 100644
+--- a/crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs
++++ b/crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs
+@@ -159,7 +159,12 @@ pub(super) fn prepare_examples(
+                     .decl_types
+                     .get(contract.binding)
+                     .ok_or_else(|| internal("doc main scheme missing"))?;
+-                let kind = if scheme.ret == Ty::Con(TyCon::Builtin(BuiltinTy::UNIT), vec![]) {
++                let kind = if scheme.ret
++                    == Ty::Con(
++                        TyCon::Builtin(BuiltinTy::UNIT),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP,
++                    ) {
+                     MainKind::Unit
+                 } else {
+                     MainKind::Result
+diff --git a/crates/benitoite/src/cli/tools/test_runner/mod.rs b/crates/benitoite/src/cli/tools/test_runner/mod.rs
+index b9ecdf13..985bc317 100644
+--- a/crates/benitoite/src/cli/tools/test_runner/mod.rs
++++ b/crates/benitoite/src/cli/tools/test_runner/mod.rs
+@@ -346,7 +346,12 @@ pub fn collect_tests(
+                 stage: text::STAGE_TEST,
+                 message: "test function scheme missing from checked program".into(),
+             })?;
+-        let kind = if scheme.ret == Ty::Con(TyCon::Builtin(BuiltinTy::UNIT), vec![]) {
++        let kind = if scheme.ret
++            == Ty::Con(
++                TyCon::Builtin(BuiltinTy::UNIT),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP,
++            ) {
+             MainKind::Unit
+         } else {
+             // 型検査（E0806）を通ったテストの関数の戻り値は `Unit` か `Result[Unit, String]` である。
+diff --git a/crates/benitoite/src/external/check.rs b/crates/benitoite/src/external/check.rs
+index 73d68163..571ec662 100644
+--- a/crates/benitoite/src/external/check.rs
++++ b/crates/benitoite/src/external/check.rs
+@@ -754,7 +754,7 @@ fn user_type_note(
+     names: &TyNames<'_>,
+     sources: &SourceTable,
+ ) -> DiagBuilder {
+-    if let Ty::Con(crate::types::TyCon::Adt(id), _) = ty
++    if let Ty::Con(crate::types::TyCon::Adt(id), _, _) = ty
+         && let Some(def) = names.adts.get(*id)
+         && matches!(def.name.as_str(), "Option" | "Result" | "Pair" | "Triple")
+         && let Some(source) = sources.get(def.module.file())
+diff --git a/crates/benitoite/src/external/expansion.rs b/crates/benitoite/src/external/expansion.rs
+index 05f73ad7..ac7f345a 100644
+--- a/crates/benitoite/src/external/expansion.rs
++++ b/crates/benitoite/src/external/expansion.rs
+@@ -95,7 +95,7 @@ pub(crate) fn walk<'a, E>(
+         visit(concrete.ty, Visit::Enter).map_err(WalkError::Visitor)?;
+         let mut result = None;
+         let children = match concrete.ty {
+-            Ty::Con(TyCon::Adt(id), args) => {
++            Ty::Con(TyCon::Adt(id), args, _) => {
+                 // パラメータを葉とする宣言の依存を先に検査するため、有限の同型の入れ子を拒まない。
+                 check_dependencies(*id, adts, &mut checked, total).map_err(|error| {
+                     WalkError::Expansion(match error {
+@@ -137,7 +137,7 @@ pub(crate) fn walk<'a, E>(
+                     Vec::new()
+                 }
+             }
+-            Ty::Con(_, args) | Ty::App(_, args) => {
++            Ty::Con(_, args, _) | Ty::App(_, args) => {
+                 args.iter().map(|ty| concrete.child(ty)).collect()
+             }
+             Ty::Fn(f) => f
+@@ -216,7 +216,7 @@ fn check_dependencies(
+             }
+             Work::Type(ty) => {
+                 let args = match ty {
+-                    Ty::Con(con, args) => {
++                    Ty::Con(con, args, _) => {
+                         if let TyCon::Adt(id) = con {
+                             work.push(Work::Declaration(*id));
+                         }
+diff --git a/crates/benitoite/src/external/tests.rs b/crates/benitoite/src/external/tests.rs
+index 21f8a180..1a0718b1 100644
+--- a/crates/benitoite/src/external/tests.rs
++++ b/crates/benitoite/src/external/tests.rs
+@@ -1263,7 +1263,11 @@ fn declaration_plan_checks_dependencies_and_record_fields() {
+         .find(|(_, def)| def.name == "Wrapper")
+         .unwrap();
+     let mut def = def.clone();
+-    let ty = Ty::Con(TyCon::Adt(id), vec![]);
++    let ty = Ty::Con(
++        TyCon::Adt(id),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    );
+     let mut total = 100;
+     assert!(types::plan(&ty, &program.resolved, &program.types.adts, &mut total).is_ok());
+     let mut total = 2;
+diff --git a/crates/benitoite/src/external/types.rs b/crates/benitoite/src/external/types.rs
+index 2f4373ec..d4fddb19 100644
+--- a/crates/benitoite/src/external/types.rs
++++ b/crates/benitoite/src/external/types.rs
+@@ -7,7 +7,7 @@ use crate::types::{AdtTable, Ty, TyCon, builtin::BuiltinTypeId as B};
+ use wasmtime::component::Type;
+ 
+ pub(super) fn is_unit(ty: &Ty) -> bool {
+-    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args) if args.is_empty())
++    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args, _) if args.is_empty())
+ }
+ 
+ // 宣言の名前を残す表と WIT の名前を保存する表を分けることで、
+@@ -61,7 +61,7 @@ pub(super) fn plan<'a>(
+                     return Err(unsupported(ty, Some("map_key")));
+                 }
+                 validate(ty, adts)?;
+-                check_map_key = matches!(ty, Ty::Con(TyCon::Builtin(B::MAP), _));
++                check_map_key = matches!(ty, Ty::Con(TyCon::Builtin(B::MAP), _, _));
+             }
+             Visit::Leave(count) => {
+                 let start = plans
+@@ -123,7 +123,7 @@ fn unsupported<'a>(ty: &'a Ty, note: Option<&'static str>) -> Unsupported<'a> {
+ }
+ 
+ fn scalar(ty: &Ty) -> Option<WitPlan> {
+-    let Ty::Con(TyCon::Builtin(id), args) = ty else {
++    let Ty::Con(TyCon::Builtin(id), args, _) = ty else {
+         return None;
+     };
+     if !args.is_empty() {
+@@ -168,15 +168,20 @@ fn is_map_key(ty: &Ty) -> bool {
+ }
+ 
+ fn validate<'a>(ty: &'a Ty, adts: &'a AdtTable) -> Result<(), Unsupported<'a>> {
++    if let Ty::Con(_, _, ix) = ty
++        && *ix != crate::types::builtin::RangeIndex::TOP
++    {
++        return Err(unsupported(ty, None));
++    }
+     if scalar(ty).is_some() {
+         return Ok(());
+     }
+     match ty {
+-        Ty::Con(TyCon::External(_), args) if args.is_empty() => Ok(()),
+-        Ty::Con(TyCon::Builtin(B::LIST), args) if args.len() == 1 => Ok(()),
+-        Ty::Con(TyCon::Builtin(B::SET), args) if args.len() == 1 => Ok(()),
+-        Ty::Con(TyCon::Builtin(B::MAP), args) if args.len() == 2 => Ok(()),
+-        Ty::Con(TyCon::Adt(id), args) => {
++        Ty::Con(TyCon::External(_), args, _) if args.is_empty() => Ok(()),
++        Ty::Con(TyCon::Builtin(B::LIST), args, _) if args.len() == 1 => Ok(()),
++        Ty::Con(TyCon::Builtin(B::SET), args, _) if args.len() == 1 => Ok(()),
++        Ty::Con(TyCon::Builtin(B::MAP), args, _) if args.len() == 2 => Ok(()),
++        Ty::Con(TyCon::Adt(id), args, _) => {
+             let def = adts.get(*id).ok_or_else(|| unsupported(ty, None))?;
+             if args.len() != def.type_params.len() {
+                 return Err(unsupported(ty, None));
+@@ -200,13 +205,13 @@ fn build<'a>(
+     }
+     let mut children = children.into_iter();
+     match ty {
+-        Ty::Con(TyCon::External(id), _) => Ok(DeclPlan::External(*id)),
+-        Ty::Con(TyCon::Builtin(B::MAP), _) => {
++        Ty::Con(TyCon::External(id), _, _) => Ok(DeclPlan::External(*id)),
++        Ty::Con(TyCon::Builtin(B::MAP), _, _) => {
+             let key = children.next().ok_or_else(|| unsupported(ty, None))?;
+             let value = children.next().ok_or_else(|| unsupported(ty, None))?;
+             Ok(DeclPlan::Map(Box::new(key), Box::new(value)))
+         }
+-        Ty::Con(TyCon::Builtin(B::SET), _) => {
++        Ty::Con(TyCon::Builtin(B::SET), _, _) => {
+             let Some(DeclPlan::Variant { name, cases }) = children.next() else {
+                 return Err(unsupported(ty, Some("flags_data")));
+             };
+@@ -224,24 +229,26 @@ fn build<'a>(
+                     .collect(),
+             })
+         }
+-        Ty::Con(TyCon::Builtin(B::LIST), _) => children
++        Ty::Con(TyCon::Builtin(B::LIST), _, _) => children
+             .next()
+             .map(|plan| DeclPlan::List(Box::new(plan)))
+             .ok_or_else(|| unsupported(ty, None)),
+-        Ty::Con(TyCon::Adt(id), _) if Some(*id) == resolved.stdlib("Benitoite.Option.Option") => {
++        Ty::Con(TyCon::Adt(id), _, _)
++            if Some(*id) == resolved.stdlib("Benitoite.Option.Option") =>
++        {
+             children
+                 .next()
+                 .map(|plan| DeclPlan::Option(Box::new(plan)))
+                 .ok_or_else(|| unsupported(ty, None))
+         }
+-        Ty::Con(TyCon::Adt(id), _)
++        Ty::Con(TyCon::Adt(id), _, _)
+             if ["Benitoite.Pair.Pair", "Benitoite.Triple.Triple"]
+                 .iter()
+                 .any(|name| Some(*id) == stdlib_type(resolved, name)) =>
+         {
+             Ok(DeclPlan::Tuple(children.collect()))
+         }
+-        Ty::Con(TyCon::Adt(id), _) => {
++        Ty::Con(TyCon::Adt(id), _, _) => {
+             let def = adts.get(*id).ok_or_else(|| unsupported(ty, None))?;
+             if let Some(fields) = &def.record {
+                 if fields.len() != children.len() {
+diff --git a/crates/benitoite/src/ir/check.rs b/crates/benitoite/src/ir/check.rs
+index 3620b6a6..2f138b71 100644
+--- a/crates/benitoite/src/ir/check.rs
++++ b/crates/benitoite/src/ir/check.rs
+@@ -145,7 +145,11 @@ struct Checker<'a> {
+ }
+ 
+ fn builtin(id: BuiltinTypeId, args: Vec<Ty>) -> Ty {
+-    Ty::Con(TyCon::Builtin(id), args)
++    Ty::Con(
++        TyCon::Builtin(id),
++        args,
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ 
+ /// V-Const の type(c)。P-Const でも定数の種類を同じ型に対応させる。
+@@ -173,6 +177,9 @@ fn constant_type(c: &Const) -> Ty {
+ // 名前を含む構造上の一致だけでは、不正な名前表どうしの一致を排除できない。
+ // コアの型付けでも個数と一意性を要求する（設計書 02-06「コア IR の検査器」）。
+ fn valid_contracts(ty: &Ty) -> bool {
++    if !ty.indices_valid(0) {
++        return false;
++    }
+     let mut pending = vec![ty];
+     while let Some(ty) = pending.pop() {
+         match ty {
+@@ -182,8 +189,9 @@ fn valid_contracts(ty: &Ty) -> bool {
+                 }
+                 pending.extend(&f.params);
+                 pending.push(&f.ret);
++                pending.extend(&f.effects.failures);
+             }
+-            Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args),
++            Ty::Con(_, args, _) | Ty::App(_, args) => pending.extend(args),
+             Ty::Param(_) | Ty::Rigid { .. } => {}
+         }
+     }
+@@ -434,10 +442,10 @@ impl<'a> Checker<'a> {
+     /// V-Prim・V-Fun の equality・key・ordered。ADT は宣言の要約で判定する。
+     fn satisfies(&self, ty: &Ty, constraint: BuiltinConstraint, env: &Env<'_>) -> bool {
+         if constraint == BuiltinConstraint::Ordered {
+-            return matches!(ty, Ty::Con(TyCon::Builtin(b), args) if args.is_empty() && TySet::ORD.contains(*b));
++            return matches!(ty, Ty::Con(TyCon::Builtin(b), args, _) if args.is_empty() && TySet::ORD.contains(*b));
+         }
+         match ty {
+-            Ty::Fn(_) | Ty::App(_, _) | Ty::Con(TyCon::External(_), _) => false,
++            Ty::Fn(_) | Ty::App(_, _) | Ty::Con(TyCon::External(_), _, _) => false,
+             Ty::Param(i) => at(env.params, *i)
+                 .and_then(|p| p.builtin)
+                 .is_some_and(|c| c == BuiltinConstraint::Key || c == constraint),
+@@ -448,7 +456,7 @@ impl<'a> Checker<'a> {
+                 .and_then(|s| at(&s.type_params, *index))
+                 .and_then(|p| p.builtin)
+                 .is_some_and(|c| c == BuiltinConstraint::Key || c == constraint),
+-            Ty::Con(TyCon::Builtin(b), args) => match b.def() {
++            Ty::Con(TyCon::Builtin(b), args, _) => match b.def() {
+                 Some(d) if usize::from(d.arity) == args.len() => match d.class {
+                     BuiltinTypeClass::Basic => {
+                         constraint != BuiltinConstraint::Key
+@@ -461,7 +469,7 @@ impl<'a> Checker<'a> {
+                 },
+                 Some(_) | None => false,
+             },
+-            Ty::Con(TyCon::Adt(a), args) => self.program.adts.get(*a).is_some_and(|d| {
++            Ty::Con(TyCon::Adt(a), args, _) => self.program.adts.get(*a).is_some_and(|d| {
+                 let allowed = |summary: &crate::types::TypeSummary, c| {
+                     !summary.always
+                         && summary
+@@ -542,7 +550,11 @@ impl<'a> Checker<'a> {
+                         "unknown constructor or incorrect type argument count",
+                     );
+                 }
+-                Some(Ty::Con(TyCon::Adt(*adt), tys.clone()))
++                Some(Ty::Con(
++                    TyCon::Adt(*adt),
++                    tys.clone(),
++                    crate::types::builtin::RangeIndex::TOP,
++                ))
+             }
+             ValKind::List(items) => {
+                 self.list(items, &val.ty, env, val.origin);
+@@ -579,7 +591,7 @@ impl<'a> Checker<'a> {
+                     );
+                 }
+             }
+-            Ty::Con(_, args) | Ty::App(_, args) => {
++            Ty::Con(_, args, _) | Ty::App(_, args) => {
+                 for t in args {
+                     self.rigid_scope(t, env, origin);
+                 }
+@@ -614,7 +626,7 @@ impl<'a> Checker<'a> {
+                 self.effects(lambda.body.origin, &lambda.body.eff, &f.effects);
+                 f.effects.clone()
+             }
+-            Ty::Con(_, _) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
++            Ty::Con(_, _, _) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
+                 lambda.body.eff.clone()
+             }
+         };
+@@ -629,7 +641,7 @@ impl<'a> Checker<'a> {
+     /// V-List。要素の型の最も外側が関数である場合にだけ V-Sub を使う。
+     fn list(&mut self, items: &[CoreVal], ty: &Ty, env: &mut Env<'_>, origin: Span) {
+         let element = match ty {
+-            Ty::Con(TyCon::Builtin(b), args) if *b == BuiltinTypeId::LIST && args.len() == 1 => {
++            Ty::Con(TyCon::Builtin(b), args, _) if *b == BuiltinTypeId::LIST && args.len() == 1 => {
+                 args.first()
+             }
+             Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => None,
+@@ -926,7 +938,7 @@ impl<'a> Checker<'a> {
+     /// C-Use。リソースの表を引き、解放の State を導く。
+     fn use_comp(&mut self, resource: &CoreVal, body: &Comp, comp: &Comp, env: &mut Env<'_>) {
+         self.value(resource, env);
+-        if !matches!(&resource.ty, Ty::Con(TyCon::Builtin(b), args)
++        if !matches!(&resource.ty, Ty::Con(TyCon::Builtin(b), args, _)
+             if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource && usize::from(d.arity) == args.len()))
+         {
+             self.error(resource.origin, "use requires a resource type");
+@@ -1537,6 +1549,7 @@ impl<'a> Checker<'a> {
+                                 | BuiltinTypeId::BOOLEAN
+                                 | BuiltinTypeId::UNIT
+                         ),
++                        _,
+                         _
+                     )
+                 ) {
+@@ -1546,7 +1559,7 @@ impl<'a> Checker<'a> {
+                 }
+             }
+             CorePat::Ctor { adt, tag, args } => match ty {
+-                Ty::Con(TyCon::Adt(a), tys) if a == adt => {
++                Ty::Con(TyCon::Adt(a), tys, _) if a == adt => {
+                     match self.program.adts.field_types(*adt, *tag, tys) {
+                         Some(fields) => {
+                             self.count(origin, "constructor patterns", args.len(), fields.len());
+@@ -1579,7 +1592,7 @@ impl<'a> Checker<'a> {
+                 rest,
+                 after,
+             } => match ty {
+-                Ty::Con(TyCon::Builtin(b), args)
++                Ty::Con(TyCon::Builtin(b), args, _)
+                     if *b == BuiltinTypeId::LIST && args.len() == 1 =>
+                 {
+                     if let Some(t) = args.first() {
+@@ -1950,6 +1963,44 @@ mod tests {
+         )
+     }
+ 
++    // 関門: 型のEqだけでは、検査器が同じ名前の添字を無視する退行を捕まえない。
++    // 公開のcheck_programで受理と拒否を対にし、範囲変数・資源の非Topも同じ境界で断る。
++    #[test]
++    fn indexed_values_are_invariant_and_program_types_are_closed() {
++        use crate::types::builtin::RangeIndex;
++        use crate::types::scope::{PathPattern, Range};
++        let indices = [
++            RangeIndex::TOP,
++            RangeIndex::fixed(Range::Path(PathPattern::parse("/data/**").unwrap())),
++            RangeIndex::fixed(Range::Path(PathPattern::parse("/data/input").unwrap())),
++        ];
++        let ty = |id, ix| Ty::Con(TyCon::Builtin(id), vec![], ix);
++        for a in &indices {
++            for b in &indices {
++                let input = ty(BuiltinTypeId::IO_ERROR, a.clone());
++                let output = ty(BuiltinTypeId::IO_ERROR, b.clone());
++                let p = main_program(
++                    ret(variable(1, output, 1)),
++                    vec![var(1, input)],
++                    EffectSet::empty(),
++                );
++                assert_eq!(check_program(&p).is_empty(), a == b);
++            }
++        }
++        let reader = find_builtin_type(&["IO", "File"], "Reader").unwrap();
++        for t in [
++            ty(BuiltinTypeId::IO_ERROR, RangeIndex::var(0)),
++            ty(reader, indices[1].clone()),
++        ] {
++            let p = main_program(
++                ret(variable(1, t.clone(), 1)),
++                vec![var(1, t)],
++                EffectSet::empty(),
++            );
++            assert!(!check_program(&p).is_empty());
++        }
++    }
++
+     #[test]
+     fn polymorphic_values_applications_and_node_annotations() {
+         let mut id = definition(
+@@ -2777,7 +2828,11 @@ end function
+             param: 1,
+             class: SUPER,
+         };
+-        let target = Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]);
++        let target = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![Ty::Param(0)],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let helper_body = ret(variable(0, Ty::Param(0), 10));
+         let mut helper = definition(
+             ID,
+@@ -2909,12 +2964,27 @@ end function
+         );
+         let mut super_option = definition(
+             BindingId(26),
+-            vec![var(0, Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]))],
+-            Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]),
++            vec![var(
++                0,
++                Ty::Con(
++                    TyCon::Adt(OPTION),
++                    vec![Ty::Param(0)],
++                    crate::types::builtin::RangeIndex::TOP,
++                ),
++            )],
++            Ty::Con(
++                TyCon::Adt(OPTION),
++                vec![Ty::Param(0)],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
+             EffectSet::empty(),
+             ret(variable(
+                 0,
+-                Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]),
++                Ty::Con(
++                    TyCon::Adt(OPTION),
++                    vec![Ty::Param(0)],
++                    crate::types::builtin::RangeIndex::TOP,
++                ),
+                 41,
+             )),
+         );
+@@ -2981,13 +3051,21 @@ end function
+                     )],
+                 },
+                 SUPER,
+-                TypeArg::Ty(Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)])),
++                TypeArg::Ty(Ty::Con(
++                    TyCon::Adt(OPTION),
++                    vec![Ty::Param(0)],
++                    crate::types::builtin::RangeIndex::TOP,
++                )),
+                 23,
+             )],
+             methods: vec![method],
+             span: span(203),
+         });
+-        let target = Ty::Con(TyCon::Adt(OPTION), vec![int()]);
++        let target = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![int()],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let show = dict(
+             DictKind::Impl {
+                 impl_decl: IMPL,
+@@ -3048,7 +3126,11 @@ end function
+                     33,
+                 )),
+             },
+-            Ty::Con(TyCon::Adt(OPTION), vec![int()]),
++            Ty::Con(
++                TyCon::Adt(OPTION),
++                vec![int()],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
+             EffectSet::empty(),
+             34,
+         );
+@@ -3077,7 +3159,11 @@ end function
+                 args: vec![concrete_dict(24)],
+             },
+             SHOW,
+-            TypeArg::Ty(Ty::Con(TyCon::Adt(OPTION), vec![int()])),
++            TypeArg::Ty(Ty::Con(
++                TyCon::Adt(OPTION),
++                vec![int()],
++                crate::types::builtin::RangeIndex::TOP,
++            )),
+             28,
+         );
+         one(&broken, 28, "Dict");
+@@ -3109,7 +3195,11 @@ end function
+         let CompKind::App { func, .. } = &mut body.kind else {
+             panic!()
+         };
+-        let ty = Ty::Con(TyCon::Adt(OPTION), vec![int()]);
++        let ty = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![int()],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         *func = lambda(ret(variable(10, ty.clone(), 35)), vec![var(10, ty)], 31);
+         one(&broken, 33, "dictionary arguments");
+         let mut broken = p.clone();
+@@ -3159,7 +3249,11 @@ end function
+         ];
+         s.class_constraints = vec![ClassConstraint { param: 0, class }];
+         p.schemes.insert(method_id, s);
+-        let option = Ty::Con(TyCon::Adt(OPTION), vec![Ty::Param(0)]);
++        let option = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![Ty::Param(0)],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let mut m = definition(
+             method_binding,
+             vec![var(0, option.clone())],
+@@ -3197,7 +3291,11 @@ end function
+             span: span(201),
+         });
+         let head = TypeArg::Head(TyHead::Con(TyCon::Adt(OPTION)));
+-        let option = Ty::Con(TyCon::Adt(OPTION), vec![int()]);
++        let option = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![int()],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let body = comp(
+             CompKind::Method(Box::new(MethodCall {
+                 dict: dict(
+@@ -3442,7 +3540,11 @@ end function
+             rows[0].pattern = CorePat::Wild;
+             good(&p);
+         }
+-        let ty = Ty::Con(TyCon::Adt(RECORD), vec![]);
++        let ty = Ty::Con(
++            TyCon::Adt(RECORD),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let value = val(
+             ValKind::Ctor {
+                 adt: RECORD,
+@@ -3544,15 +3646,27 @@ end function
+         let opaque = builtin(BuiltinTypeId::REFERENCE, vec![int()]);
+         let float = builtin(BuiltinTypeId::FLOAT, vec![]);
+         let float32 = builtin(BuiltinTypeId::FLOAT32, vec![]);
+-        let option_float = Ty::Con(TyCon::Adt(OPTION), vec![float.clone()]);
+-        let option_fn = Ty::Con(TyCon::Adt(OPTION), vec![plain_fn.clone()]);
++        let option_float = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![float.clone()],
++            crate::types::builtin::RangeIndex::TOP,
++        );
++        let option_fn = Ty::Con(
++            TyCon::Adt(OPTION),
++            vec![plain_fn.clone()],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         for (constraint, ty, expected) in [
+             (BuiltinConstraint::Equality, float, true),
+             (BuiltinConstraint::Equality, float32.clone(), true),
+             (BuiltinConstraint::Key, float32.clone(), false),
+             (
+                 BuiltinConstraint::Key,
+-                Ty::Con(TyCon::Adt(OPTION), vec![float32]),
++                Ty::Con(
++                    TyCon::Adt(OPTION),
++                    vec![float32],
++                    crate::types::builtin::RangeIndex::TOP,
++                ),
+                 false,
+             ),
+             (BuiltinConstraint::Equality, plain_fn, false),
+@@ -3562,7 +3676,11 @@ end function
+             (BuiltinConstraint::Key, list_ty(int()), true),
+             (
+                 BuiltinConstraint::Key,
+-                Ty::Con(TyCon::Adt(RECORD), vec![]),
++                Ty::Con(
++                    TyCon::Adt(RECORD),
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP,
++                ),
+                 true,
+             ),
+             (
+@@ -4167,13 +4285,21 @@ mod exit_report_tests {
+                 }
+                 2 => {
+                     report.cause.kind = ValKind::Const(Const::Int(4));
+-                    report.cause.ty = Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]);
++                    report.cause.ty = Ty::Con(
++                        TyCon::Builtin(BuiltinTypeId::INTEGER),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP,
++                    );
+                     "expected"
+                 }
+                 3 => {
+                     let message = report.message.as_mut().expect("message");
+                     message.kind = ValKind::Const(Const::Int(4));
+-                    message.ty = Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![]);
++                    message.ty = Ty::Con(
++                        TyCon::Builtin(BuiltinTypeId::INTEGER),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP,
++                    );
+                     "expected"
+                 }
+                 _ => {
+diff --git a/crates/benitoite/src/ir/core_ir.rs b/crates/benitoite/src/ir/core_ir.rs
+index 5666266d..3784ade0 100644
+--- a/crates/benitoite/src/ir/core_ir.rs
++++ b/crates/benitoite/src/ir/core_ir.rs
+@@ -297,7 +297,11 @@ impl BuilderKind {
+             Self::Bytes => (B::BYTES, vec![]),
+             Self::List(t) => (B::LIST, vec![t.clone()]),
+         };
+-        Ty::Con(TyCon::Builtin(id), args)
++        Ty::Con(
++            TyCon::Builtin(id),
++            args,
++            crate::types::builtin::RangeIndex::TOP,
++        )
+     }
+ }
+ 
+diff --git a/crates/benitoite/src/ir/decision.rs b/crates/benitoite/src/ir/decision.rs
+index a345f4b4..9bb3f8f3 100644
+--- a/crates/benitoite/src/ir/decision.rs
++++ b/crates/benitoite/src/ir/decision.rs
+@@ -113,7 +113,11 @@ fn fresh(counter: &mut u32) -> Result<u32, LowerError> {
+ }
+ 
+ fn builtin_ty(id: BuiltinTypeId) -> Ty {
+-    Ty::Con(TyCon::Builtin(id), Vec::new())
++    Ty::Con(
++        TyCon::Builtin(id),
++        Vec::new(),
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ 
+ fn lower_def(def: &CoreDef, adts: &AdtTable, body_count: &mut u32) -> Result<LowerDef, LowerError> {
+@@ -930,8 +934,10 @@ impl Lowerer<'_> {
+             }
+         }
+         match &column.ty {
+-            Ty::Con(TyCon::Adt(adt), args) => self.ctor_tree(&matrix, c, &column, *adt, args, arms),
+-            Ty::Con(TyCon::Builtin(b), _)
++            Ty::Con(TyCon::Adt(adt), args, _) => {
++                self.ctor_tree(&matrix, c, &column, *adt, args, arms)
++            }
++            Ty::Con(TyCon::Builtin(b), _, _)
+                 if [
+                     BuiltinTypeId::STRING,
+                     BuiltinTypeId::BOOLEAN,
+@@ -941,18 +947,18 @@ impl Lowerer<'_> {
+             {
+                 self.const_tree(&matrix, c, &column, *b, arms)
+             }
+-            Ty::Con(TyCon::Builtin(b), _)
++            Ty::Con(TyCon::Builtin(b), _, _)
+                 if [BuiltinTypeId::INTEGER, BuiltinTypeId::CHARACTER].contains(b) =>
+             {
+                 self.range_tree(&matrix, c, &column, *b, arms)
+             }
+-            Ty::Con(TyCon::Builtin(b), args) if *b == BuiltinTypeId::LIST => {
++            Ty::Con(TyCon::Builtin(b), args, _) if *b == BuiltinTypeId::LIST => {
+                 let elem = args
+                     .first()
+                     .ok_or_else(|| error("list has no element type"))?;
+                 self.list_tree(&matrix, c, &column, elem, arms)
+             }
+-            Ty::Con(_, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
++            Ty::Con(_, _, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
+                 Err(error("pattern tests an unsupported type"))
+             }
+         }
+@@ -1912,10 +1918,14 @@ mod tests {
+         builtin_ty(BuiltinTypeId::INTEGER)
+     }
+     fn list_ty(t: Ty) -> Ty {
+-        Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![t])
++        Ty::Con(
++            TyCon::Builtin(BuiltinTypeId::LIST),
++            vec![t],
++            crate::types::builtin::RangeIndex::TOP,
++        )
+     }
+     fn adt_ty(b: BindingId, args: Vec<Ty>) -> Ty {
+-        Ty::Con(TyCon::Adt(b), args)
++        Ty::Con(TyCon::Adt(b), args, crate::types::builtin::RangeIndex::TOP)
+     }
+     fn var(id: u32, ty: Ty) -> Var {
+         Var {
+@@ -3458,7 +3468,11 @@ mod tests {
+                 id: BodyId(1),
+                 body: Box::new(boolean(true)),
+             },
+-            ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::LAZY), vec![bool_ty()]),
++            ty: Ty::Con(
++                TyCon::Builtin(BuiltinTypeId::LAZY),
++                vec![bool_ty()],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
+             eff: EffectSet::empty(),
+             origin: other_span(),
+         };
+@@ -3639,6 +3653,7 @@ mod tests {
+             ty: Ty::Con(
+                 TyCon::Builtin(BuiltinTypeId::LAZY),
+                 vec![adt_ty(OBS, vec![])],
++                crate::types::builtin::RangeIndex::TOP,
+             ),
+             eff: EffectSet::empty(),
+             origin: other_span(),
+diff --git a/crates/benitoite/src/ir/decision/arena.rs b/crates/benitoite/src/ir/decision/arena.rs
+index 131dd12d..c6cff5c5 100644
+--- a/crates/benitoite/src/ir/decision/arena.rs
++++ b/crates/benitoite/src/ir/decision/arena.rs
+@@ -393,7 +393,16 @@ fn add_bytes(a: usize, b: usize) -> Result<usize, LowerError> {
+ fn ty_bytes(t: &Ty) -> Result<usize, LowerError> {
+     let mut bytes = size_of::<Ty>();
+     match t {
+-        Ty::Con(_, args) | Ty::App(_, args) => {
++        Ty::Con(_, args, ix) => {
++            bytes = add_bytes(bytes, ix.allocation_bytes())?;
++            if let Some(range) = ix.range() {
++                bytes = add_bytes(bytes, range_bytes(range)?)?;
++            }
++            for t in args {
++                bytes = add_bytes(bytes, ty_bytes(t)?)?;
++            }
++        }
++        Ty::App(_, args) => {
+             for t in args {
+                 bytes = add_bytes(bytes, ty_bytes(t)?)?;
+             }
+diff --git a/crates/benitoite/src/ir/decision/rows.rs b/crates/benitoite/src/ir/decision/rows.rs
+index 3dfbf708..4366c11b 100644
+--- a/crates/benitoite/src/ir/decision/rows.rs
++++ b/crates/benitoite/src/ir/decision/rows.rs
+@@ -271,7 +271,7 @@ impl Lowerer<'_> {
+                 test: ConstTest::Range(lo.clone(), hi.clone()),
+             }),
+             CorePat::Ctor { adt, tag, args } => {
+-                let Ty::Con(TyCon::Adt(actual), tys) = &column.ty else {
++                let Ty::Con(TyCon::Adt(actual), tys, _) = &column.ty else {
+                     return Err(error("invalid ADT pattern"));
+                 };
+                 if actual != adt {
+@@ -310,7 +310,7 @@ impl Lowerer<'_> {
+                 rest,
+                 after,
+             } => {
+-                let Ty::Con(TyCon::Builtin(b), tys) = &column.ty else {
++                let Ty::Con(TyCon::Builtin(b), tys, _) = &column.ty else {
+                     return Err(error("invalid list pattern"));
+                 };
+                 if *b != BuiltinTypeId::LIST {
+diff --git a/crates/benitoite/src/ir/desugar.rs b/crates/benitoite/src/ir/desugar.rs
+index dbbf4833..b3b165c7 100644
+--- a/crates/benitoite/src/ir/desugar.rs
++++ b/crates/benitoite/src/ir/desugar.rs
+@@ -62,7 +62,11 @@ fn fresh(n: &mut u32) -> Result<u32, InternalError> {
+ }
+ 
+ fn basic(id: BuiltinTypeId) -> Ty {
+-    Ty::Con(TyCon::Builtin(id), vec![])
++    Ty::Con(
++        TyCon::Builtin(id),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn value(kind: ValKind<Comp>, ty: Ty, origin: Span) -> CoreVal {
+     Val { kind, ty, origin }
+diff --git a/crates/benitoite/src/ir/desugar/decls.rs b/crates/benitoite/src/ir/desugar/decls.rs
+index bd4c5f54..53f2dfc1 100644
+--- a/crates/benitoite/src/ir/desugar/decls.rs
++++ b/crates/benitoite/src/ir/desugar/decls.rs
+@@ -408,9 +408,12 @@ fn implementation(
+             .ok_or_else(|| error("missing target ADT"))?
+             .name
+             .clone(),
+-        TypeArg::Head(TyHead::Con(TyCon::External(id))) => {
+-            Ty::Con(TyCon::External(*id), vec![]).show(&names)
+-        }
++        TypeArg::Head(TyHead::Con(TyCon::External(id))) => Ty::Con(
++            TyCon::External(*id),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP,
++        )
++        .show(&names),
+         TypeArg::Head(TyHead::Con(TyCon::Builtin(b))) => basic(*b).show(&names),
+     };
+     let class = types
+diff --git a/crates/benitoite/src/ir/desugar/die_tests.rs b/crates/benitoite/src/ir/desugar/die_tests.rs
+index 05073a65..8629bab2 100644
+--- a/crates/benitoite/src/ir/desugar/die_tests.rs
++++ b/crates/benitoite/src/ir/desugar/die_tests.rs
+@@ -24,7 +24,11 @@ fn source_span(start: usize, end: usize) -> Span {
+ }
+ 
+ fn ty(id: BuiltinTypeId) -> Ty {
+-    Ty::Con(TyCon::Builtin(id), vec![])
++    Ty::Con(
++        TyCon::Builtin(id),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn val(kind: ValKind<Comp>, ty: Ty, origin: Span) -> CoreVal {
+     Val { kind, ty, origin }
+diff --git a/crates/benitoite/src/ir/desugar/effects.rs b/crates/benitoite/src/ir/desugar/effects.rs
+index 83f03755..a06b1340 100644
+--- a/crates/benitoite/src/ir/desugar/effects.rs
++++ b/crates/benitoite/src/ir/desugar/effects.rs
+@@ -18,7 +18,7 @@ impl State<'_> {
+             .get(e.id)
+             .cloned()
+             .ok_or_else(|| error(format!("missing try_kinds for {:?}", e.id)))?;
+-        let Ty::Con(_, input_args) = self.ty(e.value.id())? else {
++        let Ty::Con(_, input_args, _) = self.ty(e.value.id())? else {
+             return Err(error("try operand has no type arguments"));
+         };
+         let mut pending = vec![];
+@@ -74,7 +74,7 @@ impl State<'_> {
+                 ast::TryAction::ImplicitReturn | ast::TryAction::Return { .. },
+                 crate::typeck::TryActionInfo::Return { ret },
+             ) => {
+-                let Ty::Con(_, ret_args) = &ret else {
++                let Ty::Con(_, ret_args, _) = &ret else {
+                     return Err(error("try return has no type arguments"));
+                 };
+                 Comp {
+@@ -300,7 +300,11 @@ impl State<'_> {
+         self.conts = conts;
+         let body = body?;
+         Ok(Comp {
+-            ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::LAZY), vec![body.ty.clone()]),
++            ty: Ty::Con(
++                TyCon::Builtin(BuiltinTypeId::LAZY),
++                vec![body.ty.clone()],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
+             eff: EffectSet::empty(),
+             origin: e.span,
+             kind: CompKind::Lazy {
+diff --git a/crates/benitoite/src/ir/desugar/exprs.rs b/crates/benitoite/src/ir/desugar/exprs.rs
+index 36a67a56..ada27ddf 100644
+--- a/crates/benitoite/src/ir/desugar/exprs.rs
++++ b/crates/benitoite/src/ir/desugar/exprs.rs
+@@ -941,7 +941,7 @@ impl State<'_> {
+     #[inline(never)]
+     fn list(&mut self, e: &ast::ListExpr) -> Result<Comp, InternalError> {
+         let ty = self.ty(e.id)?;
+-        let Ty::Con(TyCon::Builtin(b), types) = &ty else {
++        let Ty::Con(TyCon::Builtin(b), types, _) = &ty else {
+             return Err(error("list type expected"));
+         };
+         if *b != BuiltinTypeId::LIST {
+@@ -1083,7 +1083,7 @@ impl State<'_> {
+         let adt = self.reference(e.id)?;
+         let ty = self.ty(e.id)?;
+         let tys = if let Some(base) = &e.base {
+-            let Ty::Con(TyCon::Adt(a), tys) = self.ty(base.id())? else {
++            let Ty::Con(TyCon::Adt(a), tys, _) = self.ty(base.id())? else {
+                 return Err(error("record base type expected"));
+             };
+             if a != adt {
+@@ -1283,8 +1283,8 @@ fn value_types(args: &TypeArgs) -> Result<Vec<Ty>, InternalError> {
+ }
+ fn basic_id(ty: &Ty) -> Result<BuiltinTypeId, InternalError> {
+     match ty {
+-        Ty::Con(TyCon::Builtin(b), args) if args.is_empty() => Ok(*b),
+-        Ty::Con(_, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
++        Ty::Con(TyCon::Builtin(b), args, _) if args.is_empty() => Ok(*b),
++        Ty::Con(_, _, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
+             Err(error(format!("basic type expected: {ty:?}")))
+         }
+     }
+diff --git a/crates/benitoite/src/ir/desugar/tests.rs b/crates/benitoite/src/ir/desugar/tests.rs
+index 4b1f29d0..ee0c7b0b 100644
+--- a/crates/benitoite/src/ir/desugar/tests.rs
++++ b/crates/benitoite/src/ir/desugar/tests.rs
+@@ -399,11 +399,10 @@ end function
+         calls.iter().map(|(name, _, _)| *name).collect::<Vec<_>>(),
+         ["%ne", "%eq"]
+     );
+-    assert!(
+-        calls
+-            .iter()
+-            .all(|(_, a, _)| matches!(a.tys.as_slice(), [TypeArg::Ty(Ty::Con(TyCon::Adt(_), _))]))
+-    );
++    assert!(calls.iter().all(|(_, a, _)| matches!(
++        a.tys.as_slice(),
++        [TypeArg::Ty(Ty::Con(TyCon::Adt(_), _, _))]
++    )));
+     assert!(matches!(
+         &def(&p, "minimum").body.kind,
+         CompKind::Return(Val {
+@@ -841,7 +840,11 @@ end function
+     };
+     assert_eq!(
+         lazy.ty,
+-        Ty::Con(TyCon::Builtin(BuiltinTypeId::LAZY), vec![body.ty.clone()])
++        Ty::Con(
++            TyCon::Builtin(BuiltinTypeId::LAZY),
++            vec![body.ty.clone()],
++            crate::types::builtin::RangeIndex::TOP
++        )
+     );
+     assert!(lazy.eff.is_empty());
+     let CompKind::Return(Val {
+diff --git a/crates/benitoite/src/runtime/assert.rs b/crates/benitoite/src/runtime/assert.rs
+index a3d9a0b6..e3237a1a 100644
+--- a/crates/benitoite/src/runtime/assert.rs
++++ b/crates/benitoite/src/runtime/assert.rs
+@@ -847,7 +847,7 @@ fn fits<'e>(
+                 continue;
+             }
+         };
+-        let Ty::Con(con, args) = ty else { continue };
++        let Ty::Con(con, args, _) = ty else { continue };
+         match con {
+             TyCon::Builtin(id) => match id {
+                 BuiltinTypeId::LIST => {
+@@ -954,7 +954,7 @@ enum Work<'e> {
+ // 静的な型は値ではないので、再帰で辿ってよい。
+ fn has_params(ty: &Ty) -> bool {
+     match ty {
+-        Ty::Con(_, args) => args.iter().any(has_params),
++        Ty::Con(_, args, _) => args.iter().any(has_params),
+         Ty::Fn(f) => f.params.iter().any(has_params) || has_params(&f.ret),
+         Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => true,
+     }
+@@ -963,7 +963,11 @@ fn has_params(ty: &Ty) -> bool {
+ // 構成子の引数の型の、型の宣言の型パラメータを、値の型の引数で置き換える。
+ fn substitute(ty: &Ty, args: &[Ty]) -> Ty {
+     match ty {
+-        Ty::Con(con, xs) => Ty::Con(*con, xs.iter().map(|x| substitute(x, args)).collect()),
++        Ty::Con(con, xs, ix) => Ty::Con(
++            *con,
++            xs.iter().map(|x| substitute(x, args)).collect(),
++            ix.clone(),
++        ),
+         Ty::Fn(f) => Ty::Fn(Box::new(crate::types::FnTy {
+             param_names: f.param_names.clone(),
+             params: f.params.iter().map(|x| substitute(x, args)).collect(),
+@@ -1005,7 +1009,7 @@ fn render_typed<'e>(
+     out: &mut Vec<Work<'e>>,
+     budget: usize,
+ ) -> Result<bool, Stop> {
+-    let Ty::Con(con, args) = ty else {
++    let Ty::Con(con, args, _) = ty else {
+         return Ok(false);
+     };
+     let elem = |i: usize| args.get(i).map(|t| Rc::new(t.clone()));
+diff --git a/crates/benitoite/src/runtime/assert/tests.rs b/crates/benitoite/src/runtime/assert/tests.rs
+index 2d7c3440..05564daf 100644
+--- a/crates/benitoite/src/runtime/assert/tests.rs
++++ b/crates/benitoite/src/runtime/assert/tests.rs
+@@ -198,7 +198,11 @@ fn width_immediates_render_with_and_without_static_types() {
+                 "-Infinity",
+             ),
+         ] {
+-            let ty = Ty::Con(TyCon::Builtin(id), vec![]);
++            let ty = Ty::Con(
++                TyCon::Builtin(id),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP,
++            );
+             assert_eq!(
+                 render_value(ctx, &prepared.table, value, Some(&ty)).unwrap(),
+                 expected
+diff --git a/crates/benitoite/src/typeck/builders.rs b/crates/benitoite/src/typeck/builders.rs
+index b00a4cef..89c77712 100644
+--- a/crates/benitoite/src/typeck/builders.rs
++++ b/crates/benitoite/src/typeck/builders.rs
+@@ -54,17 +54,21 @@ pub(super) fn operation(ctx: &mut Body<'_, '_>, call: &CallExpr, info: BuilderCa
+     let kind = decl.as_ref().filter(|_| valid_target).map(|d| &d.kind);
+     let contents = match kind {
+         Some(BuilderKind::String) => basic(B::STRING),
+-        Some(BuilderKind::List(t)) => {
+-            ITy::Con(crate::types::TyCon::Builtin(B::LIST), vec![lift(t)])
+-        }
++        Some(BuilderKind::List(t)) => ITy::Con(
++            crate::types::TyCon::Builtin(B::LIST),
++            vec![lift(t)],
++            crate::types::builtin::RangeIndex::TOP,
++        ),
+         Some(BuilderKind::Bytes) => basic(B::BYTES),
+         // 対象の誤りはラベル・個数の後で診断する。ここで誤り型にすると
+         // 呼び出しの計画自体が消えて対象の診断へ進めなくなる。
+         None => match info.class {
+             BuilderClass::String => basic(B::STRING),
+-            BuilderClass::List => {
+-                ITy::Con(crate::types::TyCon::Builtin(B::LIST), vec![ctx.fresh_ty()])
+-            }
++            BuilderClass::List => ITy::Con(
++                crate::types::TyCon::Builtin(B::LIST),
++                vec![ctx.fresh_ty()],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
+             BuilderClass::Bytes => basic(B::BYTES),
+         },
+     };
+diff --git a/crates/benitoite/src/typeck/calls.rs b/crates/benitoite/src/typeck/calls.rs
+index 9274a51e..7fb82694 100644
+--- a/crates/benitoite/src/typeck/calls.rs
++++ b/crates/benitoite/src/typeck/calls.rs
+@@ -671,8 +671,13 @@ pub(super) fn builder(
+             BuilderClass::String => ITy::Con(
+                 TyCon::Builtin(B::LIST),
+                 vec![super::generate::basic(B::STRING)],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
++            BuilderClass::List => ITy::Con(
++                TyCon::Builtin(B::LIST),
++                vec![element],
++                crate::types::builtin::RangeIndex::TOP,
+             ),
+-            BuilderClass::List => ITy::Con(TyCon::Builtin(B::LIST), vec![element]),
+             BuilderClass::Bytes => super::generate::basic(B::BYTES),
+         }),
+         None | Some(BuilderOp::Copy | BuilderOp::Length) => {}
+diff --git a/crates/benitoite/src/typeck/consts.rs b/crates/benitoite/src/typeck/consts.rs
+index 63132283..4bb01017 100644
+--- a/crates/benitoite/src/typeck/consts.rs
++++ b/crates/benitoite/src/typeck/consts.rs
+@@ -167,7 +167,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
+ fn contains_param(ty: &Ty) -> bool {
+     match ty {
+         Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => true,
+-        Ty::Con(_, a) => a.iter().any(contains_param),
++        Ty::Con(_, a, _) => a.iter().any(contains_param),
+         Ty::Fn(f) => {
+             f.effects.failures.iter().any(contains_param)
+                 || f.params.iter().any(contains_param)
+diff --git a/crates/benitoite/src/typeck/context.rs b/crates/benitoite/src/typeck/context.rs
+index 4702dfbb..d470c778 100644
+--- a/crates/benitoite/src/typeck/context.rs
++++ b/crates/benitoite/src/typeck/context.rs
+@@ -236,14 +236,16 @@ impl<'a, 'd> Body<'a, 'd> {
+             .collect::<Vec<_>>();
+         while let Some(ty) = pending.pop() {
+             match ty {
+-                Ty::Con(con, args) => {
+-                    let name = Ty::Con(con, vec![]).show(&TyNames {
+-                        bindings: &self.decls.resolved.bindings,
+-                        adts: &self.decls.out.adts,
+-                        effects: &self.decls.out.effects,
+-                        type_params: &[],
+-                        effect_params: &[],
+-                    });
++                Ty::Con(con, args, _) => {
++                    let name = Ty::Con(con, vec![], crate::types::builtin::RangeIndex::TOP).show(
++                        &TyNames {
++                            bindings: &self.decls.resolved.bindings,
++                            adts: &self.decls.out.adts,
++                            effects: &self.decls.out.effects,
++                            type_params: &[],
++                            effect_params: &[],
++                        },
++                    );
+                     by_name.entry(name).or_default().insert(con);
+                     pending.extend(args);
+                 }
+@@ -374,7 +376,7 @@ impl<'a, 'd> Body<'a, 'd> {
+                 };
+                 *ty = Ty::Param(n);
+             }
+-            Ty::Con(_, args) | Ty::App(_, args) => {
++            Ty::Con(_, args, _) | Ty::App(_, args) => {
+                 for t in args {
+                     self.name_rigid_types(t, names, indices);
+                 }
+@@ -813,7 +815,11 @@ pub(super) fn substitute(t: &Ty, args: &[IArg], effs: &[IEffect]) -> ITy {
+             },
+             ts.iter().map(|t| substitute(t, args, effs)).collect(),
+         ),
+-        Ty::Con(c, ts) => ITy::Con(*c, ts.iter().map(|t| substitute(t, args, effs)).collect()),
++        Ty::Con(c, ts, ix) => ITy::Con(
++            *c,
++            ts.iter().map(|t| substitute(t, args, effs)).collect(),
++            ix.clone(),
++        ),
+         Ty::Fn(f) => ITy::Fn(Box::new(IFnTy {
+             contract: IContract::Known(f.param_names.clone()),
+             params: f.params.iter().map(|t| substitute(t, args, effs)).collect(),
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index 8128e759..4211f425 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -56,10 +56,18 @@ pub(super) struct Decls<'a> {
+ }
+ 
+ pub(super) fn unit() -> Ty {
+-    Ty::Con(TyCon::Builtin(B::UNIT), vec![])
++    Ty::Con(
++        TyCon::Builtin(B::UNIT),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ pub(super) fn basic(id: B) -> Ty {
+-    Ty::Con(TyCon::Builtin(id), vec![])
++    Ty::Con(
++        TyCon::Builtin(id),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ pub(super) fn scheme(params: Vec<Ty>, ret: Ty) -> Scheme {
+     Scheme {
+@@ -224,7 +232,7 @@ impl Decls<'_> {
+         for (user, standard) in [(expected, found), (found, expected)] {
+             let mut pending = vec![*user];
+             while let Some(ty) = pending.pop() {
+-                if let Ty::Con(TyCon::Adt(id), _) = ty
++                if let Ty::Con(TyCon::Adt(id), _, _) = ty
+                     && let Some(adt) = self.out.adts.get(*id)
+                     && self.is_shadowed_prelude_type(adt.module, &adt.name, span)
+                     && self.contains_prelude_type(standard, &adt.name)
+@@ -239,7 +247,7 @@ impl Decls<'_> {
+     fn contains_prelude_type(&self, ty: &Ty, name: &str) -> bool {
+         let mut pending = vec![ty];
+         while let Some(ty) = pending.pop() {
+-            if let Ty::Con(con, _) = ty {
++            if let Ty::Con(con, _, _) = ty {
+                 let same = match con {
+                     TyCon::External(_) => false,
+                     TyCon::Builtin(id) => {
+@@ -264,7 +272,7 @@ impl Decls<'_> {
+     }
+     fn push_type_children<'t>(ty: &'t Ty, pending: &mut Vec<&'t Ty>) {
+         match ty {
+-            Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args.iter().rev()),
++            Ty::Con(_, args, _) | Ty::App(_, args) => pending.extend(args.iter().rev()),
+             Ty::Fn(f) => {
+                 pending.extend(&f.effects.failures);
+                 pending.push(&f.ret);
+@@ -602,7 +610,7 @@ impl Decls<'_> {
+         if !self.arity(id, &binding.name, arity, args.len(), t.span, true) {
+             return unit();
+         }
+-        Ty::Con(con, args)
++        Ty::Con(con, args, crate::types::builtin::RangeIndex::TOP)
+     }
+     fn arity(
+         &mut self,
+@@ -819,7 +827,7 @@ fn has_effect(ty: &Ty, index: u32) -> bool {
+                 || f.params.iter().any(|t| has_effect(t, index))
+                 || has_effect(&f.ret, index)
+         }
+-        Ty::Con(_, a) | Ty::App(_, a) => a.iter().any(|t| has_effect(t, index)),
++        Ty::Con(_, a, _) | Ty::App(_, a) => a.iter().any(|t| has_effect(t, index)),
+         Ty::Param(_) | Ty::Rigid { .. } => false,
+     }
+ }
+@@ -827,7 +835,7 @@ fn has_param(ty: &Ty, index: u32) -> bool {
+     match ty {
+         Ty::Param(i) => *i == index,
+         Ty::App(i, a) => *i == index || a.iter().any(|t| has_param(t, index)),
+-        Ty::Con(_, a) => a.iter().any(|t| has_param(t, index)),
++        Ty::Con(_, a, _) => a.iter().any(|t| has_param(t, index)),
+         Ty::Fn(f) => {
+             f.effects.failures.iter().any(|t| has_param(t, index))
+                 || f.params.iter().any(|t| has_param(t, index))
+@@ -1058,6 +1066,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+                         (0..s.type_params.len())
+                             .map(|i| Ty::Param(u32::try_from(i).unwrap_or(u32::MAX)))
+                             .collect(),
++                        crate::types::builtin::RangeIndex::TOP,
+                     );
+                     let mut ctors = vec![];
+                     if data.variants.is_empty() {
+@@ -1117,6 +1126,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+                         (0..s.type_params.len())
+                             .map(|i| Ty::Param(u32::try_from(i).unwrap_or(u32::MAX)))
+                             .collect(),
++                        crate::types::builtin::RangeIndex::TOP,
+                     );
+                     let mut budget = TypeBudget::default();
+                     if let Err(limit) = budget.enter(1) {
+@@ -1269,7 +1279,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+ 
+ fn returns_result(d: &Decls<'_>, ty: &Ty) -> bool {
+     match ty {
+-        Ty::Con(TyCon::Adt(id), args)
++        Ty::Con(TyCon::Adt(id), args, _)
+             if Some(*id) == d.resolved.stdlib("Benitoite.Result.Result") =>
+         {
+             args == &vec![unit(), basic(B::STRING)]
+@@ -1375,10 +1385,10 @@ fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
+     let mut out = TypeSummary::default();
+     match ty {
+         Ty::Param(i) => out.depends_on.push(*i),
+-        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } | Ty::Con(TyCon::External(_), _) => {
++        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } | Ty::Con(TyCon::External(_), _, _) => {
+             out.always = !key
+         }
+-        Ty::Con(TyCon::Builtin(b), args) => {
++        Ty::Con(TyCon::Builtin(b), args, _) => {
+             if key {
+                 out.always = matches!(*b, B::FLOAT | B::FLOAT32);
+             } else {
+@@ -1397,7 +1407,7 @@ fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
+                 }
+             }
+         }
+-        Ty::Con(TyCon::Adt(id), args) => {
++        Ty::Con(TyCon::Adt(id), args, _) => {
+             if let Some(a) = adts.get(*id) {
+                 let s = if key { &a.key_summary } else { &a.eq_summary };
+                 out.always = s.always;
+diff --git a/crates/benitoite/src/typeck/effects/mod.rs b/crates/benitoite/src/typeck/effects/mod.rs
+index ce6eb89b..adb8fdd4 100644
+--- a/crates/benitoite/src/typeck/effects/mod.rs
++++ b/crates/benitoite/src/typeck/effects/mod.rs
+@@ -67,7 +67,11 @@ fn lazy_expr(ctx: &mut Body<'_, '_>, e: &LazyExpr) -> ITy {
+         sup: fixed(EffectSet::empty()),
+         reason: reason(e.span, ReasonKind::LazyBody),
+     });
+-    ITy::Con(TyCon::Builtin(B::LAZY), vec![ty])
++    ITy::Con(
++        TyCon::Builtin(B::LAZY),
++        vec![ty],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ 
+ // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+@@ -92,7 +96,11 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+                 ctx.die_message_boundary = boundary;
+                 ctx.add(Constraint::Flow {
+                     from: ty,
+-                    to: ITy::Con(TyCon::Builtin(B::STRING), vec![]),
++                    to: ITy::Con(
++                        TyCon::Builtin(B::STRING),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP,
++                    ),
+                     reason: reason(message.span(), ReasonKind::DieMessage),
+                 });
+                 let mut r = reason(message.span(), ReasonKind::DieMessage);
+diff --git a/crates/benitoite/src/typeck/effects/special.rs b/crates/benitoite/src/typeck/effects/special.rs
+index 3f24d5d1..e928d77b 100644
+--- a/crates/benitoite/src/typeck/effects/special.rs
++++ b/crates/benitoite/src/typeck/effects/special.rs
+@@ -52,7 +52,7 @@ pub(super) fn solve(ctx: &mut Body<'_, '_>, final_pass: bool) {
+                 Constraint::Resource { ty, reason }
+                     if !ctx.solver.contains_error(&ty)
+                         && !matches!(ctx.solver.zonk(&ty),
+-                        ITy::Con(TyCon::Builtin(b), _) if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource)) =>
++                        ITy::Con(TyCon::Builtin(b), _, _) if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource)) =>
+                 {
+                     ctx.diagnostic(
+                         DiagBuilder::new(DiagCode::E0443)
+@@ -113,13 +113,13 @@ fn solve_try(
+         return;
+     }
+     let (kind, con, args) = match ctx.solver.zonk(target) {
+-        ITy::Con(TyCon::Adt(id), args)
++        ITy::Con(TyCon::Adt(id), args, _)
+             if Some(id) == ctx.decls.resolved.stdlib("Benitoite.Result.Result")
+                 && args.len() == 2 =>
+         {
+             (TryKind::Result, TyCon::Adt(id), args)
+         }
+-        ITy::Con(TyCon::Adt(id), args)
++        ITy::Con(TyCon::Adt(id), args, _)
+             if Some(id) == ctx.decls.resolved.stdlib("Benitoite.Option.Option")
+                 && args.len() == 1 =>
+         {
+@@ -169,7 +169,7 @@ fn solve_try(
+     };
+     let current_ret = ctx.solver.zonk(ret);
+     if !matches!(&current_ret, ITy::Var(_))
+-        && !matches!(&current_ret, ITy::Con(c, a) if *c == con && a.len() == args.len())
++        && !matches!(&current_ret, ITy::Con(c, a, _) if *c == con && a.len() == args.len())
+     {
+         let [target_name, return_name] = ctx.show_types([target, ret]);
+         let d = DiagBuilder::new(DiagCode::E0441)
+@@ -191,13 +191,13 @@ fn solve_try(
+     // 変数の範囲を引き継ぐ。節内のラムダが剛な型を返せるようにする（01-12 の Δ）。
+     let beta = match &current_ret {
+         ITy::Var(v) => ctx.solver.fresh_ty_like(*v),
+-        ITy::Con(_, returned) => returned.first().cloned().unwrap_or(ITy::Error),
++        ITy::Con(_, returned, _) => returned.first().cloned().unwrap_or(ITy::Error),
+         ITy::Fn(_) | ITy::Param(_) | ITy::App(..) | ITy::Rigid { .. } | ITy::Error => ITy::Error,
+     };
+     let mut wanted = vec![beta];
+     if let Some(error) = args.get(1) {
+         wanted.push(error.clone());
+-        if let ITy::Con(_, returned) = &current_ret
++        if let ITy::Con(_, returned, _) = &current_ret
+             && let Some(expected) = returned.get(1)
+             && ctx.solver.equal(expected, error, r).is_err()
+         {
+@@ -213,7 +213,11 @@ fn solve_try(
+             return;
+         }
+     }
+-    if ctx.unify(ret, &ITy::Con(con, wanted), r) {
++    if ctx.unify(
++        ret,
++        &ITy::Con(con, wanted, crate::types::builtin::RangeIndex::TOP),
++        r,
++    ) {
+         ctx.try_kinds.insert(node, (kind, action.clone()));
+     }
+ }
+diff --git a/crates/benitoite/src/typeck/effects/tests.rs b/crates/benitoite/src/typeck/effects/tests.rs
+index 035a22c4..085c1517 100644
+--- a/crates/benitoite/src/typeck/effects/tests.rs
++++ b/crates/benitoite/src/typeck/effects/tests.rs
+@@ -32,7 +32,11 @@ fn clean(s: &str) -> (LoadOutput, ResolveOutput, TypeckOutput) {
+     (l, r, t)
+ }
+ fn basic(b: B) -> Ty {
+-    Ty::Con(TyCon::Builtin(b), vec![])
++    Ty::Con(
++        TyCon::Builtin(b),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn binding(r: &ResolveOutput, name: &str) -> BindingId {
+     r.bindings
+@@ -196,7 +200,8 @@ fn specification_examples_and_output_tables() {
+             TyCon::Builtin(
+                 crate::types::builtin::find_builtin_type(&["IO", "File"], "Reader").unwrap()
+             ),
+-            vec![]
++            vec![],
++            crate::types::builtin::RangeIndex::TOP
+         ))
+     );
+ }
+@@ -435,7 +440,11 @@ fn lazy_resources_and_taskgroup_placement() {
+     };
+     assert_eq!(
+         t.expr_types.get(e.value.id()),
+-        Some(&Ty::Con(TyCon::Builtin(B::LAZY), vec![basic(B::INTEGER)]))
++        Some(&Ty::Con(
++            TyCon::Builtin(B::LAZY),
++            vec![basic(B::INTEGER)],
++            crate::types::builtin::RangeIndex::TOP
++        ))
+     );
+     let source = "import Benitoite.Unofficial.IO.Console\nfunction f() -> Lazy[Unit]\n return lazy Console.writeLine(\"a\") end lazy\nend function\n";
+     let d = expect(source, &[(C::E0503, "Console.writeLine", 0)]);
+@@ -509,7 +518,8 @@ fn try_infers_return_types_and_reports_incompatible_types() {
+             super::super::TryActionInfo::Return {
+                 ret: Ty::Con(
+                     TyCon::Adt(r.stdlib("Benitoite.Result.Result").unwrap()),
+-                    vec![basic(B::INTEGER), basic(B::STRING)]
++                    vec![basic(B::INTEGER), basic(B::STRING)],
++                    crate::types::builtin::RangeIndex::TOP
+                 )
+             }
+         );
+diff --git a/crates/benitoite/src/typeck/external.rs b/crates/benitoite/src/typeck/external.rs
+index e1f739fe..5d6ce4ec 100644
+--- a/crates/benitoite/src/typeck/external.rs
++++ b/crates/benitoite/src/typeck/external.rs
+@@ -82,7 +82,7 @@ fn contains_external<'a>(
+     for ty in types {
+         crate::external::expansion::walk(ty, resolved, adts, total, |ty, visit| {
+             if matches!(visit, crate::external::expansion::Visit::Enter)
+-                && matches!(ty, Ty::Con(TyCon::External(_), _))
++                && matches!(ty, Ty::Con(TyCon::External(_), _, _))
+             {
+                 external = true;
+             }
+@@ -94,7 +94,7 @@ fn contains_external<'a>(
+ }
+ 
+ fn is_unit(ty: &Ty) -> bool {
+-    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args) if args.is_empty())
++    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args, _) if args.is_empty())
+ }
+ 
+ fn external_effect_error(f: &FnDecl, external: bool) -> Diagnostic {
+diff --git a/crates/benitoite/src/typeck/generate.rs b/crates/benitoite/src/typeck/generate.rs
+index fea7faa3..fc5049cb 100644
+--- a/crates/benitoite/src/typeck/generate.rs
++++ b/crates/benitoite/src/typeck/generate.rs
+@@ -14,7 +14,11 @@ use crate::types::builtin::BuiltinTypeId as B;
+ use crate::types::{ConstValue, TyCon, TyNames, TySet};
+ 
+ pub(super) fn basic(b: B) -> ITy {
+-    ITy::Con(TyCon::Builtin(b), vec![])
++    ITy::Con(
++        TyCon::Builtin(b),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ pub(super) fn equal(
+     ctx: &mut Body<'_, '_>,
+@@ -1200,7 +1204,11 @@ fn format_set(format: &FormatSpec) -> TySet {
+ #[inline(never)]
+ fn list(ctx: &mut Body<'_, '_>, e: &ListExpr) -> ITy {
+     let elem = ctx.fresh_ty();
+-    let list = ITy::Con(TyCon::Builtin(B::LIST), vec![elem.clone()]);
++    let list = ITy::Con(
++        TyCon::Builtin(B::LIST),
++        vec![elem.clone()],
++        crate::types::builtin::RangeIndex::TOP,
++    );
+     for item in &e.elems {
+         match item {
+             ListElem::Expr(e) => {
+diff --git a/crates/benitoite/src/typeck/infer.rs b/crates/benitoite/src/typeck/infer.rs
+index 3b7f17f7..9e7ef509 100644
+--- a/crates/benitoite/src/typeck/infer.rs
++++ b/crates/benitoite/src/typeck/infer.rs
+@@ -26,7 +26,7 @@ pub enum IHead {
+ pub enum ITy {
+     /// 値の型の変数
+     Var(TyVar),
+-    Con(TyCon, Vec<ITy>),
++    Con(TyCon, Vec<ITy>, crate::types::builtin::RangeIndex),
+     Fn(Box<IFnTy>),
+     /// 検査している定義の型パラメータ。ほかの何とも等しくない
+     Param(u32),
+diff --git a/crates/benitoite/src/typeck/interval/discovery.rs b/crates/benitoite/src/typeck/interval/discovery.rs
+index c55583fc..f9b985fb 100644
+--- a/crates/benitoite/src/typeck/interval/discovery.rs
++++ b/crates/benitoite/src/typeck/interval/discovery.rs
+@@ -338,7 +338,7 @@ impl<'ast> Discovery<'_, 'ast, '_> {
+         self.list(i.segments.iter().map(|s| Some(Node::Expr(&s.expr))), fuel)?;
+         let input = self.input;
+         self.list(i.segments.iter().filter(|s| {
+-        s.format.is_some() || input.interpolation_type(s.expr.id()).is_ok_and(|t| !matches!(t, crate::types::Ty::Con(crate::types::TyCon::Builtin(b), a) if *b == crate::types::builtin::BuiltinTypeId::STRING && a.is_empty()))
++        s.format.is_some() || input.interpolation_type(s.expr.id()).is_ok_and(|t| !matches!(t, crate::types::Ty::Con(crate::types::TyCon::Builtin(b), a, _) if *b == crate::types::builtin::BuiltinTypeId::STRING && a.is_empty()))
+     }).map(|s| Some(Node::Synthetic(F::PrimName, Synthetic::InterpolationConverter, Origin { node: s.expr.id(), span: s.span }))), fuel)
+     }
+ 
+diff --git a/crates/benitoite/src/typeck/interval/domain.rs b/crates/benitoite/src/typeck/interval/domain.rs
+index e3b455fb..898a9708 100644
+--- a/crates/benitoite/src/typeck/interval/domain.rs
++++ b/crates/benitoite/src/typeck/interval/domain.rs
+@@ -42,7 +42,7 @@ impl IntKind {
+ 
+     /// Byte と型引数を持つ型を除き、解決済みの型だけを認定する。
+     pub fn of_type(ty: &Ty) -> Option<Self> {
+-        let Ty::Con(TyCon::Builtin(id), args) = ty else {
++        let Ty::Con(TyCon::Builtin(id), args, _) = ty else {
+             return None;
+         };
+         if !args.is_empty() {
+diff --git a/crates/benitoite/src/typeck/interval/fixed_domain.rs b/crates/benitoite/src/typeck/interval/fixed_domain.rs
+index 1465852c..17b11131 100644
+--- a/crates/benitoite/src/typeck/interval/fixed_domain.rs
++++ b/crates/benitoite/src/typeck/interval/fixed_domain.rs
+@@ -33,7 +33,7 @@ impl Contract {
+     }
+ 
+     fn matches(&self, scheme: &Scheme) -> bool {
+-        let same_type = |ty: &Ty, expected| matches!(ty, Ty::Con(TyCon::Builtin(actual), args) if *actual == expected && args.is_empty());
++        let same_type = |ty: &Ty, expected| matches!(ty, Ty::Con(TyCon::Builtin(actual), args, _) if *actual == expected && args.is_empty());
+         self.minimum <= self.maximum
+             && self.argument_types.get(self.argument) == Some(&B::INTEGER)
+             && scheme.type_params.is_empty()
+diff --git a/crates/benitoite/src/typeck/interval/flow/independent.rs b/crates/benitoite/src/typeck/interval/flow/independent.rs
+index 0fe12004..0c3e802d 100644
+--- a/crates/benitoite/src/typeck/interval/flow/independent.rs
++++ b/crates/benitoite/src/typeck/interval/flow/independent.rs
+@@ -323,7 +323,13 @@ impl<'ast> Flow<'_, 'ast, '_> {
+                     .input
+                     .interpolation_type(segment.expr.id())
+                     .map_err(IdentityStop::Input)?;
+-                if segment.format.is_some() || *ty != Ty::Con(TyCon::Builtin(B::STRING), Vec::new())
++                if segment.format.is_some()
++                    || *ty
++                        != Ty::Con(
++                            TyCon::Builtin(B::STRING),
++                            Vec::new(),
++                            crate::types::builtin::RangeIndex::TOP,
++                        )
+                 {
+                     remaining = remaining.checked_sub(1).ok_or(IdentityStop::Depth)?;
+                     self.frame()?;
+diff --git a/crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs b/crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs
+index 4dcbe7b2..e3b0c32d 100644
+--- a/crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs
++++ b/crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs
+@@ -104,9 +104,23 @@ fn shift_tables_identify_all_resolved_declarations_and_lean_contracts() {
+                 assert!(actual.effects.is_empty());
+                 assert_eq!(actual.param_names, ["a", "n"]);
+                 for (ty, builtin) in actual.params.iter().zip([operand, B::INTEGER]) {
+-                    assert_eq!(*ty, Ty::Con(TyCon::Builtin(builtin), vec![]));
++                    assert_eq!(
++                        *ty,
++                        Ty::Con(
++                            TyCon::Builtin(builtin),
++                            vec![],
++                            crate::types::builtin::RangeIndex::TOP
++                        )
++                    );
+                 }
+-                assert_eq!(actual.ret, Ty::Con(TyCon::Builtin(operand), vec![]));
++                assert_eq!(
++                    actual.ret,
++                    Ty::Con(
++                        TyCon::Builtin(operand),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP
++                    )
++                );
+                 (c.name, entry.declaration)
+             })
+             .collect();
+diff --git a/crates/benitoite/src/typeck/limits.rs b/crates/benitoite/src/typeck/limits.rs
+index 4f25f380..5317bafd 100644
+--- a/crates/benitoite/src/typeck/limits.rs
++++ b/crates/benitoite/src/typeck/limits.rs
+@@ -75,7 +75,7 @@ impl TypeBudget {
+             self.enter(depth)?;
+             let next = depth.saturating_add(1);
+             match ty {
+-                Ty::Con(_, ts) | Ty::App(_, ts) => {
++                Ty::Con(_, ts, _) | Ty::App(_, ts) => {
+                     pending.extend(ts.iter().map(|t| (t, next, substitute)));
+                 }
+                 Ty::Fn(f) => {
+diff --git a/crates/benitoite/src/typeck/pattern_ext.rs b/crates/benitoite/src/typeck/pattern_ext.rs
+index 691284d3..03255706 100644
+--- a/crates/benitoite/src/typeck/pattern_ext.rs
++++ b/crates/benitoite/src/typeck/pattern_ext.rs
+@@ -58,7 +58,11 @@ pub(super) fn pattern(ctx: &mut Body<'_, '_>, p: &Pattern) -> ITy {
+         }
+         Pattern::List(p) => {
+             let elem = ctx.fresh_ty();
+-            let list = ITy::Con(TyCon::Builtin(B::LIST), vec![elem.clone()]);
++            let list = ITy::Con(
++                TyCon::Builtin(B::LIST),
++                vec![elem.clone()],
++                crate::types::builtin::RangeIndex::TOP,
++            );
+             for child in p.before.iter().chain(&p.after) {
+                 let found = ctx.pattern(child);
+                 equal(ctx, elem.clone(), found, child.span(), ReasonKind::Pattern);
+@@ -1139,7 +1143,12 @@ mod tests {
+             out.expr_types.get(list.rest.as_ref().unwrap().id),
+             Some(&crate::types::Ty::Con(
+                 TyCon::Builtin(B::LIST),
+-                vec![crate::types::Ty::Con(TyCon::Builtin(B::STRING), vec![])]
++                vec![crate::types::Ty::Con(
++                    TyCon::Builtin(B::STRING),
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP
++                )],
++                crate::types::builtin::RangeIndex::TOP
+             ))
+         );
+         let s = "function grade(score: Integer) -> String\n return match score with\n case n if n < 0 -> \"invalid\"\n case 90..100 -> \"A\"\n case 70..89 -> \"B\"\n case _ -> \"C\"\n end match\nend function";
+diff --git a/crates/benitoite/src/typeck/patterns.rs b/crates/benitoite/src/typeck/patterns.rs
+index dff763a1..43de18c9 100644
+--- a/crates/benitoite/src/typeck/patterns.rs
++++ b/crates/benitoite/src/typeck/patterns.rs
+@@ -219,7 +219,7 @@ impl<'a> Search<'a> {
+             self.enumerate(1)?;
+             cells = cells.saturating_add(1);
+             match ty {
+-                Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args),
++                Ty::Con(_, args, _) | Ty::App(_, args) => pending.extend(args),
+                 Ty::Fn(f) => {
+                     for name in &f.param_names {
+                         self.enumerate(name.len())?;
+@@ -289,7 +289,7 @@ pub(super) fn check_match_diagnostic(
+     let mut search = Search::new(MAX_COVERAGE_WORK, view);
+     search.concrete = true;
+     let mut checked = check_match_with(scrutinee, arms, adts, &mut search)?;
+-    if matches!(scrutinee, Ty::Con(TyCon::Builtin(b), _) if *b == B::INTEGER) {
++    if matches!(scrutinee, Ty::Con(TyCon::Builtin(b), _, _) if *b == B::INTEGER) {
+         for issue in &mut checked.issues {
+             if let MatchIssue::NonExhaustive { witness, .. } = issue
+                 && witness == "_"
+@@ -528,7 +528,7 @@ fn shapes(
+ ) -> Result<Option<Vec<Shape>>, Undecided> {
+     search.enumerate(column.len().saturating_add(1))?;
+     Ok(Some(match ty {
+-        Ty::Con(TyCon::Adt(id), args) => {
++        Ty::Con(TyCon::Adt(id), args, _) => {
+             let Some(d) = adts.get(*id) else {
+                 return Ok(Some(vec![Shape::Other]));
+             };
+@@ -549,11 +549,11 @@ fn shapes(
+             }
+             result
+         }
+-        Ty::Con(TyCon::Builtin(b), _) if *b == B::BOOLEAN => {
++        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::BOOLEAN => {
+             vec![Shape::Boolean(true), Shape::Boolean(false)]
+         }
+-        Ty::Con(TyCon::Builtin(b), _) if *b == B::UNIT => vec![Shape::Unit],
+-        Ty::Con(TyCon::Builtin(b), _) if *b == B::INTEGER || *b == B::CHARACTER => {
++        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::UNIT => vec![Shape::Unit],
++        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::INTEGER || *b == B::CHARACTER => {
+             let character = *b == B::CHARACTER;
+             // 整列した端点を一度だけ走査し、各最小区間の被覆を活動区間数で求める。
+             // max64+1 は i128 のまま保ち、Integer の値へ戻さない（02-05「本体の後の検査」）。
+@@ -613,7 +613,7 @@ fn shapes(
+             }
+             result
+         }
+-        Ty::Con(TyCon::Builtin(b), _) if *b == B::STRING => {
++        Ty::Con(TyCon::Builtin(b), _, _) if *b == B::STRING => {
+             let mut result = vec![Shape::Other];
+             let mut seen = HashSet::new();
+             for p in column {
+@@ -627,7 +627,7 @@ fn shapes(
+             }
+             result
+         }
+-        Ty::Con(TyCon::Builtin(b), args) if *b == B::LIST => {
++        Ty::Con(TyCon::Builtin(b), args, _) if *b == B::LIST => {
+             let elem = args.first().cloned().unwrap_or(Ty::Param(0));
+             let (mut exact_end, mut front, mut back) = (0, 0, 0);
+             for p in column {
+@@ -1289,7 +1289,11 @@ mod tests {
+     }
+ 
+     fn builtin(b: B) -> Ty {
+-        Ty::Con(TyCon::Builtin(b), vec![])
++        Ty::Con(
++            TyCon::Builtin(b),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP,
++        )
+     }
+     fn arm(p: Pat) -> ArmPats {
+         ArmPats {
+@@ -1627,7 +1631,11 @@ mod tests {
+             assert_eq!(checked_issues(&ty, &arms, &table), vec![]);
+         }
+         // 型引数が足りず構成子の欄の型を取得できない場合も、問いの形を保つ。
+-        let missing_args = Ty::Con(TyCon::Adt(BindingId(0)), vec![]);
++        let missing_args = Ty::Con(
++            TyCon::Adt(BindingId(0)),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         assert_eq!(
+             checked_issues(
+                 &missing_args,
+@@ -1653,7 +1661,11 @@ mod tests {
+     #[test]
+     fn lists_distinguish_exact_lengths_and_front_back_alignment() {
+         let table = AdtTable::default();
+-        let ty = Ty::Con(TyCon::Builtin(B::LIST), vec![builtin(B::BOOLEAN)]);
++        let ty = Ty::Con(
++            TyCon::Builtin(B::LIST),
++            vec![builtin(B::BOOLEAN)],
++            crate::types::builtin::RangeIndex::TOP,
++        );
+         let empty = list(vec![], false, vec![]);
+         let any_nonempty = list(vec![Pat::Wild], true, vec![]);
+         let exact_one = list(vec![Pat::Wild], false, vec![]);
+@@ -1767,7 +1779,14 @@ mod tests {
+                 key_summary: TypeSummary::default(),
+             },
+         );
+-        (Ty::Con(TyCon::Adt(id), vec![builtin(B::BOOLEAN)]), table)
++        (
++            Ty::Con(
++                TyCon::Adt(id),
++                vec![builtin(B::BOOLEAN)],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
++            table,
++        )
+     }
+     fn some(p: Pat) -> Pat {
+         Pat::Ctor {
+@@ -1919,7 +1938,11 @@ mod tests {
+             .unwrap();
+             assert_eq!(checked.issues, vec![unreachable(0, 2, &[])]);
+             assert_eq!(checked.covering, vec![((0, 2), vec![(0, 1)])]);
+-            let list_ty = Ty::Con(TyCon::Builtin(B::LIST), vec![ty.clone()]);
++            let list_ty = Ty::Con(
++                TyCon::Builtin(B::LIST),
++                vec![ty.clone()],
++                crate::types::builtin::RangeIndex::TOP,
++            );
+             let arms = [
+                 arm(list(vec![], false, vec![])),
+                 arm(list(vec![known.clone()], true, vec![])),
+@@ -1943,7 +1966,12 @@ mod tests {
+             outer.adts.insert(BindingId(10), inner);
+             let nested_ty = Ty::Con(
+                 TyCon::Adt(BindingId(0)),
+-                vec![Ty::Con(TyCon::Adt(BindingId(10)), vec![])],
++                vec![Ty::Con(
++                    TyCon::Adt(BindingId(10)),
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP,
++                )],
++                crate::types::builtin::RangeIndex::TOP,
+             );
+             let nested_known = Pat::Ctor {
+                 adt: BindingId(10),
+@@ -2162,7 +2190,14 @@ mod tests {
+                 key_summary: TypeSummary::default(),
+             },
+         );
+-        (Ty::Con(TyCon::Adt(id), vec![]), table)
++        (
++            Ty::Con(
++                TyCon::Adt(id),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP,
++            ),
++            table,
++        )
+     }
+     fn review_arms(n: usize) -> Vec<ArmPats> {
+         let mut arms = vec![];
+diff --git a/crates/benitoite/src/typeck/solve.rs b/crates/benitoite/src/typeck/solve.rs
+index 7a4dbf28..f69ab6cb 100644
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -19,7 +19,7 @@ use effect_key::EffectConstraintKey;
+ // 子を左から順に展開し、親の型は子をすべて作ってから組み立てる。
+ // 作業の枠はヒープに置き、型の深さに比例する Rust の再帰を使わない（02-03）。
+ enum ZonkHead<'a> {
+-    Con(TyCon),
++    Con(TyCon, &'a crate::types::builtin::RangeIndex),
+     App(IHead),
+     Fn(&'a IFnTy),
+ }
+@@ -311,7 +311,7 @@ impl Solver {
+                     }
+                     budget.enter(depth)?;
+                     let children = match t {
+-                        ITy::Con(c, args) => Some((ZonkHead::Con(*c), args)),
++                        ITy::Con(c, args, ix) => Some((ZonkHead::Con(*c, ix), args)),
+                         ITy::App(h, args) => Some((ZonkHead::App(*h), args)),
+                         ITy::Fn(f) => {
+                             for t in &f.effect.failures {
+@@ -371,7 +371,7 @@ impl Solver {
+                     budget.enter(depth)?;
+                     let next = depth.saturating_add(1);
+                     match t {
+-                        ITy::Con(_, ts) | ITy::App(_, ts) => {
++                        ITy::Con(_, ts, _) | ITy::App(_, ts) => {
+                             pending.extend(ts.iter().map(|t| ZonkStep::Count(t, next)))
+                         }
+                         ITy::Fn(f) => {
+@@ -413,10 +413,12 @@ impl Solver {
+                         pending.push(ZonkStep::Visit(child, depth));
+                     } else {
+                         match head {
+-                            ZonkHead::Con(c) => result = ITy::Con(c, built),
++                            ZonkHead::Con(c, ix) => result = ITy::Con(c, built, ix.clone()),
+                             ZonkHead::App(h) => {
+                                 result = match self.head(h) {
+-                                    Some(TyHead::Con(c)) => ITy::Con(c, built),
++                                    Some(TyHead::Con(c)) => {
++                                        ITy::Con(c, built, crate::types::builtin::RangeIndex::TOP)
++                                    }
+                                     Some(TyHead::Param(i)) => ITy::App(IHead::Param(i), built),
+                                     None => ITy::App(h, built),
+                                 };
+@@ -469,7 +471,7 @@ impl Solver {
+                     pending.extend(f.params);
+                     pending.push(f.ret);
+                 }
+-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+                 ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+             }
+         }
+@@ -488,7 +490,7 @@ impl Solver {
+     fn finalize_zonked(&self, t: ITy, r: &ResolveOutput) -> Ty {
+         match t {
+             ITy::Var(_) | ITy::Error => super::decls::unit(),
+-            ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.finalize(t, r)).collect()),
++            ITy::Con(c, a, ix) => Ty::Con(c, a.iter().map(|t| self.finalize(t, r)).collect(), ix),
+             ITy::Fn(f)
+                 if self.contract_names(&f.contract).is_none_or(|names| {
+                     names.len() != f.params.len()
+@@ -508,7 +510,7 @@ impl Solver {
+             ITy::App(h, a) => {
+                 let args = a.iter().map(|t| self.finalize(t, r)).collect();
+                 match self.finalize_head(h, r) {
+-                    TyHead::Con(c) => Ty::Con(c, args),
++                    TyHead::Con(c) => Ty::Con(c, args, crate::types::builtin::RangeIndex::TOP),
+                     TyHead::Param(i) => Ty::App(i, args),
+                 }
+             }
+@@ -535,11 +537,12 @@ impl Solver {
+     fn finalize_failure_type_normalized(&self, t: &ITy) -> Ty {
+         match t {
+             ITy::Var(_) | ITy::Error => super::decls::unit(),
+-            ITy::Con(c, ts) => Ty::Con(
++            ITy::Con(c, ts, ix) => Ty::Con(
+                 *c,
+                 ts.iter()
+                     .map(|t| self.finalize_failure_type_normalized(t))
+                     .collect(),
++                ix.clone(),
+             ),
+             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+                 param_names: self.contract_names(&f.contract).unwrap_or_default(),
+@@ -562,7 +565,7 @@ impl Solver {
+                     .map(|t| self.finalize_failure_type_normalized(t))
+                     .collect();
+                 match self.head(*h) {
+-                    Some(TyHead::Con(c)) => Ty::Con(c, ts),
++                    Some(TyHead::Con(c)) => Ty::Con(c, ts, crate::types::builtin::RangeIndex::TOP),
+                     Some(TyHead::Param(i)) => Ty::App(i, ts),
+                     None => super::decls::unit(),
+                 }
+@@ -585,7 +588,7 @@ impl Solver {
+                     pending.extend(f.params);
+                     pending.push(f.ret);
+                 }
+-                ITy::Con(_, ts) | ITy::App(_, ts) => pending.extend(ts),
++                ITy::Con(_, ts, _) | ITy::App(_, ts) => pending.extend(ts),
+                 ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+             }
+         }
+@@ -603,7 +606,7 @@ impl Solver {
+                         return true;
+                     }
+                 }
+-                ITy::Con(_, a) | ITy::App(_, a) => todo.extend(a),
++                ITy::Con(_, a, _) | ITy::App(_, a) => todo.extend(a),
+                 ITy::Fn(f) => {
+                     todo.extend(self.failure_types(&f.effect));
+                     todo.extend(f.params);
+@@ -647,7 +650,7 @@ impl Solver {
+                 ITy::Var(v) => {
+                     vars.insert(v.0);
+                 }
+-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+                 ITy::Fn(f) => {
+                     pending.extend(self.failure_types(&f.effect));
+                     pending.extend(f.params);
+@@ -716,7 +719,9 @@ impl Solver {
+         }
+         match (&a, &b) {
+             (ITy::Var(v), t) | (t, ITy::Var(v)) => self.bind(*v, t),
+-            (ITy::Con(c, x), ITy::Con(d, y)) if c == d && x.len() == y.len() => {
++            (ITy::Con(c, x, ix), ITy::Con(d, y, iy))
++                if c == d && ix == iy && x.len() == y.len() =>
++            {
+                 for (a, b) in x.iter().zip(y) {
+                     self.equal_with_outer(a, b, reason, expected, found)?;
+                 }
+@@ -745,8 +750,8 @@ impl Solver {
+                 self.equal_function_effects(&x.effect, &y.effect, reason, expected, found);
+                 Ok(())
+             }
+-            (ITy::App(h, x), ITy::Con(c, y)) | (ITy::Con(c, y), ITy::App(h, x))
+-                if x.len() == y.len() =>
++            (ITy::App(h, x), ITy::Con(c, y, ix)) | (ITy::Con(c, y, ix), ITy::App(h, x))
++                if ix == &crate::types::builtin::RangeIndex::TOP && x.len() == y.len() =>
+             {
+                 self.bind_head(*h, TyHead::Con(*c))?;
+                 for (a, b) in x.iter().zip(y) {
+@@ -944,7 +949,7 @@ impl Solver {
+                         n.binding = Some(ITy::Error);
+                     }
+                 }
+-                ITy::Con(_, a) | ITy::App(_, a) => todo.extend(a),
++                ITy::Con(_, a, _) | ITy::App(_, a) => todo.extend(a),
+                 ITy::Fn(f) => {
+                     todo.extend(f.effect.failures);
+                     todo.extend(f.params);
+@@ -962,7 +967,9 @@ impl Solver {
+     pub(super) fn diagnostic_type(&self, t: &ITy) -> Ty {
+         match self.zonk(t) {
+             ITy::Var(_) | ITy::Error => Ty::Param(u32::MAX),
+-            ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.diagnostic_type(t)).collect()),
++            ITy::Con(c, a, ix) => {
++                Ty::Con(c, a.iter().map(|t| self.diagnostic_type(t)).collect(), ix)
++            }
+             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
+                 param_names: self.contract_names(&f.contract).unwrap_or_default(),
+                 params: f.params.iter().map(|t| self.diagnostic_type(t)).collect(),
+@@ -974,7 +981,9 @@ impl Solver {
+             ITy::App(h, a) => {
+                 let args = a.iter().map(|t| self.diagnostic_type(t)).collect();
+                 match self.head(h) {
+-                    Some(TyHead::Con(c)) => Ty::Con(c, args),
++                    Some(TyHead::Con(c)) => {
++                        Ty::Con(c, args, crate::types::builtin::RangeIndex::TOP)
++                    }
+                     Some(TyHead::Param(i)) => Ty::App(i, args),
+                     None => Ty::App(u32::MAX, args),
+                 }
+@@ -1012,7 +1021,7 @@ impl Solver {
+                     pending.push((&e.ret, &f.ret));
+                     pending.extend(e.params.iter().zip(&f.params).rev());
+                 }
+-                (ITy::Con(_, es), ITy::Con(_, fs)) | (ITy::App(_, es), ITy::App(_, fs)) => {
++                (ITy::Con(_, es, _), ITy::Con(_, fs, _)) | (ITy::App(_, es), ITy::App(_, fs)) => {
+                     pending.extend(es.iter().zip(fs).rev())
+                 }
+                 _ => {}
+@@ -1216,7 +1225,7 @@ impl Solver {
+             if let Some(note) = note {
+                 d = d.note(note);
+             }
+-            if let (ITy::Con(TyCon::Builtin(a), _), ITy::Con(TyCon::Builtin(b), _)) =
++            if let (ITy::Con(TyCon::Builtin(a), _, _), ITy::Con(TyCon::Builtin(b), _, _)) =
+                 (self.zonk(expected), self.zonk(found))
+                 && [a, b].iter().any(|ty| {
+                     super::text::numeric_suffix(*ty).is_some()
+@@ -1228,7 +1237,12 @@ impl Solver {
+                 d = d.arg("suffix", suffix).help("numeric_width");
+             }
+             if let Some(literal) = &r.int_literal
+-                && self.zonk(expected) == ITy::Con(TyCon::Builtin(B::FLOAT), vec![])
++                && self.zonk(expected)
++                    == ITy::Con(
++                        TyCon::Builtin(B::FLOAT),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP,
++                    )
+             {
+                 d = d.arg("literal", literal).help_edits(
+                     "float_literal",
+@@ -1755,7 +1769,7 @@ impl Solver {
+                 if (independent_format
+                     || !has_error(&actual)
+                     || r.kind == ReasonKind::InterpFormat && !matches!(&actual, ITy::Error))
+-                    && !matches!(&actual, ITy::Con(TyCon::Builtin(b), args) if args.is_empty() && set.contains(*b))
++                    && !matches!(&actual, ITy::Con(TyCon::Builtin(b), args, _) if args.is_empty() && set.contains(*b))
+                 {
+                     self.bound_failure(ctx, &actual, outer.as_ref(), &r, mode, Some(set));
+                     self.poison(&[ty]);
+@@ -1766,7 +1780,7 @@ impl Solver {
+             // 既知の不適合な型への診断は保つ（設計書 02-05「制約の解決」）。
+             if set == Some(TySet::INT_DIV)
+                 && (!matches!(&t, ITy::Var(_)) || final_pass)
+-                && !matches!(&t, ITy::Con(TyCon::Builtin(b), args)
++                && !matches!(&t, ITy::Con(TyCon::Builtin(b), args, _)
+                     if args.is_empty() && TySet::INT_DIV.contains(*b))
+             {
+                 let integer = super::generate::basic(B::INTEGER);
+@@ -1790,7 +1804,7 @@ impl Solver {
+                     super::traits::check_rigid_bound(ctx, clause, index, mode, set, &r);
+                     *self = std::mem::take(&mut ctx.solver);
+                 }
+-                ITy::Con(con, args) => {
++                ITy::Con(con, args, _) => {
+                     let mut valid = true;
+                     let mut indices = vec![];
+                     if mode == Bound::Set {
+@@ -1886,8 +1900,8 @@ impl Solver {
+         let mut pending = vec![self.zonk(ty)];
+         while let Some(ty) = pending.pop() {
+             match ty {
+-                ITy::Con(TyCon::Builtin(B::FLOAT | B::FLOAT32), _) => return true,
+-                ITy::Con(TyCon::Adt(id), args) => {
++                ITy::Con(TyCon::Builtin(B::FLOAT | B::FLOAT32), _, _) => return true,
++                ITy::Con(TyCon::Adt(id), args, _) => {
+                     if let Some(adt) = ctx.decls.out.adts.get(id) {
+                         if adt.key_summary.always {
+                             return true;
+@@ -1899,7 +1913,7 @@ impl Solver {
+                         }
+                     }
+                 }
+-                ITy::Con(_, args) => pending.extend(args),
++                ITy::Con(_, args, _) => pending.extend(args),
+                 ITy::Fn(_)
+                 | ITy::App(..)
+                 | ITy::Var(_)
+@@ -1962,7 +1976,7 @@ impl Solver {
+                     op: OpName::Bin(BinOp::Div)
+                 }
+             )
+-            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _) if TySet::INT_DIV.contains(b))
++            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _, _) if TySet::INT_DIV.contains(b))
+         {
+             d = d.help_edits(
+                 "div",
+@@ -1994,7 +2008,7 @@ impl Solver {
+             }
+         });
+         let help = if set == Some(TySet::FORMAT_FIXED)
+-            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _) if TySet::FORMAT_INT.contains(b))
++            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _, _) if TySet::FORMAT_INT.contains(b))
+         {
+             "integer_fixed"
+         } else {
+@@ -2056,7 +2070,7 @@ impl Solver {
+                     pending.extend(f.params);
+                     pending.push(f.ret);
+                 }
+-                ITy::Con(_, ts) | ITy::App(_, ts) => pending.extend(ts),
++                ITy::Con(_, ts, _) | ITy::App(_, ts) => pending.extend(ts),
+                 ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+             }
+         }
+@@ -2384,7 +2398,7 @@ fn add_die_effect_help(ctx: &Body<'_, '_>, file: crate::base::FileId, diagnostic
+ pub(super) fn has_error(t: &ITy) -> bool {
+     match t {
+         ITy::Error => true,
+-        ITy::Con(_, a) | ITy::App(_, a) => a.iter().any(has_error),
++        ITy::Con(_, a, _) | ITy::App(_, a) => a.iter().any(has_error),
+         ITy::Fn(f) => {
+             f.params.iter().any(has_error)
+                 || has_error(&f.ret)
+diff --git a/crates/benitoite/src/typeck/solve/effect_key.rs b/crates/benitoite/src/typeck/solve/effect_key.rs
+index a7002525..4d6d81ea 100644
+--- a/crates/benitoite/src/typeck/solve/effect_key.rs
++++ b/crates/benitoite/src/typeck/solve/effect_key.rs
+@@ -11,7 +11,7 @@ use std::mem::{Discriminant, discriminant};
+ #[derive(PartialEq, Eq, Hash)]
+ enum Part {
+     Var(TyVar),
+-    Con(TyCon, usize),
++    Con(TyCon, usize, crate::types::builtin::RangeIndex),
+     Fn(IContract, usize),
+     Param(u32),
+     App(IHead, usize),
+@@ -129,8 +129,8 @@ impl EffectConstraintKey {
+                 }
+                 Pending::Ty(t) => match t {
+                     ITy::Var(v) => parts.push(Part::Var(*v)),
+-                    ITy::Con(c, args) => {
+-                        parts.push(Part::Con(*c, args.len()));
++                    ITy::Con(c, args, ix) => {
++                        parts.push(Part::Con(*c, args.len(), ix.clone()));
+                         pending.extend(args.iter().rev().map(Pending::Ty));
+                     }
+                     ITy::App(h, args) => {
+diff --git a/crates/benitoite/src/typeck/solve/provenance.rs b/crates/benitoite/src/typeck/solve/provenance.rs
+index e1f710f6..814998b7 100644
+--- a/crates/benitoite/src/typeck/solve/provenance.rs
++++ b/crates/benitoite/src/typeck/solve/provenance.rs
+@@ -174,7 +174,7 @@ impl Solver {
+                             .entry(source.0)
+                             .or_default()
+                             .push((target.0, path, Vec::new())),
+-                        ITy::Con(_, args) | ITy::App(_, args) => {
++                        ITy::Con(_, args, _) | ITy::App(_, args) => {
+                             for (i, part) in args.iter().enumerate() {
+                                 let mut child = path.clone();
+                                 child.push(i);
+@@ -200,7 +200,7 @@ impl Solver {
+                 }
+             }
+             match (target, shape) {
+-                (ITy::Con(c, a), ITy::Con(d, b)) if c == d => {
++                (ITy::Con(c, a, ix), ITy::Con(d, b, iy)) if c == d && ix == iy => {
+                     for (a, b) in a.iter().zip(b) {
+                         self.build_value(a, b, b);
+                     }
+@@ -240,7 +240,7 @@ impl Solver {
+                     .entry(source.0)
+                     .or_default()
+                     .push((v.0, Vec::new(), path)),
+-                ITy::Con(_, args) | ITy::App(_, args) => {
++                ITy::Con(_, args, _) | ITy::App(_, args) => {
+                     for (i, ty) in args.iter().enumerate() {
+                         let mut child = path.clone();
+                         child.push(i);
+@@ -312,7 +312,7 @@ impl Solver {
+                         return true;
+                     }
+                     let children = match ty {
+-                        ITy::Con(_, args) | ITy::App(_, args) => args,
++                        ITy::Con(_, args, _) | ITy::App(_, args) => args,
+                         ITy::Fn(f) => f
+                             .params
+                             .into_iter()
+@@ -499,7 +499,7 @@ impl Solver {
+                         return true;
+                     }
+                 }
+-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+                 ITy::Fn(f) => {
+                     pending.extend(&f.params);
+                     pending.push(&f.ret);
+@@ -531,7 +531,9 @@ impl Solver {
+             match (a, b) {
+                 (ITy::Error | ITy::Var(_), _) | (_, ITy::Error | ITy::Var(_)) => {}
+                 (ITy::App(h, _), _) | (_, ITy::App(h, _)) if self.head(h).is_none() => {}
+-                (ITy::Con(c, a), ITy::Con(d, b)) if c == d && a.len() == b.len() => {
++                (ITy::Con(c, a, ix), ITy::Con(d, b, iy))
++                    if c == d && ix == iy && a.len() == b.len() =>
++                {
+                     pending.extend(a.into_iter().zip(b))
+                 }
+                 (ITy::App(c, a), ITy::App(d, b)) if c == d && a.len() == b.len() => {
+@@ -667,7 +669,9 @@ impl Solver {
+                 }
+             }
+             match (self.origin_shape(&a), self.origin_shape(&b)) {
+-                (ITy::Con(c, a), ITy::Con(d, b)) if c == d => pending.extend(a.into_iter().zip(b)),
++                (ITy::Con(c, a, ix), ITy::Con(d, b, iy)) if c == d && ix == iy => {
++                    pending.extend(a.into_iter().zip(b))
++                }
+                 (ITy::App(c, a), ITy::App(d, b)) if c == d => pending.extend(a.into_iter().zip(b)),
+                 (ITy::Fn(a), ITy::Fn(b)) => {
+                     pending.extend(a.params.into_iter().zip(b.params));
+@@ -689,7 +693,7 @@ impl Solver {
+     fn intrinsic_type(&self, ty: &ITy) -> bool {
+         match ty {
+             ITy::Var(v) => self.origin_confirmed(v.0),
+-            ITy::Con(_, args) | ITy::App(_, args) => args.iter().all(|t| self.intrinsic_type(t)),
++            ITy::Con(_, args, _) | ITy::App(_, args) => args.iter().all(|t| self.intrinsic_type(t)),
+             ITy::Fn(f) => {
+                 f.params.iter().all(|t| self.intrinsic_type(t)) && self.intrinsic_type(&f.ret)
+             }
+@@ -731,7 +735,9 @@ impl Solver {
+             return self.zonk(&t);
+         }
+         match self.origin_shape(ty) {
+-            ITy::Con(c, args) => ITy::Con(c, args.iter().map(|t| self.recovered_type(t)).collect()),
++            ITy::Con(c, args, ix) => {
++                ITy::Con(c, args.iter().map(|t| self.recovered_type(t)).collect(), ix)
++            }
+             ITy::App(h, args) => ITy::App(h, args.iter().map(|t| self.recovered_type(t)).collect()),
+             ITy::Fn(mut f) => {
+                 // fixedの原子の範囲は複写したまま、型を含む部分だけを回復する。
+@@ -761,7 +767,7 @@ impl Solver {
+                 return true;
+             }
+             match self.origin_shape(&t) {
+-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+                 ITy::Fn(f) => {
+                     pending.extend(f.params);
+                     pending.push(f.ret);
+@@ -789,7 +795,7 @@ impl Solver {
+                 return true;
+             }
+             match self.origin_shape(&t) {
+-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+                 ITy::Fn(f) => {
+                     pending.extend(f.params);
+                     pending.push(f.ret);
+@@ -840,7 +846,7 @@ impl Solver {
+                     continue;
+                 }
+                 match (self.origin_shape(&value), self.origin_shape(&imposed)) {
+-                    (ITy::Con(c, a), ITy::Con(d, b)) if c == d => {
++                    (ITy::Con(c, a, ix), ITy::Con(d, b, iy)) if c == d && ix == iy => {
+                         pending.extend(a.into_iter().zip(b))
+                     }
+                     (ITy::Fn(a), ITy::Fn(b)) if a.params.len() == b.params.len() => {
+diff --git a/crates/benitoite/src/typeck/tests.rs b/crates/benitoite/src/typeck/tests.rs
+index 4c5f8973..2f9bce98 100644
+--- a/crates/benitoite/src/typeck/tests.rs
++++ b/crates/benitoite/src/typeck/tests.rs
+@@ -385,7 +385,11 @@ end function
+     let n = node_at(&l, start);
+     assert_eq!(
+         t.type_args.get(n).unwrap().tys,
+-        vec![TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))]
++        vec![TypeArg::Ty(Ty::Con(
++            TyCon::Builtin(B::INTEGER),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP
++        ))]
+     );
+     let start = s.find("Box.value(b)").unwrap();
+     let n = node_at(&l, start);
+@@ -1218,7 +1222,11 @@ fn higher_kinded_instantiation_and_equatable_declaration_summaries() {
+             TypeArg::Head(crate::types::TyHead::Con(TyCon::Adt(
+                 r.stdlib("Benitoite.Option.Option").unwrap()
+             ))),
+-            TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))
++            TypeArg::Ty(Ty::Con(
++                TyCon::Builtin(B::INTEGER),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP
++            ))
+         ]
+     );
+     clean(
+@@ -1470,7 +1478,11 @@ fn width_literals_keep_their_exact_types_and_values() {
+         let node = node_at(&loaded, source.find(literal).unwrap());
+         assert_eq!(
+             typed.expr_types.get(node),
+-            Some(&Ty::Con(TyCon::Builtin(builtin), vec![]))
++            Some(&Ty::Con(
++                TyCon::Builtin(builtin),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP
++            ))
+         );
+         assert!(typed.lit_values.get(node).is_some());
+     }
+@@ -1581,7 +1593,11 @@ fn width_integer_literals_check_both_boundaries_and_record_exact_values() {
+             let node = node_at(&loaded, source.find(&literal).unwrap());
+             assert_eq!(
+                 typed.expr_types.get(node),
+-                Some(&Ty::Con(TyCon::Builtin(builtin), vec![]))
++                Some(&Ty::Con(
++                    TyCon::Builtin(builtin),
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP
++                ))
+             );
+             assert_width_value(typed.lit_values.get(node).unwrap(), expected);
+         }
+@@ -1678,7 +1694,11 @@ fn width_integer_division_waits_for_operands_and_defaults_unconstrained_lambdas(
+         let operand = node_at(&loaded, source.find(&format!("a {op} b")).unwrap());
+         assert_eq!(
+             typed.expr_types.get(operand),
+-            Some(&Ty::Con(TyCon::Builtin(B::INTEGER), vec![]))
++            Some(&Ty::Con(
++                TyCon::Builtin(B::INTEGER),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP
++            ))
+         );
+     }
+ }
+@@ -1933,8 +1953,22 @@ fn contracts_come_from_declarations_and_written_lambda_parameters() {
+         panic!()
+     };
+     assert_eq!(lambda.param_names, ["value"]);
+-    assert_eq!(lambda.params, [Ty::Con(TyCon::Builtin(B::INTEGER), vec![])]);
+-    assert_eq!(lambda.ret, Ty::Con(TyCon::Builtin(B::INTEGER), vec![]));
++    assert_eq!(
++        lambda.params,
++        [Ty::Con(
++            TyCon::Builtin(B::INTEGER),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP
++        )]
++    );
++    assert_eq!(
++        lambda.ret,
++        Ty::Con(
++            TyCon::Builtin(B::INTEGER),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP
++        )
++    );
+     assert_eq!(lambda.param_names.len(), lambda.params.len());
+     for value in ["lambda(other) return other", "identity"] {
+         let source = format!(
+diff --git a/crates/benitoite/src/typeck/tests/interpolation_formats.rs b/crates/benitoite/src/typeck/tests/interpolation_formats.rs
+index 7f62c27e..af53bc91 100644
+--- a/crates/benitoite/src/typeck/tests/interpolation_formats.rs
++++ b/crates/benitoite/src/typeck/tests/interpolation_formats.rs
+@@ -103,7 +103,11 @@ fn format_type_matrix_and_locations() {
+             .unwrap();
+         assert_eq!(
+             out.interp_types.get(expr.id()),
+-            Some(&Ty::Con(TyCon::Builtin(ty), vec![]))
++            Some(&Ty::Con(
++                TyCon::Builtin(ty),
++                vec![],
++                benitoite::types::builtin::RangeIndex::TOP
++            ))
+         );
+         assert_eq!(
+             out.expr_types.get(expr.id()),
+diff --git a/crates/benitoite/src/typeck/traits/collect.rs b/crates/benitoite/src/typeck/traits/collect.rs
+index 5a6608fa..3fdbe259 100644
+--- a/crates/benitoite/src/typeck/traits/collect.rs
++++ b/crates/benitoite/src/typeck/traits/collect.rs
+@@ -270,7 +270,7 @@ fn collect_impl(d: &mut Decls<'_>, i: &ImplDecl, module: ModuleId) {
+         target
+     };
+     let target_con = match &target {
+-        TypeArg::Ty(Ty::Con(c, _)) | TypeArg::Head(TyHead::Con(c)) => *c,
++        TypeArg::Ty(Ty::Con(c, _, _)) | TypeArg::Head(TyHead::Con(c)) => *c,
+         TypeArg::Ty(_) | TypeArg::Head(TyHead::Param(_)) => {
+             TyCon::Builtin(crate::types::builtin::BuiltinTypeId::UNIT)
+         }
+@@ -342,7 +342,7 @@ pub(super) fn has_param(t: &Ty, p: u32) -> bool {
+     match t {
+         Ty::Param(i) => *i == p,
+         Ty::App(i, a) => *i == p || a.iter().any(|t| has_param(t, p)),
+-        Ty::Con(_, a) => a.iter().any(|t| has_param(t, p)),
++        Ty::Con(_, a, _) => a.iter().any(|t| has_param(t, p)),
+         Ty::Fn(f) => f.params.iter().any(|t| has_param(t, p)) || has_param(&f.ret, p),
+         Ty::Rigid { .. } => false,
+     }
+diff --git a/crates/benitoite/src/typeck/traits/impls.rs b/crates/benitoite/src/typeck/traits/impls.rs
+index 8db4bd78..3336b09a 100644
+--- a/crates/benitoite/src/typeck/traits/impls.rs
++++ b/crates/benitoite/src/typeck/traits/impls.rs
+@@ -29,7 +29,9 @@ fn head_scheme(i: &ImplDef) -> Scheme {
+ fn target_ty(i: &ImplDef) -> Ty {
+     match &i.target {
+         TypeArg::Ty(t) => t.clone(),
+-        TypeArg::Head(TyHead::Con(c)) => Ty::Con(*c, vec![]),
++        TypeArg::Head(TyHead::Con(c)) => {
++            Ty::Con(*c, vec![], crate::types::builtin::RangeIndex::TOP)
++        }
+         TypeArg::Head(TyHead::Param(i)) => Ty::App(*i, vec![]),
+     }
+ }
+@@ -184,7 +186,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
+ fn check_shape(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
+     let mut used = BTreeSet::new();
+     let valid = match &i.target {
+-        TypeArg::Ty(Ty::Con(_, args)) => args.iter().all(|t| {
++        TypeArg::Ty(Ty::Con(_, args, _)) => args.iter().all(|t| {
+             if let Ty::Param(p) = t {
+                 used.insert(*p)
+             } else {
+diff --git a/crates/benitoite/src/typeck/traits/solve.rs b/crates/benitoite/src/typeck/traits/solve.rs
+index 3c120b7b..c7e3d507 100644
+--- a/crates/benitoite/src/typeck/traits/solve.rs
++++ b/crates/benitoite/src/typeck/traits/solve.rs
+@@ -21,7 +21,7 @@ pub(in crate::typeck) fn shared_table(d: &Decls<'_>) -> std::rc::Rc<ImplTable> {
+ }
+ pub(super) fn target_con(i: &ImplDef) -> Option<TyCon> {
+     match &i.target {
+-        TypeArg::Ty(Ty::Con(c, _)) | TypeArg::Head(TyHead::Con(c)) => Some(*c),
++        TypeArg::Ty(Ty::Con(c, _, _)) | TypeArg::Head(TyHead::Con(c)) => Some(*c),
+         TypeArg::Ty(_) | TypeArg::Head(TyHead::Param(_)) => None,
+     }
+ }
+@@ -103,7 +103,7 @@ pub(super) fn resolve(
+             }
+             // 空の適用で頭だけを置き換える。finalize_head の既定値を解決前に選ばない。
+             match solver.zonk(&ITy::App(*h, vec![])) {
+-                ITy::Con(c, _) => IClassArg::Con(c),
++                ITy::Con(c, _, _) => IClassArg::Con(c),
+                 ITy::App(h, _) => IClassArg::Head(h),
+                 ITy::Var(_) | ITy::Fn(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {
+                     return Err(Failure::Suppressed);
+@@ -186,9 +186,9 @@ fn resolve_normalized(
+     ) {
+         return Err(Failure::Unknown(normalized.clone()));
+     }
+-    let (con, args) = match normalized {
+-        IClassArg::Ty(ITy::Con(c, args)) => (*c, args.as_slice()),
+-        IClassArg::Con(c) => (*c, &[][..]),
++    let (con, args, ix) = match normalized {
++        IClassArg::Ty(ITy::Con(c, args, ix)) => (*c, args.as_slice(), ix),
++        IClassArg::Con(c) => (*c, &[][..], &crate::types::builtin::RangeIndex::TOP),
+         IClassArg::Ty(_) | IClassArg::Head(_) => {
+             if d.invalid_impl_targets.contains(&class) {
+                 return Err(Failure::Suppressed);
+@@ -208,9 +208,20 @@ fn resolve_normalized(
+     let Some(i) = d.out.impls.get(*id) else {
+         return Err(Failure::Suppressed);
+     };
++    let target_ix = match &i.target {
++        TypeArg::Ty(Ty::Con(_, _, ix)) => ix,
++        TypeArg::Head(_) => &crate::types::builtin::RangeIndex::TOP,
++        TypeArg::Ty(_) => return Err(Failure::Suppressed),
++    };
++    if ix != target_ix {
++        return Err(Failure::Missing {
++            class,
++            arg: normalized.clone(),
++        });
++    }
+     // 型の数えは TypeBudget と同じく Con/App と Fn の引数・戻り値を一節ずつ数える。
+     // 写す前に予算を検査し、大きな型を持つ辞書も止める。
+-    if let TypeArg::Ty(Ty::Con(_, params)) = &i.target {
++    if let TypeArg::Ty(Ty::Con(_, params, _)) = &i.target {
+         for (_, ty) in params.iter().zip(args) {
+             charge_type(parts, ty)?;
+         }
+@@ -221,7 +232,7 @@ fn resolve_normalized(
+     let mut type_args = vec![TypeArg::Ty(crate::typeck::decls::unit()); i.type_params.len()];
+     let mut infer_args = vec![ITy::Error; i.type_params.len()];
+     // 対象は引数の順が宣言の順とは限らない（Pair[B, A]）。対象の Param の番号で置き換える。
+-    if let TypeArg::Ty(Ty::Con(_, params)) = &i.target {
++    if let TypeArg::Ty(Ty::Con(_, params, _)) = &i.target {
+         for (p, t) in params.iter().zip(args) {
+             if let Ty::Param(index) = p
+                 && let Ok(index) = usize::try_from(*index)
+@@ -286,7 +297,7 @@ fn charge_type(parts: &mut usize, ty: &ITy) -> Result<(), Failure> {
+     while let Some(ty) = pending.pop() {
+         charge(parts, 1)?;
+         match ty {
+-            ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++            ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+             ITy::Fn(f) => {
+                 pending.extend(&f.effect.failures);
+                 pending.extend(&f.params);
+@@ -303,11 +314,12 @@ fn charge_type(parts: &mut usize, ty: &ITy) -> Result<(), Failure> {
+ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOutput) -> Ty {
+     match ty {
+         ITy::Var(_) | ITy::Error => crate::typeck::decls::unit(),
+-        ITy::Con(c, args) => Ty::Con(
++        ITy::Con(c, args, ix) => Ty::Con(
+             *c,
+             args.iter()
+                 .map(|t| finalize_normalized(solver, t, r))
+                 .collect(),
++            ix.clone(),
+         ),
+         ITy::App(h, args) => {
+             let args = args
+@@ -315,7 +327,7 @@ fn finalize_normalized(solver: &Solver, ty: &ITy, r: &crate::resolve::ResolveOut
+                 .map(|t| finalize_normalized(solver, t, r))
+                 .collect();
+             match solver.finalize_head(*h, r) {
+-                TyHead::Con(c) => Ty::Con(c, args),
++                TyHead::Con(c) => Ty::Con(c, args, crate::types::builtin::RangeIndex::TOP),
+                 TyHead::Param(i) => Ty::App(i, args),
+             }
+         }
+@@ -405,7 +417,7 @@ fn unresolved_argument(solver: &Solver, arg: &IClassArg) -> bool {
+                 pending.extend(f.params);
+                 pending.push(f.ret);
+             }
+-            ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
++            ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
+             ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
+         }
+     }
+@@ -535,7 +547,7 @@ pub(super) fn solve_classes(ctx: &mut Body<'_, '_>, final_pass: bool) {
+ fn argument_ty(ctx: &Body<'_, '_>, arg: &IClassArg) -> Ty {
+     match arg {
+         IClassArg::Ty(t) => ctx.solver.finalize(t, ctx.decls.resolved),
+-        IClassArg::Con(c) => Ty::Con(*c, vec![]),
++        IClassArg::Con(c) => Ty::Con(*c, vec![], crate::types::builtin::RangeIndex::TOP),
+         IClassArg::Head(h) => Ty::App(
+             match ctx.solver.finalize_head(*h, ctx.decls.resolved) {
+                 TyHead::Param(i) => i,
+@@ -560,7 +572,7 @@ fn report(ctx: &mut Body<'_, '_>, failure: Failure, class: BindingId, arg: &ICla
+                 IClassArg::Ty(t) => t,
+                 IClassArg::Head(IHead::Var(v)) => ITy::Var(v),
+                 IClassArg::Head(IHead::Param(i)) => ITy::Param(i),
+-                IClassArg::Con(c) => ITy::Con(c, vec![]),
++                IClassArg::Con(c) => ITy::Con(c, vec![], crate::types::builtin::RangeIndex::TOP),
+             };
+             // 型変数の同じ失敗を重ねず、後の表でも未確定と誤りを区別する（設計書 02-05「誤りの報告と検査の継続」）。
+             let result = ctx.solver.equal(&ty, &ITy::Error, r);
+diff --git a/crates/benitoite/src/typeck/traits/tests.rs b/crates/benitoite/src/typeck/traits/tests.rs
+index 9b8adff8..718c449d 100644
+--- a/crates/benitoite/src/typeck/traits/tests.rs
++++ b/crates/benitoite/src/typeck/traits/tests.rs
+@@ -302,7 +302,11 @@ fn show_example_records_nested_dictionaries_and_method_values() {
+         dict(&l, &t, s, "describeAll", 2),
+         &[DictExpr::Impl {
+             impl_decl: option,
+-            type_args: vec![TypeArg::Ty(Ty::Con(TyCon::Adt(person), vec![]))],
++            type_args: vec![TypeArg::Ty(Ty::Con(
++                TyCon::Adt(person),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP
++            ))],
+             args: vec![concrete(p)],
+         }]
+     );
+@@ -361,8 +365,16 @@ fn higher_kinded_methods_select_heads_and_keep_method_arguments() {
+                 .tys,
+             [
+                 TypeArg::Head(TyHead::Con(con)),
+-                TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![])),
+-                TypeArg::Ty(Ty::Con(TyCon::Builtin(B::STRING), vec![])),
++                TypeArg::Ty(Ty::Con(
++                    TyCon::Builtin(B::INTEGER),
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP
++                )),
++                TypeArg::Ty(Ty::Con(
++                    TyCon::Builtin(B::STRING),
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP
++                )),
+             ]
+         );
+     }
+@@ -740,8 +752,16 @@ fn permuted_implementation_arguments_and_method_dictionaries_keep_their_order()
+             DictExpr::Impl {
+                 impl_decl: render,
+                 type_args: vec![
+-                    TypeArg::Ty(Ty::Con(TyCon::Builtin(B::STRING), vec![])),
+-                    TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![])),
++                    TypeArg::Ty(Ty::Con(
++                        TyCon::Builtin(B::STRING),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP
++                    )),
++                    TypeArg::Ty(Ty::Con(
++                        TyCon::Builtin(B::INTEGER),
++                        vec![],
++                        crate::types::builtin::RangeIndex::TOP
++                    )),
+                 ],
+                 args: vec![string, integer.clone()],
+             },
+diff --git a/crates/benitoite/src/types/builtin.rs b/crates/benitoite/src/types/builtin.rs
+index b0c3eb39..898bf986 100644
+--- a/crates/benitoite/src/types/builtin.rs
++++ b/crates/benitoite/src/types/builtin.rs
+@@ -563,3 +563,80 @@ impl FailureDeclaration {
+         }
+     }
+ }
++
++/// 型の添字。範囲の変数は標準署名の内部だけで使う（02-05「型とエフェクトの表現」）。
++/// Top以外を不変の共有データとして保持し、型を複写しても添字の内容は変わらない。
++#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
++pub struct RangeIndex(Option<std::sync::Arc<Index>>);
++
++#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
++enum Index {
++    Fixed(super::scope::Range),
++    Var(u32),
++}
++
++impl RangeIndex {
++    /// 範囲を省略した既存の型を構築する際にも明示する Top。割り当てを要しない。
++    pub const TOP: Self = Self(None);
++
++    /// 閉じた範囲を持つ不変の添字を作る。Top は同じ一つの表現にそろえる。
++    pub fn fixed(range: super::scope::Range) -> Self {
++        if range == super::scope::Range::Top {
++            Self::TOP
++        } else {
++            Self(Some(std::sync::Arc::new(Index::Fixed(range))))
++        }
++    }
++
++    /// 標準署名の中の範囲変数を、その宣言の中の番号で指す。
++    pub fn var(index: u32) -> Self {
++        Self(Some(std::sync::Arc::new(Index::Var(index))))
++    }
++
++    /// 閉じた添字の範囲。範囲変数の場合は値を返さない。
++    pub fn range(&self) -> Option<&super::scope::Range> {
++        match self.0.as_deref() {
++            None => Some(&super::scope::Range::Top),
++            Some(Index::Fixed(r)) => Some(r),
++            Some(Index::Var(_)) => None,
++        }
++    }
++
++    /// 署名内の変数の番号が、宣言した範囲の個数より小さいかを調べる。
++    /// 確定したプログラムには個数 0 を用いる。
++    pub fn vars_in(&self, count: u32) -> bool {
++        match self.0.as_deref() {
++            None | Some(Index::Fixed(_)) => true,
++            Some(Index::Var(i)) => *i < count,
++        }
++    }
++
++    /// 署名の範囲変数を同時に具体化する。不足する番号は変数のまま保持する。
++    /// 呼び出し側は具体化後の `vars_in(0)` を検査する。
++    pub fn instantiate(&self, ranges: &[super::scope::Range]) -> Self {
++        match self.0.as_deref() {
++            None | Some(Index::Fixed(_)) => self.clone(),
++            Some(Index::Var(i)) => usize::try_from(*i)
++                .ok()
++                .and_then(|i| ranges.get(i))
++                .map_or_else(|| self.clone(), |r| Self::fixed(r.clone())),
++        }
++    }
++
++    pub(crate) fn suffix(&self) -> String {
++        match self.0.as_deref() {
++            None => String::new(),
++            Some(Index::Fixed(r)) => r.suffix(),
++            Some(Index::Var(i)) => format!("[rvar {i}]"),
++        }
++    }
++
++    // 共有データも一出現ぶんずつ数える保守的な上限。文字列の分は利用側で加える。
++    pub(crate) fn allocation_bytes(&self) -> usize {
++        if self.0.is_some() {
++            std::mem::size_of::<Index>().saturating_add(std::mem::size_of::<[usize; 2]>())
++        } else {
++            0
++        }
++    }
++}
+diff --git a/crates/benitoite/src/types/mod.rs b/crates/benitoite/src/types/mod.rs
+index d12cb61e..68726fcb 100644
+--- a/crates/benitoite/src/types/mod.rs
++++ b/crates/benitoite/src/types/mod.rs
+@@ -145,10 +145,11 @@ impl EffectSet {
+     }
+ }
+ 
+-/// 型検査を終えた後の型。
++/// 型と標準署名の内部表現。確定したプログラムの添字に範囲変数は置かない。
+ #[derive(Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
+ pub enum Ty {
+-    Con(TyCon, Vec<Ty>),
++    /// 型構成子・型引数・不変の添字。既存の型も明示の Top を持つ。
++    Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+     Fn(Box<FnTy>),
+     /// 型パラメータ（値の型を表すもの）
+     Param(u32),
+@@ -269,7 +270,7 @@ impl Scheme {
+                     pending.push(&f.ret);
+                     pending.extend(&f.effects.failures);
+                 }
+-                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
++                Ty::Con(_, ts, _) | Ty::App(_, ts) => pending.extend(ts),
+                 Ty::Param(_) | Ty::Rigid { .. } => {}
+             }
+         }
+@@ -570,13 +571,83 @@ impl TySet {
+ }
+ 
+ impl Ty {
++    /// 型と Fail 内部の添字を検査する。資源・基本型・データ型・外部型の添字は Top に限る。
++    /// 範囲変数を許すのは標準署名の宣言した個数の内側だけである。
++    pub fn indices_valid(&self, range_count: u32) -> bool {
++        let mut pending = vec![self];
++        while let Some(ty) = pending.pop() {
++            match ty {
++                Ty::Con(con, args, ix) => {
++                    if !ix.vars_in(range_count)
++                        || (ix != &builtin::RangeIndex::TOP
++                            && !matches!(con, TyCon::Builtin(id)
++                                if !matches!(*id, BuiltinTypeId::REFERENCE | BuiltinTypeId::LAZY)
++                                    && id.def().is_some_and(|d| d.class == builtin::BuiltinTypeClass::Opaque)))
++                    {
++                        return false;
++                    }
++                    pending.extend(args);
++                }
++                Ty::Fn(f) => {
++                    pending.extend(&f.params);
++                    pending.push(&f.ret);
++                    pending.extend(&f.effects.failures);
++                }
++                Ty::App(_, args) => pending.extend(args),
++                Ty::Param(_) | Ty::Rigid { .. } => {}
++            }
++        }
++        true
++    }
++
++    /// 標準署名内の型の範囲変数を具体化する。型／行の代入とは独立であり、
++    /// 不足する番号を Top に変えない。確定型への接続では `indices_valid(0)` が必要である。
++    pub fn instantiate_ranges(&self, ranges: &[scope::Range]) -> Ty {
++        match self {
++            Ty::Con(con, args, ix) => Ty::Con(
++                *con,
++                args.iter().map(|t| t.instantiate_ranges(ranges)).collect(),
++                ix.instantiate(ranges),
++            ),
++            Ty::App(i, args) => Ty::App(
++                *i,
++                args.iter().map(|t| t.instantiate_ranges(ranges)).collect(),
++            ),
++            Ty::Fn(f) => {
++                let mut effects = EffectSet {
++                    failures: vec![],
++                    names: f.effects.names.clone(),
++                    vars: f.effects.vars.clone(),
++                };
++                for ty in &f.effects.failures {
++                    effects.insert_failure(ty.instantiate_ranges(ranges));
++                }
++                Ty::Fn(Box::new(FnTy {
++                    param_names: f.param_names.clone(),
++                    params: f
++                        .params
++                        .iter()
++                        .map(|t| t.instantiate_ranges(ranges))
++                        .collect(),
++                    ret: f.ret.instantiate_ranges(ranges),
++                    effects,
++                }))
++            }
++            Ty::Param(_) | Ty::Rigid { .. } => self.clone(),
++        }
++    }
++
+     /// 型パラメータを `tys` で、エフェクト変数を `effs` で置き換える（`Ty::App(i, args)` の i が
+-    /// `TypeArg::Head(TyHead::Con(c))` に置き換わるときは `Ty::Con(c, args)` にする）。
++    /// `TypeArg::Head(TyHead::Con(c))` に置き換わるときは `Ty::Con(c, args, RangeIndex::TOP)` にする）。
+     /// `tys`・`effs` にない番号はそのまま残す。`Ty::Rigid` は置き換えない。
+     pub fn subst(&self, tys: &[TypeArg], effs: &[EffectSet]) -> Ty {
+         let arg = |i: u32| usize::try_from(i).ok().and_then(|i| tys.get(i));
+         match self {
+-            Ty::Con(con, args) => Ty::Con(*con, args.iter().map(|t| t.subst(tys, effs)).collect()),
++            Ty::Con(con, args, ix) => Ty::Con(
++                *con,
++                args.iter().map(|t| t.subst(tys, effs)).collect(),
++                ix.clone(),
++            ),
+             Ty::Fn(f) => Ty::Fn(Box::new(FnTy {
+                 param_names: f.param_names.clone(),
+                 params: f.params.iter().map(|t| t.subst(tys, effs)).collect(),
+@@ -591,7 +662,9 @@ impl Ty {
+             Ty::App(i, args) => {
+                 let args = args.iter().map(|t| t.subst(tys, effs)).collect();
+                 match arg(*i) {
+-                    Some(TypeArg::Head(TyHead::Con(con))) => Ty::Con(*con, args),
++                    Some(TypeArg::Head(TyHead::Con(con))) => {
++                        Ty::Con(*con, args, crate::types::builtin::RangeIndex::TOP)
++                    }
+                     Some(TypeArg::Head(TyHead::Param(j))) => Ty::App(*j, args),
+                     Some(TypeArg::Ty(_)) | None => Ty::App(*i, args),
+                 }
+@@ -612,7 +685,7 @@ impl Ty {
+                     pending.push(&f.ret);
+                     pending.extend(&f.effects.failures);
+                 }
+-                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
++                Ty::Con(_, ts, _) | Ty::App(_, ts) => pending.extend(ts),
+                 Ty::Param(_) | Ty::Rigid { .. } => {}
+             }
+         }
+@@ -633,7 +706,7 @@ impl Ty {
+                     pending.push(&f.ret);
+                     pending.extend(&f.effects.failures);
+                 }
+-                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
++                Ty::Con(_, ts, _) | Ty::App(_, ts) => pending.extend(ts),
+                 Ty::Param(_) | Ty::Rigid { .. } => {}
+             }
+         }
+@@ -720,7 +793,7 @@ fn show_ty(
+     out: &mut String,
+ ) {
+     match ty {
+-        Ty::Con(con, args) => {
++        Ty::Con(con, args, ix) => {
+             if let Some(name) = qualified.get(con) {
+                 out.push_str(name);
+             } else {
+@@ -749,6 +822,7 @@ fn show_ty(
+                 }
+             }
+             show_args(args, names, qualified, out);
++            out.push_str(&ix.suffix());
+         }
+         Ty::Param(i) => out.push_str(param_name(*i, names.type_params)),
+         Ty::App(i, args) => {
+@@ -857,7 +931,11 @@ mod tests {
+     use super::*;
+ 
+     fn integer() -> Ty {
+-        Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![])
++        Ty::Con(
++            TyCon::Builtin(BuiltinTypeId::INTEGER),
++            vec![],
++            crate::types::builtin::RangeIndex::TOP,
++        )
+     }
+ 
+     #[test]
+@@ -885,10 +963,19 @@ mod tests {
+             (BuiltinTypeId::UNSIGNED_INTEGER32, "UnsignedInteger32"),
+             (BuiltinTypeId::FLOAT32, "Float32"),
+         ] {
+-            let ty = Ty::Con(TyCon::Builtin(ty), vec![]);
++            let ty = Ty::Con(
++                TyCon::Builtin(ty),
++                vec![],
++                crate::types::builtin::RangeIndex::TOP,
++            );
+             assert_eq!(ty.show(&names), expected);
+             assert_eq!(
+-                Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![ty]).show(&names),
++                Ty::Con(
++                    TyCon::Builtin(BuiltinTypeId::LIST),
++                    vec![ty],
++                    crate::types::builtin::RangeIndex::TOP
++                )
++                .show(&names),
+                 format!("List[{expected}]")
+             );
+         }
+@@ -1003,6 +1090,11 @@ mod tests {
+     #[test]
+     fn scoped_effects_survive_rows_and_types_inside_failures() {
+         use scope::{PathPattern, Range};
++        let value = Ty::Con(
++            TyCon::Builtin(BuiltinTypeId::IO_ERROR),
++            vec![],
++            builtin::RangeIndex::fixed(Range::Path(PathPattern::parse("/data/input").unwrap())),
++        );
+         let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
+         let atom = EffectName::Builtin(read, Range::Path(PathPattern::parse("/data/**").unwrap()));
+         let mut image = EffectSet::empty();
+@@ -1016,16 +1108,19 @@ mod tests {
+             effects: row.clone(),
+         }));
+         row.insert_failure(nested);
+-        let result = row.subst_types(&[TypeArg::Ty(integer())], &[image.clone()]);
++        row.insert_failure(value.clone());
++        let result = row.subst_types(&[TypeArg::Ty(value.clone())], &[image.clone()]);
+         let expected = Ty::Fn(Box::new(FnTy {
+             param_names: vec!["value".into()],
+-            params: vec![integer()],
+-            ret: integer(),
++            params: vec![value.clone()],
++            ret: value.clone(),
+             effects: image,
+         }));
+         assert_eq!(result.names, [atom]);
+         assert!(result.vars.is_empty());
+-        assert_eq!(result.failures, [expected]);
++        assert_eq!(result.failures.len(), 2);
++        assert!(result.failures.contains(&expected));
++        assert!(result.failures.contains(&value));
+     }
+ 
+     // 関門: 公開の型表示が非Topを省略せず、IO.Allで隠さないことを守る。
+@@ -1058,6 +1153,84 @@ mod tests {
+         }
+     }
+ 
++    // 関門: Topだけの既存テストでは、添字を消す等号・hash・表示・具体化を検出できない。
++    // 公開の型APIを使い、広い範囲と狭い範囲も別の型として残す。差し込み口は加えない。
++    #[test]
++    fn indexed_type_identity_display_and_signature_instantiation() {
++        use builtin::RangeIndex;
++        use scope::{PathPattern, Range};
++        use std::collections::{BTreeSet, HashSet};
++        let wide = Range::Path(PathPattern::parse("/data/**").unwrap());
++        let narrow = Range::Path(PathPattern::parse("/data/input").unwrap());
++        let ty = |ix| Ty::Con(TyCon::Builtin(BuiltinTypeId::IO_ERROR), vec![], ix);
++        let bindings = BindingMap::default();
++        let effects = BindingMap::default();
++        let adts = AdtTable::default();
++        let names = TyNames {
++            bindings: &bindings,
++            effects: &effects,
++            adts: &adts,
++            type_params: &[],
++            effect_params: &[],
++        };
++        let cases = [
++            (RangeIndex::TOP, "IOError"),
++            (RangeIndex::fixed(wide.clone()), "IOError[\"/data/**\"]"),
++            (
++                RangeIndex::fixed(narrow.clone()),
++                "IOError[\"/data/input\"]",
++            ),
++            (RangeIndex::var(0), "IOError[rvar 0]"),
++            (RangeIndex::var(1), "IOError[rvar 1]"),
++        ];
++        let mut types = Vec::new();
++        for (ix, expected) in cases {
++            let t = ty(ix);
++            assert_eq!(t.show(&names), expected);
++            assert_eq!(t.subst(&[], &[]), t);
++            types.push(t);
++        }
++        assert_eq!(types.iter().collect::<HashSet<_>>().len(), 5);
++        assert_eq!(types.iter().collect::<BTreeSet<_>>().len(), 5);
++        let signature = ty(RangeIndex::var(0));
++        assert!(!signature.indices_valid(0));
++        assert!(signature.indices_valid(1));
++        assert_eq!(signature.instantiate_ranges(&[]), signature);
++        let closed = signature.instantiate_ranges(std::slice::from_ref(&narrow));
++        assert_eq!(closed, ty(RangeIndex::fixed(narrow)));
++        assert!(closed.indices_valid(0));
++        assert_eq!(
++            closed.instantiate_ranges(std::slice::from_ref(&wide)),
++            closed
++        );
++        let reader = builtin::find_builtin_type(&["IO", "File"], "Reader").unwrap();
++        for ix in [RangeIndex::fixed(wide), RangeIndex::var(0)] {
++            assert!(!Ty::Con(TyCon::Builtin(reader), vec![], ix).indices_valid(1));
++        }
++        let mut failures = EffectSet::empty();
++        failures.insert_failure(signature.clone());
++        let nested = Ty::Fn(Box::new(FnTy {
++            param_names: vec!["value".into()],
++            params: vec![signature.clone()],
++            ret: signature,
++            effects: failures,
++        }));
++        assert!(!nested.indices_valid(0));
++        let instantiated = nested.instantiate_ranges(&[Range::Top]);
++        assert!(instantiated.indices_valid(0));
++        let mut expected_effects = EffectSet::empty();
++        expected_effects.insert_failure(ty(RangeIndex::TOP));
++        assert_eq!(
++            instantiated,
++            Ty::Fn(Box::new(FnTy {
++                param_names: vec!["value".into()],
++                params: vec![ty(RangeIndex::TOP)],
++                ret: ty(RangeIndex::TOP),
++                effects: expected_effects,
++            }))
++        );
++    }
++
+     #[test]
+     fn substitution_is_simultaneous_and_preserves_unbound_parameters() {
+         let console = EffectName::Builtin(BuiltinEffectId(2), crate::types::scope::Range::Top);
+@@ -1103,7 +1276,11 @@ mod tests {
+         for (head, applied) in [
+             (
+                 TyHead::Con(TyCon::Builtin(BuiltinTypeId::LIST)),
+-                Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![integer()]),
++                Ty::Con(
++                    TyCon::Builtin(BuiltinTypeId::LIST),
++                    vec![integer()],
++                    crate::types::builtin::RangeIndex::TOP,
++                ),
+             ),
+             (TyHead::Param(7), Ty::App(7, vec![integer()])),
+         ] {
+@@ -1186,6 +1363,7 @@ mod tests {
+                     fields: vec![Ty::Con(
+                         TyCon::Builtin(BuiltinTypeId::LIST),
+                         vec![Ty::Param(0)],
++                        crate::types::builtin::RangeIndex::TOP,
+                     )],
+                 }],
+                 record: None,
+@@ -1198,7 +1376,8 @@ mod tests {
+             table.field_types(binding, 0, &[integer()]),
+             Some(vec![Ty::Con(
+                 TyCon::Builtin(BuiltinTypeId::LIST),
+-                vec![integer()]
++                vec![integer()],
++                crate::types::builtin::RangeIndex::TOP
+             )])
+         );
+         assert!(table.get(BindingId(99)).is_none());
+diff --git a/crates/benitoite/src/vm/builder_tests.rs b/crates/benitoite/src/vm/builder_tests.rs
+index fa78c461..48c10e11 100644
+--- a/crates/benitoite/src/vm/builder_tests.rs
++++ b/crates/benitoite/src/vm/builder_tests.rs
+@@ -16,7 +16,11 @@ use crate::types::builtin::BuiltinTypeId as B;
+ use crate::types::{EffectSet, Ty, TyCon, TypeArgs};
+ 
+ fn ty(id: B) -> Ty {
+-    Ty::Con(TyCon::Builtin(id), vec![])
++    Ty::Con(
++        TyCon::Builtin(id),
++        vec![],
++        crate::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn comp(kind: CompKind, ty: Ty, origin: crate::base::Span) -> Comp {
+     Comp {
+@@ -194,10 +198,18 @@ fn dedicated_builders_survive_handle_resume_drop_and_nested_bodies() {
+                 BuilderKind::String | BuilderKind::List(_) => comp(
+                     CompKind::Return(Val {
+                         kind: ValKind::List(vec![second.clone()]),
+-                        ty: Ty::Con(TyCon::Builtin(B::LIST), vec![elem]),
++                        ty: Ty::Con(
++                            TyCon::Builtin(B::LIST),
++                            vec![elem],
++                            crate::types::builtin::RangeIndex::TOP,
++                        ),
+                         origin,
+                     }),
+-                    Ty::Con(TyCon::Builtin(B::LIST), vec![second.ty.clone()]),
++                    Ty::Con(
++                        TyCon::Builtin(B::LIST),
++                        vec![second.ty.clone()],
++                        crate::types::builtin::RangeIndex::TOP,
++                    ),
+                     origin,
+                 ),
+                 BuilderKind::Bytes => comp(
+diff --git a/crates/benitoite/tests/coverage_export.rs b/crates/benitoite/tests/coverage_export.rs
+index 591c246d..09810e37 100644
+--- a/crates/benitoite/tests/coverage_export.rs
++++ b/crates/benitoite/tests/coverage_export.rs
+@@ -59,13 +59,25 @@ impl Random {
+     }
+ }
+ fn base(b: B) -> Ty {
+-    Ty::Con(TyCon::Builtin(b), vec![])
++    Ty::Con(
++        TyCon::Builtin(b),
++        vec![],
++        benitoite::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn data(n: u32, args: Vec<Ty>) -> Ty {
+-    Ty::Con(TyCon::Adt(BindingId(n)), args)
++    Ty::Con(
++        TyCon::Adt(BindingId(n)),
++        args,
++        benitoite::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn list(a: Ty) -> Ty {
+-    Ty::Con(TyCon::Builtin(B::LIST), vec![a])
++    Ty::Con(
++        TyCon::Builtin(B::LIST),
++        vec![a],
++        benitoite::types::builtin::RangeIndex::TOP,
++    )
+ }
+ fn con(n: u32, tag: u32, args: Vec<Pat>) -> Pat {
+     Pat::Ctor {
+@@ -208,7 +220,7 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut
+     }
+     *nodes += 1;
+     match ty {
+-        Ty::Con(TyCon::Adt(id), args) => {
++        Ty::Con(TyCon::Adt(id), args, _) => {
+             let def = table.get(*id).unwrap();
+             let ctor = &def.ctors[r.index(def.ctors.len())];
+             let ts: Vec<_> = args.iter().cloned().map(TypeArg::Ty).collect();
+@@ -221,7 +233,7 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut
+                     .collect(),
+             )
+         }
+-        Ty::Con(TyCon::Builtin(b), args) => match *b {
++        Ty::Con(TyCon::Builtin(b), args, _) => match *b {
+             B::INTEGER => {
+                 let a = INTEGERS[r.index(INTEGERS.len())];
+                 let b = INTEGERS[r.index(INTEGERS.len())];
+@@ -257,7 +269,7 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut
+             }
+             _ => panic!("unexpected builtin"),
+         },
+-        Ty::Con(TyCon::External(_), _)
++        Ty::Con(TyCon::External(_), _, _)
+         | Ty::Param(_)
+         | Ty::App(_, _)
+         | Ty::Rigid { .. }
+@@ -267,15 +279,22 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut
+     }
+ }
+ fn ty_json(t: &Ty) -> Value {
++    if let Ty::Con(_, _, ix) = t {
++        assert_eq!(
++            *ix,
++            benitoite::types::builtin::RangeIndex::TOP,
++            "scoped type in legacy coverage exchange"
++        );
++    }
+     match t {
+-        Ty::Con(TyCon::Adt(id), args) => {
++        Ty::Con(TyCon::Adt(id), args, _) => {
+             json!({"kind":"data", "name":format!("d{}",id.0), "args":args.iter().map(ty_json).collect::<Vec<_>>()})
+         }
+-        Ty::Con(TyCon::Builtin(b), args) => {
++        Ty::Con(TyCon::Builtin(b), args, _) => {
+             json!({"kind":b.def().unwrap().name.to_lowercase(),"args":args.iter().map(ty_json).collect::<Vec<_>>()})
+         }
+         Ty::Param(i) => json!({"kind":"param","index":i}),
+-        Ty::Con(TyCon::External(_), _) | Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => {
++        Ty::Con(TyCon::External(_), _, _) | Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => {
+             panic!("external or unexpected type")
+         }
+     }
+@@ -732,6 +751,13 @@ fn count_kinds(j: &Value, stats: &mut BTreeMap<String, usize>) {
+ 
+ // 旧生成器へ名前付きの型を混ぜず、網羅性 2 の型を再帰的に書き出す。
+ fn named_ty_json(ty: &Ty) -> Value {
++    if let Ty::Con(_, _, ix) = ty {
++        assert_eq!(
++            *ix,
++            benitoite::types::builtin::RangeIndex::TOP,
++            "scoped type in legacy named coverage exchange"
++        );
++    }
+     match ty {
+         Ty::Fn(f) => {
+             assert_eq!(
+@@ -752,11 +778,11 @@ fn named_ty_json(ty: &Ty) -> Value {
+             assert!(f.effects.names.is_empty() && f.effects.vars.is_empty());
+             json!({"kind":"function","names":f.param_names,"params":f.params.iter().map(named_ty_json).collect::<Vec<_>>(),"ret":named_ty_json(&f.ret),"eff":[]})
+         }
+-        Ty::Con(TyCon::Builtin(b), args) => {
++        Ty::Con(TyCon::Builtin(b), args, _) => {
+             json!({"kind":b.def().unwrap().name.to_lowercase(),"args":args.iter().map(named_ty_json).collect::<Vec<_>>()})
+         }
+-        Ty::Con(TyCon::Adt(_), _)
+-        | Ty::Con(TyCon::External(_), _)
++        Ty::Con(TyCon::Adt(_), _, _)
++        | Ty::Con(TyCon::External(_), _, _)
+         | Ty::Param(_)
+         | Ty::App(_, _)
+         | Ty::Rigid { .. } => panic!("unsupported independent named coverage type"),
+diff --git a/crates/benitoite/tests/desugar_export.rs b/crates/benitoite/tests/desugar_export.rs
+index fdc67b3a..1d2d8b11 100644
+--- a/crates/benitoite/tests/desugar_export.rs
++++ b/crates/benitoite/tests/desugar_export.rs
+@@ -949,6 +949,7 @@ fn export_batch2_character() {
+     let ty = benitoite::types::Ty::Con(
+         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+         vec![],
++        benitoite::types::builtin::RangeIndex::TOP,
+     );
+     write_batch2_coverage(&output, &ty, json!({"kind":"character","args":[]}));
+     fs::write(output.join("character-domain.bnt"), source).unwrap();
+@@ -973,6 +974,7 @@ fn write_batch2(output: &Path, export: named::Export) {
+     let ty = benitoite::types::Ty::Con(
+         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::INTEGER),
+         vec![],
++        benitoite::types::builtin::RangeIndex::TOP,
+     );
+     write_batch2_coverage(output, &ty, json!({"kind":"integer","args":[]}));
+ }
+@@ -989,6 +991,7 @@ fn write_batch2_coverage(output: &Path, ty: &benitoite::types::Ty, ty_json: Valu
+         == &benitoite::types::Ty::Con(
+             benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+             vec![],
++            benitoite::types::builtin::RangeIndex::TOP,
+         ) {
+         Pat::CharacterRange('\0', '\u{10ffff}')
+     } else {
+diff --git a/crates/benitoite/tests/desugar_export/builtins.rs b/crates/benitoite/tests/desugar_export/builtins.rs
+index 9ed85657..11bf4179 100644
+--- a/crates/benitoite/tests/desugar_export/builtins.rs
++++ b/crates/benitoite/tests/desugar_export/builtins.rs
+@@ -26,7 +26,7 @@ fn used_prims(value: &Value, names: &mut BTreeSet<String>) {
+ // opaque の名前の中の引数は Release.Ty.subst が辿れない。具体的な引数でも印を残す。
+ fn opaque_arguments(ty: &Ty, names: &mut BTreeSet<String>) {
+     match ty {
+-        Ty::Con(con, args) => {
++        Ty::Con(con, args, _) => {
+             if let TyCon::Builtin(id) = con
+                 && !args.is_empty()
+                 && !matches!(*id, BuiltinTypeId::REFERENCE | BuiltinTypeId::LAZY)
+@@ -88,13 +88,14 @@ pub fn complete_stdlib() -> CheckedProgram {
+ // 補助入力のデータ型だけを元の入力の名前空間へ移す。型パラメータ・エフェクトは変えない。
+ fn remap_ty(ty: &Ty, names: &BTreeMap<BindingId, BindingId>) -> Ty {
+     match ty {
+-        Ty::Con(con, args) => Ty::Con(
++        Ty::Con(con, args, ix) => Ty::Con(
+             match con {
+                 TyCon::Adt(id) => TyCon::Adt(names[id]),
+                 TyCon::Builtin(id) => TyCon::Builtin(*id),
+                 TyCon::External(id) => TyCon::External(*id),
+             },
+             args.iter().map(|t| remap_ty(t, names)).collect(),
++            ix.clone(),
+         ),
+         Ty::Fn(f) => Ty::Fn(Box::new(types::FnTy {
+             param_names: f.param_names.clone(),
+diff --git a/crates/benitoite/tests/desugar_export/exchange.rs b/crates/benitoite/tests/desugar_export/exchange.rs
+index 12c01ce1..697412cb 100644
+--- a/crates/benitoite/tests/desugar_export/exchange.rs
++++ b/crates/benitoite/tests/desugar_export/exchange.rs
+@@ -568,7 +568,12 @@ impl Surface<'_> {
+                 fields["names"] = json!(f.param_names);
+                 tagged("fn", fields)
+             }
+-            Ty::Con(con, args) => {
++            Ty::Con(con, args, ix) => {
++                assert_eq!(
++                    *ix,
++                    benitoite::types::builtin::RangeIndex::TOP,
++                    "scoped type in legacy exchange"
++                );
+                 let args: Vec<_> = args.iter().map(|t| self.ty(t)).collect();
+                 match con {
+                     TyCon::External(_) => self.outside("external type"),
+@@ -1161,7 +1166,7 @@ impl Surface<'_> {
+                 }
+             }
+             a::Expr::List(v) => {
+-                let Ty::Con(_, ts) = self.p.types.expr_types.get(v.id).unwrap() else {
++                let Ty::Con(_, ts, _) = self.p.types.expr_types.get(v.id).unwrap() else {
+                     panic!("list type")
+                 };
+                 let elem = self.ty(&ts[0]);
+@@ -1319,7 +1324,7 @@ impl Surface<'_> {
+                 for s in &v.segments {
+                     es.push(self.expr(&s.expr, env));
+                     let ty = self.p.types.interp_types.get(s.expr.id()).unwrap();
+-                    let Ty::Con(TyCon::Builtin(b), args) = ty else {
++                    let Ty::Con(TyCon::Builtin(b), args, _) = ty else {
+                         panic!("non-basic interpolation type: {ty:?}")
+                     };
+                     assert!(args.is_empty());
+@@ -1396,7 +1401,7 @@ impl Surface<'_> {
+                     })
+                     .collect();
+                 let tys = if let Some(base) = &v.base {
+-                    let Ty::Con(TyCon::Adt(data), tys) =
++                    let Ty::Con(TyCon::Adt(data), tys, _) =
+                         self.p.types.expr_types.get(base.id()).unwrap()
+                     else {
+                         panic!("record base type")
+@@ -1429,7 +1434,7 @@ impl Surface<'_> {
+                         a::TryAction::ImplicitReturn | a::TryAction::Return { .. },
+                         benitoite::typeck::TryActionInfo::Return { ret },
+                     ) => {
+-                        let Ty::Con(_, ret_args) = ret else {
++                        let Ty::Con(_, ret_args, _) = ret else {
+                             panic!("try return type")
+                         };
+                         let ret_args: Vec<_> = ret_args.iter().map(|t| self.ty(t)).collect();
+@@ -2682,7 +2687,11 @@ pub(super) fn definitions_recorded(
+             effect_params: Vec::new(),
+             class_constraints: Vec::new(),
+             params: Vec::new(),
+-            ret: Ty::Con(TyCon::Builtin(BuiltinTypeId::UNIT), Vec::new()),
++            ret: Ty::Con(
++                TyCon::Builtin(BuiltinTypeId::UNIT),
++                Vec::new(),
++                benitoite::types::builtin::RangeIndex::TOP,
++            ),
+             effects: EffectSet::empty(),
+             wrote_io_all: false,
+         };
+@@ -2899,7 +2908,11 @@ pub fn named_class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
+             effect_params: Vec::new(),
+             class_constraints: Vec::new(),
+             params: Vec::new(),
+-            ret: Ty::Con(TyCon::Builtin(BuiltinTypeId::UNIT), Vec::new()),
++            ret: Ty::Con(
++                TyCon::Builtin(BuiltinTypeId::UNIT),
++                Vec::new(),
++                benitoite::types::builtin::RangeIndex::TOP,
++            ),
+             effects: EffectSet::empty(),
+             wrote_io_all: false,
+         };
+@@ -2969,7 +2982,11 @@ pub fn named_stdlib_declarations(
+                 effect_params: Vec::new(),
+                 class_constraints: Vec::new(),
+                 params: Vec::new(),
+-                ret: Ty::Con(TyCon::Builtin(BuiltinTypeId::UNIT), Vec::new()),
++                ret: Ty::Con(
++                    TyCon::Builtin(BuiltinTypeId::UNIT),
++                    Vec::new(),
++                    benitoite::types::builtin::RangeIndex::TOP,
++                ),
+                 effects: EffectSet::empty(),
+                 wrote_io_all: false,
+             };
+diff --git a/crates/benitoite/tests/desugar_export/lib.rs b/crates/benitoite/tests/desugar_export/lib.rs
+index 7c0b1c17..59c056fc 100644
+--- a/crates/benitoite/tests/desugar_export/lib.rs
++++ b/crates/benitoite/tests/desugar_export/lib.rs
+@@ -181,6 +181,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
+                                     crate::types::builtin::BuiltinTypeId::STRING,
+                                 ),
+                                 vec![],
++                                crate::types::builtin::RangeIndex::TOP,
+                             ))
+                 })
+                 .unwrap();
+@@ -228,7 +229,8 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
+                 &p,
+                 &crate::types::Ty::Con(
+                     crate::types::TyCon::Builtin(crate::types::builtin::BuiltinTypeId::INTEGER),
+-                    vec![]
++                    vec![],
++                    crate::types::builtin::RangeIndex::TOP
+                 )
+             ),
+             json!({"base":{"name":"Integer"}})
+diff --git a/crates/benitoite/tests/desugar_export/named.rs b/crates/benitoite/tests/desugar_export/named.rs
+index dd1b3be5..35d651d9 100644
+--- a/crates/benitoite/tests/desugar_export/named.rs
++++ b/crates/benitoite/tests/desugar_export/named.rs
+@@ -357,7 +357,7 @@ pub(super) fn contracts_well_formed(p: &pipeline::CheckedProgram) -> bool {
+                     && f.params.iter().all(well_formed)
+                     && well_formed(&f.ret)
+             }
+-            Ty::Con(_, args) | Ty::App(_, args) => args.iter().all(well_formed),
++            Ty::Con(_, args, _) | Ty::App(_, args) => args.iter().all(well_formed),
+             Ty::Param(_) | Ty::Rigid { .. } => true,
+         }
+     }
+diff --git a/crates/benitoite/tests/named_arguments.rs b/crates/benitoite/tests/named_arguments.rs
+index 936e4a2a..dd5f98b7 100644
+--- a/crates/benitoite/tests/named_arguments.rs
++++ b/crates/benitoite/tests/named_arguments.rs
+@@ -628,9 +628,20 @@ fn nested_dictionary_arguments_wait_for_numeric_defaulting() {
+     assert_eq!(callback.param_names.len(), callback.params.len());
+     assert_eq!(
+         callback.params,
+-        [Ty::Con(TyCon::Builtin(B::INTEGER), vec![])]
++        [Ty::Con(
++            TyCon::Builtin(B::INTEGER),
++            vec![],
++            benitoite::types::builtin::RangeIndex::TOP
++        )]
++    );
++    assert_eq!(
++        callback.ret,
++        Ty::Con(
++            TyCon::Builtin(B::INTEGER),
++            vec![],
++            benitoite::types::builtin::RangeIndex::TOP
++        )
+     );
+-    assert_eq!(callback.ret, Ty::Con(TyCon::Builtin(B::INTEGER), vec![]));
+     assert!(pipeline::desugar_checked(&p).is_ok());
+ }
+ 
+@@ -796,7 +807,8 @@ fn named_holes_and_pipe_insertion_keep_exact_contracts_and_causes() {
+                             benitoite::types::TyCon::Builtin(
+                                 benitoite::types::builtin::BuiltinTypeId::INTEGER
+                             ),
+-                            vec![]
++                            vec![],
++                            benitoite::types::builtin::RangeIndex::TOP
+                         );
+                         plan.hole_names.len()
+                     ]
+diff --git a/crates/benitoite/tests/runtime_builtins.rs b/crates/benitoite/tests/runtime_builtins.rs
+index 4f661ab7..4fc23925 100644
+--- a/crates/benitoite/tests/runtime_builtins.rs
++++ b/crates/benitoite/tests/runtime_builtins.rs
+@@ -75,7 +75,13 @@ fn format_all_fourteen_heads_have_fixed_contracts_and_execute() {
+     };
+     use benitoite::runtime::heap::{Heap, Value as V};
+     use benitoite::types::{Ty, TyCon, builtin::BuiltinTypeId as B};
+-    let basic = |id| Ty::Con(TyCon::Builtin(id), vec![]);
++    let basic = |id| {
++        Ty::Con(
++            TyCon::Builtin(id),
++            vec![],
++            benitoite::types::builtin::RangeIndex::TOP,
++        )
++    };
+     let mut heap = Heap::new(HeapConfig::default());
+     heap.epoch(|ctx| {
+         let text = ctx.alloc_str("猫", "format test").unwrap();
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index dfd24da9..c0ea2fde 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -467,6 +467,12 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ | 型変数 | まだ決まっていない型。値の型の変数と、型構成子の変数がある。制約（演算子の型の集まり、等値、鍵、`try` の対象、リソース）を持ちうる |
+ | 誤りの型 | 誤りを報告した箇所の型。どの型とも等しいものとして扱う（後述の「誤りの報告と検査の継続」） |
+ 
++【決定】名前の型の格納は `Ty::Con(TyCon, Vec<Ty>, RangeIndex)`、推論中は `ITy::Con(TyCon, Vec<ITy>, RangeIndex)` とする。`types::builtin::RangeIndex` は、閉じた範囲と標準署名の内部の範囲変数を区別する。`RangeIndex::fixed` で閉じた範囲を、`RangeIndex::var` で署名内の番号を構築する。Top 以外の内容は不変の共有データに置き、比較・hash・整列には共有先の構造を使う。既存の型の構築には、割り当てを要しない明示の `RangeIndex::TOP` を渡す。利用者の型構文は範囲変数を作らない。資源の型、基本型、コレクション、`Reference`・`Lazy`、代数的データ型、外部型の添字は Top に限る。理由: 不透明標準型の添字を既存の型の読者と同じ構造で保持し、範囲変数の使用箇所を標準署名の内部に限るためである。
++
++型の等号・hash・整列と推論の単一化は添字の構造を含める。範囲の被覆から型の等号を導かない。型構成子の適用 `F[A]` と名前の型の照合は、後者の添字が Top のときだけ行う。型／行の同時代入、Fail 内の型、推論型の再構築と確定、制約の索引キー、診断の由来と回復、実行時の検査用の型代入も添字を保持する。型の表示は Top を省略し、非 Top の閉じた範囲を型名と型引数の後に表示する。
++
++標準署名の範囲変数の具体化は、型／行の代入と独立に行う。番号に対応する閉じた範囲がなければ変数のまま残し、Top で補わない。`Ty::indices_valid` は範囲変数の番号の上限と、Top に限る型の条件を検査する。コア IR の検査器は上限 0 で検査し、確定した型に残る範囲変数を断る。標準署名の登録と名前ごとの範囲の種類の認定は、この格納の条件と区別する。
++
+ 【方針】型の形は、値の型と、型引数を一つとる型構成子の二つである（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。宣言の検査は、型を書く位置ごとに求める形と書いた型の形が合うかを検査する。単一化は次の規則を加える。
+ 
+ - `F[A]` と `D[B1, …, Bn]` を等しくするときは、D のとる型引数の個数が 1 の場合に限り、F を D と等しくし、A と B1 を等しくする。それ以外は誤りとする。
+diff --git a/docs/design/02-impl/02-06-ir-and-lowering.md b/docs/design/02-impl/02-06-ir-and-lowering.md
+index b88657fc..73814e88 100644
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -37,6 +37,7 @@
+ | 定義 | 関数 `fn f[ᾱ; ρ̄](x̄:Ā) : B ! ε = M`、実装 `impl I[β̄](d̄ : Dict[Cl', β̄']) : Dict[Cl, τ] = { S̄ = Ū; m̄ = D̄ }`、定数 `const k : A = M` |
+ 
+ - 型は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型に、初回リリース版の拡張で加えたもの（基本型 `Byte`・`Decimal`、`Map`・`Set`・`Bytes`、`Reference`・`Lazy`、等値を持たない組み込みの不透明型 O（`IOError`・`NetworkError`・`Task[A]`・リソースの型、`Regex.Pattern` など）、辞書の型 `Dict[Cl, τ]`、型構成子を表す型パラメータの適用 `α[Ā]`、継続の型 `Cont(B → T ! ε)`）を含む。継続の型を持つのは、`handle` の節で継続を束縛する変数だけである。型の別名は型検査で展開してあるので、コア IR に現れない。
++- 名前の型は型検査器と同じ `Ty::Con(TyCon, Vec<Ty>, RangeIndex)` を使い、脱糖後も不変の添字を保持する。既存の型は明示の Top を持つ。コア IR の検査器は、範囲変数のない添字と資源の型の Top を検査し、同じ名前で添字が違う型の照合を断る。型／行の代入は Fail 内にも添字を残す。判定の木の複製前のメモリ計上には、型の添字が所有する文字列と要素列も含める。
+ - 辞書と継続は、コア計算の型付けでは型 `Dict[Cl, τ]`・`Cont(B → T ! ε)` を持つ値であるが、表層で値として束縛・返却・格納できない。辞書が現れるのは制約を持つ関数・操作の呼び出しの辞書の引数、メソッドの呼び出しの辞書、実装の定義の上位の型クラスの辞書と実装の制約の辞書、辞書の中の辞書だけであり、継続が現れるのは `handle` の節の継続の変数と `resume` だけである。そこで、処理系のコア IR は、辞書と継続を普通の値と別の分類に置き、型検査器の型の表現（表層の型）に辞書の型と継続の型を加えなくてよい。このとき、辞書の型は辞書の型クラスと対象の型の組で、継続の型は継続の変数が持つ引数の型 B と、節を持つ `handle` の型とエフェクト（T と ε）で表す。辞書の引数は、定義の値の引数と別に並べてよい。制約を持つ関数・操作を呼ばずに値として使う箇所は、同章の表のとおり辞書を渡すラムダに移すので、`f[T̄; Ē]` の値の型を値の引数だけの関数の型としてよい。コア IR の検査器は、この表し方の上で、後述の V-Dict・V-Super・C-Meth・D-Impl・C-Handle・C-Resume と同じ条件を調べる。
+ - エフェクトの集合は、名前と閉じた範囲を持つ原子、エフェクト変数、型付きの失敗の列を持つ `types::EffectSet` で表す。原子の `types::EffectName` は、組み込みの番号または宣言の束縛の番号と `types::scope::Range` の組である。既存の名前だけの原子は明示の `Range::Top` を持つ。脱糖は原子の範囲を保持し、ハンドラで除く原子の照合とコア IR の検査は、名前と範囲の構造を使う。`IO.All` は型検査が Top の原子の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
+ - 各ノードは、型（値は A、計算は A ! ε）と、由来位置（[ソース管理と位置情報](02-02-source-and-spans.md)の「合成ノードの由来位置」）を持つ。型とエフェクトの求め方は、この節の後の表で定める。

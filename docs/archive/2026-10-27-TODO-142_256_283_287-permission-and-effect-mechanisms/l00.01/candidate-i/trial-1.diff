@@ -1,0 +1,36 @@
+diff --git a/formal/Benitoite/Release/Atom.lean b/formal/Benitoite/Release/Atom.lean
+index 52da9050..9630ba85 100644
+--- a/formal/Benitoite/Release/Atom.lean
++++ b/formal/Benitoite/Release/Atom.lean
+@@ -14,9 +14,16 @@ abbrev EffName := String
+ /-- 状態を扱う組み込みの関数と解放のエフェクト `State`（01-07「可変のセル（初回リリース版）」）。 -/
+ def stateEff : EffName := "State"
+ 
+-/-- エフェクトの原子。01-12 の `e ::= L | ρ`。 -/
++/-- 比較の試行（L00.01 の案 (i)）: 原子と標準値型が持つ閉じた範囲。`top` は旧の名前だけの原子と
++同じ種類の全対象を表し、`pathExact` は解析済みのパスの要素列の完全一致を表す。 -/
++inductive ScopeRange where
++  | top
++  | pathExact (stem : List String)
++  deriving DecidableEq, Repr
++
++/-- エフェクトの原子。01-12 の `e ::= L | ρ`。比較の試行で名前の原子に範囲の引数を加えた。 -/
+ inductive Atom where
+-  | name (l : EffName)
++  | name (l : EffName) (r : ScopeRange)
+   | rho (i : Nat)
+   deriving DecidableEq, Repr
+ 
+diff --git a/formal/Benitoite/Release/Types.lean b/formal/Benitoite/Release/Types.lean
+index 76f0625b..e972e0f4 100644
+--- a/formal/Benitoite/Release/Types.lean
++++ b/formal/Benitoite/Release/Types.lean
+@@ -44,7 +44,7 @@ mutual
+ `Dict[Cl, τ]`、`tapp i Ā` は型構成子を表す型パラメータの適用 `α[Ā]`、`ctor φ` は型構成子 φ である。 -/
+ inductive Ty where
+   | base (ι : BaseTy)
+-  | opaque (o : OpaqueName)
++  | opaque (o : OpaqueName) (r : ScopeRange)
+   | data (d : DataName) (args : List Ty)
+   | list (a : Ty)
+   | fn (names : List String) (params : List Ty) (ret : Ty) (eff : EffR)

@@ -16,8 +16,22 @@ use crate::vm::InstrRef;
 /// `heap` は呼び出しの区間、`site` は呼んだ命令、`args` は引数の値の並びである。
 /// IO と State の口は、その権限の関数を呼ぶときに必須である。
 /// 完了・待つ・起動・終了の応答の処理は、呼び出し側が行う（設計書 02-08「組み込みの関数の呼び出し」）。
+#[cfg(test)]
 pub(crate) fn call_builtin<'e>(
     decl: &BuiltinDecl,
+    heap: &mut NoGcCtx<'e>,
+    io: Option<&mut dyn IoServices>,
+    state: Option<&mut dyn StateServices>,
+    site: Option<InstrRef>,
+    args: &[Value<'e>],
+) -> Result<Reply<'e>, Stop> {
+    call_builtin_scoped(decl, &[], heap, io, state, site, args)
+}
+
+/// 受理済みの範囲の列を変更せず実行本体へ渡す（設計書 02-08「組み込みの関数の呼び出し」）。
+pub(crate) fn call_builtin_scoped<'e>(
+    decl: &BuiltinDecl,
+    ranges: &[crate::types::scope::Range],
     heap: &mut NoGcCtx<'e>,
     io: Option<&mut dyn IoServices>,
     state: Option<&mut dyn StateServices>,
@@ -40,7 +54,7 @@ pub(crate) fn call_builtin<'e>(
     // 口の参照とトレイトオブジェクトの寿命を、局所の CallCtx を借りる間に縮める。
     let io = io.map(|services| services as &mut dyn IoServices);
     let state = state.map(|services| services as &mut dyn StateServices);
-    let mut call = CallCtx::new(heap, io, state, site);
+    let mut call = CallCtx::new(heap, io, state, site).with_ranges(ranges);
     (decl.raw)(&mut call, args)
 }
 
@@ -99,6 +113,22 @@ pub mod tags {
     pub const RESULT_OK: u32 = 0;
     /// `Result.Error`
     pub const RESULT_ERROR: u32 = 1;
+    /// `Scope.ScopeError.InvalidPattern`
+    pub const SCOPE_ERROR_INVALID_PATTERN: u32 = 0;
+    /// `Scope.ScopeError.InvalidTarget`
+    pub const SCOPE_ERROR_INVALID_TARGET: u32 = 1;
+    /// `Scope.ScopeError.InvalidPortRange`
+    pub const SCOPE_ERROR_INVALID_PORT_RANGE: u32 = 2;
+    /// `Scope.ScopeError.InvalidPort`
+    pub const SCOPE_ERROR_INVALID_PORT: u32 = 3;
+    /// `Scope.ScopeError.OutsideScope`
+    pub const SCOPE_ERROR_OUTSIDE_SCOPE: u32 = 4;
+    /// `Scope.ScopeError.PortOutsideScope`
+    pub const SCOPE_ERROR_PORT_OUTSIDE_SCOPE: u32 = 5;
+    /// `Http.RequestCheckError.InvalidUrl`
+    pub const REQUEST_CHECK_ERROR_INVALID_URL: u32 = 0;
+    /// `Http.RequestCheckError.Scope`
+    pub const REQUEST_CHECK_ERROR_SCOPE: u32 = 1;
     /// `Pair`
     pub const PAIR: u32 = 0;
     /// `Triple`
@@ -761,16 +791,188 @@ pub fn list_pattern_builtin(op: ListPatternOp) -> Option<BuiltinId> {
     lookup_builtin(name)
 }
 
+// 標準ソースには書けない範囲変数を、認定した組み込みの対象位置だけへ入れる。
+// 戻り値の型引数の位置と引数の位置を区別し、他の不透明型は書き換えない
+// （設計書 02-05「型とエフェクトの表現」）。
+#[derive(Clone, Copy)]
+enum RangePosition {
+    Parameter(usize),
+    Return,
+    ReturnArgument(usize),
+}
+
+const FILE_IN_OPERATIONS: &[&str] = &[
+    "Benitoite.IO.File.readTextIn",
+    "Benitoite.IO.File.readBytesIn",
+    "Benitoite.IO.File.writeTextIn",
+    "Benitoite.IO.File.appendTextIn",
+    "Benitoite.IO.File.writeBytesIn",
+    "Benitoite.IO.File.appendBytesIn",
+];
+
+fn builtin_range_positions(id: BuiltinId) -> Option<&'static [(RangePosition, BuiltinTypeId)]> {
+    match builtin_decl(id)?.name {
+        name if FILE_IN_OPERATIONS.contains(&name) => {
+            Some(&[(RangePosition::Parameter(0), BuiltinTypeId::PATH_IN)])
+        }
+        "Benitoite.Network.Http.sendIn" => {
+            Some(&[(RangePosition::Parameter(0), BuiltinTypeId::REQUEST_IN)])
+        }
+        "Scope.checkPathIn" => Some(&[(RangePosition::ReturnArgument(0), BuiltinTypeId::PATH_IN)]),
+        "Scope.pathInValue" => Some(&[(RangePosition::Parameter(0), BuiltinTypeId::PATH_IN)]),
+        "Scope.widenPathIn" => Some(&[
+            (RangePosition::Parameter(0), BuiltinTypeId::PATH_IN),
+            (RangePosition::Return, BuiltinTypeId::PATH_IN),
+        ]),
+        "Http.checkRequestIn" => {
+            Some(&[(RangePosition::ReturnArgument(0), BuiltinTypeId::REQUEST_IN)])
+        }
+        "Http.requestInValue" => Some(&[(RangePosition::Parameter(0), BuiltinTypeId::REQUEST_IN)]),
+        "Http.widenRequestIn" => Some(&[
+            (RangePosition::Parameter(0), BuiltinTypeId::REQUEST_IN),
+            (RangePosition::Return, BuiltinTypeId::REQUEST_IN),
+        ]),
+        _ => Some(&[]),
+    }
+}
+
+/// 標準ソースの Top の対象位置に、登録表の範囲変数を入れる。
+/// 利用者の宣言や旧 Checked 型をこの経路で変換しない。
+pub(crate) fn parameterize_builtin_signature(id: BuiltinId, scheme: &Scheme) -> Option<Scheme> {
+    use crate::types::builtin::RangeIndex;
+    use crate::types::{Ty, TyCon};
+    let positions = builtin_range_positions(id)?;
+    let ranges = builtin_range_signature(id)?;
+    if positions.len() != ranges.range_count() {
+        return None;
+    }
+    let mut scheme = scheme.clone();
+    for (index, (position, expected)) in positions.iter().enumerate() {
+        let target = match position {
+            RangePosition::Parameter(position) => scheme.params.get_mut(*position)?,
+            RangePosition::Return => &mut scheme.ret,
+            RangePosition::ReturnArgument(position) => match &mut scheme.ret {
+                Ty::Con(TyCon::Adt(_), args, ix) if ix == &RangeIndex::TOP => {
+                    args.get_mut(*position)?
+                }
+                Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => {
+                    return None;
+                }
+            },
+        };
+        let Ty::Con(TyCon::Builtin(actual), args, ix) = target else {
+            return None;
+        };
+        if actual != expected
+            || !args.is_empty()
+            || ix != &RangeIndex::TOP
+            || actual.value_kind() != ranges.kinds.get(index).copied()
+        {
+            return None;
+        }
+        *ix = RangeIndex::var(u32::try_from(index).ok()?);
+    }
+    if matches!(
+        ranges.shape,
+        crate::types::signature::IoShape::Single { .. }
+    ) {
+        let [crate::types::EffectName::Builtin(effect, ix)] = scheme.effects.names.as_mut_slice()
+        else {
+            return None;
+        };
+        if ix != &RangeIndex::TOP || effect.scope_kind() != ranges.kinds.first().copied() {
+            return None;
+        }
+        *ix = RangeIndex::var(0);
+    }
+    Some(scheme)
+}
+
+/// 認定した組み込みの項目の範囲の情報。利用者の同じ綴りの名前はこの番号を持たない。
+/// 新しい API の登録は宣言と実行本体を追加する枝で行う。
+pub fn builtin_range_signature(id: BuiltinId) -> Option<crate::types::signature::RangeSignature> {
+    use crate::types::scope::Kind;
+    use crate::types::signature::{IoShape, RangeAdmission, RangeSignature};
+    let decl = builtin_decl(id)?;
+    builtin_kind(id)?;
+    let shape = if FILE_IN_OPERATIONS.contains(&decl.name) {
+        IoShape::Single {
+            kind: Kind::Path,
+            position: 0,
+        }
+    } else if decl.name == "Benitoite.Network.Http.sendIn" {
+        IoShape::Single {
+            kind: Kind::Endpoint,
+            position: 0,
+        }
+    } else if decl.capability == Capability::Io && decl.name.starts_with("Benitoite.IO.File.") {
+        IoShape::TopTargeted(Kind::Path)
+    } else if decl.capability == Capability::Io && decl.name == "Benitoite.Network.Http.send" {
+        IoShape::TopTargeted(Kind::Endpoint)
+    } else {
+        IoShape::Untargeted
+    };
+    let kinds = builtin_range_positions(id)?
+        .iter()
+        .map(|(_, ty)| ty.value_kind())
+        .collect::<Option<Vec<_>>>()?;
+    Some(RangeSignature {
+        kinds,
+        shape,
+        admission: match decl.name {
+            "Scope.widenPathIn" | "Http.widenRequestIn" => {
+                RangeAdmission::Covers { outer: 1, inner: 0 }
+            }
+            _ => RangeAdmission::Any,
+        },
+    })
+}
+
+/// 標準署名と登録の範囲の情報を照合する。演算子等は範囲の変数を持てない。
+pub fn builtin_signature_valid(id: BuiltinId, scheme: &Scheme) -> bool {
+    let Some(ranges) = builtin_range_signature(id) else {
+        return false;
+    };
+    let Some(kind) = builtin_kind(id) else {
+        return false;
+    };
+    let Some(decl) = builtin_decl(id) else {
+        return false;
+    };
+    let range_free = match kind {
+        EntryKind::Declared | EntryKind::EffectOp => false,
+        EntryKind::Operator { .. }
+        | EntryKind::Equality { .. }
+        | EntryKind::ListPattern(_)
+        | EntryKind::Interpolation { .. }
+        | EntryKind::Format { .. } => true,
+    };
+    (!(range_free || decl.name == "Benitoite.IO.Process.exit") || ranges.range_count() == 0)
+        && (decl.capability == Capability::Io
+            || ranges.shape == crate::types::signature::IoShape::Untargeted)
+        && ranges.signature_valid(scheme, kind == EntryKind::EffectOp)
+}
+
 /// ソースに宣言のない項目（`Operator`・`Equality`・`ListPattern`・`Interpolation`・`Format`）の宣言の型。
 /// `Declared` と `EffectOp` の項目には `None` を返す（型はソースの宣言が与える）。
 /// 型パラメータは `T` 一つ（`Equality` は組み込みの制約 `equality` を持つ）か、ない。エフェクトは空集合である。
 pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
     use crate::types::{BuiltinConstraint, EffectSet, ParamKind, Ty, TyCon, TypeParamInfo};
-    let basic = |id| Ty::Con(TyCon::Builtin(id), Vec::new());
+    let basic = |id| {
+        Ty::Con(
+            TyCon::Builtin(id),
+            Vec::new(),
+            crate::types::builtin::RangeIndex::TOP,
+        )
+    };
     let integer = basic(BuiltinTypeId::INTEGER);
     let boolean = basic(BuiltinTypeId::BOOLEAN);
     let string = basic(BuiltinTypeId::STRING);
-    let list = Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![Ty::Param(0)]);
+    let list = Ty::Con(
+        TyCon::Builtin(BuiltinTypeId::LIST),
+        vec![Ty::Param(0)],
+        crate::types::builtin::RangeIndex::TOP,
+    );
     let mut type_params = Vec::new();
     let (params, ret) = match builtin_kind(id)? {
         EntryKind::Declared | EntryKind::EffectOp => return None,
@@ -862,7 +1064,7 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
         ],
         EntryKind::Declared | EntryKind::EffectOp => return None,
     };
-    Some(Scheme {
+    let scheme = Scheme {
         no_fail: vec![],
         param_names: param_names.into_iter().map(String::from).collect(),
         type_params,
@@ -872,7 +1074,8 @@ pub fn builtin_scheme(id: BuiltinId) -> Option<Scheme> {
         ret,
         effects: EffectSet::empty(),
         wrote_io_all: false,
-    })
+    };
+    builtin_signature_valid(id, &scheme).then_some(scheme)
 }
 
 #[cfg(test)]
@@ -892,7 +1095,11 @@ mod tests {
     use crate::types::{BuiltinConstraint, EffectSet, ParamKind, Ty, TyCon, TypeParamInfo};
 
     fn basic(id: BuiltinTypeId) -> Ty {
-        Ty::Con(TyCon::Builtin(id), vec![])
+        Ty::Con(
+            TyCon::Builtin(id),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP,
+        )
     }
 
     #[test]
@@ -900,7 +1107,7 @@ mod tests {
         let lengths = [
             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
             16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
-            11, 39, 3, 4, 6, 14,
+            11, 39, 6, 4, 6, 14, 3, 6, 1,
         ];
         assert_eq!(
             super::super::funcs::PARTS
@@ -951,6 +1158,7 @@ mod tests {
             let scheme = builtin_scheme(id);
             assert_eq!(scheme.is_some(), decl.name.starts_with('%'));
             if let Some(scheme) = scheme {
+                assert!(builtin_signature_valid(id, &scheme));
                 assert_eq!(scheme.params.len(), usize::from(decl.arity));
                 let expected_names = match kind {
                     EntryKind::Operator {
@@ -988,15 +1196,16 @@ mod tests {
                 !decl.name.starts_with('%') && !decl.name.starts_with("Benitoite.")
             );
         }
-        assert_eq!(lengths.len(), 58);
-        assert_eq!(names.len(), 510);
-        assert_eq!(capabilities, [435, 16, 59]);
+        assert_eq!(lengths.len(), 61);
+        assert_eq!(names.len(), 523);
+        assert_eq!(capabilities, [441, 16, 66]);
         assert!(lookup_builtin("missing.name").is_none());
         let invalid = BuiltinId(u16::MAX);
         assert!(builtin_decl(invalid).is_none());
         assert!(builtin_kind(invalid).is_none());
         assert!(builtin_intrinsic(invalid).is_none());
         assert!(builtin_scheme(invalid).is_none());
+        assert!(builtin_range_signature(invalid).is_none());
     }
 
     #[test]
@@ -1275,7 +1484,11 @@ mod tests {
             }
         }
         assert!(interpolation_builtin(BuiltinTypeId::STRING).is_none());
-        let list = Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![Ty::Param(0)]);
+        let list = Ty::Con(
+            TyCon::Builtin(BuiltinTypeId::LIST),
+            vec![Ty::Param(0)],
+            crate::types::builtin::RangeIndex::TOP,
+        );
         let integer = basic(BuiltinTypeId::INTEGER);
         for &(op, name) in LIST_PATTERN {
             let id = list_pattern_builtin(op).unwrap();

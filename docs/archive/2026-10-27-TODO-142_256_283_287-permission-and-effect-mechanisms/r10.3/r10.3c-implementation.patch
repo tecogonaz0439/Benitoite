@@ -1,0 +1,351 @@
+--- a/crates/benitoite/src/syntax/parser/scope.rs
++++ b/crates/benitoite/src/syntax/parser/scope.rs
+@@ -22,10 +22,22 @@
+             }
+             // 閉じ忘れで後続の宣言・本体まで読み込まない。式として拒否する候補だけを
+             // 要素内に残し、構文の境界はその場で報告する（設計書 02-03「型の解析」）。
+-            if !element_token(kind) {
++            if strings == 0
++                && stack.is_empty()
++                && p.pos > from
++                && let (Some(previous), Some(next)) =
++                    (p.tokens.get(p.pos.saturating_sub(1)), p.tokens.get(p.pos))
++                && element_end(previous.kind)
++                && next.start_line > previous.end_line
++                && !matches!(kind, TokenKind::Comma | TokenKind::RBracket)
++                && !binary_operator(kind)
++            {
+                 return Err(p.unexpected(text::COMMA_OR_RBRACKET));
+             }
+-            if kind == TokenKind::LParen && p.pos > from {
++            if strings == 0 && !element_token(kind) {
++                return Err(p.unexpected(text::COMMA_OR_RBRACKET));
++            }
++            if strings == 0 && kind == TokenKind::LParen && p.pos > from {
+                 let previous = p.tokens.get(p.pos.saturating_sub(1)).map(|t| t.kind);
+                 if previous.is_some_and(|k| {
+                     matches!(
+@@ -90,6 +102,8 @@
+             | TokenKind::FloatLit
+             | TokenKind::DecimalLit
+             | TokenKind::CharLit
++            | TokenKind::KwTrue
++            | TokenKind::KwFalse
+             | TokenKind::LowerIdent
+             | TokenKind::UpperIdent
+             | TokenKind::Dot
+@@ -124,6 +138,45 @@
+     )
+ }
+ 
++// 物理行をまたいで次の要素や本体を飲み込まないための終端。
++fn element_end(kind: TokenKind) -> bool {
++    matches!(
++        kind,
++        TokenKind::StringLit
++            | TokenKind::StrEnd
++            | TokenKind::IntLit
++            | TokenKind::FloatLit
++            | TokenKind::DecimalLit
++            | TokenKind::CharLit
++            | TokenKind::KwTrue
++            | TokenKind::KwFalse
++            | TokenKind::LowerIdent
++            | TokenKind::UpperIdent
++            | TokenKind::RParen
++            | TokenKind::RBracket
++    )
++}
++fn binary_operator(kind: TokenKind) -> bool {
++    matches!(
++        kind,
++        TokenKind::PipeGt
++            | TokenKind::KwOr
++            | TokenKind::KwAnd
++            | TokenKind::Eq
++            | TokenKind::NotEq
++            | TokenKind::Lt
++            | TokenKind::Le
++            | TokenKind::Gt
++            | TokenKind::Ge
++            | TokenKind::Plus
++            | TokenKind::Minus
++            | TokenKind::Star
++            | TokenKind::Slash
++            | TokenKind::KwDiv
++            | TokenKind::KwMod
++    )
++}
++
+ fn classify(tokens: &[Token]) -> ScopeArgKind {
+     match tokens {
+         [
+--- a/crates/benitoite/src/resolve/scope.rs
++++ b/crates/benitoite/src/resolve/scope.rs
+@@ -1,9 +1,11 @@
+ //! 名前の種類と閉じた範囲の照合（設計書 02-04「範囲引数の解決」）。
+-use super::{BindingKind, collect::Resolver, lookup::Ctx, lookup::dotted};
++use super::{BindingKind, DeclSite, collect::Resolver, lookup::Ctx, lookup::dotted};
+ use crate::base::{BindingId, Span};
+ use crate::diag::{DiagBuilder, DiagCode};
+ use crate::modules::ModuleKind;
+-use crate::syntax::ast::{EffectRef, NamedType, ScopeArg, ScopeArgKind, ScopeArgs};
++use crate::syntax::ast::{
++    EffectRef, Item, NamedType, ScopeArg, ScopeArgKind, ScopeArgs, TypeParamKind,
++};
+ use crate::types::builtin::{BuiltinEffectId, find_builtin_effect};
+ use crate::types::scope::{
+     EndpointPattern, HostPattern, InvalidScope, Kind, PathPattern, Port, PortRange, Range,
+@@ -98,12 +100,51 @@
+                 DiagBuilder::new(DiagCode::E0520)
+                     .primary(scope.span)
+                     .arg("name", dotted(&t.path))
+-                    .arg("expectedScopeKind", super::text::TYPE_ARGUMENTS)
++                    .arg(
++                        "expectedScopeKind",
++                        if self.has_type_parameters(id) {
++                            super::text::TYPE_ARGUMENTS
++                        } else {
++                            super::text::NO_SCOPE_ARGUMENTS
++                        },
++                    )
+                     .arg("found", self.scope_source(scope.span))
+                     .note("found")
+                     .build(),
+             );
+         }
++    }
++    // 型の綴りでなく、解決済みの組み込み表または宣言を参照する。
++    fn has_type_parameters(&self, id: BindingId) -> bool {
++        let Some(binding) = self.out.bindings.get(id) else {
++            return false;
++        };
++        if let BindingKind::BuiltinType(ty) = binding.kind {
++            return ty.def().is_some_and(|def| def.arity > 0);
++        }
++        let DeclSite::Node(node) = binding.decl else {
++            return false;
++        };
++        let Some(decl) = self
++            .ast(binding.module)
++            .and_then(|m| m.decls.iter().find(|d| d.item.id() == node))
++        else {
++            return false;
++        };
++        let params = if let Item::Data(d) = &decl.item {
++            &d.type_params
++        } else if let Item::Record(d) = &decl.item {
++            &d.type_params
++        } else if let Item::Alias(d) = &decl.item {
++            &d.type_params
++        } else if let Item::ExternalType(d) = &decl.item {
++            &d.type_params
++        } else {
++            return false;
++        };
++        params
++            .iter()
++            .any(|p| !matches!(p.kind, TypeParamKind::Effect))
+     }
+     fn scope_source(&self, span: Span) -> String {
+         self.sources
+--- a/crates/benitoite/src/resolve/text.rs
++++ b/crates/benitoite/src/resolve/text.rs
+@@ -46,6 +46,7 @@
+ pub(super) const PATH_SCOPE: &str = "path string literal";
+ pub(super) const ENDPOINT_SCOPE: &str = "host string and port literal pairs";
+ pub(super) const HOST_SCOPE: &str = "host string literal";
++pub(super) const NO_SCOPE_ARGUMENTS: &str = "no scope arguments";
+ pub(super) const TYPE_ARGUMENTS: &str = "type arguments";
+ pub(super) const SCOPE_ARGUMENTS: &str = "scope arguments";
+ pub(super) const SCOPE_INTERNAL: &str = "scope normalization invariant failed";
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -210,6 +210,20 @@
+         ("", "File.Write[\"/data/../file\"]", "E0520"),
+         ("", "File.Write[\"/data/*\"]", "E0520"),
+         ("", "File.Write[\"${1}\"]", "E0520"),
++        ("", "File.Write[\"/a\", true]", "E0520"),
++        ("", "File.Write[\"/a\", false]", "E0520"),
++        (
++            "",
++            "File.Write[\"${if true then 1 else 2 end if}\"]",
++            "E0520",
++        ),
++        (
++            "",
++            "File.Write[\"${if false then f(1) else 2 end if}\"]",
++            "E0520",
++        ),
++        ("", "File.Write[\"${\"x\" |> f()}\"]", "E0520"),
++        ("", "File.Write[\"${\"${f([1, 2])}\"}\"]", "E0520"),
+         ("", "File.Write[\"/data\" + \"/file\"]", "E0520"),
+         (
+             "const pattern: String = \"/data\"\n",
+@@ -444,8 +458,35 @@
+         let pos = checked.sources.get(span.file).unwrap().line_col(span.start);
+         assert_eq!((pos.line, pos.column), (1, column));
+     }
+-    for ty in ["List[42]", "List[\"a\"]", "List[\"${1}\"]"] {
+-        let source = format!("type Bad = {ty}\n");
++    // 関門: 型パラメータの有無で診断文を分ける契約を固定する。
++    // 従来の番号だけの検査ではIntegerや利用者型への誤った案内を捕まえない。
++    for (setup, ty, name, expected, found) in [
++        ("", "List[42]", "List", "type arguments", "[42]"),
++        ("", "List[\"a\"]", "List", "type arguments", "[\"a\"]"),
++        ("", "List[\"${1}\"]", "List", "type arguments", "[\"${1}\"]"),
++        (
++            "",
++            "Integer[\"/data\"]",
++            "Integer",
++            "no scope arguments",
++            "[\"/data\"]",
++        ),
++        (
++            "record R\n value: String\nend record\n",
++            "R[\"a\"]",
++            "R",
++            "no scope arguments",
++            "[\"a\"]",
++        ),
++        (
++            "record R[T]\n value: T\nend record\n",
++            "R[\"a\"]",
++            "R",
++            "type arguments",
++            "[\"a\"]",
++        ),
++    ] {
++        let source = format!("{setup}type Bad = {ty}\n");
+         let checked = check(&source);
+         let diagnostics = errors(&checked);
+         assert_eq!(diagnostics.len(), 1, "{ty}: {diagnostics:?}");
+@@ -453,9 +494,9 @@
+         assert_eq!(d.code.unwrap().info().id, "E0520");
+         assert_eq!(
+             d.message,
+-            "invalid scope arguments for `List` (expected type arguments)"
+-        );
+-        assert_eq!(d.notes, [format!("found: {}", &ty[4..])]);
++            format!("invalid scope arguments for `{name}` (expected {expected})")
++        );
++        assert_eq!(d.notes, [format!("found: {found}")]);
+     }
+ }
+ 
+@@ -464,6 +505,30 @@
+ #[test]
+ fn unclosed_scopes_stop_at_the_next_unexpected_token() {
+     for (source, token, line, column) in [
++        (
++            "function sample() -> Unit uses File.Write[\"/data\"\n f(1)\nend function\n",
++            "f",
++            2,
++            2,
++        ),
++        (
++            "function sample() -> Unit uses File.Write[\"/data\"\n x\nend function\n",
++            "x",
++            2,
++            2,
++        ),
++        (
++            "function sample() -> Unit uses File.Write[\"/data\"\n \"x\" |> print\nend function\n",
++            "string",
++            2,
++            2,
++        ),
++        (
++            "function sample() -> Unit uses File.Write[\"/data\"\n let a = 1\nend function\n",
++            "let",
++            2,
++            2,
++        ),
+         (
+             "uses File.Write[\"/data\"\nfunction after() -> Unit\nend function\n",
+             "function",
+@@ -489,9 +554,20 @@
+         let checked = check(source);
+         let d = errors(&checked)[0];
+         assert_eq!(d.code.unwrap().info().id, "E0201", "{source}: {d:?}");
+-        assert_eq!(d.message, format!("expected `,` or `]`, found `{token}`"));
++        assert_eq!(
++            d.message,
++            if token == "string" {
++                "expected `,` or `]`, found a string literal".to_owned()
++            } else {
++                format!("expected `,` or `]`, found `{token}`")
++            }
++        );
+         let span = d.primary.as_ref().unwrap().span;
+-        assert_eq!(slice(source, span), token, "{source}: {d:?}");
++        assert_eq!(
++            slice(source, span),
++            if token == "string" { "\"x\"" } else { token },
++            "{source}: {d:?}"
++        );
+         let pos = checked.sources.get(span.file).unwrap().line_col(span.start);
+         assert_eq!((pos.line, pos.column), (line, column), "{source}");
+     }
+@@ -528,3 +604,39 @@
+         );
+     }
+ }
++
++// 関門: 閉じ忘れの回復で、正しい複数行の群・末尾コンマを拒否しない。
++// 一行の展開テストでは物理行の境界による誤拒否を捕まえない。
++#[test]
++fn multiline_scopes_keep_valid_groups_and_expression_diagnostics() {
++    for annotation in [
++        "File.Write[\n \"/a\"\n , \"/b\"\n ]",
++        "File.Write[\n \"/a\",\n \"/b\",\n ]",
++        "Http.Connect[\n \"a.example\",\n 443,\n \"b.example\", 80..81,\n ]",
++    ] {
++        let source =
++            format!("{IMPORTS}function sample() -> Unit uses {annotation}\n ()\nend function\n");
++        let checked = check(&source);
++        assert!(
++            errors(&checked).is_empty(),
++            "{annotation}: {:?}",
++            checked.diagnostics
++        );
++    }
++    for annotation in [
++        "File.Write[\"/a\"\n + \"/b\"]",
++        "File.Write[\"/a\" +\n \"/b\"]",
++        "File.Write[\"/a\", (\"/b\"\n + \"/c\")]",
++    ] {
++        let source =
++            format!("{IMPORTS}function sample() -> Unit uses {annotation}\n ()\nend function\n");
++        let checked = check(&source);
++        let diagnostics = errors(&checked);
++        assert_eq!(diagnostics.len(), 1, "{annotation}: {diagnostics:?}");
++        assert_eq!(
++            diagnostics[0].code.unwrap().info().id,
++            "E0520",
++            "{annotation}: {diagnostics:?}"
++        );
++    }
++}
+--- a/docs/design/02-impl/02-03-frontend.md
++++ b/docs/design/02-impl/02-03-frontend.md
+@@ -243,7 +243,7 @@
+ 
+ ### 型の解析
+ 
+-【決定】型の位置で `[` の直後が `StringLit`・`StrStart`・`IntLit` なら範囲引数の候補とし、それ以外は型引数として読む。範囲の要素ではリテラル・文字列の各部分・識別子・演算子・対応する括弧だけを読み、宣言の語や完成した要素の後の `(` などは、その字句で E0201 とする。閉じ括弧の欠落によって後続の宣言をファイル末まで読み飛ばさない。
++【決定】型の位置で `[` の直後が `StringLit`・`StrStart`・`IntLit` なら範囲引数の候補とし、それ以外は型引数として読む。範囲の要素では真偽値を含むリテラル・文字列の各部分・識別子・演算子・対応する括弧を読む。文字列補間の中では字句の種類を制限せず、入れ子の対応だけを数える。補間の外では、宣言の語や完成した要素の後の `(` などを、その字句で E0201 とする。括弧と補間の外で、前の字句が要素を閉じるリテラル・識別子・`)`・`]`・`StrEnd` であり、次の字句が後の物理行にあって `,`・`]`・二項演算子のどれでもなければ、次の字句で E0201 とする。閉じ括弧の欠落によって後続の宣言をファイル末まで読み飛ばさない。
+ 
+ 【決定】型は括弧で囲める（`"(" Type ")"`）。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む。理由: 括弧がないと、型の並びの中の `uses` の並びの終わりと、`uses` がどの関数の型に付くかが決まらず、書き手が曖昧さを避ける手段もないからである。
+ 
+--- a/docs/design/02-impl/02-04-resolver.md
++++ b/docs/design/02-impl/02-04-resolver.md
+@@ -108,7 +108,7 @@
+ 
+ 【決定】エフェクトの束縛と標準ライブラリの所有元を確認してから、引数の種類を検査する。標準の `File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組として `types::scope` で正規化する。同名の利用者のエフェクトにはこの規則を付けない。`Failure.Fail` だけは従来どおり一つの値の型引数を名前解決する。利用者のエフェクトと `IO.All`・`State` 等の対象を持たない名前への引数は E0513 とする。File に型引数を書いた場合と範囲の空・個数・種類・字句の不正は E0520 とする。`InvalidScope::Internal` は入力の誤りにせず、報告の種類を Internal とする（CLI の終了状態3）。
+ 
+-【決定】正規化した範囲は注釈のノード番号で範囲の表へ残し、型検査が効果の原子と型の添字へ渡す。明示した同一原子の重複は、展開後の名前と範囲を比較し、元の両要素の位置を示す。範囲の正規化で AST の字句・群・要素の位置を変えない。登録された範囲付き標準値型以外への範囲引数は拒否する。
++【決定】正規化した範囲は注釈のノード番号で範囲の表へ残し、型検査が効果の原子と型の添字へ渡す。明示した同一原子の重複は、展開後の名前と範囲を比較し、元の両要素の位置を示す。範囲の正規化で AST の字句・群・要素の位置を変えない。登録された範囲付き標準値型以外への範囲引数は拒否する。この E0520 では、束縛の型パラメータが一つ以上なら型引数を期待すると示し、なければ範囲引数を取らないと示す。
+ 
+ ### 位置の式の事前展開
+ 

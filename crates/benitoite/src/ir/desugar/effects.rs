@@ -18,7 +18,7 @@ impl State<'_> {
             .get(e.id)
             .cloned()
             .ok_or_else(|| error(format!("missing try_kinds for {:?}", e.id)))?;
-        let Ty::Con(_, input_args) = self.ty(e.value.id())? else {
+        let Ty::Con(_, input_args, _) = self.ty(e.value.id())? else {
             return Err(error("try operand has no type arguments"));
         };
         let mut pending = vec![];
@@ -74,7 +74,7 @@ impl State<'_> {
                 ast::TryAction::ImplicitReturn | ast::TryAction::Return { .. },
                 crate::typeck::TryActionInfo::Return { ret },
             ) => {
-                let Ty::Con(_, ret_args) = &ret else {
+                let Ty::Con(_, ret_args, _) = &ret else {
                     return Err(error("try return has no type arguments"));
                 };
                 Comp {
@@ -300,7 +300,11 @@ impl State<'_> {
         self.conts = conts;
         let body = body?;
         Ok(Comp {
-            ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::LAZY), vec![body.ty.clone()]),
+            ty: Ty::Con(
+                TyCon::Builtin(BuiltinTypeId::LAZY),
+                vec![body.ty.clone()],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
             eff: EffectSet::empty(),
             origin: e.span,
             kind: CompKind::Lazy {
@@ -429,7 +433,10 @@ impl State<'_> {
 
 fn state_effect(eff: &EffectSet) -> EffectSet {
     let mut eff = eff.clone();
-    eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));
+    eff.insert_name(EffectName::Builtin(
+        BuiltinEffectId::STATE,
+        crate::types::builtin::RangeIndex::TOP,
+    ));
     eff
 }
 fn without(eff: &EffectSet, removed: &EffectSet) -> EffectSet {
@@ -444,7 +451,7 @@ fn without(eff: &EffectSet, removed: &EffectSet) -> EffectSet {
             .names
             .iter()
             .filter(|n| !removed.names.contains(n))
-            .copied()
+            .cloned()
             .collect(),
         vars: eff
             .vars

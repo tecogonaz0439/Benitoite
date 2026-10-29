@@ -1,0 +1,13 @@
+// spec: 01-03 依存のパッケージの取り込み
+language "0.0.11"
+
+dependency Textkit
+  path "packages/textkit"
+end dependency
+
+import Benitoite.Unofficial.IO.Console
+import Textkit.Slug
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Slug.slug(" Hello Packages "))
+end function

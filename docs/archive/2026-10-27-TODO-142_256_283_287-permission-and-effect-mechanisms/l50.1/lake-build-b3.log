@@ -1,0 +1,33 @@
+== wait-for-lock start 08:56:00
+== lock acquired 08:56:00 after 0s
+⚠ [116/119] Replayed Benitoite.Exchange.Convert
+warning: Benitoite/Exchange/Convert.lean:216:10: This simp argument is unused:
+  List.contains_iff_mem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [this] at ha
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [117/119] Built Benitoite.Exchange.Builtins (865ms)
+✔ [118/119] Built Benitoite.Exchange.CheckInput (785ms)
+✔ [119/119] Built Benitoite.Exchange.RangeExamples (586ms)
+Build completed successfully (119 jobs).
+        2.37 real         1.62 user         0.84 sys
+          1490632704  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              283008  page reclaims
+                  45  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  17  voluntary context switches
+                5385  involuntary context switches
+          1096479775  instructions retired
+           329581449  cycles elapsed
+            19940384  peak memory footprint
+== exit 0

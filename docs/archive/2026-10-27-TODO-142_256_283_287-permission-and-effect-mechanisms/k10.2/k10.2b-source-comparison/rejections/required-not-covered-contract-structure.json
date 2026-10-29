@@ -1,0 +1,189 @@
+{
+  "surface": {
+    "header": {
+      "eff": [],
+      "effParams": [],
+      "names": [
+        "raw"
+      ],
+      "neffs": 0,
+      "params": [
+        {
+          "base": {
+            "name": "String"
+          }
+        }
+      ],
+      "ret": {
+        "base": {
+          "name": "Unit"
+        }
+      },
+      "tparams": []
+    },
+    "body": {
+      "bind": {
+        "expr": {
+          "call": {
+            "args": [
+              {
+                "literal": {
+                  "value": {
+                    "string": {
+                      "value": "/data/**"
+                    }
+                  }
+                }
+              },
+              {
+                "local": {
+                  "index": 0
+                }
+              }
+            ],
+            "callee": {
+              "primName": {
+                "effs": [],
+                "name": "Scope.checkPathIn",
+                "ranges": [
+                  "<contract>"
+                ],
+                "tys": []
+              }
+            },
+            "labels": [
+              "pattern",
+              "path"
+            ],
+            "positions": [
+              0,
+              1
+            ]
+          }
+        },
+        "shadow": false,
+        "ty": {
+          "data": {
+            "args": [
+              {
+                "opaque": {
+                  "ix": {
+                    "fixed": "<contract>"
+                  },
+                  "name": "101:[]"
+                }
+              },
+              {
+                "declaredType": "ScopeError"
+              }
+            ],
+            "name": "Result"
+          }
+        },
+        "rest": {
+          "last": {
+            "expr": "unit"
+          }
+        }
+      }
+    },
+    "dictParams": [],
+    "implementation": null,
+    "method": null,
+    "supers": []
+  },
+  "core": {
+    "header": {
+      "eff": [],
+      "effParams": [],
+      "names": [
+        "raw"
+      ],
+      "neffs": 0,
+      "params": [
+        {
+          "base": {
+            "name": "String"
+          }
+        }
+      ],
+      "ret": {
+        "base": {
+          "name": "Unit"
+        }
+      },
+      "tparams": []
+    },
+    "body": {
+      "letIn": {
+        "body": {
+          "ret": {
+            "value": {
+              "const": {
+                "value": "unit"
+              }
+            }
+          }
+        },
+        "bound": {
+          "letIn": {
+            "body": {
+              "letIn": {
+                "body": {
+                  "app": {
+                    "args": [
+                      {
+                        "var": {
+                          "index": 1
+                        }
+                      },
+                      {
+                        "var": {
+                          "index": 0
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "prim": {
+                        "effs": [],
+                        "name": "Scope.checkPathIn",
+                        "ranges": [
+                          "<contract>"
+                        ],
+                        "tys": []
+                      }
+                    }
+                  }
+                },
+                "bound": {
+                  "ret": {
+                    "value": {
+                      "var": {
+                        "index": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "bound": {
+              "ret": {
+                "value": {
+                  "const": {
+                    "value": {
+                      "string": {
+                        "value": "/data/**"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "lambdaEffects": [],
+    "supers": []
+  }
+}

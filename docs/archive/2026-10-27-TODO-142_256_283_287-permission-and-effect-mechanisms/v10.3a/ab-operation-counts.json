@@ -1,0 +1,57 @@
+[
+  {
+    "path": "crates/benitoite/src/prelude/stdlib/IO/File.bnt",
+    "effect": "Read",
+    "count": 13,
+    "operations": [
+      "readText",
+      "readTextIn",
+      "openReader",
+      "readLine",
+      "readBytes",
+      "readBytesIn",
+      "readLines",
+      "exists",
+      "info",
+      "listDirectory",
+      "walk",
+      "canonicalize",
+      "readChunk"
+    ],
+    "sha256": "75e2032273f6b805fe818a426b3e87585c185a55f2e9325d062c0bc942edc5ee"
+  },
+  {
+    "path": "crates/benitoite/src/prelude/stdlib/IO/File.bnt",
+    "effect": "Write",
+    "count": 16,
+    "operations": [
+      "writeText",
+      "writeTextIn",
+      "appendText",
+      "appendTextIn",
+      "writeBytes",
+      "writeBytesIn",
+      "appendBytes",
+      "appendBytesIn",
+      "createDirectory",
+      "remove",
+      "removeTree",
+      "rename",
+      "openWriter",
+      "write",
+      "writeLine",
+      "writeChunk"
+    ],
+    "sha256": "75e2032273f6b805fe818a426b3e87585c185a55f2e9325d062c0bc942edc5ee"
+  },
+  {
+    "path": "crates/benitoite/src/prelude/stdlib/Network/Http.bnt",
+    "effect": "Connect",
+    "count": 2,
+    "operations": [
+      "send",
+      "sendIn"
+    ],
+    "sha256": "3afd06495aba92e02a6780fab4ce0392170ba649fcb8cb4bb2cc09e4c8856e8a"
+  }
+]

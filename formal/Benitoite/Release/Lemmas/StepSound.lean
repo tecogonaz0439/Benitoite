@@ -92,16 +92,17 @@ theorem releaseStep_cases {rel : Val → Option ErrKind} {v ok err l s'}
   · rename_i r e; simp only [Option.some.injEq, Prod.mk.injEq] at h
     exact Or.inr ⟨r, e, h.1.symm, h.2.symm⟩
 
-theorem rel_resp (hb : B.Assumptions P) {rel : Val → Option ErrKind}
+theorem rel_resp (hb : B.CoreAssumptions P) {rel : Val → Option ErrKind}
     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v)) {Ψ R ε v k a b Eb Re}
     (hk : ContTy P B Ψ R ε (.release v :: k) a b Eb Re) : B.releaseResponse v (rel v) := by
   obtain ⟨o, hv, hres, _, _⟩ := hk.inv_release
   obtain ⟨r, hr⟩ := hb.release_exists Ψ v o hv hres
   exact hrel v r hr
 
-theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Option ErrKind)
+theorem step_soundE (hb : B.CoreAssumptions P) (oracle : Oracle) (rel : Val → Option ErrKind)
     (fresh : Store → Nat)
-    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
+    (horacle : ∀ b ts es ws o obs, B.ioResponse b ts es ws o obs →
+      B.ioResponse b ts es ws (oracle b ts es ws).1 (oracle b ts es ws).2)
     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v))
     (hfresh : ∀ σ : Store, (∃ n, ∀ l, n ≤ l → σ l = none) → σ (fresh σ) = none)
     {Eb : Eff} {s : State} {l : Option Event} {s' : State}
@@ -206,7 +207,7 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
               exact .E_Super hv'
       | app f ws =>
           obtain ⟨_, _, _, _, hf, _⟩ := hm.inv_app rfl
-          rcases hf.canonical_fn_or_raise with ⟨names, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩ | ⟨T, E, rfl⟩
+          rcases hf.canonical_fn_or_raise with ⟨names, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rs, rfl⟩ | ⟨o, ts, rfl⟩ | ⟨T, E, rfl⟩
           · simp only [step] at h
             split at h
             · rename_i e; simp only [Option.some.injEq, Prod.mk.injEq] at h
@@ -236,11 +237,11 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
               case h_2 | h_3 =>
                 have hkd : s0.kind = .io ∨ s0.kind = .exit := by
                   first | exact Or.inl ‹_› | exact Or.inr ‹_›
-                obtain ⟨s1, hs1, htl, hel, had, hargs, _, _⟩ := inv_prim_app hm
+                obtain ⟨s1, hs1, htl, hel, had, hargs, _, _, hrs⟩ := inv_prim_app hm
                 have e0 := Option.some.inj (hsig.symm.trans hs1)
                 subst e0
-                obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s0 ts es _ hsig hkd htl hel had hargs
-                have hro := horacle _ _ _ _ _ ho
+                obtain ⟨o, obs, ho⟩ := hb.io_exists Ψ b0 s0 _ ts es _ hsig hkd hrs htl hel had hargs
+                have hro := horacle _ _ _ _ _ _ ho
                 split at h
                 · rename_i k1 h' k2 e1
                   split at h

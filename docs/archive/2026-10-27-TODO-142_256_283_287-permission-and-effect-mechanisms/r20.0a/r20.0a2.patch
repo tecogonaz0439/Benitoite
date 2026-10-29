@@ -1,0 +1,40 @@
+--- a/crates/benitoite/src/builtins/funcs/scope.rs
++++ b/crates/benitoite/src/builtins/funcs/scope.rs
+@@ -1,4 +1,5 @@
+ //! Scopeの純粋な判定を既存Result/Pairへ包む（設計書 03-06「Scope」）。
++//! checkPathInは形式と所属を検査して同じパスをPathInに保持し、失敗時はScopeErrorを作り、pathInValueは保持したパスを直接返す。
+ 
+ use crate::builtins::checked_scope::{self, CheckedPair, Failure};
+ use crate::builtins::iface::{BuiltinDecl, builtin};
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -190,6 +190,8 @@
+ 
+ 【方針】コア IR に[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型付け規則で型が付くかを調べる検査器を作る。検査器は処理系のテストで使い、脱糖の結果に型が付かなければ処理系の不具合とする。これは、同章の「確かめる性質」の 1（脱糖の型の保存）を、テストで反例を探す手段になる（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。
+ 
++【決定】操作の節でも共通の署名の具体化処理を使い、範囲の Top 具体化に加えて、型引数の数・種類・組み込みの制約、エフェクト引数の数、NoFail、具体化後の型に含まれる各エフェクト集合の失敗型が高々一つであることを再検査する。
++
+ 【決定】型の照合では、Fail のエラー型の中を含むすべての関数型について、契約名の個数が引数型の個数と一致し、契約名が重複しないことを検査する。型の両側に同じ不正な契約名があっても受理しない。理由: 関数型の整形式性は、エフェクトが持つ Fail のエラー型にも再帰的に要求されるためである。
+ 
+ 【決定】`ir::check` は C-Sub・C-Eff と `Ty.Le` に対応する包含を `EffectSet::covers` で検査する。名前の一致の後で一原子の範囲の被覆を検査し、Fail と行は構造の所属を求める。C-Handle・C-Handle-Fail の保護本体、lazy・guard・定数の純粋要求には `is_subset` を使う。コアの節の計算と Fail の Rest から上限への拡大は C-Sub として被覆で検査する。表層の検査器がハンドラの節を構造で推論することとは区別する。型の引数・戻り値・添字・メソッド宣言の契約は構造で照合し、相互被覆で型の等号を認めない。
+--- a/crates/benitoite/src/resolve/tests.rs
++++ b/crates/benitoite/src/resolve/tests.rs
+@@ -464,6 +464,18 @@
+         ("Result.Error", tags::RESULT_ERROR),
+         ("Pair.Pair", tags::PAIR),
+         ("Triple.Triple", tags::TRIPLE),
++        (
++            "Scope.ScopeError.InvalidPattern",
++            tags::SCOPE_ERROR_INVALID_PATTERN,
++        ),
++        (
++            "Scope.ScopeError.InvalidTarget",
++            tags::SCOPE_ERROR_INVALID_TARGET,
++        ),
++        (
++            "Scope.ScopeError.OutsideScope",
++            tags::SCOPE_ERROR_OUTSIDE_SCOPE,
++        ),
+         ("IOErrorKind.NotFound", tags::IO_ERROR_KIND_NOT_FOUND),
+         (
+             "IOErrorKind.PermissionDenied",

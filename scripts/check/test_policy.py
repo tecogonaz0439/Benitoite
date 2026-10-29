@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """check.sh の入口と長い対象の実行器を、一時Gitリポジトリで検査する。"""
 
+import ast
 from contextlib import contextmanager
 import json
 import os
@@ -241,6 +242,22 @@ class PolicyTests(unittest.TestCase):
             self.assertEqual(calls.count(independent), 1)
             batch4 = ['python3', '-B', 'formal/tests/test_batch4_exchange.py']
             self.assertEqual(calls.count(batch4), 1)
+            range_calls = [
+                ['python3', '-I', 'formal/tests/test_range_exchange.py',
+                 '--output', str(output_dir / 'range-exchange-comparison')],
+                ['python3', '-B', 'formal/tests/test_range_sources.py',
+                 '--exports', str(output_dir / 'range-sources'),
+                 '--cli', str(root / 'target/debug/benitoite'),
+                 '--output', str(output_dir / 'range-source-comparison')],
+                ['python3', '-B', 'formal/tests/test_range_budget_sources.py',
+                 '--rust-dir', str(output_dir / 'range-budget'),
+                 '--output-dir', str(output_dir / 'range-budget-comparison')],
+                ['python3', '-B', 'formal/tests/test_range_known_differences.py',
+                 '--cli', str(root / 'target/debug/benitoite'),
+                 '--output-dir', str(output_dir / 'range-known-differences')],
+            ]
+            for call in range_calls:
+                self.assertEqual(calls.count(call), 1)
             rust = [call for call in calls if call[:3] == independent and '--rust-dir' in call]
             self.assertEqual(len(rust), 1)
             self.assertTrue(rust[0][-1].endswith('/batch3/b3'))
@@ -285,7 +302,7 @@ class PolicyTests(unittest.TestCase):
             # 旧六入口の全体と各交換を残し、新しい途中失敗も後の成功で隠さない。
             for tool in ('coverageDiff', 'coverageProgramDiff', 'desugarDiff', 'builtinCheck', 'surfaceCheckAll'):
                 self.assertTrue(any(call[0] == tool for call in calls))
-            for call in (independent, batch4, rust[0], *checker, *exports, interval[0], *artifact_calls,
+            for call in (independent, batch4, *range_calls, rust[0], *checker, *exports, interval[0], *artifact_calls,
                          ['lake', 'build', 'intervalDiff'], ['cargo', 'build', '-p', 'benitoite', '--bin', 'benitoite']):
                 with self.subTest(failure=call):
                     log.unlink()
@@ -295,6 +312,129 @@ class PolicyTests(unittest.TestCase):
                     self.assertEqual(len(log.read_text().splitlines()), calls.index(call) + 1)
                     self.assertEqual([json.loads(line) for line in log.read_text().splitlines()],
                                      calls[:calls.index(call) + 1])
+
+    def test_formal_remaining_batch3_main_order(self):
+        # 四群の直接検査とは別に、最終入口からの呼び忘れと順序の退行を検出する。
+        source = ROOT / 'crates/benitoite/tests/desugar_export/check_named.py'
+        tree = ast.parse(source.read_text(encoding='utf-8'))
+        main = next(node for node in tree.body
+                    if isinstance(node, ast.FunctionDef) and node.name == 'main')
+        calls = [node.value for node in main.body
+                 if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call)
+                 and isinstance(node.value.func, ast.Name)]
+        remaining = [call for call in calls if call.func.id == 'check_remaining_batch3']
+        routing = [call for call in calls if call.func.id == 'check_routing']
+        self.assertEqual(len(remaining), 1, 'main must call check_remaining_batch3 once')
+        self.assertEqual(len(routing), 1, 'main must call check_routing once')
+        self.assertEqual([ast.dump(arg) for arg in remaining[0].args],
+                         [ast.dump(ast.Name(id='directory', ctx=ast.Load()))])
+        self.assertFalse(remaining[0].keywords)
+        self.assertLess(calls.index(remaining[0]), calls.index(routing[0]),
+                        'check_remaining_batch3 must precede check_routing')
+
+    def test_formal_remaining_batch3_profiles_and_failure_propagation(self):
+        # 実際の最終読者とbatch3読者をつなぎ、外部の比較実行ファイルだけを代える。
+        # 表層・コアの意味は全比較の責任であり、ここでは四群の欠落と失敗の隠蔽を拒む。
+        with tempfile.TemporaryDirectory(prefix='benitoite-final-batch3-policy-') as temporary:
+            root = Path(temporary).resolve()
+            for name in ('crates/benitoite/tests/desugar_export/check_named.py',
+                         'crates/benitoite/tests/desugar_export/check_batch3.py',
+                         'crates/benitoite/tests/desugar_export/batch3/manifest.json',
+                         'formal/tests/test_batch3_exchange.py', 'formal/tests/test_named_exchange.py'):
+                target = root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(ROOT / name, target)
+            output = root / 'target/desugar-diff/policy'
+            # 期待する四群と件数は読者の列挙から算出しない。
+            profiles = {
+                'k3': {'scope': 5}, 'k4': {'range': 7},
+                'm1': {'binary-minimal': 4, 'result': 13, 'user-result': 14},
+                't3': {'higher-order': 3, 'super-paths': 3, 'failure': 3},
+            }
+            for profile, names in profiles.items():
+                directory = output / 'batch3' / profile
+                directory.mkdir(parents=True)
+                inputs = []
+                for name, count in names.items():
+                    definitions = [{'scope': {'inScope': {'surface': {
+                        'implementation': 'shared' if profile == 'm1' and name == 'result' and index < 6 else None
+                    }}}} for index in range(count)]
+                    inputs.append(dict(group='golden', name=name, excluded=[], definitions=definitions))
+                keys = [dict(group='golden', name=name) for name in names]
+                program = [dict(item, matches=[], bindings=[]) for item in keys]
+                coverage_count = {'k3': 0, 'k4': 1, 'm1': 7, 't3': 1}[profile]
+                program[0]['matches'] = [{} for _ in range(coverage_count)]
+                for name, data in {
+                    'corpus': dict(version=15, inputs=inputs),
+                    'builtins': dict(version=7, inputs=keys),
+                    'stdlib': dict(version=7, inputs=keys),
+                    'coverage': dict(version=7, cases=[{}]),
+                    'coverage-program': dict(version=7, inputs=program),
+                }.items():
+                    (directory / (name + '.json')).write_text(json.dumps(data))
+            bin_dir = root / 'formal/.lake/build/bin'
+            bin_dir.mkdir(parents=True)
+            observer = '''
+import json, os, sys
+from pathlib import Path
+tool = Path(sys.argv[0]).name
+source = Path(sys.argv[1])
+profile = source.parent.name
+with open(os.environ['POLICY_LOG'], 'a') as log:
+    log.write(json.dumps([profile, tool, *sys.argv[1:]]) + '\\n')
+if os.environ.get('POLICY_FAIL_PROFILE') == profile:
+    sys.exit(17)
+data = json.loads(source.read_text())
+if tool == 'desugarDiff':
+    count = sum(len(i['definitions']) for i in data['inputs'])
+    report = dict(mismatches=[], golden=dict(definitions=dict(matched=count, mismatched=0, outside=0, excluded=0)))
+elif tool == 'builtinCheck':
+    report = dict(errors=[], summaryMismatchCount=0, checkedInputs=len(data['inputs']))
+elif tool == 'surfaceCheckAll':
+    count = sum(sum(d['scope']['inScope']['surface']['implementation'] is None for d in i['definitions'])
+                + len({d['scope']['inScope']['surface']['implementation'] for d in i['definitions']
+                       if d['scope']['inScope']['surface']['implementation'] is not None}) for i in data['inputs'])
+    report = dict(counts=dict(matched=count, mismatched=0, outOfScope=0, q11=0, lazyRestriction=0, preparationFailure=0))
+elif tool == 'surfaceCheck':
+    report = dict(result=dict(ok=True))
+else:
+    count = len(data['cases']) if tool == 'coverageDiff' else sum(len(i['matches']) + len(i['bindings']) for i in data['inputs'])
+    report = dict(matched=count, mismatched=0, outOfScope=0, fuelExhausted=0)
+Path(sys.argv[-1]).write_text(json.dumps(report))
+sys.exit(1 if tool == 'coverageProgramDiff' and count == 0 else 0)
+'''
+            tools = ('coverageDiff', 'coverageProgramDiff', 'desugarDiff', 'builtinCheck',
+                     'surfaceCheck', 'surfaceCheckAll')
+            for tool in tools:
+                target = bin_dir / tool
+                target.write_text('#!' + sys.executable + '\n' + observer)
+                target.chmod(0o755)
+            log = root / 'calls.jsonl'
+            env = dict(os.environ, POLICY_LOG=str(log))
+            env.pop('POLICY_FAIL_PROFILE', None)
+            command = [sys.executable, '-B', '-c',
+                       "import runpy,sys; from pathlib import Path; "
+                       "runpy.run_path(sys.argv[1])['check_remaining_batch3'](Path(sys.argv[2]))",
+                       str(root / 'crates/benitoite/tests/desugar_export/check_named.py'), str(output)]
+            result = execute(command, root, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            calls = [json.loads(line) for line in log.read_text().splitlines()]
+            for profile, names in profiles.items():
+                selected = [call for call in calls if call[0] == profile]
+                self.assertEqual([call[1] for call in selected],
+                                 [*tools[:4], *(['surfaceCheck'] * len(names)), 'surfaceCheckAll'])
+                for call in selected:
+                    self.assertEqual(Path(call[2]).parent, output / 'batch3' / profile)
+            for profile in profiles:
+                with self.subTest(failure=profile):
+                    log.unlink()
+                    result = execute(command, root, dict(env, POLICY_FAIL_PROFILE=profile))
+                    self.assertNotEqual(result.returncode, 0, result.stderr)
+                    self.assertIn('got 17', result.stderr)
+                    actual = [json.loads(line) for line in log.read_text().splitlines()]
+                    first = next(index for index, call in enumerate(calls) if call[0] == profile)
+                    # 一時の報告先は毎回変わるため、入力とツールの呼び出し列を照合する。
+                    self.assertEqual([call[:-1] for call in actual], [call[:-1] for call in calls[:first + 1]])
 
     def test_formal_output_directory_isolation(self):
         # 本物の準備入口へ、.. とリンクを含む出力先を渡す。内容の字面は検査しない。

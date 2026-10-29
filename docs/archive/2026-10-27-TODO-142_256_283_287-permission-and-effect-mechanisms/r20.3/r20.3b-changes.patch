@@ -1,0 +1,764 @@
+--- a/crates/benitoite/skill/references/diagnostics.md
++++ b/crates/benitoite/skill/references/diagnostics.md
+@@ -1934,6 +1934,9 @@
+ - Kind: check (error)
+ - Message: effect `{effect}` is not covered by one surrounding atom ({reason})
+ - Label: `{effect}` is not covered by `{expected}`
++- `scope_check`: the range arguments of check `{effect}` do not cover the required scope ({reason})
++- `scope_projection`: the range arguments of projection `{effect}` do not cover the required scope ({reason})
++- `scope_widen`: the range arguments of widening `{effect}` do not cover the required scope ({reason})
+ - `scope_rule`: the range arguments of this direct call must cover the ranges selected by the local Scope rule
+ - `atomic`: two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked
+ - `uncovered`: no one surrounding atom of the same name covers the required scope
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -971,7 +971,10 @@
+         "A failure handle contains exactly one Failure.raise clause.";
+ 
+     E0519 Check "effect `{effect}` is not covered by one surrounding atom ({reason})" "`{effect}` is not covered by `{expected}`"
+-        [scope_rule: "the range arguments of this direct call must cover the ranges selected by the local Scope rule",
++        [scope_check: "the range arguments of check `{effect}` do not cover the required scope ({reason})",
++         scope_projection: "the range arguments of projection `{effect}` do not cover the required scope ({reason})",
++         scope_widen: "the range arguments of widening `{effect}` do not cover the required scope ({reason})",
++         scope_rule: "the range arguments of this direct call must cover the ranges selected by the local Scope rule",
+          atomic: "two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked",
+          uncovered: "no one surrounding atom of the same name covers the required scope",
+          unknown: "the required scope is Top (all targets); only a surrounding Top atom of the same name covers it",
+--- a/crates/benitoite/src/refinterp/convert.rs
++++ b/crates/benitoite/src/refinterp/convert.rs
+@@ -254,7 +254,9 @@
+                         .map_err(|_| resources::fault())?
+                         .worker(wait)?;
+                     done.complete(
+-                        &mut CallCtx::new(ctx, Some(&mut io), None, None).io_ctx()?,
++                        &mut CallCtx::new(ctx, Some(&mut io), None, None)
++                            .with_ranges(ranges)
++                            .io_ctx()?,
+                         &args,
+                     )?
+                 }
+--- a/crates/benitoite/src/typeck/mod.rs
++++ b/crates/benitoite/src/typeck/mod.rs
+@@ -244,6 +244,8 @@
+ mod records;
+ mod scope;
+ mod scoped_calls;
++#[cfg(test)]
++mod scoped_calls_tests;
+ mod source_input;
+ pub use scope::{
+     DEFAULT_NUMBERING_OPERATIONS, ScopeAcceptError, ScopeAnalysis, ScopeArgument,
+--- a/crates/benitoite/src/typeck/scope/accept.rs
++++ b/crates/benitoite/src/typeck/scope/accept.rs
+@@ -48,7 +48,7 @@
+ pub struct ScopeRejection {
+     /// 囲む定義名。
+     pub definition: String,
+-    /// 完全な番号付けで得た先行順番号。停止した本体では None。
++    /// 完全な番号付けで得た先行順番号。番号付けが停止した本体では None。
+     pub preorder: Option<u64>,
+     /// 元ソースの呼び出し。
+     pub node: NodeId,
+@@ -190,7 +190,7 @@
+                 if let Some(reason) = failure {
+                     return Err(ScopeAcceptError::Rejected(ScopeRejection {
+                         definition: self.input.body_key.definition.clone(),
+-                        preorder: self.stopped.is_none().then_some(call.preorder),
++                        preorder: self.input.stopped.is_none().then_some(call.preorder),
+                         node: call.node,
+                         reason,
+                     }));
+@@ -199,38 +199,4 @@
+         }
+         Ok(())
+     }
+-
+-    /// 構文順の全規則呼び出しを確かめ、最初の拒否を返す。
+-    /// 停止後の接頭辞は使わず、番号に依存しない rule_calls の全件を渡す。
+-    pub fn accept_body(
+-        &self,
+-        rule_calls: &[ScopeCall],
+-        ranges: &NodeMap<Vec<Range>>,
+-    ) -> Result<(), ScopeAcceptError> {
+-        if let Some(stop) = self.stopped
+-            && !matches!(stop, ScopeInputStop::BudgetExceeded { .. })
+-        {
+-            return Err(ScopeAcceptError::InputStopped(stop));
+-        }
+-        let numbered: std::collections::BTreeMap<_, _> = self
+-            .input
+-            .calls
+-            .iter()
+-            .map(|call| (call.node, call))
+-            .collect();
+-        for raw_call in rule_calls {
+-            let call = if self.stopped.is_none() {
+-                numbered
+-                    .get(&raw_call.node)
+-                    .copied()
+-                    .ok_or(ScopeAcceptError::InputStopped(
+-                        ScopeInputStop::MissingInput(raw_call.node),
+-                    ))?
+-            } else {
+-                raw_call
+-            };
+-            self.accept_call(call, ranges.get(call.node).map_or(&[], Vec::as_slice))?;
+-        }
+-        Ok(())
+-    }
+-}
++}
+--- a/crates/benitoite/src/typeck/scope/accept_tests.rs
++++ b/crates/benitoite/src/typeck/scope/accept_tests.rs
+@@ -94,32 +94,35 @@
+ }
+ 
+ #[test]
+-fn budget_before_the_rule_requires_top_without_using_a_partial_preorder() {
++fn final_run_budget_requires_top_and_keeps_the_completed_preorder() {
+     let body = input(
+         r#"function sample() -> Unit
+  bind _ <- 1 + 2
+- bind _ <- Scope.checkPathIn(pattern: "/data/**", path: "/data/a")
++ bind result <- Scope.checkPathIn(pattern: "/data/**", path: "/data/a")
+  ()
+ end function"#,
+     );
+-    let analysis = body.analyze(1, limits());
+-    assert!(analysis.input.calls.is_empty());
+-    let calls = body.rule_calls();
++    let mut limits = limits();
++    limits.body.operations = 0;
++    let analysis = body.analyze(DEFAULT_NUMBERING_OPERATIONS, limits);
++    assert_eq!(analysis.input.stopped, None);
++    assert!(matches!(
++        analysis.stopped,
++        Some(ScopeInputStop::BudgetExceeded { .. })
++    ));
++    let calls = &analysis.input.calls;
+     assert_eq!(calls.len(), 1);
+     assert_eq!(analysis.selected_ranges(&calls[0]).unwrap(), [Range::Top]);
+-    let mut ranges = NodeMap::default();
+-    ranges.insert(calls[0].node, vec![path("/data/**")]);
+     assert_eq!(
+-        analysis.accept_body(&calls, &ranges),
++        analysis.accept_call(&calls[0], &[path("/data/**")]),
+         Err(ScopeAcceptError::Rejected(ScopeRejection {
+             definition: ".sample".into(),
+-            preorder: None,
++            preorder: Some(calls[0].preorder),
+             node: calls[0].node,
+             reason: ScopeCoverFailure::BudgetExceeded,
+         }))
+     );
+-    ranges.insert(calls[0].node, vec![Range::Top]);
+-    assert_eq!(analysis.accept_body(&calls, &ranges), Ok(()));
++    assert_eq!(analysis.accept_call(&calls[0], &[Range::Top]), Ok(()));
+ }
+ 
+ #[test]
+--- a/crates/benitoite/src/typeck/scoped_calls.rs
++++ b/crates/benitoite/src/typeck/scoped_calls.rs
+@@ -22,6 +22,7 @@
+     fallback: Range,
+     kind: BuiltinTypeId,
+     check: bool,
++    requires_top: bool,
+ }
+ 
+ // 単一の対象を持つ標準操作は、期待される関数型の入力からも範囲を選ぶ。
+@@ -83,7 +84,7 @@
+             return;
+         };
+         let analysis = input.analyze_pending(DEFAULT_NUMBERING_OPERATIONS, limits());
+-        let calls = if analysis.stopped.is_some() {
++        let calls = if analysis.input.stopped.is_some() {
+             input.rule_calls()
+         } else {
+             analysis.input.calls.clone()
+@@ -256,6 +257,23 @@
+             .and_then(|ranges| ranges.first())
+             .cloned()
+             .unwrap_or(Range::Top);
++        let check = matches!(
++            call.declaration,
++            ScopeDeclaration::CheckPath | ScopeDeclaration::CheckRequest
++        );
++        // 由来が未知の射影・拡大は Top だけを受理する。検査の既定値を
++        // 選ぶ前に通常の型制約へ渡し、同じ成功型にもこの要求を伝える。
++        let requires_top = !check
++            && self.scoped_calls.analysis.as_ref().is_some_and(|analysis| {
++                analysis.required_ranges(&call).is_ok_and(|states| {
++                    states.iter().flatten().any(|requirement| {
++                        matches!(
++                            requirement,
++                            ScopeRequired::Unknown | ScopeRequired::Exceeded
++                        )
++                    })
++                })
++            });
+         self.scoped_calls.spans.insert(call.node, span);
+         self.scoped_calls.pending.push(Pending {
+             head,
+@@ -265,10 +283,8 @@
+             destination,
+             fallback,
+             kind,
+-            check: matches!(
+-                call.declaration,
+-                ScopeDeclaration::CheckPath | ScopeDeclaration::CheckRequest
+-            ),
++            check,
++            requires_top,
+         });
+         (params, ret, effect)
+     }
+@@ -308,8 +324,41 @@
+     final_pass: bool,
+ ) -> Vec<Constraint> {
+     let mut constraints = Vec::new();
++    for pending in &ctx.scoped_calls.pending {
++        if pending.requires_top && matches!(solver.zonk(&pending.source), ITy::Var(_)) {
++            constraints.push(Constraint::Equal {
++                expected: opaque(pending.kind, Range::Top),
++                found: pending.source.clone(),
++                reason: reason(pending.span, ReasonKind::CallArg { index: 1 }),
++            });
++        }
++    }
++    if !constraints.is_empty() {
++        // 既定値を選ぶ前に Top の要求を解く。既に注釈で決まった狭い型は
++        // 書き換えず、後の必須受理で unknownSource として拒否する。
++        return constraints;
++    }
+     let mut waiting = Vec::new();
+     let checks_pending = ctx.scoped_calls.pending.iter().any(|pending| pending.check);
++    // 合流などで同じ未確定の型変数を共有する検査は、一括で既定値を選ぶ。
++    // 狭い既定値が食い違えば Top とし、走査順で先の範囲へ固定しない。
++    let mut defaults = BTreeMap::new();
++    if final_pass {
++        for pending in &ctx.scoped_calls.pending {
++            if pending.check
++                && let ITy::Var(variable) = solver.zonk(&pending.source)
++            {
++                defaults
++                    .entry(variable.0)
++                    .and_modify(|range| {
++                        if *range != pending.fallback {
++                            *range = Range::Top;
++                        }
++                    })
++                    .or_insert_with(|| pending.fallback.clone());
++            }
++        }
++    }
+     for pending in std::mem::take(&mut ctx.scoped_calls.pending) {
+         let source = candidate(solver, &pending.source, pending.kind);
+         let destination = pending
+@@ -321,7 +370,14 @@
+             waiting.push(pending);
+             continue;
+         }
+-        let source = source.unwrap_or(pending.fallback);
++        let source = source.unwrap_or_else(|| {
++            if let ITy::Var(variable) = solver.zonk(&pending.source)
++                && let Some(range) = defaults.get(&variable.0)
++            {
++                return range.clone();
++            }
++            pending.fallback
++        });
+         let mut ranges = vec![source.clone()];
+         if let Some(target) = &pending.destination {
+             if let Some(destination) = destination {
+@@ -439,7 +495,11 @@
+         .primary(span)
+         .note("scope_rule")
+         .help("scope_rule")
+-        .build()
++        .build_variant(match declaration {
++            ScopeDeclaration::CheckPath | ScopeDeclaration::CheckRequest => "scope_check",
++            ScopeDeclaration::PathValue | ScopeDeclaration::RequestValue => "scope_projection",
++            ScopeDeclaration::WidenPath | ScopeDeclaration::WidenRequest => "scope_widen",
++        })
+ }
+ 
+ /// 表層の番号だけを確定し直し、解析を再実行せず全定義とメソッドを受理する。
+@@ -476,15 +536,10 @@
+         let Some(analysis) = &mut body.analysis else {
+             continue;
+         };
+-        if let Err(stop) = analysis.renumber(input.numbered(DEFAULT_NUMBERING_OPERATIONS)) {
+-            if decls
+-                .diagnostics
+-                .iter()
+-                .any(crate::diag::Diagnostic::is_error)
+-            {
+-                continue;
+-            }
+-            let _stop = stop;
++        if analysis
++            .renumber(input.numbered(DEFAULT_NUMBERING_OPERATIONS))
++            .is_err()
++        {
+             decls
+                 .diagnostics
+                 .push(crate::runtime::report::internal_diagnostic(
+@@ -509,7 +564,7 @@
+                 ));
+             return;
+         }
+-        let calls = if analysis.stopped.is_some() {
++        let calls = if analysis.input.stopped.is_some() {
+             input.rule_calls()
+         } else {
+             analysis.input.calls.clone()
+@@ -520,7 +575,7 @@
+                 Some(signature) if !signature.admits(ranges) => {
+                     Err(ScopeAcceptError::Rejected(ScopeRejection {
+                         definition: analysis.input.body_key.definition.clone(),
+-                        preorder: analysis.stopped.is_none().then_some(call.preorder),
++                        preorder: analysis.input.stopped.is_none().then_some(call.preorder),
+                         node: call.node,
+                         reason: ScopeCoverFailure::NotCovered,
+                     }))
+@@ -532,7 +587,7 @@
+                     ScopeAcceptError::Rejected(rejection) => {
+                         if let Some(span) = body.spans.get(&call.node).copied() {
+                             let mut diag = diagnostic(call.declaration, span, rejection.reason);
+-                            // 鍵は確定した番号だけから作り、予算停止では番号を補わない。
++                            // 番号付けの停止では番号を補わず、Run だけの超過では確定した番号を使う。
+                             diag.notes.push(super::text::scope_key(
+                                 &rejection.definition,
+                                 rejection.preorder,
+--- a/crates/benitoite/tests/scoped_calls.rs
++++ b/crates/benitoite/tests/scoped_calls.rs
+@@ -61,6 +61,84 @@
+         let core = pipeline::desugar_checked(&program).unwrap();
+         assert!(benitoite::ir::check::check_program(&core).is_empty());
+     }
++}
++
++#[test]
++fn unannotated_checks_use_top_when_projection_or_join_requires_it() {
++    // 通常の入口で、由来の忘却と型変数の共有による既定値の衝突を検査する。
++    // 既存の拒否表と組にし、注釈のない利用を狭い既定値で拒否する退行を捕まえる。
++    for (name, body) in [
++        (
++            "alias",
++            r#"bind alias <- value
++  Scope.pathInValue(path: alias)"#,
++        ),
++        (
++            "rewrap",
++            r#"bind wrapped <- Result.Ok(value)
++  match wrapped with
++  case Result.Ok(unwrapped) -> Scope.pathInValue(path: unwrapped)
++  case Result.Error(_) -> "error"
++  end match"#,
++        ),
++        (
++            "capture",
++            r#"bind project <- lambda() -> String
++   return Scope.pathInValue(path: value)
++  end lambda
++  project()"#,
++        ),
++        ("pipe", "value |> Scope.pathInValue()"),
++    ] {
++        let source = path_source(&format!(
++            r#"function sample(path: String) -> String
++ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
++ return match checked with
++ case Result.Ok(value) ->
++  {body}
++ case Result.Error(_) -> "error"
++ end match
++end function"#
++        ));
++        assert_top_calls(name, &source);
++    }
++    let source = path_source(
++        r#"function sample(flag: Boolean, path: String) -> Unit
++ bind checked <- if flag then
++  Scope.checkPathIn(pattern: "/data/a", path: path)
++ else
++  Scope.checkPathIn(pattern: "/data/b", path: path)
++ end if
++ bind _ <- checked
++ ()
++end function"#,
++    );
++    assert_top_calls("join", &source);
++}
++
++fn assert_top_calls(name: &str, source: &str) {
++    let result = check(source);
++    assert!(
++        !result.diagnostics.iter().any(|d| d.is_error()),
++        "{name}: {source}\n{:?}",
++        result.diagnostics
++    );
++    let program = result.program.unwrap();
++    let scoped: Vec<_> = program
++        .types
++        .call_ranges
++        .iter()
++        .filter(|(_, ranges)| !ranges.is_empty())
++        .collect();
++    assert_eq!(scoped.len(), 2, "{name}: {scoped:?}");
++    assert!(
++        scoped.iter().all(|(_, ranges)| ranges
++            .iter()
++            .all(|range| *range == benitoite::types::scope::Range::Top)),
++        "{name}: {scoped:?}"
++    );
++    let core = pipeline::desugar_checked(&program).unwrap();
++    assert!(benitoite::ir::check::check_program(&core).is_empty());
+ }
+ 
+ #[test]
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -103,9 +103,9 @@
+ 
+ 局所解析の上限は、本体・全体それぞれの操作数・保持する事実数を `ScopeLimits` で明示する。呼び出しの費用は、表層で `funName` または `primName` となる直接の頭に計上する。登録済みの組み込み操作も含み、利用者の操作は含めない。超過では候補の状態を採用せず、位置を保って事実を忘れ、停止理由に本体か全体かと操作数か保持数かを残す。番号付けの操作数の上限は別の引数である。番号付けが停止した場合は、その接頭辞から局所の事実を作らない。
+ 
+-【決定】`rule_calls()` は番号付けと定数の展開に依存せず、全規則呼び出しを構文順に返す。番号付けまたは最後の Run が予算で止まった本体では、この一覧の全件に Top を要求し、途中の番号や事実を受理の照合に使わない。内側の本体だけが超過して外側へ回復した場合、最後の Run の超過とはみなさず、内側の無記録位置を事実のない状態で読む。
+-
+-【決定】`typeck::scoped_calls` は、規則の範囲の選択と通常の型制約を接続する。対象の不透明型の一時的な型変数を引数・戻り値の注釈と結び、未指定の元範囲には規則の選択を使う。チェックの成功型を先に確定してから射影へ伝え、契約を自動で広げない。widen の行き先は戻り型で一意に定まる場合だけ確定する。範囲変数を型推論の変数として解くことはなく、確定した列だけを `TypeckOutput.call_ranges` に頭の NodeId で保存する。範囲変数0個の頭には空の列を保存し、未登録と区別する。純粋な六宣言の間接呼び出し・関数値・部分適用には宣言した個数の Top を明示する。単一対象の IO の署名（`IoShape::Single`）は、対象の入力型から範囲を一意に具体化し、同じ範囲を潜在効果へ適用する。この機構は関数値の期待入力型にも用いる。IO の結果に範囲付きの成功型を追加するものではない。
++【決定】`rule_calls()` は番号付けと定数の展開に依存せず、全規則呼び出しを構文順に返す。番号付けが予算で止まった本体では、この一覧の全件に Top を要求し、途中の番号や事実を受理の照合に使わない。番号付けが完了し、最後の Run だけが予算で止まった本体でも全件に Top を要求するが、確定した呼び出しの順と番号は保持する。内側の本体だけが超過して外側へ回復した場合、最後の Run の超過とはみなさず、内側の無記録位置を事実のない状態で読む。
++
++【決定】`typeck::scoped_calls` は、規則の範囲の選択と通常の型制約を接続する。対象の不透明型の一時的な型変数を引数・戻り値の注釈と結び、未指定の元範囲には規則の選択を使う。射影・拡大の元の位置の必須判定が未知または超過なら、未確定の元の型に Top との等号制約を加え、検査の既定値より先に解く。既に注釈で決まった型は書き換えず、必須の受理で照合する。複数の検査が同じ未確定の型変数を共有し、規則の選ぶ既定値が食い違うときは Top を選ぶ。それ以外は、型の制約を使い切った後に検査の成功型を確定して射影へ伝える。宣言した契約を自動で広げない。widen の行き先は戻り型で一意に定まる場合だけ確定する。範囲変数を型推論の変数として解くことはなく、確定した列だけを `TypeckOutput.call_ranges` に頭の NodeId で保存する。範囲変数0個の頭には空の列を保存し、未登録と区別する。純粋な六宣言の間接呼び出し・関数値・部分適用には宣言した個数の Top を明示する。単一対象の IO の署名（`IoShape::Single`）は、対象の入力型から範囲を一意に具体化し、同じ範囲を潜在効果へ適用する。この機構は関数値の期待入力型にも用いる。IO の結果に範囲付きの成功型を追加するものではない。
+ 
+ 【決定】型付けの検査の後に、全ての定義と実装メソッドの本体を受理する。各呼び出しで全記録状態の選択を確かめ、無記録なら事実のない状態を使う。規則が選ぶ位置だけに被覆を要求し、列の個数・種類と widen の被覆は標準署名でも検査する。最初の拒否を E0519 とし、定義名・確定した先行順番号・`notCovered`・`unknownSource`・`budgetExceeded` を示す。番号付けが予算で止まった本体の番号は未確定とし、途中の番号を補わない。効果原子の和での被覆の拒否は従来の `atomicCoverOnly` に従う。
+ 
+--- a/docs/design/02-impl/02-08-vm.md
++++ b/docs/design/02-impl/02-08-vm.md
+@@ -215,7 +215,7 @@
+ 
+ 【決定】`Scope.checkPathIn`・`Scope.pathInValue` は、純粋な組み込みの関数として `PRIM` で呼ぶ。検査は、共通のパスの判定で動的なパターンと入力の所属を確かめ、成功した入力の文字列の値を一欄の構成子に保存して `Result.Ok` を作る。射影は、その欄の値を直接返す。二つの入口の標準署名はパスの範囲変数を一つ持ち、型検査とコアの検査では、規則と型制約で確定した範囲の列を適用してから型と行を代入する。実行時もこの列への所属を検査し、動的な条件の検査を省かない。コアの Scheme と対応する範囲情報を保持し、未具体化の範囲変数をプログラムの型へ残さない。
+ 
+-【決定】`Http.checkRequestIn`・`Http.requestInValue` も純粋な組み込みの関数として `PRIM` で呼ぶ。検査は、要求の `url` から実効の端点を得て共通のホスト・ポートの判定に通し、成功時に同じ要求のレコードと端点を構成子に保存する。射影は保存したレコードの値を直接返す。二つの標準署名は端点の範囲変数を一つ持ち、パスの二入口と同じ登録・確定した列の具体化の経路を使う。要求の五欄を作り直したり、検査後に別の端点へ取り替えたりしない。 `Scope.widenPathIn`・`Http.widenRequestIn` は二要素の列の被覆を確かめて同じ値を返す。組み込み参照は範囲の列も保持し、VM と参照実行器はその列を実行文脈へ渡す。
++【決定】`Http.checkRequestIn`・`Http.requestInValue` も純粋な組み込みの関数として `PRIM` で呼ぶ。検査は、要求の `url` から実効の端点を得て共通のホスト・ポートの判定に通し、成功時に同じ要求のレコードと端点を構成子に保存する。射影は保存したレコードの値を直接返す。二つの標準署名は端点の範囲変数を一つ持ち、パスの二入口と同じ登録・確定した列の具体化の経路を使う。要求の五欄を作り直したり、検査後に別の端点へ取り替えたりしない。`Scope.widenPathIn`・`Http.widenRequestIn` は二要素の列の被覆を確かめて同じ値を返す。組み込み参照は範囲の列も保持し、VM と参照実行器はその列を実行文脈へ渡す。
+ 
+ 【決定】構造の `=`（`EQV`）など、値の構造を辿る組み込みの処理は、Rust の再帰に頼らず、明示の積み重ねを使って辿る。長いリストや深い木の値でも、処理系のスタックを使い果たさないようにするためである。値の解放と回収の印付けも同じく明示の積み重ねで行う。
+ 
+--- a/docs/design/03-interop/03-06-stdlib.md
++++ b/docs/design/03-interop/03-06-stdlib.md
+@@ -137,9 +137,9 @@
+ | `pathInValue` | `function(path: PathIn[R]) -> String` |
+ | `widenPathIn` | `function(path: PathIn[R]) -> PathIn[S]` |
+ 
+-直接呼び出しの `checkPathIn` は、リテラルまたは const の直接参照からパターンが既知なら、そのパターンを R に選ぶ。未知なら Top を選ぶ。検査の Result を一度保存して同じ `Result.Ok` を照合した成功値と、その直接の射影では局所解析の事実を使う。未知の呼び出し・別名・再包装・本体の境界などで事実を忘れた位置、間接呼び出し・穴のある部分適用・パイプの右辺の呼び出しには、狭い範囲を与えない。期待する型の注釈だけから所属を得ることもない。詳しい選択と受理の条件は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+-
+-たとえば、`checkPathIn(pattern: "/data/**", path: raw)` の成功型は `Scope.PathIn["/data/**"]` である。これを裸の `Scope.PathIn`（Top）へ渡すには、同じ成功値が分かる位置で `widenPathIn` を呼び、戻りの型を `Scope.PathIn` と明示する。S は戻りの注釈から一意に選び、S が R を覆う場合だけ受理する。拡大は同じ値を返し、保持したパスを変更しない。Top はパターンへの所属を静的に絞らないことを表し、実行時の検査の成功を表す値の代用ではない。
++直接呼び出しの `checkPathIn` は、型の制約で R が決まらなければ、リテラルまたは const の直接参照から既知のパターンを R に選ぶ。未知なら Top を選ぶ。検査の Result を一度保存して同じ `Result.Ok` を照合した成功値と、その直接の射影では局所解析の事実を使う。未知の呼び出し・別名・再包装・本体の境界などで事実を忘れた位置、間接呼び出し・穴のある部分適用・パイプの右辺の呼び出しには、狭い範囲を与えない。期待する型の注釈だけから所属を得ることもない。詳しい選択と受理の条件は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
++
++たとえば、`checkPathIn(pattern: "/data/**", path: raw)` の成功型は、型の制約で決まらなければ `Scope.PathIn["/data/**"]` となる。成功値を裸の `Scope.PathIn`（Top）の引数へ直接渡すなど、型の制約から R が Top と決まれば、検査も Top へ具体化する。R が狭い範囲に確定した値を Top へ拡大する場合は、同じ成功値が分かる位置で `widenPathIn` を呼び、戻りの型を `Scope.PathIn` と明示する。S は戻りの注釈から一意に選び、S が R を覆う場合だけ受理する。拡大は同じ値を返し、保持したパスを変更しない。Top はパターンへの所属を静的に絞らないことを表し、実行時の検査の成功を表す値の代用ではない。
+ 
+ `checkPathIn` は、後述のパスの字面とパターンの規則で動的な入力を検査し、選んだ静的な範囲への所属も確かめる。パターンの形式不良は `InvalidPattern`、対象の形式不良は `InvalidTarget`、所属不良は `OutsideScope` とし、この順で判定する。成功時は入力された同じパスを保持する `PathIn` を `Result.Ok` に入れる。`pathInValue` は、その同じパスを変更せず返す。既存の `CheckedPath` から検査を省いて変換する入口は持たない。
+ 
+@@ -168,7 +168,7 @@
+ 
+ 成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
+ 
+-要求の検査・射影・明示拡大は `Benitoite.Network.Http` の `checkRequestIn`・`requestInValue`・`widenRequestIn` に置く。三つとも純粋であり、標準署名の内部では、検査と射影は種類 endpoint の範囲変数を一つ、拡大は二つ持つ。検査は、同じ要求の `url` から得た端点と、ホストのパターン・ポートの閉区間を、共通の範囲の代数で照合する。既知の条件では規則が選ぶ範囲、未知なら Top へ具体化する。URL から端点を得られない失敗と Scope の失敗を `Http.RequestCheckError` で区別し、成功時には同じ `Http.ClientRequest` を保持して射影する。明示拡大は保持した要求と実効の端点を変えない。署名と URL の条件は[ネットワークのモジュール](03-09-network.md#クライアント)に従う。
++要求の検査・射影・明示拡大は `Benitoite.Network.Http` の `checkRequestIn`・`requestInValue`・`widenRequestIn` に置く。三つとも純粋であり、標準署名の内部では、検査と射影は種類 endpoint の範囲変数を一つ、拡大は二つ持つ。検査は、同じ要求の `url` から得た端点と、ホストのパターン・ポートの閉区間を、共通の範囲の代数で照合する。型の制約で範囲が決まらなければ、既知の条件では規則が選ぶ範囲、未知なら Top へ具体化する。URL から端点を得られない失敗と Scope の失敗を `Http.RequestCheckError` で区別し、成功時には同じ `Http.ClientRequest` を保持して射影する。明示拡大は保持した要求と実効の端点を変えない。署名と URL の条件は[ネットワークのモジュール](03-09-network.md#クライアント)に従う。
+ 
+ ### Range
+ 
+--- a/docs/design/03-interop/03-09-network.md
++++ b/docs/design/03-interop/03-09-network.md
+@@ -204,7 +204,7 @@
+ | `Http.requestInValue(request)` | `function(request: Http.RequestIn[H,P]) -> Http.ClientRequest` | 検査で保持した同じ要求のレコードを返す |
+ | `Http.widenRequestIn(request)` | `function(request: Http.RequestIn[H,P]) -> Http.RequestIn[H',P']` | 戻りの注釈が元の範囲を覆う場合に、同じ検査済みの値を返す |
+ 
+-直接呼び出しでホストのパターンとポートの両端がリテラルまたは const の直接参照から既知で、正しい範囲を作る場合は、その端点の範囲を選ぶ。未知の条件や逆転した閉区間では Top を選ぶ。たとえば `checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: raw)` の成功型は `Http.RequestIn["api.example", 443]` である。未知の条件を渡した検査の成功型は裸の `Http.RequestIn`（Top）である。
++直接呼び出しの検査は、型の制約で範囲が決まらなければ、規則が選ぶ範囲へ具体化する。ホストのパターンとポートの両端がリテラルまたは const の直接参照から既知で、正しい範囲を作る場合は、その端点の範囲を選ぶ。未知の条件や逆転した閉区間では Top を選ぶ。たとえば `checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: raw)` の成功型は、型の制約で決まらなければ `Http.RequestIn["api.example", 443]` となる。成功値を裸の `Http.RequestIn`（Top）の引数へ直接渡すなど、型の制約から Top と決まれば、検査も Top へ具体化する。未知の条件を渡した検査の成功型は裸の `Http.RequestIn`（Top）である。
+ 
+ 射影と拡大の元の範囲は、同じ Result の保存と同じ `Result.Ok` の照合で得た局所解析の事実から選ぶ。期待する型の注釈だけで所属を得ることはなく、事実を忘れた位置には Top を要求する。明示拡大の行き先は戻りの注釈から一意に選び、元の端点の範囲を覆う場合だけ受理する。拡大は、保持した要求のレコードと実効の端点の両方を変更しない。直接呼び出し以外の扱いと忘却の境界は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+ 
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -694,7 +694,7 @@
+ | 初回リリース版の拡張: エフェクトの名前と開始状態（`BuiltinOnly` の案 BA）・信頼条件の分離 | 段階 B の状態の型付けと仮定の構造体を変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.BuiltinOnly` は範囲の位置によらず組み込みのエフェクトの名前の原子を許し、旧の像では以前の定義 `BuiltinOnlyOld` と同値である（`BuiltinOnly.iff_old`）。以前の定義で型の付く状態は新しい定義でも型が付く（`stateTy_of_old`）。継続と内部の状態の型付けの末尾の単調性（`ContTy.mono_end`・`StateTyE.mono`・`stateTy_of_stateTyE_sub`）と、範囲付きの名前の原子が末尾に届く補題（`ContTy.name_end_ix`・`ContTy.end_of_noHandler_ix`）を置いた。信頼条件は `Builtins.CoreAssumptions`（`io_op` の内容を形の検査 `Builtins.ShapeOk` に変えた）と `Builtins.TargetAgreement`（`io_target`）に分け、全体の `Builtins.Assumptions` は両方を含む。項目の形は `PrimSig.shape`（`Scope.Signature.IOShape`）、呼び出しの引数に照らした形は `PrimSig.shapeAt` である。`Release/ShapeOk.lean` は形の検査と以前の `io_op` の対応、`Release/Lemmas/TargetSound.lean` は κ を `effKind` で読む `Builtins.Allows` と一回の呼び出しの観測の許可（`Builtins.TargetAgreement.obs_allowed`）、`Release/TargetTable.lean` は範囲付きの 13 項目の表、`Release/ModelTargets.lean` は二つの信頼条件を満たす実例と範囲付きのプログラムへの主定理の適用例を置く。Rust の処理系の表は形と表のデータを持たず、観測を報告しない |
+ | 初回リリース版の拡張: エフェクトの名前と開始状態（構造上の包含・被覆・許可の関係） | 本体の主定理の外の独立の定義と証明。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/EffectCover.lean` は、原子の被覆 `Atom.Covers`（同じ名前の閉じた範囲の原子どうしは `Range.Covers`、範囲の変数の原子と行の原子は同じ原子だけ）、効果の被覆 `Eff.Covers`、名前から対象の種類への関数 κ を引数に取る許可の関係 `Eff.Allows` を定義する。被覆の反射・推移、構造上の包含からの被覆、被覆による許可の包含（`Eff.Covers.sound`）、和・空・正規化・代入（`Eff.Covers.bind`・`substAt`・`substRho`）での被覆の保存、Top の許可が名前の種類に相対的であること、代入が閉じた範囲と許可を変えないこと（`Eff.allows_bind`・`allows_bind_of_rows_nil`・`allows_substAt_nil`・`allows_substRho`・`allows_bind_comp`）、旧の効果（`Eff.TopAtoms`）では被覆が構造上の包含と同じであり（`Eff.covers_iff_sub_of_topAtoms`）、所属の一致と構造上の包含が旧の原子だけの所属で決まること（`Eff.mem_iff_of_topAtoms`・`Eff.sub_iff_of_topAtoms`）を示す。`Eff.eq_of_sub_of_sub`・`Eff.norm_ext`・`Eff.ext_canonical` を旧の原子の所属で述べた系は、利用側がないので L50.3 で除いた（旧の言明はこの二つの補題との合成で得る）。採用定義 `Scope.TopCompat`（`TopEmbedding`・`GEff`・`old_*`）は、本番の原子で具体化すると恒等になるので本番では使わず、L00 のモデル（`Scope.CompatExamples`・`Scope.SwitchExamples`）だけが使う。反例として、相互に覆う正規形の効果が等しくないこと（`Eff.no_eq_of_semCovers`・`no_eq_of_allows_iff`）、内側が Top の原子を `/**` の原子が覆わないこと、和による被覆を判定しないことを示す。`Eff.Sub` と `Eff.eq_of_sub_of_sub` は構造上の包含のまま変えない。被覆の定義と型付けが使う基本の補題は `Release/EffectCoverDef.lean` にあり、被覆は型付けの効果の包含が使う（「初回リリース版の拡張: 効果の上限の被覆による包含」の行）。許可の関係は対象健全性の言明が使い、型付けと `Builtins.Assumptions` からは使わない。本番の必須欄が未接続なので、Rust の処理系とこれらの定義の全比較は行っていない |
+ | 初回リリース版の拡張: 効果の上限の被覆による包含 | 段階 B の型付けと継続の型付け、段階 C の表層の型付けを変更し、補題と例を追加。本番の必須欄が未接続であり、Rust との全比較は未実施 | `HasTypeCQ.C_Sub`・`C_Eff` と `Ty.Le` は効果を `Eff.Covers` で広げ（`Release/Typing.lean`）、`ContTy.K_Handle` の節の効果の前提と `K_Handle_Fail` の前提は被覆である（`Release/Semantics.lean`）。C-Handle・C-Handle-Fail と K-Handle の保護本体の効果の前提は構造上の包含のままである。表層の `HasTypeQ.E_Sub`・`HasBlockQ.B_Sub` も被覆で広げる（`Surface/Typing.lean`）。逆転の補題は被覆を返し（`Release/Lemmas/Inversion.lean` ほか）、`ContTy.name_end_ix`・`ContTy.split`・`end_of_noHandler_ix` は範囲付きの原子が覆う原子として届くことを返す。型の変数の移動での保存 `Eff.Covers.shift`、原子だけの効果の被覆と構造上の包含の一致 `Eff.Covers.sub_of_noAtoms`、被覆による許可 `Eff.allows_of_mem_covers`、捕捉した引数の被覆による拡大 `HasTypeVsQ.widen_covers`、旧の像での同値（`Release/CoverCompat.lean` の `Eff.covers_iff_sub_old`・`Ty.le_iff_leOld`・`Ty.LeOld.le`）を置く。例は `Release/CoverExamples.lean`（被覆だけで型付く関数の本体と利用者の関数の呼び出しから到達した書き込みの事象の観測が上限に許される）と `Surface/CoverExamples.lean`（被覆だけで型付く定義を含む表層のプログラムの `program_wellTyped`・`program_target_sound`。main が `Scope.checkPathIn` の結果を照合して書き込みの事象へ到達する `main_reach`・`main_reach_allowed`・`main_never_passwd`）にある。表層の検査器は、ラムダの本体、`resume` の引数、関数とメソッドの本体の効果の上限と関数の型の潜在効果を被覆で受け入れ（`Check.acceptEffCover`・`Finite.effCovers`・`tyLe`。健全性は `acceptEffCover_sound`）、`handle` の保護本体と節、Fail の節、純粋の要求、部分適用の潜在効果を構造上の包含で受け入れる。`handle` の節の添字は保護本体の推論した効果から選ぶので、検査器は型付けより狭い（`Surface/CheckAcceptExamples.lean` の例）。Rust の型検査器は被覆による受理に接続していない |
+-| 初回リリース版の拡張: 型検査器の入口の必須の判定の受理 | 段階 E2 の入口の追加。主定理の前提に入れない。Rust の全定義・実装メソッドの純粋六宣言の受理を接続済み。必須の判定の入力の交換と Rust との全比較は未実施 | `Surface.CheckAccept` は、本体の出現の解決 `primResolve`、本体の表 `tableFor`、本体の始まり `bodyKey`・`entryScope`、定義とメソッドの本体の受理 `acceptDef`・`acceptMethod`、全体の受理 `acceptProgram` と述語 `Accepted`、入口 `checkProgramAccepted` と失敗 `EntryError`（型付けの誤りか、出現の鍵と DET-05 の理由）を定め、`acceptProgram_sound`・`checkProgramAccepted_sound`・`checkProgramAccepted_empty`・`checkProgramAccepted_noRules`・`acceptProgram_noRules`・`tableFor_sound`・`accepted_check_connection` を示す。例は `Surface/CheckAcceptExamples.lean`（受理、`notCovered`・`unknownSource`・`budgetExceeded`、型付けの誤りの先行、規則のない入力の同値、被覆だけの効果の上限の受理）。交換の入口（`surfaceCheck`・`surfaceCheckAll`）はこの入口を使う。コアの実行と表層の評価の対応の補題は置かない Rust は局所解析を型制約前に一度行い、補間の確定後に番号ラベルだけを更新する。通常定義の後に実装メソッドを受理し、最初の拒否の定義名・番号・DET-05 の理由を E0519 に記す。 |
++| 初回リリース版の拡張: 型検査器の入口の必須の判定の受理 | 段階 E2 の入口の追加。主定理の前提に入れない。Rust の全定義・実装メソッドの純粋六宣言の受理を接続済み。必須の判定の入力の交換と Rust との全比較は未実施 | `Surface.CheckAccept` は、本体の出現の解決 `primResolve`、本体の表 `tableFor`、本体の始まり `bodyKey`・`entryScope`、定義とメソッドの本体の受理 `acceptDef`・`acceptMethod`、全体の受理 `acceptProgram` と述語 `Accepted`、入口 `checkProgramAccepted` と失敗 `EntryError`（型付けの誤りか、出現の鍵と DET-05 の理由）を定め、`acceptProgram_sound`・`checkProgramAccepted_sound`・`checkProgramAccepted_empty`・`checkProgramAccepted_noRules`・`acceptProgram_noRules`・`tableFor_sound`・`accepted_check_connection` を示す。例は `Surface/CheckAcceptExamples.lean`（受理、`notCovered`・`unknownSource`・`budgetExceeded`、型付けの誤りの先行、規則のない入力の同値、被覆だけの効果の上限の受理）。交換の入口（`surfaceCheck`・`surfaceCheckAll`）はこの入口を使う。コアの実行と表層の評価の対応の補題は置かない。Rust は局所解析を型制約前に一度行い、補間の確定後に番号ラベルだけを更新する。通常定義の後に実装メソッドを受理し、最初の拒否の定義名・番号・DET-05 の理由を E0519 に記す。 |
+ | 初回リリース版の拡張: ハンドラ（節の添字と枠の上の効果） | 段階 B の型付けと継続の型付けを変更。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release.opSigAt` は組み込みの操作の型を節の添字の列で具体化し（引数は `Ty.instTarget`、結果は署名のまま。計算できる形）、`Release.Eff.clauseRange` は保護本体の効果から節の添字を選ぶ規則、`ClauseIxOk` は許す添字（Top と規則の値）、`ClauseSig` は節の型付けの前提である（`Release/Typing.lean`）。`HasTypeClausesQ` は選択の効果（保護本体の効果）を添字に持ち、C-Handle は保護本体の効果を渡す。`ContTy.K_Handle` は枠の上で許すエフェクトを保護本体の効果 εb とし、`εb ⊆ εc ∪ handled(H)` を前提に持つ。`ContTy.split` は枠の上の効果へ届く名前の原子（呼び出しの原子を覆う原子）を返し、`pres_op_common` は、節の操作の型について引数と結果を型付ける証明を呼び出し側から受け取る（`E_OpPrim` の S が規則の値の場合は、S が呼び出しの範囲を覆うことを `Builtins.ShapeOk.eff_cases` と `NoHandler.handled_false` から導き、捕捉した引数を `HasTypeVsQ.widen_covers` で広げる）。規則の性質（`Eff.clauseRange_of`・`clauseRange_of_rho`・`clauseRange_of_two`・`clauseRange_of_top`・`clauseRange_of_none`・`ClauseIxOk.iff`）、型の代入での保存（`ClauseSig.substAt`）、旧の像での同値（`ClauseSig.iff_opSig_of_rangeFree`・`HasTypeClausesQ.sel_congr_of_rangeFree`・`ContTy.toOld`・`ContTyOld.toNew`・`contTy_exists_iff_old`）と、`File.writeTextIn` の節の添字の例（`ClauseIxExamples`）は `Release/Lemmas/ClauseIx.lean` にある。脱糖が作る節は表層の型付けが選んだ規則の値の添字で型付ける（「表層の節の添字と脱糖の範囲」の行）。Rust の処理系は節の添字を持たない |
+ | 初回リリース版の拡張: ハンドラ（継続を通した対象の伝播） | 本体の主定理の外の補題と例。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/Lemmas/TargetPropagation.lean` は `ContTy.end_of_noHandler` の対象版を置く。許可の関係 `Eff.Allows κ`（κ は任意。対象健全性では表の `effKind`）で、計算の効果が許す名前 L の対象は、L を処理する枠が継続になければ継続の末尾の効果も許す（`ContTy.allows_end`）。処理されない組み込みの呼び出し（`ContTy.allows_end_of_noHandler`・`ContTy.allows_end_of_prim_call`）、捕捉の枠（`ContTy.allows_hole_of_split` は枠の上の効果への伝播、`ContTy.allows_clause_end` は節自身の IO の、枠の下の継続の末尾への伝播）、名前全体の除去と外側の上限に残る原子（`mem_handled_of_nameTop`・`Eff.mem_outer_of_not_handled`・`Eff.allows_outer_of_not_handled`）、解放の枠（`releases_no_handle`・`NoHandler.releases_append`・`ContTy.allows_end_release`・`ContTy.allows_end_releases`）の場合に分ける。型付けと遷移の規則は変えていない。`Release/HandlerTargetExamples.lean` は、L20.7 の実例の表で、別の対象へ書く節（初期状態から E-Handle・E-OpPrim で到達した節の IO の状態の観測が初期の上限に許され、捕捉した呼び出しの対象は許されない。`sIO_obs_allowed`・`logsBound_not_allows_data`・`s1_hole_allows`）、捕捉した引数を転送する節（`handleFwd_typed`）、利用者の操作の節（`handleSave_typed`・`reportsBound_no_report`・`opSigAt_save`）を本番の型付けで置く |
+ | 初回リリース版の拡張: 一段の対象健全性 | 性質 2・3 の主定理とは別の定理と例。型付けと遷移の規則は変えていない。本番の必須欄が未接続であり、Rust との全比較は未実施 | `Release/Lemmas/TargetStep.lean` は、事象の観測の射影 `Event.obs`（解放の事象は空）、上限に別の名前の原子を足しても許可が増えないこと（`Eff.allows_union_other_name`）、一段の対象健全性（`step_target_sound`。前提の信頼条件は `CoreAssumptions` と `TargetAgreement`。全体の信頼条件のもとでの `step_target_sound_of_assumptions`、事象の種類によらない形の `step_target_sound_event`）、節の型付けの反転による節自身の IO の伝播（`StateTyE.clause_allows`・`StateTyE.opPrim_clause_allows`）を置く。`Release/TargetStepExamples.lean` は、L20.7 の実例の表で、範囲付きの IO の事象（`ioState_target_sound`）、例 3a の節の IO の事象（`sIO_target_sound`）、保存の定理を通さない節の型付けからの伝播（`s1_clause_allows_log`・`s1_captured_allows`）、名前を落とした言明の反例（`readBound_exists_name_allows_passwd`・`readBound_not_allows_write_passwd`・`no_write_event_passwd`）を置く |
+--- /dev/null
++++ b/crates/benitoite/src/typeck/scoped_calls_tests.rs
+@@ -0,0 +1,175 @@
++//! 単一対象の標準署名の具体化を、実際の本体の型検査で確かめる（設計書 02-05）。
++// 関門: 対象の型から潜在効果へ同じ範囲を渡し、具体化の失敗を内部診断にする契約を守る。
++// 既存の登録に Single がなく、通常の統合検査ではこの経路に入らない。
++// 読み込み・名前解決・制約生成・solver は本物を使い、本番の登録や差し込み口を増やさない。
++#![allow(clippy::unwrap_used, clippy::panic)]
++
++use super::context::{Body, lift};
++use super::decls::{Decls, Scope};
++use super::{TypeckOutput, collect_declarations, generate};
++use crate::diag::{Diagnostic, ReportKind};
++use crate::resolve::test_support::resolve_files;
++use crate::syntax::ast::Item;
++use crate::types::builtin::{BuiltinEffectId, BuiltinTypeId, RangeIndex};
++use crate::types::scope::{Kind, PathPattern, Range};
++use crate::types::signature::{IoShape, RangeAdmission, RangeSignature};
++use crate::types::{EffectName, EffectSet, Ty, TyCon};
++
++fn fixture(
++    source: &str,
++    fail_instantiation: bool,
++) -> (TypeckOutput, Vec<Diagnostic>, crate::base::NodeId) {
++    let source =
++        format!("import Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.Scope\n{source}");
++    let (load, resolved, _) = resolve_files(&[("single-target.bnt", &source)]);
++    assert!(
++        resolved.diagnostics.is_empty(),
++        "{:?}",
++        resolved.diagnostics
++    );
++    let (out, diagnostics) =
++        collect_declarations(&load.modules, &load.asts, &load.sources, &resolved);
++    assert!(diagnostics.is_empty(), "{diagnostics:?}");
++    let mut decls = Decls::new(&load.modules, &load.asts, &load.sources, &resolved);
++    decls.out = out;
++    let binding = resolved.stdlib("Benitoite.IO.File.readText").unwrap();
++    // テストの宣言表だけに仮の Single 署名を置く。大域の組み込み表は変えない。
++    let mut scheme = decls.out.decl_types.get(binding).unwrap().clone();
++    scheme.params = vec![Ty::Con(
++        TyCon::Builtin(BuiltinTypeId::PATH_IN),
++        vec![],
++        RangeIndex::var(0),
++    )];
++    scheme.effects = EffectSet {
++        names: vec![EffectName::Builtin(
++            BuiltinEffectId::FILE_READ,
++            RangeIndex::var(0),
++        )],
++        ..EffectSet::empty()
++    };
++    let signature = RangeSignature {
++        kinds: vec![Kind::Path],
++        admission: RangeAdmission::Any,
++        shape: IoShape::Single {
++            kind: Kind::Path,
++            position: 0,
++        },
++    };
++    assert!(signature.signature_valid(&scheme, true));
++    decls.out.decl_types.insert(binding, scheme);
++    decls
++        .out
++        .range_signatures
++        .insert(binding, signature.clone());
++    let function = load
++        .asts
++        .iter()
++        .flat_map(|ast| &ast.decls)
++        .find_map(|top| match &top.item {
++            Item::Fn(function) if function.name.text == "sample" => Some(function),
++            Item::Fn(_)
++            | Item::Const(_)
++            | Item::Data(_)
++            | Item::Alias(_)
++            | Item::ExternalType(_)
++            | Item::Record(_)
++            | Item::Trait(_)
++            | Item::Effect(_)
++            | Item::Impl(_)
++            | Item::Error(_) => None,
++        })
++        .unwrap();
++    let head = resolved
++        .refs
++        .iter()
++        .find_map(|(node, target)| (*target == binding).then_some(node))
++        .unwrap();
++    if fail_instantiation {
++        let owner = *resolved.decls.get(function.id).unwrap();
++        let scheme = decls.out.decl_types.get(owner).unwrap().clone();
++        let module = resolved.bindings.get(owner).unwrap().module;
++        let mut body = Body::new(&mut decls, module, Scope::default(), scheme);
++        for (parameter, ty) in function.params.iter().zip(body.scheme.params.clone()) {
++            body.locals
++                .insert(*resolved.decls.get(parameter.id).unwrap(), lift(&ty));
++        }
++        body.block(function.body.as_ref().unwrap());
++        // 形の取得時は有効だった宣言を破損させ、解決時の再具体化だけを失敗させる。
++        let mut invalid = signature;
++        invalid.kinds.clear();
++        body.decls.out.range_signatures.insert(binding, invalid);
++        body.solve();
++        body.finish();
++    } else {
++        generate::check_function(&mut decls, function);
++    }
++    (decls.out, decls.diagnostics, head)
++}
++
++#[test]
++fn single_target_io_uses_argument_or_expected_input_and_defaults_to_top() {
++    let narrow = Range::Path(PathPattern::parse("/data/**").unwrap());
++    for (source, expected) in [
++        (
++            r#"function sample(path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
++ return File.readText(path: path)
++end function"#,
++            narrow.clone(),
++        ),
++        (
++            r#"function sample() -> function(path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
++ return File.readText
++end function"#,
++            narrow,
++        ),
++        (
++            r#"function sample() -> Unit
++ bind read <- File.readText
++end function"#,
++            Range::Top,
++        ),
++    ] {
++        let (out, diagnostics, head) = fixture(source, false);
++        assert!(
++            !diagnostics.iter().any(Diagnostic::is_error),
++            "{source}\n{diagnostics:?}"
++        );
++        assert_eq!(out.call_ranges.get(head), Some(&vec![expected.clone()]));
++        let Ty::Fn(function) = out.expr_types.get(head).unwrap() else {
++            panic!("operation head must retain a function type");
++        };
++        assert_eq!(
++            function.params,
++            [Ty::Con(
++                TyCon::Builtin(BuiltinTypeId::PATH_IN),
++                vec![],
++                RangeIndex::fixed(expected.clone()),
++            )]
++        );
++        assert_eq!(
++            function.effects.names,
++            [EffectName::Builtin(
++                BuiltinEffectId::FILE_READ,
++                RangeIndex::fixed(expected),
++            )]
++        );
++        assert!(function.effects.vars.is_empty());
++    }
++
++    let (_, diagnostics, _) = fixture(
++        r#"function sample(path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
++ return File.readText(path: path)
++end function"#,
++        true,
++    );
++    assert!(
++        diagnostics.iter().any(|diagnostic| {
++            diagnostic.is_error()
++                && diagnostic.kind == ReportKind::Internal
++                && diagnostic.notes.iter().any(|note| {
++                    note.contains("single-target operation scope instantiation was incomplete")
++                })
++        }),
++        "{diagnostics:?}"
++    );
++}
+--- a/crates/benitoite/src/typeck/scope/local_tests.rs
++++ b/crates/benitoite/src/typeck/scope/local_tests.rs
+@@ -20,20 +20,9 @@
+     }
+ }
+ 
++// 型の制約から Top を選べる入力は、由来を忘れた射影も受理する。
++// 局所解析が認定する由来の期待値は、型検査で選んだ列とは独立に保つ。
+ fn source(text: &str) -> (crate::resolve::ResolveOutput, crate::typeck::TypeckOutput) {
+-    source_with_acceptance(text, false)
+-}
+-
+-// 忘却の境界では非 Top の引数の射影を必須判定が拒否する。
+-// その非受理入力でも局所解析の独立した期待値を保ち、型の適合は別の検査で確かめる。
+-fn rejected_source(text: &str) -> (crate::resolve::ResolveOutput, crate::typeck::TypeckOutput) {
+-    source_with_acceptance(text, true)
+-}
+-
+-fn source_with_acceptance(
+-    text: &str,
+-    rejected: bool,
+-) -> (crate::resolve::ResolveOutput, crate::typeck::TypeckOutput) {
+     let text = format!(
+         r#"import Benitoite.Unofficial.Scope
+ import Benitoite.Unofficial.Network.Http
+@@ -50,13 +39,7 @@
+         .iter()
+         .filter(|diagnostic| diagnostic.is_error())
+         .collect();
+-    assert_eq!(!errors.is_empty(), rejected, "{diagnostics:#?}");
+-    assert!(
+-        errors
+-            .iter()
+-            .all(|diagnostic| diagnostic.code == Some(crate::diag::DiagCode::E0519)),
+-        "{diagnostics:#?}"
+-    );
++    assert!(errors.is_empty(), "{diagnostics:#?}");
+     (resolved, output)
+ }
+ 
+@@ -107,7 +90,7 @@
+ 
+ #[test]
+ fn saved_result_ok_and_error_match_independent_scope_lower_records() {
+-    let (resolved, output) = rejected_source(
++    let (resolved, output) = source(
+         r#"function sample(path: String) -> Unit
+  bind result <- Scope.checkPathIn(pattern: "/data/**", path: path)
+  match result with
+@@ -168,7 +151,7 @@
+ 
+ #[test]
+ fn direct_projections_distinguish_instances_aliases_rewrap_and_unknown_calls() {
+-    let (_, output) = rejected_source(
++    let (_, output) = source(
+         r#"function identity[T](value: T) -> T
+  return value
+ end function
+@@ -342,7 +325,7 @@
+ 
+ #[test]
+ fn request_ok_keeps_its_own_origin_and_projection_has_no_result_fact() {
+-    let (_, output) = rejected_source(
++    let (_, output) = source(
+         r#"function sample(req: Http.ClientRequest, other: Http.RequestIn) -> Unit
+  bind r <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: req)
+  match r with
+@@ -387,7 +370,7 @@
+ 
+ #[test]
+ fn joins_forget_only_the_value_and_keep_outer_facts_and_positions() {
+-    let (_, output) = rejected_source(
++    let (_, output) = source(
+         r#"function sample(path: String) -> Unit
+  bind r <- Scope.checkPathIn(pattern: "/outer/**", path: path)
+  match r with
+@@ -450,7 +433,7 @@
+ 
+ #[test]
+ fn bodies_clear_facts_preserve_positions_and_restore_the_outer_state() {
+-    let (resolved, output) = rejected_source(
++    let (resolved, output) = source(
+         r#"effect E
+  function ask() -> Unit
+ end effect
+@@ -543,7 +526,7 @@
+ 
+ #[test]
+ fn try_direct_match_wrapping_and_unvisited_expressions_do_not_gain_facts() {
+-    let (_, output) = rejected_source(
++    let (_, output) = source(
+         r#"function sample(path: String) -> Result[Unit, Scope.ScopeError]
+  bind r <- Scope.checkPathIn(pattern: "/outer/**", path: path)
+  bind p <- try r

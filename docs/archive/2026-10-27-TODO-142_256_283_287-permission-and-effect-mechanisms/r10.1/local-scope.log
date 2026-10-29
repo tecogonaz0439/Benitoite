@@ -1,0 +1,22 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 31.79s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 14 tests
+test types::scope::tests::name_and_direct_ip_classification ... ok
+test types::scope::tests::name_membership_and_atomic_cover ... ok
+test types::scope::tests::path_lexical_boundary_rejects_repairs ... ok
+test types::scope::tests::path_membership_and_atomic_cover ... ok
+test types::scope::tests::host_name_and_ip_never_convert_into_each_other ... ok
+test types::scope::tests::ip_membership_keeps_family_and_closed_endpoints ... ok
+test types::scope::tests::ip_atomic_cover_is_same_family_interval_inclusion ... ok
+test types::scope::tests::atomic_cover_does_not_combine_a_union ... ok
+test types::scope::tests::ports_and_endpoint_product_use_closed_bounds ... ok
+test types::scope::tests::cidr_normalization_bounds_and_rejection ... ok
+test types::scope::tests::ip_parser_rejects_noncanonical_or_out_of_domain_text ... ok
+test types::scope::tests::ip_parser_and_formatter_have_independent_numeric_examples ... ok
+test types::scope::tests::top_and_kinds_follow_domain_instead_of_set_equivalence ... ok
+test types::scope::tests::equality_hash_and_order_preserve_narrow_atoms ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1354 filtered out; finished in 0.01s
+

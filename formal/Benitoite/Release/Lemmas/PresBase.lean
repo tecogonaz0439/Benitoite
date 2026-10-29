@@ -1,4 +1,5 @@
 import Benitoite.Release.Lemmas.Preservation
+import Benitoite.Release.RangeInst
 
 /-!
 # 保存の定理の補助の補題（契約名を持つコア）
@@ -20,7 +21,7 @@ mutual
     | .fnRef _ _ es, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) es h.2⟩
-    | .prim _ _ es, h => by
+    | .prim _ _ es _, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Eff.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) es h.2⟩
     | .lam _ _ body, h => by
@@ -40,6 +41,8 @@ mutual
         simp only [Val.VarsIn] at h ⊢; exact ⟨Val.VarsInList.toTrue ks h.1, Val.VarsInList.toTrue vs h.2⟩
     | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.toTrue elems h
     | .bytesV _, _ => by simp [Val.VarsIn]
+    | .checked _, _ => by simp [Val.VarsIn]
+    | .checkedRequest _ _, _ => by simp [Val.VarsIn]
     | .dict _ _ args, h => by
         simp only [Val.VarsIn] at h ⊢
         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Val.VarsInList.toTrue args h.2⟩
@@ -109,16 +112,16 @@ mutual
 end
 
 /-- 閉じた値の並びの型は、型の変数を含まない。 -/
-theorem HasTypeVsQ.wf_all (hwf : P.WellFormed) (hb : B.Assumptions P) {Ψ} (hΨ : StoreTy.WF Ψ) :
+theorem HasTypeVsQ.wf_all (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Ψ} (hΨ : StoreTy.WF Ψ) :
     {ws : List Val} → {as : List Ty} → HasTypeVs P B Ψ [] [] ws as →
-    Val.VarsInList 0 (fun _ => True) ws → ∀ x ∈ as, Ty.WF 0 x
+    Val.VarsInList 0 (fun _ => True) ws → ∀ x ∈ as, Ty.WF 0 0 x
   | _, _, .nil, _, x, hx => by simp at hx
   | _, _, .cons hv hvs, hc, x, hx => by
       rcases List.mem_cons.mp hx with rfl | hx
       · exact HasTypeVQ.wf hwf hb hv (envWF_nil 0) hΨ hc.1
       · exact HasTypeVsQ.wf_all hwf hb hΨ hvs hc.2 x hx
 
-theorem envWF_single {a : Ty} (h : Ty.WF 0 a) : EnvWF 0 [some a] := by
+theorem envWF_single {a : Ty} (h : Ty.WF 0 0 a) : EnvWF 0 [some a] := by
   intro i x hx
   cases i with
   | zero => simp at hx; subst hx; exact h
@@ -149,14 +152,14 @@ theorem stE_exit {Eb n rs Ψ R a b ε k σ} (hσ : StoreOk P B Ψ σ) (hk : Cont
     (hkc : Cont.Closed k) (hσc : Store.Closed σ) : StateTyE P B Eb (.exit n rs k σ) :=
   ⟨Ψ, R, a, b, ε, hσ, hk, hkc, hσc⟩
 
-theorem stE_ret {Eb Ψ R a a' b ε v k σ} (ha : Ty.WF 0 a) (hσ : StoreOk P B Ψ σ) (hv : HasTypeV P B Ψ [] [] v a')
+theorem stE_ret {Eb Ψ R a a' b ε v k σ} (ha : Ty.WF 0 0 a) (hσ : StoreOk P B Ψ σ) (hv : HasTypeV P B Ψ [] [] v a')
     (hle : Ty.Le a' a) (hk : ContTy P B Ψ R ε k a b Eb none) (hvc : Val.VarsIn 0 (fun _ => True) v)
     (hkc : Cont.Closed k) (hσc : Store.Closed σ) : StateTyE P B Eb (.run (.ret v) k σ) :=
-  ⟨Ψ, R, a, b, ε, Eff.empty, hσ, .C_Sub (.C_Return hv) hle (Eff.Sub.refl _) ha, Eff.empty_sub _, hk, hvc,
+  ⟨Ψ, R, a, b, ε, Eff.empty, hσ, .C_Sub (.C_Return hv) hle (Eff.Covers.refl _) ha, Eff.empty_sub _, hk, hvc,
     hkc, hσc⟩
 
 /-- `drop κ` の枠で、κ の継続の解放の枠を実行する（E-DropRel など）。 -/
-theorem dropRel_common (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ κ k' R ε k a b Eb}
+theorem dropRel_common (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P) {Ψ σ κ k' R ε k a b Eb}
     (hσ : StoreOk P B Ψ σ) (hσκ : σ κ = some (.cont k')) (hk : ContTy P B Ψ R ε (.drop κ :: k) a b Eb none)
     (hkc : Cont.Closed (.drop κ :: k)) (hσc : Store.Closed σ) :
     StoreOk P B Ψ (σ.set κ .used) ∧ ContTy P B Ψ R ε (releases k' ++ k) a b Eb none ∧
@@ -172,14 +175,24 @@ theorem dropRel_common (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ κ 
 
 /-! ## 可変のセルと明示遅延の組み込みの関数 -/
 
-theorem store_prim_inv (hb : B.Assumptions P) {Ψ R b ts es ws a ε1 s} (hsig : B.sig b = some s)
+theorem store_prim_inv (hb : B.CoreAssumptions P) {Ψ R b ts es rs ws a ε1 s} (hsig : B.sig b = some s)
     (hkd : s.kind ≠ .pure ∧ s.kind ≠ .io ∧ s.kind ≠ .exit)
-    (hm : HasTypeC P B Ψ [] [] R (.app (.prim b ts es) ws) a ε1) :
+    (hm : HasTypeC P B Ψ [] [] R (.app (.prim b ts es rs) ws) a ε1) :
     ∃ t, ts = [t] ∧ es = [] ∧ HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst [t] [])) ∧
-      Ty.Le (Ty.subst [t] [] s.ret) a ∧ Eff.Sub s.eff ε1 := by
-  obtain ⟨s', hs', htl, hel, _, hargs, hle, hsub⟩ := inv_prim_app hm
+      Ty.Le (Ty.subst [t] [] s.ret) a ∧ Eff.Covers ε1 s.eff := by
+  obtain ⟨s', hs', htl, hel, _, hargs, hle, hsub, hrs⟩ := inv_prim_app hm
   rw [hsig] at hs'; cases hs'
   have hsh := hb.store_shape b s hsig
+  -- 可変のセルと明示遅延の項目は範囲の変数を持たないので、範囲の列は空で、具体化は署名を変えない。
+  have h0 : s.nranges = 0 := by
+    unfold PrimSig.StoreShape at hsh
+    simp only [PrimSig.nranges]
+    cases e : s.kind <;> rw [e] at hsh hkd
+    all_goals first
+      | exact absurd rfl hkd.1 | exact absurd rfl hkd.2.1 | exact absurd rfl hkd.2.2
+      | simp [hsh.2.2.2.2.2.2]
+  obtain rfl := (Builtins.rangeAdmissible_iff_nil h0 rs).mp hrs
+  rw [PrimSig.inst_nil_of_scoped (hb.sig_scoped _ _ hsig) h0] at hargs hle hsub
   have h1 : s.ntys = 1 ∧ s.neffs = 0 := by
     unfold PrimSig.StoreShape at hsh
     cases e : s.kind <;> rw [e] at hsh hkd
@@ -196,45 +209,53 @@ theorem store_prim_inv (hb : B.Assumptions P) {Ψ R b ts es ws a ε1 s} (hsig : 
       | exact absurd rfl hkd.1
       | exact absurd rfl hkd.2.1
       | exact absurd rfl hkd.2.2
-      | (rw [hsh.2.2.2.2.2]; first | exact Eff.substAt_single _ _ _ _ | exact Eff.substAt_empty _ _ _)
+      | (rw [hsh.2.2.2.2.2.1]; first | exact Eff.substAt_single _ _ _ _ | exact Eff.substAt_empty _ _ _)
   rw [hid] at hsub
   exact ⟨t, rfl, rfl, hargs, hle, hsub⟩
 
-theorem ClosedArgs.single {t : Ty} {es : List Eff} (h : Val.VarsIn 0 (fun _ => True) (.prim b [t] es)) :
+theorem ClosedArgs.single {t : Ty} {es : List Eff} {rs} (h : Val.VarsIn 0 (fun _ => True) (.prim b [t] es rs)) :
     ClosedArgs [t] :=
   closedArgs_of (by simp only [Val.VarsIn] at h; exact h.1)
 
 /-- `Reference.update` の遷移した先の計算の型付け。 -/
-theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
+theorem refUpdate_typed (hb : B.CoreAssumptions P) {Ψ R l t f}
     (hl : Ψ l = some (.ref t)) (hf : HasTypeV P B Ψ [] [] f (.fn ["value"] [t] t Eff.empty)) (ht : ClosedArgs [t]) :
-    HasTypeC P B Ψ [] [] R (.letIn (.app (.prim B.refGet [t] []) [.loc l])
-      (.letIn (.app (f.rename (· + 1)) [.var 0]) (.app (.prim B.refSet [t] []) [.loc l, .var 0])))
+    HasTypeC P B Ψ [] [] R (.letIn (.app (.prim B.refGet [t] [] []) [.loc l])
+      (.letIn (.app (f.rename (· + 1)) [.var 0]) (.app (.prim B.refSet [t] [] []) [.loc l, .var 0])))
       (.base .unit) (Eff.single stateEff) := by
   obtain ⟨sg, hsg, hkg⟩ := hb.ref_get
   obtain ⟨ss, hss, hks⟩ := hb.ref_set
   have hshg := hb.store_shape _ _ hsg
   unfold PrimSig.StoreShape at hshg; rw [hkg] at hshg
-  obtain ⟨hgn, hg1, hg2, hg3, hg4, hg5⟩ := hshg
+  obtain ⟨hgn, hg1, hg2, hg3, hg4, hg5, hg6⟩ := hshg
   have hshs := hb.store_shape _ _ hss
   unfold PrimSig.StoreShape at hshs; rw [hks] at hshs
-  obtain ⟨hsn, hs1, hs2, hs3, hs4, hs5⟩ := hshs
+  obtain ⟨hsn, hs1, hs2, hs3, hs4, hs5, hs6⟩ := hshs
   have htn : ∀ b' t' ε', t ≠ .cont b' t' ε' := (ht t (by simp)).2
   refine .C_Let (a := t) ?_ (.C_Let (a := t) ?_ ?_)
-  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
-      (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hsg) hg2 (by simp [hg1])
+  · have h0 : sg.nranges = 0 := by simp [PrimSig.nranges, hg6]
+    have hinst := PrimSig.inst_nil_of_scoped (hb.sig_scoped _ _ hsg) h0
+    have hpa := PrimitiveAdmissible.of_noRows (Q := Qempty) (hb.sig_scoped _ _ hsg) hg2 (by simp [hg1])
       (hb.store_admits _ _ [] [t] hsg (by rw [hkg]; decide) (by rw [hkg]; decide) (by rw [hkg]; decide)
-        (by simp [hg1])) ht)
-    rw [fnTy_eq, hg3, hg4, hg5] at hv
+        (by simp [hg1])) ht
+    have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) (rs := [])
+      hsg ((Builtins.rangeAdmissible_iff_nil h0 []).mpr rfl) (by rw [hinst]; exact (hb.sig_scoped _ _ hsg).1)
+      (by rw [hinst]; exact hpa)
+    rw [hinst, fnTy_eq, hg3, hg4, hg5] at hv
     simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt] at hv
     simp [Ty.shift_of_wf (c := 0) 0 t (ht t (by simp)).1, Eff.substAt_single] at hv
     exact .C_App hv (.cons (.V_LocRef hl) .nil)
   · have hf' := hf.rename (RenOk.shift [some t] [])
-    exact .C_Eff (.C_App hf' (.cons (.V_Var (i := 0) (by simp) htn) .nil)) (Eff.empty_sub _)
-  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
-      (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hss) hs2 (by simp [hs1])
+    exact .C_Eff (.C_App hf' (.cons (.V_Var (i := 0) (by simp) htn) .nil)) (Eff.covers_empty _)
+  · have h0 : ss.nranges = 0 := by simp [PrimSig.nranges, hs6]
+    have hinst := PrimSig.inst_nil_of_scoped (hb.sig_scoped _ _ hss) h0
+    have hpa := PrimitiveAdmissible.of_noRows (Q := Qempty) (hb.sig_scoped _ _ hss) hs2 (by simp [hs1])
       (hb.store_admits _ _ [] [t] hss (by rw [hks]; decide) (by rw [hks]; decide) (by rw [hks]; decide)
-        (by simp [hs1])) ht)
-    rw [fnTy_eq, hs3, hs4, hs5] at hv
+        (by simp [hs1])) ht
+    have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := [])
+      (rs := []) hss ((Builtins.rangeAdmissible_iff_nil h0 []).mpr rfl) (by rw [hinst]; exact (hb.sig_scoped _ _ hss).1)
+      (by rw [hinst]; exact hpa)
+    rw [hinst, fnTy_eq, hs3, hs4, hs5] at hv
     simp only [List.map_cons, List.map_nil, Ty.subst, Ty.substAt] at hv
     simp [Ty.shift_of_wf (c := 0) 0 t (ht t (by simp)).1, Eff.substAt_single] at hv
     exact .C_App hv (.cons (.V_LocRef hl) (.cons (.V_Var (by simp) htn) .nil))

@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-10-29T07:34:45.105152+00:00",
+  "seconds": 0.36041020900000004,
+  "aia_url": "http://127.0.0.1:54795/intermediate-e8f56af05e1542eaa2d68f54fc083535.der",
+  "constraints": "explicit in-memory root only; no OS trust store changes; certificate URLs are loopback only",
+  "observations": [
+    {
+      "mode": "disabled",
+      "output": "default_fetch_status=0 default_fetch_allowed=1\neffective_fetch_allowed=0\nverified=0 error_code=-25318\n",
+      "seconds": 0.10613779200000001,
+      "aia_connections": []
+    },
+    {
+      "mode": "default",
+      "output": "default_fetch_status=0 default_fetch_allowed=1\neffective_fetch_allowed=1\nverified=1 error_code=0\n",
+      "seconds": 0.009631417000000031,
+      "aia_connections": [
+        {
+          "path": "/intermediate-e8f56af05e1542eaa2d68f54fc083535.der",
+          "host": "127.0.0.1:54795",
+          "user_agent": "com.apple.trustd/3.0"
+        }
+      ]
+    }
+  ],
+  "inputs": {
+    "root.der": "a65bd929c5e02bf5e7826848247ef243503a276cb926e34b792cded9ec60b68e",
+    "intermediate.der": "60066a4b8b4af17b261d0e34c47b34940dec53e03b0ba134cffaaee111446fb2",
+    "leaf.der": "abb4c4bec911765824f6acab18249a5f7097f40b3fb722fa480b77beb6589207",
+    "intermediate.cnf": "602d091645524be7a4bab43ae5500a894e4aa3fedf609d18e63641053c0564b8",
+    "leaf.cnf": "18a1bf2479a133f0da337b500f9bae5055d4fba9f9e9f8f1fabf99bbaaf4b546"
+  },
+  "preserved_inputs": "sectrust-aia-preserved",
+  "temporary_removed": true
+}

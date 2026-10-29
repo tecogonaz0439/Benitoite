@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  match Range.checkInteger(minimum: 1, maximum: 10, value: 11) with
+    case Result.Error(_) -> Console.writeLine("error value")
+    case Result.Ok(_) -> Console.writeLine("ok value")
+  end match
+end function

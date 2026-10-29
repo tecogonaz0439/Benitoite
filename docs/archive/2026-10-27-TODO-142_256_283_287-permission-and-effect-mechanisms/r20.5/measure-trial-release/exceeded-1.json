@@ -1,0 +1,45 @@
+{
+  "accepted_selected_calls": 10,
+  "bodies": [
+    {
+      "calls": 10,
+      "definition": ".sample0",
+      "metrics": {
+        "body_operations": 8,
+        "max_body_items": 2,
+        "max_whole_items": 2,
+        "stops": [
+          {
+            "preorder": 9,
+            "reason": "BudgetExceeded { scope: Body, resource: Operations }"
+          }
+        ],
+        "whole_operations": 8
+      },
+      "occurrences": 55,
+      "stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })"
+    }
+  ],
+  "case": "exceeded-1",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handlers": 0,
+  "limits": "ScopeLimits { body: ScopeCap { operations: 8, items: 2 }, whole: ScopeCap { operations: 800, items: 200 } }",
+  "narrow_rejections": [
+    "PathValue:17:BudgetExceeded",
+    "CheckPath:20:BudgetExceeded",
+    "CheckRequest:26:NotCovered",
+    "RequestValue:34:BudgetExceeded",
+    "WidenRequest:37:BudgetExceeded",
+    "RequestValue:43:BudgetExceeded",
+    "CheckRequest:46:NotCovered"
+  ],
+  "occurrences": 55,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_seconds": 0.000041542,
+  "sha256": "95a303751bb3ba3d2c251536ef6241818d7c9b1d2df6c7d8c52b17edfb65e4c7",
+  "source_bytes": 1178,
+  "typecheck_seconds": 0.019393792
+}

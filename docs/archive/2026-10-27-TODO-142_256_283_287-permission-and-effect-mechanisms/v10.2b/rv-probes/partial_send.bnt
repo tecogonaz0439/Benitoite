@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Network.Http
+
+function f(r: Http.ClientRequest, canned: Result[Http.Response, NetworkError]) -> Result[Http.Response, NetworkError]
+  return handle Http.send(request: r) with
+    case Http.send(request) -> resume(canned)
+  end handle
+end function
+
+function main() -> Unit
+  ()
+end function

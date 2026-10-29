@@ -105,5 +105,6 @@ theorem input_sound {m : Materials} {S raw b select atoms}
     (m.input (builtins S (primEntries S raw) b) (satB S)
       (admitsDec S (primEntries S raw))
       (makeOpPrim select) atoms).Sound :=
-  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _, constructors_withView_sound m.declarations.view hc⟩
+  ⟨hd, hb, sat_sound _ _ _, admits_sound _ _ _, opPrim_sound _, constructors_withView_sound m.declarations.view hc,
+    fun _ _ h => by simp [Materials.input] at h⟩
 end Benitoite.Surface.CheckTables

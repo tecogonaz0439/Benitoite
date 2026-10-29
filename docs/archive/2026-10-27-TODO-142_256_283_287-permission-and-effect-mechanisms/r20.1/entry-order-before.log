@@ -1,0 +1,19 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.04s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments' (4381846) panicked at crates/benitoite/src/typeck/scope/tests.rs:127:9:
+assertion failed: input.entry.positions[values..].iter().all(Option::is_none)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1384 filtered out; finished in 0.14s
+
+error: test failed, to rerun pass `-p benitoite --lib`

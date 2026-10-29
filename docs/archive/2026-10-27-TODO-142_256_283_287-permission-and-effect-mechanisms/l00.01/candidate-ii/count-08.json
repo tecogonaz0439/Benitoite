@@ -1,0 +1,140 @@
+{
+ "log": "build-08-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Release.Lemmas.BuilderTyping",
+  "Benitoite.Release.Lemmas.Preservation",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckTables"
+ ],
+ "unchecked_modules_count": 58,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.Dict",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Lemmas.PresBase",
+  "Benitoite.Release.Lemmas.PresFailure",
+  "Benitoite.Release.Lemmas.PresMain",
+  "Benitoite.Release.Lemmas.Progress",
+  "Benitoite.Release.Lemmas.StepSound",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BlockSequence",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderLower",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Builders",
+  "Benitoite.Surface.Lemmas.CallHead",
+  "Benitoite.Surface.Lemmas.Dict",
+  "Benitoite.Surface.Lemmas.Extensions",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Lemmas.Records",
+  "Benitoite.Surface.Lemmas.ReturnTry",
+  "Benitoite.Surface.Lemmas.Scoped",
+  "Benitoite.Surface.Lemmas.Typing",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "error_diagnostics": 11,
+ "error_files": [
+  "Benitoite/Release/Lemmas/BuilderTyping.lean",
+  "Benitoite/Release/Lemmas/Preservation.lean",
+  "Benitoite/Surface/CheckSoundControl.lean",
+  "Benitoite/Surface/CheckTables.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Release/Lemmas/BuilderTyping.lean",
+   "decl": "theorem HasTypeVQ.canonical_bytes",
+   "line": 26,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/Preservation.lean",
+   "decl": "theorem inv_prim_app",
+   "line": 24,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/CheckSoundControl.lean",
+   "decl": "theorem with_case",
+   "line": 181,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckTables.lean",
+   "decl": "def BuiltinMaterial.effectOps",
+   "line": 59,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckTables.lean",
+   "decl": "def BuiltinMaterial.isResource",
+   "line": 63,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckTables.lean",
+   "decl": "def Materials.program",
+   "line": 153,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckTables.lean",
+   "decl": "def PrimMaterial.toPrimSig",
+   "line": 45,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckTables.lean",
+   "decl": "def builtins",
+   "line": 97,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/CheckTables.lean",
+   "decl": "def checkProgram",
+   "line": 219,
+   "errors": 1
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

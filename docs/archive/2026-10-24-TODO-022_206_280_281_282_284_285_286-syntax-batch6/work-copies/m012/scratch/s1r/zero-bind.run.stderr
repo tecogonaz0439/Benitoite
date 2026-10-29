@@ -1,0 +1,10 @@
+runtime error[R0101]: division by zero
+  --> work/m012/scratch/s1r/zero-bind.bnt:3:10
+   |
+ 3 |   return t div n
+   |          ^^^^^^^
+   |
+   = note: call trace (innermost first):
+             f    at work/m012/scratch/s1r/zero-bind.bnt:7:13
+             main
+   = note: functions left by tail calls are not shown

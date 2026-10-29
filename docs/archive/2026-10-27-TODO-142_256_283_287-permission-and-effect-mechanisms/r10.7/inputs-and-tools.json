@@ -1,0 +1,147 @@
+{
+  "recorded_at": "2026-10-28T13:48:14.240946+00:00",
+  "head": "765ae6d1606f8874761f881aebef585dd89d294d",
+  "branch": "m013/r10.7",
+  "b_work": "765ae6d1606f8874761f881aebef585dd89d294d",
+  "source_directory": "target/r10.7-ftable",
+  "corpus_version": 15,
+  "sidecar_version": 7,
+  "counts": {
+    "inputs": 1,
+    "definitions": 2,
+    "signatures": 13,
+    "pure": 6,
+    "io": 7,
+    "effKinds": 3,
+    "valKinds": 2,
+    "admitsR": 13,
+    "valContents": 1,
+    "nonTopRanges": 18
+  },
+  "l502_provenance": {
+    "first_three_prims": "matched",
+    "dataDecls": "matched",
+    "dataTypes": "matched",
+    "summaries": "matched",
+    "common_table_entries": "matched",
+    "name_mapping": {
+      "101:[]": "32:[]",
+      "102:[]": "16:[]",
+      "103:[]": "16:[]",
+      "104:[]": "17:[]",
+      "105:[]": "33:[]",
+      "Result": "data:1001",
+      "Http.RequestCheckError": "data:1002",
+      "File.Write": "IO.File.Write",
+      "Http.Connect": "Network.Http.Connect"
+    }
+  },
+  "files": [
+    {
+      "path": "formal/tests/test_range_exchange.py",
+      "bytes": 28308,
+      "sha256": "cad490cbd9971458653f1f286db0f9dc26454b4d076dbdcd1d135d4080fc4e29"
+    },
+    {
+      "path": "formal/Benitoite/Release/TargetTable.lean",
+      "bytes": 15239,
+      "sha256": "cc7d6b3e087a3a2854549ba2765e1372df60419997a27b659004bc46edb50199"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Range.lean",
+      "bytes": 23660,
+      "sha256": "b5924cb7f5346e603f7bf2ac7fe96d46ab74e8ade2cce323d36c060e5eaa0b37"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Version.lean",
+      "bytes": 20178,
+      "sha256": "7e186657dde51635bb2daa30dfd53b664a7cdbe39aa8f57be76e3507825b7384"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Builtins.lean",
+      "bytes": 14128,
+      "sha256": "50ff1d75234280eba584bcb07098c851a12fa1e2ac3f54eef3acb52bf74b0f5b"
+    },
+    {
+      "path": "formal/Benitoite/Exchange/Convert.lean",
+      "bytes": 63184,
+      "sha256": "f4bb98a0fb87833229538a7948b8f2a7747a334c60f096d59f724b0e0f8f7982"
+    },
+    {
+      "path": "formal/lakefile.toml",
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    {
+      "path": "formal/lean-toolchain",
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    {
+      "path": "formal/lake-manifest.json",
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    {
+      "path": "formal/.lake/build/bin/builtinCheck",
+      "bytes": 105552192,
+      "sha256": "ea2388bcd6290a0b0fbafd0af527df6b3d3b608cbd6749f505827420c281212a"
+    },
+    {
+      "path": "formal/.lake/build/bin/desugarDiff",
+      "bytes": 105924560,
+      "sha256": "ecc786f35de98a909df176bb8242f2aae16dee7cc9d8b8e1126df44799f40243"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "bytes": 66,
+      "sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1633,
+      "sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 50695,
+      "sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+    },
+    {
+      "path": ".cargo/config.toml",
+      "bytes": 26,
+      "sha256": "cfa18b92df6134d8b83cbdd1527a08ad31a913cd17b6eac019cc362207e92254"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/scope-tables-expected.json",
+      "bytes": 17195,
+      "sha256": "2e29bf6b6d047152ec19998273d718c3994393ebe4bfd6b45bb2af9e3b1db1d2"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/scope-tables-corpus.json",
+      "bytes": 3713,
+      "sha256": "58fcb59458e83ff61b2fda18e4d9919ea14e2aa31790cc69adb90cadf4aea6a8"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/scope-tables-builtins.json",
+      "bytes": 7804,
+      "sha256": "59e6ee2742427bed495a051ffb9f388f8d53f9394327a04f1e9e156944307e3e"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/scope-tables-expected.json",
+      "bytes": 7654,
+      "sha256": "5bc94e77b6039289a675d402dab90bdad75322a26e48afdaacc6bef7ad3521b1"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/builtin-report.json",
+      "bytes": 657,
+      "sha256": "0c72baf8ec1c32880355de96da4bf75a31538a1e4be2169981841851f63b03c3"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/desugar-report.json",
+      "bytes": 10132,
+      "sha256": "96cf6a26dd36b8972bd21243b83a6519e4479ec77967e0f4ebf4551c23e9aa85"
+    }
+  ],
+  "formal_diff_from_b_work": ""
+}

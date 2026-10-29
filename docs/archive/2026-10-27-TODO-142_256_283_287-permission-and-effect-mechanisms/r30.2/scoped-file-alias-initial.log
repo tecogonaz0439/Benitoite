@@ -1,0 +1,29 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.18s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 6 tests
+test file_io::file_single_target_operations_work_in_implementation_methods_with_dictionaries ... ok
+test file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle ... ok
+test file_io::file_handler_unhandled_write_is_accepted_but_captured_index_is_invariant ... ok
+test file_io::file_io_constraints_choose_check_indices_and_top_cannot_be_narrowed_afterward ... ok
+test file_io::file_handler_clause_projection_and_widen_require_local_facts_for_non_top ... ok
+
+thread 'file_io::file_single_target_signatures_follow_inputs_and_expected_function_inputs' (6242269) panicked at crates/benitoite/tests/scoped_calls/file_io.rs:15:5:
+import Benitoite.Unofficial.IO.File as Files
+import Benitoite.Unofficial.Scope
+function sample(path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses Files.Read["/data/**"]
+ return Files.readTextIn(path: path)
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0339), message: "the module `Benitoite.Unofficial.IO.File` declares built-in effects and cannot be renamed with `as`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(39), end: BytePos(44) }, text: "renamed here" }), secondary: [], notes: [], helps: [Help { message: "remove `as Files` and replace references to `Files.` with `File.`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(35), end: BytePos(44) }, replacement: "" }, Edit { span: Span { file: FileId(0), start: BytePos(159), end: BytePos(164) }, replacement: "File" }, Edit { span: Span { file: FileId(0), start: BytePos(190), end: BytePos(195) }, replacement: "File" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test file_io::file_single_target_signatures_follow_inputs_and_expected_function_inputs ... FAILED
+
+failures:
+
+failures:
+    file_io::file_single_target_signatures_follow_inputs_and_expected_function_inputs
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 23 filtered out; finished in 2.54s
+
+error: test failed, to rerun pass `--test scoped_calls`

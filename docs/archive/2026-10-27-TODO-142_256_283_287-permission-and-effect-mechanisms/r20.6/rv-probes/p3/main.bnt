@@ -1,0 +1,10 @@
+record Scope
+ checkPathIn: function(path: String) -> String
+end record
+function sample(s: Scope) -> String
+ bind f <- Scope.checkPathIn(s)
+ return f("/bad//path")
+end function
+function main() -> Unit
+ ()
+end function

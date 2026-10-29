@@ -1,0 +1,13 @@
+L20.6 の試行の件数（基準 3757cd6ec6a3795a3dfab82dfc3319c65ca70b75、作業用のディレクトリ <wt>、コミットしない）
+
+方法: trial-central.diff の中心の変更を当て、排他の道具で既定の全入口の lake build を回した。Lake は失敗した
+モジュールを import する先を検査しないので、壊れた宣言を直しては全体のビルドを繰り返した（build-01〜07）。
+build-07 で終了 0。sorry には置き換えていない。
+
+1. ビルドの診断から宣言へ対応付けたもの（count-from-logs.txt）: 28 宣言、9 ファイル
+2. 診断が出る前に機械的に直した、空の応答の関係（fun _ _ _ _ _ => False）を持つ表: 7 宣言、6 ファイル（Model の 1 件は 1 のファイルと重なる）
+   Model.builtins、Exchange/Builtins.lean の表、Surface/FailureExamples・CheckCounterexamples・CheckTables・CheckToolsExamples の表、SurfaceCheck/Validation.lean の表
+3. 中心の変更: 7 宣言、4 ファイル（Typing の Builtins、Semantics の Event・Step・Oracle・step、Assumptions の Builtins.Assumptions、Theorems の step_sound）。step_soundE は 1 に含む
+
+合計: 42 宣言、19 ファイル（一意）。最後の回で全入口を検査したので、未検査はない。
+回ごとの時間（排他の道具の内側の real）: 00（基準）2.53 秒、01 137.55 秒、02 19.60 秒、03 5.72 秒、04 3.77 秒、05 6.48 秒、06 4.42 秒、07 1.50 秒。

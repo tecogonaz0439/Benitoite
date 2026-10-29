@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.IO.Console
+
+function smallInteger(text: String) -> Option[Integer16]
+  bind value <- try Integer.parse(text) or return
+  return Integer16.fromInteger(value)
+end function
+
+function main() -> Unit uses Console.Write
+  bind value <- Option.unwrapOr(o: smallInteger("42"), fallback: 0s16)
+  bind wide: UnsignedInteger <- 18446744073709551615u64
+  Console.writeLine("${value + 1s16} ${smallInteger("32768") = Option.None}")
+  Console.writeLine("${UnsignedInteger64.toDecimal(wide)} ${UnsignedInteger64.toInteger(wide) = Option.None}")
+  Console.writeLine("${Float32.toFloat(1.5f32)} ${Byte.toInteger(255u8)}")
+end function

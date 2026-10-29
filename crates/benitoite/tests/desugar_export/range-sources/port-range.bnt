@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Network.Http
+function sample(raw: Http.ClientRequest) -> Unit
+ bind checked: Result[Http.RequestIn["api.example.com", 80..443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: 80, maximumPort: 443, request: raw)
+end function

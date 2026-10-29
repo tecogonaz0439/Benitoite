@@ -1,0 +1,62 @@
+IF20.06で使った検索コマンド（主な配置検索・内容検索）
+リポジトリの根を基準とする。rtkを読み込んだ後は原則としてrtk proxyで実行した。
+sed/catによる続きの読解、Pythonによる表の読解・集計はこの検索一覧とは別である。
+存在しなかった場所を含む最初の検索は末尾へ分けた。private/・docs/todo/は検索対象にしていない。
+
+rg --files -g AGENTS.md -g '!private/**' -g '!docs/todo/**'
+rg -n 'IF20|IF30|判断 8|判断 19|判断 21|表記と略語|情報フロー制御の設計者への問い' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/{plan,decisions}.md
+rg -n '^#|^\| [HPCDEXFA]|申し送り|件数|重複' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/inventory/{http,console-process,display-json-log,failure-exit}.md
+rg -n '^#|公開 CSV|OAuth|webhook|gh/git|gh |シェル|並行取得|認証|保管|IFC-D|^\| D[3468]' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/{questions,synthesis,information-flow,usage-and-flow}.md
+rg --files crates/benitoite/src docs/design | rg '(task|scheduler|resource|unwind|effect|handler|wasm|plugin|clock|random|Time|Task|Random|Reference|Lazy|environment|06-tooling|07-01)'
+rg --files docs/design/03-interop docs/design/02-impl | sort
+rg --files crates/benitoite/src | rg '(external|services|random|clock|reference|lazy|run/)'
+rg -n 'Task\.|TaskGroup\.|parallel|concurrent' crates/benitoite/src/prelude/stdlib --glob '*.bnt'
+rg -n '^pub |^fn |^    (pub )?fn |cancel|release|AllOk|Race|WithTimeout|inherit|handlers|propagat|Completed' crates/benitoite/src/vm/dispatch/tasks{.rs,/cancel.rs,/io.rs} crates/benitoite/src/runtime/sched.rs crates/benitoite/src/vm/task.rs
+rg -n 'SystemTime|Instant|random|seed|environment|offset|monotonic|now_millis|ReadAhead|flush' crates/benitoite/src/runtime/io/services.rs crates/benitoite/src/runtime/run.rs crates/benitoite/src/runtime/random.rs
+rg -n '^fn |^pub\(super\) fn |ContState|InheritedClause|resume|Drop' crates/benitoite/src/vm/dispatch/handlers.rs | head -95
+rg --files crates/benitoite/src/runtime | rg '(clock|sched|host|env)'
+rg -n 'import|Linker|instantiate|resource_drop|drop|call|post_return|stateful|session|Prepared' crates/benitoite/src/external/{check,runtime}.rs | head -110
+rg -n '^pub|^fn |Clock|SystemTime|Instant|local_offset' crates/benitoite/src/runtime/sched/parts.rs
+rg -n 'FileWriter|fn release|flush|failure' crates/benitoite/src/builtins/funcs/file.rs | tail -45
+rg -n 'imports|Linker|instantiate' crates/benitoite/src/external/check.rs crates/benitoite/src/external/runtime.rs
+rg -n '^pub|^fn|force|Running|Evaluat|Wait|Done' crates/benitoite/src/vm/dispatch/lazy.rs | head -55
+rg -n 'pub.*fn|fn |UnwindCause::|take_release_failure|request_release' crates/benitoite/src/vm/unwind.rs | head -70
+rg -n 'resource_drop|drop_pending|pending|post_return|stateful|execute' crates/benitoite/src/external/runtime.rs | head -55
+rg -n 'fn execute|stdin|stdout|stderr|wait|spawn|env|current_dir|transfer' crates/benitoite/src/builtins/funcs/process.rs | head -70
+rg -n 'io fn|state fn' crates/benitoite/src/builtins/funcs --glob '*.rs' --glob '!**/tests/**' --glob '!**/tests.rs' --glob '!**/*tests.rs' | cut -d: -f1 | sort | uniq -c
+rg -n -i 'keystore|keychain|keyring|fromKeystore|Secret\.prompt|Secret\.Read|effect Secret|oauth|credential' crates/benitoite/src --glob '!**/tests/**' --glob '!**/tests.rs' --glob '!**/*tests.rs'
+rg -n 'setEnvironment|removeEnvironment|set_var|remove_var|env_clear' crates/benitoite/src --glob '!**/tests/**' --glob '!**/tests.rs' --glob '!**/*tests.rs'
+rg --files crates/benitoite/src/vm/dispatch | rg '(state|cell|update)'
+rg -n 'fn |read|File' crates/benitoite/src/external/path.rs | head -28
+rg -n 'pub struct RunEnv|pub struct RunEnd|pub enum OutputPort|pub fn run_program' crates/benitoite/src/runtime/run.rs
+rg --files crates/benitoite/src/vm/dispatch crates/benitoite/src/typeck | rg '(/call|/expr|/cell)'
+rg -n 'fn run_|fn task_poll|fn open_task_group|stop_exchange|fn poll' crates/benitoite/src/runtime/run.rs crates/benitoite/src/vm/state.rs crates/benitoite/src/runtime/io/http.rs crates/benitoite/src/vm/dispatch/tasks/io.rs
+rg --files crates/benitoite/src/vm/dispatch crates/benitoite/src/typeck | head -65
+rg -n '^fn |^pub.*fn' crates/benitoite/src/vm/dispatch/tasks/io.rs | tail -35
+rg -n '^fn .*call|call_plain|closure_value|CallTarget' crates/benitoite/src/vm/dispatch.rs | head -25
+rg -n 'read|read_limited|bytes' crates/benitoite/src/external/mod.rs | head -20
+rg -n '^\| D11[678]' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/inventory/display-json-log.md
+rg -n 'Deadlock|Cancelled' crates/benitoite/src/runtime/mod.rs crates/benitoite/src/vm/dispatch/tasks.rs
+rg -n 'fn.*|read_bytes|bytes\(' crates/benitoite/src/external/check.rs | head -22
+rg -n 'post_return|post-return' crates/benitoite/src/external --glob '*.rs' --glob '!**/*tests.rs' --glob '!**/tests.rs' | head -20
+rg -n '^### (Clock|Random|Process)|環境' docs/design/03-interop/03-07-io-modules.md | head -20
+rg -n 'fs.read|read_binary|read_bytes' crates/benitoite/src/external/check.rs
+rg -n 'map_result|die_failure' crates/benitoite/src/cli --glob '*.rs' | head -25
+rg -n 'fn.*cell|pub.*fn.*finish|fn update|fn retry' crates/benitoite/src/vm/dispatch/cell.rs
+rg -n '^pub.*fn|^fn' crates/benitoite/src/vm/dispatch/cell.rs | tail -8
+rg -n 'post_return' crates/benitoite/src/external/{runtime,typed}.rs | head -12
+rg -n 'pub fn.*|pure fn' crates/benitoite/src/builtins/funcs/{path,regex,hash}.rs | head -20
+rg -n '^pub.*fn|pub fn|fn' crates/benitoite/src/external/adapter/runtime.rs | head -16
+rg -n 'queue|impl Drop|struct.*Handle' crates/benitoite/src/external/{mod,convert,runtime}.rs | head -35
+rg -n 'sleep|IoWait::Sleep' crates/benitoite/src/vm/dispatch/tasks/io.rs
+
+存在しない場所を含んだ初回の検索（後にrg --filesで実在位置を確認）:
+rg -n '^###|^####' docs/design/{01-spec/01-07-effects,01-spec/01-10-resources,01-spec/01-09-concurrency,03-interop/03-10-external-functions,02-impl/02-11-embedding,07-quality/07-01-security-model,06-tooling/06-01-cli,06-tooling/06-06-agent-skills}.md
+rg -n 'external|invoke|stats' crates/benitoite/src/vm/dispatch.rs | head -35
+rg -n 'UPDATE|apply|update' crates/benitoite/src/vm/dispatch/cells.rs
+rg -n 'map_result|die_failure' crates/benitoite/src/doc* crates/benitoite/src/cli/testing* --glob '*.rs' | head -35
+
+結果の件数はコマンドやツール呼出しの数ではなく、inventoryのO表の25宣言と経路表の39行である。
+
+末尾の実装位置の再照合:
+rg -n '^pub.*fn call|^fn call|^pub.*fn check' crates/benitoite/src/external/{mod,runtime,check}.rs

@@ -1,0 +1,36 @@
+== wait-for-lock start 17:54:47
+== lock acquired 17:54:47 after 0s
+✔ [30/410] Built Benitoite.Release.Atom (188ms)
+✔ [31/410] Built Benitoite.Release.Atom:c.o (98ms)
+✔ [32/410] Built Benitoite.Release.Types (277ms)
+✖ [33/410] Building Benitoite.Release.Order.Atoms (340ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Order/Atoms.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Order/Atoms.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Order/Atoms.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Order/Atoms.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Order/Atoms.setup.json --json
+error: Benitoite/Release/Order/Atoms.lean:60:28: Invalid field `toList`: The environment does not contain `Benitoite.Release.EffName.toList`, so it is not possible to project the field `toList` from an expression
+  s
+of type `EffName`
+error: Benitoite/Release/Order/Atoms.lean:60:49: Invalid field `toList`: The environment does not contain `Benitoite.Release.EffName.toList`, so it is not possible to project the field `toList` from an expression
+  t
+of type `EffName`
+✔ [266/410] Built Benitoite.Release.Types:c.o (131ms)
+Some required targets logged failures:
+- Benitoite.Release.Order.Atoms
+error: build failed
+        0.65 real         1.01 user         0.37 sys
+           694960128  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              117805  page reclaims
+                  65  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  16  voluntary context switches
+                9230  involuntary context switches
+          1171781461  instructions retired
+           393391297  cycles elapsed
+            21644440  peak memory footprint
+== exit 1

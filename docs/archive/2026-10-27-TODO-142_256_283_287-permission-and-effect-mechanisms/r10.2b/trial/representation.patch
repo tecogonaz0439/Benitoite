@@ -1,0 +1,48 @@
+diff --git a/crates/benitoite/src/typeck/infer.rs b/crates/benitoite/src/typeck/infer.rs
+index 3b7f17f7..9e7ef509 100644
+--- a/crates/benitoite/src/typeck/infer.rs
++++ b/crates/benitoite/src/typeck/infer.rs
+@@ -26,7 +26,7 @@ pub enum IHead {
+ pub enum ITy {
+     /// 値の型の変数
+     Var(TyVar),
+-    Con(TyCon, Vec<ITy>),
++    Con(TyCon, Vec<ITy>, crate::types::builtin::RangeIndex),
+     Fn(Box<IFnTy>),
+     /// 検査している定義の型パラメータ。ほかの何とも等しくない
+     Param(u32),
+diff --git a/crates/benitoite/src/types/builtin.rs b/crates/benitoite/src/types/builtin.rs
+index b0c3eb39..5c05991c 100644
+--- a/crates/benitoite/src/types/builtin.rs
++++ b/crates/benitoite/src/types/builtin.rs
+@@ -563,3 +563,17 @@ impl FailureDeclaration {
+         }
+     }
+ }
++
++/// 型の添字。範囲の変数は標準署名の内部だけで使う（02-05「型とエフェクトの表現」）。
++#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
++pub enum RangeIndex {
++    /// 閉じた範囲。不変の添字として構造で比較する。
++    Fixed(super::scope::Range),
++    /// 標準署名の中の範囲の変数の番号。
++    Var(u32),
++}
++
++impl RangeIndex {
++    /// 範囲を省略した既存の型を構築する際にも明示する Top。
++    pub const TOP: Self = Self::Fixed(super::scope::Range::Top);
++}
+diff --git a/crates/benitoite/src/types/mod.rs b/crates/benitoite/src/types/mod.rs
+index d12cb61e..c0169cde 100644
+--- a/crates/benitoite/src/types/mod.rs
++++ b/crates/benitoite/src/types/mod.rs
+@@ -148,7 +148,7 @@ impl EffectSet {
+ /// 型検査を終えた後の型。
+ #[derive(Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
+ pub enum Ty {
+-    Con(TyCon, Vec<Ty>),
++    Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+     Fn(Box<FnTy>),
+     /// 型パラメータ（値の型を表すもの）
+     Param(u32),

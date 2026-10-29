@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(p: String, q: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+ bind r <- S.checkPathIn(pattern: "/data/a", path: p)
+ bind out <- block
+  bind r <- S.checkPathIn(pattern: q, path: p)
+  r
+ end block
+ match out with
+ case Result.Ok(v) -> return Result.Ok(v)
+ case Result.Error(e) -> return Result.Error(e)
+ end match
+end function

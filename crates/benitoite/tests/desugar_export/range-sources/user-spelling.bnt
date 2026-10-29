@@ -1,0 +1,6 @@
+function checkPathIn(pattern: String, path: String) -> String
+ return path
+end function
+function sample(raw: String) -> String
+ return checkPathIn(pattern: "relative/**", path: raw)
+end function

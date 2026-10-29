@@ -1,0 +1,23 @@
+{
+  "command": [
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "started_utc": "2026-10-28T17:07:22.920931+00:00",
+  "finished_utc": "2026-10-28T17:08:46.707432+00:00",
+  "exit": 0,
+  "outer_seconds": 83.786491917,
+  "max_rss_raw": 3020455936,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 2880.53125,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+  "platform": "darwin"
+}

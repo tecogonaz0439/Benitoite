@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Scope
+function sample(raw: String) -> Unit
+ bind value: Result[Integer, Scope.ScopeError] <- Scope.checkPathIn(pattern: "/data/**", path: raw)
+end function
+function main() -> Unit
+end function

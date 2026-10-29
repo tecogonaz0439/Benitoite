@@ -1,0 +1,39 @@
+# IF20.05 で用いた主な検索コマンド。リポジトリの根を基準とする。
+# rtk proxy は出力を変えずに実行する。cat・sed -n による該当節の読解は results.md に記す。
+rg --files crates/benitoite/src/cli crates/benitoite/src/runtime crates/benitoite/src/diag crates/benitoite/src/prelude/stdlib
+rg --files crates/benitoite/src/vm crates/benitoite/src/runtime
+rg --files crates/benitoite/src
+rg --files crates/benitoite/src/builtins crates/benitoite/src/typeck
+rg -n 'die|Stop::|main_error|ExitCode|process::exit|write_internal|write_run_reports' crates/benitoite/src/cli/mod.rs crates/benitoite/src/runtime/run.rs crates/benitoite/src/runtime/report.rs crates/benitoite/src/main.rs
+rg -n '^public |^function |Assert|formatFailure|counter|Failure|seed' crates/benitoite/src/prelude/stdlib/Test/Property.bnt
+rg -n '^pub |^fn |enum |Stop|Exit|Internal|assert|main_error|report' crates/benitoite/src/runtime/mod.rs crates/benitoite/src/cli/tools/test_runner/mod.rs
+rg -n 'MainOutcome|DieFailure|StopReason' crates/benitoite/src/vm/mod.rs
+rg -n 'MainOutcome::|RESULT_ERROR|main_outcome' crates/benitoite/src/vm --glob '!**/tests/**' --glob '!**/tests.rs'
+rg -n 'die|Die|DIE|cause_reg|ExitReport' crates/benitoite/src/ir/desugar crates/benitoite/src/bytecode/codegen --glob '!**/*tests*'
+rg -n '^pub |^fn |snippet|excerpt|replacement|json_location|backtrace|traceOmitted' crates/benitoite/src/diag/render.rs crates/benitoite/src/diag/render/excerpt.rs
+rg -n '^fn |stdout|stderr|failure|expected|actual|mismatch|diagnostic|exit' crates/benitoite/src/cli/tools/test_runner/docs/execute.rs
+rg -n '^fn |stdout|stderr|failure|expected|actual|mismatch|diagnostic|exit' crates/benitoite/src/cli/tools/test_runner/docs.rs
+rg -n 'warning|warn|stderr|eprintln|println|WriteFailed' crates/benitoite/src/runtime/io/http.rs crates/benitoite/src/builtins/funcs/http_server.rs crates/benitoite/src/runtime/io/services.rs
+rg -n 'L[0-9]|ReportKind::Limit|checkResult|write|flush|status|catch|complete' crates/benitoite/src/cli/check_report.rs
+rg -n '\.arg\(' crates/benitoite/src/typeck/interval* crates/benitoite/src/syntax/lexer*
+rg -n 'Assert|Benitoite.Fail|unhandled|Unhandled' crates/benitoite/src/builtins crates/benitoite/src/typeck --glob '!**/*tests*'
+rg -n 'Stop::Internal|stopping|CheckFailed' crates/benitoite/src/vm/dispatch/unwinding.rs
+rg -n 'Effect|raise|Fail' crates/benitoite/src/ir/desugar/effects.rs
+rg -n 'Failure|raise|Fail' crates/benitoite/src/prelude/mod.rs crates/benitoite/src/resolve/*.rs --glob '!**/*tests*'
+rg -n '^###|IO の失敗|テスト.*失敗' docs/design/01-spec/01-07-effects.md
+rg -n '^###' docs/design/06-tooling/06-04-test-runner.md docs/design/01-spec/01-09-errors.md docs/design/01-spec/01-08-evaluation.md
+rg -n '^###|Result.Error|終了状態|処理系|停止|SIG' docs/design/06-tooling/06-01-cli.md
+rg -n '^##|^###|IO の失敗|die|テスト|終了|panic' docs/design/01-spec/01-07-effects.md docs/design/02-impl/02-09-runtime.md docs/design/02-impl/02-10-diagnostics.md docs/design/06-tooling/06-01-cli.md docs/design/07-quality/07-01-security-model.md
+rg -n '^##|^###|IF20|IFC-D[3468]' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/decisions.md docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/plan.md
+rg -n '^(##|###)|die|失敗|診断|終了|暗黙|IFC-D[3468]' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/questions.md docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/synthesis.md docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/information-flow.md docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/usage-and-flow.md
+rg -n 'formatFailure|P09|Process.exit' docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/inventory/display-json-log.md docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/inventory/console-process.md
+rg -n 'fn try|fn release_builder|fn call_trace|pub struct StopInfo|^pub function|Try' crates/benitoite/src/ir/desugar/effects.rs crates/benitoite/src/runtime/report.rs crates/benitoite/src/vm/mod.rs
+rg -n 'dry_run|DRY_RUN|mkdir|target/' scripts/check.sh
+# 読み取り専用の git コマンド
+ git rev-parse HEAD
+ git --no-optional-locks status --short
+# 上記に加え、前枝 inventory 三文書と results 三文書を、見出し・失敗・診断・申し送りで rg -n 検索した。
+# 場所を仮定して一致なし/対象なしになった検索も results.md の「失敗と修正」に残す。
+rg -n 'Fail|raise|Failure' crates/benitoite/src/syntax crates/benitoite/src/resolve --glob '!**/*tests*'
+ git --no-optional-locks diff --name-only
+ git --no-optional-locks status --short --untracked-files=all

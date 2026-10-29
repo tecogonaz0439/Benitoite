@@ -7,7 +7,7 @@ use crate::types::{AdtTable, Ty, TyCon, builtin::BuiltinTypeId as B};
 use wasmtime::component::Type;
 
 pub(super) fn is_unit(ty: &Ty) -> bool {
-    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args) if args.is_empty())
+    matches!(ty, Ty::Con(TyCon::Builtin(B::UNIT), args, _) if args.is_empty())
 }
 
 // 宣言の名前を残す表と WIT の名前を保存する表を分けることで、
@@ -61,7 +61,7 @@ pub(super) fn plan<'a>(
                     return Err(unsupported(ty, Some("map_key")));
                 }
                 validate(ty, adts)?;
-                check_map_key = matches!(ty, Ty::Con(TyCon::Builtin(B::MAP), _));
+                check_map_key = matches!(ty, Ty::Con(TyCon::Builtin(B::MAP), _, _));
             }
             Visit::Leave(count) => {
                 let start = plans
@@ -123,7 +123,7 @@ fn unsupported<'a>(ty: &'a Ty, note: Option<&'static str>) -> Unsupported<'a> {
 }
 
 fn scalar(ty: &Ty) -> Option<WitPlan> {
-    let Ty::Con(TyCon::Builtin(id), args) = ty else {
+    let Ty::Con(TyCon::Builtin(id), args, _) = ty else {
         return None;
     };
     if !args.is_empty() {
@@ -168,15 +168,20 @@ fn is_map_key(ty: &Ty) -> bool {
 }
 
 fn validate<'a>(ty: &'a Ty, adts: &'a AdtTable) -> Result<(), Unsupported<'a>> {
+    if let Ty::Con(_, _, ix) = ty
+        && *ix != crate::types::builtin::RangeIndex::TOP
+    {
+        return Err(unsupported(ty, None));
+    }
     if scalar(ty).is_some() {
         return Ok(());
     }
     match ty {
-        Ty::Con(TyCon::External(_), args) if args.is_empty() => Ok(()),
-        Ty::Con(TyCon::Builtin(B::LIST), args) if args.len() == 1 => Ok(()),
-        Ty::Con(TyCon::Builtin(B::SET), args) if args.len() == 1 => Ok(()),
-        Ty::Con(TyCon::Builtin(B::MAP), args) if args.len() == 2 => Ok(()),
-        Ty::Con(TyCon::Adt(id), args) => {
+        Ty::Con(TyCon::External(_), args, _) if args.is_empty() => Ok(()),
+        Ty::Con(TyCon::Builtin(B::LIST), args, _) if args.len() == 1 => Ok(()),
+        Ty::Con(TyCon::Builtin(B::SET), args, _) if args.len() == 1 => Ok(()),
+        Ty::Con(TyCon::Builtin(B::MAP), args, _) if args.len() == 2 => Ok(()),
+        Ty::Con(TyCon::Adt(id), args, _) => {
             let def = adts.get(*id).ok_or_else(|| unsupported(ty, None))?;
             if args.len() != def.type_params.len() {
                 return Err(unsupported(ty, None));
@@ -200,13 +205,13 @@ fn build<'a>(
     }
     let mut children = children.into_iter();
     match ty {
-        Ty::Con(TyCon::External(id), _) => Ok(DeclPlan::External(*id)),
-        Ty::Con(TyCon::Builtin(B::MAP), _) => {
+        Ty::Con(TyCon::External(id), _, _) => Ok(DeclPlan::External(*id)),
+        Ty::Con(TyCon::Builtin(B::MAP), _, _) => {
             let key = children.next().ok_or_else(|| unsupported(ty, None))?;
             let value = children.next().ok_or_else(|| unsupported(ty, None))?;
             Ok(DeclPlan::Map(Box::new(key), Box::new(value)))
         }
-        Ty::Con(TyCon::Builtin(B::SET), _) => {
+        Ty::Con(TyCon::Builtin(B::SET), _, _) => {
             let Some(DeclPlan::Variant { name, cases }) = children.next() else {
                 return Err(unsupported(ty, Some("flags_data")));
             };
@@ -224,24 +229,26 @@ fn build<'a>(
                     .collect(),
             })
         }
-        Ty::Con(TyCon::Builtin(B::LIST), _) => children
+        Ty::Con(TyCon::Builtin(B::LIST), _, _) => children
             .next()
             .map(|plan| DeclPlan::List(Box::new(plan)))
             .ok_or_else(|| unsupported(ty, None)),
-        Ty::Con(TyCon::Adt(id), _) if Some(*id) == resolved.stdlib("Benitoite.Option.Option") => {
+        Ty::Con(TyCon::Adt(id), _, _)
+            if Some(*id) == resolved.stdlib("Benitoite.Option.Option") =>
+        {
             children
                 .next()
                 .map(|plan| DeclPlan::Option(Box::new(plan)))
                 .ok_or_else(|| unsupported(ty, None))
         }
-        Ty::Con(TyCon::Adt(id), _)
+        Ty::Con(TyCon::Adt(id), _, _)
             if ["Benitoite.Pair.Pair", "Benitoite.Triple.Triple"]
                 .iter()
                 .any(|name| Some(*id) == stdlib_type(resolved, name)) =>
         {
             Ok(DeclPlan::Tuple(children.collect()))
         }
-        Ty::Con(TyCon::Adt(id), _) => {
+        Ty::Con(TyCon::Adt(id), _, _) => {
             let def = adts.get(*id).ok_or_else(|| unsupported(ty, None))?;
             if let Some(fields) = &def.record {
                 if fields.len() != children.len() {

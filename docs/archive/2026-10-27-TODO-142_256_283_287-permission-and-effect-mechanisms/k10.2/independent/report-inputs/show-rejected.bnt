@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Scope
+import Benitoite.Trait
+function describe(error: Http.RequestCheckError) -> String
+ return Trait.Show.show(error)
+end function
+function main() -> Unit
+end function

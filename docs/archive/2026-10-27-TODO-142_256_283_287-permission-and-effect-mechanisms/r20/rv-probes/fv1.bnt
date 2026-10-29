@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+ bind g: function(pattern: String, path: String) -> Result[S.PathIn["/data/a"], S.ScopeError] <- S.checkPathIn
+ return g(pattern: "/etc/**", path: p)
+end function

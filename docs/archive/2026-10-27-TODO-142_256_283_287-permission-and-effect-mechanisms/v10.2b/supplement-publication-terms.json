@@ -1,0 +1,205 @@
+{
+  "pattern": "\\bcandidates?\\b|\\b(?:pre[- ]release|release[- ]candidate|upcoming|unreleased|development (?:version|release)|work[- ]in[- ]progress)\\b",
+  "files": 73,
+  "release_stage_matches": 0,
+  "retained_matches": [
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 250,
+      "text": "call no callbacks. Shrinker.candidates returns ShrinkStep (Done/Yield/Skip),",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 252,
+      "text": "The initial candidates call and each continuation cost one work unit; each",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 253,
+      "text": "candidate property call costs one work unit and one shrink. Either zero budget",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 254,
+      "text": "skips the shrinker, and both counters accumulate after failing candidates restart.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 259,
+      "text": "candidate trials, even cycles; the reduced input is not promised minimal.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 787,
+      "text": "- `similar`: a similar name exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 797,
+      "text": "- `similar`: a similar name exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 807,
+      "text": "- `similar`: a similar name exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 932,
+      "text": "- `similar`: a similar module exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 958,
+      "text": "- `similar`: a similar module exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 959,
+      "text": "- `last_segment`: use {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 1431,
+      "text": "- `similar`: a similar field exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/diagnostics.md",
+      "line": 2134,
+      "text": "- `similar`: a similar method exists: {candidates}",
+      "meaning": "診断の候補名"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Test.Property.md",
+      "line": 8,
+      "text": "Budgets count candidate trials and individual generation/continuation calls.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Test.Property.md",
+      "line": 36,
+      "text": "  candidates: function(value: T) -> ShrinkStep[T]",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Test.Property.md",
+      "line": 172,
+      "text": "Tries zero and a finite half; zero has no candidates. Non-finite inputs try zero.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Test.Property.md",
+      "line": 178,
+      "text": "Shrinks true to false; false has no candidates.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1666,
+      "text": "`Shrinker[T]` has `candidates: function(value: T) -> ShrinkStep[T]`. Import",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1695,
+      "text": "and duplicate candidates. Integer candidates start with zero and successive",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1696,
+      "text": "halves toward zero, without overflowing on the minimum Integer. Float candidates",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1715,
+      "text": "Built-in shrinkers use steps for candidate generation and deduplication.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1716,
+      "text": "Each comparison against the original or one previously accepted candidate is a",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1719,
+      "text": "public entry point nor element shrinkers collect all candidates into a List.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1721,
+      "text": "The first property `Result.Error` starts shrinking. Passing candidates advance",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1722,
+      "text": "the current continuation; a failing candidate updates the input and message and",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1723,
+      "text": "restarts the candidate sequence. Every candidate property call counts as one",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1724,
+      "text": "shrink and one work unit. The initial `candidates(value)` call and each",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1726,
+      "text": "Generating a candidate, comparing once, advancing internal state, or obtaining",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1729,
+      "text": "Both counters accumulate across restarts, including repeated or cyclic candidates.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 2069,
+      "text": "Read the [0.0.11 migration guide](../../CHANGELOG.md#0011-san-benito) before updating `language` and dependency hashes. Rebuild the executable and reinstall its embedded Skill together. Derive inventory 3 and generator 3.1.0 require a fresh preview with original body/hash verification and a newly reviewed apply hash. try-actions inventory/manifest 2 require regenerated, reviewed candidates; unknown effective contracts and unmapped file declarations remain held. Review package update's Log records and effect additions/removals, including unchanged sources with individual Log declarations. Only then update language declarations to 0.0.11 and dependency hashes.",
+      "meaning": "旧移行節の移行候補"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 2451,
+      "text": "Generators need a finite base and regular recursive type arguments. The size budget bounds total generated record nodes, not each branch's depth separately; optional/container edges may form a finite base. Nonregular recursion, required cycles without a finite base, and constraints that cannot close are refused. Fields consume successive random states in declaration order. Recursive factories defer their work until generation or candidate demand.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 2453,
+      "text": "Shrinkers delete recursive container contents before shrinking one field at a time in declaration order. A required record field shrinks itself; it does not replace its parent with a child. Standard leaves/containers discard self candidates and do not increase recursive node count. A custom Shrinker supplied for an unconstrained type parameter must exclude its own input. Custom callback termination and global minimality are not guaranteed. Show/Order constraints propagate through the declaration graph; Order does not imply builtin equality.",
+      "meaning": "縮小器の候補値"
+    },
+    {
+      "path": "docs/reference/install.md",
+      "line": 158,
+      "text": "Finish pending derive recovery with the saved old tool. Use inventory 3 and generator 3.1.0 with matching Rust/Python readers; records, manifest/receipt and semantic-hash algorithm remain 3. Verify original bodies and hashes, make and review a fresh preview, apply its exact reviewed manifest SHA-256, then run normal check/test and derive check. Imports must precede file-level uses. try-actions requires inventory/manifest 2: regenerate and review old candidates, preserving holds for unknown effective contracts or unmapped contract boundaries. Never turn null into an empty effect set or change old version fields to force apply. Package Log records may change even without file-level uses. Update language and dependency hashes only after reviewing these changes. Reinstalling the Skill alone does not migrate source or authorize operations.",
+      "meaning": "旧移行節の移行候補"
+    }
+  ]
+}

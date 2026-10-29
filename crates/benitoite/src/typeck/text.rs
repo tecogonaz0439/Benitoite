@@ -1,5 +1,9 @@
 //! 型検査の診断に埋める固定の文言（設計書 02-10「文言の言語」）。
 
+pub(super) const NOT_COVERED: &str = "notCovered";
+pub(super) const ATOMIC_COVER_ONLY: &str = "atomicCoverOnly";
+pub(super) const UNKNOWN_SOURCE: &str = "unknownSource";
+
 pub(super) const MAIN_MODULE: &str = "main";
 pub(super) const STANDARD_PACKAGE: &str = "Benitoite";
 pub(super) const INTEGER_OVERFLOW: &str = "integer overflow";
@@ -101,4 +105,73 @@ pub(super) fn coverage_limits() -> String {
     format!(
         "{MAX_COVERAGE_WORK} search cells, {MAX_COVERAGE_ENUM_WORK} enumeration/key steps, {MAX_COVERAGE_MEMO_CELLS} memo cells, {MAX_COVERAGE_KEY_BYTES} key bytes"
     )
+}
+
+/// 必須判定の予算の超過と、確定した呼び出しの鍵。
+pub(super) const BUDGET_EXCEEDED: &str = "budgetExceeded";
+pub(super) const SCOPE_BUDGET_BODY: &str = "body";
+pub(super) const SCOPE_BUDGET_WHOLE: &str = "whole";
+pub(super) const SCOPE_BUDGET_OPERATIONS: &str = "operations";
+pub(super) const SCOPE_BUDGET_ITEMS: &str = "items";
+pub(super) const SCOPE_RULE_CONTRACT: &str = "the annotated scope contract (requiredUpperBound)";
+pub(super) fn scope_key(definition: &str, preorder: Option<u64>) -> String {
+    match preorder {
+        Some(preorder) => format!("scope call: {definition} at surface preorder {preorder}"),
+        None => format!("scope call: {definition}; budget exceeded; surface preorder unavailable"),
+    }
+}
+
+/// 番号付けの実装固有の上限。局所解析の四上限と区別して表示する。
+pub(super) fn scope_numbering_limit(limit: u64) -> String {
+    limit.to_string()
+}
+
+/// 範囲の診断の補足欄。JSON の構造を増やさず notes でも同じ鍵を示す。
+pub(super) const SCOPE_REQUIRED_UPPER_BOUND: &str = "requiredUpperBound";
+pub(super) const SCOPE_KNOWN_UPPER_BOUND: &str = "knownUpperBound";
+pub(super) const SCOPE_UNCOVERED_ATOM: &str = "uncoveredAtom";
+pub(super) const SCOPE_SOURCE: &str = "source";
+pub(super) const SCOPE_REASON: &str = "reason";
+pub(super) const SCOPE_CONTRACT_ANNOTATION: &str =
+    "the scope contract is required by this annotation";
+pub(super) const SCOPE_SUCCESS_CHECK: &str = "the same successful checked value originates here";
+pub(super) const SCOPE_LITERAL_SOURCE: &str = "literal check conditions";
+pub(super) const SCOPE_UNKNOWN_CONDITIONS: &str =
+    "the check conditions are not statically known at this call";
+pub(super) const SCOPE_UNKNOWN_SOURCE: &str =
+    "no local provenance for the same successful checked value at this call";
+pub(super) const SCOPE_NUMBERING_SOURCE: &str =
+    "numbering stopped; every Scope rule in this definition requires Top";
+pub(super) const SCOPE_BUDGET_SOURCE: &str = "the final pass of local Scope analysis remains over budget; checked-value provenance was forgotten";
+pub(super) const SCOPE_EFFECT_SOURCE: &str = "the effect flowing from this call or expression";
+
+pub(super) fn scope_field(name: &str, value: &str) -> String {
+    format!("{name}: {value}")
+}
+pub(super) fn scope_range(range: &crate::types::scope::Range) -> String {
+    match range {
+        crate::types::scope::Range::Top => "Top (all targets)".into(),
+        crate::types::scope::Range::Path(_)
+        | crate::types::scope::Range::Host(_)
+        | crate::types::scope::Range::Endpoint(_) => range.suffix(),
+    }
+}
+pub(super) fn scope_success_source(definition: &str, preorder: u64) -> String {
+    format!("successful check in {definition} at surface preorder {preorder}")
+}
+
+/// 拡大の二つの範囲は元と行き先を区別し、配列の順を読者に推測させない。
+pub(super) fn scope_widen_contract(ranges: &[crate::types::scope::Range]) -> String {
+    match ranges {
+        [source, destination] => format!(
+            "source {}; destination {}",
+            scope_range(source),
+            scope_range(destination)
+        ),
+        _ => ranges
+            .iter()
+            .map(scope_range)
+            .collect::<Vec<_>>()
+            .join(", "),
+    }
 }

@@ -1,0 +1,50 @@
+import Benitoite.Unofficial.IO.Console
+
+data Shape
+  Circle(Float)
+  Rectangle(Float, Float)
+end data
+
+record Item
+  name: String
+  price: Integer
+  quantity: Integer
+end record
+
+function area(shape: Shape) -> Float
+  return match shape with
+    case Shape.Circle(r) -> 3.0 * r * r
+    case Shape.Rectangle(w, h) -> w * h
+  end match
+end function
+
+function describe(xs: List[Integer]) -> String
+  return match xs with
+    case [] -> "empty"
+    case [x] -> "one: ${x}"
+    case [first, ..rest] if first < 0 -> "starts negative, ${List.length(rest)} more"
+    case [first, ..] -> "starts with ${first}"
+  end match
+end function
+
+function grade(score: Integer) -> String
+  return match score with
+    case 90..100 -> "A"
+    case 70..89 -> "B"
+    case 0, 1 -> "almost nothing"
+    case otherScore -> "C"
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  List.forEach(xs: [Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)], f: lambda(value)
+    Console.writeLine(Float.toString(area(value)))
+  end lambda)
+  bind item <- Item(name: "pen", price: 120, quantity: 3)
+  bind more <- Item(..item, quantity: 10)
+  Console.writeLine("${Item.name(more)}: ${Item.price(more) * Item.quantity(more)}")
+  bind Pair(low, high) <- Pair(1, 9)
+  Console.writeLine(describe([low, ..[high, 4]]))
+  Console.writeLine(describe([-1, 2, 3]))
+  Console.writeLine("${grade(95)} ${grade(75)} ${grade(1)} ${grade(50)}")
+end function

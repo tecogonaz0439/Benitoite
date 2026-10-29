@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope
+function piped(path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ return path |> Scope.checkPathIn(pattern: "/data/**", path: _)
+end function
+function main() -> Unit
+ ()
+end function

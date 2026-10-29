@@ -1,5 +1,6 @@
 import Std
 import Benitoite.Release.Atom
+import Benitoite.Release.Order.Range
 
 /-!
 # 名前と行の関数の固定順序
@@ -46,23 +47,24 @@ private theorem charsCode_injective {cs ds : List Char} (h : charsCode cs = char
         omega
       exact congrArg (c :: ·) (ih ht)
 
-/-- 名前は偶数、行変数は奇数へ写す。 -/
+/-- 名前は偶数、行変数は奇数へ写す。名前と範囲の位置は対の符号で一つの数にする（`Order.nameIxCode`）。 -/
 def code : Atom → Nat
-  | .name s => 2 * charsCode s.toList
+  | .name s r => 2 * Order.nameIxCode s r
   | .rho i => 2 * i + 1
 
 /-- 符号の一致から原子の一致を導く。 -/
 theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
   cases a with
-  | name s =>
+  | name s r =>
     cases b with
-    | name t =>
-      have hc : charsCode s.toList = charsCode t.toList := by simp only [code] at h; omega
-      exact congrArg Atom.name (String.toList_inj.mp (charsCode_injective hc))
+    | name t q =>
+      have hp := Order.nameIxCode_injective (show Order.nameIxCode s r = Order.nameIxCode t q by
+        simp only [code] at h; omega)
+      rw [hp.1, hp.2]
     | rho i => simp only [code] at h; omega
   | rho i =>
     cases b with
-    | name s => simp only [code] at h; omega
+    | name s r => simp only [code] at h; omega
     | rho j => have : i = j := by simp only [code] at h; omega
                exact congrArg Atom.rho this
 

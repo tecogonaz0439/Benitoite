@@ -1,0 +1,323 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+error: expected a pattern, found an expression
+  --> crates/benitoite/src/typeck/effects/declarations.rs:25:28
+   |
+25 |         } else if let Some(name.clone()) = d.effect_name(id) {
+   |                            ^^^^^^^^^^^^ not a pattern
+   |
+   = note: arbitrary expressions are not allowed in patterns: <https://doc.rust-lang.org/book/ch19-00-patterns.html>
+
+error[E0425]: cannot find value `name` in this scope
+   --> crates/benitoite/src/typeck/effects/declarations.rs:26:27
+    |
+ 26 |             !names.insert(name)
+    |                           ^^^^
+    |
+note: these functions exist but are inaccessible
+   --> crates/benitoite/src/ir/desugar/decls.rs:137:1
+    |
+137 | fn name(module: &ModuleInfo, public: bool, name: &str) -> Result<String, InternalError> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `crate::ir::desugar::decls::name`: not accessible
+    |
+   ::: crates/benitoite/src/runtime/heap/builders.rs:179:1
+    |
+179 | fn name(kind: BuilderClass, op: BuilderOp) -> &'static str {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `crate::runtime::heap::builders::name`: not accessible
+help: a local variable with a similar name exists
+    |
+ 26 |             !names.insert(names)
+    |                               +
+help: consider importing one of these functions
+    |
+  2 + use crate::typeck::effects::name;
+    |
+  2 + use crate::typeck::generate::name;
+    |
+
+error[E0308]: mismatched types
+   --> crates/benitoite/src/typeck/effects/declarations.rs:286:38
+    |
+286 |         .map(|name| effect_name(ctx, *name, module))
+    |                     -----------      ^^^^^ expected `&EffectName`, found `EffectName`
+    |                     |
+    |                     arguments to this function are incorrect
+    |
+note: function defined here
+   --> crates/benitoite/src/typeck/effects/declarations.rs:340:26
+    |
+340 | pub(in crate::typeck) fn effect_name(
+    |                          ^^^^^^^^^^^
+341 |     ctx: &Body<'_, '_>,
+342 |     name: &EffectName,
+    |     -----------------
+help: consider removing deref here
+    |
+286 -         .map(|name| effect_name(ctx, *name, module))
+286 +         .map(|name| effect_name(ctx, name, module))
+    |
+
+error[E0507]: cannot move out of `op.effect` which is behind a shared reference
+    --> crates/benitoite/src/ir/check.rs:1334:37
+     |
+1334 |                 handled.insert_name(op.effect);
+     |                                     ^^^^^^^^^ move occurs because `op.effect` has type `types::EffectName`, which does not implement the `Copy` trait
+     |
+help: consider cloning the value if the performance cost is acceptable
+     |
+1334 |                 handled.insert_name(op.effect.clone());
+     |                                              ++++++++
+
+error[E0382]: use of moved value: `name`
+    --> crates/benitoite/src/typeck/decls.rs:1207:29
+     |
+1183 |                     let name = d.effect_name(binding).unwrap_or(EffectName::User(binding, crate::types::scope::Range::Top));
+     |                         ----   -------------------------------------------------------------------------------------------- this reinitialization might get skipped
+     |                         |
+     |                         move occurs because `name` has type `types::EffectName`, which does not implement the `Copy` trait
+1184 |                     let mut ops = vec![];
+1185 |                     for op in &e.ops {
+     |                     ---------------- inside of this loop
+...
+1198 |                             s.effects.insert_name(name);
+     |                                                   ---- value moved here, in previous iteration of loop
+...
+1207 |                             name,
+     |                             ^^^^ value used here after move
+     |
+note: consider changing this parameter type in method `insert_name` to borrow instead if owning the value isn't necessary
+    --> crates/benitoite/src/types/mod.rs:101:38
+     |
+ 101 |     pub fn insert_name(&mut self, n: EffectName) {
+     |            -----------               ^^^^^^^^^^ this parameter takes ownership of the value
+     |            |
+     |            in this method
+help: consider cloning the value if the performance cost is acceptable
+     |
+1198 |                             s.effects.insert_name(name.clone());
+     |                                                       ++++++++
+
+error[E0507]: cannot move out of `effect.name` which is behind a shared reference
+   --> crates/benitoite/src/typeck/effects/handle.rs:206:33
+    |
+206 |             handled.insert_name(effect.name);
+    |                                 ^^^^^^^^^^^ move occurs because `effect.name` has type `types::EffectName`, which does not implement the `Copy` trait
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+206 |             handled.insert_name(effect.name.clone());
+    |                                            ++++++++
+
+Some errors have detailed explanations: E0308, E0382, E0425, E0507.
+For more information about an error, try `rustc --explain E0308`.
+error: could not compile `benitoite` (lib) due to 6 previous errors
+warning: build failed, waiting for other jobs to finish...
+error[E0382]: use of moved value: `effect_name`
+    --> crates/benitoite/src/ir/check.rs:3677:65
+     |
+3666 |         let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+     |             ----------- move occurs because `effect_name` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+3671 |             effect: effect_name,
+     |                     ----------- value moved here
+...
+3677 |             .insert(BindingId(41), scheme(vec![], int(), effect(effect_name)));
+     |                                                                 ^^^^^^^^^^^ value used here after move
+     |
+help: consider cloning the value if the performance cost is acceptable
+     |
+3671 |             effect: effect_name.clone(),
+     |                                ++++++++
+
+error[E0382]: use of moved value: `effect_name`
+    --> crates/benitoite/src/ir/check.rs:3679:37
+     |
+3666 |         let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+     |             ----------- move occurs because `effect_name` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+3677 |             .insert(BindingId(41), scheme(vec![], int(), effect(effect_name)));
+     |                                                                 ----------- value moved here
+3678 |         handler(&mut p).handled = EffectSet::empty();
+3679 |         p.defs[0].body.eff = effect(effect_name);
+     |                                     ^^^^^^^^^^^ value used here after move
+     |
+note: consider changing this parameter type in function `effect` to borrow instead if owning the value isn't necessary
+    --> crates/benitoite/src/ir/check.rs:1668:21
+     |
+1668 |     fn effect(name: EffectName) -> EffectSet {
+     |        ------       ^^^^^^^^^^ this parameter takes ownership of the value
+     |        |
+     |        in this function
+help: consider cloning the value if the performance cost is acceptable
+     |
+3677 |             .insert(BindingId(41), scheme(vec![], int(), effect(effect_name.clone())));
+     |                                                                            ++++++++
+
+error[E0382]: use of moved value: `effect_name`
+    --> crates/benitoite/src/ir/check.rs:3680:32
+     |
+3666 |         let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+     |             ----------- move occurs because `effect_name` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+3679 |         p.defs[0].body.eff = effect(effect_name);
+     |                                     ----------- value moved here
+3680 |         p.defs[0].eff = effect(effect_name);
+     |                                ^^^^^^^^^^^ value used here after move
+     |
+note: consider changing this parameter type in function `effect` to borrow instead if owning the value isn't necessary
+    --> crates/benitoite/src/ir/check.rs:1668:21
+     |
+1668 |     fn effect(name: EffectName) -> EffectSet {
+     |        ------       ^^^^^^^^^^ this parameter takes ownership of the value
+     |        |
+     |        in this function
+help: consider cloning the value if the performance cost is acceptable
+     |
+3679 |         p.defs[0].body.eff = effect(effect_name.clone());
+     |                                                ++++++++
+
+error[E0382]: use of moved value: `effect_name`
+    --> crates/benitoite/src/ir/check.rs:3681:54
+     |
+3666 |         let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+     |             ----------- move occurs because `effect_name` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+3680 |         p.defs[0].eff = effect(effect_name);
+     |                                ----------- value moved here
+3681 |         handler(&mut p).clauses[0].body.eff = effect(effect_name);
+     |                                                      ^^^^^^^^^^^ value used here after move
+     |
+note: consider changing this parameter type in function `effect` to borrow instead if owning the value isn't necessary
+    --> crates/benitoite/src/ir/check.rs:1668:21
+     |
+1668 |     fn effect(name: EffectName) -> EffectSet {
+     |        ------       ^^^^^^^^^^ this parameter takes ownership of the value
+     |        |
+     |        in this function
+help: consider cloning the value if the performance cost is acceptable
+     |
+3680 |         p.defs[0].eff = effect(effect_name.clone());
+     |                                           ++++++++
+
+error[E0382]: use of moved value: `effect_name`
+    --> crates/benitoite/src/ir/check.rs:3683:56
+     |
+3666 |         let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+     |             ----------- move occurs because `effect_name` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+3681 |         handler(&mut p).clauses[0].body.eff = effect(effect_name);
+     |                                                      ----------- value moved here
+3682 |         p.schemes
+3683 |             .insert(MAIN, scheme(vec![], int(), effect(effect_name)));
+     |                                                        ^^^^^^^^^^^ value used here after move
+     |
+note: consider changing this parameter type in function `effect` to borrow instead if owning the value isn't necessary
+    --> crates/benitoite/src/ir/check.rs:1668:21
+     |
+1668 |     fn effect(name: EffectName) -> EffectSet {
+     |        ------       ^^^^^^^^^^ this parameter takes ownership of the value
+     |        |
+     |        in this function
+help: consider cloning the value if the performance cost is acceptable
+     |
+3681 |         handler(&mut p).clauses[0].body.eff = effect(effect_name.clone());
+     |                                                                 ++++++++
+
+error[E0382]: use of moved value: `effect_name`
+    --> crates/benitoite/src/ir/check.rs:3685:42
+     |
+3666 |         let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+     |             ----------- move occurs because `effect_name` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+3683 |             .insert(MAIN, scheme(vec![], int(), effect(effect_name)));
+     |                                                        ----------- value moved here
+3684 |         good(&p);
+3685 |         handler(&mut p).handled = effect(effect_name);
+     |                                          ^^^^^^^^^^^ value used here after move
+     |
+note: consider changing this parameter type in function `effect` to borrow instead if owning the value isn't necessary
+    --> crates/benitoite/src/ir/check.rs:1668:21
+     |
+1668 |     fn effect(name: EffectName) -> EffectSet {
+     |        ------       ^^^^^^^^^^ this parameter takes ownership of the value
+     |        |
+     |        in this function
+help: consider cloning the value if the performance cost is acceptable
+     |
+3683 |             .insert(MAIN, scheme(vec![], int(), effect(effect_name.clone())));
+     |                                                                   ++++++++
+
+error[E0507]: cannot move out of a shared reference
+   --> crates/benitoite/src/ir/desugar/tests.rs:902:15
+    |
+902 |       let log = types
+    |  _______________^
+903 | |         .effects
+904 | |         .iter()
+905 | |         .find(|(_, e)| e.display_name == "Log")
+906 | |         .unwrap()
+907 | |         .1
+908 | |         .name;
+    | |_____________^ move occurs because value has type `types::EffectName`, which does not implement the `Copy` trait
+    |
+help: consider borrowing here
+    |
+902 |     let log = &types
+    |               +
+help: consider cloning the value if the performance cost is acceptable
+    |
+908 |         .name.clone();
+    |              ++++++++
+
+error[E0382]: use of moved value: `state`
+   --> crates/benitoite/src/types/mod.rs:963:29
+    |
+949 |         let state = EffectName::Builtin(BuiltinEffectId::STATE, crate::types::scope::Range::Top);
+    |             ----- move occurs because `state` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+952 |             names: vec![state],
+    |                         ----- value moved here
+...
+963 |                 names: vec![state],
+    |                             ^^^^^ value used here after move
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+952 |             names: vec![state.clone()],
+    |                              ++++++++
+
+error[E0382]: use of moved value: `state`
+   --> crates/benitoite/src/types/mod.rs:968:22
+    |
+949 |         let state = EffectName::Builtin(BuiltinEffectId::STATE, crate::types::scope::Range::Top);
+    |             ----- move occurs because `state` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+963 |                 names: vec![state],
+    |                             ----- value moved here
+...
+968 |         for name in [state, console] {
+    |                      ^^^^^ value used here after move
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+963 |                 names: vec![state.clone()],
+    |                                  ++++++++
+
+error[E0382]: use of moved value: `console`
+   --> crates/benitoite/src/types/mod.rs:968:29
+    |
+948 |         let console = EffectName::Builtin(BuiltinEffectId(2), crate::types::scope::Range::Top);
+    |             ------- move occurs because `console` has type `types::EffectName`, which does not implement the `Copy` trait
+...
+958 |                 names: vec![console],
+    |                             ------- value moved here
+...
+968 |         for name in [state, console] {
+    |                             ^^^^^^^ value used here after move
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+958 |                 names: vec![console.clone()],
+    |                                    ++++++++
+
+error: could not compile `benitoite` (lib test) due to 16 previous errors

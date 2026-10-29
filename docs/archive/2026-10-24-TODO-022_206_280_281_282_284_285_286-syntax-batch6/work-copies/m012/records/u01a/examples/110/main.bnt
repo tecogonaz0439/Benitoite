@@ -1,0 +1,9 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Regex
+function parse(source: String) -> Result[Regex.Pattern, String]
+  return Regex.compile(source)
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show(Result.isError(parse("["))))
+end function

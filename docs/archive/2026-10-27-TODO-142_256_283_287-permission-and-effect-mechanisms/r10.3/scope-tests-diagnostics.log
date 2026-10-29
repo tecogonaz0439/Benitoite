@@ -1,0 +1,25 @@
+
+running 4 tests
+test scope_shorthand_preserves_atoms_and_source_elements ... ok
+test scoped_function_types_and_failure_arguments_survive_instantiation ... FAILED
+test duplicate_atoms_report_both_original_elements ... ok
+test invalid_scopes_are_rejected_by_the_argument_contract ... ok
+
+failures:
+
+---- scoped_function_types_and_failure_arguments_survive_instantiation stdout ----
+
+thread 'scoped_function_types_and_failure_arguments_survive_instantiation' (2629067) panicked at crates/benitoite/tests/scope_annotations.rs:173:5:
+Diagnostic { kind: Check, severity: Error, code: Some(E0401), message: "mismatched types", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(552), end: BytePos(558) }, text: "expected `function(value: Integer) -> Integer uses File.Read[\"/data/**\"]`, found `function(value: Integer) -> Integer uses File.Read[\"/other/**\"]`" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(221), end: BytePos(271) }, text: "expected because of this" }], notes: ["argument 1 must match the parameter type of the called function"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scoped_function_types_and_failure_arguments_survive_instantiation
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.98s
+
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.82s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

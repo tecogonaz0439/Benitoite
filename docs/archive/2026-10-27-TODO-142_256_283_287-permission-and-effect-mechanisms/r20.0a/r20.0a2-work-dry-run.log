@@ -1,0 +1,15 @@
+== plan: level work against 538090391ea48a833ddd824f4b732e599616d48c (changed files not classified) (partial selection: --only fmt,lint_default,lib_default,source_rules)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of --only (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   later: stage checks named connections; change covers full regression; release checks the candidate
+command_exit=0
+real 0.03
+user 0.01
+sys 0.00

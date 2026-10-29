@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_range_budget_sources.py", line 123, in <module>
+    main()
+  File "<wt>/formal/tests/test_range_budget_sources.py", line 104, in main
+    table, timing = run("builtinCheck", [builtin_path], output / "builtinCheck.json", 0)
+  File "<wt>/formal/tests/test_range_budget_sources.py", line 32, in run
+    assert process.returncode == status, (tool, status, process.returncode, raw)
+AssertionError: ('builtinCheck', 0, 2, 'builtinCheck: usage: builtinCheck corpus.json builtins.json builtin-report.json\n')
+real 0.15
+user 0.10
+sys 0.03

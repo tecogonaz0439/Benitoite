@@ -1,0 +1,4 @@
+== plan: level stage against 6124775788579e60530f55fb85570f26ef7fa900 (changed files not classified) (partial selection: --only tests_related)
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client --test network_faults --test cli_process --test test_command --test golden
+   later: stage checks named connections; change covers full regression; release checks the candidate

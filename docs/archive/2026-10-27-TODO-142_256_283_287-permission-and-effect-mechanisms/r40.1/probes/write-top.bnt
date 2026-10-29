@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.File
+function sample(path: String) -> Result[Unit, IOError] uses File.Write["/data/**"]
+ return File.writeText(path: path, text: "x")
+end function
+function main() -> Unit
+end function

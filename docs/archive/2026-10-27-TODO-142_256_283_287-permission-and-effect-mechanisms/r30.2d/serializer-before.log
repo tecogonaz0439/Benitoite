@@ -1,0 +1,19 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.86s
+     Running tests/declarations.rs (target/debug/deps/declarations-b14f9dd705079229)
+
+running 1 test
+
+thread 'inventory_json_keeps_user_key_mappings_as_strings' (6580398) panicked at crates/benitoite/tests/declarations.rs:689:54:
+called `Result::unwrap()` on an `Err` value: Error("invalid digit found in string", line: 0, column: 0)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test inventory_json_keeps_user_key_mappings_as_strings ... FAILED
+
+failures:
+
+failures:
+    inventory_json_keeps_user_key_mappings_as_strings
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.14s
+
+error: test failed, to rerun pass `-p benitoite --test declarations`

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/compare_exports.py",
+    "<baseline>/target/top-exports",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/top-after"
+  ],
+  "invoked": [
+    "python3",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/compare_exports.py",
+    "<baseline>/target/top-exports",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/top-after"
+  ],
+  "started_at": "2026-10-28T12:19:51.976112+00:00",
+  "ended_at": "2026-10-28T12:19:55.259996+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 3.283823208,
+  "auxiliary_max_rss_bytes": 292143104,
+  "auxiliary_max_rss_mib": 278.609375,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

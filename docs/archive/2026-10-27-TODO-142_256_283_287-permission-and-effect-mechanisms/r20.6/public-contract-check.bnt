@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope
+function checked(path: String) -> Result[Scope.PathIn, Scope.ScopeError]
+ return Scope.checkPathIn(pattern: "/data/**", path: path)
+end function
+function caller(path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ return checked(path)
+end function

@@ -1,0 +1,52 @@
+$ git grep -n -E case[[:space:]]+[^[:space:]]*(readTextIn|readBytesIn|writeTextIn|appendTextIn|writeBytesIn|appendBytesIn|readText|readBytes|readLines|sendIn|send)[[:space:]]*\( -- *.rs *.bnt *.md *.py :!private :!docs/todo :!docs/archive :!docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms :!tools/bench/results :!tools/syntax-measure/results :!tools/skill-eval/results
+crates/benitoite/skill/SKILL.md:207:    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+crates/benitoite/skill/references/idioms.md:766:    case File.readText(path) ->
+crates/benitoite/src/typeck/scope/measure.rs:199:const READ_CLAUSES: &str = r#"case File.readText(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:202: case File.readBytes(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:203: case File.readTextIn(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:204: case File.readBytesIn(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:205: case File.readLines(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:220:        "case File.readText(path) -> 0"
+crates/benitoite/src/typeck/scoped_calls_tests.rs:238:            "function sample{generics}({params}) -> Integer uses IO.All{}\n return handle\n{body}\nwith\n case File.readText(captured) -> resume(Result.Ok(\"\"))\nend handle\nend function",
+crates/benitoite/src/typeck/scoped_calls_tests.rs:266:   case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:299:   case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:337:  case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:354:  case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:372:  case File.readText(captured) ->
+crates/benitoite/src/typeck/scoped_calls_tests.rs:403:        "case File.readText(captured) -> resume(Result.Ok(\"\"))",
+crates/benitoite/src/typeck/scoped_calls_tests.rs:404:        "case File.readText(captured) ->\n    bind _: Scope.PathIn[\"/data/a\"] <- captured\n    resume(Result.Ok(\"\"))",
+crates/benitoite/testdata/handlers/c12-builtin-port.bnt:17:    case File.readText(path) ->
+crates/benitoite/testdata/handlers/first-release-port.bnt:13:    case File.readText(path) ->
+crates/benitoite/testdata/packages/todo-handler/main.bnt:13:    case File.readText(path) ->
+crates/benitoite/testdata/test/handler_replacement.bnt:15:    case File.readText(path) ->
+crates/benitoite/tests/runtime_builtins.rs:2124: case File.readTextIn(captured) ->
+crates/benitoite/tests/scoped_calls.rs:464: case File.readBytes(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:465: case File.readTextIn(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:466: case File.readBytesIn(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:467: case File.readLines(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:504: case File.readText(path) -> {clause}
+crates/benitoite/tests/scoped_calls.rs:534:  case File.readText(path) -> 0
+crates/benitoite/tests/scoped_calls/file_io.rs:255:            "{IMPORTS}function sample(path: Scope.PathIn{index}) -> Result[String, IOError] uses File.Read{index}\n return handle File.readTextIn(path: path) with\n case File.readTextIn(captured) ->\n {clause}\n end handle\nend function"
+crates/benitoite/tests/scoped_calls/file_io.rs:297: case File.writeTextIn(captured, text) -> resume(accept(path: captured, text: text))
+crates/benitoite/tests/scoped_calls/file_io.rs:314: case File.writeTextIn(captured, text) ->
+crates/benitoite/tests/scoped_calls/file_io.rs:321: case File.appendTextIn(path, text) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:322: case File.writeBytesIn(path, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:323: case File.appendBytesIn(path, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/handler_selection.rs:29:  case File.readText(path) -> 0
+crates/benitoite/tests/scoped_calls/http_io.rs:232:            "{IMPORT}function sample(request: Http.RequestIn{index}) -> Result[Http.Response, NetworkError] uses Http.Connect{index}\n return handle Http.sendIn(request: request) with\n case Http.sendIn(captured) ->\n {clause}\n end handle\nend function"
+crates/benitoite/tests/scoped_calls/http_io.rs:246:            "{IMPORT}function sample(request: Http.ClientRequest) -> Result[Http.Response, NetworkError]{effect}\n return handle Http.send(request: request) with\n case Http.send(captured) -> Result.Ok(Http.text(status: 200, s: \"handled\"))\n end handle\nend function"
+crates/benitoite/tests/scoped_calls/http_io.rs:251:    let complete = old_only("").replace(" end handle", " case Http.sendIn(captured) -> Result.Ok(Http.text(status: 200, s: \"handled in\"))\n end handle");
+crates/benitoite/tests/scoped_calls/http_io.rs:263: case Http.sendIn(captured) -> resume(accept(request: captured))
+crates/benitoite/tests/scoped_calls/http_io.rs:281: case Http.sendIn(captured) ->
+crates/benitoite/tests/scoped_calls/http_io.rs:284: case Http.send(captured) -> Result.Ok(Http.text(status: 200, s: "old"))
+docs/design/01-spec/01-07-effects.md:363:    case File.readText(path) ->
+docs/design/01-spec/01-11-concurrency.md:118:  case File.readText(path) ->
+docs/design/06-tooling/06-04-test-runner.md:79:    case File.readText(path) ->
+docs/ja/reference/benitoite.md:1496:    case File.readText(path) ->
+docs/ja/skill/SKILL.md:206:    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+docs/ja/skill/references/idioms.md:721:    case File.readText(path) ->
+docs/reference/benitoite.md:1516:    case File.readText(path) ->
+tools/skill-eval/tasks/write_tests/reference.bnt:43:    case File.readLines(path) ->
+tools/skill-eval/tasks/write_tests/task.md:11:- at least 1 test of `loadSettings` that replaces `File.readLines` with a handler (`handle ... with case File.readLines(path) -> ...`), so that the test does not read a real file.
+
+exit=0

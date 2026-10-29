@@ -330,7 +330,7 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     c["targets"][0]["fields"] = json!({"name":{"encode":"Helpers.text","decode":"Helpers.text"},"opaque":{"encode":"Benitoite.Unofficial.Failure.toResult","decode":"Benitoite.Unofficial.Failure.toResult"}});
     let bytes = serde_json::to_vec(&c).unwrap();
     let first = derive_inventory::inventory(&p.0, &c, &bytes).unwrap();
-    assert_eq!(first["version"], 3);
+    assert_eq!(first["version"], 4);
     let target = &first["targets"][0];
     let failure = &target["customFunctions"]["Benitoite.Unofficial.Failure.toResult"];
     assert_eq!(failure["name"], "Benitoite.Failure.toResult");
@@ -356,7 +356,7 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     );
     assert_eq!(
         target["customFunctions"]["Helpers.text"]["signature"]["returnType"],
-        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.String.String"},"arguments":[]})
+        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.String.String"},"arguments":[],"ix":{"fixed":"top"}})
     );
     assert_eq!(target["module"], "People");
     assert_eq!(target["public"], true);
@@ -370,11 +370,11 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     );
     assert_eq!(
         fields[0]["type"],
-        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.String.String"},"arguments":[]})
+        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.String.String"},"arguments":[],"ix":{"fixed":"top"}})
     );
     assert_eq!(
         fields[1]["type"],
-        json!({"tag":"application","head":{"tag":"named","name":"Other.Address"},"arguments":[]})
+        json!({"tag":"application","head":{"tag":"named","name":"Other.Address"},"arguments":[],"ix":{"fixed":"top"}})
     );
     assert_eq!(
         fields[2]
@@ -406,7 +406,7 @@ fn inventory_json_preserves_resolved_types_order_spans_and_input_hashes() {
     );
     assert_eq!(
         first["functions"]["People.pending"]["signature"]["returnType"],
-        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.Unit"},"arguments":[]})
+        json!({"tag":"application","head":{"tag":"named","name":"Benitoite.Unit"},"arguments":[],"ix":{"fixed":"top"}})
     );
     p.write("Other.bnt","public record Address\n city: String\n zip: Integer\nend record\npublic function text(value: String) -> String\n return missingGenerated()\nend function\n");
     let second = derive_inventory::inventory(&p.0, &c, &bytes).unwrap();
@@ -590,6 +590,126 @@ fn inventory_v2_preserves_kinds_anonymous_implementations_and_opaque_boundaries(
     );
 }
 
+// 関門: 宣言情報の交換境界で、Top・閉じた範囲・標準署名内の変数と被覆の向きを守る。
+// 旧テストは範囲を import できない失敗だけを捕まえ、Top への置換や関係の消失を検出しない。
+// 実際の宣言を読み、独立した期待値へ比較する。公開の差し込み口は増やさない。
+#[test]
+fn inventory_preserves_ranges_and_standard_signature_relationships() {
+    let p = Project::new();
+    p.write(
+        "People.bnt",
+        r#"import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+public record Person
+ path: Scope.PathIn["/data/**"]
+ anyPath: Scope.PathIn
+ request: Http.RequestIn["2001:db8::/32", 443]
+end record
+public function read(path: Scope.PathIn["/data/**"]) -> String uses File.Read["/data/**"]
+ return missingBody()
+end function
+public function sorted() -> Unit uses Http.Connect["::1", 443], Http.Connect["::a", 443]
+ return missingBody()
+end function
+"#,
+    );
+    let c = config();
+    let inv = derive_inventory::inventory(&p.0, &c, &serde_json::to_vec(&c).unwrap()).unwrap();
+    assert_eq!(inv["version"], 4);
+    let path = json!({"fixed":{"path":{"tree":["data"]}}});
+    let fields = &inv["targets"][0]["fields"];
+    assert_eq!(fields[0]["type"]["ix"], path);
+    assert_eq!(fields[1]["type"]["ix"], json!({"fixed":"top"}));
+    assert_eq!(
+        fields[2]["type"]["ix"],
+        json!({"fixed":{"endpoint":{"host":{"ip":{"cidr":{"family":"v6","network":"42540766411282592856903984951653826560","prefixLen":32}}},"ports":{"lo":443,"hi":443}}}})
+    );
+    assert_eq!(inv["types"]["Benitoite.Scope.PathIn"]["rangeKind"], "path");
+    assert_eq!(
+        inv["types"]["Benitoite.Network.Http.RequestIn"]["rangeKind"],
+        "endpoint"
+    );
+    assert_eq!(
+        inv["types"]["Benitoite.String.String"]["rangeKind"],
+        Value::Null
+    );
+    let read = &inv["functions"]["People.read"]["signature"];
+    assert_eq!(read["rkinds"], json!([]));
+    assert_eq!(read["params"][0]["type"]["ix"], path);
+    assert_eq!(
+        read["effects"]["names"],
+        json!([{"tag":"builtin","name":"IO.File.Read","ix":path}])
+    );
+    for (module, check, project, widen, kind) in [
+        (
+            "Benitoite.Scope",
+            "checkPathIn",
+            "pathInValue",
+            "widenPathIn",
+            "path",
+        ),
+        (
+            "Benitoite.Network.Http",
+            "checkRequestIn",
+            "requestInValue",
+            "widenRequestIn",
+            "endpoint",
+        ),
+    ] {
+        let functions = &inv["functions"];
+        let check = &functions[format!("{module}.{check}")]["signature"];
+        let project = &functions[format!("{module}.{project}")]["signature"];
+        let widen = &functions[format!("{module}.{widen}")]["signature"];
+        assert_eq!(check["rkinds"], json!([kind]));
+        assert_eq!(check["admission"], "any");
+        assert_eq!(check["shape"], "untargeted");
+        assert_eq!(check["returnType"]["arguments"][0]["ix"], json!({"rvar":0}));
+        assert_eq!(project["rkinds"], json!([kind]));
+        assert_eq!(project["params"][0]["type"]["ix"], json!({"rvar":0}));
+        assert_eq!(widen["rkinds"], json!([kind, kind]));
+        assert_eq!(widen["admission"], json!({"covers":{"inner":0,"outer":1}}));
+        assert_eq!(widen["params"][0]["type"]["ix"], json!({"rvar":0}));
+        assert_eq!(widen["returnType"]["ix"], json!({"rvar":1}));
+    }
+    let wire = derive_inventory::to_string(&inv).unwrap();
+    assert!(wire.contains("\"network\":42540766411282592856903984951653826560,"));
+    let sorted = &inv["functions"]["People.sorted"]["signature"]["effects"];
+    let rows = sorted["names"].as_array().unwrap();
+    assert_eq!(rows.len(), 2);
+    assert_eq!(
+        rows[0]
+            .pointer("/ix/fixed/endpoint/host/ip/exact/bits")
+            .unwrap(),
+        "1"
+    );
+    assert_eq!(
+        rows[1]
+            .pointer("/ix/fixed/endpoint/host/ip/exact/bits")
+            .unwrap(),
+        "10"
+    );
+}
+
+// 関門: JSON に内包する利用者のキー名を、範囲の整数欄と取り違えない。
+// 普通の型の期待値だけでは設定の再書き出しの破損を捕まえない。実際の出力境界を使う。
+#[test]
+fn inventory_json_keeps_user_key_mappings_as_strings() {
+    let p = Project::new();
+    p.write("People.bnt", "public record Person\n family: String\n bits: Integer\n network: String\n prefixLen: Integer\nend record\n");
+    for keys in [
+        json!({"family":"f","bits":"renamed"}),
+        json!({"network":"123","prefixLen":"length"}),
+    ] {
+        let mut c = config();
+        c["targets"][0]["json"]["keys"] = keys.clone();
+        let inv = derive_inventory::inventory(&p.0, &c, &serde_json::to_vec(&c).unwrap()).unwrap();
+        let wire = derive_inventory::to_string(&inv).unwrap();
+        let decoded: Value = serde_json::from_str(&wire).unwrap();
+        assert_eq!(decoded["targets"][0]["config"]["json"]["keys"], keys);
+    }
+}
+
 // 関門: 標準のLogだけを組み込みとして扱い、IO.All・利用者同名・as禁止を独立に確かめる。
 // 宣言の収集と公開checkを通すので、名前の綴りだけのテストにはしない。
 #[test]
@@ -607,8 +727,8 @@ fn log_standard_declarations_and_effect_identity() {
     let log = inventory.resolved.stdlib("Benitoite.Log.Log").unwrap();
     let definition = inventory.types.effects.get(log).unwrap();
     assert!(matches!(
-        definition.name,
-        benitoite::types::EffectName::Builtin(_)
+        &definition.name,
+        benitoite::types::EffectName::Builtin(_, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP
     ));
     assert_eq!(definition.ops.len(), 2);
     let opts = CheckOptions {

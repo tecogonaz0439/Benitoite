@@ -1,7 +1,7 @@
 # RP1: P1 の判断の記録と実装プランのレビュー
 
 - 対象: `decisions.md`、`plan.md`、`implementation-request.md`、`preflight.md`（Codex、P1。未コミット）
-- 前提: [README](../README.md) の二つの「設計者の決定」、`study/` の各文書と問い、`reviews/` の RS1〜RS3 と対応、`docs/workflow/` の雛形、`work/m011/P1-prompt.md`
+- 前提: [README](../README.md) の二つの「設計者の決定」、`study/` の各文書と問い、`reviews/` の RS1〜RS3 と対応、`docs/workflow/` の雛形、[P1-prompt.md の保管方針](../work-copies/README.md#f001) 依頼文・実行の運用記録は git の外に置き、保管していない。結果とレビューはこのアーカイブ内の記録を正とする。
 - 開始版: `a9c4132e`（ブランチ `san_benito`）
 - レビュー日: 2026-10-23
 - 行った確認: 文書・設計書・ソース・Lean・検査スクリプトの読み取りと、`rg`・`grep` による抜き取りの照合。ビルド・テスト・CLI の実行・Lean のビルド・測定は行っていない。書き込んだのはこの記録だけである。
@@ -134,5 +134,5 @@ S-W の `runtime_builtins`・`cli_process` は、W2 の work の対象に含ま�
 ## 公開の文書としての点検
 
 - docs/todo へのリンクはない。「docs/todo の TODO-nnn」と文字で書いている。
-- 非公開の内容はない。`Codex` の語と `private/` の名前は出てくるが、第4弾の公開の implementation-request にも先例がある。`work/m011/scratch/`（git で無視される場所）の記述は RS1〜RS3 にも先例があり、F0 の結果は `f0/results.md` に残す計画なので問題はない。
+- 非公開の内容はない。`Codex` の語と `private/` の名前は出てくるが、第4弾の公開の implementation-request にも先例がある。[当時の作業用領域の対応表](../work-copies/README.md#分類と元の対応)（git で無視される場所）の記述は RS1〜RS3 にも先例があり、F0 の結果は `f0/results.md` に残す計画なので問題はない。
 - 造語として直すべきものは、指摘 18（表示の幅の表記の揺れ）と指摘 19（「枠」の衝突）だけである。「整形頭」は内部の説明の語で、設計書へ写す語ではない。設計書に写すときは、既存の「直接の頭」に合わせればよい。

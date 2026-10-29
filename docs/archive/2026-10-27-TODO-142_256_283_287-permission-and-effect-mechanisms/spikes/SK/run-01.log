@@ -1,0 +1,69 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+SK.lean:540:2: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (v.HasType (ArgTy.checked s))
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+SK.lean:546:8: warning: declaration uses `sorry`
+SK.lean:547:5: warning: Variable name `h` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _h
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+SK.lean:564:42: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.name` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.MacroScopesView.name`
+  [apply] `Atom.name`
+  [apply] `Lean.Try.Config.name`
+  [apply] `Std.Net.InterfaceAddress.name`
+  [apply] `Std.Time.TimeZone.name`
+  [apply] `Std.Async.System.OSInfo.name`
+  [apply] `Std.Http.URI.Host.name`
+  [apply] `Std.Time.TimeZone.DaylightSavingRule.name`
+SK.lean:564:31: error: Ambiguous term
+  singleton
+Possible interpretations:
+  Structural.singleton (Atom.name s.kind) : Eff
+  
+  {?m.10} : ?m.8
+SK.lean:566:26: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.bounded` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Atom.bounded`
+  [apply] `ClosedScope.bounded`
+SK.lean:566:15: error: Ambiguous term
+  singleton
+Possible interpretations:
+  Structural.singleton (Atom.bounded sc) : Eff
+  
+  {?m.24} : ?m.22
+SK.lean:614:8: warning: declaration uses `sorry`
+SK.lean:615:5: warning: Variable name `hv` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hv
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'SK.trace_target_soundness' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SK.effect_soundness' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+        0.89 real         1.20 user         0.27 sys
+           732790784  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47120  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               10427  involuntary context switches
+          9922401561  instructions retired
+          4434244489  cycles elapsed
+           182296056  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

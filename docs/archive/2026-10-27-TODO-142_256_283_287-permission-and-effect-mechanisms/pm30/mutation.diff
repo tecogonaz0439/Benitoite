@@ -1,0 +1,4 @@
+56c56
+< def KindCheck {Kind : Type} (declared allowed : KindSet Kind) : Prop := Subset declared allowed
+---
+> def KindCheck {Kind : Type} (declared allowed : KindSet Kind) : Prop := Subset allowed declared

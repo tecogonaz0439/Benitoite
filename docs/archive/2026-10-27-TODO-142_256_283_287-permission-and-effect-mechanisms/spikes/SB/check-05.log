@@ -1,0 +1,33 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+'SB.HasTypeV.subst' depends on axioms: [propext]
+'SB.HasTypeC.subst' depends on axioms: [propext]
+'SB.body_substitution' depends on axioms: [propext]
+'SB.beta_contract' depends on axioms: [propext]
+'SB.Ty.Le.fn_fn' does not depend on any axioms
+'SB.Ty.Le.substType' depends on axioms: [propext]
+'SB.Ty.Le.eq_of_rigid_right' depends on axioms: [propext]
+'SB.Ty.Le.eq_of_rigid_left' depends on axioms: [propext]
+'SB.covariance_counterexample' depends on axioms: [propext]
+'SB.checked_integer_to_range' depends on axioms: [propext]
+'SB.beta_preservation' depends on axioms: [propext]
+'SB.cannot_assign_outside_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SB.no_unchecked_integer_narrowing' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.89 real         1.13 user         0.25 sys
+           726663168  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46817  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                6466  involuntary context switches
+         10699089952  instructions retired
+          4176679751  cycles elapsed
+           178265472  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

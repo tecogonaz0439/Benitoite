@@ -1,0 +1,9 @@
+function f(t: Integer) -> Integer
+  bind n <- 0
+  return t div n
+end function
+
+function main() -> Unit
+  bind _ <- f(10)
+  return ()
+end function

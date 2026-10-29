@@ -1,0 +1,23 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+effect Report
+ function save(path: Scope.PathIn["/data/reports/**"]) -> Unit
+end effect
+function sink(path: Scope.PathIn["/data/reports/**"]) -> Unit uses File.Write["/data/reports/**"]
+ ()
+end function
+function transfer(path: Scope.PathIn["/other/**"]) -> Unit uses File.Write["/data/reports/**"]
+ handle save(path) with
+ case save(p) ->
+  sink(p)
+  resume(())
+ end handle
+end function
+function main() -> Unit uses File.Write["/data/reports/**"]
+ handle () with
+ case save(p) ->
+  sink(p)
+  resume(())
+ end handle
+end function

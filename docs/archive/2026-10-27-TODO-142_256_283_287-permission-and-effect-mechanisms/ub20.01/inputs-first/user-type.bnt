@@ -1,0 +1,9 @@
+effect Write
+ function save() -> Unit
+end effect
+function sample() -> Unit uses Write[Integer]
+ ()
+end function
+function main() -> Unit
+ ()
+end function

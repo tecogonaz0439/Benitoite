@@ -1,0 +1,87 @@
+{
+  "start_commit": "6124775788579e60530f55fb85570f26ef7fa900",
+  "working_base": "f6b0d974bfd80b834448325d8b8413824161a78c",
+  "working_diff": true,
+  "builds": [
+    {
+      "state": "start",
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "-O",
+        "<wt>/tools/bench/compare/timing_probe.rs",
+        "--extern",
+        "benitoite=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+        "-L",
+        "dependency=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+        "-o",
+        "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/r20.5b-timing-probe",
+        "--extern",
+        "serde_json=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+        "--cfg",
+        "benitoite_parser_pending"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.3540967910000001,
+      "api": {
+        "parser_pending": true,
+        "parser_sha256": "d2df47e23ecae22342f4a3b76cd7c55a1e0f847d89c46735b952dbab7c2118c2",
+        "range_index": false,
+        "types_sha256": "a8d25a6452521157508223529c218d242e5bc5ed9601fa7f36ecf008d0510bf3",
+        "range_signatures": false,
+        "core_ir_sha256": "bb3fa3189542c88316cb707fa529e1d678865e02e705e0df10f2d4e5875798c1"
+      },
+      "bridge_sources": {
+        "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+        "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+        "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+        "wrapper": "d003cac93d2d8987d9c92298ad5e01c8c4280f1133abfe3cdabd747283080d9c",
+        "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+      },
+      "library_sha256": "8299530adce6391b10904ac8438e98b77c90055549a9f4d0829965701ec9e0b8",
+      "probe_sha256": "d7d3b6a44e1e7143636efbe96b19c07fbf12558aeb5ea0196f7b74b6ed2e3839"
+    },
+    {
+      "state": "working-diff",
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "-O",
+        "<wt>/tools/bench/compare/timing_probe.rs",
+        "--extern",
+        "benitoite=<wt>/target/release/libbenitoite.rlib",
+        "-L",
+        "dependency=<wt>/target/release/deps",
+        "-o",
+        "<wt>/target/r20.5b-probe/r20.5b-timing-probe",
+        "--extern",
+        "serde_json=<wt>/target/release/deps/libserde_json-8caac38b8bfac622.rlib",
+        "--cfg",
+        "benitoite_parser_pending",
+        "--cfg",
+        "benitoite_range_index",
+        "--cfg",
+        "benitoite_range_signatures"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.522798125,
+      "api": {
+        "parser_pending": true,
+        "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+        "range_index": true,
+        "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+        "range_signatures": true,
+        "core_ir_sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2"
+      },
+      "bridge_sources": {
+        "original_convert": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917",
+        "original_value": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75",
+        "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+        "wrapper": "71f3cc84320715e863fa9bdc53756e2a6f0ab7ea96b7a585000f15a04f6f41e5",
+        "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+      },
+      "library_sha256": "348a1be6b26abd7f2c1767175960f78dde91b1383fa841ea004229eef11002b5",
+      "probe_sha256": "3a61bea4927672b9bc8aa90eef1a40f4ab4935978c0865dc4a720118d17f6ee9"
+    }
+  ]
+}

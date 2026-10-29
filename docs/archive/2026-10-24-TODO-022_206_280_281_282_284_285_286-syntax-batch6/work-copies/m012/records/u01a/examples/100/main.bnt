@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind name <- "Ada"
+  bind price <- 1.25m
+  bind page <- """
+    <p>Hello, ${name}</p>
+    <p>Total: ${price * 3m}</p>
+    """
+  Console.write(page)
+  Console.writeLine(r"\d+ and ${not interpolated}")
+  Console.writeLine("${String.characterCount("héllo")} characters, ${String.byteLength("héllo")} bytes")
+  Console.writeLine(Decimal.toString(Decimal.round(x: 2.675m, places: 2, mode: RoundingMode.HalfToEven)))
+end function

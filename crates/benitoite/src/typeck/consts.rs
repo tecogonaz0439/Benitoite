@@ -167,7 +167,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
 fn contains_param(ty: &Ty) -> bool {
     match ty {
         Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => true,
-        Ty::Con(_, a) => a.iter().any(contains_param),
+        Ty::Con(_, a, _) => a.iter().any(contains_param),
         Ty::Fn(f) => {
             f.effects.failures.iter().any(contains_param)
                 || f.params.iter().any(contains_param)

@@ -15,7 +15,7 @@ variable {P : Program} {B : Builtins}
 
 /-- 関数の型の閉じた値は、`λ`、関数の名前、組み込みの関数、通常の操作、raise のいずれかである。 -/
 theorem HasTypeVQ.canonical_fn_or_raise {Ψ C v names ps r ε} (h : HasTypeV P B Ψ C [] v (.fn names ps r ε)) :
-    (∃ ns qs body, v = .lam ns qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨ (∃ b ts es, v = .prim b ts es) ∨
+    (∃ ns qs body, v = .lam ns qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨ (∃ b ts es rs, v = .prim b ts es rs) ∨
       (∃ o ts, v = .op o ts) ∨ (∃ T E, v = .raise T E) := by
   cases v with
   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
@@ -23,7 +23,7 @@ theorem HasTypeVQ.canonical_fn_or_raise {Ψ C v names ps r ε} (h : HasTypeV P B
       obtain ⟨_, e, _⟩ := (h.inv_const rfl).fn_right
       cases c <;> simp [Const.type] at e
   | fnRef f ts es => exact Or.inr (Or.inl ⟨_, _, _, rfl⟩)
-  | prim b ts es => exact Or.inr (Or.inr (Or.inl ⟨_, _, _, rfl⟩))
+  | prim b ts es rs => exact Or.inr (Or.inr (Or.inl ⟨_, _, _, _, rfl⟩))
   | op o ts => exact Or.inr (Or.inr (Or.inr (Or.inl ⟨_, _, rfl⟩)))
   | raise T E => exact Or.inr (Or.inr (Or.inr (Or.inr ⟨_, _, rfl⟩)))
   | lam ns qs body => exact Or.inl ⟨_, _, _, rfl⟩
@@ -33,6 +33,8 @@ theorem HasTypeVQ.canonical_fn_or_raise {Ψ C v names ps r ε} (h : HasTypeV P B
   | mapV ks vs => obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+  | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
+  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
 
@@ -41,7 +43,7 @@ theorem HasTypeVQ.canonical_fn {Ψ C v names ps r ε}
     (h : HasTypeV P B Ψ C [] v (.fn names ps r ε))
     (hn : ∀ T E, v ≠ .raise T E) :
     (∃ ns qs body, v = .lam ns qs body) ∨ (∃ f ts es, v = .fnRef f ts es) ∨
-      (∃ b ts es, v = .prim b ts es) ∨ (∃ o ts, v = .op o ts) := by
+      (∃ b ts es rs, v = .prim b ts es rs) ∨ (∃ o ts, v = .op o ts) := by
   rcases h.canonical_fn_or_raise with h | h | h | h | ⟨T, E, he⟩
   · exact Or.inl h
   · exact Or.inr (Or.inl h)
@@ -75,8 +77,8 @@ theorem HasTypeVQ.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
   | .fnRef _ _ _, _, _, h => by
       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
-  | .prim _ _ _, _, _, h => by
-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+  | .prim _ _ _ _, _, _, h => by
+      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
   | .op _ _, _, _, h => by
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
@@ -93,6 +95,8 @@ theorem HasTypeVQ.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
   | .mapV _ _, _, _, h => by obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
   | .setV _, _, _, h => by obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
   | .bytesV _, _, _, h => by have h' := h.inv_bytesV rfl; simp at h'
+  | .checked _, _, _, h => by obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
+  | .checkedRequest _ _, _, _, h => by obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
 
 /-- メソッドの呼び出しは、E-Meth か E-Super で遷移できる。 -/
 theorem progress_meth (hwt : P.WellTyped B) {Ψ σ R a ε v m ss es ws k}
@@ -199,7 +203,7 @@ theorem findClause_of_handles {h : List Clause} {o : OpRef} (hh : handles h o = 
 /-- 継続のどの `handle` の枠も処理しない利用者の操作は、型の付いた状態では呼ばれない。 -/
 theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) (hod : P.ops o = some od)
-    (hε : Eff.mem ε (.name od.eff)) (hno : NoHandler k (.user o)) : False := by
+    (hε : Eff.mem ε (.nameTop od.eff)) (hno : NoHandler k (.user o)) : False := by
   obtain ⟨os, hos, hmem⟩ := hdecl.2.1 o od hod
   have hend := hk.name_end hε (fun hs hin => by
     have hh := hno hs hin
@@ -211,13 +215,13 @@ theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
     simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps, hos]
     revert hall
     cases os.map OpRef.user <;> simp)
-  obtain ⟨l, hl, hnone, _⟩ := hEb.2 _ hend
+  obtain ⟨l, r, hl, hnone, _⟩ := hEb.2 _ hend
   cases hl
   rw [hos] at hnone; cases hnone
 
 /-! ## 各形の状態の進行 -/
 
-theorem progress_ret (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k} (hσ : StoreOk P B Ψ σ)
+theorem progress_ret (hb : B.CoreAssumptions P) {Ψ σ R ε v a b Eb k} (hσ : StoreOk P B Ψ σ)
     (hk : ContTy P B Ψ R ε k a b Eb none) (hv : HasTypeV P B Ψ [] [] v a) :
     State.Final (.run (.ret v) k σ) ∨ ∃ l s', Step P B (.run (.ret v) k σ) l s' := by
   cases k with
@@ -247,7 +251,7 @@ theorem progress_ret (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k} (hσ : Store
           · exact ⟨_, _, .E_Drop h⟩
           · exact ⟨_, _, .E_DropRel h⟩
 
-theorem progress_escape (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k r} (hσ : StoreOk P B Ψ σ)
+theorem progress_escape (hb : B.CoreAssumptions P) {Ψ σ R ε v a b Eb k r} (hσ : StoreOk P B Ψ σ)
     (hk : ContTy P B Ψ R ε k a b Eb none) (hR : R = some r) :
     ∃ l s', Step P B (.run (.escape v) k σ) l s' := by
   cases k with
@@ -273,7 +277,7 @@ theorem progress_escape (hb : B.Assumptions P) {Ψ σ R ε v a b Eb k r} (hσ : 
           · exact ⟨_, _, .E_EscDrop h⟩
           · exact ⟨_, _, .E_EscDropRel h⟩
 
-theorem progress_error (hb : B.Assumptions P) {Ψ σ R ε a b Eb k rs} (hσ : StoreOk P B Ψ σ)
+theorem progress_error (hb : B.CoreAssumptions P) {Ψ σ R ε a b Eb k rs} (hσ : StoreOk P B Ψ σ)
     (hk : ContTy P B Ψ R ε k a b Eb none) :
     State.Final (.error rs k σ) ∨ ∃ l s', Step P B (.error rs k σ) l s' := by
   cases k with
@@ -298,7 +302,7 @@ theorem progress_error (hb : B.Assumptions P) {Ψ σ R ε a b Eb k rs} (hσ : St
           · exact ⟨_, _, .E_ErrDrop h⟩
           · exact ⟨_, _, .E_ErrDropRel h⟩
 
-theorem progress_exit (hb : B.Assumptions P) {Ψ σ R ε a b Eb k n rs} (hσ : StoreOk P B Ψ σ)
+theorem progress_exit (hb : B.CoreAssumptions P) {Ψ σ R ε a b Eb k n rs} (hσ : StoreOk P B Ψ σ)
     (hk : ContTy P B Ψ R ε k a b Eb none) :
     State.Final (.exit n rs k σ) ∨ ∃ l s', Step P B (.exit n rs k σ) l s' := by
   cases k with
@@ -324,14 +328,14 @@ theorem progress_exit (hb : B.Assumptions P) {Ψ σ R ε a b Eb k n rs} (hσ : S
           · exact ⟨_, _, .E_ExitDropRel h⟩
 
 /-- IO を行う組み込みの関数とプロセスの終了の関数の呼び出し。 -/
-theorem progress_io (hb : B.Assumptions P) {Ψ σ b0 s ts es ws k} (hσ : StoreOk P B Ψ σ)
-    (hsig : B.sig b0 = some s) (hkd : s.kind = .io ∨ s.kind = .exit) (htl : ts.length = s.ntys)
-    (hel : es.length = s.neffs) (had : s.admits [] ts)
-    (hargs : HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es))) :
-    ∃ l s', Step P B (.run (.app (.prim b0 ts es) ws) k σ) l s' := by
+theorem progress_io (hb : B.CoreAssumptions P) {Ψ σ b0 s ts es rs ws k} (hσ : StoreOk P B Ψ σ)
+    (hsig : B.sig b0 = some s) (hkd : s.kind = .io ∨ s.kind = .exit) (hrs : B.RangeAdmissible b0 s rs)
+    (htl : ts.length = s.ntys) (hel : es.length = s.neffs) (had : s.admits [] ts)
+    (hargs : HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es))) :
+    ∃ l s', Step P B (.run (.app (.prim b0 ts es rs) ws) k σ) l s' := by
   by_cases hno : NoHandler k (.prim b0)
-  · obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s ts es ws hsig hkd htl hel had hargs
-    rcases hb.io_kind b0 s ts es ws o hsig ho with ⟨hk, hne⟩ | ⟨hk, hne⟩
+  · obtain ⟨o, obs, ho⟩ := hb.io_exists Ψ b0 s rs ts es ws hsig hkd hrs htl hel had hargs
+    rcases hb.io_kind b0 s ts es ws o obs hsig ho with ⟨hk, hne⟩ | ⟨hk, hne⟩
     · cases o with
       | val v => exact ⟨_, _, .E_IO hsig hk hno ho⟩
       | err r => exact ⟨_, _, .E_IOErr hsig (Or.inl hk) hno ho⟩
@@ -346,19 +350,19 @@ theorem progress_io (hb : B.Assumptions P) {Ψ σ b0 s ts es ws k} (hσ : StoreO
     exact ⟨_, _, .E_OpPrim hsig hkd hsplit hc hκ⟩
 
 /-- 組み込みの関数の呼び出し。 -/
-theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ : StoreOk P B Ψ σ)
-    (hm : HasTypeC P B Ψ [] [] R (.app (.prim b0 ts es) ws) a ε1) :
-    ∃ l s', Step P B (.run (.app (.prim b0 ts es) ws) k σ) l s' := by
-  obtain ⟨s, hsig, htl, hel, had, hargs, _, _⟩ := inv_prim_app hm
+theorem progress_prim (hb : B.CoreAssumptions P) {Ψ σ R a ε1 b0 ts es rs ws k} (hσ : StoreOk P B Ψ σ)
+    (hm : HasTypeC P B Ψ [] [] R (.app (.prim b0 ts es rs) ws) a ε1) :
+    ∃ l s', Step P B (.run (.app (.prim b0 ts es rs) ws) k σ) l s' := by
+  obtain ⟨s, hsig, htl, hel, had, hargs, _, _, hrs⟩ := inv_prim_app hm
   cases hkd : s.kind with
   | pure =>
-      obtain ⟨o, hδ, hne, _⟩ := hb.delta_typed Ψ b0 s ts es ws hsig hkd htl hel had hargs
+      obtain ⟨o, hδ, hne, _⟩ := hb.delta_typed Ψ b0 s rs ts es ws hsig hkd hrs htl hel had hargs
       cases o with
       | val v => exact ⟨_, _, .E_Prim hsig hkd hδ⟩
       | err r => exact ⟨_, _, .E_Err hsig hkd hδ⟩
       | exit n => exact absurd rfl (hne n)
-  | io => exact progress_io hb hσ hsig (Or.inl hkd) htl hel had hargs
-  | exit => exact progress_io hb hσ hsig (Or.inr hkd) htl hel had hargs
+  | io => exact progress_io hb hσ hsig (Or.inl hkd) hrs htl hel had hargs
+  | exit => exact progress_io hb hσ hsig (Or.inr hkd) hrs htl hel had hargs
   | refNew =>
       obtain ⟨t, rfl, rfl, hargs', _, _⟩ := store_prim_inv hb hsig (by simp [hkd]) hm
       have hsh := hb.store_shape _ _ hsig
@@ -414,12 +418,12 @@ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ 
       · exact ⟨_, _, .E_ForceDone hsig hkd hv⟩
 
 /-- 関数の適用。 -/
-theorem progress_app (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b ε ε1 Eb f ws k}
+theorem progress_app (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P) {Ψ σ R a b ε ε1 Eb f ws k}
     (hσ : StoreOk P B Ψ σ) (hm : HasTypeC P B Ψ [] [] R (.app f ws) a ε1) (hε : Eff.Sub ε1 ε)
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
     ∃ l s', Step P B (.run (.app f ws) k σ) l s' := by
   obtain ⟨names, as, b', ε', hf, hargs, _, _⟩ := hm.inv_app rfl
-  rcases hf.canonical_fn_or_raise with ⟨ns, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rfl⟩ | ⟨o, ts, rfl⟩ | ⟨T, E, rfl⟩
+  rcases hf.canonical_fn_or_raise with ⟨ns, ps, body, rfl⟩ | ⟨g, ts, es, rfl⟩ | ⟨b0, ts, es, rs, rfl⟩ | ⟨o, ts, rfl⟩ | ⟨T, E, rfl⟩
   · obtain ⟨r, ε'', _, _, hle⟩ := hf.inv_lam rfl
     obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle
     exact ⟨_, _, .E_Lam (by rw [hargs.length_eq, hps])⟩
@@ -432,7 +436,7 @@ theorem progress_app (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b
   · by_cases hno : NoHandler k (.user o)
     · obtain ⟨od, hod, _, _, _, hsub⟩ := inv_op_app hm
       refine (no_unhandled_user hdecl hk hEb hod ?_ hno).elim
-      apply hε.1; apply hsub.1
+      apply hε.1; apply hsub.nameTop
       rw [Eff.substAt_single]
       exact (Eff.mem_single _ _).mpr rfl
     · obtain ⟨k1, h, k2, hsplit⟩ := split_of_not_noHandler hno
@@ -456,7 +460,7 @@ theorem progress_app (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b
             obtain ⟨κ, hκ, _⟩ := hσ.fresh
             exact ⟨_, _, .E_OpFail hs hκ⟩
 
-theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ σ R a b ε ε1 Eb m k}
+theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P) {Ψ σ R a b ε ε1 Eb m k}
     (hσ : StoreOk P B Ψ σ) (hm : HasTypeC P B Ψ [] [] R m a ε1) (hε : Eff.Sub ε1 ε)
     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
     State.Final (.run m k σ) ∨ ∃ l s', Step P B (.run m k σ) l s' := by
@@ -502,7 +506,7 @@ theorem progress_run (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assum
         · exact Or.inr ⟨_, _, .E_Resume h⟩
   | meth v m ss es ws => exact Or.inr (progress_meth hwt hm)
 
-theorem progressE (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Eb : Eff} {s : State}
+theorem progressE (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P) {Eb : Eff} {s : State}
     (hs : StateTyE P B Eb s) (hEb : BuiltinOnly P B Eb) : s.Final ∨ ∃ l s', Step P B s l s' := by
   cases s with
   | run m k σ =>

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "98b420af9bf9e6de4eea81bab140efb835529bd9",
+    "--dry-run"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 0.1071275,
+  "maxrss_raw": 11894784,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 11.34375,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 0.13284025,
+  "recorded_at": "2026-10-29T07:50:53.300606+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.4/run-record.py",
+    "--child",
+    "r30.4b-work-dry-run",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "98b420af9bf9e6de4eea81bab140efb835529bd9",
+    "--dry-run"
+  ]
+}

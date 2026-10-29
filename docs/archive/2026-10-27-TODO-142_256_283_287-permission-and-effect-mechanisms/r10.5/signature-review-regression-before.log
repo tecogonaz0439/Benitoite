@@ -1,0 +1,23 @@
+$ cargo test -p benitoite --lib types::signature::tests::io_signature_validates_target_position_and_all_effect_indices
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.57s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+test types::signature::tests::io_signature_validates_target_position_and_all_effect_indices ... FAILED
+
+failures:
+
+---- types::signature::tests::io_signature_validates_target_position_and_all_effect_indices stdout ----
+
+thread 'types::signature::tests::io_signature_validates_target_position_and_all_effect_indices' (3127077) panicked at crates/benitoite/src/types/signature.rs:363:9:
+assertion failed: !old_shape.signature_valid(&polymorphic, true)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    types::signature::tests::io_signature_validates_target_position_and_all_effect_indices
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1378 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p benitoite --lib`

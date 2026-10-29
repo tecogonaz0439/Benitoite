@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "success": true,
+  "cases": [
+    {
+      "name": "numbering-stop",
+      "rustRules": 6,
+      "lean": "notApplicable-numbering-limit"
+    },
+    {
+      "name": "last-run-exceeded",
+      "rustRules": 2,
+      "key": {
+        "definition": "fn:43",
+        "surfacePreorder": 6
+      },
+      "reason": "budgetExceeded",
+      "nonTopRangesWithoutCandidates": 5,
+      "definitions": 1,
+      "reports": [
+        {
+          "tool": "surfaceCheck",
+          "returncode": 1,
+          "outerSeconds": 0.02730575
+        },
+        {
+          "tool": "surfaceCheckAll",
+          "returncode": 1,
+          "outerSeconds": 0.026237457999999998
+        },
+        {
+          "tool": "desugarDiff",
+          "returncode": 0,
+          "outerSeconds": 0.022747917000000006
+        },
+        {
+          "tool": "builtinCheck",
+          "returncode": 0,
+          "outerSeconds": 0.02369850000000001
+        }
+      ]
+    },
+    {
+      "name": "inner-exceeded-outer-recovered",
+      "rustRules": 6,
+      "key": {
+        "definition": "fn:43",
+        "surfacePreorder": 19
+      },
+      "reason": "unknownSource",
+      "nonTopRangesWithoutCandidates": 16,
+      "definitions": 1,
+      "reports": [
+        {
+          "tool": "surfaceCheck",
+          "returncode": 1,
+          "outerSeconds": 0.02744350000000001
+        },
+        {
+          "tool": "surfaceCheckAll",
+          "returncode": 1,
+          "outerSeconds": 0.026051040999999997
+        },
+        {
+          "tool": "desugarDiff",
+          "returncode": 0,
+          "outerSeconds": 0.022562166999999994
+        },
+        {
+          "tool": "builtinCheck",
+          "returncode": 0,
+          "outerSeconds": 0.024420458000000006
+        }
+      ]
+    }
+  ],
+  "rustOnlyCases": 1,
+  "auxiliaryExpectedMismatches": [
+    {
+      "name": "last-run-exceeded",
+      "expected": 6,
+      "actual": 4
+    }
+  ],
+  "auxiliaryExpectedMismatchCount": 1,
+  "successScope": "Required keys, indices and reasons; auxiliary metric expectation has one recorded mismatch",
+  "leanComparedCases": 2,
+  "requiredReasonComparisons": 2,
+  "maxRssBytesAuxiliary": 42221568
+}

@@ -101,7 +101,7 @@ class FileEffects(Project, unittest.TestCase):
                 data = source.replace('\n', ending).encode()
                 self.source.write_bytes(data)
                 inv = derive.collect(self.root, self.config)
-                self.assertEqual(inv['version'], 3)
+                self.assertEqual(inv['version'], 4)
                 module = next(m for m in inv['modules'] if m['name'] == 'People')
                 use = module['fileUses']
                 self.assertEqual(use['text'], 'uses Log')
@@ -110,7 +110,7 @@ class FileEffects(Project, unittest.TestCase):
                 self.assertEqual(module['importInsertLimit'], use['span']['start'])
                 self.assertEqual(module['preambleEnd'], len('//! 日本語の説明'.encode()))
                 self.assertEqual(inv['functions']['People.identity']['signature']['effects'],
-                                 {'names': [{'tag': 'builtin', 'name': 'Log.Log'}], 'vars': [], 'failures': []})
+                                 {'names': [{'tag': 'builtin', 'name': 'Log.Log', 'ix': {'fixed': 'top'}}], 'vars': [], 'failures': []})
                 for change in ('missing', 'missing-limit', 'old', 'null', 'bool', 'past-end', 'before-preamble', 'wrong-text', 'wrong-path'):
                     with self.subTest(change=change):
                         changed = copy.deepcopy(inv)
@@ -614,7 +614,7 @@ class Management(Project, unittest.TestCase):
     # 四問: 実際の出力を使い、外部JSONの契約と意味ハッシュの境界を確かめる。
     # 未知のタグや番号を通す退行、表示を意味として読む退行で失敗する。
     # VMの既存例はJSONの読者を検査しない。テスト専用の本番APIは加えない。
-    def test_v3_reader_and_semantic_hash_contract(self):
+    def test_v4_reader_and_semantic_hash_contract(self):
         inv = derive.collect(self.root, self.config)
         self.assertTrue(all(m['fileUses'] is None and m['importInsertLimit'] is None for m in inv['modules']))
         original = derive.structure(inv['targets'][0], inv)
@@ -662,6 +662,99 @@ class Management(Project, unittest.TestCase):
         changed['targets'][0]['visibility'] = 'private'
         with self.assertRaisesRegex(ValueError, 'inconsistent inventory visibility'):
             derive.validate_inventory(changed, self.root)
+
+    # 作成時の関門: 実際の宣言JSONを消費する境界で、範囲の情報と厳密な検証を守る。
+    # 既存のTopだけの例では範囲の欠落・種類の混同・ハッシュからの脱落を捕まえない。
+    # 修正前のreaderではcollect自体が失敗する。新しい差し込み口は使わない。
+    def test_range_inventory_validation_hashing_and_custom_refusal(self):
+        self.source.write_text('''import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+public record Person
+  name: String
+  path: Scope.PathIn["/data/**"]
+  request: Http.RequestIn["example.com", 80..443]
+end record
+public function load(path: Scope.PathIn["/data/**"]) -> String uses File.Read["/data/**"]
+  return ""
+end function
+public function unicodeEffects() -> Unit uses File.Read["/z", "/あ"]
+  ()
+end function
+''')
+        inv = derive.collect(self.root, self.config)
+        path = inv['targets'][0]['fields'][1]['type']
+        self.assertEqual(path['ix'], {'fixed': {'path': {'tree': ['data']}}})
+        self.assertEqual(derive.resolved_type(path),
+                         'Benitoite.Scope.PathIn[{"fixed":{"path":{"tree":["data"]}}}]')
+        original = derive.structure(inv['targets'][0], inv)
+        changed = copy.deepcopy(inv)
+        changed['targets'][0]['fields'][1]['type']['ix'] = {'fixed': {'path': {'exact': ['data']}}}
+        derive.validate_inventory(changed, self.root)
+        self.assertNotEqual(derive.structure(changed['targets'][0], changed)['declarationSha256'],
+                            original['declarationSha256'])
+        signature = inv['functions']['Benitoite.Scope.widenPathIn']['signature']
+        before = derive.digest(derive.semantic_signature(signature))
+        for key, value in (('rkinds', ['endpoint', 'endpoint']), ('admission', 'any'),
+                           ('shape', {'single': {'kind': 'path', 'position': 0}})):
+            changed_signature = {**signature, key: value}
+            self.assertNotEqual(derive.digest(derive.semantic_signature(changed_signature)), before)
+        self.assertEqual([n['ix'] for n in inv['functions']['People.unicodeEffects']['signature']['effects']['names']],
+                         [{'fixed': {'path': {'exact': ['z']}}}, {'fixed': {'path': {'exact': ['あ']}}}])
+        signature = inv['functions']['People.load']['signature']
+        self.assertEqual(signature['effects']['names'], [
+            {'tag': 'builtin', 'name': 'IO.File.Read', 'ix': {'fixed': {'path': {'tree': ['data']}}}}])
+        changed_signature = copy.deepcopy(signature)
+        changed_signature['effects']['names'][0]['ix'] = {'fixed': 'top'}
+        self.assertNotEqual(derive.digest(derive.semantic_signature(signature)),
+                            derive.digest(derive.semantic_signature(changed_signature)))
+        # IPv6 の整数を文字列や浮動小数へ落とさず、交換形式の全幅で検査する。
+        changed = copy.deepcopy(inv)
+        endpoint = changed['targets'][0]['fields'][2]['type']['ix']['fixed']['endpoint']
+        endpoint['host'] = {'ip': {'exact': {'family': 'v6', 'bits': (1 << 128) - 1}}}
+        derive.validate_inventory(changed, self.root)
+        self.assertEqual(derive.semantic_type(changed['targets'][0]['fields'][2]['type'])['ix']
+                         ['fixed']['endpoint']['host']['ip']['exact']['bits'], (1 << 128) - 1)
+        for bad_host in (
+                {'ip': {'exact': {'family': 'v6', 'bits': str((1 << 128) - 1)}}},
+                {'ip': {'exact': {'family': 'v4', 'bits': 1 << 32}}},
+                {'ip': {'cidr': {'family': 'v6', 'network': 1, 'prefixLen': 64}}},
+                {'ip': {'cidr': {'family': 'v6', 'network': 0, 'prefixLen': 128}}},
+                {'name': {'exact': ['EXAMPLE', 'com']}}):
+            with self.subTest(host=bad_host):
+                endpoint['host'] = bad_host
+                with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
+                    derive.validate_inventory(changed, self.root)
+        invalid_indices = [
+            {'rvar': 0}, {'fixed': {'host': {'name': {'exact': ['example', 'com']}}}},
+            {'fixed': {'path': {'tree': ['..']}}}, {'fixed': {'path': {'unknown': []}}},
+            {'fixed': {'path': {'tree': ['data']}, 'host': {}}}, {'fixed': 'top', 'rvar': 0},
+        ]
+        for ix in invalid_indices:
+            with self.subTest(ix=ix):
+                changed = copy.deepcopy(inv)
+                changed['targets'][0]['fields'][1]['type']['ix'] = ix
+                with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
+                    derive.validate_inventory(changed, self.root)
+        for key, value in (('rkinds', ['host', 'path']),
+                           ('admission', {'covers': {'inner': 0, 'outer': 2}}),
+                           ('shape', {'single': {'kind': 'path', 'position': 99}}),
+                           ('shape', {'single': {'kind': 'path', 'position': 0}}),
+                           ('shape', {'topTargeted': {'kind': 'path'}})):
+            with self.subTest(key=key):
+                changed = copy.deepcopy(inv)
+                changed['functions']['Benitoite.Scope.widenPathIn']['signature'][key] = value
+                with self.assertRaisesRegex(ValueError, 'derive.invalid_inventory'):
+                    derive.validate_inventory(changed, self.root)
+        self.source.write_text('public record Person\n name: String\nend record\n')
+        self.config_value['targets'][0]['fields'] = {
+            'name': {'encode': 'Benitoite.Unofficial.Scope.pathInValue', 'decode': 'Benitoite.Unofficial.Scope.checkPathIn'}}
+        self.save_config()
+        self.manager = derive.Manager(self.root, self.config)
+        before_files = self.files()
+        with self.assertRaisesRegex(ValueError, 'custom encode.*range-polymorphic signatures.*pathInValue'):
+            self.preview('range-custom')
+        self.assertEqual(self.files(), before_files)
 
     def test_opaque_record_and_data_generation_refused_in_owner_module(self):
         for declaration in ('record Person\n  name: String\nend record\n',
@@ -758,8 +851,8 @@ end function
         path, checksum = self.preview('migration')
         plan = json.loads(path.read_bytes())
         self.assertEqual(plan['version'], 3)
-        self.assertEqual(plan['recordAfter']['inventoryVersion'], 3)
-        self.assertEqual(plan['recordAfter']['hashVersion'], 3)
+        self.assertEqual(plan['recordAfter']['inventoryVersion'], 4)
+        self.assertEqual(plan['recordAfter']['hashVersion'], 4)
         self.assertEqual(plan['migration']['previousRecord'], old)
         self.assertFalse(plan['migration']['semanticHashesComparable'])
         self.assertEqual((path.parent / 'changes.diff').read_bytes(), b'')
@@ -809,35 +902,46 @@ end function
         receipt.write_text(json.dumps(proof))
         self.reject_apply_unchanged(manifest, checksum, 'incompatible_receipt')
 
-    def test_batch4_record_requires_new_review_and_protects_old_body(self):
+    def test_older_inventory_record_requires_new_review_and_protects_old_body(self):
         manifest, _ = self.install()
-        stale = json.loads(manifest.read_bytes())
-        stale.update(inventoryVersion=2, generatorVersion='3.0.0-syntax-batch4')
-        manifest = self.root / 'batch4-manifest.json'
-        manifest.write_text(json.dumps(stale))
-        self.reject_apply_unchanged(manifest, hashlib.sha256(manifest.read_bytes()).hexdigest(),
-                                    'derive.incompatible_manifest')
-        old = json.loads(self.manager.record.read_bytes())
-        old.update(inventoryVersion=2, generatorVersion='3.0.0-syntax-batch4')
-        self.manager.record.write_text(json.dumps(old))
-        before = self.files()
-        with self.assertRaisesRegex(ValueError, 'derive.migration_required'):
-            self.manager.check()
-        self.assertEqual(self.files(), before)
-        manifest, checksum = self.preview('batch5')
-        plan = json.loads(manifest.read_bytes())
-        self.assertEqual(plan['migration']['previousRecord'], old)
-        self.assertFalse(plan['migration']['semanticHashesComparable'])
-        self.assertEqual((manifest.parent / 'changes.diff').read_bytes(), b'')
-        self.assertEqual(self.manager.apply(manifest, checksum), 0)
-        self.manager.check()
-        self.assertIsNone(self.manager.apply(manifest, checksum))
-        self.manager.record.write_text(json.dumps(old))
-        self.source.write_bytes(self.source.read_bytes().replace(b'return 1', b'return 2'))
-        before = self.files()
-        with self.assertRaisesRegex(ValueError, 'derive.modified_region'):
-            self.preview('modified-batch4')
-        self.assertEqual(self.files(), before)
+        approved = json.loads(manifest.read_bytes())
+        current_record = self.manager.record.read_bytes()
+        current_source = self.source.read_bytes()
+        # 同じ生成規則のinventory/hashだけの更新も、旧承認を引き継がない。
+        versions = [
+            ('batch4', dict(inventoryVersion=2, generatorVersion='3.0.0-syntax-batch4')),
+            ('inventory3', dict(inventoryVersion=3, hashVersion=3,
+                                generatorVersion='3.1.0-syntax-batch5')),
+        ]
+        for label, previous_versions in versions:
+            with self.subTest(label=label):
+                self.source.write_bytes(current_source)
+                self.manager.record.write_bytes(current_record)
+                stale = {**approved, **previous_versions}
+                manifest = self.root / (label + '-manifest.json')
+                manifest.write_text(json.dumps(stale))
+                self.reject_apply_unchanged(manifest, hashlib.sha256(manifest.read_bytes()).hexdigest(),
+                                            'derive.incompatible_manifest')
+                old = {**json.loads(current_record), **previous_versions}
+                self.manager.record.write_text(json.dumps(old))
+                before = self.files()
+                with self.assertRaisesRegex(ValueError, 'derive.migration_required'):
+                    self.manager.check()
+                self.assertEqual(self.files(), before)
+                manifest, checksum = self.preview(label + '-migration')
+                plan = json.loads(manifest.read_bytes())
+                self.assertEqual(plan['migration']['previousRecord'], old)
+                self.assertFalse(plan['migration']['semanticHashesComparable'])
+                self.assertEqual((manifest.parent / 'changes.diff').read_bytes(), b'')
+                self.assertEqual(self.manager.apply(manifest, checksum), 0)
+                self.manager.check()
+                self.assertIsNone(self.manager.apply(manifest, checksum))
+                self.manager.record.write_text(json.dumps(old))
+                self.source.write_bytes(current_source.replace(b'return 1', b'return 2'))
+                before = self.files()
+                with self.assertRaisesRegex(ValueError, 'derive.modified_region'):
+                    self.preview('modified-' + label)
+                self.assertEqual(self.files(), before)
 
 
     def test_public_cli_empty_workflow_and_argument_errors(self):
@@ -1238,6 +1342,10 @@ end function
         # 保存した例そのものを生成入力にし、基本型と容器の実行結果も確かめる。
         for name in ('People.bnt', 'Address.bnt', 'derive.json', 'derive.generated.json'):
             (self.root / name).write_bytes((Path(derive.__file__).parent / 'examples' / name).read_bytes())
+        # 同じ例の生成・照合を、範囲付きの標準署名を読むimportのある入力で守る。
+        self.source.write_text(self.source.read_text().replace('import Address\n',
+            'import Address\nimport Benitoite.Unofficial.IO.File\n'
+            'import Benitoite.Unofficial.Scope\nimport Benitoite.Unofficial.Network.Http\n'))
         self.source.write_text(self.source.read_text() + '''
 @test
 function generatedBasics() -> Unit uses Assert.Check

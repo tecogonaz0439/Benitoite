@@ -1,0 +1,27 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_preserves",
+    "--",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_preserves",
+    "--",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:13:04.216751+00:00",
+  "ended_at": "2026-10-28T14:13:05.208419+00:00",
+  "exit_code": 101,
+  "elapsed_seconds": 0.9916034169999999,
+  "auxiliary_max_rss_bytes": 417071104,
+  "auxiliary_max_rss_mib": 397.75,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

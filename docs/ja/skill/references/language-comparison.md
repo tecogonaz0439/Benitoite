@@ -1,6 +1,6 @@
 # Benitoite とほかの言語の比較
 
-> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.13 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 <!--
 このファイルのコードの例の検査の仕方（tests/skill_examples.rs）:
@@ -159,6 +159,8 @@ working age
 | `random.random()` | `Math.random()` | `rng.gen::<f64>()` | `Random.float()` |
 | `requests.get(url)` | `fetch(url)` | `reqwest::get(url)` | `Http.get(url)` （エフェクト `Http.Connect`） |
 | `assert a == b` | `assert.equal(a, b)` | `assert_eq!(a, b)` | `Assert.equal(actual: a, expected: b)` （`@test` の関数の中で） |
+
+上の String を取る File の入口と `Http.get` は、対象の範囲が Top である。範囲付き IO は検査済みの `Scope.PathIn` または `Http.RequestIn` を使い、その入力の不変な範囲をエフェクトにも保つ。処理系の[範囲付きの値と IO](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#scoped-values-and-io)と、[定番の書き方](idioms.md)の検査済みの例を参照する。静的な対象の上限は、実行時の権限を与えず、ファイルシステム上の実体や DNS 解決後の相手を特定せず、情報フローを制御しない。ハーネスによるエフェクトの確認と隔離は引き続き必要である。
 
 任意の環境のマップを子プロセスの API へ渡す場合と異なり、`Process.Command.environment` の明示設定には、`DYLD_` または `LD_` で始まる名前を使えない（ASCII の大文字小文字を区別しない）。`LD_RUN_PATH`、空値、同じ値の上書きも含む。`Process.run` と `Process.runAttached` はどちらも、子を起動する前に `IOErrorKind.InvalidInput` を返す。`Process.shell` も含め、継承する変数は変えない。`Process.Run` を了承すると、コマンド自身が変数を設定することは依然として可能である。これは入力の規則であり、プロセスを隔離しない。[外部のコマンドの実行](idioms.md#外部のコマンドの実行)を参照する。
 

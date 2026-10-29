@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.Scope
+@test
+function scopeExample() -> Unit uses Assert.Check
+  match Scope.checkHost(pattern: "*.example.com", host: "API.EXAMPLE.COM") with
+    case Result.Ok(value) -> Assert.equal(actual: Scope.host(value), expected: "api.example.com")
+    case Result.Error(_) -> Assert.fail("host did not match")
+  end match
+  match Scope.checkPath(pattern: "/data/**", path: "/data/report.txt") with
+    case Result.Ok(value) -> Assert.equal(actual: Scope.path(value), expected: "/data/report.txt")
+    case Result.Error(_) -> Assert.fail("path did not match")
+  end match
+  match Scope.checkEndpoint(hostPattern: "example.com", host: "example.com", minimumPort: 443, maximumPort: 443, port: 443) with
+    case Result.Ok(value) -> Assert.equal(actual: Scope.endpointPort(value), expected: 443)
+    case Result.Error(_) -> Assert.fail("endpoint did not match")
+  end match
+end function

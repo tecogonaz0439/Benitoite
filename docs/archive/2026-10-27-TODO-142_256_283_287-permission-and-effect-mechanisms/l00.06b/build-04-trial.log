@@ -1,0 +1,58 @@
+== wait-for-lock start 20:02:06
+== lock acquired 20:02:06 after 0s
+⚠ [35/414] Replayed Benitoite.Release.Typing
+warning: Benitoite/Release/Typing.lean:200:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [137/414] Built Benitoite.Release.Lemmas.Inversion (8.5s)
+✖ [139/414] Building Benitoite.Release.Lemmas.Regularity (1.4s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Regularity.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.setup.json --json
+error: Benitoite/Release/Lemmas/Regularity.lean:164:45: Application type mismatch: The argument
+  hsc.left
+has type
+  Ty.VarsInList s✝.ntys (fun x => x < s✝.neffs) s✝.params
+but is expected to have type
+  Ty.VarsInList (s✝.inst R✝).ntys ?m.1867 (s✝.inst R✝).params
+in the application
+  Ty.VarsInList.wf (s✝.inst R✝).params hsc.left
+error: Benitoite/Release/Lemmas/Regularity.lean:165:41: Application type mismatch: The argument
+  hsc.right.left
+has type
+  Ty.VarsIn s✝.ntys (fun x => x < s✝.neffs) s✝.ret
+but is expected to have type
+  Ty.VarsIn (s✝.inst R✝).ntys ?m.1873 (s✝.inst R✝).ret
+in the application
+  Ty.VarsIn.wf (s✝.inst R✝).ret hsc.right.left
+error: Benitoite/Release/Lemmas/Regularity.lean:166:42: Application type mismatch: The argument
+  hsc.right.right
+has type
+  Eff.VarsIn s✝.ntys (fun x => x < s✝.neffs) s✝.eff
+but is expected to have type
+  Eff.VarsIn (s✝.inst R✝).ntys ?m.1881 (s✝.inst R✝).eff
+in the application
+  Eff.VarsIn.wf (s✝.inst R✝).eff hsc.right.right
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Regularity
+error: build failed
+        9.97 real        52.36 user         0.78 sys
+          1694695424  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              164147  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   7  voluntary context switches
+               34553  involuntary context switches
+          1403041877  instructions retired
+           567896775  cycles elapsed
+            51627256  peak memory footprint
+== exit 1

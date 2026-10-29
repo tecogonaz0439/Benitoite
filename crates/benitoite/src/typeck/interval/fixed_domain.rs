@@ -33,7 +33,7 @@ impl Contract {
     }
 
     fn matches(&self, scheme: &Scheme) -> bool {
-        let same_type = |ty: &Ty, expected| matches!(ty, Ty::Con(TyCon::Builtin(actual), args) if *actual == expected && args.is_empty());
+        let same_type = |ty: &Ty, expected| matches!(ty, Ty::Con(TyCon::Builtin(actual), args, _) if *actual == expected && args.is_empty());
         self.minimum <= self.maximum
             && self.argument_types.get(self.argument) == Some(&B::INTEGER)
             && scheme.type_params.is_empty()

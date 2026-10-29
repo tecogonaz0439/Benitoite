@@ -9,6 +9,7 @@ use super::inspection::FunctionContract;
 use super::text;
 
 /// CLI が受理した、許す原子的な組み込みエフェクトの集合。
+/// 名前ごとに全対象を許す上限であり、範囲付きの引数は受理しない。
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct EffectLimit(BTreeSet<BuiltinEffectId>);
 
@@ -36,6 +37,7 @@ pub(super) fn parse(value: &str) -> Result<EffectLimit, String> {
 }
 
 /// 型検査が確定した宣言上限を ID で比較し、不足した関数に一件だけ返す。
+/// 名前だけの全対象の上限は、同名の非 Top の原子もすべて覆う。
 pub(super) fn check(contract: &FunctionContract, allowed: &EffectLimit) -> Option<Diagnostic> {
     let missing = contract
         .effects

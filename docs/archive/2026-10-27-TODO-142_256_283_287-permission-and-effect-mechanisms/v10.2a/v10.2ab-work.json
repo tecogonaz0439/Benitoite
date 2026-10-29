@@ -1,0 +1,18 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "e17336ece84ceccc6fbba7e03f2319f44b45aaad"
+  ],
+  "timer": [
+    "/usr/bin/time",
+    "-p"
+  ],
+  "shellWrapper": "scripts/check.sh --level work --base e17336ece84ceccc6fbba7e03f2319f44b45aaad\ntask_check_exit=$?\nprintf '{\"checkExit\":%s}\\n' \"$task_check_exit\" > docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2a/v10.2ab-work-check-exit.json\nexit \"$task_check_exit\"\n",
+  "checkExit": 0,
+  "timeExit": 0,
+  "elapsedSeconds": 3.514992709,
+  "rss": "time -p はRSSを報告しないため未計測"
+}

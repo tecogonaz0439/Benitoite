@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.75s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-e79e06fbc41075ec)
+
+running 1 test
+test scoped_contracts_reach_reports_and_name_limits ... FAILED
+
+failures:
+
+---- scoped_contracts_reach_reports_and_name_limits stdout ----
+
+thread 'scoped_contracts_reach_reports_and_name_limits' (7252202) panicked at crates/benitoite/tests/cli_process.rs:201:13:
+assertion `left == right` failed
+  left: Object {"basis": String("declaredUpperBound"), "expanded": Array [String("File.Write"), String("Http.Connect")]}
+ right: Object {"basis": String("declaredUpperBound"), "bounds": Array [Object {"name": String("File.Write"), "scope": Object {"kind": String("pathTree"), "path": String("/backup")}}, Object {"name": String("File.Write"), "scope": Object {"kind": String("pathTree"), "path": String("/data")}}, Object {"name": String("Http.Connect"), "scope": Object {"host": Object {"address": String("192.168.1.0"), "family": String("v4"), "kind": String("cidr"), "prefixLength": Number(24)}, "kind": String("endpoint"), "ports": Object {"maximum": Number(445), "minimum": Number(443)}}}], "expanded": Array [String("File.Write"), String("Http.Connect")]}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scoped_contracts_reach_reports_and_name_limits
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 1.18s
+
+error: test failed, to rerun pass `-p benitoite --test cli_process`

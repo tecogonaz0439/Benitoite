@@ -377,6 +377,7 @@ pub struct CallCtx<'c, 'e> {
     io: Option<&'c mut dyn IoServices>,
     state: Option<&'c mut dyn StateServices>,
     site: Option<InstrRef>,
+    ranges: &'c [crate::types::scope::Range],
 }
 
 impl<'c, 'e> CallCtx<'c, 'e> {
@@ -392,12 +393,22 @@ impl<'c, 'e> CallCtx<'c, 'e> {
             io,
             state,
             site,
+            ranges: &[],
         }
+    }
+
+    /// 型検査と検証器が受理した範囲の列を、そのまま実行本体へ渡す。
+    pub fn with_ranges(mut self, ranges: &'c [crate::types::scope::Range]) -> Self {
+        self.ranges = ranges;
+        self
     }
 
     #[doc(hidden)]
     pub fn pure_ctx(&'c self) -> PureCtx<'c, 'e> {
-        PureCtx { values: self.heap }
+        PureCtx {
+            values: self.heap,
+            ranges: self.ranges,
+        }
     }
 
     #[doc(hidden)]
@@ -407,6 +418,7 @@ impl<'c, 'e> CallCtx<'c, 'e> {
                 values: self.heap,
                 services,
                 site: self.site,
+                ranges: self.ranges,
             }),
             None => Err(Stop::Internal(String::from(
                 "io builtin called without io services",
@@ -433,12 +445,18 @@ impl<'c, 'e> CallCtx<'c, 'e> {
 #[derive(Clone, Copy)]
 pub struct PureCtx<'c, 'e> {
     values: &'c ValueCtx<'e>,
+    ranges: &'c [crate::types::scope::Range],
 }
 
 impl<'c, 'e> PureCtx<'c, 'e> {
     /// 区間の寿命 `'c` の間借りる値の文脈（`&str` の引数を読むときに使う）。
     pub fn values(self) -> &'c ValueCtx<'e> {
         self.values
+    }
+
+    /// この呼び出しの確定した範囲の列。範囲変数は含まない。
+    pub fn ranges(self) -> &'c [crate::types::scope::Range] {
+        self.ranges
     }
 }
 
@@ -455,9 +473,14 @@ pub struct IoCtx<'c, 'e> {
     values: &'c ValueCtx<'e>,
     services: &'c mut dyn IoServices,
     site: Option<InstrRef>,
+    ranges: &'c [crate::types::scope::Range],
 }
 
 impl<'c, 'e> IoCtx<'c, 'e> {
+    /// この呼び出しの確定した範囲の列。範囲変数は含まない。
+    pub fn ranges(&self) -> &'c [crate::types::scope::Range] {
+        self.ranges
+    }
     pub fn values(&self) -> &'c ValueCtx<'e> {
         self.values
     }

@@ -1,0 +1,135 @@
+diff --git a/formal/Benitoite/Release/Assumptions.lean b/formal/Benitoite/Release/Assumptions.lean
+index 0a96ff2e..dd7c454c 100644
+--- a/formal/Benitoite/Release/Assumptions.lean
++++ b/formal/Benitoite/Release/Assumptions.lean
+@@ -63,17 +63,17 @@ structure Builtins.Assumptions (P : Program) (B : Builtins) : Prop where
+     ∃ o, B.delta b ts es rs ws = some o ∧ (∀ n, o ≠ .exit n) ∧ OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+   /-- IO の応答の型。IO を行う関数の応答は値か `error(r)`、プロセスの終了の関数の応答は `exit(n)` か
+   `error(r)` である。 -/
+-  io_kind : ∀ b s ts es ws o, B.sig b = some s → B.ioResponse b ts es ws o →
++  io_kind : ∀ b s ts es ws o obs, B.sig b = some s → B.ioResponse b ts es ws o obs →
+     (s.kind = .io ∧ ∀ n, o ≠ .exit n) ∨ (s.kind = .exit ∧ ∀ v, o ≠ .val v)
+-  io_typed : ∀ Ψ b s rs ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
++  io_typed : ∀ Ψ b s rs ts es ws o obs, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
+-    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
++    B.ioResponse b ts es ws o obs → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+   /-- IO の応答の存在。 -/
+   io_exists : ∀ Ψ b s rs ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
+-    ∃ o, B.ioResponse b ts es ws o
++    ∃ o obs, B.ioResponse b ts es ws o obs
+   /-- IO を行う組み込みの関数は、組み込みのエフェクトの操作であり、型のエフェクトはそのエフェクトの
+   名前だけである。 -/
+   io_op : ∀ b s, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+diff --git a/formal/Benitoite/Release/Lemmas/StepSound.lean b/formal/Benitoite/Release/Lemmas/StepSound.lean
+index 5c3e0ae1..6255f8c5 100644
+--- a/formal/Benitoite/Release/Lemmas/StepSound.lean
++++ b/formal/Benitoite/Release/Lemmas/StepSound.lean
+@@ -101,7 +101,8 @@ theorem rel_resp (hb : B.Assumptions P) {rel : Val → Option ErrKind}
+ 
+ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Option ErrKind)
+     (fresh : Store → Nat)
+-    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
++    (horacle : ∀ b ts es ws o obs, B.ioResponse b ts es ws o obs →
++      B.ioResponse b ts es ws (oracle b ts es ws).1 (oracle b ts es ws).2)
+     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v))
+     (hfresh : ∀ σ : Store, (∃ n, ∀ l, n ≤ l → σ l = none) → σ (fresh σ) = none)
+     {Eb : Eff} {s : State} {l : Option Event} {s' : State}
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index e78a1742..fbc20457 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -60,7 +60,7 @@ inductive State where
+ 
+ /-- 事象。IO の事象 `b(W̄) ↦ …` と、解放の事象 `release(V) ↦ ok | error(r)`。 -/
+ inductive Event where
+-  | io (b : PrimName) (ws : List Val) (o : Outcome)
++  | io (b : PrimName) (ws : List Val) (o : Outcome) (obs : List Scope.Domain.Target)
+   | release (v : Val) (r : Option ErrKind)
+ 
+ /-- `mark ▷ K`。 -/
+@@ -181,20 +181,20 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State 
+       B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.err r) →
+       Step P B (.run (.app (.prim b ts es rs) ws) k σ) none (.error [r] k σ)
+   /-- E-IO。組み込みの操作 b は、継続に b の節を持つ `handle` の枠がないときにだけ、E-IO を使う。 -/
+-  | E_IO {b ts es rs ws k σ s v} :
++  | E_IO {b ts es rs ws k σ s v obs} :
+       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.val v) →
+-      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.val v))) (.run (.ret v) k σ)
++      B.ioResponse b ts es ws (.val v) obs →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.val v) obs)) (.run (.ret v) k σ)
+   /-- E-IOErr。プロセスの終了の関数の、引数が定義域の外のときの応答も `error(r)` である（01-12「プロセスの終了」）。 -/
+-  | E_IOErr {b ts es rs ws k σ s r} :
++  | E_IOErr {b ts es rs ws k σ s r obs} :
+       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.err r) →
+-      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.err r))) (.error [r] k σ)
++      B.ioResponse b ts es ws (.err r) obs →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.err r) obs)) (.error [r] k σ)
+   /-- E-Exit。終了状態を指定したプロセスの終了の関数にだけ使う。 -/
+-  | E_Exit {b ts es rs ws k σ s n} :
++  | E_Exit {b ts es rs ws k σ s n obs} :
+       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.exit n) →
+-      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.exit n))) (.exit n [] k σ)
++      B.ioResponse b ts es ws (.exit n) obs →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.exit n) obs)) (.exit n [] k σ)
+   -- ストア
+   | E_RefNew {b ts es rs v k σ s l} :
+       B.sig b = some s → s.kind = .refNew → σ l = none →
+@@ -336,7 +336,7 @@ def State.Final : State → Prop
+ /-! ## 遷移を計算する関数 -/
+ 
+ /-- IO の応答を選ぶ関数（段階 A と同じく、同じ入力には同じ応答を返す）。 -/
+-abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome
++abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome × List Scope.Domain.Target
+ 
+ /-- 継続を、op を処理する最も内側の `handle` の枠で分ける。 -/
+ def splitHandler (o : OpRef) : Cont → Option (Cont × List Clause × Cont)
+@@ -433,9 +433,9 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
+                   | none => none
+               | none =>
+                   match s.kind, oracle b ts es ws with
+-                  | .io, .val v => some (some (.io b ws (.val v)), .run (.ret v) k σ)
+-                  | _, .err r => some (some (.io b ws (.err r)), .error [r] k σ)
+-                  | .exit, .exit n => some (some (.io b ws (.exit n)), .exit n [] k σ)
++                  | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (.ret v) k σ)
++                  | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k σ)
++                  | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k σ)
+                   | _, _ => none
+           | .refNew, [v] =>
+               let l := fresh σ
+diff --git a/formal/Benitoite/Release/Theorems.lean b/formal/Benitoite/Release/Theorems.lean
+index 8130c01f..bf21ed00 100644
+--- a/formal/Benitoite/Release/Theorems.lean
++++ b/formal/Benitoite/Release/Theorems.lean
+@@ -21,7 +21,8 @@ variable {P : Program} {B : Builtins}
+ /-- 型が付いた状態について、`step` が返す遷移は `Step` の遷移である。`oracle` と `rel` は、起こりうる応答が
+ あるときは、その一つを選ぶ。`fresh` は、有限なストアに中身のない場所を選ぶ。 -/
+ theorem step_sound (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Option ErrKind) (fresh : Store → Nat)
+-    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
++    (horacle : ∀ b ts es ws o obs, B.ioResponse b ts es ws o obs →
++      B.ioResponse b ts es ws (oracle b ts es ws).1 (oracle b ts es ws).2)
+     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v))
+     (hfresh : ∀ σ : Store, (∃ n, ∀ l, n ≤ l → σ l = none) → σ (fresh σ) = none)
+     {s : State} {l : Option Event} {s' : State} :
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index d03a23e6..7fd500fe 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -71,8 +71,9 @@ structure Builtins where
+   sig : PrimName → Option PrimSig
+   /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（01-12「実行の規則」）。 -/
+   delta : PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Option Outcome
+-  /-- IO を行う組み込みの関数の応答として起こりうるもの。 -/
+-  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
++  /-- IO を行う組み込みの関数の応答と、その応答で作用した対象の観測（有限列）として起こりうるもの
++  （問 8 の O1。観測は応答の関係に含める。設計書 01-12「実行の規則」）。 -/
++  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → List Scope.Domain.Target → Prop
+   /-- 事象 `release(V)` の応答として起こりうるもの。`none` が `ok`、`some r` が `error(r)`。 -/
+   releaseResponse : Val → Option ErrKind → Prop
+   /-- リソースの型か。リソースの型の解放のエフェクト `rel(O_r)` は `{State}` である。 -/

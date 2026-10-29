@@ -27,7 +27,7 @@ mutual
     | .con _ _ vs | .list vs | .setV vs | .dict _ _ vs => Val.LocalRefsList depth places vs
     | .mapV ks vs => Val.LocalRefsList depth places ks ∧ Val.LocalRefsList depth places vs
     | .super v _ => Val.LocalRefs depth places v
-    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. => True
+    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
   def Val.LocalRefsList (depth : Nat) (places : Nat → Prop) : List Val → Prop
     | [] => True
     | v :: vs => Val.LocalRefs depth places v ∧ Val.LocalRefsList depth places vs
@@ -86,6 +86,8 @@ mutual
     | .V_Super hv _ _ =>
         simp only [Val.LocalRefs]; exact HasTypeVQ.localRefs (depth := _) (places := places) hv
     | .V_Sub hv _ hw => exact HasTypeVQ.localRefs (depth := _) (places := places) hv
+    | .V_Checked _ _ => trivial
+    | .V_CheckedRequest _ _ _ _ => trivial
 
   theorem HasTypeVsQ.localRefs {depth : Nat} {places : Nat → Prop} {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
       Val.LocalRefsList depth places vs := by
@@ -132,7 +134,7 @@ mutual
     | .plain hp hm hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hm (by simpa [hp.2.1] using hΔ.extend _) hΨ, HasTypeArmsQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
     | .guarded hp hg hm hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hg (by simpa [hp.2.1] using hΔ.extend _) hΨ, HasTypeCQ.localRefs (depth := _) (places := places) hm (by simpa [hp.2.1] using hΔ.extend _) hΨ, HasTypeArmsQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
 
-  theorem HasTypeClausesQ.localRefs {depth : Nat} {places : Nat → Prop} {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
+  theorem HasTypeClausesQ.localRefs {depth : Nat} {places : Nat → Prop} {Δl : LocalCtx} {Ψ C Γ R εb cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl)
       (hΔ : Δl.Scoped depth) (hΨ : Ψ.BuilderPlaces places) :
       Clause.LocalRefsList depth places cs := by
     match h with

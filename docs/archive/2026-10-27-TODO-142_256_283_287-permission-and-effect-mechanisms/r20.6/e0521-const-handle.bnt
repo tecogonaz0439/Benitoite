@@ -1,0 +1,9 @@
+effect Tick
+ function tick(n: Integer) -> Integer
+end effect
+const value: Integer = handle tick(1) with
+ case tick(n) -> resume(n)
+end handle
+function main() -> Unit
+ ()
+end function

@@ -1,0 +1,3406 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.File
+function sample(path: String, request: Http.ClientRequest) -> Unit uses File.Read, File.Write, Http.Connect
+ bind block0 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block1 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block2 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block3 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block4 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block5 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block6 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block7 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block8 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block9 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block10 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block11 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block12 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block13 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block14 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block15 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block16 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block17 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block18 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block19 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block20 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block21 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block22 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block23 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block24 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block25 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block26 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block27 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block28 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block29 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block30 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block31 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block32 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block33 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block34 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block35 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block36 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block37 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block38 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block39 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block40 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block41 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block42 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block43 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block44 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block45 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block46 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block47 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block48 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block49 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block50 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block51 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block52 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block53 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block54 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block55 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block56 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block57 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block58 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block59 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block60 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block61 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block62 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block63 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block64 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block65 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block66 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block67 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block68 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block69 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block70 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block71 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block72 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block73 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block74 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block75 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block76 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block77 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block78 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block79 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block80 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block81 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block82 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block83 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block84 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block85 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block86 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block87 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block88 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block89 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block90 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block91 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block92 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block93 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block94 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block95 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block96 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block97 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block98 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ bind block99 <- block
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind projected <- Scope.pathInValue(path: p)
+  bind io0 <- File.readTextIn(path: p)
+  bind io1 <- File.readBytesIn(path: p)
+  bind io2 <- File.writeTextIn(path: p, text: "data")
+  bind io3 <- File.appendTextIn(path: p, text: "data")
+  bind io4 <- File.writeBytesIn(path: p, content: String.toUTF8("data"))
+  bind io5 <- File.appendBytesIn(path: p, content: String.toUTF8("data"))
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: p)
+  bind copy <- p
+  bind branch <- if true then p else p end if
+  bind ignored <- Scope.pathInValue(path: branch)
+  bind again <- Scope.checkPathIn(pattern: projected, path: path)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ bind result <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 80, maximumPort: 443, request: request)
+ match result with
+ case Result.Ok(r) ->
+  bind projected <- Http.requestInValue(request: r)
+  bind io6 <- Http.sendIn(request: r)
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: r)
+  bind copy <- r
+  bind branch <- block r end block
+  bind ignored <- Http.requestInValue(request: branch)
+  bind again <- Http.checkRequestIn(hostPattern: "other.example", minimumPort: 443, maximumPort: 443, request: projected)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+ end block
+ ()
+end function

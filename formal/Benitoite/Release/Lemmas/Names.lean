@@ -18,7 +18,7 @@ mutual
     | .var _ => True
     | .const _ => True
     | .fnRef _ _ _ => True
-    | .prim _ _ _ => True
+    | .prim _ _ _ _ => True
     | .lam names params body => NamesWF names params ∧ Comp.LambdaNamesWF body
     | .con _ _ args => Val.LambdaNamesWFList args
     | .list elems => Val.LambdaNamesWFList elems
@@ -28,6 +28,8 @@ mutual
     | .mapV ks vs => Val.LambdaNamesWFList ks ∧ Val.LambdaNamesWFList vs
     | .setV elems => Val.LambdaNamesWFList elems
     | .bytesV _ => True
+    | .checked _ => True
+    | .checkedRequest _ _ => True
     | .dict _ _ args => Val.LambdaNamesWFList args
     | .super v _ => Val.LambdaNamesWF v
 
@@ -70,18 +72,20 @@ mutual
     match v with
     | .var _ => True
     | .const _ => True
-    | .fnRef _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
-    | .prim _ tys effs => Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs
-    | .lam _ params body => Ty.VarsInList n pe params ∧ Comp.VarsInNoLamNames n pe body (depth + params.length)
-    | .con _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
+    | .fnRef _ tys effs => Ty.VarsInList 0 n pe tys ∧ Eff.VarsInList 0 n pe effs
+    | .prim _ tys effs _ => Ty.VarsInList 0 n pe tys ∧ Eff.VarsInList 0 n pe effs
+    | .lam _ params body => Ty.VarsInList 0 n pe params ∧ Comp.VarsInNoLamNames n pe body (depth + params.length)
+    | .con _ tys args => Ty.VarsInList 0 n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
     | .list elems => Val.VarsInNoLamNamesList n pe elems depth
-    | .op _ tys => Ty.VarsInList n pe tys
-    | .raise t e => Ty.VarsIn n pe t ∧ Ty.VarsIn n pe e
+    | .op _ tys => Ty.VarsInList 0 n pe tys
+    | .raise t e => Ty.VarsIn 0 n pe t ∧ Ty.VarsIn 0 n pe e
     | .loc _ => True
     | .mapV ks vs => Val.VarsInNoLamNamesList n pe ks depth ∧ Val.VarsInNoLamNamesList n pe vs depth
     | .setV elems => Val.VarsInNoLamNamesList n pe elems depth
     | .bytesV _ => True
-    | .dict _ tys args => Ty.VarsInList n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
+    | .checked _ => True
+    | .checkedRequest _ _ => True
+    | .dict _ tys args => Ty.VarsInList 0 n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
     | .super v _ => Val.VarsInNoLamNames n pe v depth
 
   def Val.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (vs : List Val) (depth : Nat := 0) : Prop :=
@@ -91,9 +95,9 @@ mutual
 
   def Comp.VarsInNoLamNames (n : Nat) (pe : Nat → Prop) (m : Comp) (depth : Nat := 0) : Prop :=
     match m with
-    | .builderLet k body => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
+    | .builderLet k body => (match k with | .list a => Ty.VarsIn 0 n pe a | _ => True) ∧
         Comp.VarsInNoLamNames n pe body (depth + 1)
-    | .builderOp k _ r args => (match k with | .list a => Ty.VarsIn n pe a | _ => True) ∧
+    | .builderOp k _ r args => (match k with | .list a => Ty.VarsIn 0 n pe a | _ => True) ∧
         r.Scoped depth ∧ Val.VarsInNoLamNamesList n pe args depth
     | .ret v => Val.VarsInNoLamNames n pe v depth
     | .letIn m m' => Comp.VarsInNoLamNames n pe m depth ∧ Comp.VarsInNoLamNames n pe m' (depth + 1)
@@ -106,7 +110,7 @@ mutual
     | .handle m h => Comp.VarsInNoLamNames n pe m depth ∧ Clause.VarsInNoLamNamesList n pe h depth
     | .resume k v => Val.VarsInNoLamNames n pe k depth ∧ Val.VarsInNoLamNames n pe v depth
     | .meth d _ tys effs args =>
-        Val.VarsInNoLamNames n pe d depth ∧ Ty.VarsInList n pe tys ∧ Eff.VarsInList n pe effs ∧ Val.VarsInNoLamNamesList n pe args depth
+        Val.VarsInNoLamNames n pe d depth ∧ Ty.VarsInList 0 n pe tys ∧ Eff.VarsInList 0 n pe effs ∧ Val.VarsInNoLamNamesList n pe args depth
 
   def Arm.VarsInNoLamNamesList (n : Nat) (pe : Nat → Prop) (arms : List Arm) (depth : Nat := 0) : Prop :=
     match arms with
@@ -120,7 +124,7 @@ mutual
     match cs with
     | [] => True
     | .mk _ arity k m :: cs => Comp.VarsInNoLamNames (n + k) pe m (depth + arity + 1) ∧ Clause.VarsInNoLamNamesList n pe cs depth
-    | .fail e m :: cs => Ty.VarsIn n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m (depth + 2) ∧ Clause.VarsInNoLamNamesList n pe cs depth
+    | .fail e m :: cs => Ty.VarsIn 0 n pe e ∧ Comp.VarsInNoLamNames (n + 1) pe m (depth + 2) ∧ Clause.VarsInNoLamNamesList n pe cs depth
 end
 
 
@@ -149,6 +153,8 @@ mutual
     | .V_Super hv _ _ =>
         simp only [Val.LambdaNamesWF]; exact HasTypeVQ.lambdaNamesWF hv
     | .V_Sub hv _ hw => exact HasTypeVQ.lambdaNamesWF hv
+    | .V_Checked _ _ => trivial
+    | .V_CheckedRequest _ _ _ _ => trivial
 
   theorem HasTypeVsQ.lambdaNamesWF {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
       Val.LambdaNamesWFList vs := by
@@ -191,7 +197,7 @@ mutual
     | .plain _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
     | .guarded _ hg hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hg, HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
 
-  theorem HasTypeClausesQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl) :
+  theorem HasTypeClausesQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R εb cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl) :
       Clause.LambdaNamesWFList cs := by
     match h with
     | .nil => trivial
@@ -215,7 +221,7 @@ mutual
     | .fnRef _ tys effs => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
           grind only
-    | .prim _ tys effs => by
+    | .prim _ tys effs _ => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
           grind only
     | .lam names params body => by
@@ -242,6 +248,12 @@ mutual
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF, Val.varsInList_iff_noLamNames n pe elems] <;>
           grind only
     | .bytesV _ => by
+        simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
+          grind only
+    | .checked _ => by
+        simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
+          grind only
+    | .checkedRequest _ _ => by
         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
           grind only
     | .dict _ tys args => by

@@ -1,6 +1,20 @@
 # Changelog
 
-All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Every incompatible change is listed with how to migrate.
+All notable changes to Benitoite are recorded in this file. Versions follow the policy in [Compatibility](docs/reference/benitoite.md#20-compatibility): while the major version is 0, a minor version may contain incompatible changes, and a patch version contains only bug fixes. Until `0.1.0`, any release may contain incompatible changes. Incompatible changes are listed in each release section.
+
+## 0.0.13 (San Benito)
+
+A source-only release; no executables are provided. `benitoite --version` prints `benitoite 0.0.13`.
+
+### Scoped effects and checked targets
+
+- Add scoped effect bounds for file paths and HTTP endpoints, with checked `Scope.PathIn` and `Http.RequestIn` values. Bounds describe static upper limits; they do not enforce runtime permissions or information-flow control.
+- Add `File.readTextIn`, `File.readBytesIn`, `File.writeTextIn`, `File.appendTextIn`, `File.writeBytesIn`, `File.appendBytesIn`, and `Http.sendIn`. These operations retain checked targets and carry their input types' target scopes in their effects.
+- Scoped operations were added to `File.Read`, `File.Write`, and `Http.Connect`. Handlers that cover only their earlier operations, including a handler with only an `Http.send` clause, are partial and leave the effect unhandled. `File.Read` declares 13 operations, `File.Write` 16, and `Http.Connect` `send` and `sendIn`.
+- Scope host checks and patterns accept canonical IPv4/IPv6 addresses and CIDR networks; IPv4-mapped IPv6 targets are rejected, and invalid-pattern reasons list the new forms.
+- Add declared target `bounds` to inspection reports alongside expanded effect names. Unknown or incomplete contracts remain distinct from empty effect sets.
+- Update development derive declaration inventories and semantic hashes to version 4. Old manifests and receipts cannot approve new inputs.
+- Register the language compatibility boundary at `0.0.13`: earlier declarations report E0908, `0.0.13` passes, and later declarations report E0907.
 
 ## 0.0.12 (San Benito)
 

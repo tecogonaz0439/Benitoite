@@ -97,8 +97,8 @@ def primLookup (xs : List PrimEntry) (name : PrimName) : Option PrimEntry :=
 def builtins (S : SummaryTable) (xs : List PrimEntry)
     (b : BuiltinMaterial) : Builtins :=
   { sig := fun n => (primLookup xs n).map PrimEntry.signature
-    delta := fun _ _ _ _ => none
-    ioResponse := fun _ _ _ _ _ => False
+    delta := fun _ _ _ _ _ => none
+    ioResponse := fun _ _ _ _ _ _ => False
     releaseResponse := fun _ _ => False
     isResource := b.isResource
     effects := b.effectOps
@@ -203,7 +203,8 @@ def Materials.names (m : Materials) : Names :=
 
 def Materials.input (m : Materials) (B : Builtins) (sat : SatDec) (admits : AdmitsDec)
     (op : OpPrim) (atoms : List Atom) : Check.Input :=
-  ⟨m.declarations, B, sat, admits, op, dataConstructors m.data, atoms, []⟩
+  -- 交換の材料はまだ範囲の具体化の制約の判定を持たないので、全て Top の列だけを通す（L50.1・L50.2 で交換に加える）。
+  ⟨m.declarations, B, sat, admits, op, dataConstructors m.data, atoms, [], fun _ _ => false⟩
 
 /-- 各位置を検査し、最初の失敗の元の経路を返す。 -/
 def checkNamed (table : String → Option α) (check : List Nat → α → Check.Result Unit)

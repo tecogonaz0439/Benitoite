@@ -1,0 +1,64 @@
+$ python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-compare.py
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_baseline",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_baseline",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:20:17.134784+00:00",
+  "ended_at": "2026-10-28T14:20:19.299137+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.1642875420000003,
+  "auxiliary_max_rss_bytes": 687046656,
+  "auxiliary_max_rss_mib": 655.21875,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_current",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_current",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:20:19.346838+00:00",
+  "ended_at": "2026-10-28T14:20:21.646635+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.2997312500000002,
+  "auxiliary_max_rss_bytes": 687439872,
+  "auxiliary_max_rss_mib": 655.59375,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}
+{
+  "comparison": "five final JSON documents agree outside explicit version/range projection",
+  "artifacts": 10,
+  "projected_paths": 238
+}

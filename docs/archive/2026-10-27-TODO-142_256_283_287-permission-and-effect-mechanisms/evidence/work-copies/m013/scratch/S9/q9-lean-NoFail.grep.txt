@@ -1,0 +1,86 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:1:import Benitoite.Release.NoFail
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:19:/-- 全具体化の NoFail 保存。補助の一般形は noFail_substAt。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:21:    (ha : Admissible B C tps ne Qs Qt ts es e) (h : NoFail Qs e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:22:    NoFail Qt (Eff.substAt 0 ts es e) := noFail_substAt ha.noFailRows h 0 ts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:52:  (NoFail.empty_iff _).mp (h.noFailRows i hi)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:127:    (show NoFail Qempty Eff.empty from ⟨rfl, by intro i hi; cases hi⟩) hcl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:55:    NoFail Qempty (handled P B h) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:83:    (hn : NoFail Qempty Rest) (hw : Ty.WF 0 t) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:7:最も内側の節まで Fail の所属を伝播し、上限と NoFail から型の一致を導く。
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:71:      NoFail Qempty Rest ∧ Eff.Sub Rest eout ∧ Eff.Sub ec eout ∧ Ty.WF 0 t ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:146:      NoFail Qempty Rest ∧ Eff.Sub Rest eout ∧ Eff.Sub ec eout ∧ Ty.WF 0 t ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureCont.lean:255:      Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) ∧ NoFail Q Rest ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/NoFailContext.lean:4:/-! NoFail の文脈を広げる弱化。Q は型付け判断のパラメータである。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:4:# 署名由来の NoFail 文脈と行の代入
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:6:NoFail は最外の Fail 列と行の条件である。型の中の潜在 Fail は禁じない。
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:89:def NoFail (Q : NoFailCtx) (e : Eff) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:93:  ∀ i, Qs i → NoFail Qt (Eff.rowImage es i)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:107:theorem NoFail.iff_mem (Q : NoFailCtx) (e : Eff) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:108:    NoFail Q e ↔ (∀ t, ¬ Eff.memFail e t) ∧ ∀ i, Eff.mem e (.rho i) → Q i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:109:  simp only [NoFail, Eff.fails_eq_nil_iff]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:111:@[simp] theorem NoFail.norm_iff (Q : NoFailCtx) (e : Eff) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:112:    NoFail Q (Eff.norm e) ↔ NoFail Q e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:113:  simp only [NoFail.iff_mem, Eff.norm_memFail, Eff.mem_norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:115:theorem NoFail.empty (Q : NoFailCtx) : NoFail Q Eff.empty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:118:theorem NoFail.row_iff (Q : NoFailCtx) (i : Nat) : NoFail Q (Eff.row i) ↔ Q i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:119:  simp only [NoFail, Eff.row, Eff.ofAtoms, Eff.fails, true_and]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:126:theorem NoFail.mono {Q Q' : NoFailCtx} {e : Eff} (hq : QLe Q Q') (h : NoFail Q e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:127:    NoFail Q' e := ⟨h.1, fun i hi => hq i (h.2 i hi)⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:136:theorem NoFail.not_memFail {Q : NoFailCtx} {e : Eff} (h : NoFail Q e) (t : Ty) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:139:theorem NoFail.empty_iff (e : Eff) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:140:    NoFail Qempty e ↔ e.fails = [] ∧ ∀ i, ¬ Eff.mem e (.rho i) := Iff.rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:143:theorem NoFail.union_iff (Q : NoFailCtx) (e f : Eff) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:144:    NoFail Q (Eff.union e f) ↔ NoFail Q e ∧ NoFail Q f := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:145:  simp only [NoFail.iff_mem, Eff.memFail_union, Eff.mem_union]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:154:theorem NoFail.union {Q : NoFailCtx} {e f : Eff} (he : NoFail Q e) (hf : NoFail Q f) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:155:    NoFail Q (Eff.union e f) := (NoFail.union_iff Q e f).mpr ⟨he, hf⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:157:/-- 効果を狭めると NoFail は保たれる。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:158:theorem NoFail.sub {Q : NoFailCtx} {e f : Eff} (h : NoFail Q f) (hs : Eff.Sub e f) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:159:    NoFail Q e := (NoFail.iff_mem Q e).mpr
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:163:theorem NoFail.shift_iff (Q : NoFailCtx) (e : Eff) (k c : Nat) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:164:    NoFail Q (Eff.shift k c e) ↔ NoFail Q e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:180:theorem NoFail.shift {Q : NoFailCtx} {e : Eff} (h : NoFail Q e) (k c : Nat) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:181:    NoFail Q (Eff.shift k c e) := (NoFail.shift_iff Q e k c).mpr h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:183:/-- 一般の代入でも、Q の各行の像が NoFail なら NoFail を保つ。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:184:theorem NoFail.bind {Qs Qt : NoFailCtx} {e : Eff} (θ : SubstEnv)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:185:    (hr : RowTransport Qs Qt θ.rows) (h : NoFail Qs e) : NoFail Qt (Eff.bind θ e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:186:  apply (NoFail.iff_mem _ _).mpr
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:199:  simp only [RowTransport, Eff.rowImage, List.getElem?_nil, Option.getD_none, NoFail.row_iff, QLe]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:204:/-- cutoff により型の像を移動しても、NoFail の文脈の行番号は変わらない。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:210:  change NoFail Qt (Eff.rowImage (es.map (Eff.rawShift c 0)) i)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:214:    have hrf : NoFail Qt f := by simpa [Eff.rowImage, hf] using hr
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:215:    have hn := (NoFail.norm_iff Qt (Eff.rawShift c 0 f)).mp (hrf.shift c 0)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:220:    (hr : RowTransport Qs Qt es) (h : NoFail Qs e) (c : Nat) (ts : List Ty) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:221:    NoFail Qt (Eff.substAt c ts es e) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:222:  NoFail.bind (SubstEnv.at c ts es) (hr.at c ts) h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:241:  exact NoFail.bind φ h' (h i hi)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:245:    (hE : E.Canonical) (hE' : E'.Canonical) (hr : NoFail Qempty Rest)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Semantics.lean:566:      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub Rest ε → NoFail Qempty Rest →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:2:import Benitoite.Release.NoFail
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:495:        Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) → NoFail Q Rest →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:85:/-- 通常の型制約は既存の SatAll の検査から渡す。NoFail を仮定には追加しない。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:117:  -- 型制約の表は使わず、同じ計算結果から範囲と NoFail だけを取り出す。
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:232:        require path "function instantiation violates scope or NoFail"
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:246:        require path "function instantiation violates scope or NoFail"
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:262:        require path "method instantiation violates scope or NoFail"
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:272:        require path "primitive instantiation violates scope or NoFail"
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:282:        require path "Fail handler remainder violates NoFail" (noFailCheck q.atoms q.noFailRows rest)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:825:/-- 宣言の外の従来の入口は、NoFail を仮定しない。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:982:    .error ⟨[0, 0], "function instantiation violates scope or NoFail"⟩ := by rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FailureExamples.lean:101:-- 本体だけがNoFailを必要とする署名は、Qを後付けせず拒否する。
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FailureExamples.lean:109:    some "function instantiation violates scope or NoFail" := by decide
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/NoFailSignature.lean:2:import Benitoite.Release.NoFail
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/NoFailSignature.lean:4:/-! 辞書引数を加えたコアの署名も、表層の宣言と同じ NoFail 条件を持つ。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/NoFailSignature.lean:14:/-- 制約の辞書は型変数だけを含むため、署名の NoFail 条件を増やさない。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:1:import Benitoite.Release.NoFail
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:5:# 署名由来の Q と NoFail の計算
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:7:Q は宣言の行数個の Bool とする。NoFail の判定は最外の Fail 列と行だけを調べる。
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:14:/-- 計算用 Q の範囲外は NoFail とみなさない。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:94:    noFailCheck atoms q e = true ↔ NoFail (NoFailCtxOf q) e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:115:    noFailCheck atoms q e = true ↔ NoFail (NoFailCtxOf q) e :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:153:    have hne : NoFail (NoFailCtxOf qt) es[i] := by simpa [Eff.rowImage, he] using hn
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheckExamples.lean:47:/-- NoFail は最外の条件であり、名前の種類や内部の Fail 型の比較は不要である。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheckExamples.lean:48:example : NoFail Qempty (Eff.single stateEff) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/SingleFail.lean:1:import Benitoite.Release.NoFail
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/SingleFail.lean:8:同じエラー型と署名由来の NoFail 行を要求する（設計書 01-12「型付きの失敗の表層検査」）。
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:147:        Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) → NoFail Q Rest →

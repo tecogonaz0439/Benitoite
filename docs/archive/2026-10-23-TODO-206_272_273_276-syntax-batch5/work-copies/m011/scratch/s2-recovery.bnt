@@ -1,0 +1,9 @@
+function main() -> Unit
+  bind f <- SourceLocation.here
+  bind n: Integer <- f
+  match f with
+    case Option.Some(v) -> ()
+    case Option.None -> ()
+  end match
+  bind independent: Integer <- "wrong"
+end function

@@ -1,0 +1,14 @@
+trait Scope[T]
+ function checkPathIn(pattern: String, path: T) -> String
+end trait
+implement Scope[String]
+ function checkPathIn(pattern: String, path: String) -> String
+  return path
+ end function
+end implement
+function sample() -> String
+ return Scope.checkPathIn(pattern: "/bad//path", path: "x")
+end function
+function main() -> Unit
+ ()
+end function

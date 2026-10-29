@@ -1,0 +1,25 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.23s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures' (3815455) panicked at crates/benitoite/tests/desugar_export/scope_tables.rs:40:5:
+assertion `left == right` failed: [Diagnostic { kind: Check, severity: Error, code: Some(E0230), message: "`let` is not used to bind names", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(95), end: BytePos(98) }, text: "" }), secondary: [], notes: [], helps: [Help { message: "write `bind result <- Scope.checkPathIn(pattern: pattern, path: raw)`", edits: [] }, Help { message: "if `result` is already a local name here, write `shadow result <- Scope.checkPathIn(pattern: pattern, path: raw)`", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures ... FAILED
+
+failures:
+
+failures:
+    scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 41 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`
+command_exit=101
+real 3.23
+user 4.03
+sys 0.59

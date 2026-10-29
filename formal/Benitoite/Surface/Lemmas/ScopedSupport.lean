@@ -15,8 +15,8 @@ theorem desugarPipeValue {op pos lhs rhs} (h : rhs.PipeValue) :
 /-- 型とエフェクトの変数の範囲。局所変数の番号は rename が扱う。 -/
 def CallHead.Scoped (nt : Nat) (pe : Nat → Prop) : CallHead → Prop
   | .app v ds => Val.VarsIn nt pe v ∧ Val.VarsInList nt pe ds
-  | .meth d _ ss es us => Val.VarsIn nt pe d ∧ Ty.VarsInList nt pe ss ∧
-      Eff.VarsInList nt pe es ∧ Val.VarsInList nt pe us
+  | .meth d _ ss es us => Val.VarsIn nt pe d ∧ Ty.VarsInList 0 nt pe ss ∧
+      Eff.VarsInList 0 nt pe es ∧ Val.VarsInList nt pe us
 
 theorem CallHead.Scoped.rename {nt pe} {h : CallHead} (hh : h.Scoped nt pe) (ξ : Nat → Nat) :
     (h.rename ξ).Scoped nt pe := by

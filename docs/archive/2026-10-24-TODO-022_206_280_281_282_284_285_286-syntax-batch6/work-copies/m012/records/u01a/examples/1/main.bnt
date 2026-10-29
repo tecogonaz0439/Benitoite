@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.IO.File
+
+function firstLine(path: String) -> Result[String, String] uses File.Read
+  bind text <- try File.readText(path) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error)) or return
+  return Option.okOr(o: List.head(String.lines(text)), error: "empty file")
+end function
+
+@test("firstLine returns the first line")
+function firstLineWorks() -> Unit uses Assert.Check, File.Read
+  bind result <- handle
+    firstLine("data.txt")
+  with
+    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+  end handle
+  Assert.equal(actual: result, expected: Result.Ok("alpha"))
+end function

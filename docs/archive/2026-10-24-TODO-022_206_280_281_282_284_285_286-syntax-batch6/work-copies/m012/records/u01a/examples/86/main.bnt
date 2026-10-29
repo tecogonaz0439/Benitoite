@@ -1,0 +1,17 @@
+import Benitoite.Unofficial.Range
+@test
+function rangeExample() -> Unit uses Assert.Check
+  match Range.checkInteger(minimum: 1, maximum: 10, value: 10) with
+    case Result.Ok(value) ->
+      Assert.equal(actual: Range.minimum(value), expected: 1)
+      Assert.equal(actual: Range.maximum(value), expected: 10)
+      Assert.equal(actual: Range.value(value), expected: 10)
+    case Result.Error(_) -> Assert.fail("inclusive bound did not match")
+  end match
+  match Range.checkInteger(minimum: 10, maximum: 1, value: 0) with
+    case Result.Error(Range.RangeError.InvalidBounds(low, high)) ->
+      Assert.equal(actual: low, expected: 10)
+      Assert.equal(actual: high, expected: 1)
+    case _ -> Assert.fail("reversed bounds must take priority")
+  end match
+end function

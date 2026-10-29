@@ -1,0 +1,86 @@
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite.lean:34:import Benitoite.Release.Lemmas.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Core/Lemmas/Preservation.lean:1:import Benitoite.Core.Lemmas.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/BuilderExamples.lean:132:  refine .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.empty, Eff.Canonical, Eff.norm]) ?_
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Effect.lean:67:theorem union_canonical (e f : Eff) : Canonical (union e f) := norm_idem _
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Effect.lean:70:theorem canonical_ofAtoms (a : Atom → Bool) : Canonical (ofAtoms a) := rfl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Effect.lean:73:theorem eq_of_sub_of_sub {e f : Eff} (he : Canonical e) (hf : Canonical f)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Finite.lean:210:theorem Ty.normWith_canonical {s t} (h : Ty.Support (· ∈ s) t) : (t.normWith s).Canonical := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Finite.lean:215:    Eff.Canonical (Eff.normWith s e) := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/BuilderTyping.lean:1:import Benitoite.Release.Lemmas.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/CoverageRuntime.lean:2:import Benitoite.Release.Lemmas.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Dict.lean:21:    (h : Eff.RhosIn (fun _ => False) e) (hc : Eff.Canonical e) : Eff.substRho es e = e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:284:      have hcanon : t.Canonical := htw.canonical t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:305:      have hcanon : t.Canonical := htw.canonical t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:321:      have hcanon : t.Canonical := htw.canonical t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:338:      have hcanon : t.Canonical := htw.canonical t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:375:      have hcanon : t.Canonical := htw.canonical t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/PresMain.lean:391:      have hcanon : t.Canonical := htw.canonical t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:2:import Benitoite.Release.Lemmas.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Preservation.lean:48:theorem Ty.subst_tvar0 (t : Ty) (es : List Eff) (ht : t.Canonical) : Ty.subst [t] es (.tvar 0) = t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/Regularity.lean:179:            simp [Eff.Canonical, Eff.singleFail, Eff.norm, Ty.norm_idem]⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/TyLemmas.lean:25:theorem Ty.applyTo_of_notHead {t : Ty} (h : ¬ t.IsHead) (hc : t.Canonical) (as : List Ty) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/TyLemmas.lean:27:  cases t <;> simp_all [Ty.applyTo, Ty.IsHead, Ty.Canonical]
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/TyLemmas.lean:62:theorem Ty.shift_zero (c : Nat) (a : Ty) (h : a.Canonical) : a.shift 0 c = a := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Lemmas/TyLemmas.lean:65:theorem Ty.shiftList_zero (c : Nat) (as : List Ty) (h : ∀ a ∈ as, a.Canonical) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:347:  exact .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:361:  exact .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys])
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:408:  exact .C_App (.V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return .V_Const))
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Model.lean:409:    (.cons (.V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))) .nil)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/NoFail.lean:245:    (hE : E.Canonical) (hE' : E'.Canonical) (hr : NoFail Qempty Rest)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Normalize.lean:52:def Ty.Canonical (t : Ty) : Prop := t.norm = t
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Normalize.lean:55:def Eff.Canonical (e : Eff) : Prop := e.norm = e
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Normalize.lean:171:  theorem Ty.canonical_of_failsLeOne (t : Ty) (h : t.FailsLeOne) : t.Canonical := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Normalize.lean:172:    cases t <;> simp only [Ty.FailsLeOne] at h <;> unfold Ty.Canonical <;> simp only [Ty.norm]
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Normalize.lean:192:  theorem Eff.canonical_of_failsLeOne (e : Eff) (h : Eff.FailsLeOne e) : Eff.Canonical e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Normalize.lean:196:      unfold Eff.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Order/Shift.lean:20:theorem Ty.shift_compare (k c : Nat) (a b : Ty) (ha : a.Canonical) (hb : b.Canonical) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Order/Shift.lean:24:private theorem shift_map (k c : Nat) (as : List Ty) (ha : ∀ a ∈ as, a.Canonical) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Order/Shift.lean:32:    (ha : ∀ a ∈ as, a.Canonical) (hb : ∀ b ∈ bs, b.Canonical) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Order/Shift.lean:38:theorem Ty.sortUnique_shift (k c : Nat) (as : List Ty) (ha : ∀ a ∈ as, a.Canonical) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Semantics.lean:603:  | .cont b t e r => Ty.WF 0 b ∧ Ty.WF 0 t ∧ (∀ x, r = some x → Ty.WF 0 x) ∧ Eff.WF 0 e ∧ Eff.Canonical e
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeComposition.lean:334:theorem Eff.ext_canonical {e f : Eff} (he : Eff.Canonical e) (hf : Eff.Canonical f)
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:16:  theorem Ty.WF.canonical {n : Nat} (t : Ty) (h : Ty.WF n t) : t.Canonical := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:17:    cases t <;> simp only [Ty.WF] at h <;> unfold Ty.Canonical <;> simp only [Ty.norm]
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:35:/-- 型内部の Canonical の条件は、正規化によって失われない。 -/
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:59:  | .fn _ _ _ e => Eff.WF n e ∧ Eff.Canonical e
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeRegularity.lean:132:theorem Eff.shift_of_wf {c : Nat} (k : Nat) (e : Eff) (h : Eff.WF c e) (hc : Eff.Canonical e) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeScopedSubst.lean:208:theorem Eff.substRho_nil (e : Eff) (h : Eff.Canonical e) : Eff.substRho [] e = e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeScopedSubst.lean:218:    (h : Eff.WF c e) (hc : Eff.Canonical e) : Eff.substAt c ts [] e = e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:107:theorem Ty.rawShift_canonical (k c : Nat) {t : Ty} (h : t.Canonical) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:108:    (t.rawShift k c).Canonical := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:109:  unfold Ty.Canonical at h ⊢
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:112:theorem Eff.rawShift_canonical (k c : Nat) {e : Eff} (h : Eff.Canonical e) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:113:    Eff.Canonical (Eff.rawShift k c e) := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:114:  unfold Eff.Canonical at h ⊢
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:163:theorem Ty.shift_canonical (k c : Nat) (t : Ty) : (t.shift k c).Canonical := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:164:  rw [Ty.Canonical, Ty.shift_eq_norm_rawShift]; exact Ty.norm_idem _
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeShift.lean:166:theorem Eff.shift_canonical (k c : Nat) (e : Eff) : Eff.Canonical (Eff.shift k c e) := Eff.norm_idem _
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeSubstLemmas.lean:143:/-- 有限列による代入も、最上位の効果の Canonical を求めずに包含を保つ。 -/
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeVariables.lean:23:          Eff.VarsIn n pe eff ∧ Eff.Canonical eff
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/TypeVariables.lean:33:  /-- 最上位の効果の変数の範囲。最上位の Canonical は求めない。 -/
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Typing.lean:141:    | .fn names params ret e => NamesWF names params ∧ Ty.WFList n params ∧ Ty.WF n ret ∧ Eff.WF n e ∧ Eff.Canonical e
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Typing.lean:145:    | .cont b t e => Ty.WF n b ∧ Ty.WF n t ∧ Eff.WF n e ∧ Eff.Canonical e
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Release/Typing.lean:158:  計算の最上位の効果の列自体には Canonical を求めない。 -/
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckPredicates.lean:70:    canonicalEff atoms e = true ↔ Eff.Canonical e := Finite.canonicalEff_spec he
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckPredicates.lean:79:    wfEff atoms n e = true ↔ Eff.WF n e ∧ Eff.Canonical e := Finite.wfEff_spec n e ha
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/CheckPredicates.lean:88:    cleanEff atoms n e = true ↔ Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e :=
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Examples.lean:10:@[local simp] private theorem canonical_empty : Eff.Canonical Eff.empty := rfl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Examples.lean:11:@[local simp] private theorem canonical_single (l : EffName) : Eff.Canonical (Eff.single l) := rfl
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Examples.lean:271:    (by simp [Expr.Scoped, Block.Scoped, intTy, NamesWF, Ty.VarsInList, Ty.VarsIn, Eff.VarsIn, Eff.empty, Eff.Canonical, Eff.norm, Ty.normTys])
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Examples.lean:412:private theorem dieExit_ok (C : List TParam) (t : Ty) (ht : t.Canonical) : DieExitOk dieBuiltins C "exit" t := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/FinitePredicates.lean:18:    canonicalEff atoms e = true ↔ Eff.Canonical e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/FinitePredicates.lean:60:      wfEff atoms n e = true ↔ Eff.WF n e ∧ Eff.Canonical e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/FinitePredicates.lean:101:      cleanEff atoms n e = true ↔ Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Invariants.lean:32:    (he : ∀ ns ps r e, b = .fn ns ps r e → Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e) :
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Invariants.lean:362:        by simp [Eff.Canonical, Eff.singleFail, Eff.norm, Ty.norm_idem]⟩
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/ScopedSupport.lean:1:import Benitoite.Release.Lemmas.Canonical
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Sequence.lean:332:theorem union_empty_right (ε : Eff) (hε : Eff.Canonical ε) : Eff.union ε Eff.empty = ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Sequence.lean:341:theorem union_empty_left (ε : Eff) (hε : Eff.Canonical ε) : Eff.union Eff.empty ε = ε := by
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Lemmas/Typing.lean:354:    (by simp [mixedHoles, HoleArgs.holeNames, HoleArgs.holeTypes, Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.single, Eff.ofAtoms, Eff.norm, Ty.normTys])
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Monad2Examples.lean:267:    NamesWF, Ty.VarsIn, Ty.VarsInList, Eff.VarsIn, Eff.empty, row, Eff.ofAtoms, Eff.Canonical, Eff.norm, Ty.normTys]
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/Monad2Examples.lean:325:      Eff.VarsIn, row, Eff.ofAtoms, Eff.Canonical, Eff.norm, Ty.normTys]
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/WellFormed.lean:68:        f.Scoped nt pe nv ∧ args.Scoped nt pe nv ∧ Ty.VarsIn nt pe r ∧ Eff.VarsIn nt pe ε ∧ Eff.Canonical ε
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/Benitoite/Surface/WellFormed.lean:81:        NamesWF names ps ∧ Ty.VarsInList nt pe ps ∧ Ty.VarsIn nt pe r ∧ Eff.VarsIn nt pe ε ∧ Eff.Canonical ε ∧
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/README.md:405:| `Benitoite/Core/Lemmas/Canonical.lean` | 閉じた値の形、分岐の選択、パターンの照合が束縛する値の型 | |
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/README.md:416:| `Benitoite/Release/TypeBounds.lean` / `TypeRows.lean` / `TypeVariables.lean` / `TypeRegularity.lean` / `TypeScopedSubst.lean` | Fail内部の整形式・型と行の範囲、内部のCanonical、正規化・代入の保存 | 同上 |
+65b165272b42c3f3621ad59bc2a2c6c9cec9c46e:formal/README.md:437:| `Benitoite/Release/Lemmas/Canonical.lean` | 閉じた値の形、分岐の選択、パターンの照合が束縛する値の型 | |

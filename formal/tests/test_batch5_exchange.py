@@ -205,7 +205,7 @@ def check_rust(directory, report_path):
     counts = {i['name']: len(i['definitions']) for i in data['corpus']['inputs']}
     require(counts == manifest['inputs'], 'batch5 Rust input counts')
     for f, doc in data.items():
-        require(doc['version'] == (14 if f == 'corpus' else 6), f'{f}: version')
+        require(doc['version'] == (15 if f == 'corpus' else 7), f'{f}: version')
     for item in data['corpus']['inputs']:
         require(not item['excluded'], f"{item['name']}: excluded")
         require(all(set(d['scope']) == {'inScope'} for d in item['definitions']), 'batch5 outside')
@@ -217,7 +217,7 @@ def check_rust(directory, report_path):
     for index in range(25):
         got = copy.deepcopy(next(d['scope']['inScope'] for d in actual
                                 if d['name'].startswith(f'format{index} (')))
-        expected = copy.deepcopy(independent['inputs'][0]['definitions'][index]['scope']['inScope'])
+        expected = checker['explicit_top_ranges'](independent['inputs'][0]['definitions'][index]['scope']['inScope'])
         for key in ('package', 'coverageView'): expected['surface'][key] = got['surface'][key]
         # 末尾returnの継続型はRustではUnit。返す値とコアの比較は保持する。
         expected['surface']['body']['last']['expr']['returnE']['ret'] = {'base': {'name': 'Unit'}}

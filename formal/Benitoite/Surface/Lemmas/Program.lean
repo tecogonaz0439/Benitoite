@@ -100,15 +100,15 @@ theorem desugar_wellTyped (hwf : p.WellFormed) (hwt : p.WellTyped B op)
     · intro m ms hms
       obtain ⟨body, hb, _, hbody⟩ := hmethods m ms hms
       have hsc := hwf.2.2.2.2.2.2.1 _ _ hc _ _ hms
-      have htarget : Ty.VarsInList id.tparams.length (fun _ => True) [id.target] :=
+      have htarget : Ty.VarsInList 0 id.tparams.length (fun _ => True) [id.target] :=
         ⟨scoped_clean sc.2.1, trivial⟩
       have hret : TyOK (ms.tparams ++ id.tparams).length (id.methTy ms ms.ret) := by
         simpa only [Surface.ImplDecl.methTy, List.length_append, List.length_singleton] using
           substAt_clean ms.tparams.length [] htarget (by simp) ms.ret (scoped_clean hsc.2.2.1)
-      have hparams : Ty.VarsInList (ms.tparams.length + id.tparams.length) (fun _ => True)
+      have hparams : Ty.VarsInList 0 (ms.tparams.length + id.tparams.length) (fun _ => True)
           (ms.params.map (id.methTy ms)) :=
         substAtList_clean ms.tparams.length [] htarget (by simp) ms.params (scopedList_clean hsc.2.1)
-      have hdicts : Ty.VarsInList id.tparams.length (fun _ => True) id.dictTys := by
+      have hdicts : Ty.VarsInList 0 id.tparams.length (fun _ => True) id.dictTys := by
         unfold ImplSig.dictTys
         exact Ty.varsInList_of_forall (by
           intro t ht
@@ -165,5 +165,35 @@ theorem main_typed (hwf : p.WellFormed) (hmain : p.HasMain Eff.empty) :
     List.range_zero, FunDecl.dictTys, hdict, hp, List.nil_append,
     hε', List.map_nil, Eff.substAt_empty] at hf
   exact ⟨_, .C_App hf .nil⟩
+
+/-- 開始状態の呼び出し `main[;]()` は、main の宣言のエフェクト d.eff（許す上限 ε に構造上含まれる）を型の代入
+`substAt 0 [] []` で読んだ効果で型付く。HasMain の戻り値型の制限は、この入口の型付けには使わない。 -/
+theorem main_typed_eff {ε : Eff} (hwf : p.WellFormed) (hmain : p.HasMain ε) :
+    ∃ d a, p.defs "main" = some d ∧ Eff.Sub d.eff ε ∧ HasTypeC (desugarProgram op p) B StoreTy.empty [] [] none
+      (.app (.fnRef "main" [] []) []) a (Eff.substAt 0 [] [] d.eff) := by
+  obtain ⟨d, hd, ht, he, hn, hp, _, hε⟩ := hmain
+  have hdict := d.dictParams_nil_of_tparams_nil (hwf.2.1 _ _ hd) ht
+  have hd' : (desugarProgram op p).defs "main" = some (desugarDef op d) := by
+    simp [desugarProgram, Program.lookupFun, hd]
+  have hsat : SatAll B [] [] d.tparams := by
+    rw [ht]; exact ⟨rfl, by intro i τ c hi; cases hi⟩
+  have hf := HasTypeVQ.V_Fun (Q := Qempty) (ts := []) (es := []) (Ψ := StoreTy.empty) (Γ := [])
+    hd' (hwf.2.1 _ _ hd).2.1 (by
+      have hsc := (hwf.2.1 _ _ hd).2.2
+      refine ⟨hsat, by simp, by simpa [desugarDef] using he.symm, by simp, ?_, ?_, ?_⟩
+      · simpa only [desugarDef, he, List.length_nil] using Eff.VarsIn.rows d.eff hsc.2.2.1
+      · have hq := Qsig.varsIn_scoped hsc.1 hsc.2.1 hsc.2.2.1
+        simpa only [desugarDef, FunDecl.dictTys, hdict, List.map_nil, List.nil_append, he, List.length_nil] using hq
+      · intro i hi
+        have hq := Qsig.varsIn_scoped hsc.1 hsc.2.1 hsc.2.2.1
+        have hi' : Qsig d.params d.ret d.eff i := by
+          simpa only [desugarDef, FunDecl.dictTys, hdict, List.map_nil, List.nil_append] using hi
+        have hn := hq i hi'
+        rw [he] at hn
+        exact (Nat.not_lt_zero i hn).elim)
+  simp only [desugarDef, fnTy_eq, FunDecl.coreNames, internalNames, hn, List.length_nil,
+    List.range_zero, FunDecl.dictTys, hdict, hp, List.nil_append, List.map_nil] at hf
+  exact ⟨d, _, hd, hε, .C_App hf .nil⟩
+
 
 end Benitoite.Surface

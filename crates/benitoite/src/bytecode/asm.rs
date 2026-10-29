@@ -363,6 +363,9 @@ impl ProgramBuilder {
                 .map_err(|_| "too many builtin references")?,
         ));
         self.program.builtins.push(BuiltinRef {
+            ranges: crate::builtins::table::builtin_range_signature(id)
+                .map(|s| vec![crate::types::scope::Range::Top; s.kinds.len()])
+                .unwrap_or_default(),
             id,
             arity,
             capability,
@@ -522,6 +525,7 @@ mod tests {
         assert_eq!(
             program.builtin(builtin).unwrap(),
             &BuiltinRef {
+                ranges: vec![],
                 id: BuiltinId(123),
                 arity: 1,
                 capability: Capability::Io,

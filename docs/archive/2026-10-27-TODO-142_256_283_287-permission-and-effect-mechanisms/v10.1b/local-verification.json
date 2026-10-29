@@ -1,0 +1,74 @@
+{
+  "j2": [
+    {
+      "file": "j2-send-only.bnt",
+      "exit": 2,
+      "codes": [
+        "E0501"
+      ],
+      "expectationMatched": true
+    },
+    {
+      "file": "j2-complete.bnt",
+      "exit": 0,
+      "codes": [],
+      "expectationMatched": true
+    }
+  ],
+  "h31": [
+    {
+      "name": "h31-user-signature",
+      "operationSignatureIndex": {
+        "path": {
+          "tree": [
+            "srv",
+            "audit"
+          ]
+        }
+      },
+      "definitions": 1,
+      "nonTopRanges": 3,
+      "effects": [
+        "Audit"
+      ],
+      "prim": null,
+      "allDefinitionsChecked": true,
+      "expectationMatched": true
+    },
+    {
+      "name": "h31-user-forward",
+      "operationSignatureIndex": {
+        "path": {
+          "tree": [
+            "srv",
+            "audit"
+          ]
+        }
+      },
+      "definitions": 1,
+      "nonTopRanges": 7,
+      "effects": [
+        "File.Write[\"/srv/audit/**\"]"
+      ],
+      "prim": "File.writeTextIn",
+      "allDefinitionsChecked": true,
+      "expectationMatched": true
+    }
+  ],
+  "groups": 17,
+  "definitions": 20,
+  "nonTopRanges": 67,
+  "topCompatibility": {
+    "old-ip": 0,
+    "user-spelling": 0,
+    "all-top": 0
+  },
+  "rejections": 8,
+  "excluded": 8,
+  "reportSubset": {
+    "inputs": 26,
+    "commands": 50,
+    "status": "passed"
+  },
+  "obligation35": "局所比較のみ成功。最終確認はV10.1dであり未完を保つ"
+}

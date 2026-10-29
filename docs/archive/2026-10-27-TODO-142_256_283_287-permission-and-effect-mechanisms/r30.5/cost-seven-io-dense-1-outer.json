@@ -1,0 +1,22 @@
+{
+  "case": "seven-io-dense-1",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--release",
+    "--lib",
+    "typeck::scope::tests::measure_scope_budget",
+    "--",
+    "--exact",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "wall_seconds": 0.11827804100000001,
+  "max_rss_raw": 78036992,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 74.421875,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); child high-water mark, not sum of RSS"
+}

@@ -1,0 +1,71 @@
+{
+  "base": "f6b0d974bfd80b834448325d8b8413824161a78c",
+  "head": "f6b0d974bfd80b834448325d8b8413824161a78c",
+  "branch": "m013/r20.5",
+  "changed": [
+    "crates/benitoite/src/typeck/scope/accept_tests.rs"
+  ],
+  "previous_hashes": {
+    "crates/benitoite/skill/references/diagnostics.md": "6908be3433709c9b550a7dc9345ca54bd1a010140271a474af4707cc071650e7",
+    "crates/benitoite/src/diag/codes.rs": "b70ac7cb11c71b141bdf9034484318c18090f31ca7cd0d4439adfb72307f4b5d",
+    "crates/benitoite/src/typeck/effects/handle.rs": "9fb60aff1a79f91c211d76a31ba3bbe522b1279d58f0016f23d1e347780e2c12",
+    "crates/benitoite/src/typeck/generate.rs": "5cb6928483db210bb7d6e7a11c17f1b303dc37d6d3fb2db0ec5dae6c23fc8125",
+    "crates/benitoite/src/typeck/mod.rs": "3609eba566f2aae983025d37f47174dc1dc7670c7f56170836ffbd11670240ad",
+    "crates/benitoite/src/typeck/scope/accept.rs": "a56ea8efd4d17531dbc010f6cd5883c7885ef05af1d36525d872151d59617743",
+    "crates/benitoite/src/typeck/scope/accept_tests.rs": "5fe1f83b5a02a017294dcabfbfc84daed1a9193e304c4fd9d0ac56e7065a460c",
+    "crates/benitoite/src/typeck/scope/input.rs": "e740102d82e6af138075146dc8b5e8021f70498a75a77bb9cd183582fc990f52",
+    "crates/benitoite/src/typeck/scope/local.rs": "7e13a817426a6ecc829acde9fb7dd452c3d83cf04c175557c67f60d357093c5d",
+    "crates/benitoite/src/typeck/scope/local_tests.rs": "b6dd24cb62179c0ad92fc1e80b049075fa5d47ca70445a5720c147df69558ddd",
+    "crates/benitoite/src/typeck/scope/measure.rs": "565485efd7e6ef610c57ea20b1798aa9c6d986a91b3d8b043027ab0e5e3e4a28",
+    "crates/benitoite/src/typeck/scope/mod.rs": "23232507473b3d96669cf73eb0e70a9f0da27b5fdfc07531f55ad43ea0dddaf4",
+    "crates/benitoite/src/typeck/scope/numbering_budget_tests.rs": "2f7bb901cd37e6e03483ab41180cede304dbce86c6b058182103884602dec94f",
+    "crates/benitoite/src/typeck/scope/tests.rs": "34fcb369e7ae7c66734f9320d341e0944016b043c5718f171842e31f9eefad35",
+    "crates/benitoite/src/typeck/scoped_calls.rs": "7cd9bd3e03f83b947a81907a0c9f7329e88750e2c6906ce8ae5cc4ad4036ba02",
+    "crates/benitoite/src/typeck/text.rs": "381f8e0608ee5e239240f2fd49db178b165652ee76fa433489a3a69e3c391b3a",
+    "docs/design/01-spec/01-06-type-system.md": "39d13185f242277d9d27767ec5eff6ef1e062bf13517cd065b6016d0e55de12d",
+    "docs/design/01-spec/01-12-core-calculus.md": "52a428ce8ea5d803c652104aaf2f4271107caee2d6154995dd57f7083921aa54",
+    "docs/design/02-impl/02-05-typechecker.md": "b23d0da2d14e01f3f879b3a7ea2099c611518b28568374dcf91f71d36377777c",
+    "docs/design/02-impl/02-10-diagnostics.md": "39a70d93db8934263c7a99bc0758fcf7385f321e336ee6b933a84773c5dd802f",
+    "docs/design/07-quality/07-04-formal-semantics.md": "1506fd723d54e94aaea5535496fe73c88633c1ccc35090aad3443ae4256e67b4"
+  },
+  "current_hashes": {
+    "crates/benitoite/skill/references/diagnostics.md": "6908be3433709c9b550a7dc9345ca54bd1a010140271a474af4707cc071650e7",
+    "crates/benitoite/src/diag/codes.rs": "b70ac7cb11c71b141bdf9034484318c18090f31ca7cd0d4439adfb72307f4b5d",
+    "crates/benitoite/src/typeck/effects/handle.rs": "9fb60aff1a79f91c211d76a31ba3bbe522b1279d58f0016f23d1e347780e2c12",
+    "crates/benitoite/src/typeck/generate.rs": "5cb6928483db210bb7d6e7a11c17f1b303dc37d6d3fb2db0ec5dae6c23fc8125",
+    "crates/benitoite/src/typeck/mod.rs": "3609eba566f2aae983025d37f47174dc1dc7670c7f56170836ffbd11670240ad",
+    "crates/benitoite/src/typeck/scope/accept.rs": "a56ea8efd4d17531dbc010f6cd5883c7885ef05af1d36525d872151d59617743",
+    "crates/benitoite/src/typeck/scope/accept_tests.rs": "7359f5af159dab7256005daf48f550ff82102681bca32b55424273e05c7c44b9",
+    "crates/benitoite/src/typeck/scope/input.rs": "e740102d82e6af138075146dc8b5e8021f70498a75a77bb9cd183582fc990f52",
+    "crates/benitoite/src/typeck/scope/local.rs": "7e13a817426a6ecc829acde9fb7dd452c3d83cf04c175557c67f60d357093c5d",
+    "crates/benitoite/src/typeck/scope/local_tests.rs": "b6dd24cb62179c0ad92fc1e80b049075fa5d47ca70445a5720c147df69558ddd",
+    "crates/benitoite/src/typeck/scope/measure.rs": "565485efd7e6ef610c57ea20b1798aa9c6d986a91b3d8b043027ab0e5e3e4a28",
+    "crates/benitoite/src/typeck/scope/mod.rs": "23232507473b3d96669cf73eb0e70a9f0da27b5fdfc07531f55ad43ea0dddaf4",
+    "crates/benitoite/src/typeck/scope/numbering_budget_tests.rs": "2f7bb901cd37e6e03483ab41180cede304dbce86c6b058182103884602dec94f",
+    "crates/benitoite/src/typeck/scope/tests.rs": "34fcb369e7ae7c66734f9320d341e0944016b043c5718f171842e31f9eefad35",
+    "crates/benitoite/src/typeck/scoped_calls.rs": "7cd9bd3e03f83b947a81907a0c9f7329e88750e2c6906ce8ae5cc4ad4036ba02",
+    "crates/benitoite/src/typeck/text.rs": "381f8e0608ee5e239240f2fd49db178b165652ee76fa433489a3a69e3c391b3a",
+    "docs/design/01-spec/01-06-type-system.md": "39d13185f242277d9d27767ec5eff6ef1e062bf13517cd065b6016d0e55de12d",
+    "docs/design/01-spec/01-12-core-calculus.md": "52a428ce8ea5d803c652104aaf2f4271107caee2d6154995dd57f7083921aa54",
+    "docs/design/02-impl/02-05-typechecker.md": "b23d0da2d14e01f3f879b3a7ea2099c611518b28568374dcf91f71d36377777c",
+    "docs/design/02-impl/02-10-diagnostics.md": "39a70d93db8934263c7a99bc0758fcf7385f321e336ee6b933a84773c5dd802f",
+    "docs/design/07-quality/07-04-formal-semantics.md": "1506fd723d54e94aaea5535496fe73c88633c1ccc35090aad3443ae4256e67b4"
+  },
+  "change": "one test fixture body operations 1 -> 3 and explanatory comment; no production or generated changes",
+  "checks": [
+    "w-r.log",
+    "reason-fixture-final.log",
+    "fmt-after-fixture.log"
+  ],
+  "judgement": "Codex, 2026-10-29: other test inputs, expected values, production sources, configuration and exchange paths are unchanged",
+  "tool_versions": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+  },
+  "inputs": {
+    "Cargo.toml": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+    "Cargo.lock": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "crates/benitoite/Cargo.toml": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+    "rust-toolchain.toml": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb"
+  }
+}

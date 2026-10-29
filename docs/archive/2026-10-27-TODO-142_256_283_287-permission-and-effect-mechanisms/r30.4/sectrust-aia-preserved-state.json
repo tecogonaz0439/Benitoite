@@ -1,0 +1,56 @@
+{
+  "recorded_at": "2026-10-29T07:35:19.710902+00:00",
+  "initial_sources": [
+    {
+      "file": "sectrust-aia.c",
+      "sha256": "9ddafbce8750e6b49c92ce4c054d94be0800bb74ec7dc241f5869bce1ed6635f",
+      "initial_unchanged": true
+    },
+    {
+      "file": "sectrust-aia.py",
+      "sha256": "c35733b40ea103ec85de4863a286129e592aa16220c2ae8ccf42aca364ea52b1",
+      "initial_unchanged": true
+    }
+  ],
+  "preserved": [
+    {
+      "file": "sectrust-aia-preserve.py",
+      "bytes": 5129,
+      "sha256": "2234715f77864af85b166a5f94748d2cf8ae8542ac543d85c9e0454c84aecb8e"
+    },
+    {
+      "file": "sectrust-aia-preserved.json",
+      "bytes": 1484,
+      "sha256": "c61485b2445efd149a30c071bac59acf6ce65768d9f21198cc97ad9b291a26dc"
+    },
+    {
+      "file": "sectrust-aia-preserved/root.der",
+      "bytes": 756,
+      "sha256": "a65bd929c5e02bf5e7826848247ef243503a276cb926e34b792cded9ec60b68e"
+    },
+    {
+      "file": "sectrust-aia-preserved/intermediate.der",
+      "bytes": 924,
+      "sha256": "60066a4b8b4af17b261d0e34c47b34940dec53e03b0ba134cffaaee111446fb2"
+    },
+    {
+      "file": "sectrust-aia-preserved/leaf.der",
+      "bytes": 1012,
+      "sha256": "abb4c4bec911765824f6acab18249a5f7097f40b3fb722fa480b77beb6589207"
+    },
+    {
+      "file": "sectrust-aia-preserved/intermediate.cnf",
+      "bytes": 144,
+      "sha256": "602d091645524be7a4bab43ae5500a894e4aa3fedf609d18e63641053c0564b8"
+    },
+    {
+      "file": "sectrust-aia-preserved/leaf.cnf",
+      "bytes": 325,
+      "sha256": "18a1bf2479a133f0da337b500f9bae5055d4fba9f9e9f8f1fabf99bbaaf4b546"
+    }
+  ],
+  "target_temporary_leftovers": [],
+  "private_keys_or_binaries_preserved": false,
+  "os_trust_store_changes": false,
+  "test_scope": "same SecTrust contrast once; no production HTTPS test"
+}

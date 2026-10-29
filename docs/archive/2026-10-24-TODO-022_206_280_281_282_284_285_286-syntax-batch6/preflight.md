@@ -103,7 +103,7 @@ shortはB0と処理系の取り込み後を比べ、少なくとも各処理系�
 
 自動workは、この時点の文書だけの差分に対して「nothing to check: only documents changed」であった。将来のRust差分やX04aのスクリプト差分は作っていないため、将来の自動選択は未確認である。X04aでpolicy_selftestとformal_buildが選ばれる見込みは、classifyとworkへの対応表の読み取りによる。実装担当は実際の差分とB_WORKでdry-runをやり直す。
 
-下表の「追加指定」は、共通の`scripts/check.sh --level work --base 706d7ca3`へ加え、最後に`--dry-run`を付けたものである。S-R2だけはlevelをstageとする。出力は手元の絶対パスを残さず、必要なら<repo>・<home>へ伏せた。指定と表示全文は<repo>/work/m012/scratch/p1r/dryrun.jsonにも保存した。
+下表の「追加指定」は、共通の`scripts/check.sh --level work --base 706d7ca3`へ加え、最後に`--dry-run`を付けたものである。S-R2だけはlevelをstageとする。出力は手元の絶対パスを残さず、必要なら<repo>・<home>へ伏せた。指定と表示全文は[dryrun.json](work-copies/m012/scratch/p1r/dryrun.json)にも保存した。
 
 | 番号 | 確かめた行 | 追加指定 | 選ばれた単位・表示 | 終了 |
 |---|---|---|---|---|

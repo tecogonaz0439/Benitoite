@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+function host(p: String, h: String) -> String
+  return match Scope.checkHost(pattern: p, host: h) with
+    case Result.Ok(_) -> "ok"
+    case Result.Error(e) -> Trait.Show.show(e)
+  end match
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(host(p: "192.0.2.0/24", h: "192.0.2.1"))
+  Console.writeLine(host(p: "**", h: "192.0.2.1"))
+end function

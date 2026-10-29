@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.IO.Console
+@test
+function ioExample() -> Unit uses Assert.Check
+  bind value <- handle Console.readLine() with
+    case Console.readLine() -> resume(Result.Ok(Option.Some("supplied")))
+    case Console.readAll() -> resume(Result.Ok("supplied"))
+    case Console.readAllLines() -> resume(Result.Ok(["supplied"]))
+    case Console.readAllBytes() -> resume(Result.Ok(Bytes.empty()))
+  end handle
+  match value with
+    case Result.Ok(line) -> Assert.equal(actual: line, expected: Option.Some("supplied"))
+    case Result.Error(_) -> Assert.fail("mock input failed")
+  end match
+end function

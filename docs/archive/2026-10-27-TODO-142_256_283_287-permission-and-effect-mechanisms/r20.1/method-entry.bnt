@@ -1,0 +1,9 @@
+trait Inspect[T]
+ function inspect(value: T) -> Unit
+end trait
+implement[T: Inspect] Inspect[List[T]]
+ function inspect(value: List[T]) -> Unit
+  bind _ <- value
+  ()
+ end function
+end implement

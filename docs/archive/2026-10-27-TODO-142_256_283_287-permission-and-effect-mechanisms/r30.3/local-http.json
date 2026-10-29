@@ -1,0 +1,28 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "runtime_builtins",
+    "http_request_in_",
+    "--",
+    "--nocapture"
+  ],
+  "wrapper": [
+    "/usr/bin/time",
+    "-p",
+    "/bin/sh",
+    "-c"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-29T05:30:22.161032+00:00",
+  "finished_utc": "2026-10-29T05:30:28.343720+00:00",
+  "command_exit": 0,
+  "outer_seconds": 6.182279083999999,
+  "maxrss_raw": 1455013888,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 1387.609375,
+  "maxrss_method": "macOS getrusage(RUSAGE_CHILDREN); maximum descendant, not concurrent sum"
+}

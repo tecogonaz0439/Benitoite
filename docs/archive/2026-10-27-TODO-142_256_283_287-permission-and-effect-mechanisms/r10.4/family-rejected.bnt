@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Network.Http
+function target() -> Unit uses Http.Connect["192.0.2.1", 443]
+ ()
+end function
+function main() -> Unit uses Http.Connect["::/0", 443]
+ target()
+end function

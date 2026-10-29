@@ -1,0 +1,29 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_baseline",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--test",
+    "r10_7b_baseline",
+    "capture_serialization_comparison",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:19:45.798132+00:00",
+  "ended_at": "2026-10-28T14:19:48.074082+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.27588175,
+  "auxiliary_max_rss_bytes": 684998656,
+  "auxiliary_max_rss_mib": 653.265625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

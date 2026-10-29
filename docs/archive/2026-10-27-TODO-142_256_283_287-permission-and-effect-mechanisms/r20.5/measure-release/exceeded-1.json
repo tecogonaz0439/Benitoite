@@ -1,0 +1,130 @@
+{
+  "accepted_selected_calls": 10,
+  "bodies": [
+    {
+      "calls": 10,
+      "definition": ".sample0",
+      "metrics": {
+        "body_operations": 8,
+        "max_body_items": 2,
+        "max_whole_items": 2,
+        "stops": [
+          {
+            "preorder": 9,
+            "reason": "BudgetExceeded { scope: Body, resource: Operations }"
+          }
+        ],
+        "whole_operations": 8
+      },
+      "numbering_operations": 146,
+      "occurrences": 55,
+      "stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })"
+    }
+  ],
+  "body_items_max": 2,
+  "body_operations_max": 8,
+  "candidates": [
+    {
+      "definition": ".sample0",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "lost_ranges": 7,
+      "name": "small",
+      "numbering_operations": 128,
+      "numbering_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "rejections": [
+        "CheckPath:0:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(12), reason: BudgetExceeded })",
+        "PathValue:6:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(20), reason: BudgetExceeded })",
+        "WidenPath:9:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(26), reason: BudgetExceeded })",
+        "CheckRequest:26:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(65), reason: BudgetExceeded })",
+        "RequestValue:34:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(73), reason: BudgetExceeded })",
+        "WidenRequest:37:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(79), reason: BudgetExceeded })",
+        "CheckRequest:46:Rejected(ScopeRejection { definition: \".sample0\", preorder: None, node: NodeId(100), reason: BudgetExceeded })"
+      ],
+      "stops": []
+    },
+    {
+      "definition": ".sample0",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 146,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample0",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 146,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "exceeded-1",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 0,
+  "limits": {
+    "body": {
+      "items": 2,
+      "operations": 8
+    },
+    "whole": {
+      "items": 200,
+      "operations": 800
+    }
+  },
+  "narrow_rejections": [
+    "PathValue:17:BudgetExceeded",
+    "CheckPath:20:BudgetExceeded",
+    "CheckRequest:26:NotCovered",
+    "RequestValue:34:BudgetExceeded",
+    "WidenRequest:37:BudgetExceeded",
+    "RequestValue:43:BudgetExceeded",
+    "CheckRequest:46:NotCovered"
+  ],
+  "occurrences": 55,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.000094,
+  "sha256": "95a303751bb3ba3d2c251536ef6241818d7c9b1d2df6c7d8c52b17edfb65e4c7",
+  "source_bytes": 1178,
+  "typecheck_seconds": 0.021142417,
+  "whole_items_max": 2,
+  "whole_operations_total": 8
+}

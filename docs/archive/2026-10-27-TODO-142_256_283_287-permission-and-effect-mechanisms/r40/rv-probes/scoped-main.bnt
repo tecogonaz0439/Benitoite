@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses File.Read["/data/**"], Console.Write
+ Console.writeLine(text: "hi")
+end function
+@test
+function t() -> Unit uses File.Read["/data/**"]
+end function

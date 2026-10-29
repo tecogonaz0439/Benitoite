@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind result: Result[Unit, String] <- Failure.toResult(body: lambda()
+    return Failure.raise("bad")
+  end lambda)
+  match result with
+    case Result.Ok(_) -> return ()
+    case Result.Error(message) -> Console.writeLine("handled: ${message}")
+  end match
+end function

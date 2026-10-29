@@ -1,0 +1,380 @@
+[
+  {
+    "path": "crates/benitoite/skill/references/diagnostics.md",
+    "sha256": "61efce6e824ed5d225fa92bb2e965eb5d495e869a5161d9398b274ff171cf861",
+    "bytes": 109130,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/skill/references/stdlib/Network.Http.md",
+    "sha256": "4e6abfed135fc80f7c774f52fe3c9a5052d8aeb4ce79b05e61419812eb1361e3",
+    "bytes": 5887,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/skill/references/stdlib/Scope.md",
+    "sha256": "20da20d113db6f160ad5811dac1080a6fb7ec33724d34a1abe86bf19d38b6894",
+    "bytes": 5583,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/http_client/checked_request.rs",
+    "sha256": "bff1162ab4ca2526090d715f99babc758346d3fdff98401b54a6bc415d112544",
+    "bytes": 12323,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/builtins/funcs/scope.rs",
+    "sha256": "e835723a7fd53ac1cce904cb9f6addb3ad50b04766b2bc9bf12d3bb91399db89",
+    "bytes": 7775,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/builtins/iface.rs",
+    "sha256": "ffcb2e7fecaa9c61f80b20906a0269c29b915a3931228cf324781ffef3740a2f",
+    "bytes": 41584,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/builtins/table.rs",
+    "sha256": "5fe4a417e7bc944e5cd1af4ae8b107c835f17aa258e6fa0cc15d7f265e9fb539",
+    "bytes": 55841,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/asm.rs",
+    "sha256": "c2f9e30d4e0df662f9f14a2442212e6b02516866278f82a19158cb868388b85c",
+    "bytes": 22286,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/codegen/emit.rs",
+    "sha256": "82659df09c1aec26ec1c8a86e72e5fadc85685c19c4ec8d2fd9babba02a743bf",
+    "bytes": 61559,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/codegen/mod.rs",
+    "sha256": "f7337ab271f027a5ce64342579f799fe0c5ac61aba21d3f5dd87998a42f17a78",
+    "bytes": 11551,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/codegen/tables.rs",
+    "sha256": "085776222af37e406d52260cf5ebaa0176f968d9deeff56534e5ab9528d560c3",
+    "bytes": 18457,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/codegen/tests.rs",
+    "sha256": "9351876e58c609c72413fd5d7be13ed04a200ddb239b17fc226524b2332ce7e9",
+    "bytes": 50979,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/liveness.rs",
+    "sha256": "579eb8d97d49bad46df985589f7446304bb0baf160c17016650c306bb4c9ce17",
+    "bytes": 58123,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/program.rs",
+    "sha256": "1194b9d0b6c723a7abb3911f2953ba7643c44dacdb4419fc848388b111e677c9",
+    "bytes": 17955,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/bytecode/verify.rs",
+    "sha256": "c0e51fb3c0f8845f9b8130ca708902d151f56d8ade0b079868c6f9d246a57fc8",
+    "bytes": 43161,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/diag/codes.rs",
+    "sha256": "bd13e23612f1f9d5e82d78b5c6d7e176a3a288495bbfa00c6196182aaaac004f",
+    "bytes": 118630,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/check.rs",
+    "sha256": "7b290809aec58408ec31034e7f0588bf9ab97586d453ad623639e1704f3506b2",
+    "bytes": 156701,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/core_ir.rs",
+    "sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2",
+    "bytes": 21506,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/decision.rs",
+    "sha256": "43b528a5c24bb15391b979a4fd68b17b1a75569cb5fd00a2710b519403f7c0f1",
+    "bytes": 148967,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/desugar.rs",
+    "sha256": "998f38ef05e685dbe7a2e2f4f83e3fa8eada41a9b62e9d819b19075d664b33d2",
+    "bytes": 13720,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/desugar/die_tests.rs",
+    "sha256": "e5650d37820c10a1e02f59bfe3f35607cd54a2ba7f9d304e08b7265cb1a8e041",
+    "bytes": 19214,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/desugar/exprs.rs",
+    "sha256": "6be536c8e048968822d70f49b735ee8f2f011ecc1c28180e802be1164f0583db",
+    "bytes": 52278,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/ir/desugar/tests.rs",
+    "sha256": "848c1b0a386b69483606ac22c7350e7306b41bd0a282c1fb14c2e6ca70977e5c",
+    "bytes": 48192,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/prelude/stdlib/Network/Http.bnt",
+    "sha256": "ea7c25d12c1260b0ef1959130054ef2857c933d7dbd458059695aaf4e2fe92a6",
+    "bytes": 7269,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/prelude/stdlib/Scope.bnt",
+    "sha256": "b0760bbf6e015016db20700f9be5ced785ba0a6a313844563d44f179fdf6ed0a",
+    "bytes": 10190,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/refinterp/convert.rs",
+    "sha256": "174a475708d745141d45ee2a3f24439df298f8ebc64d89b9cdd9ba751bf98530",
+    "bytes": 64109,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/refinterp/eval.rs",
+    "sha256": "439b96e8371db77b52fd8beba7d43815c80b5ef45a51112d3d14d86ec1523585",
+    "bytes": 43298,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/refinterp/value.rs",
+    "sha256": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75",
+    "bytes": 16273,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/calls.rs",
+    "sha256": "f1f780893a18d4e57466fc71de3ba94cd5d0b86230aa81bddf7493b66c0a2ca5",
+    "bytes": 27741,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/context.rs",
+    "sha256": "6e4618e32b06bbc76f875d3b17f16dbda090a317ba2eade6a46d30ea2b407eff",
+    "bytes": 36356,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/decls.rs",
+    "sha256": "a663d1f12e73ea68d7954580f023aa4d60fb84f1641867c233519cdcbffde2f5",
+    "bytes": 61250,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/generate.rs",
+    "sha256": "0b08b11e0246364bcc1ca1423f8cd599e94b35daaeaee1f895b85e402ce7915d",
+    "bytes": 49284,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/interval/identity/tests.rs",
+    "sha256": "8b8cd9ce6209f7a34278f4f5c2eb26285e578222155388542ab0b0d86a21864c",
+    "bytes": 25250,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/mod.rs",
+    "sha256": "c27685436a96b6108431c8f8a1cb05736f138da9b8571ebad7e5150a515d5d75",
+    "bytes": 11671,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/accept.rs",
+    "sha256": "10298749543347f16fed19ab5b4e254b3f0ce1de8312c467489cfeeba356066e",
+    "bytes": 9172,
+    "untracked": true
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/accept_tests.rs",
+    "sha256": "d48a3afe8a48a98583676c391a1fa08839a29a89c27ba2f6d6068240c00d67d1",
+    "bytes": 6884,
+    "untracked": true
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/input.rs",
+    "sha256": "faed62e92eff944ed5a849e4f03e76b9241104996a2356e2991f592a7c2abb0e",
+    "bytes": 30863,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/local.rs",
+    "sha256": "07b290ed52323c878ec668aa5ac762fb08baf9943b1403b62a0aff4cca9e7241",
+    "bytes": 24793,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/local_tests.rs",
+    "sha256": "1dbcbe4e934f12964be57a3876ae2f627e277230b1c5b53578b1692ec412a2b6",
+    "bytes": 23385,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/lower.rs",
+    "sha256": "b96db595541efcb9cb4d35fdd9488ad930cc648c043140426cd940d0780e139e",
+    "bytes": 17578,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/mod.rs",
+    "sha256": "b8ebc371e39ebaae66fd5c9544dc7c3afc1333e421f99992d2a04d9b8163d033",
+    "bytes": 12413,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scope/tests.rs",
+    "sha256": "304ab32d2c3b851528ec5723584e418f7b78a55f66bfa9d3215b50f3ade98535",
+    "bytes": 21620,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/scoped_calls.rs",
+    "sha256": "ef5476c1b7aaa63202b42896b6e61df6b73bfd9fcaee441973d3ddb52e7ebbdd",
+    "bytes": 21203,
+    "untracked": true
+  },
+  {
+    "path": "crates/benitoite/src/typeck/solve.rs",
+    "sha256": "bc247b04e3b29106c9e99ff147aa19a52575235c41ec4e12b52115957be81a4b",
+    "bytes": 108677,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/typeck/text.rs",
+    "sha256": "9af319ed24baed4ae4f2167062d105b2aa5078c07d7dfc9fc8453087e09f22bc",
+    "bytes": 4716,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/vm/dispatch.rs",
+    "sha256": "22fe4c9b13956ad10ed962205838c7e224f1fe8615ff3d52cb2aa6cfa3faefe5",
+    "bytes": 84131,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/vm/dispatch/tasks.rs",
+    "sha256": "fe622e41158f6809d87787a65a871418b24d41b83b85ace15e9fcd1384739c9a",
+    "bytes": 42362,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/src/vm/dispatch/tasks/io.rs",
+    "sha256": "9aa1bd14aae6e412c2af5898f7f9e4054e4658102dfa1ba35ca2a0ca71a4f798",
+    "bytes": 34948,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/tests/desugar_export/exchange.rs",
+    "sha256": "7285bbddb5a20fb2bca232b229ee72a9c02259fdcf2ef76a86d48097a14f215e",
+    "bytes": 133236,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/tests/desugar_export/lib.rs",
+    "sha256": "fa848ddd3d2efbe88c4ad939df0f2b80c1de9c9688243d5c9e6fdafee356da73",
+    "bytes": 12489,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/tests/desugar_export/scope_tables.rs",
+    "sha256": "3dbe89602dc17ab5c0dace8dad88205d78c6d49b13b68b0a30c8afd37e6567cb",
+    "bytes": 29188,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/tests/runtime_builtins.rs",
+    "sha256": "5fe6a8825f6a8d330d0273cfacfa5f75b774ad3952cce7411e9bfbe9fc0d7a14",
+    "bytes": 101437,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/tests/scope_annotations.rs",
+    "sha256": "f41cc03945802a13f37907f1766893e869ebddb0086e71b0be0187c9fc9c579c",
+    "bytes": 43820,
+    "untracked": false
+  },
+  {
+    "path": "crates/benitoite/tests/scoped_calls.rs",
+    "sha256": "bb89ca518a25dcb90949c042a495cb118721e6d3d3ffa0463d77b99b080cb9b4",
+    "bytes": 8834,
+    "untracked": true
+  },
+  {
+    "path": "docs/design/01-spec/01-06-type-system.md",
+    "sha256": "dc2780b363ce868adce2aa4b10801b87bd649a35b9915625a7921c10ab78b96d",
+    "bytes": 77101,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/01-spec/01-12-core-calculus.md",
+    "sha256": "eddfe787fcdb55bff574a179cc87c2c932c3129ae43bfbc84f1505780ebb19e2",
+    "bytes": 634026,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/02-impl/02-05-typechecker.md",
+    "sha256": "de28ee97e1562ecc2d6a14791cca9ce7352688f9ae57a094ab5a6a90c791a0fa",
+    "bytes": 223666,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/02-impl/02-06-ir-and-lowering.md",
+    "sha256": "192deb962f23f4f050ac199b9c7f2a3fb94a9e95be2b111fb28300ff95c7cdc1",
+    "bytes": 64431,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/02-impl/02-07-bytecode.md",
+    "sha256": "3c77f22bc9dd05832378c74cb967509a9062c76420e400fddfcf07137dca3d88",
+    "bytes": 51668,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/02-impl/02-08-vm.md",
+    "sha256": "eec5a54537cba1277b561c287d1192d0550250862ff37bd66282cf2fe65430a9",
+    "bytes": 88835,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/03-interop/03-06-stdlib.md",
+    "sha256": "39479ffa8c8781f734c78f7ab192a15f35abc37ef83c690214ff3f8add5eec7a",
+    "bytes": 121447,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/03-interop/03-09-network.md",
+    "sha256": "c88c6b5d6c4a735faf2809c81ff65c650e1eacc11a8953df4c772b62afe46d5b",
+    "bytes": 44318,
+    "untracked": false
+  },
+  {
+    "path": "docs/design/07-quality/07-04-formal-semantics.md",
+    "sha256": "6dce756ed185c3bf6e0b0956a92ad90f57f6da4500f34138f5212666acdf0f77",
+    "bytes": 409233,
+    "untracked": false
+  }
+]

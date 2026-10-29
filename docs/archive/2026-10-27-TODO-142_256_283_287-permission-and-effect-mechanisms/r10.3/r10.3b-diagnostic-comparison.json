@@ -1,0 +1,211 @@
+[
+  {
+    "source": "type Bad = List[string]\n",
+    "equal": true,
+    "results": {
+      "B_WORK": {
+        "code": "E0201",
+        "message": "expected a type, found `string`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 17,
+            "offset": 16
+          },
+          "end": {
+            "line": 1,
+            "column": 23,
+            "offset": 22
+          },
+          "label": "unexpected `string`"
+        }
+      },
+      "R10.3b": {
+        "code": "E0201",
+        "message": "expected a type, found `string`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 17,
+            "offset": 16
+          },
+          "end": {
+            "line": 1,
+            "column": 23,
+            "offset": 22
+          },
+          "label": "unexpected `string`"
+        }
+      }
+    }
+  },
+  {
+    "source": "type Bad = Option[int]\n",
+    "equal": true,
+    "results": {
+      "B_WORK": {
+        "code": "E0201",
+        "message": "expected a type, found `int`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 19,
+            "offset": 18
+          },
+          "end": {
+            "line": 1,
+            "column": 22,
+            "offset": 21
+          },
+          "label": "unexpected `int`"
+        }
+      },
+      "R10.3b": {
+        "code": "E0201",
+        "message": "expected a type, found `int`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 19,
+            "offset": 18
+          },
+          "end": {
+            "line": 1,
+            "column": 22,
+            "offset": 21
+          },
+          "label": "unexpected `int`"
+        }
+      }
+    }
+  },
+  {
+    "source": "type Bad = List[]\n",
+    "equal": true,
+    "results": {
+      "B_WORK": {
+        "code": "E0201",
+        "message": "expected a type, found `]`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 17,
+            "offset": 16
+          },
+          "end": {
+            "line": 1,
+            "column": 18,
+            "offset": 17
+          },
+          "label": "unexpected `]`"
+        }
+      },
+      "R10.3b": {
+        "code": "E0201",
+        "message": "expected a type, found `]`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 17,
+            "offset": 16
+          },
+          "end": {
+            "line": 1,
+            "column": 18,
+            "offset": 17
+          },
+          "label": "unexpected `]`"
+        }
+      }
+    }
+  },
+  {
+    "source": "type Bad = Integer[]\n",
+    "equal": true,
+    "results": {
+      "B_WORK": {
+        "code": "E0201",
+        "message": "expected a type, found `]`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 20,
+            "offset": 19
+          },
+          "end": {
+            "line": 1,
+            "column": 21,
+            "offset": 20
+          },
+          "label": "unexpected `]`"
+        }
+      },
+      "R10.3b": {
+        "code": "E0201",
+        "message": "expected a type, found `]`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 20,
+            "offset": 19
+          },
+          "end": {
+            "line": 1,
+            "column": 21,
+            "offset": 20
+          },
+          "label": "unexpected `]`"
+        }
+      }
+    }
+  },
+  {
+    "source": "uses File.Write[\"/data\"\nfunction after() -> Unit\nend function\n",
+    "results": {
+      "B_WORK": {
+        "code": "E0201",
+        "message": "expected a type, found a string literal",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 1,
+            "column": 17,
+            "offset": 16
+          },
+          "end": {
+            "line": 1,
+            "column": 24,
+            "offset": 23
+          },
+          "label": "unexpected a string literal"
+        }
+      },
+      "R10.3b": {
+        "code": "E0201",
+        "message": "expected `,` or `]`, found `function`",
+        "primary": {
+          "file": "probe.bnt",
+          "start": {
+            "line": 2,
+            "column": 1,
+            "offset": 24
+          },
+          "end": {
+            "line": 2,
+            "column": 9,
+            "offset": 32
+          },
+          "label": "unexpected `function`"
+        }
+      }
+    }
+  }
+]

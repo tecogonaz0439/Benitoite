@@ -42,7 +42,7 @@ def clausesChildren : Clauses → List Expr
 /-- 宣言のフィールド順の直接の子。全相互帰納容器を扱うが、評価は行わない。 -/
 def children : Expr → List Expr
   | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-  | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+  | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
   | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
   | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
   | .negFloat32 _ | .unit => []
@@ -80,7 +80,7 @@ mutual
   def surfacePreorder (source : Expr) : List Expr :=
     source :: (match source with
     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
     | .negFloat32 _ | .unit => []

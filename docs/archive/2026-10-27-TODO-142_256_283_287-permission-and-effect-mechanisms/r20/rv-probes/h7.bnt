@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(r: Http.ClientRequest) -> Result[Http.RequestIn["127.0.0.1", 80], Http.RequestCheckError]
+ return Http.checkRequestIn(hostPattern: "127.0.0.01", minimumPort: 80, maximumPort: 80, request: r)
+end function

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "runtime_builtins",
+    "scope_checked_values_preserve_inputs_and_runtime_errors",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "returncode": 0,
+  "outerSeconds": 0.7216415,
+  "maxRssBytesAuxiliary": 78069760
+}

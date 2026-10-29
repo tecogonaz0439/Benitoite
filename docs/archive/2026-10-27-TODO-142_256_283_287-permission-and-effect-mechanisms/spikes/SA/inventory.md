@@ -1,0 +1,242 @@
+# 基準版の字句上の依存箇所
+
+基準: `65b165272b42c3f3621ad59bc2a2c6c9cec9c46e`。詳しい数え方と一覧は `inventory.py` と `inventory.json` にある。
+
+コメント・文字列・宣言自身の名前を除き、宣言の本文まで数える。Lean が解決した依存グラフでも推移的な依存件数でもない。
+
+| 検索 | grep の一致行 | grep のファイル | 直接参照する定理 | 定理のファイル |
+|---|---:|---:|---:|---:|
+| `eq_of_sub_of_sub` | 6 | 3 | 5 | 2 |
+| `Canonical` | 86 | 34 | 44 | 21 |
+| `norm` | 239 | 40 | 113 | 36 |
+
+三つの和集合: 149定理、39ファイル。
+
+`norm` を名前に含む補題群まで広げた検索: 220定理、47ファイル。無関係な正規化名を含みうる字句上の上限寄りの数である。
+
+例示用の `Examples*.lean` と `tests/` を除く数は `inventory.json` の `theorems_without_examples` にある。
+
+## 宣言の一覧
+
+- `formal/Benitoite/Release/BuilderExamples.lean:129` `Benitoite.Release.BuilderExamples.dedicated_inside_lambda`: Canonical, norm, norm_family
+- `formal/Benitoite/Release/CoverageTypes.lean:39` `Benitoite.Release.Coverage.erase_norm`: norm, norm_family
+- `formal/Benitoite/Release/CoverageTypes.lean:41` `Benitoite.Release.Coverage.eraseTys_norm`: norm_family
+- `formal/Benitoite/Release/CoverageTypes.lean:72` `Benitoite.Release.Coverage.erase_subst_raw`: norm_family
+- `formal/Benitoite/Release/Effect.lean:41` `Benitoite.Release.Eff.mem_union`: norm, norm_family
+- `formal/Benitoite/Release/Effect.lean:50` `Benitoite.Release.Eff.memFail_singleFail`: norm, norm_family
+- `formal/Benitoite/Release/Effect.lean:53` `Benitoite.Release.Eff.memFail_union`: norm_family
+- `formal/Benitoite/Release/Effect.lean:59` `Benitoite.Release.Eff.mem_norm`: norm, norm_family
+- `formal/Benitoite/Release/Effect.lean:63` `Benitoite.Release.Eff.sub_norm`: norm, norm_family
+- `formal/Benitoite/Release/Effect.lean:67` `Benitoite.Release.Eff.union_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/Effect.lean:70` `Benitoite.Release.Eff.canonical_ofAtoms`: Canonical, norm_family
+- `formal/Benitoite/Release/Effect.lean:73` `Benitoite.Release.Eff.eq_of_sub_of_sub`: Canonical, norm, norm_family
+- `formal/Benitoite/Release/Effect.lean:98` `Benitoite.Release.Eff.shift_mono`: norm_family
+- `formal/Benitoite/Release/Effect.lean:115` `Benitoite.Release.Eff.sub_norm_self`: norm, norm_family
+- `formal/Benitoite/Release/Effect.lean:119` `Benitoite.Release.Eff.norm_sub_self`: norm, norm_family
+- `formal/Benitoite/Release/FailureEffects.lean:7` `Benitoite.Release.Eff.substAt_singleFail`: norm, norm_family
+- `formal/Benitoite/Release/FailureExamples.lean:99` `Benitoite.Release.FailureExamples.toResult_typed`: norm, norm_family
+- `formal/Benitoite/Release/Finite.lean:128` `Benitoite.Release.Ty.normWith_eq_norm`: norm, norm_family
+- `formal/Benitoite/Release/Finite.lean:143` `Benitoite.Release.Ty.normTysWith_eq_norm`: norm_family
+- `formal/Benitoite/Release/Finite.lean:151` `Benitoite.Release.Eff.normWith_eq_norm_of_fails`: norm, norm_family
+- `formal/Benitoite/Release/Finite.lean:164` `Benitoite.Release.Eff.normWith_eq_norm`: norm, norm_family
+- `formal/Benitoite/Release/Finite.lean:200` `Benitoite.Release.Ty.normWith_support`: norm_family
+- `formal/Benitoite/Release/Finite.lean:205` `Benitoite.Release.Eff.normWith_support`: norm_family
+- `formal/Benitoite/Release/Finite.lean:210` `Benitoite.Release.Ty.normWith_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/Finite.lean:214` `Benitoite.Release.Eff.normWith_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/Finite.lean:219` `Benitoite.Release.Ty.normWith_idem`: norm_family
+- `formal/Benitoite/Release/Finite.lean:224` `Benitoite.Release.Eff.normWith_idem`: norm_family
+- `formal/Benitoite/Release/Finite.lean:236` `Benitoite.Release.Ty.normWith_support_independent`: norm_family
+- `formal/Benitoite/Release/Finite.lean:240` `Benitoite.Release.Eff.normWith_support_independent`: norm_family
+- `formal/Benitoite/Release/FiniteSupport.lean:151` `Benitoite.Release.Ty.support_of_norm`: norm, norm_family
+- `formal/Benitoite/Release/FiniteSupport.lean:163` `Benitoite.Release.Ty.supportList_of_norm`: norm_family
+- `formal/Benitoite/Release/FiniteSupport.lean:168` `Benitoite.Release.Eff.support_of_norm`: norm, norm_family
+- `formal/Benitoite/Release/FiniteSupport.lean:179` `Benitoite.Release.Eff.norm_fails_support`: norm, norm_family
+- `formal/Benitoite/Release/FiniteSupport.lean:188` `Benitoite.Release.Eff.support_of_sub`: norm_family
+- `formal/Benitoite/Release/Lemmas/Basic.lean:39` `Benitoite.Release.Eff.substRho_empty`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Basic.lean:44` `Benitoite.Release.Eff.substAt_empty`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Basic.lean:51` `Benitoite.Release.Eff.substRho_name`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Closed.lean:19` `Benitoite.Release.Ty.applyTo_varsIn`: norm_family
+- `formal/Benitoite/Release/Lemmas/Closed.lean:31` `Benitoite.Release.Ty.VarsIn.substAt`: norm_family
+- `formal/Benitoite/Release/Lemmas/Closed.lean:90` `Benitoite.Release.Eff.VarsIn.substAt`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Dict.lean:20` `Benitoite.Release.Eff.substRho_of_noRho`: Canonical, norm_family
+- `formal/Benitoite/Release/Lemmas/Dict.lean:29` `Benitoite.Release.Ty.shift_subst_append`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Dict.lean:51` `Benitoite.Release.Ty.methTy_subst`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Dict.lean:120` `Benitoite.Release.Eff.methTy_subst`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:65` `Benitoite.Release.captureEff_left`: norm_family
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:69` `Benitoite.Release.captureEff_right`: norm_family
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:73` `Benitoite.Release.captureEff_state`: norm_family
+- `formal/Benitoite/Release/Lemmas/PresFailure.lean:15` `Benitoite.Release.HasFailureClause.instantiate`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/PresFailure.lean:60` `Benitoite.Release.pres_failure`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/PresMain.lean:18` `Benitoite.Release.preservationE`: Canonical, norm_family
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:48` `Benitoite.Release.Ty.subst_tvar0`: Canonical, norm_family
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:111` `Benitoite.Release.pres_op_common`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/Regularity.lean:34` `Benitoite.Release.fnTy_wf`: norm_family
+- `formal/Benitoite/Release/Lemmas/Regularity.lean:138` `Benitoite.Release.HasTypeVQ.wf`: Canonical, norm, norm_family
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:19` `Benitoite.Release.Ty.applyTo_notHead`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:25` `Benitoite.Release.Ty.applyTo_of_notHead`: Canonical, norm_family
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:56` `Benitoite.Release.Ty.applyTo_wf`: norm_family
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:62` `Benitoite.Release.Ty.shift_zero`: Canonical, norm_family
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:65` `Benitoite.Release.Ty.shiftList_zero`: Canonical, norm_family
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:25` `Benitoite.Release.Ty.applyTo_notCont`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:12` `Benitoite.Release.Ty.bind_clean`: norm, norm_family
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:44` `Benitoite.Release.Eff.bind_clean`: norm, norm_family
+- `formal/Benitoite/Release/NoFail.lean:111` `Benitoite.Release.NoFail.norm_iff`: norm, norm_family
+- `formal/Benitoite/Release/NoFail.lean:163` `Benitoite.Release.NoFail.shift_iff`: norm_family
+- `formal/Benitoite/Release/NoFail.lean:205` `Benitoite.Release.RowTransport.at`: norm_family
+- `formal/Benitoite/Release/NoFail.lean:244` `Benitoite.Release.failure_upper_bound`: Canonical, norm_family
+- `formal/Benitoite/Release/NoFail.lean:253` `Benitoite.Release.Eff.norm_fails_eq_nil`: norm, norm_family
+- `formal/Benitoite/Release/NoFail.lean:267` `Benitoite.Release.QTy.norm_iff`: norm, norm_family
+- `formal/Benitoite/Release/NoFail.lean:270` `Benitoite.Release.QTys.norm_iff`: norm_family
+- `formal/Benitoite/Release/NoFail.lean:275` `Benitoite.Release.QEff.norm_iff`: norm, norm_family
+- `formal/Benitoite/Release/NoFail.lean:303` `Benitoite.Release.QTy.shift_iff`: norm_family
+- `formal/Benitoite/Release/NoFail.lean:307` `Benitoite.Release.QEff.shift_iff`: norm_family
+- `formal/Benitoite/Release/Normalize.lean:46` `Benitoite.Release.Ty.normTys_eq_map`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:57` `Benitoite.Release.normTys_sortUnique`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:76` `Benitoite.Release.Ty.norm_idem`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:80` `Benitoite.Release.Ty.normTys_idem`: norm_family
+- `formal/Benitoite/Release/Normalize.lean:86` `Benitoite.Release.Eff.norm_idem`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:96` `Benitoite.Release.Eff.norm_memFail`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:125` `Benitoite.Release.Ty.norm_legacy`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:139` `Benitoite.Release.Ty.normTys_legacy`: norm_family
+- `formal/Benitoite/Release/Normalize.lean:146` `Benitoite.Release.Eff.norm_legacy`: norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:171` `Benitoite.Release.Ty.canonical_of_failsLeOne`: Canonical, norm, norm_family
+- `formal/Benitoite/Release/Normalize.lean:192` `Benitoite.Release.Eff.canonical_of_failsLeOne`: Canonical, norm, norm_family
+- `formal/Benitoite/Release/Order/Shift.lean:15` `Benitoite.Release.Ty.shift_compare_norm`: norm, norm_family
+- `formal/Benitoite/Release/Order/Shift.lean:20` `Benitoite.Release.Ty.shift_compare`: Canonical, norm_family
+- `formal/Benitoite/Release/Order/Shift.lean:24` `Benitoite.Release.shift_map`: Canonical, norm_family
+- `formal/Benitoite/Release/Order/Shift.lean:31` `Benitoite.Release.Ty.shift_compareList`: Canonical, norm_family
+- `formal/Benitoite/Release/Order/Shift.lean:38` `Benitoite.Release.Ty.sortUnique_shift`: Canonical, norm_family
+- `formal/Benitoite/Release/SubstEnv.lean:41` `Benitoite.Release.Eff.substRho_row`: norm, norm_family
+- `formal/Benitoite/Release/SubstEnv.lean:77` `Benitoite.Release.Ty.shift_eq_bind`: norm_family
+- `formal/Benitoite/Release/TypeBounds.lean:67` `Benitoite.Release.Ty.norm_rawWF`: norm, norm_family
+- `formal/Benitoite/Release/TypeBounds.lean:82` `Benitoite.Release.Ty.normTys_rawWF`: norm_family
+- `formal/Benitoite/Release/TypeBounds.lean:87` `Benitoite.Release.Eff.norm_rawWF`: norm, norm_family
+- `formal/Benitoite/Release/TypeBounds.lean:153` `Benitoite.Release.Ty.bind_wf`: norm_family
+- `formal/Benitoite/Release/TypeBounds.lean:180` `Benitoite.Release.Ty.shift_wf`: norm_family
+- `formal/Benitoite/Release/TypeBounds.lean:225` `Benitoite.Release.Eff.bind_wf`: norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:34` `Benitoite.Release.Eff.memFail_rawBind_rowImage`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:52` `Benitoite.Release.Eff.norm_ext`: eq_of_sub_of_sub, norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:60` `Benitoite.Release.Ty.bind_congr_rows`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:87` `Benitoite.Release.Ty.bindTys_congr_rows`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:97` `Benitoite.Release.Eff.bind_congr_rows`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:133` `Benitoite.Release.Eff.mem_bind`: norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:140` `Benitoite.Release.Eff.memFail_bind`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:153` `Benitoite.Release.Eff.bind_row`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:197` `Benitoite.Release.Ty.bind_applyTo`: norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:209` `Benitoite.Release.Ty.bind_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:213` `Benitoite.Release.Eff.bind_comp_of_types`: eq_of_sub_of_sub, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:265` `Benitoite.Release.Ty.bind_comp`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:308` `Benitoite.Release.Ty.bindTys_comp`: norm, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:319` `Benitoite.Release.Eff.bind_comp`: norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:334` `Benitoite.Release.Eff.ext_canonical`: eq_of_sub_of_sub, Canonical, norm_family
+- `formal/Benitoite/Release/TypeComposition.lean:340` `Benitoite.Release.Eff.bind_union`: norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:15` `Benitoite.Release.Ty.bind_congr_scoped`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:43` `Benitoite.Release.Ty.bindTys_congr_scoped`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:53` `Benitoite.Release.Eff.bind_congr_scoped`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:103` `Benitoite.Release.Ty.bind_identity`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:106` `Benitoite.Release.Eff.bind_identity`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:109` `Benitoite.Release.Eff.rowImage_normEnv`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:115` `Benitoite.Release.Ty.bind_normEnv`: norm, norm_family
+- `formal/Benitoite/Release/TypeCongruence.lean:119` `Benitoite.Release.Ty.bind_congr_scoped_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeRegularity.lean:16` `Benitoite.Release.Ty.WF.canonical`: Canonical, norm, norm_family
+- `formal/Benitoite/Release/TypeRegularity.lean:29` `Benitoite.Release.Ty.WFList.norm_eq`: norm_family
+- `formal/Benitoite/Release/TypeRegularity.lean:36` `Benitoite.Release.Ty.norm_WF`: norm, norm_family
+- `formal/Benitoite/Release/TypeRegularity.lean:47` `Benitoite.Release.Eff.norm_WF`: norm, norm_family
+- `formal/Benitoite/Release/TypeRegularity.lean:129` `Benitoite.Release.Ty.shift_of_wf`: norm_family
+- `formal/Benitoite/Release/TypeRegularity.lean:132` `Benitoite.Release.Eff.shift_of_wf`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeRows.lean:66` `Benitoite.Release.Ty.norm_rowsIn`: norm, norm_family
+- `formal/Benitoite/Release/TypeRows.lean:79` `Benitoite.Release.Ty.normTys_rowsIn`: norm_family
+- `formal/Benitoite/Release/TypeRows.lean:85` `Benitoite.Release.Eff.norm_rowsIn`: norm, norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:14` `Benitoite.Release.Eff.substRho_true`: norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:139` `Benitoite.Release.Eff.shift_at_rowImages`: norm, norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:175` `Benitoite.Release.Eff.substAt_fails`: norm, norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:203` `Benitoite.Release.Eff.substRho_nil_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:208` `Benitoite.Release.Eff.substRho_nil`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:217` `Benitoite.Release.Eff.substAt_nil_of_wf`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeScopedSubst.lean:287` `Benitoite.Release.Eff.substAt_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:85` `Benitoite.Release.Ty.norm_rawShift`: norm, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:89` `Benitoite.Release.Ty.normTys_rawShift`: norm_family
+- `formal/Benitoite/Release/TypeShift.lean:95` `Benitoite.Release.Eff.norm_rawShift`: norm, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:107` `Benitoite.Release.Ty.rawShift_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:112` `Benitoite.Release.Eff.rawShift_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:149` `Benitoite.Release.Ty.shift_eq_norm_rawShift`: norm, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:154` `Benitoite.Release.Ty.shiftTys_eq_norm_rawShift`: norm_family
+- `formal/Benitoite/Release/TypeShift.lean:163` `Benitoite.Release.Ty.shift_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:166` `Benitoite.Release.Eff.shift_canonical`: Canonical, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:183` `Benitoite.Release.Ty.shift_zero_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeShift.lean:186` `Benitoite.Release.Eff.shift_zero_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:19` `Benitoite.Release.TyCon.norm_rawApply`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:27` `Benitoite.Release.Ty.norm_rawApplyTo`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:34` `Benitoite.Release.Ty.norm_rawBind`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:45` `Benitoite.Release.Ty.normTys_rawBind`: norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:51` `Benitoite.Release.Eff.norm_rawBind`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:65` `Benitoite.Release.Ty.rawBind_norm_congr`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:70` `Benitoite.Release.Eff.memFail_rawBind`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:120` `Benitoite.Release.Eff.bind_mono`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:147` `Benitoite.Release.Eff.test_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:151` `Benitoite.Release.Eff.substAtoms_map_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:163` `Benitoite.Release.Eff.rowFails_map_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:191` `Benitoite.Release.Ty.rawApplyTo_norm_congr`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:198` `Benitoite.Release.Ty.norm_rawBind_normEnv`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:208` `Benitoite.Release.Ty.normTys_rawBind_normEnv`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:214` `Benitoite.Release.Eff.norm_rawBind_normEnv`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:229` `Benitoite.Release.SubstEnv.at_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:249` `Benitoite.Release.Ty.norm_substAt`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:256` `Benitoite.Release.Eff.norm_substAt`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:263` `Benitoite.Release.Ty.applyTo_eq_raw_norm`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:269` `Benitoite.Release.Ty.substAt_eq_rawBind`: norm, norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:395` `Benitoite.Release.Ty.shift_eq_raw_of_legacy`: norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:398` `Benitoite.Release.Eff.shift_eq_raw_of_legacy`: norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:421` `Benitoite.Release.Ty.substAt_eq_raw_of_legacy`: norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:428` `Benitoite.Release.Eff.substAt_eq_raw_of_legacy`: norm_family
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:435` `Benitoite.Release.Eff.substAt_ofAtoms`: norm, norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:32` `Benitoite.Release.Ty.norm_support`: norm, norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:44` `Benitoite.Release.Ty.normTys_support`: norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:49` `Benitoite.Release.Eff.norm_support`: norm, norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:82` `Benitoite.Release.Ty.shift_support`: norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:86` `Benitoite.Release.Eff.shift_support`: norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:168` `Benitoite.Release.Ty.substAt_support`: norm_family
+- `formal/Benitoite/Release/TypeSupport.lean:175` `Benitoite.Release.Eff.substAt_support`: norm_family
+- `formal/Benitoite/Release/TypeVariables.lean:130` `Benitoite.Release.Ty.norm_VarsIn`: norm, norm_family
+- `formal/Benitoite/Release/TypeVariables.lean:135` `Benitoite.Release.Eff.norm_VarsIn`: norm, norm_family
+- `formal/Benitoite/Surface/CheckComputeCalls.lean:119` `Benitoite.Surface.Check.computes_partialCon`: norm_family
+- `formal/Benitoite/Surface/CheckLemmas.lean:421` `Benitoite.Surface.Check.singleFailure_eq`: norm_family
+- `formal/Benitoite/Surface/CheckLemmas.lean:425` `Benitoite.Surface.Check.singleFailure_atoms`: norm_family
+- `formal/Benitoite/Surface/CheckPredicates.lean:69` `Benitoite.Surface.CheckTools.canonicalEff_spec`: Canonical, norm_family
+- `formal/Benitoite/Surface/CheckPredicates.lean:78` `Benitoite.Surface.CheckTools.wfEff_spec`: Canonical, norm_family
+- `formal/Benitoite/Surface/CheckPredicates.lean:87` `Benitoite.Surface.CheckTools.cleanEff_spec`: Canonical, norm_family
+- `formal/Benitoite/Surface/CheckSoundCalls.lean:187` `Benitoite.Surface.Check.partialCon_case`: norm_family
+- `formal/Benitoite/Surface/CheckTools.lean:48` `Benitoite.Surface.CheckTools.union_atoms`: norm_family
+- `formal/Benitoite/Surface/CheckTools.lean:118` `Benitoite.Surface.CheckTools.applyTo_atoms`: norm_family
+- `formal/Benitoite/Surface/Examples.lean:10` `Benitoite.Surface.Examples.canonical_empty`: Canonical, norm_family
+- `formal/Benitoite/Surface/Examples.lean:11` `Benitoite.Surface.Examples.canonical_single`: Canonical, norm_family
+- `formal/Benitoite/Surface/Examples.lean:60` `Benitoite.Surface.Examples.mainExpr_typed`: norm, norm_family
+- `formal/Benitoite/Surface/Examples.lean:412` `Benitoite.Surface.Examples.dieExit_ok`: Canonical, norm_family
+- `formal/Benitoite/Surface/FinitePredicates.lean:17` `Benitoite.Surface.CheckTools.Finite.canonicalEff_spec`: Canonical, norm_family
+- `formal/Benitoite/Surface/FinitePredicates.lean:59` `Benitoite.Surface.CheckTools.Finite.wfEff_spec`: Canonical, norm_family
+- `formal/Benitoite/Surface/FinitePredicates.lean:100` `Benitoite.Surface.CheckTools.Finite.cleanEff_spec`: Canonical, norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:49` `Benitoite.Surface.CheckTools.Finite.applyToTy_eq`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:54` `Benitoite.Surface.CheckTools.Finite.shiftTy_eq`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:59` `Benitoite.Surface.CheckTools.Finite.shiftEff_eq`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:63` `Benitoite.Surface.CheckTools.Finite.substTyAt_eq`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:70` `Benitoite.Surface.CheckTools.Finite.substEffAt_eq`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:95` `Benitoite.Surface.CheckTools.Finite.unionEff_eq_of_fails`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:104` `Benitoite.Surface.CheckTools.Finite.unionEff_fails_support`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:114` `Benitoite.Surface.CheckTools.Finite.unionEff_eq`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:117` `Benitoite.Surface.CheckTools.Finite.unionEff_support`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:127` `Benitoite.Surface.CheckTools.Finite.effSub_sound_of_fails`: norm_family
+- `formal/Benitoite/Surface/FiniteTools.lean:148` `Benitoite.Surface.CheckTools.Finite.effSub_complete`: norm_family
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:31` `Benitoite.Surface.clean_le`: Canonical, norm_family
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:65` `Benitoite.Surface.fnTy_clean`: norm_family
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:286` `Benitoite.Surface.HasTypeQ.clean`: Canonical, norm, norm_family
+- `formal/Benitoite/Surface/Lemmas/Records.lean:96` `Benitoite.Surface.record_subst_identity`: norm, norm_family
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:332` `Benitoite.Surface.union_empty_right`: Canonical, norm, norm_family
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:341` `Benitoite.Surface.union_empty_left`: Canonical, norm, norm_family
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:351` `Benitoite.Surface.union_empty_right_nested`: eq_of_sub_of_sub
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:358` `Benitoite.Surface.union_empty_left_nested`: eq_of_sub_of_sub
+- `formal/Benitoite/Surface/Lemmas/ShiftClean.lean:56` `Benitoite.Surface.shiftEff_clean`: norm_family
+- `formal/Benitoite/Surface/Lemmas/ShiftClean.lean:73` `Benitoite.Surface.rawShiftEff_clean`: norm_family
+- `formal/Benitoite/Surface/Lemmas/SubstClean.lean:8` `Benitoite.Surface.substAt_clean`: norm_family
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:209` `Benitoite.Surface.HasTypeQ.desugar_partialCon`: norm, norm_family
+- `formal/Benitoite/Surface/Monad2Examples.lean:264` `Benitoite.Surface.Monad2Examples.signatures_scoped`: Canonical, norm, norm_family
+- `formal/Benitoite/Surface/Monad2Examples.lean:315` `Benitoite.Surface.Monad2Examples.program_wellFormed`: Canonical, norm, norm_family

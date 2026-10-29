@@ -40,7 +40,7 @@ RS3は `-> String` の次行に uses を置く例を挙げたが、現行の `ne
 
 共通の受け入れ照合0.25〜0.5時間を加え、新語の追加を6.25〜11.5時間、基準15〜30時間との合計を21.25〜41.5時間（約21〜42時間）と見込む。実装・文書の合計は13〜25時間である。これは変更箇所と分類した作業からの計画用の見込みであり、試行時間からの換算ではない。with 固有の境界判定を除きつつ、診断位置、生成器、旧語の診断を別に積み上げた。全コーパスの分類と実装による更新はまだ必要である。
 
-残っていた `work/m011/scratch/rs3-keyword-dry-run.py` を `python3 -B` で再実行した。source-migrate の `proposed` で、8入力・15箇所の置換後のバイト列をメモリ上に作る試行である。終了0、内部時間約0.002秒、入力のバイト列が変わっていないことを確認した。既存の診断JSONの14位置について、with では列・バイト位置の差は0、can と effects では列が10位置、バイト位置が14位置変わった。結果は `work/m011/scratch/rs3-keyword-dry-run.json` にある。新しい字句解析・構文解析・診断・整形の実行ではなく、全体への外挿もしていないことを本文7.2に明記した。
+残っていた [rs3-keyword-dry-run.py](../work-copies/m011/scratch/rs3-keyword-dry-run.py) を `python3 -B` で再実行した。source-migrate の `proposed` で、8入力・15箇所の置換後のバイト列をメモリ上に作る試行である。終了0、内部時間約0.002秒、入力のバイト列が変わっていないことを確認した。既存の診断JSONの14位置について、with では列・バイト位置の差は0、can と effects では列が10位置、バイト位置が14位置変わった。結果は [rs3-keyword-dry-run.json](../work-copies/m011/scratch/rs3-keyword-dry-run.json) にある。新しい字句解析・構文解析・診断・整形の実行ではなく、全体への外挿もしていないことを本文7.2に明記した。
 
 「語の長さによって整形器の行の折り返しが変わる」という部分は、現行には当てはまらない。[06-03「整形の考え方」](../../../design/06-tooling/06-03-formatter.md#整形の考え方)は長い行を折り返さないと定め、`cli/tools/formatter/print.rs:25` も改行を保つ。従ってその追加費用は含めない。語の字面を含む整形の期待値と再解析・冪等性、診断位置の照合は含めた。
 
@@ -70,4 +70,4 @@ RS3は `-> String` の次行に uses を置く例を挙げたが、現行の `ne
 
 2026-10-23に、今回の修正の根拠となる [Nim Manual](https://nim-lang.org/docs/manual.html#effect-system)、[Ante](https://antelang.org/)、[Delphi Programs and Units](https://docwiki.embarcadero.com/RADStudio/Athens/en/Programs_and_Units_%28Delphi%29)を開いて照合した。Delphiは今回は本文を取得でき、The Program Uses Clauseのカンマ区切りとEditorの例を確認できたため、RS3の未取得という留保を本書の未確認事項としては引き継がない。本文3節の途中の修正が断定した事実を、今回改めて確かめた。can・mayの用法は [Cambridge公式ページ](https://dictionary.cambridge.org/grammar/british-grammar/can-or-may)の検索結果に表示された説明で確認し、直接取得の403と区別した。他言語の全行を新たに再調査したものではない。
 
-最終確認は、RS3の8指摘と3文書の対応、数値の検算、相対リンクの参照先、書き込み範囲の照合である。今回の書き込みは指定の3文書と `work/m011/scratch/` に限る。ビルド、テスト、ベンチマーク、LLM評価、gitのadd・commit・branchは行っていない。
+最終確認は、RS3の8指摘と3文書の対応、数値の検算、相対リンクの参照先、書き込み範囲の照合である。今回の書き込みは指定の3文書と [当時の作業用領域の対応表](../work-copies/README.md#分類と元の対応) に限る。ビルド、テスト、ベンチマーク、LLM評価、gitのadd・commit・branchは行っていない。

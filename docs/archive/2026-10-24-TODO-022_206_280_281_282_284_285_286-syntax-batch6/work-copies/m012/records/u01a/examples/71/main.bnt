@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.Range
+@test
+function checkedListExample() -> Unit uses Assert.Check
+  match Range.checkLength(minimum: 2, maximum: 2, values: [10, 20]) with
+    case Result.Ok(value) ->
+      Assert.equal(actual: Range.checkedLength(value), expected: 2)
+      Assert.equal(actual: Range.lengthValues(value), expected: [10, 20])
+    case Result.Error(_) -> Assert.fail("exact length was rejected")
+  end match
+  match Range.checkIndex(index: 1, values: [10, 20]) with
+    case Result.Ok(value) -> Assert.equal(actual: Range.get(value), expected: 20)
+    case Result.Error(_) -> Assert.fail("valid index was rejected")
+  end match
+end function

@@ -1,0 +1,14 @@
+{
+  "id": "allow-run-name",
+  "command": [
+    "<repo>/target/release/benitoite",
+    "run",
+    "--diagnostics=json",
+    "--allow-effects=File.Write",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+  ],
+  "exit": 0,
+  "seconds": 0.026578458000000138,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

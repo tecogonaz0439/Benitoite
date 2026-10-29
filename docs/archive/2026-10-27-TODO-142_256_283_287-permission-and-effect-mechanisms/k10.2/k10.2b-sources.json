@@ -1,0 +1,22 @@
+{
+  "command": [
+    "env",
+    "PYTHONOPTIMIZE=1",
+    "python3",
+    "-B",
+    "formal/tests/test_range_sources.py",
+    "--exports",
+    "target/k10.2b-exports/range-sources",
+    "--cli",
+    "target/debug/benitoite",
+    "--output",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/k10.2b-source-comparison"
+  ],
+  "start": "2026-10-29T13:14:14.480011+00:00",
+  "end": "2026-10-29T13:14:23.638715+00:00",
+  "exit": 0,
+  "seconds": 9.158008500000001,
+  "maxrssRaw": 45203456,
+  "maxrssUnit": "bytes",
+  "maxrssBytes": 45203456
+}

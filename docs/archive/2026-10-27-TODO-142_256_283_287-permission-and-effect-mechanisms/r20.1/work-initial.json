@@ -1,0 +1,16 @@
+{
+  "command": "/usr/bin/time -p scripts/check.sh --level work --base 986e44b20d667a77f4153266652a4883108b3482",
+  "wrapper": "scripts/check.sh \"$@\"; check_result=$?; printf \"%s\\n\" \"$check_result\" > \"$R20_CHECK_STATUS\"; exit \"$check_result\"",
+  "check_exit": 1,
+  "time_wrapper_exit": 1,
+  "wall_seconds": 12.576,
+  "started_utc": "2026-10-28T18:10:47.413465+00:00",
+  "finished_utc": "2026-10-28T18:10:59.989588+00:00",
+  "os_time": {
+    "real": 12.57,
+    "user": 15.76,
+    "sys": 1.05
+  },
+  "maximum_rss": null,
+  "maximum_rss_reason": "指定の time -p は RSS を表示しない。time -l は指示により不使用。"
+}

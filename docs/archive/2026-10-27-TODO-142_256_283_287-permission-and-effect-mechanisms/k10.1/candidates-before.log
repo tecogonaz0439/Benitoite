@@ -1,0 +1,23 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.11s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'export_named_declarations_smoke' (7615600) panicked at crates/benitoite/tests/desugar_export.rs:1030:5:
+assertion failed: contains_json(&input["candidates"],
+    &json!({"name":{"value":"IO.File.Read","ix":{"fixed":{"path":{"tree":["data"]}}}}}))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_named_declarations_smoke ... FAILED
+
+failures:
+
+failures:
+    export_named_declarations_smoke
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 46 filtered out; finished in 0.38s
+
+error: test failed, to rerun pass `--test desugar_export`
+real 2.51
+user 2.18
+sys 0.62

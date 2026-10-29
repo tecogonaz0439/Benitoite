@@ -1,0 +1,102 @@
+[
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/interval-analysis/range-error.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.1364,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "--allow-effects=Console.Write",
+      "work/m012/scratch/interval-analysis/range-error.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.1619,
+    "stdout": "error value\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/interval-analysis/local-overflow.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0652,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "work/m012/scratch/interval-analysis/local-overflow.bnt"
+    ],
+    "exit": 1,
+    "seconds": 0.0783,
+    "stdout": "",
+    "stderr": "runtime error[R0102]: integer overflow\n  --> work/m012/scratch/interval-analysis/local-overflow.bnt:3:13\n   |\n 3 |   bind y <- x + 1\n   |             ^^^^^\n   |\n   = note: call trace (innermost first):\n             main\n   = note: functions left by tail calls are not shown\n"
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/interval-analysis/width-warning.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0649,
+    "stdout": "",
+    "stderr": "warning[W0402]: this calculation overflows `Integer8`\n  --> work/m012/scratch/interval-analysis/width-warning.bnt:2:13\n   |\n 2 |   bind _ <- Integer8.absolute(-128s8)\n   |             ^^^^^^^^^^^^^^^^^^^^^^^^^ always overflows\n\nwarning: 1 warning emitted\n"
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "work/m012/scratch/interval-analysis/width-warning.bnt"
+    ],
+    "exit": 1,
+    "seconds": 0.0783,
+    "stdout": "",
+    "stderr": "warning[W0402]: this calculation overflows `Integer8`\n  --> work/m012/scratch/interval-analysis/width-warning.bnt:2:13\n   |\n 2 |   bind _ <- Integer8.absolute(-128s8)\n   |             ^^^^^^^^^^^^^^^^^^^^^^^^^ always overflows\n\nwarning: 1 warning emitted\nruntime error[R0102]: integer overflow\n  --> work/m012/scratch/interval-analysis/width-warning.bnt:2:13\n   |\n 2 |   bind _ <- Integer8.absolute(-128s8)\n   |             ^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             main\n   = note: functions left by tail calls are not shown\n"
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/interval-analysis/branch-zero.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0656,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "run",
+      "work/m012/scratch/interval-analysis/branch-zero.bnt"
+    ],
+    "exit": 1,
+    "seconds": 0.0781,
+    "stdout": "",
+    "stderr": "runtime error[R0101]: division by zero\n  --> work/m012/scratch/interval-analysis/branch-zero.bnt:2:24\n   |\n 2 |   return if x = 0 then 10 div x else 10 end if\n   |                        ^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/interval-analysis/branch-zero.bnt:5:13\n             main\n   = note: functions left by tail calls are not shown\n"
+  },
+  {
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/interval-analysis/port-candidate.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.1355,
+    "stdout": "",
+    "stderr": ""
+  }
+]

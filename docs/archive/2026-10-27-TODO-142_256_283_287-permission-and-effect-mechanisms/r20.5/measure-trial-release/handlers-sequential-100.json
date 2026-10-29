@@ -1,0 +1,32 @@
+{
+  "accepted_selected_calls": 0,
+  "bodies": [
+    {
+      "calls": 0,
+      "definition": ".sample",
+      "metrics": {
+        "body_operations": 0,
+        "max_body_items": 0,
+        "max_whole_items": 0,
+        "stops": [],
+        "whole_operations": 0
+      },
+      "occurrences": 501,
+      "stopped": "None"
+    }
+  ],
+  "case": "handlers-sequential-100",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handlers": 100,
+  "limits": "ScopeLimits { body: ScopeCap { operations: 1000000, items: 100000 }, whole: ScopeCap { operations: 100000000, items: 10000000 } }",
+  "narrow_rejections": [],
+  "occurrences": 501,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_seconds": 0.000043333,
+  "sha256": "b2ef5e32af4fa43822e77bcd3ad7166d964c1699fbfe807a2a058114dd91183d",
+  "source_bytes": 7195,
+  "typecheck_seconds": 0.0278475
+}

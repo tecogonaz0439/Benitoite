@@ -1,0 +1,665 @@
+== wait-for-lock start 17:57:33
+== lock acquired 17:57:33 after 0s
+✔ [42/410] Built Benitoite.Release.Normalize (564ms)
+✔ [43/410] Built Benitoite.Release.Normalize:c.o (329ms)
+✖ [44/410] Building Benitoite.Release.TypeShift (1.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeShift.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeShift.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeShift.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeShift.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeShift.setup.json --json
+error: Benitoite/Release/TypeShift.lean:17:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeShift.lean:61:69: unsolved goals
+case base.opaque
+k c : Nat
+ι✝ : BaseTy
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.base ι✝) (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 0 1
+
+case opaque.base
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+ι✝ : BaseTy
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.base ι✝) = compare 1 0
+
+case opaque.data
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+d✝ : DataName
+args✝ : List Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.data d✝ (Ty.rawShiftTys k c args✝)) = compare 1 2
+
+case opaque.list
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.rawShift k c a✝).list = compare 1 3
+
+case opaque.fn
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝))
+      (Ty.fn names✝ (Ty.rawShiftTys k c params✝) (Ty.rawShift k c ret✝) (Eff.rawShift k c eff✝)) =
+    compare 1 4
+
+case opaque.tvar
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+i✝ : Nat
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.tvar (if i✝ < c then i✝ else i✝ + k)) = compare 1 5
+
+case opaque.reference
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.rawShift k c a✝).reference = compare 1 6
+
+case opaque.lazy
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.rawShift k c a✝).lazy = compare 1 7
+
+case opaque.cont
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝))
+      ((Ty.rawShift k c b✝).cont (Ty.rawShift k c t✝) (Eff.rawShift k c eff✝)) =
+    compare 1 8
+
+case opaque.map
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+k✝ v✝ : Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) ((Ty.rawShift k c k✝).map (Ty.rawShift k c v✝)) = compare 1 9
+
+case opaque.set
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.rawShift k c a✝).set = compare 1 10
+
+case opaque.bytes
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) Ty.bytes = compare 1 11
+
+case opaque.dict
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+cl✝ : ClassName
+τ✝ : Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.dict cl✝ (Ty.rawShift k c τ✝)) = compare 1 12
+
+case opaque.tapp
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+i✝ : Nat
+args✝ : List Ty
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.tapp (if i✝ < c then i✝ else i✝ + k) (Ty.rawShiftTys k c args✝)) =
+    compare 1 13
+
+case opaque.ctor
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+φ✝ : TyCon
+⊢ tyCompare (Ty.rawShift k c (Ty.opaque o✝ r✝)) (Ty.ctor φ✝) = compare 1 14
+
+case data.opaque
+k c : Nat
+d✝ : DataName
+args✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.data d✝ (Ty.rawShiftTys k c args✝)) (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 2 1
+
+case list.opaque
+k c : Nat
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.rawShift k c a✝).list (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 3 1
+
+case fn.opaque
+k c : Nat
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.fn names✝ (Ty.rawShiftTys k c params✝) (Ty.rawShift k c ret✝) (Eff.rawShift k c eff✝))
+      (Ty.rawShift k c (Ty.opaque o✝ r✝)) =
+    compare 4 1
+
+case tvar.opaque
+k c i✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.tvar (if i✝ < c then i✝ else i✝ + k)) (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 5 1
+
+case reference.opaque
+k c : Nat
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.rawShift k c a✝).reference (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 6 1
+
+case lazy.opaque
+k c : Nat
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.rawShift k c a✝).lazy (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 7 1
+
+case cont.opaque
+k c : Nat
+b✝ t✝ : Ty
+eff✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare ((Ty.rawShift k c b✝).cont (Ty.rawShift k c t✝) (Eff.rawShift k c eff✝))
+      (Ty.rawShift k c (Ty.opaque o✝ r✝)) =
+    compare 8 1
+
+case map.opaque
+k c : Nat
+k✝ v✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare ((Ty.rawShift k c k✝).map (Ty.rawShift k c v✝)) (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 9 1
+
+case set.opaque
+k c : Nat
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.rawShift k c a✝).set (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 10 1
+
+case bytes.opaque
+k c : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare Ty.bytes (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 11 1
+
+case dict.opaque
+k c : Nat
+cl✝ : ClassName
+τ✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.dict cl✝ (Ty.rawShift k c τ✝)) (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 12 1
+
+case tapp.opaque
+k c i✝ : Nat
+args✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.tapp (if i✝ < c then i✝ else i✝ + k) (Ty.rawShiftTys k c args✝)) (Ty.rawShift k c (Ty.opaque o✝ r✝)) =
+    compare 13 1
+
+case ctor.opaque
+k c : Nat
+φ✝ : TyCon
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompare (Ty.ctor φ✝) (Ty.rawShift k c (Ty.opaque o✝ r✝)) = compare 14 1
+error: Benitoite/Release/TypeShift.lean:60:10: fail to show termination for
+  Benitoite.Release.Ty.rawShift_compare
+  Benitoite.Release.Eff.rawShift_compare
+  Benitoite.Release.Ty.rawShiftTys_compare
+with errors
+failed to infer structural recursion:
+Not considering parameter k of Benitoite.Release.Ty.rawShift_compare:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.rawShift_compare:
+  it is unchanged in the recursive calls
+Not considering parameter k of Benitoite.Release.Eff.rawShift_compare:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Eff.rawShift_compare:
+  it is unchanged in the recursive calls
+Not considering parameter k of Benitoite.Release.Ty.rawShiftTys_compare:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.rawShiftTys_compare:
+  it is unchanged in the recursive calls
+Skipping arguments of type List Ty, as Benitoite.Release.Ty.rawShift_compare has no compatible argument.
+Cannot use parameters a of Benitoite.Release.Ty.rawShift_compare, e of Benitoite.Release.Eff.rawShift_compare, and as of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters a of Benitoite.Release.Ty.rawShift_compare, e of Benitoite.Release.Eff.rawShift_compare, and bs of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters a of Benitoite.Release.Ty.rawShift_compare, f of Benitoite.Release.Eff.rawShift_compare, and as of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters a of Benitoite.Release.Ty.rawShift_compare, f of Benitoite.Release.Eff.rawShift_compare, and bs of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters b of Benitoite.Release.Ty.rawShift_compare, e of Benitoite.Release.Eff.rawShift_compare, and as of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters b of Benitoite.Release.Ty.rawShift_compare, e of Benitoite.Release.Eff.rawShift_compare, and bs of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters b of Benitoite.Release.Ty.rawShift_compare, f of Benitoite.Release.Eff.rawShift_compare, and as of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+Cannot use parameters b of Benitoite.Release.Ty.rawShift_compare, f of Benitoite.Release.Eff.rawShift_compare, and bs of Benitoite.Release.Ty.rawShiftTys_compare:
+  failed to eliminate recursive application
+    Ty.rawShift_compare k c (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝)
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ ? ?  ?  ?
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShiftTys_compare at 60:10-29:
+   k c #1 #2
+k  _ _  _  _
+c  _ _  _  _
+#5 _ _  _  _
+#6 _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShiftTys_compare at 60:10-29:
+   k c #1 #2
+k  _ _  _  _
+c  _ _  _  _
+#5 _ _  _  _
+#6 _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Eff.rawShift_compare at 60:10-29:
+   k c #1 #2
+k  _ _  _  _
+c  _ _  _  _
+#3 _ _  _  _
+#4 _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Eff.rawShift_compare at 60:10-29:
+   k c #1 #2
+k  _ _  _  _
+c  _ _  _  _
+#3 _ _  _  _
+#4 _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+ k c #1 #2
+ _ _  _  _
+Call from Benitoite.Release.Ty.rawShift_compare to Benitoite.Release.Ty.rawShiftTys_compare at 60:10-29:
+   k c #1 #2
+k  _ _  _  _
+c  _ _  _  _
+#5 _ _  _  _
+#6 _ _  _  _
+Call from Benitoite.Release.Eff.rawShift_compare to Benitoite.Release.Ty.rawShiftTys_compare at 60:10-29:
+   k c #3 #4
+k  _ _  _  _
+c  _ _  _  _
+#5 _ _  _  _
+#6 _ _  _  _
+Call from Benitoite.Release.Ty.rawShiftTys_compare to Benitoite.Release.Ty.rawShift_compare at 60:10-29:
+   k c #5 #6
+k  _ _  _  _
+c  _ _  _  _
+#1 _ _  _  _
+#2 _ _  _  _
+Call from Benitoite.Release.Ty.rawShiftTys_compare to Benitoite.Release.Ty.rawShiftTys_compare at 60:10-29:
+ k c #5 #6
+ _ _  _  _
+
+
+#1: sizeOf a
+#2: sizeOf b
+#3: sizeOf e
+#4: sizeOf f
+#5: sizeOf as
+#6: sizeOf bs
+
+Please use `termination_by` to specify a decreasing measure.
+error: Benitoite/Release/TypeShift.lean:85:10: fail to show termination for
+  Benitoite.Release.Ty.norm_rawShift
+  Benitoite.Release.Eff.norm_rawShift
+  Benitoite.Release.Ty.normTys_rawShift
+with errors
+failed to infer structural recursion:
+Not considering parameter k of Benitoite.Release.Ty.norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter k of Benitoite.Release.Eff.norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Eff.norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter k of Benitoite.Release.Ty.normTys_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.normTys_rawShift:
+  it is unchanged in the recursive calls
+Skipping arguments of type List Ty, as Benitoite.Release.Ty.norm_rawShift has no compatible argument.
+Cannot use parameters t of Benitoite.Release.Ty.norm_rawShift, e of Benitoite.Release.Eff.norm_rawShift, and as of Benitoite.Release.Ty.normTys_rawShift:
+  failed to eliminate recursive application
+    Ty.norm_rawShift k c (Ty.opaque o✝ r✝)
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ ? ?  ?
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.normTys_rawShift at 85:10-26:
+   k c #1
+k  _ _  _
+c  _ _  _
+#3 _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.normTys_rawShift at 85:10-26:
+   k c #1
+k  _ _  _
+c  _ _  _
+#3 _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Eff.norm_rawShift at 85:10-26:
+   k c #1
+k  _ _  _
+c  _ _  _
+#2 _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Eff.norm_rawShift at 85:10-26:
+   k c #1
+k  _ _  _
+c  _ _  _
+#2 _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.norm_rawShift to Benitoite.Release.Ty.normTys_rawShift at 85:10-26:
+   k c #1
+k  _ _  _
+c  _ _  _
+#3 _ _  _
+Call from Benitoite.Release.Eff.norm_rawShift to Benitoite.Release.Ty.normTys_rawShift at 100:10-29:
+   k c #2
+k  _ _  _
+c  _ _  _
+#3 _ _  _
+Call from Benitoite.Release.Ty.normTys_rawShift to Benitoite.Release.Ty.norm_rawShift at 85:10-26:
+   k c #3
+k  _ _  _
+c  _ _  _
+#1 _ _  _
+Call from Benitoite.Release.Ty.normTys_rawShift to Benitoite.Release.Ty.normTys_rawShift at 85:10-26:
+ k c #3
+ _ _  _
+
+
+#1: sizeOf t
+#2: sizeOf e
+#3: sizeOf as
+
+Please use `termination_by` to specify a decreasing measure.
+error: Benitoite/Release/TypeShift.lean:123:4: Missing cases:
+(«opaque» _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeShift.lean:149:10: fail to show termination for
+  Benitoite.Release.Ty.shift_eq_norm_rawShift
+  Benitoite.Release.Ty.shiftTys_eq_norm_rawShift
+with errors
+failed to infer structural recursion:
+Not considering parameter k of Benitoite.Release.Ty.shift_eq_norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.shift_eq_norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter k of Benitoite.Release.Ty.shiftTys_eq_norm_rawShift:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.shiftTys_eq_norm_rawShift:
+  it is unchanged in the recursive calls
+Skipping arguments of type List Ty, as Benitoite.Release.Ty.shift_eq_norm_rawShift has no compatible argument.
+Cannot use parameters t of Benitoite.Release.Ty.shift_eq_norm_rawShift and as of Benitoite.Release.Ty.shiftTys_eq_norm_rawShift:
+  failed to eliminate recursive application
+    shift_eq_norm_rawShift k c («opaque» o✝ r✝)
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ ? ?  ?
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shiftTys_eq_norm_rawShift at 149:10-35:
+   k c #1
+k  _ _  _
+c  _ _  _
+#2 _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shiftTys_eq_norm_rawShift at 149:10-35:
+   k c #1
+k  _ _  _
+c  _ _  _
+#2 _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+ k c #1
+ _ _  _
+Call from Benitoite.Release.Ty.shift_eq_norm_rawShift to Benitoite.Release.Ty.shiftTys_eq_norm_rawShift at 149:10-35:
+   k c #1
+k  _ _  _
+c  _ _  _
+#2 _ _  _
+Call from Benitoite.Release.Ty.shiftTys_eq_norm_rawShift to Benitoite.Release.Ty.shift_eq_norm_rawShift at 149:10-35:
+   k c #2
+k  _ _  _
+c  _ _  _
+#1 _ _  _
+Call from Benitoite.Release.Ty.shiftTys_eq_norm_rawShift to Benitoite.Release.Ty.shiftTys_eq_norm_rawShift at 149:10-35:
+ k c #2
+ _ _  _
+
+
+#1: sizeOf t
+#2: sizeOf as
+
+Please use `termination_by` to specify a decreasing measure.
+error: Benitoite/Release/TypeShift.lean:169:10: fail to show termination for
+  Benitoite.Release.Ty.rawShift_zero
+  Benitoite.Release.Eff.rawShift_zero
+  Benitoite.Release.Ty.rawShiftTys_zero
+with errors
+failed to infer structural recursion:
+Not considering parameter c of Benitoite.Release.Ty.rawShift_zero:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Eff.rawShift_zero:
+  it is unchanged in the recursive calls
+Not considering parameter c of Benitoite.Release.Ty.rawShiftTys_zero:
+  it is unchanged in the recursive calls
+Skipping arguments of type List Ty, as Benitoite.Release.Ty.rawShift_zero has no compatible argument.
+Cannot use parameters t of Benitoite.Release.Ty.rawShift_zero, e of Benitoite.Release.Eff.rawShift_zero, and as of Benitoite.Release.Ty.rawShiftTys_zero:
+  failed to eliminate recursive application
+    Ty.rawShift_zero c (Ty.opaque o✝ r✝)
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ ?  ?
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShiftTys_zero at 169:10-26:
+   c #1
+c  _  _
+#3 _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShiftTys_zero at 169:10-26:
+   c #1
+c  _  _
+#3 _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Eff.rawShift_zero at 169:10-26:
+   c #1
+c  _  _
+#2 _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Eff.rawShift_zero at 169:10-26:
+   c #1
+c  _  _
+#2 _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+ c #1
+ _  _
+Call from Benitoite.Release.Ty.rawShift_zero to Benitoite.Release.Ty.rawShiftTys_zero at 169:10-26:
+   c #1
+c  _  _
+#3 _  _
+Call from Benitoite.Release.Eff.rawShift_zero to Benitoite.Release.Ty.rawShiftTys_zero at 169:10-26:
+   c #2
+c  _  _
+#3 _  _
+Call from Benitoite.Release.Ty.rawShiftTys_zero to Benitoite.Release.Ty.rawShift_zero at 169:10-26:
+   c #3
+c  _  _
+#1 _  _
+Call from Benitoite.Release.Ty.rawShiftTys_zero to Benitoite.Release.Ty.rawShiftTys_zero at 169:10-26:
+ c #3
+ _  _
+
+
+#1: sizeOf t
+#2: sizeOf e
+#3: sizeOf as
+
+Please use `termination_by` to specify a decreasing measure.
+Some required targets logged failures:
+- Benitoite.Release.TypeShift
+error: build failed
+        2.64 real         2.86 user         0.34 sys
+           741834752  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              104042  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  10  voluntary context switches
+                8540  involuntary context switches
+          1186915090  instructions retired
+           418456092  cycles elapsed
+            21808232  peak memory footprint
+== exit 1

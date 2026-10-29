@@ -1,0 +1,103 @@
+== wait-for-lock start 00:42:41
+== lock acquired 00:42:41 after 0s
+✔ [31/432] Built Benitoite.Scope.Domain (719ms)
+✔ [33/432] Built Benitoite.Scope.Signature (440ms)
+✔ [34/432] Built Benitoite.Scope.Cover (457ms)
+✔ [36/432] Built Benitoite.Scope.IPCover (553ms)
+✔ [37/432] Built Benitoite.Release.Atom (381ms)
+✔ [39/432] Built Benitoite.Release.Order.Range (702ms)
+✔ [41/432] Built Benitoite.Release.Types (429ms)
+✔ [42/432] Built Benitoite.Scope.RangeCover (714ms)
+✔ [44/432] Built Benitoite.Release.Order.Atoms (396ms)
+✔ [46/432] Built Benitoite.Release.Order.FiniteAtoms (426ms)
+✔ [48/432] Built Benitoite.Scope.SignatureExamples (1.7s)
+✔ [49/432] Built Benitoite.Release.Order.Labels (803ms)
+✔ [51/432] Built Benitoite.Checked.Scope (1.1s)
+✔ [52/432] Built Benitoite.Release.Order.Types (1.4s)
+✔ [54/432] Built Benitoite.Release.Normalize (532ms)
+✔ [56/432] Built Benitoite.Release.TypeShift (1.4s)
+✔ [58/432] Built Benitoite.Release.Effect (289ms)
+✔ [60/432] Built Benitoite.Release.TypeSubst (433ms)
+✔ [61/432] Built Benitoite.Scope.TopCompat (434ms)
+✔ [62/432] Built Benitoite.Release.RangeNormalize (401ms)
+✔ [64/432] Built Benitoite.Scope.RepresentationExamplesI (622ms)
+✔ [65/432] Built Benitoite.Release.Syntax (663ms)
+✔ [66/432] Built Benitoite.Release.TypeSubstLemmas (813ms)
+✔ [68/432] Built Benitoite.Release.Syntax:c.o (299ms)
+✔ [69/432] Built Benitoite.Surface.BuilderSyntax (434ms)
+✔ [71/432] Built Benitoite.Release.Subst (666ms)
+✔ [72/432] Built Benitoite.Interval.Domain (710ms)
+✔ [75/432] Built Benitoite.Release.TypeRows (640ms)
+✔ [77/432] Built Benitoite.Release.SubstExamples (527ms)
+✔ [78/432] Built Benitoite.Release.Order.Shift (535ms)
+✔ [79/432] Built Benitoite.Surface.BuilderLower (500ms)
+✔ [81/432] Built Benitoite.Release.LocalRef (566ms)
+✔ [83/432] Built Benitoite.Release.TypeComposition (703ms)
+✔ [84/432] Built Benitoite.Surface.FormatSpec (1.5s)
+✔ [87/432] Built Benitoite.Interval.Budget (1.0s)
+✔ [89/432] Built Benitoite.Release.NoFail (567ms)
+✔ [90/432] Built Benitoite.Interval.BudgetExamples (299ms)
+✔ [92/432] Built Benitoite.Release.TypeSupport (622ms)
+✔ [94/432] Built Benitoite.Release.Finite (968ms)
+✔ [96/432] Built Benitoite.Release.Typing (1.5s)
+✔ [98/432] Built Benitoite.Release.BuilderContents (512ms)
+✔ [99/432] Built Benitoite.Release.LocalTyping (496ms)
+✔ [102/432] Built Benitoite.Release.TypeRegularity (727ms)
+✔ [104/432] Built Benitoite.Release.BuiltinTable (878ms)
+✔ [106/432] Built Benitoite.Release.BuilderExec (626ms)
+✔ [107/432] Built Benitoite.Release.Lemmas.Basic (445ms)
+✔ [109/432] Built Benitoite.Release.BuilderExec:c.o (267ms)
+✔ [110/432] Built Benitoite.Release.TypeBounds (968ms)
+✔ [112/432] Built Benitoite.Release.SubstEnv (791ms)
+✔ [114/432] Built Benitoite.Release.TypeCongruence (1.1s)
+✔ [116/432] Built Benitoite.Release.FiniteSupport (3.5s)
+✔ [118/432] Built Benitoite.Release.TypeVariables (1.5s)
+✔ [120/432] Built Benitoite.Surface.SingleFail (404ms)
+✖ [122/432] Building Benitoite.Release.WellFormed (761ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/WellFormed.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/WellFormed.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/WellFormed.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/WellFormed.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/WellFormed.setup.json --json
+error: Benitoite/Release/WellFormed.lean:26:4: Missing cases:
+(Val.checked (Scope.Domain.Target.path _))
+(Val.checked (Scope.Domain.Target.host (Scope.Domain.HostTarget.name _)))
+(Val.checked (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v4 (Fin.mk _ _)))))
+(Val.checked (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v6 (Fin.mk _ _)))))
+(Val.checked (Scope.Domain.Target.endpoint (Scope.Domain.Endpoint.mk (Scope.Domain.HostTarget.name _) (Fin.mk _ _))))
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+✔ [125/432] Built Benitoite.Release.TypeScopedSubst (749ms)
+✔ [143/432] Built Benitoite.Release.FailureEffects (510ms)
+✔ [144/432] Built Benitoite.Release.EffectCover (915ms)
+✖ [145/432] Building Benitoite.Release.LocalScope (4.5s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/LocalScope.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/LocalScope.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/LocalScope.setup.json --json
+error: Benitoite/Release/LocalScope.lean:26:4: Missing cases:
+(Val.checked (Scope.Domain.Target.path _))
+(Val.checked (Scope.Domain.Target.host (Scope.Domain.HostTarget.name _)))
+(Val.checked (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v4 (Fin.mk _ _)))))
+(Val.checked (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v6 (Fin.mk _ _)))))
+(Val.checked (Scope.Domain.Target.endpoint (Scope.Domain.Endpoint.mk (Scope.Domain.HostTarget.name _) (Fin.mk _ _))))
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+✔ [146/432] Built Benitoite.Release.Lemmas.Rename (7.8s)
+✔ [149/432] Built Benitoite.Release.Lemmas.Rename:c.o (463ms)
+✔ [150/432] Built Benitoite.Release.Lemmas.Irrelevant (2.4s)
+✔ [153/432] Built Benitoite.Release.Lemmas.Inversion (10s)
+Some required targets logged failures:
+- Benitoite.Release.WellFormed
+- Benitoite.Release.LocalScope
+error: build failed
+       22.83 real       103.35 user        13.44 sys
+          1608613888  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             2837363  page reclaims
+                  17  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 476  voluntary context switches
+              285212  involuntary context switches
+          2451931459  instructions retired
+          1253073056  cycles elapsed
+            67732752  peak memory footprint
+== exit 1

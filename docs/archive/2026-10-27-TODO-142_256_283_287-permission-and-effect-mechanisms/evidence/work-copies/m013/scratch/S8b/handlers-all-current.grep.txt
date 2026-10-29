@@ -1,0 +1,19 @@
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/skill/SKILL.md:199:    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/skill/references/idioms.md:732:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/testdata/acceptance/test_replaces_effects.bnt:49:    case File.writeText(path, text) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/testdata/handlers/c12-builtin-port.bnt:17:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/testdata/handlers/first-release-port.bnt:13:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/testdata/packages/todo-handler/main.bnt:13:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:crates/benitoite/testdata/test/handler_replacement.bnt:15:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/higher-order-effects.md:526:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/study/higher-order-effects.md:622:// 実際の with の解放は State であり、case File.close(...) では捕捉できない。
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/design/01-spec/01-07-effects.md:328:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/design/01-spec/01-11-concurrency.md:118:  case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/design/06-tooling/06-04-test-runner.md:79:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/ja/reference/benitoite.md:1496:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/ja/skill/SKILL.md:206:    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/ja/skill/references/idioms.md:721:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:docs/reference/benitoite.md:1516:    case File.readText(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:tools/skill-eval/tasks/write_tests/reference.bnt:43:    case File.readLines(path) ->
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:tools/skill-eval/tasks/write_tests/task.json:1:{"kind": "test", "script": "settings_test.bnt", "attempt_limit": 10, "min_tests": 4, "require_text": ["case File.readLines(", "resume("]}
+3597b310ea0d91fb3a3bb3fcf281c7aa57ac9a34:tools/skill-eval/tasks/write_tests/task.md:11:- at least 1 test of `loadSettings` that replaces `File.readLines` with a handler (`handle ... with case File.readLines(path) -> ...`), so that the test does not read a real file.

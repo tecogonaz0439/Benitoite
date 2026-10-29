@@ -1,0 +1,88 @@
+--- a/crates/benitoite/tests/runtime_builtins.rs
++++ b/crates/benitoite/tests/runtime_builtins.rs
+@@ -1998,12 +1998,10 @@
+ // 外部ファイル以外を差し替えず、既存の VM/参照実行器の公開入口を使う。
+ #[test]
+ fn file_in_operations_use_the_retained_path_and_preserve_values_and_errors() {
+-    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+-        .join("../../target")
+-        .canonicalize()
+-        .unwrap()
++    let directory = std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR"))
+         .join(format!("file-in-runtime-{}", std::process::id()));
+     std::fs::create_dir_all(&directory).unwrap();
++    let directory = directory.canonicalize().unwrap();
+     let path = directory.join("actual");
+     let missing = directory.join("absent-parent/actual");
+     let decoy = directory.join("decoy");
+--- a/crates/benitoite/src/builtins/table.rs
++++ b/crates/benitoite/src/builtins/table.rs
+@@ -801,14 +801,18 @@
+     ReturnArgument(usize),
+ }
+ 
++const FILE_IN_OPERATIONS: &[&str] = &[
++    "Benitoite.IO.File.readTextIn",
++    "Benitoite.IO.File.readBytesIn",
++    "Benitoite.IO.File.writeTextIn",
++    "Benitoite.IO.File.appendTextIn",
++    "Benitoite.IO.File.writeBytesIn",
++    "Benitoite.IO.File.appendBytesIn",
++];
++
+ fn builtin_range_positions(id: BuiltinId) -> Option<&'static [(RangePosition, BuiltinTypeId)]> {
+     match builtin_decl(id)?.name {
+-        "Benitoite.IO.File.readTextIn"
+-        | "Benitoite.IO.File.readBytesIn"
+-        | "Benitoite.IO.File.writeTextIn"
+-        | "Benitoite.IO.File.appendTextIn"
+-        | "Benitoite.IO.File.writeBytesIn"
+-        | "Benitoite.IO.File.appendBytesIn" => {
++        name if FILE_IN_OPERATIONS.contains(&name) => {
+             Some(&[(RangePosition::Parameter(0), BuiltinTypeId::PATH_IN)])
+         }
+         "Scope.checkPathIn" => Some(&[(RangePosition::ReturnArgument(0), BuiltinTypeId::PATH_IN)]),
+@@ -888,15 +892,7 @@
+     use crate::types::signature::{IoShape, RangeAdmission, RangeSignature};
+     let decl = builtin_decl(id)?;
+     builtin_kind(id)?;
+-    let shape = if matches!(
+-        decl.name,
+-        "Benitoite.IO.File.readTextIn"
+-            | "Benitoite.IO.File.readBytesIn"
+-            | "Benitoite.IO.File.writeTextIn"
+-            | "Benitoite.IO.File.appendTextIn"
+-            | "Benitoite.IO.File.writeBytesIn"
+-            | "Benitoite.IO.File.appendBytesIn"
+-    ) {
++    let shape = if FILE_IN_OPERATIONS.contains(&decl.name) {
+         IoShape::Single {
+             kind: Kind::Path,
+             position: 0,
+--- a/crates/benitoite/skill/SKILL.md
++++ b/crates/benitoite/skill/SKILL.md
+@@ -165,6 +165,10 @@
+ 
+ Use public construction and inspection functions for opaque types; constructors, updates, patterns and automatic accessors are private to the owner module (E0340). Direct Regex/Scope calls reject known invalid inputs even in tests; pass invalid inputs through an ordinary function parameter to test runtime Error. Range retains runtime Result.Error for constants too. Scope proves spelling membership, not permission, DNS/filesystem identity or IO success. See `references/common-mistakes.md` and `references/stdlib/Scope.md` / `references/stdlib/Range.md`.
+ 
++`File.readTextIn`, `readBytesIn`, `writeTextIn`, `appendTextIn`, `writeBytesIn`, and `appendBytesIn` take a checked `Scope.PathIn`. Their `File.Read` or `File.Write` effect uses the same range as that input type. They operate on the path retained by the check; the range describes path strings and does not isolate symbolic-link targets or special files.
++
++Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow handler argument has no local check provenance, so this form still cannot project or widen that argument. Forward it with the same narrow input type, or use a bare `Scope.PathIn` input when projection is needed; IO through the bare type has a Top range.
++
+ Import `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. Declarations and dedicated operations add no State; ordinary argument effects remain. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies allocate immutable snapshots; referenced element cells remain shared. Repeated intermediate copies have proportional cost. There is no clear/reserve/finish operation; ordinary Reference/task/resource effects remain. See the corresponding generated builder module reference for signatures.
+ 
+ Use `block ... end block` to keep builder declarations and work inside one expression; its last expression is its value, and a final bind/empty block is Unit. It introduces local scope but no return boundary. Do not return the builder itself. Integer ranges covering the complete signed 64-bit domain are exhaustive: omit a following catch-all (E0602), while guarded ranges and gaps still need coverage.
+@@ -181,11 +185,9 @@
+ 
+ ## Tests
+ 
+-`File.readTextIn`, `readBytesIn`, `writeTextIn`, `appendTextIn`, `writeBytesIn`, and `appendBytesIn` take a checked `Scope.PathIn`. Their `File.Read` or `File.Write` effect uses the same range as that input type. They operate on the path retained by the check; the range describes path strings and does not isolate symbolic-link targets or special files. A complete `File.Read` handler needs all 13 operations, including both new read operations; a complete `File.Write` handler needs all 16 operations, including the four new write operations. The examples below replace one operation and keep the remaining effect in `uses`.
+-
+-Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow handler argument has no local check provenance, so this form still cannot project or widen that argument. Forward it with the same narrow input type, or use a bare `Scope.PathIn` input when projection is needed; IO through the bare type has a Top range.
+-
+ A test is a function with `@test("description")`, no parameters, and the return type `Unit` or `Result[Unit, String]` (use the latter when the test uses `try e or return`). Check with `Assert.equal(actual: actual, expected: expected)`. Replace an operation such as `File.readText` or `Process.run` with a handler so that the test does not touch the outside world; more examples are in `references/idioms.md`. Checks in generic helpers recover constructor names when the caller's types can be determined; otherwise, a type may remain unknown. If a report shows `<constructor #n of an unknown type>` (the zero-based constructor position), compare values with a concrete type in the check to show their names.
++
++A complete `File.Read` handler needs all 13 operations, including both new read operations; a complete `File.Write` handler needs all 16 operations, including the four new write operations.
+ 
+ ```benitoite test
+ import Benitoite.Unofficial.IO.File

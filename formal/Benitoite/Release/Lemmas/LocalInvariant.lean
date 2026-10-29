@@ -57,7 +57,7 @@ theorem ContTy.localRefs {P B Ψ R ε k a b ε0 Re places}
       rcases List.mem_cons.mp hf with rfl | hf
       · exact builder_value_no_free_local hv
       · exact ih f hf
-  | K_Handle _ _ hc _ ih =>
+  | K_Handle _ _ _ hc _ ih =>
       intro f hf
       rcases List.mem_cons.mp hf with rfl | hf
       · exact hc.localRefs (.nil _) (.hidden _ _)
@@ -125,7 +125,7 @@ theorem StateTy.local_invariant {P B s} (hs : StateTy P B s) : LocalStateInvaria
 
 /-- 通常 State・Fail・escape・解放を含む任意の有限接頭辞で局所の保証を保つ。 -/
 theorem local_steps_invariant {P B s s'} (hwf : P.WellFormed) (hwt : P.WellTyped B)
-    (hdecl : P.EffectsOk B) (hb : B.Assumptions P) (hs : StateTy P B s)
+    (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P) (hs : StateTy P B s)
     (hsteps : Steps P B s s') : StateTy P B s' ∧ LocalStateInvariant P B s' := by
   have hs' : StateTy P B s' := by
     induction hsteps with
@@ -135,7 +135,7 @@ theorem local_steps_invariant {P B s s'} (hwf : P.WellFormed) (hwt : P.WellTyped
 
 /-- 保存継続を新鮮なセルへ追加する一歩も、既存の専用セルの場所と内容を保つ。 -/
 theorem capture_local_valid {P B m n k k' σ κ saved ev}
-    (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P)
+    (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P)
     (hs : StateTy P B (.run m k σ)) (hf : σ κ = none)
     (hst : Step P B (.run m k σ) ev (.run n k' (σ.set κ (.cont saved)))) :
     StateTy P B (.run n k' (σ.set κ (.cont saved))) ∧
@@ -149,7 +149,7 @@ theorem capture_local_valid {P B m n k k' σ κ saved ev}
 
 /-- 再開の使用済み更新は保存枠の専用セルを変更せず、型と局所有効性を保つ。 -/
 theorem resume_local_valid {P B m n k k' σ κ saved ev}
-    (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.Assumptions P)
+    (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P)
     (hs : StateTy P B (.run m k σ)) (hc : σ κ = some (.cont saved))
     (hst : Step P B (.run m k σ) ev (.run n k' (σ.set κ .used))) :
     StateTy P B (.run n k' (σ.set κ .used)) ∧

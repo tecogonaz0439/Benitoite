@@ -1,0 +1,23 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "runtime_builtins",
+    "http_request_in_checks_endpoints_and_retains_the_same_request",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_utc": "2026-10-28T17:37:56.774735+00:00",
+  "finished_utc": "2026-10-28T17:38:06.500562+00:00",
+  "exit": 0,
+  "outer_seconds": 9.72578025,
+  "max_rss_raw": 2064105472,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 1968.484375,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+  "platform": "darwin"
+}

@@ -1,0 +1,92 @@
+== wait-for-lock start 18:03:50
+== lock acquired 18:05:02 after 72s
+⚠ [20/410] Replayed Benitoite.Release.Order.Atoms
+warning: Benitoite/Release/Order/Atoms.lean:55:8: declaration uses `sorry`
+✖ [156/410] Building Benitoite.Surface.Syntax (1.4s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/Syntax.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Syntax.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Syntax.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/Syntax.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/Syntax.setup.json --json
+error: Benitoite/Surface/Syntax.lean:551:15: Type mismatch
+  D.effects
+has type
+  EffName → Option (List OpName)
+but is expected to have type
+  EffBase → Option (List OpName)
+✖ [363/410] Building Benitoite.Release.Lemmas.TySubstMain (3.5s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/TySubstMain.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.setup.json --json
+error: Benitoite/Release/Lemmas/TySubstMain.lean:544:12: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Ty.substAt ?c ?ts' ?es' (fnTy ?m.2009 s✝.params s✝.ret s✝.eff ?m.2017 ?m.2018)
+in the target expression
+  HasTypeVQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ)
+    (Val.prim b✝ (List.map (Ty.substAt c ts' es') ts✝) (List.map (Eff.substAt c ts' es') es✝))
+    (Ty.substAt c ts' es' (fnTy (s✝.inst R✝).names (s✝.inst R✝).params (s✝.inst R✝).ret (s✝.inst R✝).eff ts✝ es✝))
+
+Q : NoFailCtx
+P : Program
+B : Builtins
+hwf : P.WellFormed
+hb : Builtins.Assumptions P B
+Q' : NoFailCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+v : Val
+a : Ty
+ts' : List Ty
+es' : List Eff
+c : Nat
+h : HasTypeVQ P B Ψ Q C Γ v a
+hc : c ≤ C.length
+hts : ClosedArgs ts'
+hes' : ∀ (e : Eff), e ∈ es' → Eff.WF 0 e
+hsat : SatAll B [] ts' (List.drop c C)
+hΨ : StoreFix Ψ ts' es'
+hrow : RowTransport Q Q' es'
+htc : (List.take c C).length = c
+transportWF : ∀ {x : Ty}, Ty.WF C.length x → Ty.WF (List.take c C).length (Ty.substAt c ts' es' x)
+hCsplit : C = List.take c C ++ List.drop c C
+b✝ : PrimName
+s✝ : PrimSig
+R✝ : NameScope
+ts✝ : List Ty
+es✝ : List Eff
+hs : B.sig b✝ = some s✝
+hnames : NamesWF (s✝.inst R✝).names (s✝.inst R✝).params
+had : PrimitiveAdmissible C (s✝.inst R✝) Q ts✝ es✝
+hsc :
+  NamesWF s✝.names s✝.params ∧
+    Ty.VarsInList s✝.ntys (fun x => x < s✝.neffs) s✝.params ∧
+      Ty.VarsIn s✝.ntys (fun x => x < s✝.neffs) s✝.ret ∧ Eff.VarsIn s✝.ntys (fun x => x < s✝.neffs) s✝.eff
+⊢ HasTypeVQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ)
+    (Val.prim b✝ (List.map (Ty.substAt c ts' es') ts✝) (List.map (Eff.substAt c ts' es') es✝))
+    (Ty.substAt c ts' es' (fnTy (s✝.inst R✝).names (s✝.inst R✝).params (s✝.inst R✝).ret (s✝.inst R✝).eff ts✝ es✝))
+error: Benitoite/Release/Lemmas/TySubstMain.lean:544:45: Application type mismatch: The argument
+  had.rowCount
+has type
+  es✝.length = (s✝.inst R✝).neffs
+but is expected to have type
+  List.length ?m.2018 = s✝.neffs
+in the application
+  fnTy_substAt hsc.right ?m.2024 had.rowCount
+✔ [369/410] Built Benitoite.Release.Lemmas.FailureCont (7.5s)
+Some required targets logged failures:
+- Benitoite.Surface.Syntax
+- Benitoite.Release.Lemmas.TySubstMain
+error: build failed
+        7.61 real        15.29 user         0.85 sys
+           953745408  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              170966  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  12  voluntary context switches
+               28045  involuntary context switches
+          1372113303  instructions retired
+           507198906  cycles elapsed
+            27837568  peak memory footprint
+== exit 1

@@ -18,10 +18,10 @@ def EnvClean (n : Nat) (Γ : List (Option Ty)) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → TyOK n a ∨
     ∃ b t ε, a = .cont b t ε ∧ TyOK n b ∧ TyOK n t
 
-theorem scoped_clean {n pe a} (h : Ty.VarsIn n pe a) : TyOK n a :=
+theorem scoped_clean {n pe a} (h : Ty.VarsIn 0 n pe a) : TyOK n a :=
   Ty.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) a h
 
-theorem scopedList_clean {n pe as} (h : Ty.VarsInList n pe as) : Ty.VarsInList n (fun _ => True) as :=
+theorem scopedList_clean {n pe as} (h : Ty.VarsInList 0 n pe as) : Ty.VarsInList 0 n (fun _ => True) as :=
   Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) as h
 
 theorem clean_notCont {n a} (h : TyOK n a) : ∀ b t ε, a ≠ .cont b t ε := by
@@ -29,7 +29,7 @@ theorem clean_notCont {n a} (h : TyOK n a) : ∀ b t ε, a ≠ .cont b t ε := b
 
 /-- 包含だけでは、移動先の潜在効果の正規形を導けない。 -/
 theorem clean_le {n a b} (h : Ty.Le a b) (ha : TyOK n a)
-    (he : ∀ ns ps r e, b = .fn ns ps r e → Eff.VarsIn n (fun _ => True) e ∧ Eff.Canonical e) :
+    (he : ∀ ns ps r e, b = .fn ns ps r e → Eff.VarsIn 0 n (fun _ => True) e ∧ Eff.Canonical e) :
     TyOK n b := by
   rcases h with rfl | ⟨ns, ps, r, e, f, rfl, rfl, _⟩
   · exact ha
@@ -37,36 +37,36 @@ theorem clean_le {n a b} (h : Ty.Le a b) (ha : TyOK n a)
 
 /-- データ型からの包含は型そのものを保つ。 -/
 theorem clean_data_le {n d ts b} (h : Ty.Le (.data d ts) b)
-    (ha : Ty.VarsInList n (fun _ => True) ts) : TyOK n b := by
+    (ha : Ty.VarsInList 0 n (fun _ => True) ts) : TyOK n b := by
   rcases h with rfl | ⟨_, _, _, _, _, he, _, _⟩
   · exact ha
   · cases he
 
-theorem scopedEff_clean {n pe e} (h : Eff.VarsIn n pe e) : Eff.VarsIn n (fun _ => True) e :=
+theorem scopedEff_clean {n pe e} (h : Eff.VarsIn 0 n pe e) : Eff.VarsIn 0 n (fun _ => True) e :=
   Eff.VarsIn.mono (Nat.le_refl _) (fun _ _ => trivial) e h
 
-theorem scopedEffList_clean {n pe es} (h : Eff.VarsInList n pe es) :
-    ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e :=
+theorem scopedEffList_clean {n pe es} (h : Eff.VarsInList 0 n pe es) :
+    ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e :=
   fun e he => scopedEff_clean (Eff.VarsInList.iff.mp h e he)
 
-theorem subst_clean {n ts} (es : List Eff) (hts : Ty.VarsInList n (fun _ => True) ts)
-    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e) (a : Ty) (h : TyOK ts.length a) :
+theorem subst_clean {n ts} (es : List Eff) (hts : Ty.VarsInList 0 n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e) (a : Ty) (h : TyOK ts.length a) :
     TyOK n (a.subst ts es) := Ty.subst_clean ts es hts hes a h
 
-theorem substList_clean {n ts} (es : List Eff) (hts : Ty.VarsInList n (fun _ => True) ts)
-    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e) (as : List Ty)
-    (h : Ty.VarsInList ts.length (fun _ => True) as) :
-    Ty.VarsInList n (fun _ => True) (as.map (Ty.subst ts es)) := by
+theorem substList_clean {n ts} (es : List Eff) (hts : Ty.VarsInList 0 n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e) (as : List Ty)
+    (h : Ty.VarsInList 0 ts.length (fun _ => True) as) :
+    Ty.VarsInList 0 n (fun _ => True) (as.map (Ty.subst ts es)) := by
   apply Ty.VarsInList.iff.mpr
   intro t ht
   obtain ⟨a, ha, rfl⟩ := List.mem_map.mp ht
   exact subst_clean es hts hes a (Ty.VarsInList.iff.mp h a ha)
 
 theorem fnTy_clean {n names ps r ε ts es} (hn : NamesWF names ps)
-    (hts : Ty.VarsInList n (fun _ => True) ts)
-    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e)
-    (hps : Ty.VarsInList ts.length (fun _ => True) ps) (hr : TyOK ts.length r)
-    (hε : Eff.VarsIn ts.length (fun _ => True) ε) :
+    (hts : Ty.VarsInList 0 n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e)
+    (hps : Ty.VarsInList 0 ts.length (fun _ => True) ps) (hr : TyOK ts.length r)
+    (hε : Eff.VarsIn 0 ts.length (fun _ => True) ε) :
     TyOK n (fnTy names ps r ε ts es) := by
   rw [fnTy_eq]
   exact ⟨by simpa only [NamesWF, List.length_map] using hn,
@@ -105,7 +105,7 @@ theorem EnvClean.hide {n Γ} (h : EnvClean n Γ) : EnvClean n (hideConts Γ) := 
   obtain ⟨hi, hc⟩ := hideConts_get.mp hi
   exact Or.inl (h.value hi hc)
 
-theorem EnvClean.binds {n ps Γ} (hps : Ty.VarsInList n (fun _ => True) ps) (h : EnvClean n Γ) :
+theorem EnvClean.binds {n ps Γ} (hps : Ty.VarsInList 0 n (fun _ => True) ps) (h : EnvClean n Γ) :
     EnvClean n (Release.binds ps ++ Γ) := by
   intro i a hi
   by_cases hlt : i < (Release.binds ps).length
@@ -132,14 +132,14 @@ theorem EnvClean.shift {n Γ} (ntys : Nat) (h : EnvClean n Γ) :
           shift_clean ntys b hb, shift_clean ntys t ht⟩
 
 theorem cleanList_append {n as bs}
-    (ha : Ty.VarsInList n (fun _ => True) as) (hb : Ty.VarsInList n (fun _ => True) bs) :
-    Ty.VarsInList n (fun _ => True) (as ++ bs) := by
+    (ha : Ty.VarsInList 0 n (fun _ => True) as) (hb : Ty.VarsInList 0 n (fun _ => True) bs) :
+    Ty.VarsInList 0 n (fun _ => True) (as ++ bs) := by
   induction as with
   | nil => exact hb
   | cons a as ih => exact ⟨ha.1, ih ha.2⟩
 
 private theorem cleanList_replicate {n : Nat} {a : Ty} (ha : TyOK n a) (k : Nat) :
-    Ty.VarsInList n (fun _ => True) (List.replicate k a) := by
+    Ty.VarsInList 0 n (fun _ => True) (List.replicate k a) := by
   induction k with
   | zero => trivial
   | succ k ih => simpa only [List.replicate_succ, Ty.VarsInList] using And.intro ha ih
@@ -147,7 +147,7 @@ private theorem cleanList_replicate {n : Nat} {a : Ty} (ha : TyOK n a) (k : Nat)
 mutual
   theorem PatTy.clean {P : Release.Program} (hw : ∀ c cd, P.cons c = some cd → cd.Scoped)
       {pat a δ n} (h : PatTy P pat a δ) (ha : TyOK n a) :
-      Ty.VarsInList n (fun _ => True) δ := by
+      Ty.VarsInList 0 n (fun _ => True) δ := by
     match h with
     | .P_Wild => trivial
     | .P_Var => exact ⟨ha, trivial⟩
@@ -156,7 +156,7 @@ mutual
     | .P_RangeChar => trivial
     | .P_List (rest := rest) (a := t) hb ht _ =>
         have hat : TyOK n t := ha
-        have hr : Ty.VarsInList n (fun _ => True) (restTys rest t) := by
+        have hr : Ty.VarsInList 0 n (fun _ => True) (restTys rest t) := by
           cases rest with
           | none => trivial
           | some r => cases r with
@@ -169,15 +169,15 @@ mutual
           rw [ht]; exact scopedList_clean (hw _ _ hc)))
 
   theorem PatTys.clean {P : Release.Program} (hw : ∀ c cd, P.cons c = some cd → cd.Scoped)
-      {pats as δ n} (h : PatTys P pats as δ) (ha : Ty.VarsInList n (fun _ => True) as) :
-      Ty.VarsInList n (fun _ => True) δ := by
+      {pats as δ n} (h : PatTys P pats as δ) (ha : Ty.VarsInList 0 n (fun _ => True) as) :
+      Ty.VarsInList 0 n (fun _ => True) δ := by
     match h with
     | .nil => trivial
     | .cons h hs => exact cleanList_append (PatTy.clean hw h ha.1) (PatTys.clean hw hs ha.2)
 end
 
 theorem HoleArgs.holeTypes_scoped {nt pe nv} (args : HoleArgs) (h : args.Scoped nt pe nv) :
-    Ty.VarsInList nt pe args.holeTypes := by
+    Ty.VarsInList 0 nt pe args.holeTypes := by
   match args with
   | .nil => trivial
   | .expr _ _ _ rest => exact HoleArgs.holeTypes_scoped rest h.2
@@ -189,7 +189,7 @@ theorem FunDecl.dictTys_length (d : FunDecl) : d.dictTys.length = d.dictParams.l
   simp [FunDecl.dictTys]
 
 theorem FunDecl.dictTys_scoped (d : FunDecl) {nt pe}
-    (h : ∀ p ∈ d.dictParams, p.2 < nt) : Ty.VarsInList nt pe d.dictTys := by
+    (h : ∀ p ∈ d.dictParams, p.2 < nt) : Ty.VarsInList 0 nt pe d.dictTys := by
   unfold FunDecl.dictTys
   revert h
   induction d.dictParams with
@@ -207,9 +207,9 @@ theorem Def.dictParams_nil_of_tparams_nil (d : Def) (sc : d.Scoped) (ht : d.tpar
       simp [ht] at h
 
 theorem funDecl_scoped (hwf : p.WellFormed) {f d} (hd : p.declarations.funs f = some d) :
-    Ty.VarsInList d.tparams.length (· < d.neffs) d.params ∧
-    Ty.VarsIn d.tparams.length (· < d.neffs) d.ret ∧
-      Eff.VarsIn d.tparams.length (· < d.neffs) d.eff := by
+    Ty.VarsInList 0 d.tparams.length (· < d.neffs) d.params ∧
+    Ty.VarsIn 0 d.tparams.length (· < d.neffs) d.ret ∧
+      Eff.VarsIn 0 d.tparams.length (· < d.neffs) d.eff := by
   cases hs : p.defs f with
   | some dd =>
       simp only [Program.declarations, Program.lookupFun, hs, Option.some.injEq] at hd
@@ -226,7 +226,7 @@ theorem funDecl_scoped (hwf : p.WellFormed) {f d} (hd : p.declarations.funs f = 
           subst d
           have hcd := hwf.2.2.1 c cd hc
           simp only [accessorDecl, List.length_replicate]
-          refine ⟨⟨?_, trivial⟩, ?_, fun _ _ => Bool.noConfusion ‹_›, trivial⟩
+          refine ⟨⟨?_, trivial⟩, ?_, fun _ _ => Bool.noConfusion ‹_›, trivial, fun _ h => Bool.noConfusion h⟩
           · exact Ty.varsInList_of_forall (by
               intro t ht
               obtain ⟨i, hi, rfl⟩ := List.mem_map.mp ht
@@ -237,7 +237,7 @@ theorem funDecl_scoped (hwf : p.WellFormed) {f d} (hd : p.declarations.funs f = 
 
 theorem implSig_scoped (hwf : p.WellFormed) {i id} (hd : p.declarations.impls i = some id) :
     (∀ q ∈ id.dictParams, q.2 < id.tparams.length) ∧
-      Ty.VarsIn id.tparams.length (fun _ => False) id.target := by
+      Ty.VarsIn 0 id.tparams.length (fun _ => False) id.target := by
   obtain ⟨sd, hs, heq⟩ := Option.map_eq_some_iff.mp hd
   cases heq
   have sc := hwf.2.2.2.2.2.2.2.1 _ _ hs
@@ -256,30 +256,41 @@ theorem DictEv.HasType.clean (hwf : p.WellFormed) {C Γ d a pe}
   | .super (d := d') (cl := cl) (τ := τ) hd _ _ =>
       exact DictEv.HasType.clean (d := d') (a := .dict cl τ) hwf hd sc hΓ
 
-/-- 節の引数と再開する値の型は宣言の範囲内である。エフェクト変数には条件を課さない。 -/
-theorem opSig_clean (hwf : p.WellFormed)
-    (hsig : ∀ b s, B.sig b = some s → s.Scoped) {o sg}
-    (h : opSig p.declarations.patternProgram B o = some sg) :
-    Ty.VarsInList sg.tparams.length (fun _ => True) sg.params ∧
+/-- 節の引数と再開する値の型は宣言の範囲内である。エフェクト変数には条件を課さない。節の添字 S によらない
+（組み込みの操作の引数は S の列で具体化し、範囲の変数を残さない。L40.5）。 -/
+theorem opSigAt_clean (hwf : p.WellFormed)
+    (hsig : ∀ b s, B.sig b = some s → s.Scoped) {S : Scope.Domain.Range} {o sg}
+    (h : opSigAt p.declarations.patternProgram B S o = some sg) :
+    Ty.VarsInList 0 sg.tparams.length (fun _ => True) sg.params ∧
       TyOK sg.tparams.length sg.ret := by
   cases o with
   | user o =>
-      simp only [opSig, Option.map_eq_some_iff] at h
+      simp only [opSigAt, Option.map_eq_some_iff] at h
       obtain ⟨od, hod, rfl⟩ := h
       have hsc := (hwf.2.2.2.1 o od hod).1
       exact ⟨scopedList_clean hsc.2.1, scoped_clean hsc.2.2⟩
   | fail => cases h
   | prim b =>
-      simp only [opSig] at h
+      simp only [opSigAt] at h
       split at h
       · rename_i s hs
         split at h
-        · simp only [Option.some.injEq] at h
+        · rename_i l hl
+          simp only [Option.some.injEq] at h
           subst h
           have hsc := hsig b s hs
-          exact ⟨scopedList_clean hsc.2.1, scoped_clean hsc.2.2.1⟩
+          have hp := (hsc.inst_varsIn_zero (rs := List.replicate s.nranges S) (by simp)).1
+          rw [PrimSig.inst_params] at hp
+          exact ⟨scopedList_clean hp, scoped_clean (hsc.2.2.2.2.2 l hl)⟩
         · cases h
       · cases h
+
+theorem opSig_clean (hwf : p.WellFormed)
+    (hsig : ∀ b s, B.sig b = some s → s.Scoped) {o sg}
+    (h : opSig p.declarations.patternProgram B o = some sg) :
+    Ty.VarsInList 0 sg.tparams.length (fun _ => True) sg.params ∧
+      TyOK sg.tparams.length sg.ret :=
+  opSigAt_clean (S := .top) hwf hsig (by rwa [opSigAt_top])
 
 mutual
   /-- 型の付いた式の結果は継続型を含まない。エフェクトの包含は型のこの条件を保つ。 -/
@@ -317,28 +328,28 @@ mutual
           Eff.subst_clean _ _ hts (scopedEffList_clean sc.2.2.1) _ (by
             simpa only [List.length_append, List.length_singleton, ht.1] using scopedEff_clean hms.2.2.2),
           Eff.norm_idem _⟩
-    | .E_Prim hs hn ht _ _ hrows _ =>
-        have ss := hsig _ _ hs
+    | .E_Prim hs hr hn ht _ _ hrows _ =>
+        have ss := (hsig _ _ hs).inst_varsIn_zero hr.nranges_le
         exact fnTy_clean hn (scopedList_clean sc.1) (scopedEffList_clean sc.2)
-          (by rw [ht]; exact scopedList_clean ss.2.1)
-          (by rw [ht]; exact scoped_clean ss.2.2.1)
-          (by rw [ht]; exact scopedEff_clean ss.2.2.2)
+          (by rw [ht]; exact scopedList_clean ss.1)
+          (by rw [ht]; exact scoped_clean ss.2.1)
+          (by rw [ht]; exact scopedEff_clean ss.2.2)
     | .E_OpDicts (od := od) hd _ hn ht _ _ _ _ _ =>
         have ss := (hwf.2.2.2.1 _ _ hd).1
-        have hp : Ty.VarsInList od.tparams.length (fun _ => False) od.valueParams :=
+        have hp : Ty.VarsInList 0 od.tparams.length (fun _ => False) od.valueParams :=
           Ty.varsInList_of_forall (fun t hm => varsInList_mem ss.2.1 (List.mem_of_mem_drop hm))
         exact fnTy_clean hn (scopedList_clean sc.1) (by simp)
           (by rw [ht.1]; exact scopedList_clean hp)
           (by rw [ht.1]; exact scoped_clean ss.2.2)
-          ⟨fun _ _ => trivial, trivial⟩
+          ⟨fun _ _ => trivial, trivial, Eff.single_atoms_wf 0 _⟩
     | .E_Op hd hn ht _ =>
         have ss := (hwf.2.2.2.1 _ _ hd).1
         exact fnTy_clean hn (scopedList_clean sc) (by simp)
           (by rw [ht.1]; exact scopedList_clean ss.2.1)
           (by rw [ht.1]; exact scoped_clean ss.2.2)
-          ⟨fun _ _ => trivial, trivial⟩
+          ⟨fun _ _ => trivial, trivial, Eff.single_atoms_wf 0 _⟩
     | .E_NullCon _ _ _ => exact scopedList_clean sc
-    | .E_ConValue _ _ _ _ _ _ => exact ⟨sc.2.1, scopedList_clean sc.2.2, scopedList_clean sc.1, ⟨fun _ _ => trivial, trivial⟩, rfl⟩
+    | .E_ConValue _ _ _ _ _ _ => exact ⟨sc.2.1, scopedList_clean sc.2.2, scopedList_clean sc.1, ⟨fun _ _ => trivial, trivial, fun _ h => Bool.noConfusion h⟩, rfl⟩
     | .E_PipeCall _ hf _ _ _ => exact (HasTypeQ.clean hΔ hwf hsig hf sc.2.1 hΓ hR).2.2.1
     | .E_PipeConCall _ _ _ _ _ => exact scopedList_clean sc.2.1
     | .E_PipeConValue _ _ _ _ _ _ _ => exact scopedList_clean sc.2.1
@@ -358,7 +369,7 @@ mutual
     | .E_NegInteger32 => trivial
     | .E_NegFloat32 => trivial
     | .E_Raise _ _ => exact ⟨by simp [NamesWF], ⟨scoped_clean sc.2, trivial⟩, scoped_clean sc.1,
-        ⟨(by intro a h; cases h), ⟨Ty.norm_VarsIn _ (scoped_clean sc.2), trivial⟩⟩,
+        ⟨(by intro a h; cases h), ⟨Ty.norm_VarsIn _ (scoped_clean sc.2), trivial⟩, fun _ h => Bool.noConfusion h⟩,
         by simp [Eff.Canonical, Eff.singleFail, Eff.norm, Ty.norm_idem]⟩
     | .E_HandleFail _ _ _ _ _ _ _ => exact scoped_clean sc.2.1
     | .E_Unit => trivial
@@ -368,14 +379,14 @@ mutual
     | .E_Record _ _ _ _ => exact scopedList_clean sc.1
     | .E_RecordUpdate _ _ _ _ _ _ _ _ _ => exact scopedList_clean sc.1
     | .E_Call hf _ _ _ => exact (HasTypeQ.clean hΔ hwf hsig hf sc.1 hΓ hR).2.2.1
-    | .E_Binary (o := o) (ts := ts) (s := sg) _ _ hts hs hn ht _ _ heq _ _ =>
-        have ss := hsig _ _ hs
+    | .E_Binary (o := o) (ts := ts) (s := sg) _ _ hts hs hn ht hne _ heq _ _ =>
+        have ss := (hsig _ _ hs).vars_zero hne.2
         have hh := fnTy_clean hn (n := C.length) (ε := sg.eff) (ts := ts) (es := [])
           (by rw [hts]; cases o <;> simp [Operator.typeArgs, Ty.VarsInList]; all_goals exact scoped_clean sc.1)
           (by simp)
-          (by rw [ht]; exact scopedList_clean ss.2.1)
-          (by rw [ht]; exact scoped_clean ss.2.2.1)
-          (by rw [ht]; exact scopedEff_clean ss.2.2.2)
+          (by rw [ht]; exact scopedList_clean ss.1)
+          (by rw [ht]; exact scoped_clean ss.2.1)
+          (by rw [ht]; exact scopedEff_clean ss.2.2)
         rw [heq] at hh; exact hh.2.2.1
     | .E_Neg _ _ _ _ _ _ _ _ _ => exact scoped_clean sc.1
     | .E_Not _ => trivial

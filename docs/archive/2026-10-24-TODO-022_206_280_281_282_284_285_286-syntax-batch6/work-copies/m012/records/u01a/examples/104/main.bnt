@@ -1,0 +1,20 @@
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+record Invalid
+  value: Integer
+end record
+
+function convert(value: Integer) -> Integer uses Failure.Fail[Invalid]
+  return Failure.fromResult(if value = 2 then Result.Error(Invalid(value: value)) else Result.Ok(value) end if)
+end function
+
+function main() -> Unit uses Console.Write
+  bind result: Result[List[Integer], Invalid] <- Failure.toResult(body: lambda()
+    return List.map(xs: [1, 2, 3], f: convert)
+  end lambda)
+  match result with
+    case Result.Ok(_) -> Console.writeLine("all succeeded")
+    case Result.Error(error) -> Console.writeLine("failed at " + Integer.toString(Invalid.value(error)))
+  end match
+end function

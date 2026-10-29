@@ -308,6 +308,12 @@ fn scope_constants_follow_shared_runtime_contract_and_positions() {
             vec![],
         ),
         (
+            "Scope.checkHost(pattern: dynamic, host: \"::ffff:127.0.0.1\")",
+            C::E0460,
+            "\"::ffff:127.0.0.1\"",
+            vec![],
+        ),
+        (
             "Scope.checkPath(pattern: \"/a/*\", path: dynamic)",
             C::E0459,
             "\"/a/*\"",
@@ -336,6 +342,261 @@ fn scope_constants_follow_shared_runtime_contract_and_positions() {
             })
             .collect();
         assert_eq!(actual, related, "{expression}");
+    }
+}
+
+// 関門: 新しい検査入口も旧入口と同じ既知の不良を報告し、引数名の並べ替えと
+// 部分既知の条件でも位置を保つ。既存表は新入口の登録・異なるポート位置を通らない。
+// 期待は通常の公開checkで観察し、共通判定やテスト用の差し込み口から作らない。
+#[test]
+fn scoped_value_checks_report_known_bad_arguments_after_body_checking() {
+    // 新しい入口の既知の不良の代表的な入力と、旧入口の拒否を通常ソースで検査する。
+    for (source, expected) in [
+        (
+            r#"import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: "relative/**", path: p)
+end function
+"#,
+            C::E0459,
+        ),
+        (
+            r#"import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(r: Http.ClientRequest) -> Result[Http.RequestIn, Http.RequestCheckError]
+ return Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: 443, maximumPort: 80, request: r)
+end function
+"#,
+            C::E0461,
+        ),
+        (
+            r#"import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(r: Http.ClientRequest) -> Result[Http.RequestIn, Http.RequestCheckError]
+ return Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: 70000, maximumPort: 80000, request: r)
+end function
+"#,
+            C::E0461,
+        ),
+        (
+            r#"import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.CheckedPath, S.ScopeError]
+ return S.checkPath(pattern: "relative/**", path: p)
+end function
+"#,
+            C::E0459,
+        ),
+        (
+            r#"import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: "/data/**", path: "relative")
+end function
+"#,
+            C::E0460,
+        ),
+    ] {
+        let result = check(source);
+        let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).collect();
+        assert_eq!(
+            errors.iter().filter_map(|d| d.code).collect::<Vec<_>>(),
+            [expected],
+            "{source}: {errors:?}"
+        );
+        assert!(result.program.is_none());
+    }
+    for (setup, expression, expected, primary, related) in [
+        (
+            "",
+            "S.checkPathIn(pattern: \"/data/*\", path: dynamic)",
+            Some(C::E0459),
+            "\"/data/*\"",
+            vec![],
+        ),
+        (
+            "",
+            "S.checkPathIn(path: \"relative\", pattern: dynamic)",
+            Some(C::E0460),
+            "\"relative\"",
+            vec![],
+        ),
+        (
+            "",
+            "S.checkPathIn(pattern: \"/data/**\", path: \"/other/file\")",
+            Some(C::E0462),
+            "\"/other/file\"",
+            vec!["\"/data/**\""],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(request: request, maximumPort: 80, hostPattern: dynamic, minimumPort: 443)",
+            Some(C::E0461),
+            "80",
+            vec!["443"],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: dynamic, minimumPort: p, maximumPort: -1, request: request)",
+            Some(C::E0461),
+            "-1",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: dynamic, minimumPort: 65536, maximumPort: p, request: request)",
+            Some(C::E0461),
+            "65536",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"*\", minimumPort: p, maximumPort: p, request: request)",
+            Some(C::E0459),
+            "\"*\"",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"192.0.2.1/24\", minimumPort: p, maximumPort: p, request: request)",
+            Some(C::E0459),
+            "\"192.0.2.1/24\"",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"::ffff:127.0.0.1\", minimumPort: 0, maximumPort: 65535, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"::ffff:0.0.0.0/96\", minimumPort: 0, maximumPort: 65535, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"::ffff:127.0.0.0/104\", minimumPort: 0, maximumPort: 65535, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"::/0\", minimumPort: 0, maximumPort: 65535, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: \"192.0.2.0/24\", minimumPort: 0, maximumPort: 65535, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            "",
+            "S.checkPathIn(pattern: dynamic, path: dynamic)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            "",
+            "Http.checkRequestIn(hostPattern: dynamic, minimumPort: p, maximumPort: p, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            " bind f <- S.checkPathIn\n",
+            "f(pattern: \"relative/**\", path: dynamic)",
+            None,
+            "",
+            vec![],
+        ),
+        (
+            " bind f <- Http.checkRequestIn\n",
+            "f(hostPattern: \"*\", minimumPort: 443, maximumPort: 80, request: request)",
+            None,
+            "",
+            vec![],
+        ),
+    ] {
+        let source = format!(
+            "import Benitoite.Unofficial.Scope as S\nimport Benitoite.Unofficial.Network.Http\nfunction sample(dynamic: String, p: Integer, request: Http.ClientRequest) -> Unit\n{setup} bind _ <- {expression}\nend function\n"
+        );
+        let result = check(&source);
+        let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).collect();
+        assert_eq!(
+            errors.iter().filter_map(|d| d.code).collect::<Vec<_>>(),
+            expected.into_iter().collect::<Vec<_>>(),
+            "{expression}: {errors:?}"
+        );
+        assert_eq!(result.program.is_some(), expected.is_none(), "{expression}");
+        if let Some(error) = errors.first() {
+            let span = error.primary.as_ref().unwrap().span;
+            assert_eq!(
+                &source[span.start.0 as usize..span.end.0 as usize],
+                primary,
+                "{expression}"
+            );
+            assert_eq!(
+                error
+                    .secondary
+                    .iter()
+                    .map(|label| &source[label.span.start.0 as usize..label.span.end.0 as usize])
+                    .collect::<Vec<_>>(),
+                related,
+                "{expression}"
+            );
+        }
+    }
+    let source = "import Benitoite.Unofficial.Scope as S\nimport Benitoite.Unofficial.Network.Http\nconst first: String = \"relative/**\"\nconst pattern: String = first\nconst minimum: Integer = 443\nconst maximum: Integer = 80\nfunction sample(path: String, request: Http.ClientRequest) -> Unit\n bind _ <- S.checkPathIn(pattern: pattern, path: path)\n bind _ <- Http.checkRequestIn(hostPattern: \"api.example.com\", minimumPort: minimum, maximumPort: maximum, request: request)\nend function\n";
+    let result = check(source);
+    let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).collect();
+    assert_eq!(
+        errors.iter().filter_map(|d| d.code).collect::<Vec<_>>(),
+        [C::E0459, C::E0461],
+        "{errors:?}"
+    );
+    for (error, names) in errors
+        .iter()
+        .zip([vec!["first:", "pattern:"], vec!["minimum:", "maximum:"]])
+    {
+        let positions: Vec<_> = names
+            .into_iter()
+            .map(|name| source.find(name).unwrap())
+            .collect();
+        for position in positions {
+            assert!(
+                error
+                    .secondary
+                    .iter()
+                    .any(|label| label.span.start.0 as usize == position),
+                "{error:?}"
+            );
+        }
     }
 }
 

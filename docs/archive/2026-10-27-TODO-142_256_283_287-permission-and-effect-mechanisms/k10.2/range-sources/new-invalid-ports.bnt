@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function sample(raw: String, req: Http.ClientRequest) -> Result[Http.RequestIn, Http.RequestCheckError]
+ return Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: 443, maximumPort: 80, request: req)
+end function

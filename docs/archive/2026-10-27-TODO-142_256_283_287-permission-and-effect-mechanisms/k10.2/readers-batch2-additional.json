@@ -1,0 +1,31 @@
+{
+  "runs": [
+    {
+      "feature": "failure",
+      "status": "passed",
+      "outerSeconds": 0.361725625
+    },
+    {
+      "feature": "character",
+      "status": "passed",
+      "outerSeconds": 0.18857729100000004
+    },
+    {
+      "feature": "NoFail mutations",
+      "status": "passed",
+      "outerSeconds": 0.11676949999999997,
+      "result": {
+        "definitions": {
+          "failure-polymorphic": 4,
+          "failure-handlers": 4,
+          "failure-values": 5,
+          "failure-nofail": 1
+        },
+        "totalDefinitions": 14,
+        "restViolation": "function instantiation violates scope or NoFail",
+        "signatureMismatchExit": 2
+      }
+    }
+  ],
+  "maximumChildRssBytes": 44728320
+}

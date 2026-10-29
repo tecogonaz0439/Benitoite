@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+ ()
+end function
+function sample(a: Scope.PathIn["/data/a"]) -> Result[Unit, IOError] uses File.Write["/data/a"]
+ return handle File.writeTextIn(path: a, text: "x") with
+ case File.writeTextIn(captured, text) -> resume(File.writeTextIn(path: captured, text: "y"))
+ end handle
+end function

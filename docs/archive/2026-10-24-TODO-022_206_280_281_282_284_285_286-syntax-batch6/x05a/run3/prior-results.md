@@ -23,7 +23,7 @@ BENITOITE_COVERAGE_DIFF_DIR=target/coverage-diff/x05a-k1-20261027
 BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-20261027
 ```
 
-[run.py](run.py) の `timed k1 scripts/check-formal.sh` を一度起動した。外側は `/usr/bin/time -l`、その内側の子記録器は `scripts/check-formal.sh` を実行して本体の終了状態を保存する。正確な実行引数と時刻は [起動記録](k1-started.json)・[本体の記録](k1-body.json)・[外側の記録](k1.json)、パスを伏せた標準出力・標準エラーは [生ログ](k1.log)にある。K1 に dry-run の入口はないため付けていない。
+[run.py](../run.py) の `timed k1 scripts/check-formal.sh` を一度起動した。外側は `/usr/bin/time -l`、その内側の子記録器は `scripts/check-formal.sh` を実行して本体の終了状態を保存する。正確な実行引数と時刻は [起動記録](../k1-started.json)・[本体の記録](../k1-body.json)・[外側の記録](../k1.json)、パスを伏せた標準出力・標準エラーは [生ログ](../k1.log)にある。K1 に dry-run の入口はないため付けていない。
 
 | 項目 | 結果 |
 |---|---|
@@ -34,7 +34,7 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-20261027
 | ツールチェーン | Rust/Cargo 1.98.1、Lean 4.35.0、Lake 5.0.0-src+eb6cafb、elan 4.2.4、Python 3.9.6。macOS 27.0.1 / arm64 |
 | 構成 | Cargo の既定構成。Lean の `-M 12288` を維持し、ビルドは逐次実行した。単一ファイル検査・別の Lean ビルド・K1 の再実行はない |
 
-版の詳細は [environment.json](environment.json)、比較用の七実行ファイルと実 CLI の SHA-256 は [executables.json](executables.json)にある。プロセス別の使用量を調べる `ps` もサンドボックスに拒否された。最大常駐量の未取得を0と扱っていない。今回は検査本体も終了1であり、time の制限だけが原因の失敗とはしていない。
+版の詳細は [environment.json](../environment.json)、比較用の七実行ファイルと実 CLI の SHA-256 は [executables.json](../executables.json)にある。プロセス別の使用量を調べる `ps` もサンドボックスに拒否された。最大常駐量の未取得を0と扱っていない。今回は検査本体も終了1であり、time の制限だけが原因の失敗とはしていない。
 
 ## 停止の原因
 
@@ -51,17 +51,17 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-20261027
 
 12定義の理由はいずれも `external type` である。`tests/desugar_export/exchange.rs` は `TyCon::External` をこの対象外の理由として記録する（426・569行）。`tests/desugar_export/interval/manifest.rs` は、元の定義に `outside` があれば交換本文と別本体の接続を省き、その定義と入力を `enumerationComplete: false` にする（111〜117・172行）。比較器はこの状態を受け入れず、今回その条件が全件で初めて露呈した。
 
-[入力ごとの要約](incomplete-enumeration-summary.json)と[対象外の定義・理由・全体状態](incomplete-enumeration-details.json)を保存した。[diagnose.py](diagnose.py)は巨大な元 manifest を入力ごとに読み、該当4入力の理由を取り出しただけであり、比較や入力の修正はしない。深さ停止・本体予算・全体予算による退避とは区別する。12定義を除いて成功した、あるいは全件が比較済みであるとは結論しない。
+[入力ごとの要約](../incomplete-enumeration-summary.json)と[対象外の定義・理由・全体状態](../incomplete-enumeration-details.json)を保存した。[diagnose.py](../diagnose.py)は巨大な元 manifest を入力ごとに読み、該当4入力の理由を取り出しただけであり、比較や入力の修正はしない。深さ停止・本体予算・全体予算による退避とは区別する。12定義を除いて成功した、あるいは全件が比較済みであるとは結論しない。
 
 ### 固定 manifest に新しい golden 入力がない
 
-全件 corpus は1,791入力で、`tests/desugar_export/exchange-manifest.json` の1,790入力より1件多かった。差分は `golden: testdata/warnings/local-width-intervals.bnt` だけであり、欠落は0件である。全件 corpus 本体との直接照合と、同じ入力を列挙する区間要約との照合で確認した。[差分の記録](routing-difference.json)に固定 manifest のハッシュも残した。
+全件 corpus は1,791入力で、`tests/desugar_export/exchange-manifest.json` の1,790入力より1件多かった。差分は `golden: testdata/warnings/local-width-intervals.bnt` だけであり、欠落は0件である。全件 corpus 本体との直接照合と、同じ入力を列挙する区間要約との照合で確認した。[差分の記録](../routing-difference.json)に固定 manifest のハッシュも残した。
 
 この入力は A15a のコミット `8cf22e4df305b4a5983ca4650c5339fd3b50f05e` で加わった。元の関数9個が区間要約にも記録され、列挙は完了している。一方、固定 manifest は第6弾以前のままで、この入力を登録していない。最終の `check_named.py` にある `compare_routing` と `check_programs` は入力の集合の一致を要求するため、先の列挙の問題だけを直しても最終照合は通らない。ただし今回の実行はそこへ到達しておらず、**二つ目の失敗を実行して観測したとは数えない**。ソースと生成済みの入力一覧から確定する食い違いとして報告する。
 
 ## 実行できた範囲と未実行の範囲
 
-[集計](evidence-summary.json)には、生成済みの報告から得た件数と、未完了の印を残した。
+[集計](../evidence-summary.json)には、生成済みの報告から得た件数と、未完了の印を残した。
 
 | 対象 | 今回の結果 |
 |---|---|
@@ -85,11 +85,11 @@ VM の有限の比較は A1 の接続の一部であり、元ソース全体の�
 
 ## 永続の証拠と関係状態
 
-三出力先の1,891ファイルを [SHA-256 の索引](k1-records-index.json)に列挙し、うち1,879ファイルを [ZIP](k1-records.zip)へ保存して全項目を読み戻した。[bundle.py](bundle.py)がこの保存と照合を行う。16 MiB を超える再生成可能な入力12ファイルは本文を ZIP に含めず、元の大きさ・SHA-256・`persisted: false` を索引に残した。比較報告とログの省略は0件である。三つの出力先は手元の target に残しているが、その一時ログだけを引用元にしていない。
+三出力先の1,891ファイルを [SHA-256 の索引](../k1-records-index.json)に列挙し、うち1,879ファイルを [ZIP](../k1-records.zip)へ保存して全項目を読み戻した。[bundle.py](../bundle.py)がこの保存と照合を行う。16 MiB を超える再生成可能な入力12ファイルは本文を ZIP に含めず、元の大きさ・SHA-256・`persisted: false` を索引に残した。比較報告とログの省略は0件である。三つの出力先は手元の target に残しているが、その一時ログだけを引用元にしていない。
 
 入力用 manifest は1,220ファイルのハッシュを持ち、ZIP 内の `interval/input-manifest.json` に保存した。元の全件 manifest と巨大な本文を ZIP へ保存済みであるかのようには扱わない。元入力は固定したソース・生成器・設定と、この索引で同定できる。追加の4入力の対象外の理由は上記の小さい詳細記録に本文として残した。ZIP の SHA-256 は `626efcbc9da93ea323317016ab72f7cfa970893a0ad9858f004bfe55af695583`、大きさは11,500,353バイトである。パスを伏せた2ファイルでは元と保存後のハッシュを別に記録した。全記録の手元のパスは `<repo>`・`<home>`・`<tmp>` に伏せた。
 
-[検査前の入力状態](source-state-before.json)には、Rust・Lean・スクリプト・テスト・標準ソース・設定・生成元/生成物・文書例等の追跡対象5,875ファイルの SHA-256 を保存した。[検査後の状態](source-state-after.json)では、この全てが一致し、対象 HEAD も同じで、追跡済みの差分は0件であった。K1 後に追加・変更したのは x05a の結果と保管・調査の記録だけである。
+[検査前の入力状態](../source-state-before.json)には、Rust・Lean・スクリプト・テスト・標準ソース・設定・生成元/生成物・文書例等の追跡対象5,875ファイルの SHA-256 を保存した。[検査後の状態](../source-state-after.json)では、この全てが一致し、対象 HEAD も同じで、追跡済みの差分は0件であった。K1 後に追加・変更したのは x05a の結果と保管・調査の記録だけである。
 
 引用の判断者は X05a 担当、日付は2026-10-27である。X05b が引用できるのは、同じ関係状態での**失敗と部分実行の記録**であり、S-X や K1 の成功ではない。別の状態への成功の引用は認めない。修正後は、変更した入力・交換器・固定 manifest 等を取りまとめが確定し、K1 全体を新しい出力先で実行する必要がある。
 
@@ -99,13 +99,13 @@ VM の有限の比較は A1 の接続の一部であり、元ソース全体の�
 
 | 検査 | 結果と外側時間 | 記録 |
 |---|---|---|
-| 同じ指定の dry-run | 終了0、0.079秒。文書だけの変更で検査対象なし | [記録](work-dry-run.json)・[出力](work-dry-run.log) |
-| work 本体 | 終了0、0.080秒。選択0単位・実行0単位、`selected checks passed` | [本体](work-body.json) |
-| `/usr/bin/time -l` を含む外側 | 終了1、0.110秒。time の real は0.10秒。最大常駐量は sysctl の拒否で取得不能 | [外側](work.json)・[生ログ](work.log) |
+| 同じ指定の dry-run | 終了0、0.079秒。文書だけの変更で検査対象なし | [記録](../work-dry-run.json)・[出力](../work-dry-run.log) |
+| work 本体 | 終了0、0.080秒。選択0単位・実行0単位、`selected checks passed` | [本体](../work-body.json) |
+| `/usr/bin/time -l` を含む外側 | 終了1、0.110秒。time の real は0.10秒。最大常駐量は sysctl の拒否で取得不能 | [外側](../work.json)・[生ログ](../work.log) |
 
 選択0単位は計画どおりであり、Rust の回帰や K1 成功の証拠とは分ける。dry-run と本実行の変更数の差（27件と30件）は、その間に作成した実行記録によるものであり、選択はいずれも0単位であった。計測だけの失敗を理由に work を再実行していない。
 
-最後に [audit.py](audit.py) と [点検結果](self-review.json)で、5,875ソース入力の不変、入力 manifest の1,220ハッシュと保管索引の一致、ZIP のハッシュと収録一覧、記録と ZIP 内のパスの伏せ方、保存用 Python の構文、結果のリンク、git diff --check を確認した。結果と保管・点検の記録以外の差分はない。
+最後に [audit.py](../audit.py) と [点検結果](../self-review.json)で、5,875ソース入力の不変、入力 manifest の1,220ハッシュと保管索引の一致、ZIP のハッシュと収録一覧、記録と ZIP 内のパスの伏せ方、保存用 Python の構文、結果のリンク、git diff --check を確認した。結果と保管・点検の記録以外の差分はない。
 
 ## 担当へ戻す範囲
 
@@ -131,7 +131,7 @@ VM の有限の比較は A1 の接続の一部であり、元ソース全体の�
 
 2回目の着手は2026-10-27 01:18:18 JST（最初の時刻取得）である。終了時刻と所要時間は冒頭の2回目の欄へ記す。B_WORK と HEAD はともに `e895627c1d376aa5d31af82e99fea4465f6d6c8b`、ブランチは `mod012/X05a`。着手時の未コミット差分・未追跡入力はなかった。AGENTS.md、共通依頼文、plan の前提・内部契約・X01〜X05・X05a/X05b/K1/S-X の検査・X05R を置く計画変更、D5/D17/D18/D22、study 9.4、README の設計者の決定、07-03「結果の保存と引用」、全比較の二スクリプト、X01a〜X04b の申し送りと X05R の結果を確認した。rtk と japanese-tech-writing を適用した。
 
-X04a の局所40.537秒、計画の全体30〜60分、1回目の途中停止まで33分32秒を見積もりの根拠にした。全比較の時間・メモリを見積もる追加の短い試行は行っていない。K1 の前の `df -h /` は空き128 GiBであり、20 GB以上の開始条件を満たした（[出力](run2/disk-before.log)・[数値](run2/disk-before.json)）。
+X04a の局所40.537秒、計画の全体30〜60分、1回目の途中停止まで33分32秒を見積もりの根拠にした。全比較の時間・メモリを見積もる追加の短い試行は行っていない。K1 の前の `df -h /` は空き128 GiBであり、20 GB以上の開始条件を満たした（[出力](../run2/disk-before.log)・[数値](../run2/disk-before.json)）。
 
 ### コマンド・終了・時間・環境
 
@@ -144,15 +144,15 @@ BENITOITE_COVERAGE_DIFF_DIR=target/coverage-diff/x05a-k1-run2-20261027
 BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 ```
 
-[記録器](run2/run.py)の `timed k1 scripts/check-formal.sh` を一度起動した。外側は `/usr/bin/time -l`、内側で本体の終了状態と単調時計の時間を分けて保存した。K1 に dry-run の入口はない。
+[記録器](../run2/run.py)の `timed k1 scripts/check-formal.sh` を一度起動した。外側は `/usr/bin/time -l`、内側で本体の終了状態と単調時計の時間を分けて保存した。K1 に dry-run の入口はない。
 
 | 項目 | 結果と記録 |
 |---|---|
-| K1 本体 | 2026-10-27 01:19:29.824〜01:57:16.606 JST、**終了1、2266.785秒（37分46.785秒）**。[本体](run2/k1-body.json) |
-| time を含む外側 | 終了1、2266.814秒。real/user/sys は2266.80 / 2339.43 / 430.39秒。[起動](run2/k1-started.json)・[外側](run2/k1.json)・[パスを伏せた生ログ](run2/k1.log) |
+| K1 本体 | 2026-10-27 01:19:29.824〜01:57:16.606 JST、**終了1、2266.785秒（37分46.785秒）**。[本体](../run2/k1-body.json) |
+| time を含む外側 | 終了1、2266.814秒。real/user/sys は2266.80 / 2339.43 / 430.39秒。[起動](../run2/k1-started.json)・[外側](../run2/k1.json)・[パスを伏せた生ログ](../run2/k1.log) |
 | 最大常駐量（maximum resident set size） | **取得不能**。`sysctl kern.clockrate: Operation not permitted` が出て最大常駐量は表示されなかった。未取得を0と扱わない |
 | メモリの停止・構成 | 終了143はない。Cargo の既定構成、Lean の `-M 12288` を維持し、ビルドは逐次実行した。単一ファイル検査・別の Lean ビルド・K1 の再実行はない |
-| ツールチェーン | Rust/Cargo 1.98.1、Lean 4.35.0、Lake 5.0.0-src+eb6cafb、elan 4.2.4、Python 3.9.6、macOS 27.0.1 / arm64。[環境](run2/environment.json)・[七比較実行ファイルと実 CLI の SHA-256](run2/executables.json) |
+| ツールチェーン | Rust/Cargo 1.98.1、Lean 4.35.0、Lake 5.0.0-src+eb6cafb、elan 4.2.4、Python 3.9.6、macOS 27.0.1 / arm64。[環境](../run2/environment.json)・[七比較実行ファイルと実 CLI の SHA-256](../run2/executables.json) |
 
 ### 今回の停止の原因
 
@@ -160,7 +160,7 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 
 選ばれた入力は `golden:testdata/effects/choose_example.bnt` であり、その警告は `Some(W0501)` の1件だけであった。一方、`compare_warnings`（159〜173行）が照合する診断は `W0401`・`W0402`・`W0404` に限る。この入力では元から対象の警告が0件なので、全警告を空にしても比較結果は空列のまま一致する。負例の選択条件と、比較器が照合するコードの集合が食い違っている。
 
-[読み取りだけの原因確認](run2/diagnose.py)で、保存済みの Rust 観測・manifest・Lean 報告を同じ比較関数へ渡した。W0501 だけの入力では、元の観測も警告を空にした観測も対象警告が0件となり、負例が実際に受け入れられた。対照として `golden:testdata/eval/c12-lazy-deferred.bnt` の W0401（一次位置 `[0,615,616]`）を同様に消すと、`user warnings` の不一致で拒否された。[詳細と元の観測](run2/diagnosis-details.json)・[実行](run2/diagnosis-final.json)・[ログ](run2/diagnosis-final.log)に保存した。新しい Lean 実行や比較用の入力の書き換えは行っていない。
+[読み取りだけの原因確認](../run2/diagnose.py)で、保存済みの Rust 観測・manifest・Lean 報告を同じ比較関数へ渡した。W0501 だけの入力では、元の観測も警告を空にした観測も対象警告が0件となり、負例が実際に受け入れられた。対照として `golden:testdata/eval/c12-lazy-deferred.bnt` の W0401（一次位置 `[0,615,616]`）を同様に消すと、`user warnings` の不一致で拒否された。[詳細と元の観測](../run2/diagnosis-details.json)・[実行](../run2/diagnosis-final.json)・[ログ](../run2/diagnosis-final.log)に保存した。新しい Lean 実行や比較用の入力の書き換えは行っていない。
 
 この原因確認は、すべての警告比較が正しいことの証明ではない。今回の停止は、対象外の警告しかない入力を「対象の警告を消す負例」に選んだことによるものと確認できる。負例を削る・期待を弱める・警告を抑える修正は行っていない。修正候補は、負例の選択にも同じ対象コードの集合を使い、対象の警告が実際に消えた入力で拒否を確認することである。比較器・負例を扱う X02b の後続作業の担当と範囲を取りまとめが決めることを提案する。
 
@@ -183,7 +183,7 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 | 既存六入口・Log 公開利用の最終照合 | 未実行。先行の通常網羅性・独立交換だけで六入口全体の成功とはしない |
 | 最終 manifest・verify | 未実行。成功を表す `interval/manifest.json` はない。実行前の `input-manifest.json` は保存済み |
 
-個別報告の合計は[原因確認の詳細](run2/diagnosis-details.json)に、先行報告と実行環境・容量の要約は[集計](run2/evidence-summary.json)に残した。追加された `testdata/warnings/local-width-intervals.bnt` は、今回の書き出しで9定義・列挙完了として現れた（[入力の要約](run2/width-input-summary.json)）。固定表との最終照合の成功は、未実行である。
+個別報告の合計は[原因確認の詳細](../run2/diagnosis-details.json)に、先行報告と実行環境・容量の要約は[集計](../run2/evidence-summary.json)に残した。追加された `testdata/warnings/local-width-intervals.bnt` は、今回の書き出しで9定義・列挙完了として現れた（[入力の要約](../run2/width-input-summary.json)）。固定表との最終照合の成功は、未実行である。
 
 ### X05R の理由付き除外の照合
 
@@ -201,7 +201,7 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 
 ### 容量・永続の証拠・引用の範囲
 
-[実容量](run2/output-size.json)は次のとおりである。`du` は KiB 単位の実使用量、バイト数はファイルの論理サイズの和である。
+[実容量](../run2/output-size.json)は次のとおりである。`du` は KiB 単位の実使用量、バイト数はファイルの論理サイズの和である。
 
 | 出力先 | ファイル数 | 論理バイト数 | du（KiB） |
 |---|---:|---:|---:|
@@ -212,9 +212,9 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 
 区間出力は今回の途中停止時点で2,000,000,000バイト以下である。ただし、残る9系統・独立入力・最終 manifest が未生成なので、成功した K1 一回分の容量目標を実測して満たしたとは結論しない。
 
-三出力先の7,867ファイルを[ハッシュ索引](run2/k1-records-index.json)に記録し、7,859ファイルを ZIP（取りまとめがリポジトリの外の `<repo>/work/m012/records/x05a-run2-k1-records.zip` へ移した。gitignore）へ保存して全項目を読み戻した。[保存用の記録器](run2/bundle.py)を用いた。16 MiB を超える再生成可能な入力8ファイルは本文を省き、元の大きさ・SHA-256・`persisted: false`・理由を索引へ残した。報告・ログの省略は0件である。保存時にパスを伏せた1ファイルは、元と保存後のハッシュを分けた。ZIP は73,802,707バイト、SHA-256 は `5aaaffc02becc497da7e34840c5e6330f18dc14f77575e4a369af1e3d88fb1b8`。実行前の入力 manifest も ZIP へ保存した。生ログと要約を target だけに置いていない。
+三出力先の7,867ファイルを[ハッシュ索引](../run2/k1-records-index.json)に記録し、7,859ファイルを ZIP（取りまとめがリポジトリの外の [x05a-run2-k1-records.zip の索引とハッシュ](../../work-copies/README.md#f474) へ移した。gitignore）へ保存して全項目を読み戻した。[保存用の記録器](../run2/bundle.py)を用いた。16 MiB を超える再生成可能な入力8ファイルは本文を省き、元の大きさ・SHA-256・`persisted: false`・理由を索引へ残した。報告・ログの省略は0件である。保存時にパスを伏せた1ファイルは、元と保存後のハッシュを分けた。ZIP は73,802,707バイト、SHA-256 は `5aaaffc02becc497da7e34840c5e6330f18dc14f77575e4a369af1e3d88fb1b8`。実行前の入力 manifest も ZIP へ保存した。生ログと要約を target だけに置いていない。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../../work-copies/README.md#分類と元の対応)に残す。
 
-[検査前](run2/source-state-before.json)・[検査後](run2/source-state-after.json)の5,984ソース入力の SHA-256 は一致し、HEAD も同じである。最初の状態の照会は差分なしであり、記録器を作った後の snapshot の status には新しい run2 のみが現れる。以後の差分は x05a の results.md と今回の実行・調査・保管・点検の記録だけである。1回目の節と旧記録を保持し、[旧ファイルのハッシュ](run2/first-run-files.json)も保存した。
+[検査前](../run2/source-state-before.json)・[検査後](../run2/source-state-after.json)の5,984ソース入力の SHA-256 は一致し、HEAD も同じである。最初の状態の照会は差分なしであり、記録器を作った後の snapshot の status には新しい run2 のみが現れる。以後の差分は x05a の results.md と今回の実行・調査・保管・点検の記録だけである。1回目の節と旧記録を保持し、[旧ファイルのハッシュ](../run2/first-run-files.json)も保存した。
 
 引用の判断者は X05a 担当、日付は2026-10-27である。X05b が引用できるのは、この関係状態での**失敗と部分実行の記録**であり、K1 成功や S-X の受け入れではない。入力の一覧とハッシュ、実行した道具の版・ハッシュ、具体的なコマンドと終了状態、対象件数、時間、環境の制限を上記の記録へ残した。別の状態への成功の引用は認めない。修正後の全体起動は、取りまとめが担当と基準を新たに指定する必要がある。
 
@@ -224,15 +224,15 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 
 | 検査 | 結果と外側時間 | 記録 |
 |---|---|---|
-| dry-run | 終了0、0.087秒。文書だけの変更で選択0単位 | [起動](run2/work-dry-run.json)・[選択と理由](run2/work-dry-run.log) |
-| work 本体 | **終了0、0.087秒**。選択0単位・実行0単位、`selected checks passed` | [本体](run2/work-body.json) |
-| time を含む外側 | 終了1、0.114秒。最大常駐量は sysctl の拒否により取得不能 | [外側](run2/work.json)・[生ログ](run2/work.log) |
+| dry-run | 終了0、0.087秒。文書だけの変更で選択0単位 | [起動](../run2/work-dry-run.json)・[選択と理由](../run2/work-dry-run.log) |
+| work 本体 | **終了0、0.087秒**。選択0単位・実行0単位、`selected checks passed` | [本体](../run2/work-body.json) |
+| time を含む外側 | 終了1、0.114秒。最大常駐量は sysctl の拒否により取得不能 | [外側](../run2/work.json)・[生ログ](../run2/work.log) |
 
 選択0単位は計画どおりであり、Rust の回帰や K1 の成功の証拠とは分ける。dry-run の42件と本実行の45件の変更数の差は、その間に作った実行記録による。最大常駐量の取得だけを理由に work を再実行していない。work 後は結果・保管・点検の記録だけを更新した。
 
-[最終点検器](run2/audit.py)で、5,984ソース入力の不変、旧33ファイルと1回目の本文の保持、ZIP のハッシュと収録一覧、1,487圧縮入力を含む手元のパスの伏せ方、記録の構文と56リンク、git diff --check を確認した。点検は終了0・1.594秒である。[点検結果](run2/self-review.json)・[起動](run2/audit.json)・[ログ](run2/audit.log)へ保存した。
+[最終点検器](../run2/audit.py)で、5,984ソース入力の不変、旧33ファイルと1回目の本文の保持、ZIP のハッシュと収録一覧、1,487圧縮入力を含む手元のパスの伏せ方、記録の構文と56リンク、git diff --check を確認した。点検は終了0・1.594秒である。[点検結果](../run2/self-review.json)・[起動](../run2/audit.json)・[ログ](../run2/audit.log)へ保存した。
 
-記録用の原因確認器は、初回に型検査失敗の行にも `input` 欄を要求して止まり、`get` で欠落を扱うよう直した（[初回](run2/diagnosis-initial.json)）。次に詳細 JSON と起動記録の名前が重なったため、詳細の保存名を分けて保存済み出力を読み直した（[記録名の修正](run2/diagnosis-record-correction.json)）。これらは記録用の読み取り器だけの修正であり、K1・Lean・比較器の再実行や修正は行っていない。
+記録用の原因確認器は、初回に型検査失敗の行にも `input` 欄を要求して止まり、`get` で欠落を扱うよう直した（[初回](../run2/diagnosis-initial.json)）。次に詳細 JSON と起動記録の名前が重なったため、詳細の保存名を分けて保存済み出力を読み直した（[記録名の修正](../run2/diagnosis-record-correction.json)）。これらは記録用の読み取り器だけの修正であり、K1・Lean・比較器の再実行や修正は行っていない。
 
 ### 取りまとめへ戻す範囲
 
@@ -249,4 +249,4 @@ BENITOITE_INTERVAL_DIFF_DIR=target/interval-diff/x05a-k1-run2-20261027
 
 停止は正当である。`negative_cases` の `userWarnings` の負例は、観測の警告が空でない最初の入力を選ぶが、`compare_warnings` は W0401・W0402・W0404 だけを照合するので、W0501 だけの入力を選ぶと負例が成り立たない。修正の作業 X05S を置き、負例の選択を照合する警告の集合にそろえる（plan.md「計画の変更（2026-10-27、X05a の2回目の停止を受けて）」）。1回目は外部型の列挙未完で止まり、この負例まで進んでいなかった。
 
-2回目の生の記録の ZIP（73,802,707バイト、SHA-256 `5aaaffc02becc497da7e34840c5e6330f18dc14f77575e4a369af1e3d88fb1b8`）は、公開のリポジトリに置くには大きいので、取りまとめがリポジトリの外（`<repo>/work/m012/records/`、gitignore）へ移した。索引・ログ・要約・原因確認は run2/ に残す。以後の K1 の生の記録の ZIP も同じ場所に置き、リポジトリには索引とハッシュを残す。
+2回目の生の記録の ZIP（73,802,707バイト、SHA-256 `5aaaffc02becc497da7e34840c5e6330f18dc14f77575e4a369af1e3d88fb1b8`）は、公開のリポジトリに置くには大きいので、取りまとめがリポジトリの外（[作業用領域の保管対応](../../work-copies/README.md#分類と元の対応)、gitignore）へ移した。索引・ログ・要約・原因確認は run2/ に残す。以後の K1 の生の記録の ZIP も同じ場所に置き、リポジトリには索引とハッシュを残す。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../../work-copies/README.md#分類と元の対応)に残す。

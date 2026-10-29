@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "/bin/sh",
+    "-c",
+    "scripts/check.sh --level work --base 7f47822970ff5c300876198282764353afdd7a75; check_status=$?; printf \"%s\\n\" \"$check_status\" > docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.2/r20.2b-work-command.status; exit \"$check_status\""
+  ],
+  "exit": 0,
+  "elapsed_seconds": 484.259735041,
+  "maximum_resident_bytes": 4473536512,
+  "maximum_resident_mib": 4266.296875,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; 子の最大値",
+  "stdout_log": "r20.2b-work.log"
+}

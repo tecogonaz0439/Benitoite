@@ -1,0 +1,6 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:73:theorem eq_of_sub_of_sub {e f : Eff} (he : Canonical e) (hf : Canonical f)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:54:  apply Eff.eq_of_sub_of_sub (Eff.norm_idem e) (Eff.norm_idem f)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:221:  apply Eff.eq_of_sub_of_sub (e := Eff.bind φ (Eff.bind θ e)) (f := Eff.bind (θ.compose φ) e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:336:  Eff.eq_of_sub_of_sub he hf ⟨fun a => (ha a).mp, fun t => (ht t).mp⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Sequence.lean:353:  apply Eff.eq_of_sub_of_sub (Eff.union_canonical _ _) (Eff.union_canonical _ _)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Sequence.lean:360:  apply Eff.eq_of_sub_of_sub (Eff.union_canonical _ _) (Eff.union_canonical _ _)

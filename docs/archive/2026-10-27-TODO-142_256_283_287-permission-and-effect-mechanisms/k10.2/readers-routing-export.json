@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_desugar_corpus",
+    "--",
+    "--exact",
+    "--ignored",
+    "--nocapture"
+  ],
+  "environment": {
+    "BENITOITE_DESUGAR_DIFF_DIR": "target/k10.2-readers-routing"
+  },
+  "status": 0,
+  "seconds": 1346.5072787499998,
+  "max_rss_bytes": 401522688
+}

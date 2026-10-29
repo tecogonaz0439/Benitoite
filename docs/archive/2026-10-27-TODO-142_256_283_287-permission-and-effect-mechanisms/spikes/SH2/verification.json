@@ -1,0 +1,57 @@
+{
+  "source": "Hefty.lean",
+  "reference_commit": "e895627c1d376aa5d31af82e99fea4465f6d6c8b",
+  "command": "zsh work/m013/remote-lean.sh SH2 Hefty.lean 2048 120",
+  "counts": {
+    "lines": 407,
+    "named_theorems": 24,
+    "anonymous_typing_examples": 2,
+    "guards": 9,
+    "evals": 4
+  },
+  "runs": [
+    {
+      "log": "lean-01.log",
+      "exit": 1,
+      "elapsed_seconds": 5,
+      "sampled_peak_mb": 0,
+      "last_line": "== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB"
+    },
+    {
+      "log": "lean-02.log",
+      "exit": 0,
+      "elapsed_seconds": 5,
+      "sampled_peak_mb": 0,
+      "last_line": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB"
+    },
+    {
+      "log": "lean-03.log",
+      "exit": 1,
+      "elapsed_seconds": 5,
+      "sampled_peak_mb": 0,
+      "last_line": "== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB"
+    },
+    {
+      "log": "lean-04.log",
+      "exit": 0,
+      "elapsed_seconds": 5,
+      "sampled_peak_mb": 0,
+      "last_line": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB"
+    }
+  ],
+  "source_placeholders": false,
+  "local_lean_run": false,
+  "hashes": {
+    "Hefty.lean": "f55c63ed74cbf1bb254f3e25e876a7abb6eb3e928ccc1e83dd03a9d9349db1a3",
+    "Hefty-01.lean.txt": "f833c9f9a4fa9459ca8a711930f08af10b66024fb1fe486f23fcd0ed8bc23994",
+    "Hefty-02.lean.txt": "bb8cd4abb39333b5a4b4a6e23272a489962ec664931bbabcc3ee48ac4f4f8f35",
+    "Hefty-03.lean.txt": "6449f05fdd1094b9be347cc60bb90b4fa18bdb306ea2e21931000e2214e36261",
+    "lean-01.log": "c81fd1d95b8d4eb6594dc13101f86a6d13842b81e1277ff24ad43dc6f4891bbe",
+    "lean-02.log": "3ba59f6116e8d90d99d8d3b191eeb57919df321e92ef327f51de1b59d321391f",
+    "lean-03.log": "66bc3ff226a5599c3b00bcf6a629e5653b5f3b877600e5af44d8c1298d4bbe10",
+    "lean-04.log": "ae074975fa1b8ed4e0e883f03415b7ab20f89a6a14c13d6ca86272cfaf9c3ab8"
+  },
+  "started_at_jst": "2026-10-27T01:30:55+09:00",
+  "final_review_at_jst": "2026-10-27T01:42:46+09:00",
+  "elapsed_seconds": 711
+}

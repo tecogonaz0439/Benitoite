@@ -71,7 +71,20 @@ def probe_api(archive):
     source = path.read_text() if path.exists() else ''
     signature = re.search(r'\bpub\s+fn\s+parse\s*\((.*?)\)\s*->', source, re.S)
     pending = bool(signature and re.search(r'\bpending\s*:', signature.group(1)))
-    return dict(parser_pending=pending, parser_sha256=sha(source.encode()))
+    types_path = archive/'crates/benitoite/src/types/mod.rs'
+    types_source = types_path.read_bytes() if types_path.exists() else b''
+    ty = re.search(r'\bpub\s+enum\s+Ty\s*\{(.*?)\n\}', types_source.decode(), re.S)
+    range_index = bool(ty and re.search(
+        r'\bCon\s*\(\s*TyCon\s*,\s*Vec\s*<\s*Ty\s*>\s*,\s*'
+        r'(?:builtin\s*::\s*)?RangeIndex\s*,?\s*\)', ty.group(1)))
+    core_ir_path = archive/'crates/benitoite/src/ir/core_ir.rs'
+    core_ir_source = core_ir_path.read_bytes() if core_ir_path.exists() else b''
+    program = re.search(r'\bpub\s+struct\s+Program(?:\s*<[^>]*>)?\s*\{(.*?)\n\}',
+                        core_ir_source.decode(), re.S)
+    range_signatures = bool(program and re.search(r'\bpub\s+range_signatures\s*:', program.group(1)))
+    return dict(parser_pending=pending, parser_sha256=sha(source.encode()),
+                range_index=range_index, types_sha256=sha(types_source),
+                range_signatures=range_signatures, core_ir_sha256=sha(core_ir_source))
 
 
 def build_all(commits, alloc=False, cache=CACHE, imports=()):
@@ -156,6 +169,10 @@ def build_all(commits, alloc=False, cache=CACHE, imports=()):
                 probe_command += ['--cfg', 'feature="alloc-stats"']
             if api['parser_pending']:
                 probe_command += ['--cfg', 'benitoite_parser_pending']
+            if api['range_index']:
+                probe_command += ['--cfg', 'benitoite_range_index']
+            if api['range_signatures']:
+                probe_command += ['--cfg', 'benitoite_range_signatures']
             env = clean_env()
             env['BENITOITE_COMPARE_BRIDGE'] = str(bridge_source.resolve())
             with log.open('a') as stream:

@@ -1,0 +1,1136 @@
+diff --git a/crates/benitoite/skill/references/diagnostics.md b/crates/benitoite/skill/references/diagnostics.md
+index f6366066..e442ebde 100644
+--- a/crates/benitoite/skill/references/diagnostics.md
++++ b/crates/benitoite/skill/references/diagnostics.md
+@@ -1337,6 +1337,8 @@ An effect variable must be determined by a parameter type.
+ 
+ - Kind: check (error)
+ - Message: `{name}` appears more than once in `uses`
++- `first_scope`: the same scope atom was first written here
++- `scope`: remove the repeated scope element
+ - `remove`: remove the second `{name}`
+ 
+ Each effect is listed once.
+@@ -1884,7 +1886,7 @@ The declared atomic effects of the checked function (main or a test) exceed the
+ - Kind: check (error)
+ - Message: invalid type arguments for effect `{name}` (expected {count})
+ 
+-Only the standard Failure.Fail takes exactly one value type argument.
++Only the standard Failure.Fail takes exactly one value type argument. Standard File.Read, File.Write and Http.Connect take closed scope arguments; other effects take no arguments.
+ 
+ ## E0514
+ 
+@@ -1927,6 +1929,15 @@ The failure type must be fixed before its handler is erased.
+ 
+ A failure handle contains exactly one Failure.raise clause.
+ 
++## E0520
++
++- Kind: check (error)
++- Message: invalid scope arguments for `{name}` (expected {expectedScopeKind})
++- Label: invalid scope argument
++- `found`: found: {found}
++
++Scope arguments must be nonempty closed literal patterns of the kind required by the resolved standard name. File effects take path strings; Http.Connect takes complete host/port pairs. Expressions, interpolation and constant references are not scope arguments.
++
+ ## E0601
+ 
+ - Kind: check (error)
+diff --git a/crates/benitoite/skill/references/grammar.md b/crates/benitoite/skill/references/grammar.md
+index 4cffa1e0..f4317cdf 100644
+--- a/crates/benitoite/skill/references/grammar.md
++++ b/crates/benitoite/skill/references/grammar.md
+@@ -57,7 +57,13 @@ Constraint  = QualUpper | LowerIdent .
+ TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
+ Param       = LowerIdent ":" Type .
+ Uses        = "uses" EffectRef { "," EffectRef } .
+-EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
++EffectRef   = QualUpper [ EffectArgs ] .
++EffectArgs  = TypeArgs | PathEffectArgs | EndpointEffectArgs .
++TypeArgs    = "[" CommaList(Type) "]" .
++PathEffectArgs = "[" StringLit { "," StringLit } [ "," ] "]" .
++EndpointEffectArgs = "[" EndpointArg { "," EndpointArg } [ "," ] "]" .
++EndpointArg = StringLit "," PortArg .
++PortArg     = IntLit [ ".." IntLit ] .
+ 
+ ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
+ 
+diff --git a/crates/benitoite/src/cli/inspection.rs b/crates/benitoite/src/cli/inspection.rs
+index 86a1574c..a9375f91 100644
+--- a/crates/benitoite/src/cli/inspection.rs
++++ b/crates/benitoite/src/cli/inspection.rs
+@@ -9,7 +9,9 @@ use crate::syntax::ast::Item;
+ use crate::types::EffectName;
+ use crate::types::builtin::BuiltinEffectId;
+ 
+-/// 検査した関数の宣言名・位置・原子的エフェクトの上限。
++/// 検査した関数の宣言名・位置・原子的エフェクトの名前による上限。
++/// `expanded` と `--allow-effects` は対象の範囲を区別しないため、ここでは名前へ射影する。
++/// 型表の原子と範囲は変更しない。
+ pub(super) struct FunctionContract {
+     pub binding: BindingId,
+     pub name: String,
+@@ -69,8 +71,8 @@ pub(super) fn function_contract(
+         .names
+         .iter()
+         .map(|effect| {
+-            let EffectName::Builtin(id, crate::types::scope::Range::Top) = effect else {
+-                return Err(internal("user or scoped effect in checked entry contract"));
++            let EffectName::Builtin(id, _) = effect else {
++                return Err(internal("user effect in checked entry contract"));
+             };
+             Ok((effect_name(*id)?, *id))
+         })
+@@ -95,11 +97,9 @@ pub(super) fn function_contract(
+                     .names
+                     .iter()
+                     .filter_map(|effect| match effect {
+-                        EffectName::Builtin(id, crate::types::scope::Range::Top) => {
+-                            Some(Ok((*id, origin.span)))
+-                        }
++                        EffectName::Builtin(id, _) => Some(Ok((*id, origin.span))),
+                         EffectName::User(_, crate::types::scope::Range::Top) => None,
+-                        EffectName::Builtin(..) | EffectName::User(..) => {
++                        EffectName::User(..) => {
+                             Some(Err(internal("scoped effect in checked file contract")))
+                         }
+                     })
+diff --git a/crates/benitoite/src/cli/tools/formatter/roles/walk.rs b/crates/benitoite/src/cli/tools/formatter/roles/walk.rs
+index c4ee7453..476abd2b 100644
+--- a/crates/benitoite/src/cli/tools/formatter/roles/walk.rs
++++ b/crates/benitoite/src/cli/tools/formatter/roles/walk.rs
+@@ -11,8 +11,8 @@ use crate::base::{BytePos, Span};
+ use crate::syntax::ast::{
+     Arg, Attribute, Block, DataDecl, EffectDecl, ElseBranch, Expr, FnDecl, FnType, HandleExpr,
+     HeaderItem, IfExpr, ImplDecl, Item, LambdaEnding, LambdaExpr, ListElem, MatchExpr, MethodSig,
+-    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, Stmt, TopDecl, TraitDecl,
+-    TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
++    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, ScopeArgs, Stmt, TopDecl,
++    TraitDecl, TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
+ };
+ use crate::syntax::token::{Token, TokenKind};
+ 
+@@ -491,7 +491,16 @@ impl<'a> Walker<'a> {
+     }
+ 
+     fn uses(&mut self, uses: Option<&crate::syntax::ast::UsesList>) {
++        let mut previous_group = None;
+         for effect in uses.into_iter().flat_map(|u| &u.effects) {
++            if let Some(scope) = &effect.scope {
++                // 略記は原子へ展開済みでも、元の群の役割は一度だけ付ける。
++                if previous_group != Some(scope.span) {
++                    self.scope(scope);
++                    previous_group = Some(scope.span);
++                }
++                continue;
++            }
+             let Some(args) = &effect.args else {
+                 continue;
+             };
+@@ -506,6 +515,17 @@ impl<'a> Walker<'a> {
+             }
+         }
+     }
++    // 正規化した範囲ではなく、元の群と各要素の位置で整形する（06-03「入力表現」）。
++    fn scope(&mut self, scope: &ScopeArgs) {
++        if let Some(open) = self.first(scope.span)
++            && self.open_bracket(open, true).is_some()
++        {
++            for arg in scope.items.iter() {
++                self.element(arg.span, Place::Deeper(open));
++            }
++        }
++    }
++
+     fn fn_decl(&mut self, decl: &FnDecl) {
+         self.signature(&decl.name, &decl.type_params, &decl.params);
+         self.ty(&decl.ret);
+@@ -620,6 +640,10 @@ impl<'a> Walker<'a> {
+     fn ty(&mut self, ty: &TypeExpr) {
+         match ty {
+             TypeExpr::Named(t) => {
++                if let Some(scope) = &t.scope {
++                    self.scope(scope);
++                    return;
++                }
+                 if t.args.is_empty() {
+                     return;
+                 }
+diff --git a/crates/benitoite/src/diag/codes.rs b/crates/benitoite/src/diag/codes.rs
+index 4537b13f..c1515b75 100644
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -724,7 +724,9 @@ diag_codes! {
+     E0418 Check "the effect variable `{name}` does not appear in any parameter type" "" []
+         "An effect variable must be determined by a parameter type.";
+     E0419 Check "`{name}` appears more than once in `uses`" ""
+-        [remove: "remove the second `{name}`"]
++        [first_scope: "the same scope atom was first written here",
++         scope: "remove the repeated scope element",
++         remove: "remove the second `{name}`"]
+         fix [remove]
+         "Each effect is listed once.";
+     E0420 Check "Decimal literal has more than 28 digits after the decimal point" ""
+@@ -950,7 +952,7 @@ diag_codes! {
+ 
+     E0513 Check "invalid type arguments for effect `{name}` (expected {count})" ""
+         []
+-        "Only the standard Failure.Fail takes exactly one value type argument.";
++        "Only the standard Failure.Fail takes exactly one value type argument. Standard File.Read, File.Write and Http.Connect take closed scope arguments; other effects take no arguments.";
+     E0514 Check "incompatible failure types `{expected}` and `{found}` in one effect set" ""
+         [convert: "convert errors explicitly in a failure clause before joining effects",
+          individual: "the function's uses is declared here"]
+@@ -968,6 +970,10 @@ diag_codes! {
+         [nest: "nest two handles instead"]
+         "A failure handle contains exactly one Failure.raise clause.";
+ 
++    E0520 Check "invalid scope arguments for `{name}` (expected {expectedScopeKind})" "invalid scope argument"
++        [found: "found: {found}"]
++        "Scope arguments must be nonempty closed literal patterns of the kind required by the resolved standard name. File effects take path strings; Http.Connect takes complete host/port pairs. Expressions, interpolation and constant references are not scope arguments.";
++
+     // ---- E06: パターン ----
+     E0601 Check "`match` does not cover every value" "`{witness}` is not matched"
+         [add_arm: "add a branch `case {witness} ->`, or `case _ ->`",
+diff --git a/crates/benitoite/src/ir/check.rs b/crates/benitoite/src/ir/check.rs
+index 2f138b71..5e970fea 100644
+--- a/crates/benitoite/src/ir/check.rs
++++ b/crates/benitoite/src/ir/check.rs
+@@ -2001,6 +2001,29 @@ mod tests {
+         }
+     }
+ 
++    // 型の等号だけでは、Failの中で同じ不正な契約名を両側に持つ場合を見落とす。
++    // 公開の検査入口で整形式の対を先に受理し、個数と重複だけを変えて拒否を確かめる。
++    #[test]
++    fn failure_types_require_well_formed_parameter_contracts() {
++        for names in [vec!["first", "second"], vec!["first"], vec!["same", "same"]] {
++            let inner = Ty::Fn(Box::new(FnTy {
++                param_names: names.iter().map(|name| (*name).into()).collect(),
++                params: vec![int(), int()],
++                ret: int(),
++                effects: EffectSet::empty(),
++            }));
++            let mut effects = EffectSet::empty();
++            effects.insert_failure(inner);
++            let ty = fn_ty(vec![], int(), effects);
++            let p = main_program(
++                ret(variable(1, ty.clone(), 1)),
++                vec![var(1, ty)],
++                EffectSet::empty(),
++            );
++            assert_eq!(check_program(&p).is_empty(), names == ["first", "second"]);
++        }
++    }
++
+     #[test]
+     fn polymorphic_values_applications_and_node_annotations() {
+         let mut id = definition(
+diff --git a/crates/benitoite/src/resolve/lookup.rs b/crates/benitoite/src/resolve/lookup.rs
+index abe6d163..6f0cbdda 100644
+--- a/crates/benitoite/src/resolve/lookup.rs
++++ b/crates/benitoite/src/resolve/lookup.rs
+@@ -1283,11 +1283,6 @@ impl Resolver<'_> {
+     pub(super) fn uses(&mut self, ctx: &mut Ctx, uses: &UsesList, fn_span: Option<Span>) {
+         let mut prefix_valid = true;
+         for (index, effect) in uses.effects.iter().enumerate() {
+-            if let Some(args) = &effect.args {
+-                for ty in args {
+-                    self.ty(ctx, ty);
+-                }
+-            }
+             let Some(id) = self.raw_name(ctx, effect.id, &effect.path, Position::Effect) else {
+                 prefix_valid = false;
+                 continue;
+@@ -1297,6 +1292,7 @@ impl Resolver<'_> {
+             };
+             if Position::Effect.accepts(binding.kind) {
+                 self.record_ref(ctx, effect.id, id, effect.span);
++                self.effect_arguments(ctx, effect, id);
+                 continue;
+             }
+             let io = matches!(binding.kind, BindingKind::Module(module) if self.modules.get(module).is_some_and(|m| m.name.dotted() == "Benitoite.IO"));
+diff --git a/crates/benitoite/src/resolve/mod.rs b/crates/benitoite/src/resolve/mod.rs
+index 1a1024c6..707c8a66 100644
+--- a/crates/benitoite/src/resolve/mod.rs
++++ b/crates/benitoite/src/resolve/mod.rs
+@@ -130,6 +130,8 @@ pub struct ResolveOutput {
+     pub bindings: BindingMap<Binding>,
+     /// 参照の表: 名前を使う箇所のノード番号 → 束縛の番号。解決できなかった名前は載せない
+     pub refs: NodeMap<BindingId>,
++    /// 名前の種類を確認し正規化した閉じた範囲。非 Top の注釈だけを載せる。
++    pub scopes: NodeMap<crate::types::scope::Range>,
+     /// 宣言したノードのノード番号 → 束縛の番号
+     pub decls: NodeMap<BindingId>,
+     /// 公開の表: モジュール → そのモジュールのトップレベルの名前 → 束縛の番号。
+@@ -268,3 +270,5 @@ mod walk;
+ pub(crate) mod test_support;
+ #[cfg(test)]
+ mod tests;
++
++mod scope;
+diff --git a/crates/benitoite/src/resolve/text.rs b/crates/benitoite/src/resolve/text.rs
+index 7ab7e690..2097902d 100644
+--- a/crates/benitoite/src/resolve/text.rs
++++ b/crates/benitoite/src/resolve/text.rs
+@@ -41,3 +41,11 @@ pub(super) const BUILDER_LAMBDA: &str = "lambda";
+ pub(super) const BUILDER_LAZY: &str = "lazy";
+ pub(super) const BUILDER_PARTIAL: &str = "partial application";
+ pub(super) const BUILDER_CLAUSE: &str = "handler clause";
++
++// 範囲引数の診断で使う種類と内部の誤り。
++pub const PATH_SCOPE: &str = "path string literal";
++pub const ENDPOINT_SCOPE: &str = "host string and port literal pairs";
++pub const HOST_SCOPE: &str = "host string literal";
++pub const NO_SCOPE: &str = "no scope arguments";
++pub const SCOPE_ARGUMENTS: &str = "scope arguments";
++pub const SCOPE_INTERNAL: &str = "scope normalization invariant failed";
+diff --git a/crates/benitoite/src/resolve/walk.rs b/crates/benitoite/src/resolve/walk.rs
+index d543e1dd..1ebcf14d 100644
+--- a/crates/benitoite/src/resolve/walk.rs
++++ b/crates/benitoite/src/resolve/walk.rs
+@@ -69,7 +69,9 @@ impl Resolver<'_> {
+     fn ty_in_list(&mut self, ctx: &mut Ctx, ty: &TypeExpr, in_list: bool) {
+         match ty {
+             TypeExpr::Named(t) => {
+-                self.name(ctx, t.id, &t.path, Position::Type);
++                if let Some(id) = self.name(ctx, t.id, &t.path, Position::Type) {
++                    self.type_scope(t, id);
++                }
+                 for arg in &t.args {
+                     self.ty_in_list(ctx, arg, true);
+                 }
+diff --git a/crates/benitoite/src/syntax/ast.rs b/crates/benitoite/src/syntax/ast.rs
+index 15f51f68..d8b05264 100644
+--- a/crates/benitoite/src/syntax/ast.rs
++++ b/crates/benitoite/src/syntax/ast.rs
+@@ -367,6 +367,8 @@ pub struct NamedType {
+     pub span: Span,
+     pub path: Vec<Name>,
+     pub args: Vec<TypeExpr>,
++    /// 型引数とは別の閉じた範囲の字句。
++    pub scope: Option<Box<ScopeArgs>>,
+ }
+ 
+ /// `function(name: A, other: B) -> R uses E`。
+@@ -400,11 +402,51 @@ pub struct UsesList {
+ pub struct EffectRef {
+     /// エフェクトの型引数。省略と空の角括弧を区別する。
+     pub args: Option<Vec<TypeExpr>>,
++    /// 略記の展開元と、この原子に対応する要素。
++    pub scope: Option<Box<ScopeArgs>>,
+     pub id: NodeId,
+     pub span: Span,
+     pub path: Vec<Name>,
+ }
+ 
++/// 範囲引数の字句。元の字句そのものはソースと token に保持する。
++#[derive(Clone, PartialEq, Debug)]
++pub enum ScopeArgKind {
++    String(String),
++    /// 整数リテラルの解読済みの十進表記。閉区間の上端がなければ一点。
++    Port(String, Option<String>),
++    /// 式・補間・定数参照など、範囲引数として受理しない入力。
++    Invalid,
++}
++
++#[derive(Clone, PartialEq, Debug)]
++pub struct ScopeArg {
++    pub span: Span,
++    pub kind: ScopeArgKind,
++}
++
++/// 一つの角括弧の群と、展開された原子が使う要素の区間。
++#[derive(Clone, PartialEq, Debug)]
++pub struct ScopeArgs {
++    /// 角括弧を含む元の群の位置。
++    pub span: Span,
++    /// 群の全要素。展開後も同じ群と要素数を保持する。
++    pub items: std::sync::Arc<[ScopeArg]>,
++    pub element: std::ops::Range<usize>,
++}
++
++impl ScopeArgs {
++    pub fn selected(&self) -> &[ScopeArg] {
++        self.items.get(self.element.clone()).unwrap_or(&[])
++    }
++    pub fn element_span(&self) -> Span {
++        match (self.selected().first(), self.selected().last()) {
++            (Some(first), Some(last)) => first.span.to(last.span),
++            _ => self.span,
++        }
++    }
++}
++
+ // ---------------- ブロックと文 ----------------
+ 
+ /// 文の並び。関数とラムダの本体、`if` の分岐、`match` の分岐と `handle` の節の本体、
+diff --git a/crates/benitoite/src/syntax/parser/mod.rs b/crates/benitoite/src/syntax/parser/mod.rs
+index 39a48bb0..9a95a153 100644
+--- a/crates/benitoite/src/syntax/parser/mod.rs
++++ b/crates/benitoite/src/syntax/parser/mod.rs
+@@ -2942,3 +2942,5 @@ mod tests {
+         }
+     }
+ }
++
++mod scope;
+diff --git a/crates/benitoite/src/syntax/parser/types.rs b/crates/benitoite/src/syntax/parser/types.rs
+index 6fc640ba..1c13a4fa 100644
+--- a/crates/benitoite/src/syntax/parser/types.rs
++++ b/crates/benitoite/src/syntax/parser/types.rs
+@@ -93,6 +93,9 @@ fn parse_type_in(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeE
+ fn parse_named(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
+     let start = p.pos;
+     let path = p.qual_name(true)?;
++    if p.at(TokenKind::LBracket) && !type_start(p.peek_nth_kind(1)) {
++        return parse_scope_named(p, start, path);
++    }
+     let args = if p.eat(TokenKind::LBracket) {
+         comma_list(
+             p,
+@@ -110,13 +113,122 @@ fn parse_named(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
+     } else {
+         Vec::new()
+     };
+-    Ok(Box::new(TypeExpr::Named(NamedType {
++    Ok(finish_named(p, start, path, args, None))
++}
++// 範囲の分岐を再帰する型引数の枠から外す。
++#[inline(never)]
++fn parse_scope_named(p: &mut Parser, start: usize, path: Vec<Name>) -> PResult<Box<TypeExpr>> {
++    let from = p.pos;
++    p.bump();
++    let scope = super::scope::parse(p, from)?;
++    Ok(finish_named(
++        p,
++        start,
++        path,
++        Vec::new(),
++        Some(Box::new(scope)),
++    ))
++}
++fn type_start(kind: TokenKind) -> bool {
++    matches!(
++        kind,
++        TokenKind::UpperIdent | TokenKind::KwDie | TokenKind::KwFunction | TokenKind::LParen
++    )
++}
++// 再帰中の枠に AST の構築領域を置かない（設計書 02-01「関数の呼び出しと処理系のスタック」）。
++#[inline(never)]
++fn finish_named(
++    p: &mut Parser,
++    start: usize,
++    path: Vec<Name>,
++    args: Vec<TypeExpr>,
++    scope: Option<Box<ScopeArgs>>,
++) -> Box<TypeExpr> {
++    Box::new(TypeExpr::Named(NamedType {
+         id: p.node_id(),
+         span: p.span_from(start),
+         path,
+         args,
+-    })))
++        scope,
++    }))
++}
++// 型を始める字句と範囲の字句を分ける。名前の種類は解決後に検査する。
++type ParsedArguments = (Option<Vec<TypeExpr>>, Option<Box<ScopeArgs>>);
++
++fn parse_arguments(p: &mut Parser, depth: u32) -> PResult<ParsedArguments> {
++    if !p.at(TokenKind::LBracket) {
++        return Ok((None, None));
++    }
++    let start = p.pos;
++    p.bump();
++    if type_start(p.peek_kind()) {
++        let args = comma_list(
++            p,
++            depth,
++            CommaList {
++                close: TokenKind::RBracket,
++                element: text::TYPE,
++                separator: text::COMMA_OR_RBRACKET,
++                allow_empty: true,
++                indexed: false,
++            },
++            push_type,
++            |out, error| out.push(TypeExpr::Error(error)),
++        )?;
++        Ok((Some(args), None))
++    } else {
++        Ok((None, Some(Box::new(super::scope::parse(p, start)?))))
++    }
++}
++
++// 字句上の文字列列か endpoint の組の列だけを展開する。不正な群は一つで残す。
++fn expand_effect(p: &mut Parser, effect: EffectRef, out: &mut Vec<EffectRef>) {
++    let Some(scope) = &effect.scope else {
++        out.push(effect);
++        return;
++    };
++    let path = scope
++        .items
++        .iter()
++        .all(|a| matches!(a.kind, ScopeArgKind::String(_)));
++    let endpoints = scope.items.len().is_multiple_of(2)
++        && scope.items.as_chunks::<2>().0.iter().all(|pair| {
++            matches!(
++                pair,
++                [
++                    ScopeArg {
++                        kind: ScopeArgKind::String(_),
++                        ..
++                    },
++                    ScopeArg {
++                        kind: ScopeArgKind::Port(..),
++                        ..
++                    }
++                ]
++            )
++        });
++    let width = if path {
++        1
++    } else if endpoints {
++        2
++    } else {
++        out.push(effect);
++        return;
++    };
++    if scope.items.is_empty() {
++        out.push(effect);
++        return;
++    }
++    for start in (0..scope.items.len()).step_by(width) {
++        let mut atom = effect.clone();
++        atom.id = p.node_id();
++        if let Some(scope) = &mut atom.scope {
++            scope.element = start..start.saturating_add(width);
++        }
++        out.push(atom);
++    }
+ }
++
+ fn push_type(p: &mut Parser, depth: u32, out: &mut Vec<TypeExpr>) -> PResult<()> {
+     let Ok(ty) = parse_type_in(p, depth, true) else {
+         return Err(Fail);
+@@ -256,29 +368,19 @@ pub(super) fn parse_uses(
+         let from = p.pos;
+         let path = p.qual_name(true)?;
+         let ambiguous = !effects.is_empty() && path.len() == 1;
+-        let args = if !ambiguous && p.eat(TokenKind::LBracket) {
+-            Some(comma_list(
+-                p,
+-                depth,
+-                CommaList {
+-                    close: TokenKind::RBracket,
+-                    element: text::TYPE,
+-                    separator: text::COMMA_OR_RBRACKET,
+-                    allow_empty: true,
+-                    indexed: false,
+-                },
+-                push_type,
+-                |out, error| out.push(TypeExpr::Error(error)),
+-            )?)
++        let (args, scope) = if ambiguous {
++            (None, None)
+         } else {
+-            None
++            parse_arguments(p, depth)?
+         };
+-        effects.push(EffectRef {
++        let effect = EffectRef {
+             id: p.node_id(),
+             span: p.span_from(from),
+             path,
+             args,
+-        });
++            scope,
++        };
++        expand_effect(p, effect, &mut effects);
+         if effects.len() > 1
+             && effects.last().is_some_and(|e| e.path.len() == 1)
+             && p.at(TokenKind::LBracket)
+@@ -360,32 +462,17 @@ pub(super) fn parse_file_uses(p: &mut Parser) -> Option<UsesList> {
+         let parsed = (|| {
+             p.enter(1)?;
+             let path = p.qual_name(true)?;
+-            let args = if p.eat(TokenKind::LBracket) {
+-                Some(comma_list(
+-                    p,
+-                    1,
+-                    CommaList {
+-                        close: TokenKind::RBracket,
+-                        element: text::TYPE,
+-                        separator: text::COMMA_OR_RBRACKET,
+-                        allow_empty: true,
+-                        indexed: false,
+-                    },
+-                    push_type,
+-                    |out, error| out.push(TypeExpr::Error(error)),
+-                )?)
+-            } else {
+-                None
+-            };
++            let (args, scope) = parse_arguments(p, 1)?;
+             Ok::<_, Fail>(EffectRef {
+                 id: p.node_id(),
+                 span: p.span_from(from),
+                 path,
+                 args,
++                scope,
+             })
+         })();
+         match parsed {
+-            Ok(effect) => effects.push(effect),
++            Ok(effect) => expand_effect(p, effect, &mut effects),
+             Err(_) => {
+                 recover_file_uses(p);
+                 return None;
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index 4211f425..21e1d416 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -332,7 +332,14 @@ impl Decls<'_> {
+                 } else if let Some(index) = scope.effects.get(id) {
+                     variables = variables.saturating_add(1);
+                     atom.insert_var(EffVar(*index));
+-                } else if let Some(name) = self.effect_name(id) {
++                } else if let Some(mut name) = self.effect_name(id) {
++                    if let Some(range) = self.resolved.scopes.get(e.id) {
++                        match &mut name {
++                            EffectName::Builtin(_, scope) | EffectName::User(_, scope) => {
++                                *scope = range.clone()
++                            }
++                        }
++                    }
+                     if name
+                         == EffectName::Builtin(
+                             BuiltinEffectId::IO_ALL,
+@@ -610,7 +617,14 @@ impl Decls<'_> {
+         if !self.arity(id, &binding.name, arity, args.len(), t.span, true) {
+             return unit();
+         }
+-        Ty::Con(con, args, crate::types::builtin::RangeIndex::TOP)
++        Ty::Con(
++            con,
++            args,
++            self.resolved.scopes.get(t.id).cloned().map_or(
++                crate::types::builtin::RangeIndex::TOP,
++                crate::types::builtin::RangeIndex::fixed,
++            ),
++        )
+     }
+     fn arity(
+         &mut self,
+diff --git a/crates/benitoite/src/typeck/effects/declarations.rs b/crates/benitoite/src/typeck/effects/declarations.rs
+index 1ed4e5e7..6beb6dcd 100644
+--- a/crates/benitoite/src/typeck/effects/declarations.rs
++++ b/crates/benitoite/src/typeck/effects/declarations.rs
+@@ -8,10 +8,10 @@ use crate::diag::{DiagBuilder, DiagCode, Edit};
+ use crate::syntax::ast::{EffectRef, Expr, FnDecl, Item, UsesList};
+ use crate::types::builtin::{BUILTIN_EFFECTS, BuiltinEffectId};
+ use crate::types::{EffectName, EffectSet};
+-use std::collections::BTreeSet;
++use std::collections::{BTreeMap, BTreeSet};
+ 
+ pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
+-    let mut names = BTreeSet::new();
++    let mut names = BTreeMap::new();
+     let mut vars = BTreeSet::new();
+     for (i, e) in uses.effects.iter().enumerate() {
+         let Some(id) = d.reference(e.id) else {
+@@ -22,8 +22,38 @@ pub(super) fn check_uses(d: &mut Decls<'_>, uses: &UsesList, scope: &Scope) {
+         }
+         let repeated = if let Some(v) = scope.effects.get(id) {
+             !vars.insert(*v)
+-        } else if let Some(name) = d.effect_name(id) {
+-            !names.insert(name)
++        } else if let Some(mut name) = d.effect_name(id) {
++            if let Some(range) = d.resolved.scopes.get(e.id) {
++                match &mut name {
++                    EffectName::Builtin(_, scope) | EffectName::User(_, scope) => {
++                        *scope = range.clone()
++                    }
++                }
++            }
++            if let Some(first) = names.get(&name).copied() {
++                if e.scope.is_some() {
++                    let first: &EffectRef = first;
++                    d.diagnostics.push(
++                        DiagBuilder::new(DiagCode::E0419)
++                            .primary(e.scope.as_deref().map_or(e.span, |s| s.element_span()))
++                            .secondary(
++                                first
++                                    .scope
++                                    .as_deref()
++                                    .map_or(first.span, |s| s.element_span()),
++                                "first_scope",
++                            )
++                            .arg("name", path(e))
++                            .help("scope")
++                            .build(),
++                    );
++                    continue;
++                }
++                true
++            } else {
++                names.insert(name, e);
++                false
++            }
+         } else {
+             false
+         };
+diff --git a/crates/benitoite/src/types/scope.rs b/crates/benitoite/src/types/scope.rs
+index f37d5f65..408f0edb 100644
+--- a/crates/benitoite/src/types/scope.rs
++++ b/crates/benitoite/src/types/scope.rs
+@@ -542,9 +542,9 @@ impl Range {
+                     PathKind::Exact => stem,
+                     PathKind::Tree => format!("{}/**", stem.trim_end_matches('/')),
+                 };
+-                format!("[{text:?}]")
++                format!("[{}]", crate::base::literal::quoted(text.chars(), '"'))
+             }
+-            Self::Host(p) => format!("[{:?}]", host(p)),
++            Self::Host(p) => format!("[{}]", crate::base::literal::quoted(host(p).chars(), '"')),
+             Self::Endpoint(p) => {
+                 let lo = p.ports.lo().value();
+                 let hi = p.ports.hi().value();
+@@ -553,7 +553,10 @@ impl Range {
+                 } else {
+                     format!("{lo}..{hi}")
+                 };
+-                format!("[{:?}, {ports}]", host(&p.host))
++                format!(
++                    "[{}, {ports}]",
++                    crate::base::literal::quoted(host(&p.host).chars(), '"')
++                )
+             }
+         }
+     }
+diff --git a/crates/benitoite/src/types/scope/tests.rs b/crates/benitoite/src/types/scope/tests.rs
+index ba3575ec..f8f9870f 100644
+--- a/crates/benitoite/src/types/scope/tests.rs
++++ b/crates/benitoite/src/types/scope/tests.rs
+@@ -3,6 +3,31 @@
+ use super::*;
+ use ip_text::{format_address, format_pattern, parse_address, parse_pattern};
+ 
++// 修正案に埋める範囲も言語の文字列リテラルでなければならない。
++// 既存の所属の検査は補間の開始・引用符・制御文字を表示して再利用する境界に届かない。
++#[test]
++fn scope_suffix_uses_language_literals() -> Result<(), InvalidScope> {
++    for (path, expected) in [
++        ("/data/${name}", r#"["/data/\${name}"]"#),
++        ("/data/\"quoted\"", r#"["/data/\"quoted\""]"#),
++        (
++            "/data/\n\r\t\u{1b}\u{200e}",
++            r#"["/data/\n\r\t\u{1b}\u{200e}"]"#,
++        ),
++        ("/data/日本語/**", r#"["/data/日本語/**"]"#),
++    ] {
++        assert_eq!(Range::Path(PathPattern::parse(path)?).suffix(), expected);
++    }
++    let host = HostPattern::parse("a.example")?;
++    assert_eq!(Range::Host(host.clone()).suffix(), r#"["a.example"]"#);
++    let ports = PortRange::new(Port::new(443), Port::new(445))?;
++    assert_eq!(
++        Range::Endpoint(EndpointPattern { host, ports }).suffix(),
++        r#"["a.example", 443..445]"#,
++    );
++    Ok(())
++}
++
+ // 作成時の関門: 公開の代数を境界に、所属・一原子の被覆を守る
+ // （設計書 01-12「操作の対象の範囲の領域と被覆」）。
+ // 期待は手で固定した真偽値・数値・字句であり、対象の演算から生成しない。
+diff --git a/crates/benitoite/tests/cli_process.rs b/crates/benitoite/tests/cli_process.rs
+index 0410f880..9ab85cc9 100644
+--- a/crates/benitoite/tests/cli_process.rs
++++ b/crates/benitoite/tests/cli_process.rs
+@@ -152,6 +152,85 @@ fn file_effects_reach_main_reports_and_limit_origins() {
+     assert_eq!(origins[0]["end"]["offset"], 11);
+ }
+ 
++// 関門: 範囲付きの宣言をCLIの所有する契約へ写す際に内部エラーにしない。
++// 型検査だけでは届かない報告・名前だけの上限の照合を、通常のCLIで対にする。
++#[test]
++fn scoped_contracts_reach_reports_and_name_limits() {
++    use serde_json::{Value, json};
++    for file in [false, true] {
++        let directory = TestDirectory::new();
++        let uses = "uses File.Write[\"/data/**\", \"/backup/**\"], Http.Connect[\"192.168.1.0/24\", 443..445]";
++        let source = format!(
++            "import Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.Network.Http\n{}function main() -> Unit{}\nend function\n@test\nfunction verifies() -> Unit{}\nend function\n",
++            if file {
++                format!("{uses}\n")
++            } else {
++                String::new()
++            },
++            if file {
++                String::new()
++            } else {
++                format!(" {uses}")
++            },
++            if file {
++                String::new()
++            } else {
++                format!(" {uses}")
++            },
++        );
++        let script = directory.write("scoped-contracts.bnt", &source);
++        let expected =
++            json!({"basis":"declaredUpperBound", "expanded":["File.Write", "Http.Connect"]});
++        for options in [
++            vec!["check", "--report=json"],
++            vec!["test", "--check", "--report=json"],
++        ] {
++            let output = command().args(&options).arg(&script).output().unwrap();
++            assert_eq!(exit_code(&output), 0, "{options:?}: {output:?}");
++            assert!(output.stderr.is_empty(), "{output:?}");
++            let report: Value = serde_json::from_slice(&output.stdout).unwrap();
++            assert_eq!(report["status"], "ok");
++            assert_eq!(report["aggregateEffects"], expected);
++            let contract = if options[0] == "check" {
++                &report["targets"][0]["main"]["effects"]
++            } else {
++                &report["targets"][0]["tests"][0]["effects"]
++            };
++            assert_eq!(contract, &expected);
++        }
++        for mode in ["check", "run", "test"] {
++            let output = command().arg(mode).arg(&script).output().unwrap();
++            assert_eq!(exit_code(&output), 0, "{mode}: {output:?}");
++            assert!(output.stderr.is_empty(), "{output:?}");
++        }
++        for mode in ["run", "test"] {
++            for (allowed, expected_exit) in [("File.Write,Http.Connect", 0), ("Http.Connect", 2)] {
++                let output = command()
++                    .args([
++                        mode,
++                        "--diagnostics=json",
++                        &format!("--allow-effects={allowed}"),
++                    ])
++                    .arg(&script)
++                    .output()
++                    .unwrap();
++                assert_eq!(exit_code(&output), expected_exit, "{mode}: {output:?}");
++                if expected_exit == 0 {
++                    assert!(output.stderr.is_empty(), "{output:?}");
++                } else {
++                    let diagnostic: Value = serde_json::from_slice(&output.stderr).unwrap();
++                    assert_eq!(diagnostic["code"], "E0512");
++                    assert_eq!(diagnostic["notes"][0], "effects not allowed: File.Write");
++                    assert_eq!(
++                        !diagnostic["secondary"].as_array().unwrap().is_empty(),
++                        file
++                    );
++                }
++            }
++        }
++    }
++}
++
+ // 作成時の関門: 宣言上限の包含と拒否時の非実行を、本物の CLI・ファイル・出力で守る。
+ // 既存の検査報告は実行を始めないため、照合とコンパイルの接続の退行を捕まえない。
+ // 診断の集合表示と入力の両構文も同じ表で確かめ、テスト専用の本番 API は加えない。
+diff --git a/crates/benitoite/tests/fmt_command.rs b/crates/benitoite/tests/fmt_command.rs
+index e15abe95..17af4c11 100644
+--- a/crates/benitoite/tests/fmt_command.rs
++++ b/crates/benitoite/tests/fmt_command.rs
+@@ -620,3 +620,99 @@ fn file_effect_declarations_keep_source_contracts() {
+         assert_eq!(dir.read("effects.bnt"), expected);
+     }
+ }
++
++// 関門: 範囲の略記・字句・順序を保ったまま空白と字下げを整え、再整形で変えない。
++// 型引数だけの既存例では、展開済みの原子から元の群へ戻る役割分けの欠落を捕まえない。
++// CLI の実出力を固定した期待値と照合し、差し込み口や型検査の代用品を加えない。
++#[test]
++fn scope_arguments_keep_lexemes_and_grouping() {
++    let dir = TestDirectory::new("scope_arguments_keep_lexemes_and_grouping");
++    for (input, expected) in [
++        (
++            r#"uses File . Write [ r"/data/a/**" , "/data/b/\u{61}", ] , Http . Connect [ "EXAMPLE.COM", 0x1_bb .. 4_45, "192.0.2.1/32" , 0x50 ], Failure.Fail[List[String]]
++function main()->Unit
++()
++end function
++"#,
++            r#"uses File.Write[r"/data/a/**", "/data/b/\u{61}",], Http.Connect["EXAMPLE.COM", 0x1_bb..4_45, "192.0.2.1/32", 0x50], Failure.Fail[List[String]]
++
++function main() -> Unit
++  ()
++end function
++"#,
++        ),
++        (
++            r#" uses File.Write [
++ r"/data/a/**", // first
++ "/data/b/**", // second
++ ], Http.Connect [
++ "EXAMPLE.COM",
++ 0x1_bb .. 4_45, // ports
++ "192.0.2.1/32", 0x50,
++ ]
++function main()->Unit
++()
++end function
++"#,
++            r#"uses File.Write[
++  r"/data/a/**", // first
++  "/data/b/**", // second
++], Http.Connect[
++  "EXAMPLE.COM",
++  0x1_bb..4_45, // ports
++  "192.0.2.1/32", 0x50,
++]
++
++function main() -> Unit
++  ()
++end function
++"#,
++        ),
++        (
++            r#"function scoped(path:Scope.PathIn [r"/data/**"])->Http.RequestIn ["EXAMPLE.COM",0x1bb] uses File.Write ["/data/a", "/data/b"]
++()
++end function
++"#,
++            r#"function scoped(path: Scope.PathIn[r"/data/**"]) -> Http.RequestIn["EXAMPLE.COM", 0x1bb] uses File.Write["/data/a", "/data/b"]
++  ()
++end function
++"#,
++        ),
++        (
++            r#"function scoped(path:Scope.PathIn [
++ r"/data/**",
++])->Http.RequestIn [
++ "EXAMPLE.COM",
++ 443 .. 445,
++] uses Http.Connect [
++ "EXAMPLE.COM", 443 .. 445,
++ "::ffff:192.0.2.1/128", 80,
++]
++()
++end function
++"#,
++            r#"function scoped(path: Scope.PathIn[
++  r"/data/**",
++]) -> Http.RequestIn[
++  "EXAMPLE.COM",
++  443..445,
++] uses Http.Connect[
++  "EXAMPLE.COM", 443..445,
++  "::ffff:192.0.2.1/128", 80,
++]
++  ()
++end function
++"#,
++        ),
++    ] {
++        dir.write("scope.bnt", input);
++        let output = fmt(&dir, &["scope.bnt"]);
++        assert_eq!(code(&output), 0, "{}", stderr(&output));
++        assert!(output.stdout.is_empty());
++        assert!(output.stderr.is_empty(), "{}", stderr(&output));
++        assert_eq!(dir.read("scope.bnt"), expected);
++        let output = fmt(&dir, &["--check", "scope.bnt"]);
++        assert_eq!(code(&output), 0, "{}", stderr(&output));
++        assert_eq!(dir.read("scope.bnt"), expected);
++    }
++}
+diff --git a/docs/design/00-overview/00-04-glossary.md b/docs/design/00-overview/00-04-glossary.md
+index 8842cb3f..a1d36a83 100644
+--- a/docs/design/00-overview/00-04-glossary.md
++++ b/docs/design/00-overview/00-04-glossary.md
+@@ -150,6 +150,8 @@
+ | 検査、実行 | check, run | 処理系の段のうち、型検査までを検査、それより後を実行と呼ぶ。実行は検査を通ったスクリプトに対してだけ行う | [全体像](00-02-architecture.md) |
+ | 段 | stage | 処理系がスクリプトを順に処理する単位（字句解析、構文解析、名前解決、型検査など） | [パイプライン](../02-impl/02-01-pipeline.md) |
+ | 診断 | diagnostic | 処理系が、誤りや注意をソース上の位置とともに報告するもの。検査の誤りと警告がある | [診断エンジン](../02-impl/02-10-diagnostics.md) |
++| 範囲引数 | scope argument | 標準の範囲付きエフェクトの対象を指定する、角括弧内の閉じたパターン。型引数と区別する | [構文](../01-spec/01-02-syntax.md#エフェクトの宣言とハンドラ初回リリース版)、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
++| エフェクトの原子 | effect atom | 一つのエフェクトの名前と範囲の組。名前と正規化後の範囲で同一性を判定する | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
+ | 契約、権限 | contract, permission | 契約は、関数の型とエフェクトの注釈が表す、関数が受け取るもの・返すもの・行いうる操作の約束。権限は、利用者が実行を許可する操作の範囲 | [目的と設計原則](00-01-goals.md)、[全体像](00-02-architecture.md) |
+ | 実行時の権限制御 | — | 実行の途中で、利用者が許可していない操作を処理系が拒否し、実行時エラーにすること。エフェクトの静的な追跡とは別の機構である。初回リリース版には含めない | [目的と設計原則](00-01-goals.md)、[セキュリティモデル](../07-quality/07-01-security-model.md) |
+ | スタンドアロンモード | standalone mode | 処理系をサーバとして動かさずに、コマンド `benitoite` にスクリプトを指定して実行する形。初回リリース版の実行の形はこれだけであり、実行時の権限制御を行わない | [ロードマップ](00-03-roadmap.md)、[CLI](../06-tooling/06-01-cli.md) |
+diff --git a/docs/design/01-spec/01-02-syntax.md b/docs/design/01-spec/01-02-syntax.md
+index db8d29ae..6b6940e7 100644
+--- a/docs/design/01-spec/01-02-syntax.md
++++ b/docs/design/01-spec/01-02-syntax.md
+@@ -126,7 +126,7 @@ Pattern     = "_"
+ 
+ `Uses` に書く `UpperIdent` は、エフェクトの名前か、関数の型パラメータの並びで `effect` を付けて宣言したエフェクト変数である。エフェクトの名前は[エフェクト](01-07-effects.md)で定める。型の宣言の型パラメータには `effect` を付けられない。エフェクト変数の規則は[型システム](01-06-type-system.md)で定める。
+ 
+-【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない大文字の名前が来たときは、名前解決の誤りとする。関数型の次のパラメータの小文字名の前では `uses` の並びを閉じる。並びの 2 番目以降の名前の直後に `[` が続くとき（`List[Integer]` など、型引数を伴う名前）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
++【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない大文字の名前が来たときは、名前解決の誤りとする。関数型の次のパラメータの小文字名の前では `uses` の並びを閉じる。並びの 2 番目以降の修飾のない名前の直後に `[` が続くとき（`List[Integer]` など）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
+ 
+ ```text
+ function(action: (function() -> Unit uses Console.Write), count: Integer) -> Unit // 関数型の例
+@@ -736,9 +736,17 @@ HandleArm   = "case" OpName "(" CommaList(OpParam) ")" "->" ArmBody .
+ OpName      = { UpperIdent "." } LowerIdent .
+ OpParam     = LowerIdent | "_" .
+ Uses        = "uses" EffectRef { "," EffectRef } .
+-EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
++EffectRef   = QualUpper [ EffectArgs ] .
++EffectArgs  = TypeArgs | PathEffectArgs | EndpointEffectArgs .
++TypeArgs    = "[" CommaList(Type) "]" .
++PathEffectArgs = "[" StringLit { "," StringLit } [ "," ] "]" .
++EndpointEffectArgs = "[" EndpointArg { "," EndpointArg } [ "," ] "]" .
++EndpointArg = StringLit "," PortArg .
++PortArg     = IntLit [ ".." IntLit ] .
+ ```
+ 
++- 標準の `File.Read`・`File.Write` は、補間のない文字列リテラルでパスの範囲引数を書く。複数の文字列を並べる略記は、同じ名前の原子の列へ展開する。`Http.Connect` は、ホストの文字列とポートの整数または閉区間の組を反復する。`Http.Connect["a.example", 443, "192.168.1.0/24", 80..81]` は二原子である。末尾のコンマを認め、空の角括弧と組の部分省略は拒否する。範囲を省略した名前は全対象の範囲（Top）を表す。
++- 範囲引数には、式・文字列補間・定数参照を使えない。型を始める字句と範囲の字句を区別して解析し、解決した名前に従って引数の種類を検査する。`File.Write[Integer]` は E0520、`Failure.Fail["x"]` と利用者のエフェクトへの引数は E0513 とする。構文として回復できない入力は通常の構文診断とする。範囲の字句と正規化は[エフェクト](01-07-effects.md#閉じた範囲引数)で定める。
+ - 標準の `Failure.Fail[E]` だけが値の型引数を一つ取る。`import Benitoite.Unofficial.Failure` で明示的に取り込み、`uses Failure.Fail[E]` と書く。一般の `effect L[E]` は宣言できない。他のエフェクトへの型引数と、Fail の型引数の省略・過不足は E0513 とする。
+ - 二つ目以降の型引数付きエフェクト参照は、モジュール名で修飾する。修飾のない `uses A, List[Integer]` は、従来どおり関数型を括弧で囲む E0209 の修正案を出す。
+ - Fail の節は `case Failure.raise(error) -> ...` と書く。節から handle 全体の結果を返し、`resume` は書けない（E0516）。普通の操作の節と混ぜた場合は E0518 とし、handle を入れ子にする修正案を示す。
+@@ -957,7 +965,13 @@ Constraint  = QualUpper | LowerIdent .
+ TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
+ Param       = LowerIdent ":" Type .
+ Uses        = "uses" EffectRef { "," EffectRef } .
+-EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
++EffectRef   = QualUpper [ EffectArgs ] .
++EffectArgs  = TypeArgs | PathEffectArgs | EndpointEffectArgs .
++TypeArgs    = "[" CommaList(Type) "]" .
++PathEffectArgs = "[" StringLit { "," StringLit } [ "," ] "]" .
++EndpointEffectArgs = "[" EndpointArg { "," EndpointArg } [ "," ] "]" .
++EndpointArg = StringLit "," PortArg .
++PortArg     = IntLit [ ".." IntLit ] .
+ 
+ (* 定数の宣言 *)
+ ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
+diff --git a/docs/design/01-spec/01-07-effects.md b/docs/design/01-spec/01-07-effects.md
+index f5f3a8f4..99c54b15 100644
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -20,6 +20,29 @@
+ 
+ 初回リリース版の処理系は、実行時の権限制御を持たず、エフェクトの型による静的な検査だけを保証する。スクリプトは、処理系を起動した利用者の OS の権限で行える操作をすべて行える。保証の範囲は[セキュリティモデル](../07-quality/07-01-security-model.md)で定める。
+ 
++### 閉じた範囲引数
++
++【決定】標準の `File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組の範囲を取る。利用者のエフェクト、`IO.All`、`State` とその他の対象を持たない名前には範囲引数を書けず、全対象の範囲（Top）だけを使う。範囲は静的な注釈であり、実行時の権限を与えない。
++
++【決定】パスは正規化済みの絶対パスの完全一致か、`/data/**` のような木とする。木は幹の `/data` 自身も含む。`.`・`..`・空の要素・部分のワイルドカードを拒否する。ホスト名は完全一致・`*.example.com`・`**.example.com` とし、ASCII の大文字を小文字へそろえる。後二つは幹自身を含まない。ホストには正規形の IPv4・IPv6 と CIDR も使える。IPv4 は四つの十進要素とし、0 以外の先頭の0を拒否する。四つの全数字ラベルの不正をホスト名として読み直さない。
++
++【決定】IPv6 は採択した正規形と一致する文字列だけを受理する。IPv4 射影の IPv6 は `::ffff:192.0.2.1` の混合表記を保ち、IPv4 と同一視しない。CIDR は先頭の0のない十進の prefix と、host bits が0のアドレスを要求する。最大 prefix（IPv4 の32、IPv6 の128）は完全一致へそろえる。zone ID・IPvFuture・角括弧付きの IP・IP を幹にしたワイルドカードは拒否する。DNS による変換を行わない。正規形の数値上の定義は[コア計算と脱糖](01-12-core-calculus.md#操作の対象の範囲の領域と被覆)に従う。
++
++【決定】ポートは整数リテラルで0〜65535を表し、`80..81` は両端を含む閉区間である。下端が上端を超える場合は拒否する。`443` と `443..443` は同じ一点である。整数の基数・下線・接尾辞は既存の整数リテラルの規則に従い、接尾辞固有の値域も検査する。
++
++【決定】範囲付きの原子は名前と正規化後の範囲で区別する。同じ名前の異なる範囲、広い範囲と狭い範囲、Top と狭い範囲をそれぞれ残す。明示した同一原子の重複は、略記内と別の群の間のどちらでも E0419 とし、重複した両要素の位置を示す。型の等号・表示・型と効果行の代入は範囲を保持する。
++
++```text
++import Benitoite.Unofficial.IO.File
++import Benitoite.Unofficial.Network.Http
++
++function declared() -> Unit uses File.Write["/data/a/**", "/data/b/**"], Http.Connect["a.example", 443, "192.168.1.0/24", 80..81]
++  ()
++end function
++```
++
++この例は注釈の受理と略記を示す。型検査がパスや接続先の所属を確立する新しい操作の利用例ではない。
++
+ ### ファイル単位のエフェクトの宣言
+ 
+ 【決定】[ファイルの先頭の部分](01-02-syntax.md#ファイルの先頭の部分)に書いた `uses` の効果を、そのファイルの直下の関数宣言すべての最外側の効果行へ合併する。公開関数、`main`、`@test`、`@external`、`@builtin` の関数も対象とする。宣言できる効果の種類を制限しない。理由: 一律の追加を関数の型に残し、個別の入口や属性による例外を設けないためである。
+diff --git a/docs/design/02-impl/02-03-frontend.md b/docs/design/02-impl/02-03-frontend.md
+index d2905142..ff361f99 100644
+--- a/docs/design/02-impl/02-03-frontend.md
++++ b/docs/design/02-impl/02-03-frontend.md
+@@ -250,7 +250,7 @@ record  resume  return  shadow  then  trait  true  try  type  uses  with
+ - `(` で始まる型は、中の型を解析して `)` を求め、括弧の型のノードを作る。括弧の型は、中の型と同じ型を表す。
+ - 関数の型は、`function`、引数の型の並び、`->`、戻り値の型を解析した後、次の字句が `uses` であれば、その関数の型の `uses` の並びとして読む。戻り値の型が関数の型であれば、その戻り値の型の解析の中で先に `uses` を読むので、`uses` は最も内側の関数の型に付く。
+ - `uses` の並びの要素は、修飾した名前（`QualUpper`。`Console.Write`、`IO.All`）である。並びは、最初の要素を読んだ後、次の字句が `,` で、その次の字句が大文字の識別子である間、`,` と次の要素を並びに加える。`,` の次が大文字の識別子でなければ、`,` を読まずに並びを終える（その `,` は外側の並びの区切りになる）。
+-- 並びに読んだ名前がエフェクトの名前であるかは、構文解析器は判定しない。エフェクトでない名前は名前解決が報告する（[名前解決とモジュール読込](02-04-resolver.md)）。ただし、並びの 2 番目以降の要素の直後に `[` が来たとき（`function(function() -> Unit uses Console.Write, List[Integer]) -> Unit`）は E0209 の構文エラーとし、`uses` を持つ関数の型を括弧で囲むよう示す。主な位置は、最後に読んだ名前から対応する `]` までとする。型の並び（関数の型の引数か型引数）の要素の関数の型に限り、開始位置と対応する `]` が分かる場合は、関数の型の先頭に `(`、直前のエフェクトの後に `)` を挿入する置き換えを付ける。宣言とラムダの `uses`、宣言の引数・戻り値・レコードのフィールド・束縛の注釈の型には置き換えを付けない。対応する `]` は括弧の外へ閉じる `)`、文の終わりの改行、`end` を越えて探さない。対応する `]` がなければ、主な位置は `[` の一文字とし、置き換えを付けない。理由: 型引数を含む範囲を示し、誤りを解消できる形が分かる場合だけ編集を提示するためである。
++- 並びに読んだ名前がエフェクトの名前であるかは、構文解析器は判定しない。エフェクトでない名前は名前解決が報告する（[名前解決とモジュール読込](02-04-resolver.md)）。ただし、並びの 2 番目以降の修飾のない要素の直後に `[` が来たとき（`function(function() -> Unit uses Console.Write, List[Integer]) -> Unit`）は E0209 の構文エラーとし、`uses` を持つ関数の型を括弧で囲むよう示す。主な位置は、最後に読んだ名前から対応する `]` までとする。型の並び（関数の型の引数か型引数）の要素の関数の型に限り、開始位置と対応する `]` が分かる場合は、関数の型の先頭に `(`、直前のエフェクトの後に `)` を挿入する置き換えを付ける。宣言とラムダの `uses`、宣言の引数・戻り値・レコードのフィールド・束縛の注釈の型には置き換えを付けない。対応する `]` は括弧の外へ閉じる `)`、文の終わりの改行、`end` を越えて探さない。対応する `]` がなければ、主な位置は `[` の一文字とし、置き換えを付けない。理由: 型引数を含む範囲を示し、誤りを解消できる形が分かる場合だけ編集を提示するためである。
+ 
+ 関数の宣言の `->` の後の戻り値の型も、この規則で読む。`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の関数の型に付き、`f` 自身は `uses` を持たない。
+ 
+@@ -258,6 +258,10 @@ record  resume  return  shadow  then  trait  true  try  type  uses  with
+ 
+ 【決定】ファイル位置の `uses` は、関数型の並びの E0209 の回復を使わず、型引数付きのエフェクト参照をすべての位置で読む。NEWLINE と EOF を末尾とし、コンマ後の改行は既存の継続規則に従う。空の並び・遅い宣言・二度目は E0261 とし、後続の宣言を残す。import が後に来る場合は E0219、メタデータが後に来る場合は E0252 とする。本体なしの外部関数の次行の `uses` は本体へ吸収せず、遅いファイルの宣言として回復する。
+ 
++【決定】角括弧の最初の字句が型を始める場合は型引数、その他は範囲引数の候補として保持する。範囲の候補は文字列とポートの字句を区別し、補間・式・定数参照等は不正な要素として残す。名前を解決した後に E0520 または E0513 へ分担する。閉じ括弧を対応付けられない場合は従来の構文診断とする。
++
++【決定】文字列だけの範囲引数群は一文字列ずつ、文字列とポートの交互の群は一組ずつ `UsesList.effects` の原子へ展開する。不正な群と空の群は展開せず残す。標準名の判定は名前解決で行うため、`Failure.Fail["a", "b"]` を正しい複数原子として受理しない。各原子は一意のノード番号を持つ。`ScopeArgs` は元の角括弧の span、全要素の共有列、当該原子が使う要素の区間を保持する。型引数の列は展開しない。理由: 正規化後の原子と、診断・整形に使う元の群と要素の位置を区別するためである。
++
+ ### AST
+ 
+ 【決定】名前付き引数は `Arg::Named(Box<NamedArg>)` に保持し、ラベルの `Name` と、式またはプレースホルダの `ArgValue` を分ける。ラベルと値の span を混同しない。`FnType.param_names` は引数型の並びと同じ長さの名前を保持する。構文解析は位置指定・名前指定を AST に残し、呼ぶ値の種類と型に依存する対応付けは後段で検査する。レコードか直接のデータ構成子かの最終判定を、大文字名だけから決めない。
+diff --git a/docs/design/02-impl/02-04-resolver.md b/docs/design/02-impl/02-04-resolver.md
+index 6420637c..210636dd 100644
+--- a/docs/design/02-impl/02-04-resolver.md
++++ b/docs/design/02-impl/02-04-resolver.md
+@@ -102,6 +102,12 @@ prelude の名前だけでなく、数の各標準モジュールの同名の型
+ 
+ 【決定】標準モジュールと同名の内部宣言を選ぶ位置にEffectを含める。Logのモジュール束縛を組み込みの根の名前で上書きせず、標準内部宣言Log.Logの識別を組み込みのエフェクト表と照合する。利用者同名の宣言には正規表示Logを適用しない。診断の位置のモジュールで利用者のモジュールなどがpreludeのLogを隠している場合、W0501の置換とE0501の修正案は `uses Benitoite.Log` と書く。
+ 
++### 範囲引数の解決
++
++【決定】エフェクトの束縛と標準ライブラリの所有元を確認してから、引数の種類を検査する。標準の `File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組として `types::scope` で正規化する。同名の利用者のエフェクトにはこの規則を付けない。`Failure.Fail` だけは従来どおり一つの値の型引数を名前解決する。利用者のエフェクトと `IO.All`・`State` 等の対象を持たない名前への引数は E0513 とする。File に型引数を書いた場合と範囲の空・個数・種類・字句の不正は E0520 とする。`InvalidScope::Internal` は入力の誤りにせず、報告の種類を Internal とする（CLI の終了状態3）。
++
++【決定】正規化した範囲は注釈のノード番号で範囲の表へ残し、型検査が効果の原子と型の添字へ渡す。明示した同一原子の重複は、展開後の名前と範囲を比較し、元の両要素の位置を示す。範囲の正規化で AST の字句・群・要素の位置を変えない。登録された範囲付き標準値型以外への範囲引数は拒否する。
++
+ ### 位置の式の事前展開
+ 
+ 【決定】パイプラインは名前解決後、型検査前に `Benitoite.SourceLocation.here` の束縛を指す引数なしの直接呼び出しを展開する。共有のIdGenから欄とリテラルのノード番号を振り、通常のLocationレコード名と三つの欄を解決済みの標準束縛へ結ぶ。型検査・定数評価・脱糖には通常レコードとリテラルだけを渡す。hereのための新しいコア項は作らない。
+@@ -122,6 +128,7 @@ prelude の名前だけでなく、数の各標準モジュールの同名の型
+ |---|---|---|
+ | 束縛の表 | 束縛の番号 | 束縛の種類、名前、宣言したモジュールの ID、宣言したノードのノード番号（組み込みの型と組み込みのエフェクトは表の項目）、span、`public` だけを付けたか、`public(package)` を付けたか、Data/Recordの `opaque` の印、`@deprecated` の文字列 |
+ | 参照の表 | 名前を使う箇所のノード番号 | 束縛の番号 |
++| 範囲の表 | 範囲付き注釈のノード番号 | 名前の種類を確認し正規化した閉じた範囲（`ResolveOutput.scopes`）。非 Top の注釈だけを載せる |
+ | 公開の表 | モジュールの ID と名前 | `public` の束縛の番号（`ResolveOutput.exports`） |
+ | パッケージの中だけの公開の表 | モジュールの ID と名前 | `public(package)` の束縛の番号。名前解決の内部で持つ |
+ | 外部の宣言の表 | `@external` を付けた関数と型の束縛の番号 | 属性の文字列と宣言の位置。外部の宣言の照合の段が、関数にはコンポーネントのバイト列と型の変換表、型にはコンポーネントのバイト列と resource の書き出しの名前を加える（[外部の関数](../03-interop/03-10-external-functions.md)の「照合」） |
+diff --git a/docs/design/02-impl/02-06-ir-and-lowering.md b/docs/design/02-impl/02-06-ir-and-lowering.md
+index 73814e88..b6a65ef8 100644
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -188,6 +188,8 @@ Die は本番の parser から型検査・脱糖・コア IR の検査・実行
+ 
+ 【方針】コア IR に[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型付け規則で型が付くかを調べる検査器を作る。検査器は処理系のテストで使い、脱糖の結果に型が付かなければ処理系の不具合とする。これは、同章の「確かめる性質」の 1（脱糖の型の保存）を、テストで反例を探す手段になる（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)）。
+ 
++【決定】型の照合では、Fail のエラー型の中を含むすべての関数型について、契約名の個数が引数型の個数と一致し、契約名が重複しないことを検査する。型の両側に同じ不正な契約名があっても受理しない。理由: 関数型の整形式性は、エフェクトが持つ Fail のエラー型にも再帰的に要求されるためである。
++
+ 【決定】検査環境の宣言由来の型パラメータ・NoFail・実装辞書の制約は借用する。局所変数・節の辞書・剛体型の節・継続・戻り先の変更は、変更前の値をログへ記録し、範囲を出るときに開始時のログ長まで戻す。未登録の項目と既存値への上書き、戻り先の none と型のある戻り先を区別する。ラムダと lazy では継続の可視範囲の開始位置を保存して切り替える。検査で誤りが見つかった場合も復元し、兄弟の枝や外側の範囲へ変更を残さない。Let の右辺・本体の検査と復帰は明示した作業列で処理する。理由: 増大する環境全体の複製と Let 鎖に比例する Rust の呼び出しの深さを避け、従来の検査規則と誤りの報告順を保つためである。
+ 
+ 検査器は、V-Sub と C-Sub を、型が求められる位置（関数の引数、構成子の引数、リストの要素、`if`・`match` の分岐、`let` の右側と束縛した変数の型、ラムダの本体と戻り値の型、定義の本体と宣言した型、`escape` の値と最も内側の関数の戻り値の型、`handle` の本体と節の本体、`resume` の値）でだけ使う。その位置で、ノードの型が求められる型と等しいか、同章の `≤` の関係にあるか、ノードのエフェクトが求められるエフェクトに含まれるかを調べる。
+diff --git a/docs/design/06-tooling/06-03-formatter.md b/docs/design/06-tooling/06-03-formatter.md
+index 14e41db8..6e9fc8c9 100644
+--- a/docs/design/06-tooling/06-03-formatter.md
++++ b/docs/design/06-tooling/06-03-formatter.md
+@@ -42,7 +42,7 @@ CLI の `fmt` が使うフォーマッタを定める。対象は、整形の規
+ | `:` の前 | `x: Integer`、`bind n: Integer <- 0` |
+ | `.` の前と後 | `Console.writeLine` |
+ | `..` の後と、`,` の後でない `..` の前 | `Person(..p, age: 1)`、`[first, ..rest]`、`90..100` |
+-| 呼び出しの引数の並び、宣言・ラムダ・操作の引数の並び、関数の型の引数の型の並び、型引数と型パラメータの並び、構成子とレコードのパターンの括弧、属性の引数の並びを開く `(`・`[` と、`public(package)` の `(` の前 | `f(x)(y)`、`List[Integer]`、`function getOr[A](opt: Option[A], default: A)`、`lambda(x)`、`function(x: Integer) -> Integer`、`implement[T: Show] Show[Option[T]]`、`resume(())`、`public(package)` |
++| 呼び出しの引数の並び、宣言・ラムダ・操作の引数の並び、関数の型の引数の型の並び、型引数・範囲引数と型パラメータの並び、構成子とレコードのパターンの括弧、属性の引数の並びを開く `(`・`[` と、`public(package)` の `(` の前 | `f(x)(y)`、`List[Integer]`、`function getOr[A](opt: Option[A], default: A)`、`lambda(x)`、`function(x: Integer) -> Integer`、`implement[T: Show] Show[Option[T]]`、`resume(())`、`public(package)` |
+ | 単項の `-` の後 | `-x`、`-(a + b)` |
+ | `@` の後 | `@test` |
+ | 補間の開始と中間の字句（StrStart・StrMid）の後と、補間の中間と終わりの字句（StrMid・StrEnd）の前 | `"total: ${total}"` |
+@@ -55,6 +55,8 @@ CLI の `fmt` が使うフォーマッタを定める。対象は、整形の規
+ 
+ 【決定】文字列補間の書式は、通常の演算子・数リテラルの空白規則を適用せず、元の字面を保つ。式を通常どおり整形し、式と書式のコロンの間の空白を除く。コロン以後の有効な書式には空白を加えず、閉じの `}` に密着させる。例えば `${n :#08x}` は `${n:#08x}` とし、名前付き引数の `${f(value:n):>8}` は `${f(value: n):>8}` とする。不正な書式は E0262 で拒否し、ファイルを変えない。
+ 
++【決定】範囲引数の略記は元の角括弧の群を保ち、原子の列へ書き換えない。文字列の字面・ホスト名の大小文字・IP/CIDR の綴り・整数の基数と下線・範囲の順序は変えない。名前解決で正規化した範囲を整形の出力に使わない。角括弧と各要素の空白・字下げは型引数と同じ規則で整え、ポートの `..` の前後には空白を置かない。
++
+ ### 字下げ
+ 
+ 【方針】字下げの一段は、空白 2 つとする。トップレベルの宣言（import の宣言と属性を含む）が始まる行の段は 0 である。行の段は、その行の最初の字句で決める。行の最初の字句とは、行の先頭が文字列の字句の途中（複数行の文字列の内容の行と、閉じの `"""` の行）でない行の、最初の字句である。複数行の文字列の内容の行は、後述の「複数行の文字列」の規則で動かす。
+@@ -80,7 +82,7 @@ CLI の `fmt` が使うフォーマッタを定める。対象は、整形の規
+ 
+ 1. 行の最初の字句が、閉じの字句（`end`・`)`・`]`）か、`if` の `else` か、`handle` の節の並びを始める `with` であれば、その字句が属する構文の開きの行と同じ段とする。
+ 2. 行の最初の字句が `match` の分岐か `handle` の節の `case` であれば、`match` か `handle` の開きの行より一段深くする。
+-3. 行の最初の字句が、並びの要素の最初の字句であれば、その要素を囲む構文の表の規則で段を決める。並びの要素とは、文、トップレベルの宣言とその属性と import の宣言、宣言の中の構成子・フィールド・メソッド・操作・関数の宣言、`with` の束縛、括弧の中の要素（引数、リストの要素、フィールドの引数、パターンの要素、型引数など）である。`if` の分岐の文は、その分岐を始めた `if` か `else` の行より、`match` の分岐と `handle` の節の本体の文は、その `case` の行より、一段深くする。
++3. 行の最初の字句が、並びの要素の最初の字句であれば、その要素を囲む構文の表の規則で段を決める。並びの要素とは、文、トップレベルの宣言とその属性と import の宣言、宣言の中の構成子・フィールド・メソッド・操作・関数の宣言、`with` の束縛、括弧の中の要素（引数、リストの要素、フィールドの引数、パターンの要素、型引数・範囲引数など）である。`if` の分岐の文は、その分岐を始めた `if` か `else` の行より、`match` の分岐と `handle` の節の本体の文は、その `case` の行より、一段深くする。
+ 4. 上のどれにも当たらない行を、続きの行と呼ぶ。続きの行は、その最初の字句を含む最も内側の並びの要素が始まる行より、一段深くする。この規則では、`match` の分岐と `handle` の節も並びの要素に数える（分岐と節の頭の続きの行は、その `case` の行より一段深くなる）。一つの要素の続きの行が複数あっても、段はどれも同じである。
+ 
+ 規則 4 により、次の書き方は、どれも前の行の続きとして一段深くなる。
+@@ -223,7 +225,7 @@ end function
+ |---|---|
+ | 字句を切り出す工程が作る、字句と改行の印の列（それぞれ span を持つ） | 字句の並び、書き手の改行の位置、空の行の位置、複数行の文字列の字下げを知る。整形の結果の字句を書き出す元にする |
+ | コメントの一覧（本文、種類、span） | コメントを元の行に書き戻す |
+-| AST | 構文の開き・区切り・閉じの字句（前述の「字下げ」の表）、並びの要素の最初の字句、`(`・`[` が呼び出しや引数の並びを開くか、`-` が単項か二項かを知る |
++| AST | 元の範囲引数群と各要素の位置、構文の開き・区切り・閉じの字句（前述の「字下げ」の表）、並びの要素の最初の字句、`(`・`[` が呼び出しや引数の並びを開くか、`-` が単項か二項かを知る |
+ 
+ 改行による区切りの判定は、ブロックを開く語として `lambda`・`if`・`match`・`with`（分岐の並びを始めるものを除く）・`lazy`・`handle` だけを数える（[字句構造](../01-spec/01-01-lexical.md)の「改行による区切り」、[字句解析器と構文解析器](../02-impl/02-03-frontend.md)の「処理の流れ」）ので、関数の宣言や代数的データ型の宣言の中身の段は、字句の列だけでは決まらない。`case` が `match` の分岐か `handle` の節か、`if` がガードかも、構文解析の結果で決まる。そこで、フォーマッタは AST を辿って、字句の位置（span）ごとに、字下げと空白の規則に要る役割（開き・区切り・閉じの字句か、並びの要素の最初の字句か、呼び出しの括弧か、単項の `-` か）の表を作る。
+ 

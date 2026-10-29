@@ -36,7 +36,7 @@ theorem listSpread_case {q t f before spread after} :
   obtain ⟨εf, mid, hf, haf, h, hafClean⟩ := checking_accept_expr_ok
     (fun _ _ _ _ hc => ihf Δ _ _ _ _ _ _ _ _ _ hB hq he.2.1 hΓ hR hc) hft h
   obtain ⟨u3, hpure, h⟩ := checking_lift_bind_ok h
-  have hfp := HasTypeQ.E_Sub hf (Or.inl rfl) (acceptEff_sound haf (emptyEff_atoms _) hpure) hafClean
+  have hfp := HasTypeQ.E_Sub hf (Or.inl rfl) (acceptEff_sound haf (emptyEff_atoms _) hpure).covers hafClean
   obtain ⟨εb, mid', hb, h⟩ := checking_bind_ok h
   have hbefore := ihb.2 Δ _ _ _ _ _ _ _ _ _ hB hq he.2.2.1 hΓ hR he.1 hb
   obtain ⟨εs, mid'', hs, has, h, hasClean⟩ := checking_accept_expr_ok
@@ -172,7 +172,7 @@ theorem arms_cons_case {q alts guard body rest} :
           (Env.atoms_hideConts henv) (show ReturnAtoms q.atoms none from by intro t ht; contradiction) hc)
         (show Ty.AtomsIn q.atoms (.base .boolean) from trivial) h
       obtain ⟨u2, hpure', h⟩ := checking_lift_bind_ok h
-      have hgTyped := HasTypeQ.E_Sub hg (Or.inl rfl) (acceptEff_sound hag (emptyEff_atoms _) hpure') hagClean
+      have hgTyped := HasTypeQ.E_Sub hg (Or.inl rfl) (acceptEff_sound hag (emptyEff_atoms _) hpure').covers hagClean
       obtain ⟨εb, midb, ht, hab, h, habClean⟩ := checking_accept_block_ok
         (fun _ _ _ _ hc => ihb (List.replicate δ.length none ++ Δ) _ _ _ _ _ _ _ _ _ (hB.values δ) hq he.2.1 henv hR hc) hb h
       obtain ⟨εs, mid', hs, h⟩ := checking_bind_ok h

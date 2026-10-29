@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Result[S.PathIn["/**"], S.ScopeError]
+ bind v: S.PathIn["/data/a"] <- try S.checkPathIn(pattern: "/data/a", path: p)
+ bind w: S.PathIn["/**"] <- S.widenPathIn(path: v)
+ return Result.Ok(w)
+end function

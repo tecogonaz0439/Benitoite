@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+function sample(raw: Scope.PathIn["/data/**"]) -> Unit
+ bind value: Http.RequestIn["a.example", 443] <- Scope.widenPathIn(path: raw)
+end function

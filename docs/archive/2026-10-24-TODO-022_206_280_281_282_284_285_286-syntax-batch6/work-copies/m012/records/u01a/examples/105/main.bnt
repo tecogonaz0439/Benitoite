@@ -1,0 +1,23 @@
+import Benitoite.Unofficial.IO.Console
+
+function between(low: Integer, value: Integer, high: Integer) -> Boolean
+  return low <= value and value <= high
+end function
+
+function twice[T, effect E](x: T, f: function(value: T) -> T uses E) -> T uses E
+  return f(f(x))
+end function
+
+function main() -> Unit uses Console.Write
+  bind text <- [1, 2, 3, 4, 5]
+    |> List.filter(p: between(low: 2, value: _, high: 4))
+    |> List.map(f: lambda(value) return Integer.toString(value))
+    |> String.join(separator: ",")
+  Console.writeLine(text)
+  Console.writeLine(Integer.toString(twice(x: 5, f: lambda(value) return value * 3)))
+  bind shout <- lambda(value: String) -> String
+    Console.writeLine("shouting ${value}")
+    return String.toUppercase(value)
+  end lambda
+  Console.writeLine(twice(x: "hi", f: shout))
+end function

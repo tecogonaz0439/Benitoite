@@ -1,0 +1,22 @@
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.NonEmptyList
+
+@test("checked lists retain their values")
+function checkedLists() -> Unit uses Assert.Check
+  match Range.checkLength(minimum: 2, maximum: 2, values: [10, 20]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: Range.checkedLength(checked), expected: 2)
+      Assert.equal(actual: Range.lengthValues(checked), expected: [10, 20])
+    case Result.Error(_) -> Assert.fail("valid length was rejected")
+  end match
+  match Range.checkIndex(index: 1, values: [10, 20]) with
+    case Result.Ok(checked) -> Assert.equal(actual: Range.get(checked), expected: 20)
+    case Result.Error(_) -> Assert.fail("valid index was rejected")
+  end match
+  match NonEmptyList.fromList([10, 20]) with
+    case Result.Ok(checked) ->
+      Assert.equal(actual: NonEmptyList.head(checked), expected: 10)
+      Assert.equal(actual: NonEmptyList.tail(checked), expected: [20])
+    case Result.Error(_) -> Assert.fail("nonempty list was rejected")
+  end match
+end function

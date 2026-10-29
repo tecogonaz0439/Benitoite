@@ -1,0 +1,133 @@
+[
+  {
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+      "-o",
+      "<wt>/target/r20.2b-probe/start/timing-probe",
+      "--cfg",
+      "benitoite_parser_pending"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 2.4612953749999997,
+    "maximum_resident_bytes": 319307776,
+    "state": "start",
+    "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "d2df47e23ecae22342f4a3b76cd7c55a1e0f847d89c46735b952dbab7c2118c2",
+      "range_index": false,
+      "types_sha256": "a8d25a6452521157508223529c218d242e5bc5ed9601fa7f36ecf008d0510bf3",
+      "range_signatures": false,
+      "core_ir_sha256": "bb3fa3189542c88316cb707fa529e1d678865e02e705e0df10f2d4e5875798c1"
+    },
+    "bridge_sources": {
+      "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "be17f922408c85dda43c0c7ac78a18db97d466b9c0305d2cc70c489ead4c7fac",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    },
+    "library_sha256": "8299530adce6391b10904ac8438e98b77c90055549a9f4d0829965701ec9e0b8",
+    "probe_source_sha256": "912fc681398363ab08bc5799a8c840b889b9b450fac5caf6ca7f3bde3f9609e8",
+    "probe_sha256": "d83b67613fe82713118dfa308bfc5cfaa1e6b9bb9169a7cc26c7761cd42129bc"
+  },
+  {
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/debug/libbenitoite.rlib",
+      "--extern",
+      "serde_json=<wt>/target/debug/deps/libserde_json-025fd2838c13a08a.rlib",
+      "-L",
+      "dependency=<wt>/target/debug/deps",
+      "-o",
+      "<wt>/target/r20.2b-probe/base/timing-probe",
+      "--cfg",
+      "benitoite_parser_pending",
+      "--cfg",
+      "benitoite_range_index",
+      "--cfg",
+      "benitoite_range_signatures"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 2.206839791,
+    "maximum_resident_bytes": 3772923904,
+    "state": "base",
+    "commit": "7f47822970ff5c300876198282764353afdd7a75",
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+      "range_index": true,
+      "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+      "range_signatures": true,
+      "core_ir_sha256": "ded49d8c12f3a171cd9f9b6b339adaeb8d72900391bc91a203ff0a4f5f289b93"
+    },
+    "bridge_sources": {
+      "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "79ac5ae10aa8f2e8e93fe22374826eb5ba774e7fd86181302f026e41a572a4f8",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    },
+    "library_sha256": "c0a0b6169329232701c5e42dc8557b2885dbf85400e6f1ded9a68c496882a1a1",
+    "probe_source_sha256": "912fc681398363ab08bc5799a8c840b889b9b450fac5caf6ca7f3bde3f9609e8",
+    "probe_sha256": "eb8473f4e6cf57c9c926761b5c80869a08830a7830bcd5f4f75def831365ecb4"
+  },
+  {
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/debug/libbenitoite.rlib",
+      "--extern",
+      "serde_json=<wt>/target/debug/deps/libserde_json-025fd2838c13a08a.rlib",
+      "-L",
+      "dependency=<wt>/target/debug/deps",
+      "-o",
+      "<wt>/target/r20.2b-probe/current/timing-probe",
+      "--cfg",
+      "benitoite_parser_pending",
+      "--cfg",
+      "benitoite_range_index",
+      "--cfg",
+      "benitoite_range_signatures"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 1.470146707999998,
+    "maximum_resident_bytes": 3825729536,
+    "state": "current",
+    "commit": null,
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+      "range_index": true,
+      "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+      "range_signatures": true,
+      "core_ir_sha256": "ded49d8c12f3a171cd9f9b6b339adaeb8d72900391bc91a203ff0a4f5f289b93"
+    },
+    "bridge_sources": {
+      "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "f30686207072eb730251673f9850343104e50fe4f720a88cbd6e7413874a8055",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    },
+    "library_sha256": "d62f18b551cfc6ab55c28dd4e27613b25faa3ff66848fd779771788a51c40d3f",
+    "probe_source_sha256": "912fc681398363ab08bc5799a8c840b889b9b450fac5caf6ca7f3bde3f9609e8",
+    "probe_sha256": "5bf3e2d52ad2c439c2ba0a8756053075a12135c0e070cc62ce93626143a991db"
+  }
+]

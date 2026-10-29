@@ -1,0 +1,67 @@
+{
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "commands": [
+    {
+      "args": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "rustc 1.98.1 (48a229cea 2026-09-01)"
+    },
+    {
+      "args": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+    },
+    {
+      "args": [
+        "python3",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "Python 3.9.6"
+    },
+    {
+      "args": [
+        "uname",
+        "-srm"
+      ],
+      "exit": 0,
+      "output": "Darwin 27.0.0 arm64"
+    }
+  ],
+  "fixedFiles": {
+    "rust-toolchain.toml": {
+      "sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "bytes": 66
+    },
+    "formal/lean-toolchain": {
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+      "bytes": 25
+    },
+    "formal/lakefile.toml": {
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+      "bytes": 872
+    },
+    "formal/lake-manifest.json": {
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32",
+      "bytes": 152
+    },
+    "Cargo.lock": {
+      "sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "bytes": 50695
+    },
+    "fuzz/Cargo.lock": {
+      "sha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+      "bytes": 50173
+    },
+    ".cargo/config.toml": {
+      "sha256": "cfa18b92df6134d8b83cbdd1527a08ad31a913cd17b6eac019cc362207e92254",
+      "bytes": 26
+    }
+  }
+}

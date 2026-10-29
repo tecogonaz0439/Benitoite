@@ -55,6 +55,40 @@ theorem stateTy_iff {s : State} : StateTy P B s ↔ ∃ Eb, BuiltinOnly P B Eb �
       · rintro ⟨Ψ, R, a, b, ε, Eb, h1, h2, h3, h4, h5⟩; exact ⟨Eb, h3, Ψ, R, a, b, ε, h1, h2, h4, h5⟩
       · rintro ⟨Eb, h3, Ψ, R, a, b, ε, h1, h2, h4, h5⟩; exact ⟨Ψ, R, a, b, ε, Eb, h1, h2, h3, h4, h5⟩
 
+
+/-- `StateTyE` は末尾の添字 Eb について単調である（L20.1 の試行の補題）。 -/
+theorem StateTyE.mono {Eb Eb' : Eff} {s : State} (h : StateTyE P B Eb s) (hs : Eff.Sub Eb Eb') :
+    StateTyE P B Eb' s := by
+  cases s with
+  | run m k σ =>
+      simp only [StateTyE] at h ⊢
+      obtain ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h5, h6, h7⟩ := h
+      exact ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4.mono_end hs, h5, h6, h7⟩
+  | matchRun v arms next k σ =>
+      simp only [StateTyE] at h ⊢
+      obtain ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4, h5, h6, h7, h8⟩ := h
+      exact ⟨Ψ, R, a, b, ε, ε1, h1, h2, h3, h4.mono_end hs, h5, h6, h7, h8⟩
+  | error rs k σ =>
+      simp only [StateTyE] at h ⊢
+      obtain ⟨Ψ, R, a, b, ε, h1, h2, h3, h4⟩ := h
+      exact ⟨Ψ, R, a, b, ε, h1, h2.mono_end hs, h3, h4⟩
+  | exit n rs k σ =>
+      simp only [StateTyE] at h ⊢
+      obtain ⟨Ψ, R, a, b, ε, h1, h2, h3, h4⟩ := h
+      exact ⟨Ψ, R, a, b, ε, h1, h2.mono_end hs, h3, h4⟩
+
+/-- 単調性からの拡大: 末尾の添字を `BuiltinOnly` を満たす上界へ広げられるなら、公開の `StateTy` に入る
+（L20.1 の試行の補題）。 -/
+theorem stateTy_of_stateTyE_sub {Eb Eb' : Eff} {s : State} (h : StateTyE P B Eb s)
+    (hs : Eff.Sub Eb Eb') (hb : BuiltinOnly P B Eb') : StateTy P B s :=
+  stateTy_iff.mpr ⟨Eb', hb, h.mono hs⟩
+
+/-- 旧の `BuiltinOnly`（L20.7 の前の定義）で型の付く状態は、新しい `StateTy` に入る（案 BA は `StateTy` に入る状態を
+広げる）。 -/
+theorem stateTy_of_old {s : State} (h : ∃ Eb, BuiltinOnlyOld P B Eb ∧ StateTyE P B Eb s) : StateTy P B s := by
+  obtain ⟨Eb, h1, h2⟩ := h
+  exact stateTy_iff.mpr ⟨Eb, h1.toNew, h2⟩
+
 /-- 現在の分岐を飛ばせるなら、再開位置の不変条件を一つ延ばせる。 -/
 theorem MatchPrefix.advance {v arms next arm} (h : MatchPrefix v arms next)
     (hi : arms[next]? = some arm)
@@ -93,14 +127,14 @@ theorem Cont.Closed.markPush {k : Cont} (h : Cont.Closed k) :
 /-! ## 継続の R の正しさ -/
 
 theorem ContTy.R_wf {Ψ R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε0 Re)
-    (hRe : ∀ x, Re = some x → Ty.WF 0 x) : ∀ x, R = some x → Ty.WF 0 x := by
+    (hRe : ∀ x, Re = some x → Ty.WF 0 0 x) : ∀ x, R = some x → Ty.WF 0 0 x := by
   induction h with
   | K_Empty _ _ => exact hRe
   | K_Let _ _ _ _ ih => exact ih hRe
   | K_Mark _ hw _ => intro x hx; cases hx; exact hw
   | K_Update _ _ _ => intro x hx; cases hx
   | K_Release _ _ _ _ ih => exact ih hRe
-  | K_Handle _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih => exact ih hRe
+  | K_Handle _ _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih => exact ih hRe
   | K_Drop _ _ _ ih => exact ih hRe
   | K_Guard => intro x hx; cases hx
   | K_Sub _ _ ih => exact ih hRe
@@ -109,7 +143,7 @@ theorem ContTy.R_wf {Ψ R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε0 Re)
 
 /-- 関数の呼び出しの遷移が `mark` を積んだ継続に、呼び出した関数の本体の R で型を付ける。 -/
 theorem ContTy.markPush {Ψ R ε k a b E r} (hk : ContTy P B Ψ R ε k a b E none) (hle : Ty.Le r a)
-    (hw : Ty.WF 0 r) : ContTy P B Ψ (some r) ε (Benitoite.Release.markPush k) r b E none := by
+    (hw : Ty.WF 0 0 r) : ContTy P B Ψ (some r) ε (Benitoite.Release.markPush k) r b E none := by
   unfold Benitoite.Release.markPush
   split
   · rename_i k0
@@ -119,9 +153,9 @@ theorem ContTy.markPush {Ψ R ε k a b E r} (hk : ContTy P B Ψ R ε k a b E non
 
 /-! ## 節の探索 -/
 
-theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
+theorem HasTypeClausesQ.find {Ψ C Γ R εb hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R εb hs t ε)
     (hc : findClause hs o = some c) :
-    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
+    ∃ sg, ClauseSig P B εb o sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF 0 C.length ε ∧
       HasTypeC P B Ψ (sg.tparams ++ C)
         (some (.cont sg.ret (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε)) :: (binds sg.params ++ shiftEnv c.ntys Γ))
         (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε) := by
@@ -158,8 +192,8 @@ theorem Val.VarsInList.get {n pe} : {ws : List Val} → Val.VarsInList n pe ws �
   | v :: vs, hcl, 0, w, h => by simp at h; subst h; exact hcl.1
   | v :: vs, hcl, i + 1, w, h => Val.VarsInList.get hcl.2 (by simpa using h)
 
-theorem InstOk.of_values (hb : B.Assumptions P) {Ψ R0 ws as} (hws : HasTypeVs P B Ψ [] [] ws as)
-    (hwf : ∀ x ∈ as, Ty.WF 0 x) (hcl : Val.VarsInList 0 (fun _ => True) ws) :
+theorem InstOk.of_values (hb : B.CoreAssumptions P) {Ψ R0 ws as} (hws : HasTypeVs P B Ψ [] [] ws as)
+    (hwf : ∀ x ∈ as, Ty.WF 0 0 x) (hcl : Val.VarsInList 0 (fun _ => True) ws) :
     InstOk P B Ψ R0 as ws := by
   refine ⟨hws.length_eq, fun i x w hx hw => Or.inl ?_⟩
   obtain ⟨w', hw', hwt⟩ := hws.get i x hx

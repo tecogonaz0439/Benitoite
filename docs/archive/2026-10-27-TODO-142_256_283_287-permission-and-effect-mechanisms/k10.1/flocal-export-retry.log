@@ -1,0 +1,12 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0616]: field `range_bound` of struct `exchange::Surface` is private
+   --> crates/benitoite/tests/desugar_export/scope_tables.rs:917:17
+    |
+917 |         surface.range_bound = Some(2);
+    |                 ^^^^^^^^^^^ private field
+
+For more information about this error, try `rustc --explain E0616`.
+error: could not compile `benitoite` (test "desugar_export") due to 1 previous error
+real 0.54
+user 0.33
+sys 0.20

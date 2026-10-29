@@ -15,7 +15,7 @@ mutual
   /-- 正規化前の型の変数移動。 -/
   def Ty.rawShift (k c : Nat) : Ty → Ty
     | .base b => .base b
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d as => .data d (Ty.rawShiftTys k c as)
     | .list a => .list (a.rawShift k c)
     | .fn ns ps r e => .fn ns (Ty.rawShiftTys k c ps) (r.rawShift k c) (Eff.rawShift k c e)
@@ -121,7 +121,7 @@ mutual
   /-- 型の変数の番号を、`c` 以上のものだけ `k` ずらす。 -/
   noncomputable def Ty.shift (k c : Nat) : Ty → Ty
     | .base ι => .base ι
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d args => .data d (Ty.shiftTys k c args)
     | .list a => .list (Ty.shift k c a)
     | .fn names params ret eff => .fn names (Ty.shiftTys k c params) (Ty.shift k c ret) (Eff.shift k c eff)

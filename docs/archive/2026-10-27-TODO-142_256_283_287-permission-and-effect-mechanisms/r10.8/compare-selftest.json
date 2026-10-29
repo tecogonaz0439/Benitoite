@@ -1,0 +1,33 @@
+{
+  "command": [
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "invoked": [
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "started_at": "2026-10-28T14:47:50.974111+00:00",
+  "ended_at": "2026-10-28T14:52:38.574645+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 287.599976875,
+  "auxiliary_max_rss_bytes": 3011100672,
+  "auxiliary_max_rss_mib": 2871.609375,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

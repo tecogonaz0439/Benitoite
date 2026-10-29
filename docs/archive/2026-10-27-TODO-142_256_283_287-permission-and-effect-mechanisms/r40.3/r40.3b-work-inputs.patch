@@ -1,0 +1,208 @@
+diff --git a/crates/benitoite/skill/SKILL.md b/crates/benitoite/skill/SKILL.md
+index 1fa34697..e9ad3f67 100644
+--- a/crates/benitoite/skill/SKILL.md
++++ b/crates/benitoite/skill/SKILL.md
+@@ -169,7 +169,7 @@ Use public construction and inspection functions for opaque types; constructors,
+ 
+ `Http.sendIn` takes a checked `Http.RequestIn` and has `Http.Connect` at that input's endpoint range. It sends the retained request without following redirects or automatically using a proxy; 3xx responses are returned. An explicit Host header must have the same effective host and port as the URI and retained endpoint; a mismatch returns `NetworkErrorKind.InvalidInput`. `Http.send` keeps its automatic redirect behavior and Top effect. A complete `Http.Connect` handler needs both `send` and `sendIn`; a handler for `send` alone leaves `Http.Connect`. Endpoint ranges cover host/IP strings and ports before DNS and OS conversion, and do not constrain schemes, fixed origins, message contents, or runtime permission. During TLS certificate validation, the OS may fetch intermediate certificates or revocation information from other destinations; the endpoint range does not guarantee the destinations of this additional traffic. See the checked examples in `references/idioms.md`.
+ 
+-Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow handler argument has no local check provenance, so this form still cannot project or widen that argument. Forward it with the same narrow input type, or use a bare `Scope.PathIn` or `Http.RequestIn` input when projection is needed; IO through the bare type has a Top range.
++Write a projection or widening call directly on the right-hand side of `bind` before using its result in another expression. A narrow function or handler argument has no local check provenance, so this form still cannot project or widen that argument. To keep the narrow contract, forward it unchanged to a scoped entry such as `File.readTextIn` or `Http.sendIn`. For a function parameter, widen the bound checked value in the caller where check provenance is available, and give the parameter that wider type. For a handler clause parameter, change the argument type in the operation declaration. A Top clause parameter also requires a Top protected body, and the enclosing `uses` contract may need to be widened. A bare `Scope.PathIn` or `Http.RequestIn` parameter accepts all targets, and IO through it has a Top range.
+ 
+ Import `Benitoite.StringBuilder`, `Benitoite.ListBuilder`, or `Benitoite.BytesBuilder` explicitly. Builders are second-class values: declare a matching annotated local bind with a direct new() call, and use only direct dedicated operations. Declarations and dedicated operations add no State; ordinary argument effects remain. Builders cannot be passed to ordinary functions, returned, stored, compared, interpolated, or captured by lambda/lazy/partial application/handler clauses. Bind a copy or length before creating a callback; build fragment lists before appendAll. Copies allocate immutable snapshots; referenced element cells remain shared. Repeated intermediate copies have proportional cost. There is no clear/reserve/finish operation; ordinary Reference/task/resource effects remain. See the corresponding generated builder module reference for signatures.
+ 
+diff --git a/crates/benitoite/skill/references/idioms.md b/crates/benitoite/skill/references/idioms.md
+index 3c5d894a..67e74888 100644
+--- a/crates/benitoite/skill/references/idioms.md
++++ b/crates/benitoite/skill/references/idioms.md
+@@ -583,7 +583,7 @@ function main() -> Unit
+ end function
+ ```
+ 
+-A narrow handler parameter or narrow function parameter has no local check provenance: even a direct `bind` cannot project or widen it. Forward it to the same narrow input type, or accept the bare `Http.RequestIn` when projection is needed. IO through the bare type has Top scope. `Http.Connect` contains both `send` and `sendIn`; handling only `send` leaves that effect on the enclosing function.
++A narrow handler parameter or narrow function parameter has no local check provenance: even a direct `bind` cannot project or widen it. To keep the narrow contract, forward it unchanged to a scoped entry such as `Http.sendIn`. For a function parameter, widen the bound checked value in the caller where check provenance is available, and give the parameter that wider type. For a handler clause parameter, change the argument type in the operation declaration. A Top clause parameter also requires a Top protected body, and the enclosing `uses` contract may need to be widened. Accepting the bare `Http.RequestIn` means accepting all targets. IO through the bare type has Top scope. `Http.Connect` contains both `send` and `sendIn`; handling only `send` leaves that effect on the enclosing function.
+ 
+ A server that runs until it is stopped is simplest with `Http.serve`, which calls the handler for every request. (This example is only checked, not run, because it never ends.)
+ 
+diff --git a/crates/benitoite/skill/references/inspection.md b/crates/benitoite/skill/references/inspection.md
+index 969595a2..a218a016 100644
+--- a/crates/benitoite/skill/references/inspection.md
++++ b/crates/benitoite/skill/references/inspection.md
+@@ -37,17 +37,19 @@ Before using an inspection as a confirmed set, require a complete single JSON ob
+ | `diagnostics`, `diagnosticTargets` | Diagnostic objects and their target associations; discovery-wide and usage errors have no target. |
+ | `intervalAnalysis` on the report and each target | Additional local interval analysis summary, described below; independent of `complete` and report acceptance. |
+ 
+-Effects can also contain an optional `bounds` array of `{name, scope}` objects. This has the same declared-upper-bound basis as `expanded`, which remains a set of names without scope syntax. Main, selected tests, documentation examples, and aggregates use the same structure. Top or an unknown target is `{kind: "all"}`, never an empty array. A known pure contract has empty `expanded` and `bounds` arrays. An `error` documentation example rejected as expected has no contract and returns the same empty Effects object; this does not mean that its contract is pure. A `check` example retains its contract in the example report. Neither `check` nor `error` examples contribute to the execution aggregate.
++Effects can also contain an optional `bounds` array of `{name, scope}` objects. This has the same declared-upper-bound basis as `expanded`, which remains a set of names without scope syntax. Main, selected tests, documentation examples, and aggregates use the same structure. Top or an unknown target is `{kind: "all"}`, never an empty array. A known pure contract has empty `expanded` and `bounds` arrays. Regardless of the selected entry, `check` and `error` documentation examples return the same empty Effects object and `tests: []`, even when the example declares effects on `main` or `@test` functions. This empty report does not mean that the example has a pure contract. Neither `check` nor `error` examples contribute to the execution aggregate.
+ 
+ This implementation always includes `bounds` when it emits an Effects object and returns null for Effects when contract analysis is unfinished. Consumers must read an Effects object without `bounds`, such as a report from an older implementation, as declaring all targets of each name in `expanded`. This optional information preserves the existing format versions and report acceptance rules. Fully handled user effects do not reappear as bounds or permissions.
+ 
++Diagnostic notes explain local check provenance separately from these declared bounds. Do not merge a user effect named in an explanation into `expanded`, `bounds`, or the allowed set, or infer a bound from that explanation. Source IDs and content hashes identify inspected sources; they do not add permissions or pin the source of a later execution.
++
+ Scope kinds are `pathExact` and `pathTree` with a `path` (the tree stem, without `/**`), or `endpoint` with `host` and `ports: {minimum, maximum}`. Named hosts use `kind: "exact"`, `"one"`, or `"many"` and `name` without wildcard prefixes. IP hosts use `kind: "exact"` or `"cidr"`, `family: "v4"` or `"v6"`, a canonical `address`, and `prefixLength` for CIDR. Endpoints constrain host and port, covering both HTTP and HTTPS; they do not specify a scheme, URL path, or transmitted contents. Distinct declared atoms remain in `bounds` even if another atom covers them. These are static declared bounds, not inferred minimal effects, observations of actual operations, runtime permissions, or information-flow control.
+ 
+ An Effects object has `basis: "declaredUpperBound"` and `expanded`, a lexical, unique array of canonical atomic names. It includes unused declarations, not just effects reached by executing the body. `IO.All` expands to `Clock.Time`, `Console.Read`, `Console.Write`, `File.Read`, `File.Write`, `Process.Environment`, `Process.Exit`, `Process.Run`, `Random.Generate`, and `State`. Log, HTTP effects and `Assert.Check` are not in `IO.All`. Log is a canonical atomic name accepted by --allow-effects. Disabled log levels do not remove a declared Log upper bound. Keep `Assert.Check` in test contracts, their union, and the allowed set; it is forbidden on `main` (E0415). Unhandled `or die` needs `Process.Exit`; a fully handled exit removed from the declared bound is absent. Bare `try` and `or return` add no exit effect.
+ 
+ A pure success has `expanded: []`; unknown effects are `null`, not `[]`. A checked file without tests has `tests: []`; an unknown test list is `null`. An empty directory is a complete success with no targets and an empty aggregate. A failed file leaves other successful contracts available, but the overall `complete` is false and the aggregate is null. Discovery failure stops before any entry is checked; already discovered entries remain incomplete reference information. Usage errors have no inspected targets or sources. Their embedded diagnostic alone uses `kind: "check"` with `code: null`; this combination does not extend ordinary diagnostic JSON Lines. Missing test descriptions are `null`, while explicitly empty descriptions are `""`.
+ 
+-File-level `uses` is merged with the individual declaration in the checked Scheme. After accepting the whole report under the rules above, show `targets[0].main.effects.expanded` as main's declared upper bound; tests use each selected test's effects and their aggregate. Even an empty body retains shared Console.Write or Log. Reading only main's source line can miss that bound. Do not turn a report into automatic permission. Ordinary `check` still writes no standard output. The processor owns the existing required fields and acceptance rules: see the [v0.0.12 English reference](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports), with checkReport 1 and testCheckReport 1/2. The additional `intervalAnalysis` field below preserves those versions and rules.
++File-level `uses` is merged with the individual declaration in the checked Scheme. After accepting the whole report under the rules above, show `targets[0].main.effects.expanded` and, when present, `bounds` as main's declared upper bound; tests use each selected test's effects and their aggregate. Without `bounds`, read each name as an upper bound over all its targets. Even an empty body retains shared Console.Write or Log. Reading only main's source line can miss that bound. Do not turn a report into automatic permission. Ordinary `check` still writes no standard output. The processor owns the existing required fields and acceptance rules: see the [v0.0.12 English reference](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports), with checkReport 1 and testCheckReport 1/2. Use this executable's embedded Skill for the additional scope bounds described above; the pinned reference defines the existing required fields and acceptance rules. The additional `intervalAnalysis` field below preserves those versions and rules.
+ 
+ When an unaccepted effect was added by the file declaration, E0512 includes that source location as a secondary label. W0501 for a shared IO.All labels each affected function and the shared origin, with no automatic edit to the common declaration. An edit for an individual IO.All accounts for effects already supplied by the file. Doc examples keep their own imports and contracts; the outer file's shared declaration does not apply to them.
+ 
+diff --git a/crates/benitoite/tests/cli_process/scoped_diagnostics.rs b/crates/benitoite/tests/cli_process/scoped_diagnostics.rs
+index daef8570..2b21c17f 100644
+--- a/crates/benitoite/tests/cli_process/scoped_diagnostics.rs
++++ b/crates/benitoite/tests/cli_process/scoped_diagnostics.rs
+@@ -333,10 +333,14 @@ fn scoped_file_input_limit_reports_the_called_operation() {
+         "import Benitoite.Unofficial.Scope\nimport Benitoite.Unofficial.IO.File\nfunction main() -> Unit uses File.Read[\"/**\"]\n bind checked: Result[Scope.PathIn[\"/**\"], Scope.ScopeError] <- Scope.checkPathIn(pattern: \"/**\", path: \"{}\")\n match checked with\n case Result.Ok(path) ->\n  bind _ <- File.readBytesIn(path: path)\n  ()\n case Result.Error(_) -> ()\n end match\nend function\n",
+         path.display()
+     );
++    // test の失敗報告も同じ主文を持つことを、本物の worker の metadata 停止で守る。
++    let source = format!(
++        "{source}\n@test\nfunction upper() -> Unit uses File.Read[\"/**\"]\n main()\nend function\n"
++    );
+     let script = directory.write("resource.bnt", &source);
+     let output = command()
+         .args(["run", "--diagnostics=json"])
+-        .arg(script)
++        .arg(&script)
+         .output()
+         .unwrap();
+     assert_eq!(exit_code(&output), 1, "{output:?}");
+@@ -350,6 +354,22 @@ fn scoped_file_input_limit_reports_the_called_operation() {
+             .contains("`Benitoite.IO.File.readBytesIn`"),
+         "{diagnostic}"
+     );
++    let output = command()
++        .args(["test", "--diagnostics=json"])
++        .arg(&script)
++        .output()
++        .unwrap();
++    assert_eq!(exit_code(&output), 1, "{output:?}");
++    assert!(output.stderr.is_empty(), "{output:?}");
++    let rows = String::from_utf8(output.stdout).unwrap();
++    let rows: Vec<Value> = rows
++        .lines()
++        .map(|line| serde_json::from_str(line).unwrap())
++        .collect();
++    assert_eq!(rows.len(), 2, "{rows:?}");
++    assert_eq!(rows[0]["failure"]["code"], "R0903");
++    assert_eq!(rows[0]["failure"]["message"], diagnostic["message"]);
++    assert_eq!(rows[1]["failed"], 1);
+ }
+ 
+ // 関門: 名前全体を処理するには旧操作・範囲付き操作の全節が必要であり、
+diff --git a/crates/benitoite/tests/cli_process/scoped_reports.rs b/crates/benitoite/tests/cli_process/scoped_reports.rs
+index ed3d261f..77869f18 100644
+--- a/crates/benitoite/tests/cli_process/scoped_reports.rs
++++ b/crates/benitoite/tests/cli_process/scoped_reports.rs
+@@ -213,6 +213,49 @@ fn aggregate_bounds_union_contracts_and_omit_unfinished_results() {
+     }
+ }
+ 
++// 関門: 固定範囲の値引数を持つ利用者操作の節から実際の標準 IO へ渡す契約を守る。
++// 純粋な再開だけの既存例では、節の File.Write の消失や Report の復活を捕まえない。
++// 本物の非実行 CLI を使い、本番の差し込み口や外部ファイルの書込みを加えない。
++#[test]
++fn handled_user_value_preserves_only_the_scoped_io_contract() {
++    let directory = TestDirectory::new();
++    let source = include_str!("fixtures/handled-scoped-write.bnt");
++    let expected = json!({
++        "basis":"declaredUpperBound", "expanded":["File.Write"],
++        "bounds":[{"name":"File.Write","scope":{"kind":"pathTree","path":"/data/reports"}}]
++    });
++    for options in [
++        vec!["check", "--report=json"],
++        vec!["test", "--check", "--report=json"],
++    ] {
++        let value = report(&directory, "handled-scoped-write.bnt", source, &options);
++        let effects = if options[0] == "check" {
++            &value["targets"][0]["main"]["effects"]
++        } else {
++            &value["targets"][0]["tests"][0]["effects"]
++        };
++        assert_eq!(effects, &expected, "{value}");
++        assert_eq!(value["aggregateEffects"], expected, "{value}");
++    }
++    let pure = directory.write("pure.bnt", "@test\nfunction pure() -> Unit\nend function\n");
++    let output = command()
++        .args(["test", "--check", "--report=json"])
++        .arg(directory.path.join("handled-scoped-write.bnt"))
++        .arg(pure)
++        .output()
++        .unwrap();
++    assert_eq!(exit_code(&output), 0, "{output:?}");
++    assert!(output.stderr.is_empty(), "{output:?}");
++    let value: Value = serde_json::from_slice(&output.stdout).unwrap();
++    assert_eq!(value["targets"].as_array().unwrap().len(), 2);
++    assert_eq!(value["targets"][0]["tests"][0]["effects"], expected);
++    assert_eq!(
++        value["targets"][1]["tests"][0]["effects"]["expanded"],
++        json!([])
++    );
++    assert_eq!(value["aggregateEffects"], expected, "{value}");
++}
++
+ #[test]
+ fn scoped_allow_effect_arguments_are_usage_errors_before_execution() {
+     let directory = TestDirectory::new();
+diff --git a/docs/design/06-tooling/06-01-cli.md b/docs/design/06-tooling/06-01-cli.md
+index 56330b9f..19614372 100644
+--- a/docs/design/06-tooling/06-01-cli.md
++++ b/docs/design/06-tooling/06-01-cli.md
+@@ -353,7 +353,7 @@ Effects は宣言した上限であり、本体が実際に行う操作の最小
+ }
+ ```
+ 
+-【決定】範囲が未知なら Top の原子を `kind: all` として示し、空配列にしない。この処理系は Effects を出すとき常に `bounds` を置き、契約の解析が未完了なら Effects 全体を null とする。確定した純粋な契約は `expanded: []`・`bounds: []` となる。ただし、期待どおりに拒否された `error` の doc の例は契約を持たず、同じ空の Effects を返す。この空は純粋な契約を意味しない。
++【決定】範囲が未知なら Top の原子を `kind: all` として示し、空配列にしない。この処理系は Effects を出すとき常に `bounds` を置き、契約の解析が未完了なら Effects 全体を null とする。確定した純粋な契約は `expanded: []`・`bounds: []` となる。ただし、doc の check/error 例は、入口の選択によらず、同じ空の Effects と `tests: []` を返す。例の中に `main` や `@test` の宣言上限があっても報告せず、この空は純粋な契約を意味しない。
+ 
+ 【決定】受け手は、旧版の報告など `bounds` を持たない Effects を、`expanded` の各名前がその種類の全対象の上限を表すものとして読む。任意欄を無視しても名前の全上限が得られるため、報告の形式の版と受け入れ条件は変えない。
+ 
+diff --git a/docs/design/06-tooling/06-04-test-runner.md b/docs/design/06-tooling/06-04-test-runner.md
+index a07582ca..83b31de0 100644
+--- a/docs/design/06-tooling/06-04-test-runner.md
++++ b/docs/design/06-tooling/06-04-test-runner.md
+@@ -194,7 +194,7 @@ end function
+ 
+ 【決定】同じ表示パスのファイルを直接指定とディレクトリ経由で選んだ場合も、入口とその根をそれぞれ保持する。明示した重複を報告で統合しない。走査ではリンクを除外するが、直接指定したファイルやディレクトリのリンクは辿る。理由: 報告する入口と、通常の `test` が検査・実行する入口との対応を保つためである。
+ 
+-【決定】各テストと doc の例の Effects は、main と共通の `basis: declaredUpperBound`・名前集合 `expanded`・任意の範囲配列 `bounds` を使う。全体の `aggregateEffects` も同じ形とし、実行する通常テストと test/run 例の宣言上限を合併する。check 例の契約は例の報告に保持するが、実行の上限の和へ加えない。期待どおりに拒否された error 例は契約を持たず、`expanded: []`・`bounds: []` の空の Effects を返す。この空は純粋な契約を意味せず、error 例も実行の上限の和へ加えない。範囲の種類・Top・未知・解析未完了と既存の受け手の読み方は [CLI の Effects](06-01-cli.md#main-の非実行の検査報告) に従う。処理した利用者エフェクトを範囲や権限の項目へ戻さない。
++【決定】各テストと doc の例の Effects は、main と共通の `basis: declaredUpperBound`・名前集合 `expanded`・任意の範囲配列 `bounds` を使う。全体の `aggregateEffects` も同じ形とし、実行する通常テストと test/run 例の宣言上限を合併する。check/error 例は、入口の選択によらず、`expanded: []`・`bounds: []` の空の Effects と `tests: []` を返す。例の中に `main` や `@test` の宣言上限があっても報告せず、この空は純粋な契約を意味しない。check/error 例は実行の上限の和へ加えない。範囲の種類・Top・未知・解析未完了と既存の受け手の読み方は [CLI の Effects](06-01-cli.md#main-の非実行の検査報告) に従う。処理した利用者エフェクトを範囲や権限の項目へ戻さない。
+ 
+ `test --allow-effects` と doc の実行例の照合でも、名前一つを同じ種類の全対象の上限として扱う。宣言範囲の精度を名前の不足と混同せず、範囲付きの CLI 引数は使い方の誤りとして拒否する。
+ 
+diff --git a/docs/design/06-tooling/06-06-agent-skills.md b/docs/design/06-tooling/06-06-agent-skills.md
+index df3deed5..011691a4 100644
+--- a/docs/design/06-tooling/06-06-agent-skills.md
++++ b/docs/design/06-tooling/06-06-agent-skills.md
+@@ -130,7 +130,9 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
+ 
+ この手順で確認するエフェクトは、`main`（テストではテストの関数）が宣言した上限である。検査を通ったスクリプトは、`main` の `uses` にない組み込みの操作を行わない（[ロードマップ](../00-overview/00-03-roadmap.md)の「初回リリース版で宣言する保証」）。テストの関数も同じく、その `uses` にない組み込みの操作を行わない。シグネチャを手で読んで確認する場合、検査や修正の後に宣言が変われば、利用者に示した上限と異なる可能性がある。宣言上限の取得と実行前の包含の照合には、次の CLI を利用できる。
+ 
+-【決定】ハーネスは、main には `check --report=json`、テストには `test --check --report=json` を使い、型検査済みの宣言上限を取得できる。必要な形式は `--version=json` の `formats` で確認する。完全な単一の JSON、既知の形式の版と kind、status:ok、complete:true、終了状態0を確認した場合だけ、`aggregateEffects.expanded` を確認に使う。一部の入口だけが成功した報告や null を、成功した空集合と扱わない。テストの和には `Assert.Check` も残す。エフェクトは実際に使う最小集合ではなく宣言した上限であり、shell の参照は依存と到達しない関数を含む検査対象全体に対する参考情報である。
++【決定】ハーネスは、main には `check --report=json`、テストには `test --check --report=json` を使い、型検査済みの宣言上限を取得できる。必要な形式は `--version=json` の `formats` で確認する。完全な単一の JSON、既知の形式の版と kind、status:ok、complete:true、終了状態0を確認した場合だけ、`aggregateEffects` を確認に使う。`expanded` は正規名の集合、任意欄 `bounds` は各原子の名前と範囲を示し、どちらも宣言上限である。この処理系は Effects を出すとき常に `bounds` を置き、契約の解析が未完了なら Effects 全体を null にする。受け手は `bounds` のない旧版などの Effects を、`expanded` の各名前の全対象の上限として読む。一部の入口だけが成功した報告や null を、成功した空集合と扱わない。テストの和には `Assert.Check` も残す。エフェクトは実際に使う最小集合ではなく宣言した上限であり、shell の参照は依存と到達しない関数を含む検査対象全体に対する参考情報である。範囲の形と Top、doc の check/error 例が返す空の Effects の扱いは [CLI「main の非実行の検査報告」](06-01-cli.md#main-の非実行の検査報告)の Effects の規則に従う。
++
++`bounds` は実行時の権限、パスの実体の隔離、情報フロー制御を表さない。処理済みの利用者エフェクト名を `expanded`・`bounds`・`--allow-effects` の集合へ戻さない。診断の由来の説明も、宣言上限や許す集合へ加えない。名前による実行前の照合は `bounds` の範囲を使って操作を制限するものではなく、許した名前の全対象を上限として比較する。
+ 
+ 【決定】利用者に確認した正規名の集合は、カンマでつないで `run --allow-effects=<集合>` または `test --allow-effects=<集合>` に渡せる。空集合は `--allow-effects=` とする。実行前の検査が成功しても、その宣言上限が許す集合を超えれば E0512 で拒否し、上限付き test は全入口の準備が成功するまで一つも開始しない。引数と診断は [CLI](06-01-cli.md#実行前のエフェクト上限の照合)で定める。
+ 
+@@ -140,7 +142,7 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
+ 
+ 報告と後の実行は別の検査であり、ソースのハッシュや許す集合を渡しても、実行する内容は固定されない。同じエフェクトのまま操作の対象や内容が変わる場合、静的な上限照合では拒否できない。利用者への説明と確認を行うかはハーネスに依存し、処理系はその手続きを強制しない。
+ 
+-【決定】ファイル単位の宣言を使う場合も、完全な単一の JSON、理解する schemaVersion と kind、status:ok、complete:true、終了状態0をすべて確認してから、`targets[0].main.effects.expanded` を宣言上限として人間へ示す。これは個別の `uses` とファイルの宣言を合併した上限であり、実際に行った操作ではない。失敗や不明を空集合へ変えず、上限を自動で許可へ変換しない。同梱 Skill は、処理系の報告仕様の版を固定して参照する。純粋な引数や Property の関数が必要なときは、ファイルの宣言のない別ファイルへ置く例を示す。main 内の handle ではファイルの宣言の追加分を取り消せず、doc の例は外側の宣言を引き継がないことも案内する。
++【決定】ファイル単位の宣言を使う場合も、完全な単一の JSON、理解する schemaVersion と kind、status:ok、complete:true、終了状態0をすべて確認してから、`targets[0].main.effects` の `expanded` と、存在する場合は `bounds` を宣言上限として人間へ示す。これは個別の `uses` とファイルの宣言を合併した上限であり、実際に行った操作ではない。`bounds` がなければ各名前の全対象の上限として読む。失敗や不明を空集合へ変えず、上限を自動で許可へ変換しない。同梱 Skill は、既存の必須欄と受け入れ規則には処理系の報告仕様の版を固定して参照し、範囲の追加欄はその実行ファイルに同梱した `references/inspection.md` で説明する。純粋な引数や Property の関数が必要なときは、ファイルの宣言のない別ファイルへ置く例を示す。main 内の handle ではファイルの宣言の追加分を取り消せず、doc の例は外側の宣言を引き継がないことも案内する。
+ 
+ `package add`・`update` は、依存の公開の契約にある組み込みのエフェクトと、その記録の変更を報告する（[パッケージ](06-09-packages.md)）。この報告は、ここで定める実行前の確認に代わるものではない。
+ 
+@@ -151,7 +153,7 @@ benitoite skill uninstall [--user | --project] [--agent <名前>]...
+ - `Process.Run` を含むときは、起動するコマンドの名前も利用者に示す。起動したコマンドが行う操作は、処理系の検査の外にあるからである（[セキュリティモデル](../07-quality/07-01-security-model.md)の「ハーネスとの分担」）。
+ - `benitoite test` で実行するテストの関数も外部の操作を行いうるので、テストの関数のエフェクトにも同じ手順を当てる。
+ 
+-この手順は、利用者が操作を理解するためのものであり、隔離の代わりにならない。手順を守るかはエージェントに依存し、処理系は強制しない。エフェクトは操作の種類だけを表し、どのファイルやコマンドを対象にするかは表さない。初回リリース版は、対象の確認と実行時の権限制御を持たない。
++この手順は、利用者が操作を理解するためのものであり、隔離の代わりにならない。手順を守るかはエージェントに依存し、処理系は強制しない。エフェクトの名前は操作の種類を表し、範囲付きの原子はパスの文字列や接続先の上限も表す。外部コマンドが行う操作や、シンボリックリンクを解決した後のファイル、DNS で解決した後の接続先を、この範囲から保証しない。処理系は実行時の権限制御を持たない。
+ 
+ 宣言を読む開発用の `derive_inventory` は、本体の検査と実行を行わない（[外部生成の宣言情報](../03-interop/03-06-stdlib.md#外部生成の宣言情報)）。その終了0は、ここで使う `check`・`test --check` の成功や、実行前のエフェクト上限の確認に代用しない。
+ 

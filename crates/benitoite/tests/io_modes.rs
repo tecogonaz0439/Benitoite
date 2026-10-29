@@ -398,6 +398,112 @@ end function
     assert!(result.files.contains(&("b.txt".into(), b"B!".to_vec())));
 }
 
+// 関門: 新六操作の PathIn の引数と完了を、並行する別対象で保持する契約を守る。
+// 単独の実ファイル検査では完了順を入れ替えられない。既存の本物の worker と筋書きを使う。
+#[test]
+fn concurrent_file_in_operations_keep_targets_in_both_io_modes() {
+    let result = compare(
+        r#"
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Process
+function fileWork(path: String, text: String) -> Result[String, String] uses File.Write, File.Read
+ bind checked <- try Scope.checkPathIn(pattern: "/**", path: path) |> Result.mapError(r: _, f: lambda(error) return "scope" end lambda) or return
+ bind _ <- try File.writeTextIn(path: checked, text: text) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+ bind _ <- try File.appendTextIn(path: checked, text: "!") |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+ bind first <- try File.readTextIn(path: checked) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+ bind _ <- try File.writeBytesIn(path: checked, content: String.toUTF8(first)) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+ bind _ <- try File.appendBytesIn(path: checked, content: String.toUTF8("?")) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+ bind final <- try File.readBytesIn(path: checked) |> Result.mapError(r: _, f: lambda(error) return IOError.message(error) end lambda) or return
+ return Result.Ok(Bytes.toHex(final))
+end function
+function main() -> Result[Unit, String] uses File.Write, File.Read, Console.Write, Process.Environment
+ bind directory <- Process.scriptDirectory()
+ bind a <- "${directory}/a.txt"
+ bind b <- "${directory}/b.txt"
+ bind values <- Task.all([lambda() return fileWork(path: a, text: "A") end lambda,
+                          lambda() return fileWork(path: b, text: "B") end lambda])
+ if values <> [Result.Ok("41213f"), Result.Ok("42213f")] then return Result.Error("values") end if
+ Console.writeLine("A!?,B!?")
+ return Result.Ok(())
+end function
+"#,
+        b"",
+        false,
+        b"A!?,B!?\n",
+        b"",
+        false,
+    );
+    assert!(result.files.contains(&("a.txt".into(), b"A!?".to_vec())));
+    assert!(result.files.contains(&("b.txt".into(), b"B!?".to_vec())));
+}
+
+// 関門: RequestInのworkerが別対象の要求や完了へ取り違えられないことを、
+// 本物の二endpointと既存の完了順の筋書きで守る。単独送信では順序の退行を捕まえない。
+#[test]
+fn concurrent_send_in_operations_keep_each_endpoint_and_result() {
+    fn server(label: &'static str) -> (u16, std::thread::JoinHandle<()>) {
+        use std::io::{Read, Write};
+        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let port = listener.local_addr().unwrap().port();
+        listener.set_nonblocking(true).unwrap();
+        let thread = std::thread::spawn(move || {
+            for _ in 0..6 {
+                let deadline = std::time::Instant::now().checked_add(LIMIT).unwrap();
+                let mut stream = loop {
+                    match listener.accept() {
+                        Ok((stream, _)) => break stream,
+                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                            assert!(
+                                std::time::Instant::now() < deadline,
+                                "HTTP endpoint {label} was not called"
+                            );
+                            std::thread::yield_now();
+                        }
+                        Err(error) => panic!("HTTP endpoint {label}: {error}"),
+                    }
+                };
+                stream.set_nonblocking(false).unwrap();
+                stream.set_read_timeout(Some(LIMIT)).unwrap();
+                stream.set_write_timeout(Some(LIMIT)).unwrap();
+                let mut request = Vec::new();
+                while !request.ends_with(b"\r\n\r\n") {
+                    let mut byte = [0];
+                    stream.read_exact(&mut byte).unwrap();
+                    request.extend_from_slice(&byte);
+                    assert!(request.len() < 4096);
+                }
+                assert!(request.starts_with(format!("GET /{label} HTTP/1.1\r\n").as_bytes()));
+                stream.write_all(format!("HTTP/1.1 200 OK\r\nContent-Length: 1\r\nConnection: close\r\n\r\n{label}").as_bytes()).unwrap();
+            }
+        });
+        (port, thread)
+    }
+    let (a, first) = server("A");
+    let (b, second) = server("B");
+    let source = format!(
+        r#"
+import Benitoite.Unofficial.Network.Http
+function send(port: Integer, label: String) -> Result[String, String] uses Http.Connect
+ bind checked <- try Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: port, maximumPort: port, request: Http.clientRequest(method: "GET", url: "http://127.0.0.1:" + Integer.toString(port) + "/" + label)) |> Result.mapError(r: _, f: lambda(error) return "request check failed" end lambda) or return
+ bind retained <- String.repeat(s: label, n: 4000)
+ if String.byteLength(retained) <> 4000 then return Result.Error("retained label") end if
+ bind response <- try Http.sendIn(request: checked) |> Result.mapError(r: _, f: lambda(error) return NetworkError.message(error) end lambda) or return
+ return Result.Ok(Option.unwrapOr(o: String.fromUTF8(Http.Response.body(response)), fallback: "invalid"))
+end function
+function main() -> Result[Unit, String] uses Http.Connect, Console.Write
+ bind values <- Task.all([lambda() return send(port: {a}, label: "A") end lambda,
+                          lambda() return send(port: {b}, label: "B") end lambda])
+ if values <> [Result.Ok("A"), Result.Ok("B")] then return Result.Error("response order") end if
+ Console.writeLine("A,B")
+ return Result.Ok(())
+end function
+"#
+    );
+    let _result = compare(&source, b"", false, b"A,B\n", b"", false);
+    first.join().unwrap();
+    second.join().unwrap();
+}
+
 #[test]
 fn reader_waits_alongside_computation() {
     compare(

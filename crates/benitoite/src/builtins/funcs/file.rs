@@ -20,32 +20,28 @@ builtin! {
     /// `Benitoite.IO.File.readText` の本体。
     name = "Benitoite.IO.File.readText",
     io fn read_text(ctx, path: &'c str) -> IoReply<'e> {
-        let mut ctx = ctx;
-        let path = ctx.services().working_directory().join(path);
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing,
-            move |_lent| read_limited(&path),
-            read_text_done,
-        ))))
+        start_read_text(ctx, path, "Benitoite.IO.File.readText")
     }
+}
+
+fn start_read_text<'c, 'e>(
+    mut ctx: IoCtx<'c, 'e>,
+    path: &str,
+    function: &'static str,
+) -> Result<IoReply<'e>, Stop> {
+    let path = ctx.services().working_directory().join(path);
+    Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
+        Lend::Nothing,
+        move |_| (function, read_limited(&path)),
+        read_text_done,
+    ))))
 }
 
 builtin! {
     /// `Benitoite.IO.File.writeText` の本体。
     name = "Benitoite.IO.File.writeText",
     io fn write_text(ctx, path: &'c str, text: &'c str) -> IoReply<'e> {
-        let mut ctx = ctx;
-        let path = ctx.services().working_directory().join(path);
-        let text = text.to_owned();
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing,
-            move |_| {
-                let mut file = OpenOptions::new().write(true).create(true)
-                    .append(false).truncate(true).open(path)?;
-                file.write_all(text.as_bytes()).map_err(IoFailure::from)
-            },
-            write_text_done,
-        ))))
+        start_write(ctx, path, text.as_bytes(), false, "Benitoite.IO.File.writeText")
     }
 }
 
@@ -53,18 +49,7 @@ builtin! {
     /// `Benitoite.IO.File.appendText` の本体。
     name = "Benitoite.IO.File.appendText",
     io fn append_text(ctx, path: &'c str, text: &'c str) -> IoReply<'e> {
-        let mut ctx = ctx;
-        let path = ctx.services().working_directory().join(path);
-        let text = text.to_owned();
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing,
-            move |_| {
-                let mut file = OpenOptions::new().create(true)
-                    .append(true).open(path)?;
-                file.write_all(text.as_bytes()).map_err(IoFailure::from)
-            },
-            append_text_done,
-        ))))
+        start_write(ctx, path, text.as_bytes(), true, "Benitoite.IO.File.appendText")
     }
 }
 
@@ -327,10 +312,10 @@ pub(super) fn complete_line<'c, 'e>(
 
 fn read_text_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
-    output: Result<Vec<u8>, IoFailure>,
+    (function, output): (&'static str, Result<Vec<u8>, IoFailure>),
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    complete_text(ctx, output, "Benitoite.IO.File.readText", MAX_STRING_BYTES)
+    complete_text(ctx, output, function, MAX_STRING_BYTES)
 }
 fn read_line_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
@@ -349,19 +334,12 @@ fn write_done<'c, 'e>(
         Err(failure) => result_error(ctx, failure, function),
     }
 }
-fn write_text_done<'c, 'e>(
+fn write_path_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
-    output: Result<(), IoFailure>,
+    (function, output): (&'static str, Result<(), IoFailure>),
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    write_done(ctx, output, "Benitoite.IO.File.writeText")
-}
-fn append_text_done<'c, 'e>(
-    ctx: &mut IoCtx<'c, 'e>,
-    output: Result<(), IoFailure>,
-    _args: &[Value<'e>],
-) -> Result<Value<'e>, Stop> {
-    write_done(ctx, output, "Benitoite.IO.File.appendText")
+    write_done(ctx, output, function)
 }
 fn open_reader_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
@@ -407,14 +385,21 @@ builtin! {
     /// `Benitoite.IO.File.readBytes` の本体。
     name = "Benitoite.IO.File.readBytes",
     io fn read_bytes(ctx, path: &'c str) -> IoReply<'e> {
-        let mut ctx = ctx;
-        let path = ctx.services().working_directory().join(path);
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing,
-            move |_| read_bytes_job(&path),
-            read_bytes_done,
-        ))))
+        start_read_bytes(ctx, path, "Benitoite.IO.File.readBytes")
     }
+}
+
+fn start_read_bytes<'c, 'e>(
+    mut ctx: IoCtx<'c, 'e>,
+    path: &str,
+    function: &'static str,
+) -> Result<IoReply<'e>, Stop> {
+    let path = ctx.services().working_directory().join(path);
+    Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
+        Lend::Nothing,
+        move |_| (function, read_bytes_job(&path, function)),
+        read_bytes_done,
+    ))))
 }
 
 builtin! {
@@ -510,14 +495,7 @@ builtin! {
     /// `Benitoite.IO.File.writeBytes` の本体。
     name = "Benitoite.IO.File.writeBytes",
     io fn write_bytes(ctx, path: &'c str, content: &'c [u8]) -> IoReply<'e> {
-        let mut ctx = ctx;
-        let path = ctx.services().working_directory().join(path);
-        let content = content.to_owned();
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing,
-            move |_| write_bytes_job(&path, &content, false),
-            write_bytes_done,
-        ))))
+        start_write(ctx, path, content, false, "Benitoite.IO.File.writeBytes")
     }
 }
 
@@ -525,14 +503,7 @@ builtin! {
     /// `Benitoite.IO.File.appendBytes` の本体。
     name = "Benitoite.IO.File.appendBytes",
     io fn append_bytes(ctx, path: &'c str, content: &'c [u8]) -> IoReply<'e> {
-        let mut ctx = ctx;
-        let path = ctx.services().working_directory().join(path);
-        let content = content.to_owned();
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing,
-            move |_| write_bytes_job(&path, &content, true),
-            append_bytes_done,
-        ))))
+        start_write(ctx, path, content, true, "Benitoite.IO.File.appendBytes")
     }
 }
 
@@ -596,7 +567,7 @@ builtin! {
 // 仕事は Rust の値だけを返し、資源の不足も VM の共通の停止手順へ返す（設計書 02-09）。
 type PathInput<T> = Result<Result<T, IoFailure>, Stop>;
 
-fn read_bytes_job(path: &Path) -> PathInput<Vec<u8>> {
+fn read_bytes_job(path: &Path, function: &'static str) -> PathInput<Vec<u8>> {
     let mut file = match File::open(path) {
         Ok(file) => file,
         Err(e) => return Ok(Err(e.into())),
@@ -606,11 +577,7 @@ fn read_bytes_job(path: &Path) -> PathInput<Vec<u8>> {
         Err(e) => return Ok(Err(e.into())),
     };
     if metadata.len() > MAX_STRING_BYTES {
-        return Err(input_too_large(
-            "Benitoite.IO.File.readBytes",
-            SizeUnit::Bytes,
-            MAX_STRING_BYTES,
-        ));
+        return Err(input_too_large(function, SizeUnit::Bytes, MAX_STRING_BYTES));
     }
     // 読む間にファイルが増える場合にも、上限より 1 バイト多い分までに留める。
     Ok(read_all_limited(&mut file, MAX_STRING_BYTES))
@@ -764,6 +731,22 @@ fn directory_paths(
     Ok(Ok(paths))
 }
 
+fn start_write<'c, 'e>(
+    mut ctx: IoCtx<'c, 'e>,
+    path: &str,
+    content: &[u8],
+    append: bool,
+    function: &'static str,
+) -> Result<IoReply<'e>, Stop> {
+    let path = ctx.services().working_directory().join(path);
+    let content = content.to_owned();
+    Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
+        Lend::Nothing,
+        move |_| (function, write_bytes_job(&path, &content, append)),
+        write_path_done,
+    ))))
+}
+
 fn write_bytes_job(path: &Path, content: &[u8], append: bool) -> Result<(), IoFailure> {
     let mut file = OpenOptions::new()
         .write(true)
@@ -856,16 +839,15 @@ fn rename_job(from: &Path, to: &Path) -> Result<(), IoFailure> {
 
 fn read_bytes_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
-    output: PathInput<Vec<u8>>,
+    (function, output): (&'static str, PathInput<Vec<u8>>),
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    const FUNCTION: &str = "Benitoite.IO.File.readBytes";
     let bytes = match output? {
         Ok(bytes) => bytes,
-        Err(e) => return result_error(ctx, e, FUNCTION),
+        Err(e) => return result_error(ctx, e, function),
     };
-    check_input(&bytes, FUNCTION, MAX_STRING_BYTES)?;
-    let value = ctx.alloc_bytes(&bytes, FUNCTION)?;
+    check_input(&bytes, function, MAX_STRING_BYTES)?;
+    let value = ctx.alloc_bytes(&bytes, function)?;
     ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_OK, &[value])
 }
 
@@ -1001,22 +983,6 @@ fn canonicalize_done<'c, 'e>(
         .alloc_str_utf8(path.as_bytes(), FUNCTION)?
         .ok_or_else(|| Stop::Internal("validated canonical path is not UTF-8".into()))?;
     ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_OK, &[value])
-}
-
-fn write_bytes_done<'c, 'e>(
-    ctx: &mut IoCtx<'c, 'e>,
-    output: Result<(), IoFailure>,
-    _args: &[Value<'e>],
-) -> Result<Value<'e>, Stop> {
-    write_done(ctx, output, "Benitoite.IO.File.writeBytes")
-}
-
-fn append_bytes_done<'c, 'e>(
-    ctx: &mut IoCtx<'c, 'e>,
-    output: Result<(), IoFailure>,
-    _args: &[Value<'e>],
-) -> Result<Value<'e>, Stop> {
-    write_done(ctx, output, "Benitoite.IO.File.appendBytes")
 }
 
 fn create_directory_done<'c, 'e>(
@@ -1346,4 +1312,77 @@ pub const RESOURCE_DECLS: &[BuiltinDecl] = &[
     write_line::DECL,
     write_chunk::DECL,
     close_writer::DECL,
+];
+
+/// PathIn の一欄に保持した同じ String を、旧入口と共通の実処理へ渡す。
+/// 値の再確保・再検査をせず、待つ仕事へは既存のホスト側 PathBuf だけを渡す
+/// （設計書 02-08「組み込みの関数の呼び出し」、03-07「File」）。
+fn retained_path<'c, 'e>(ctx: &IoCtx<'c, 'e>, path: Value<'e>) -> Result<&'c str, Stop> {
+    if ctx.fields_header(path) != Some((FieldsKind::Ctor, tags::RECORD))
+        || ctx.fields_len(path) != Some(1)
+    {
+        return Err(Stop::Internal("File expected PathIn".into()));
+    }
+    ctx.field(path, 0)
+        .and_then(|value| ctx.values().str(value))
+        .ok_or_else(|| Stop::Internal("File PathIn lost its path".into()))
+}
+
+builtin! {
+    /// 保持したパスからテキストを読む（設計書 03-07「File」）。
+    name = "Benitoite.IO.File.readTextIn",
+    io fn read_text_in(ctx, path: Value<'e>) -> IoReply<'e> {
+        let path = retained_path(&ctx, path)?;
+        start_read_text(ctx, path, "Benitoite.IO.File.readTextIn")
+    }
+}
+builtin! {
+    /// 保持したパスからバイト列を読む（設計書 03-07「File」）。
+    name = "Benitoite.IO.File.readBytesIn",
+    io fn read_bytes_in(ctx, path: Value<'e>) -> IoReply<'e> {
+        let path = retained_path(&ctx, path)?;
+        start_read_bytes(ctx, path, "Benitoite.IO.File.readBytesIn")
+    }
+}
+builtin! {
+    /// 保持したパスへテキストを書く（設計書 03-07「File」）。
+    name = "Benitoite.IO.File.writeTextIn",
+    io fn write_text_in(ctx, path: Value<'e>, text: &'c str) -> IoReply<'e> {
+        let path = retained_path(&ctx, path)?;
+        start_write(ctx, path, text.as_bytes(), false, "Benitoite.IO.File.writeTextIn")
+    }
+}
+builtin! {
+    /// 保持したパスへテキストを追記する（設計書 03-07「File」）。
+    name = "Benitoite.IO.File.appendTextIn",
+    io fn append_text_in(ctx, path: Value<'e>, text: &'c str) -> IoReply<'e> {
+        let path = retained_path(&ctx, path)?;
+        start_write(ctx, path, text.as_bytes(), true, "Benitoite.IO.File.appendTextIn")
+    }
+}
+builtin! {
+    /// 保持したパスへバイト列を書く（設計書 03-07「File」）。
+    name = "Benitoite.IO.File.writeBytesIn",
+    io fn write_bytes_in(ctx, path: Value<'e>, content: &'c [u8]) -> IoReply<'e> {
+        let path = retained_path(&ctx, path)?;
+        start_write(ctx, path, content, false, "Benitoite.IO.File.writeBytesIn")
+    }
+}
+builtin! {
+    /// 保持したパスへバイト列を追記する（設計書 03-07「File」）。
+    name = "Benitoite.IO.File.appendBytesIn",
+    io fn append_bytes_in(ctx, path: Value<'e>, content: &'c [u8]) -> IoReply<'e> {
+        let path = retained_path(&ctx, path)?;
+        start_write(ctx, path, content, true, "Benitoite.IO.File.appendBytesIn")
+    }
+}
+
+/// 既存の登録番号を保ち、表の末尾へ追加する。
+pub const SCOPED_DECLS: &[BuiltinDecl] = &[
+    read_text_in::DECL,
+    read_bytes_in::DECL,
+    write_text_in::DECL,
+    append_text_in::DECL,
+    write_bytes_in::DECL,
+    append_bytes_in::DECL,
 ];

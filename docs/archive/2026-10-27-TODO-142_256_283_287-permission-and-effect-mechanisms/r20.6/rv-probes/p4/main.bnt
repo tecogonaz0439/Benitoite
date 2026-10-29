@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope as S
+import Lib.Scope
+function user() -> String
+ return Scope.checkPathIn(pattern: "/bad//path", path: "x")
+end function
+function standard(path: String) -> Result[S.PathIn["/data/**"], S.ScopeError]
+ return S.checkPathIn(pattern: "/data/**", path: path)
+end function
+function main() -> Unit
+ ()
+end function

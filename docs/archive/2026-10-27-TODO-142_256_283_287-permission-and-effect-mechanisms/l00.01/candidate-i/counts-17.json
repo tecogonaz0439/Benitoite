@@ -1,0 +1,120 @@
+{
+ "affected_modules": 243,
+ "checked_affected": 195,
+ "failed_modules": [
+  "Benitoite.Surface.AdmissibleCheck"
+ ],
+ "error_diagnostics": 4,
+ "sorry_warnings_from_errors": 0,
+ "broken_declarations": 3,
+ "broken_files": 1,
+ "declarations": [
+  {
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "decl": "def rowsEffCheck",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "decl": "theorem rowsAtoms_spec",
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "decl": "theorem rowsEffCheck_spec",
+   "errors": 1
+  }
+ ],
+ "files": [
+  "Benitoite/Surface/AdmissibleCheck.lean"
+ ],
+ "unchecked_count": 48,
+ "unchecked": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Surface.BuilderCheck",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.Check",
+  "Benitoite.Surface.CheckComputeAtoms",
+  "Benitoite.Surface.CheckComputeCalls",
+  "Benitoite.Surface.CheckComputeCases",
+  "Benitoite.Surface.CheckComputeControl",
+  "Benitoite.Surface.CheckComputePipe",
+  "Benitoite.Surface.CheckComputeSound",
+  "Benitoite.Surface.CheckCounterexamples",
+  "Benitoite.Surface.CheckDictSupport",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckInduction",
+  "Benitoite.Surface.CheckLemmas",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundBasicExpr",
+  "Benitoite.Surface.CheckSoundCalls",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckSoundDie",
+  "Benitoite.Surface.CheckSoundSequence",
+  "Benitoite.Surface.CheckTables",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "diagnostics": [
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "line": 26,
+   "col": 38,
+   "decl": "def rowsEffCheck",
+   "decl_line": 25,
+   "msg": "Missing cases:"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "line": 33,
+   "col": 24,
+   "decl": "theorem rowsAtoms_spec",
+   "decl_line": 31,
+   "msg": "Missing cases:"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "line": 44,
+   "col": 16,
+   "decl": "theorem rowsAtoms_spec",
+   "decl_line": 31,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/AdmissibleCheck.lean",
+   "line": 73,
+   "col": 14,
+   "decl": "theorem rowsEffCheck_spec",
+   "decl_line": 70,
+   "msg": "unsolved goals"
+  }
+ ]
+}

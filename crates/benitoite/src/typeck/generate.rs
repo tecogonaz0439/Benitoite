@@ -14,7 +14,11 @@ use crate::types::builtin::BuiltinTypeId as B;
 use crate::types::{ConstValue, TyCon, TyNames, TySet};
 
 pub(super) fn basic(b: B) -> ITy {
-    ITy::Con(TyCon::Builtin(b), vec![])
+    ITy::Con(
+        TyCon::Builtin(b),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 pub(super) fn equal(
     ctx: &mut Body<'_, '_>,
@@ -101,59 +105,108 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
     if d.invalid.contains(&id) {
         return;
     }
-    let Some(s) = d.out.decl_types.get(id).cloned() else {
+    let Some(mut s) = d.out.decl_types.get(id).cloned() else {
         return;
     };
-    let scope = d.scopes.get(&f.id).cloned().unwrap_or_default();
+    let mut scope = d.scopes.get(&f.id).cloned().unwrap_or_default();
     let Some(module) = d.resolved.bindings.get(id).map(|binding| binding.module) else {
         return;
     };
     let before = d.diagnostics.len();
-    let mut ctx = Body::new(d, module, scope, s);
-    ctx.owner = Some(f.id);
-    ctx.return_annotation = Some(f.ret.span());
-    for (p, t) in f.params.iter().zip(ctx.scheme.params.clone()) {
-        let t = lift(&t);
-        if let Some(id) = ctx.decls.binding(p.id) {
-            ctx.locals.insert(id, t.clone());
+    let before_aliases = d.invalid_alias_uses;
+    let mut selections = std::collections::BTreeMap::new();
+    let mut retries = None;
+    let mut declaration_diagnostics = vec![];
+    loop {
+        let mut ctx = Body::new(d, module, scope, s);
+        ctx.handler_overrides = selections;
+        ctx.owner = Some(f.id);
+        ctx.return_annotation = Some(f.ret.span());
+        ctx.prepare_scope(id);
+        for (p, t) in f.params.iter().zip(ctx.scheme.params.clone()) {
+            let t = lift(&t);
+            if let Some(id) = ctx.decls.binding(p.id) {
+                ctx.locals.insert(id, t.clone());
+            }
+            ctx.record_type(p.id, t);
         }
-        ctx.record_type(p.id, t);
+        let ty = ctx.block(block);
+        let end = body_end(block);
+        ctx.body_returns.insert(
+            end,
+            BodyReturn {
+                annotated: true,
+                ty: lift(&ctx.scheme.ret),
+                owner: ReturnOwner::Function,
+            },
+        );
+        equal(&mut ctx, basic(B::UNIT), ty, end, ReasonKind::FnBody);
+        let mut r = reason(f.name.span, ReasonKind::FnUses);
+        r.related = Some(f.name.span);
+        ctx.add(Constraint::EffSub {
+            relation: crate::typeck::infer::EffectRelation::Cover,
+            sub: ctx.body_effect.clone(),
+            sup: fixed(ctx.scheme.effects.clone()),
+            reason: r,
+        });
+        ctx.solve();
+        if !ctx.handler_revisions.is_empty() {
+            // 初回に検査したハンドラの数を再推論の上限とする。選択が Top へ
+            // 一方向に変わるとは限らない。上限時にも recheck の診断を残すため、
+            // 一致しない推論結果が受理されることはない。
+            let remaining = retries.get_or_insert(ctx.checked_handlers.len());
+            if *remaining != 0 {
+                *remaining = remaining.saturating_sub(1);
+                #[cfg(test)]
+                {
+                    ctx.decls.out.handler_reinferences =
+                        ctx.decls.out.handler_reinferences.saturating_add(1);
+                }
+                selections = std::mem::take(&mut ctx.handler_overrides);
+                selections.append(&mut ctx.handler_revisions);
+                scope = ctx.scope.clone();
+                s = ctx.scheme.clone();
+                // 別名や深さの上限は Decls にキャッシュされるので、診断を
+                // 捨てると次の巡で再生成されず、不正な注釈を受理しうる。
+                for diagnostic in ctx.decls.diagnostics.split_off(before) {
+                    if !declaration_diagnostics.contains(&diagnostic) {
+                        declaration_diagnostics.push(diagnostic);
+                    }
+                }
+                ctx.decls.invalid_alias_uses = before_aliases;
+                continue;
+            }
+        }
+        for diagnostic in declaration_diagnostics {
+            if !ctx
+                .decls
+                .diagnostics
+                .iter()
+                .skip(before)
+                .any(|d| d == &diagnostic)
+            {
+                ctx.decls.diagnostics.push(diagnostic);
+            }
+        }
+        ctx.check_type_limits(f.name.span);
+        let ret = lift(&ctx.scheme.ret);
+        reachability(&mut ctx, block, Some(ret));
+        for (block, ret) in std::mem::take(&mut ctx.lambda_returns) {
+            reachability(&mut ctx, &block, Some(ret));
+        }
+        let valid = !ctx
+            .diagnostics
+            .iter()
+            .any(super::consts::prevents_evaluation)
+            && ctx.decls.diagnostics.len() == before;
+        if valid {
+            super::consts::warnings(&mut ctx, block);
+        }
+        ctx.finish_scope();
+        ctx.collect_interval(f.id, valid);
+        ctx.finish();
+        break;
     }
-    let ty = ctx.block(block);
-    let end = body_end(block);
-    ctx.body_returns.insert(
-        end,
-        BodyReturn {
-            annotated: true,
-            ty: lift(&ctx.scheme.ret),
-            owner: ReturnOwner::Function,
-        },
-    );
-    equal(&mut ctx, basic(B::UNIT), ty, end, ReasonKind::FnBody);
-    let mut r = reason(f.name.span, ReasonKind::FnUses);
-    r.related = Some(f.name.span);
-    ctx.add(Constraint::EffSub {
-        sub: ctx.body_effect.clone(),
-        sup: fixed(ctx.scheme.effects.clone()),
-        reason: r,
-    });
-    ctx.solve();
-    ctx.check_type_limits(f.name.span);
-    let ret = lift(&ctx.scheme.ret);
-    reachability(&mut ctx, block, Some(ret));
-    for (block, ret) in std::mem::take(&mut ctx.lambda_returns) {
-        reachability(&mut ctx, &block, Some(ret));
-    }
-    let valid = !ctx
-        .diagnostics
-        .iter()
-        .any(super::consts::prevents_evaluation)
-        && ctx.decls.diagnostics.len() == before;
-    if valid {
-        super::consts::warnings(&mut ctx, block);
-    }
-    ctx.collect_interval(f.id, valid);
-    ctx.finish();
     if !d
         .diagnostics
         .iter()
@@ -474,6 +527,7 @@ fn apply(
         );
     }
     ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Cover,
         sub: effect,
         sup: ctx.effect.clone(),
         reason: reason(span, ReasonKind::CallEffect),
@@ -686,6 +740,7 @@ fn lambda_result(
         let mut r = reason(e.span, ReasonKind::LambdaUses);
         r.related = Some(u.span);
         ctx.add(Constraint::EffSub {
+            relation: crate::typeck::infer::EffectRelation::Cover,
             sub: effect.clone(),
             sup: fixed.clone(),
             reason: r,
@@ -1200,7 +1255,11 @@ fn format_set(format: &FormatSpec) -> TySet {
 #[inline(never)]
 fn list(ctx: &mut Body<'_, '_>, e: &ListExpr) -> ITy {
     let elem = ctx.fresh_ty();
-    let list = ITy::Con(TyCon::Builtin(B::LIST), vec![elem.clone()]);
+    let list = ITy::Con(
+        TyCon::Builtin(B::LIST),
+        vec![elem.clone()],
+        crate::types::builtin::RangeIndex::TOP,
+    );
     for item in &e.elems {
         match item {
             ListElem::Expr(e) => {

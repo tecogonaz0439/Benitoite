@@ -1,0 +1,13 @@
+diff --git a/crates/benitoite/src/typeck/tests/interpolation_formats.rs b/crates/benitoite/src/typeck/tests/interpolation_formats.rs
+index af53bc91..77504102 100644
+--- a/crates/benitoite/src/typeck/tests/interpolation_formats.rs
++++ b/crates/benitoite/src/typeck/tests/interpolation_formats.rs
+@@ -106,7 +106,7 @@ fn format_type_matrix_and_locations() {
+             Some(&Ty::Con(
+                 TyCon::Builtin(ty),
+                 vec![],
+-                benitoite::types::builtin::RangeIndex::TOP
++                crate::types::builtin::RangeIndex::TOP
+             ))
+         );
+         assert_eq!(

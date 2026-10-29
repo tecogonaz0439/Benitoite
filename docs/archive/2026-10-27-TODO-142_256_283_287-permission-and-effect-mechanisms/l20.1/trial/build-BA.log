@@ -1,0 +1,39 @@
+== wait-for-lock start 23:00:50
+== lock acquired 23:00:50 after 0s
+✖ [143/429] Building Benitoite.Release.Semantics (585ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Semantics.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Semantics.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Semantics.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Semantics.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Semantics.setup.json --json
+error: Benitoite/Release/Semantics.lean:622:13: Tactic `subst` failed: invalid equality proof, it is not of the form (x = t) or (t = x)
+  Scope.Signature.Ix
+
+P : Program
+B : Builtins
+ε : Eff
+h : BuiltinOnly P B ε
+a : Atom
+ha : ε.mem a
+l : EffName
+w✝ : Scope.Signature.Ix
+h✝ : a = Atom.name l w✝ ∧ P.effects l = none ∧ (B.effects l).isSome = true
+⊢ a.TopImage
+Some required targets logged failures:
+- Benitoite.Release.Semantics
+error: build failed
+        0.66 real         0.59 user         0.21 sys
+           731627520  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               52742  page reclaims
+                   5  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  12  voluntary context switches
+                5758  involuntary context switches
+          1345769704  instructions retired
+           544997292  cycles elapsed
+            22758504  peak memory footprint
+== exit 1

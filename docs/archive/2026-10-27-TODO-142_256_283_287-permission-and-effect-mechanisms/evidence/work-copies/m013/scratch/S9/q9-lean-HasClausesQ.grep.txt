@@ -1,0 +1,36 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckInduction.lean:51:    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckInduction.lean:241:    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:314:theorem HasClausesQ.closure_empty {D B op Q Δ C Γ R cs a ε}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:315:    (h : HasClausesQ D B op Q Δ C Γ R cs a ε) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:316:    HasClausesQ D B op Q [] C Γ R cs a ε := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:319:  | .cons h0 h1 h2 h3 h4 h5 h6 => exact .cons h0 h1 h2 h3 h4 h5 (HasClausesQ.closure_empty h6)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:325:    (h : HasClausesQ (p.declarationsFor view) B op Q Δ C Γ R cs a ε)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:329:  have hc := HasClausesQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean:204:        have cc := HasClausesQ.desugar (BuilderCtx.aligned_empty _) (BuilderCtx.clean_empty _)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Scoped.lean:243:        exact ⟨HasBlockQ.desugar_scoped hb sc.1, HasClausesQ.desugar_scoped hc sc.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Scoped.lean:298:  theorem HasClausesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R cs t ε nt pe nv}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Scoped.lean:299:      (h : HasClausesQ D B op Q Δb C Γ R cs t ε) (sc : cs.Scoped nt pe nv) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Scoped.lean:304:        exact ⟨HasBlockQ.desugar_scoped hb (by simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using sc.1), HasClausesQ.desugar_scoped hs sc.2⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:779:        · exact HasClausesQ.desugar hAlign hΔ hwf hsig hc sc.2 hΓ hR
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:880:  theorem HasClausesQ.desugar {Δb : BuilderCtx} {C Γ}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:883:      (h : HasClausesQ (p.declarationsFor view) B op Q Δb C Γ R cs t ε)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:891:        refine .cons (by exact hop) hnames hn.2 hntys hw ?_ (HasClausesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR ht)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:434:        HasClausesQ D B opPrim Q Δ C Γ R cs t ε →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:491:  inductive HasClausesQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:493:    | nil {Δ C Γ R t ε} : HasClausesQ D B opPrim Q Δ C Γ R .nil t ε
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:499:        HasClausesQ D B opPrim Q Δ C Γ R cs t ε →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:500:        HasClausesQ D B opPrim Q Δ C Γ R (.cons o n ntys body cs ndicts) t ε
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:690:        exact .E_Handle (HasBlockQ.congrΔ h0 hΔ) h1 (HasClausesQ.congrΔ h2 hΔ)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:736:  theorem HasClausesQ.congrΔ {D B op Q Δ Δ' C Γ R cs t ε}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:737:      (h : HasClausesQ D B op Q Δ C Γ R cs t ε) (hΔ : ∀ i, Δ.kindAt i = Δ'.kindAt i) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:738:      HasClausesQ D B op Q Δ' C Γ R cs t ε := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:743:        exact .cons h0 h1 h2 h3 h4 h5 (HasClausesQ.congrΔ h6 hΔ)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:890:        exact .E_Handle (HasBlockQ.of_builderFree h0 (by simp_all only [Expr.BuilderFree])) h1 (HasClausesQ.of_builderFree h2 (by simp_all only [Expr.BuilderFree]))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:936:  theorem HasClausesQ.of_builderFree {D B op Q Δ Δ' C Γ R cs t ε}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:937:      (h : HasClausesQ D B op Q Δ C Γ R cs t ε) (hf : cs.BuilderFree) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:938:      HasClausesQ D B op Q Δ' C Γ R cs t ε := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:943:        exact .cons h0 h1 h2 h3 h4 h5 (HasClausesQ.of_builderFree h6 (by simp_all only [Clauses.BuilderFree]))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:998:theorem HasClausesQ.builderFree_iff {D B op Q Δ C Γ R cs t ε} (hf : cs.BuilderFree) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:999:    HasClausesQ D B op Q Δ C Γ R cs t ε ↔ HasClausesQ D B op Q [] C Γ R cs t ε :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1034:export HasClausesQ (nil cons)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1037:abbrev HasClauses (D : Declarations) (B : Builtins) (op : OpPrim) := HasClausesQ D B op Qempty []

@@ -1,8 +1,8 @@
 # Installing Benitoite
 
-This page explains how to install `benitoite` `0.0.12`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
+This page explains how to install `benitoite` `0.0.13`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).
 
-Version 0.0.12 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.12 executable archive or SHA256SUMS is provided.
+Version 0.0.13 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.13 executable archive or SHA256SUMS is provided.
 
 ## Supported systems
 
@@ -106,7 +106,7 @@ benitoite skill install --project --agent claude-code
 
 The Skill tells agents to show you the effects of a script (such as writing files or starting commands) before running it, and to ask before running scripts that write files, start commands, or use the network. An agent or harness can use `check --report=json` for `main` or `test --check --report=json` for tests, review a complete successful report, and pass the accepted atomic effect names to `run --allow-effects=...` or executing `test --allow-effects=...`. `Assert.Check` remains part of test contracts and allowed sets. See [Inspection reports](benitoite.md#inspection-reports) and [Effect limits before execution](benitoite.md#effect-limits-before-execution) for arguments, failure handling, and output contracts.
 
-These checks compare static declared effect sets. They do not enforce permissions while a script runs, fix its source between inspection and execution, or fix the file paths, contents, and commands used within an accepted set. Run scripts inside the agent's or harness's sandbox.
+These checks compare static declared effect sets. Reports also describe [declared target bounds](benitoite.md#declared-target-bounds) for scoped operations; the harness should explain them alongside the effect names. `--allow-effects` accepts names only, each covering all targets of that kind. Static target bounds do not enforce permissions, identify actual files or DNS-resolved peers, or control information flow. Inspection does not fix source bytes for a later execution, and an accepted name set does not fix paths, contents, or commands. Run scripts inside the agent's or harness's sandbox.
 
 ### Read the Skill without installing it
 

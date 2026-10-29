@@ -1,0 +1,24 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.1/f-local",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_named_declarations_smoke",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "start": "2026-10-29T11:26:37.120011+00:00",
+  "end": "2026-10-29T11:26:40.205978+00:00",
+  "exit": 0,
+  "time_exit": 0,
+  "seconds": 3.085668167,
+  "max_rss_raw": 704806912,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 672.15625,
+  "max_rss_gib": 0.656402587890625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN), child process maximum, not concurrent sum"
+}

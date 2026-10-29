@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.34s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers' (4583116) panicked at crates/benitoite/src/typeck/scope/local_tests.rs:262:5:
+assertion `left == right` failed
+  left: [Some("[\"/data/**\"]"), None, None, None, None, None, Some("[\"api.example\", 0..65535]"), None, None, None, None, None, None]
+ right: [Some("[\"/data/**\"]"), None, None, None, None, None, Some("[\"api.example\", 0..65535]"), None, None, Some("[\"api.example\", 443..80]"), None, None, None]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1396 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p benitoite --lib`

@@ -1,0 +1,613 @@
+diff --git a/crates/benitoite/src/builtins/checked_scope.rs b/crates/benitoite/src/builtins/checked_scope.rs
+index 4c7928f5..0989cddb 100644
+--- a/crates/benitoite/src/builtins/checked_scope.rs
++++ b/crates/benitoite/src/builtins/checked_scope.rs
+@@ -1,7 +1,8 @@
+ //! Scopeの字面・所属・失敗順を静的検査と実行時で共有する（設計書 03-06「Scope」）。
+ 
+ use crate::types::scope::{
+-    EndpointPattern, HostPattern, HostTarget, Path, PathPattern, Port, PortRange, ip_text,
++    EndpointPattern, HostPattern, HostTarget, IpAddress, Path, PathPattern, Port, PortRange,
++    ip_text,
+ };
+ use std::borrow::Cow;
+ 
+@@ -13,6 +14,16 @@ mod text {
+         "expected an absolute path without empty, dot, or dot-dot components, NUL, or backslash";
+     pub const PATH_PATTERN: &str = "expected an exact path or a trailing /** wildcard";
+     pub const ENDPOINT_PATTERN: &str = "expected a host pattern or a canonical IP address or CIDR";
++    pub const MAPPED_TARGET: &str =
++        "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address";
++}
++
++/// 対象の入口だけで射影の形を拒否する。範囲の数値の代数とパターンは変えない。
++pub(crate) fn host_target(target: HostTarget) -> Result<HostTarget, Failure> {
++    if matches!(target, HostTarget::Ip(IpAddress::V6(bits)) if bits >> 32 == 0xffff) {
++        return Err(Failure::InvalidTarget(text::MAPPED_TARGET));
++    }
++    Ok(target)
+ }
+ 
+ /// HTTP の動的条件と後続の静的判定が使う、同じ host/port の代数の入口。
+@@ -73,9 +84,12 @@ fn host_format(
+         .transpose()
+         .map_err(|_| Failure::InvalidPattern(text::HOST_PATTERN))?;
+     let host = host
+-        .map(HostTarget::parse)
+-        .transpose()
+-        .map_err(|_| Failure::InvalidTarget(text::HOST))?;
++        .map(|raw| {
++            HostTarget::parse(raw)
++                .map_err(|_| Failure::InvalidTarget(text::HOST))
++                .and_then(host_target)
++        })
++        .transpose()?;
+     Ok(pattern.zip(host))
+ }
+ 
+diff --git a/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs b/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs
+index f0a2ac7b..97a71b21 100644
+--- a/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs
++++ b/crates/benitoite/src/builtins/funcs/http_client/checked_request.rs
+@@ -80,6 +80,8 @@ fn endpoint(url: &str) -> Result<(Endpoint, String), RequestFailure> {
+         .and_then(|s| s.strip_suffix(']'))
+         .unwrap_or(host)
+         .to_owned();
++    let target = checked_scope::host_target(target)
++        .map_err(|failure| RequestFailure::Scope(failure, spelling.clone()))?;
+     Ok((
+         Endpoint {
+             host: target,
+diff --git a/crates/benitoite/tests/checked_args.rs b/crates/benitoite/tests/checked_args.rs
+index 772d5e9d..331176bd 100644
+--- a/crates/benitoite/tests/checked_args.rs
++++ b/crates/benitoite/tests/checked_args.rs
+@@ -307,6 +307,12 @@ fn scope_constants_follow_shared_runtime_contract_and_positions() {
+             "\"bad.\"",
+             vec![],
+         ),
++        (
++            "Scope.checkHost(pattern: dynamic, host: \"::ffff:127.0.0.1\")",
++            C::E0460,
++            "\"::ffff:127.0.0.1\"",
++            vec![],
++        ),
+         (
+             "Scope.checkPath(pattern: \"/a/*\", path: dynamic)",
+             C::E0459,
+@@ -473,6 +479,34 @@ end function
+             "\"192.0.2.1/24\"",
+             vec![],
+         ),
++        (
++            "",
++            "Http.checkRequestIn(hostPattern: \"::ffff:127.0.0.1\", minimumPort: 0, maximumPort: 65535, request: request)",
++            None,
++            "",
++            vec![],
++        ),
++        (
++            "",
++            "Http.checkRequestIn(hostPattern: \"::ffff:0.0.0.0/96\", minimumPort: 0, maximumPort: 65535, request: request)",
++            None,
++            "",
++            vec![],
++        ),
++        (
++            "",
++            "Http.checkRequestIn(hostPattern: \"::ffff:127.0.0.0/104\", minimumPort: 0, maximumPort: 65535, request: request)",
++            None,
++            "",
++            vec![],
++        ),
++        (
++            "",
++            "Http.checkRequestIn(hostPattern: \"::/0\", minimumPort: 0, maximumPort: 65535, request: request)",
++            None,
++            "",
++            vec![],
++        ),
+         (
+             "",
+             "Http.checkRequestIn(hostPattern: \"192.0.2.0/24\", minimumPort: 0, maximumPort: 65535, request: request)",
+diff --git a/crates/benitoite/tests/desugar_export.rs b/crates/benitoite/tests/desugar_export.rs
+index f3d96220..5a39cddf 100644
+--- a/crates/benitoite/tests/desugar_export.rs
++++ b/crates/benitoite/tests/desugar_export.rs
+@@ -349,6 +349,20 @@ fn export_known_scope_failures_as_excluded() {
+             "S.checkPath(pattern: \"/data/**\", path: \"relative\")",
+             "E0460",
+         ),
++        (
++            "old-mapped-host",
++            "S.CheckedHost",
++            "S.ScopeError",
++            "S.checkHost(pattern: \"::/0\", host: \"::ffff:127.0.0.1\")",
++            "E0460",
++        ),
++        (
++            "old-mapped-endpoint",
++            "S.CheckedEndpoint",
++            "S.ScopeError",
++            "S.checkEndpoint(hostPattern: \"::ffff:0.0.0.0/96\", host: \"::ffff:127.0.0.1\", minimumPort: 0, maximumPort: 65535, port: 80)",
++            "E0460",
++        ),
+         (
+             "old-ports",
+             "S.CheckedEndpoint",
+diff --git a/crates/benitoite/tests/fixtures/checked-scope.json b/crates/benitoite/tests/fixtures/checked-scope.json
+index 2ada0c36..c044ccdb 100644
+--- a/crates/benitoite/tests/fixtures/checked-scope.json
++++ b/crates/benitoite/tests/fixtures/checked-scope.json
+@@ -563,17 +563,15 @@
+     "kind": "host",
+     "pattern": "192.168.1.0/24",
+     "target": "::ffff:192.168.1.20",
+-    "result": "OutsideScope",
+-    "code": "E0462"
++    "result": "InvalidTarget",
++    "code": "E0460"
+   },
+   {
+     "kind": "host",
+     "pattern": "::ffff:192.168.1.0/120",
+     "target": "::ffff:192.168.1.20",
+-    "result": "ok",
+-    "code": null,
+-    "expectedPattern": "::ffff:192.168.1.0/120",
+-    "expectedTarget": "::ffff:192.168.1.20"
++    "result": "InvalidTarget",
++    "code": "E0460"
+   },
+   {
+     "kind": "host",
+@@ -659,10 +657,8 @@
+     "kind": "host",
+     "pattern": "::ffff:192.168.1.20/128",
+     "target": "::ffff:192.168.1.20",
+-    "result": "ok",
+-    "code": null,
+-    "expectedPattern": "::ffff:192.168.1.20",
+-    "expectedTarget": "::ffff:192.168.1.20"
++    "result": "InvalidTarget",
++    "code": "E0460"
+   },
+   {
+     "kind": "host",
+@@ -783,8 +779,8 @@
+     "kind": "endpoint",
+     "pattern": "192.168.1.0/24",
+     "target": "::ffff:192.168.1.20",
+-    "result": "OutsideScope",
+-    "code": "E0462",
++    "result": "InvalidTarget",
++    "code": "E0460",
+     "minimum": 0,
+     "maximum": 65535,
+     "port": 443
+@@ -805,5 +801,120 @@
+     "target": "192.168.1.20",
+     "result": "OutsideScope",
+     "code": "E0462"
++  },
++  {
++    "kind": "host",
++    "pattern": "::/0",
++    "target": "::ffff:0.0.0.0",
++    "result": "InvalidTarget",
++    "code": "E0460"
++  },
++  {
++    "kind": "host",
++    "pattern": "::/0",
++    "target": "::ffff:255.255.255.255",
++    "result": "InvalidTarget",
++    "code": "E0460"
++  },
++  {
++    "kind": "host",
++    "pattern": "::/0",
++    "target": "::FFFF:127.0.0.1",
++    "result": "InvalidTarget",
++    "code": "E0460"
++  },
++  {
++    "kind": "host",
++    "pattern": "::/0",
++    "target": "0:0:0:0:0:ffff:7f00:1",
++    "result": "InvalidTarget",
++    "code": "E0460"
++  },
++  {
++    "kind": "host",
++    "pattern": "::/0",
++    "target": "::ffff:7f00:1",
++    "result": "InvalidTarget",
++    "code": "E0460"
++  },
++  {
++    "kind": "endpoint",
++    "pattern": "::/0",
++    "target": "::ffff:0.0.0.0",
++    "result": "InvalidTarget",
++    "code": "E0460",
++    "minimum": 0,
++    "maximum": 65535,
++    "port": 443
++  },
++  {
++    "kind": "endpoint",
++    "pattern": "::/0",
++    "target": "::ffff:255.255.255.255",
++    "result": "InvalidTarget",
++    "code": "E0460",
++    "minimum": 0,
++    "maximum": 65535,
++    "port": 443
++  },
++  {
++    "kind": "endpoint",
++    "pattern": "::/0",
++    "target": "::FFFF:127.0.0.1",
++    "result": "InvalidTarget",
++    "code": "E0460",
++    "minimum": 0,
++    "maximum": 65535,
++    "port": 443
++  },
++  {
++    "kind": "endpoint",
++    "pattern": "::/0",
++    "target": "0:0:0:0:0:ffff:7f00:1",
++    "result": "InvalidTarget",
++    "code": "E0460",
++    "minimum": 0,
++    "maximum": 65535,
++    "port": 443
++  },
++  {
++    "kind": "endpoint",
++    "pattern": "::/0",
++    "target": "::ffff:7f00:1",
++    "result": "InvalidTarget",
++    "code": "E0460",
++    "minimum": 0,
++    "maximum": 65535,
++    "port": 443
++  },
++  {
++    "kind": "host",
++    "pattern": "::ffff:127.0.0.1",
++    "target": "::1",
++    "result": "OutsideScope",
++    "code": "E0462"
++  },
++  {
++    "kind": "host",
++    "pattern": "::ffff:0.0.0.0/96",
++    "target": "::1",
++    "result": "OutsideScope",
++    "code": "E0462"
++  },
++  {
++    "kind": "host",
++    "pattern": "::ffff:127.0.0.0/104",
++    "target": "::1",
++    "result": "OutsideScope",
++    "code": "E0462"
++  },
++  {
++    "kind": "host",
++    "pattern": "::/0",
++    "target": "::1",
++    "result": "ok",
++    "code": null,
++    "expectedPattern": "::/0",
++    "expectedTarget": "::1"
+   }
+ ]
+diff --git a/crates/benitoite/tests/l32_http_client.rs b/crates/benitoite/tests/l32_http_client.rs
+index 0fbc18b6..9b5fd060 100644
+--- a/crates/benitoite/tests/l32_http_client.rs
++++ b/crates/benitoite/tests/l32_http_client.rs
+@@ -219,7 +219,14 @@ end function
+ // 不正な HTTP は Http.respond では作れないので、この共有のサーバだけを Rust で置く。
+ // 受信した要求を読み終えてから FIN を送る。未読の本体による RST を再現と取り違えない。
+ fn raw_server(responses: Vec<Vec<u8>>) -> (u16, std::thread::JoinHandle<Vec<Vec<u8>>>) {
+-    let listener = TcpListener::bind(("127.0.0.1", 0)).unwrap();
++    raw_server_at("127.0.0.1", responses)
++}
++
++fn raw_server_at(
++    host: &str,
++    responses: Vec<Vec<u8>>,
++) -> (u16, std::thread::JoinHandle<Vec<Vec<u8>>>) {
++    let listener = TcpListener::bind((host, 0)).unwrap();
+     let port = listener.local_addr().unwrap().port();
+     listener.set_nonblocking(true).unwrap();
+     let thread = std::thread::spawn(move || {
+@@ -268,6 +275,71 @@ fn raw_server(responses: Vec<Vec<u8>>) -> (u16, std::thread::JoinHandle<Vec<Vec<
+     (port, thread)
+ }
+ 
++// 関門: 純粋入口の表だけでは届かない、検査→射影→旧sendの実経路を守る。
++// 射影したIPv6を受理してIPv4へ送る退行を、ループバックの相手と通常の
++// スクリプトで捕まえる。内部の差し替えや本番の公開範囲の拡大は要らない。
++#[test]
++fn checked_requests_reject_mapped_ipv6_before_loopback_send() {
++    for mode in [ExecMode::Direct, ExecMode::Request] {
++        let response =
++            b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok".to_vec();
++        let (v4_port, v4_server) = raw_server(vec![response.clone()]);
++        let (v6_port, v6_server) = raw_server_at("::1", vec![response]);
++        let mut source = String::from(
++            r#"
++import Benitoite.Unofficial.Scope
++function one(pattern: String, port: Integer, host: String) -> Unit uses Console.Write, Http.Connect
++ bind request <- Http.clientRequest(method: "GET", url: "http://[" + host + "]:" + Integer.toString(port) + "/")
++ match Http.checkRequestIn(hostPattern: pattern, minimumPort: port, maximumPort: port, request: request) with
++  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.InvalidTarget(input, reason))) ->
++   if input = host and String.byteLength(reason) > 0 then Console.writeLine("InvalidTarget") else Console.writeLine("wrong input") end if
++  case Result.Error(_) -> Console.writeLine("wrong error")
++  case Result.Ok(value) ->
++   bind projected <- Http.requestInValue(request: value)
++   match Http.send(projected) with
++    case Result.Ok(_) -> Console.writeLine("sent")
++    case Result.Error(_) -> Console.writeLine("send error")
++   end match
++ end match
++end function
++function main() -> Unit uses Console.Write, Http.Connect
++"#,
++        );
++        let mut expected = String::new();
++        for pattern in ["::/0", "::ffff:0.0.0.0/96", "::ffff:127.0.0.1"] {
++            for host in [
++                "::ffff:127.0.0.1",
++                "::FFFF:7F00:1",
++                "0:0:0:0:0:ffff:7f00:1",
++                "0:0:0:0:0:FFFF:127.0.0.1",
++            ] {
++                source.push_str(&format!(
++                    " one(pattern: {pattern:?}, port: {v4_port}, host: {host:?})\n"
++                ));
++                expected.push_str("InvalidTarget\n");
++            }
++        }
++        source.push_str(&format!(
++            r#" match Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: {v4_port}, maximumPort: {v4_port}, request: Http.clientRequest(method: "GET", url: "http://127.0.0.1:{v4_port}/")) with
++  case Result.Ok(value) ->
++   bind projected <- Http.requestInValue(request: value)
++   match Http.send(projected) with
++    case Result.Ok(_) -> Console.writeLine("sent")
++    case Result.Error(_) -> Console.writeLine("send error")
++   end match
++  case Result.Error(_) -> Console.writeLine("rejected IPv4")
++ end match
++ one(pattern: "::/0", port: {v6_port}, host: "0:0:0:0:0:0:0:1")
++end function
++"#
++        ));
++        expected.push_str("sent\nsent\n");
++        assert_eq!(run_script(&source, mode), expected, "{mode:?}");
++        assert_eq!(v4_server.join().unwrap().len(), 1);
++        assert_eq!(v6_server.join().unwrap().len(), 1);
++    }
++}
++
+ fn read_wire_request(stream: &mut TcpStream) -> Vec<u8> {
+     let mut bytes = Vec::new();
+     let mut chunk = [0; 4096];
+diff --git a/crates/benitoite/tests/runtime_builtins.rs b/crates/benitoite/tests/runtime_builtins.rs
+index 4511ec44..157fa540 100644
+--- a/crates/benitoite/tests/runtime_builtins.rs
++++ b/crates/benitoite/tests/runtime_builtins.rs
+@@ -1711,7 +1711,11 @@ function main() -> Result[Unit, String]
+         ("127.0.0.0/8", 0, 65535, "http://127.0.0.1:0/"),
+         ("::1", 80, 80, "http://[0:0:0:0:0:0:0:1]/"),
+         ("2001:db8::/32", 443, 443, "https://[2001:DB8:0:0:0:0:0:1]/"),
+-        ("::ffff:127.0.0.1", 443, 443, "https://[::FFFF:7F00:1]/"),
++        ("::/0", 443, 443, "https://[::1]/"),
++        ("::/0", 80, 80, "http://[::fffe:ffff:ffff]/"),
++        ("::/0", 80, 80, "http://[::1:0:0:0]/"),
++        ("::/0", 80, 80, "http://[::192.0.2.1]/"),
++        ("64:ff9b::/96", 80, 80, "http://[64:ff9b::192.0.2.1]/"),
+     ]
+     .into_iter()
+     .enumerate()
+@@ -1755,7 +1759,102 @@ function main() -> Result[Unit, String]
+         ),
+         ("*.example.com", 0, 65535, "https://example.com/", 5),
+         ("other.example", 0, 65535, "https://example.com/", 5),
+-        ("127.0.0.1", 0, 65535, "https://[::ffff:127.0.0.1]/", 5),
++        ("127.0.0.1", 0, 65535, "https://[::ffff:127.0.0.1]/", 3),
++        ("::/0", 0, 65535, "http://[::ffff:127.0.0.1]:18081/", 3),
++        ("::/0", 0, 65535, "http://[::FfFf:7F00:0001]:18081/", 3),
++        (
++            "::/0",
++            0,
++            65535,
++            "http://[0000:0000:0000:0000:0000:FFFF:7f00:0001]:18081/",
++            3,
++        ),
++        ("::/0", 0, 65535, "http://[::FFFF:7F00:1]:18081/", 3),
++        (
++            "::/0",
++            0,
++            65535,
++            "http://[0:0:0:0:0:FFFF:127.0.0.1]:18081/",
++            3,
++        ),
++        ("::/0", 0, 65535, "http://[::ffff:0.0.0.0]:18081/", 3),
++        (
++            "::/0",
++            0,
++            65535,
++            "http://[::ffff:255.255.255.255]:18081/",
++            3,
++        ),
++        (
++            "::ffff:0.0.0.0/96",
++            0,
++            65535,
++            "http://[::ffff:127.0.0.1]:18081/",
++            3,
++        ),
++        (
++            "::ffff:0.0.0.0/96",
++            0,
++            65535,
++            "http://[::FFFF:7F00:1]:18081/",
++            3,
++        ),
++        (
++            "::ffff:0.0.0.0/96",
++            0,
++            65535,
++            "http://[0:0:0:0:0:FFFF:127.0.0.1]:18081/",
++            3,
++        ),
++        (
++            "::ffff:0.0.0.0/96",
++            0,
++            65535,
++            "http://[::ffff:0.0.0.0]:18081/",
++            3,
++        ),
++        (
++            "::ffff:0.0.0.0/96",
++            0,
++            65535,
++            "http://[::ffff:255.255.255.255]:18081/",
++            3,
++        ),
++        (
++            "::ffff:127.0.0.1",
++            0,
++            65535,
++            "http://[::ffff:127.0.0.1]:18081/",
++            3,
++        ),
++        (
++            "::ffff:127.0.0.1",
++            0,
++            65535,
++            "http://[::FFFF:7F00:1]:18081/",
++            3,
++        ),
++        (
++            "::ffff:127.0.0.1",
++            0,
++            65535,
++            "http://[0:0:0:0:0:FFFF:127.0.0.1]:18081/",
++            3,
++        ),
++        (
++            "::ffff:127.0.0.1",
++            0,
++            65535,
++            "http://[::ffff:0.0.0.0]:18081/",
++            3,
++        ),
++        (
++            "::ffff:127.0.0.1",
++            0,
++            65535,
++            "http://[::ffff:255.255.255.255]:18081/",
++            3,
++        ),
+         ("example.com", 80, 80, "https://example.com/", 6),
+         ("example.com", 443, 443, "http://example.com/", 6),
+         ("bad..pattern", -1, -1, "ftp://example.com/", 1),
+diff --git a/docs/design/00-overview/00-04-glossary.md b/docs/design/00-overview/00-04-glossary.md
+index fa3ae39c..d7391fe2 100644
+--- a/docs/design/00-overview/00-04-glossary.md
++++ b/docs/design/00-overview/00-04-glossary.md
+@@ -166,6 +166,7 @@
+ | スタンドアロンモード | standalone mode | 処理系をサーバとして動かさずに、コマンド `benitoite` にスクリプトを指定して実行する形。初回リリース版の実行の形はこれだけであり、実行時の権限制御を行わない | [ロードマップ](00-03-roadmap.md)、[CLI](../06-tooling/06-01-cli.md) |
+ | サーバモード | server mode | 処理系を常に動かしておくプロセスとして動かし、スクリプトの実行を受け付ける形。実行時の権限制御、OS のサンドボックスによる強制、MCP サーバとあわせて扱う機能であり、初回リリース版には含めない | [ロードマップ](00-03-roadmap.md) |
+ | OS のサンドボックス | OS sandbox | カーネルが範囲の外の操作を拒否する仕組み。初回リリース版の処理系は掛けず、スクリプトの隔離は処理系を起動する側（ハーネスのサンドボックスなど）に委ねる | [セキュリティモデル](../07-quality/07-01-security-model.md) |
++| NAT64 | NAT64 | IPv6 のクライアントと IPv4 のサーバの通信を、変換器によるアドレスとプロトコルの変換で可能にする機構（[RFC 6146](https://www.rfc-editor.org/rfc/rfc6146.html)） | 網に依るアドレスやポートの変換後の宛先は、静的な対象の範囲の保証に含めない（[セキュリティモデル](../07-quality/07-01-security-model.md)） |
+ | ハーネス | harness | Claude Code、Codex CLI、OpenCode などの、LLM を動かして道具を実行させる外部のプログラム。Agent Skills を実行し、そのサンドボックスがスクリプトの隔離を担う | [セキュリティモデル](../07-quality/07-01-security-model.md)、[Agent Skills 対応](../06-tooling/06-06-agent-skills.md) |
+ | 脅威モデル | threat model | 保証の前提として、関係する者のうちどれを信頼するか、何を守るか、どこに信頼の境界を置くかを定めたもの | [セキュリティモデル](../07-quality/07-01-security-model.md) |
+ | 信頼の境界 | trust boundary | 信頼するものと信頼しないものの間で、操作を制限する位置。初回リリース版では、処理系を起動する側（ハーネスのサンドボックスなど）と処理系の間だけにある | [セキュリティモデル](../07-quality/07-01-security-model.md) |
+diff --git a/docs/design/01-spec/01-07-effects.md b/docs/design/01-spec/01-07-effects.md
+index d74c5193..2e1fbfa1 100644
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -28,6 +28,8 @@
+ 
+ 【決定】IPv6 は採択した正規形と一致する文字列だけを受理する。IPv4 射影の IPv6 は `::ffff:192.0.2.1` の混合表記を保ち、IPv4 と同一視しない。CIDR は先頭の0のない十進の prefix と、host bits が0のアドレスを要求する。最大 prefix（IPv4 の32、IPv6 の128）は完全一致へそろえる。zone ID・IPvFuture・角括弧付きの IP・IP を幹にしたワイルドカードは拒否する。DNS による変換を行わない。正規形の数値上の定義は[コア計算と脱糖](01-12-core-calculus.md#操作の対象の範囲の領域と被覆)に従う。
+ 
++【決定】IPv4 射影の IPv6 を指すパターンは、範囲の代数では引き続き IPv6 として扱う。ただし、`Scope.checkHost`・`Scope.checkEndpoint`・`Http.checkRequestIn` は、`::ffff:0:0/96` に入るアドレスを対象として拒否する。射影の範囲だけを指す完全一致や CIDR もパターンとしては受理するが、これらの入口で有効な対象には一致しない。`::/0` のように他の IPv6 も含む範囲は使える。理由: OS が射影の形を IPv4 の宛先として扱うことと、IPv4 と IPv6 を区別する範囲の代数を混同しないためである。対象の条件と失敗は[標準ライブラリ](../03-interop/03-06-stdlib.md#scope)と[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)に従う。
++
+ 【決定】ポートは整数リテラルで0〜65535を表し、`80..81` は両端を含む閉区間である。下端が上端を超える場合は拒否する。`443` と `443..443` は同じ一点である。整数の基数・下線・接尾辞は既存の整数リテラルの規則に従い、接尾辞固有の値域も検査する。
+ 
+ 【決定】範囲付きの原子は名前と正規化後の範囲で区別する。同じ名前の異なる範囲、広い範囲と狭い範囲、Top と狭い範囲をそれぞれ残す。明示した同一原子の重複は、略記内と別の群の間のどちらでも E0419 とし、重複した両要素の位置を示す。型の等号・表示・型と効果行の代入は範囲を保持する。
+diff --git a/docs/design/03-interop/03-06-stdlib.md b/docs/design/03-interop/03-06-stdlib.md
+index 6205e441..9315c48b 100644
+--- a/docs/design/03-interop/03-06-stdlib.md
++++ b/docs/design/03-interop/03-06-stdlib.md
+@@ -145,7 +145,9 @@ end function
+ 
+ CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhostPattern/host/minimumPort/maximumPort/portを宣言順に保存する。ホスト名の条件と対象は ASCII の小文字にそろえ、IP の条件と対象は範囲の共通の代数の正規形で保存する。最大 prefix の CIDR（IPv4 の `/32`、IPv6 の `/128`）は完全一致にそろえる。パスの条件と対象は受理した正規の字面を保つ。保存したパターンを再び検査へ渡したときも、静的と動的の判定は同じ条件を読む。整数は入力をそのまま保つ。変更する場合は公開の検査関数で再検査する。同じ型名の値でも、保存する条件は値ごとに異なる。
+ 
+-ホストの対象は、ホスト名または正規形の IPv4・IPv6 アドレスとする。ホスト名は、ASCII の英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非 ASCII、NUL、URL、ポート付きを拒否する。四つの全数字ラベルはホスト名として扱わず、正規形の IPv4 として読める場合だけ IP の対象とする。`localhost` は認める。DNS の長さの規格への適合は保証しない。ホスト名のパターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）であり、後二者は幹自身を含まない。IP のパターンは完全一致と CIDR とする。IP の字面、host bits、prefix と正規化は[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)と同じ規則に従う。ホスト名と IP、IPv4 と IPv6 は互いに所属せず、IPv4 を射影した IPv6 も IPv6 のままとする。名前の解決や族の変換は行わない。
++ホストの対象は、ホスト名または正規形の IPv4・IPv6 アドレスとする。ホスト名は、ASCII の英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非 ASCII、NUL、URL、ポート付きを拒否する。四つの全数字ラベルはホスト名として扱わず、正規形の IPv4 として読める場合だけ IP の対象とする。`localhost` は認める。DNS の長さの規格への適合は保証しない。ホスト名のパターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）であり、後二者は幹自身を含まない。IP のパターンは完全一致と CIDR とする。IP の字面、host bits、prefix と正規化は[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)と同じ規則に従う。ホスト名と IP、IPv4 と IPv6 は互いに所属せず、IPv4 を射影した IPv6 も範囲の代数では IPv6 のままとする。名前の解決や族の変換は行わない。
++
++【決定】`checkHost` と `checkEndpoint` は、IPv4 射影の IPv6（`::ffff:0:0/96` に入るアドレス）を対象とすると `InvalidTarget` を返す。正規形の `::ffff:127.0.0.1` にもこの拒否を適用する。大文字・ゼロの省略・末尾を16進数にする表記の違いは、直接入力の正規形の条件でも拒否する。既知の対象にも同じ検査を適用し、E0460 を報告する。射影の範囲だけを指すパターンは `InvalidPattern` や E0459 にはせず、その範囲の有効な対象がないものとして受理する。射影の範囲を含む `::/0` も受理する。理由: 対象の拒否を入口の条件とし、範囲の正規化・所属・被覆の数値の規則を保つためである。
+ 
+ パスはスラッシュ区切りの絶対形式であり、根 `/` を認める。根以外の末尾スラッシュ、空要素、`.`・`..`、NUL、逆斜線を拒否し、その他のUnicode文字を保つ。パターンは完全一致か末尾 `/**` の木だけであり、他の位置の `*` を拒否する。`/data/reports/**` は幹自身と任意段の子を含み、`/data/reports-old` を含まない。`/**` は根とすべての受理したパスを含む。対象側の `*` は普通の文字である。
+ 
+@@ -166,7 +168,7 @@ ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のSho
+ 
+ `checkHost`・`checkPath`・`checkEndpoint`・`checkPathIn` と `Http.checkRequestIn` の直接呼び出しでは、リテラルまたは const の直接参照から既知の部分を本体の後に追加検査する。`checkPathIn` は `checkPath` と同じパターン・パスを検査し、`Http.checkRequestIn` はホストのパターンとポートの両端を検査する。要求内の URL の解析は実行時に残す。射影 `pathInValue`・`Http.requestInValue` は追加検査する条件を引数に持たない。この追加検査は、静的な範囲を選ぶ必須の判定から独立している。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
+ 
+-成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
++成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、網に依るアドレスやポートの変換、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
+ 
+ 要求の検査・射影・明示拡大は `Benitoite.Network.Http` の `checkRequestIn`・`requestInValue`・`widenRequestIn` に置く。三つとも純粋であり、標準署名の内部では、検査と射影は種類 endpoint の範囲変数を一つ、拡大は二つ持つ。検査は、同じ要求の `url` から得た端点と、ホストのパターン・ポートの閉区間を、共通の範囲の代数で照合する。型の制約で範囲が決まらなければ、既知の条件では規則が選ぶ範囲、未知なら Top へ具体化する。URL から端点を得られない失敗と Scope の失敗を `Http.RequestCheckError` で区別し、成功時には同じ `Http.ClientRequest` を保持して射影する。明示拡大は保持した要求と実効の端点を変えない。署名と URL の条件は[ネットワークのモジュール](03-09-network.md#クライアント)に従う。
+ 
+diff --git a/docs/design/03-interop/03-09-network.md b/docs/design/03-interop/03-09-network.md
+index 61597b44..b93b795e 100644
+--- a/docs/design/03-interop/03-09-network.md
++++ b/docs/design/03-interop/03-09-network.md
+@@ -220,7 +220,7 @@ end function
+ 
+ `checkRequestIn` の URL は、ASCII の絶対形式で scheme が `http` か `https`、ホストが空でないものに限る。字句には ASCII の英数字と `-._~:/?#[]@!$&'()*+,;=%` だけを許し、正しい二桁の16進数が続かない `%` と userinfo を拒否する。パスやクエリの非 ASCII の文字は、URL に渡す前にパーセント符号化する。ホスト名は範囲の代数と同じ ASCII のラベルに限る。断片（`#` 以後）は受理して元のレコードへ保持するが、端点には含めない。URL のポートを省略した場合と空にした場合は、`http` では80、`https` では443を実効のポートとする。ポートを明示した場合は ASCII の十進数字と0〜65535の範囲を検査し、不正な文字列や範囲外の値を既定のポートへ置き換えない。
+ 
+-URL の角括弧で囲んだ IPv6 は数値として読み、実効のホストを採択した正規形へそろえる。IPv4 は正規形の四つの十進要素に限り、先頭0と不正な四要素を拒否する。名前として読めるホストでも、ドットで分けた全ての要素が ASCII の数字で始まり、`[0-9a-fA-FxX]` だけからなる場合は、数値風のホストとして拒否する。この判定は、省略形（`127.1` など）、整数（`2130706433` など）、十六進（`0x7f000001` など）、`0x`・`0X` だけの要素を含む形（`127.0x.0.1` など）を含む。英字で始まるラベルを含む正当なホスト名（`a0x.example` など）は、この判定では拒否しない。zone ID と IPvFuture も受理しない。URL から取り出したホストのこの不良は `Scope` の `InvalidTarget` とする。URL の元の字面は、要求のレコードの `url` にそのまま保持する。
++URL の角括弧で囲んだ IPv6 は数値として読み、実効のホストを採択した正規形へそろえる。ただし、IPv4 射影の IPv6（`::ffff:0:0/96`）は数値で判定し、`Http.RequestCheckError.Scope` の中の `Scope.ScopeError.InvalidTarget` として拒否する。大文字、ゼロの省略、末尾の IPv4 の点の形と16進数の形のいずれでも同じ判定とする。URL から host と port を取り出せるこの場合は `InvalidUrl` にしない。射影の範囲だけを指すパターンは受理するが、有効な対象には一致しない。IPv4 は正規形の四つの十進要素に限り、先頭0と不正な四要素を拒否する。名前として読めるホストでも、ドットで分けた全ての要素が ASCII の数字で始まり、`[0-9a-fA-FxX]` だけからなる場合は、数値風のホストとして拒否する。この判定は、省略形（`127.1` など）、整数（`2130706433` など）、十六進（`0x7f000001` など）、`0x`・`0X` だけの要素を含む形（`127.0x.0.1` など）を含む。英字で始まるラベルを含む正当なホスト名（`a0x.example` など）は、この判定では拒否しない。zone ID と IPvFuture も受理しない。URL から取り出したホストのこの不良は `Scope` の `InvalidTarget` とする。URL の元の字面は、要求のレコードの `url` にそのまま保持する。
+ 
+ - 【決定】`Http.send` の要求の `headers` も、`Http.respond` と同じく、名前が token の文字以外を含むか値が制御文字（水平タブを除く 0x00〜0x1F と 0x7F）を含むときは、送る前に実行時エラーとする。
+ - `Http.clientRequest(method: method, url: url)` は、`headers` を空のリスト、`body` を空のバイト列、`timeoutMilliseconds` を 30000 にする。ほかの値にするときは、レコードの更新で変える。
+diff --git a/docs/design/07-quality/07-01-security-model.md b/docs/design/07-quality/07-01-security-model.md
+index c31768c7..61763fcf 100644
+--- a/docs/design/07-quality/07-01-security-model.md
++++ b/docs/design/07-quality/07-01-security-model.md
+@@ -57,7 +57,11 @@
+ 
+ 【決定】六つの `File.*In` は、対象引数 `Scope.PathIn[R]` の型から求めた R を `File.Read[R]` または `File.Write[R]` に用い、成功値に保持した同じパス文字列を実処理へ渡す。静的な範囲はこのパス文字列についての上限であり、実パス・シンボリックリンクの解決先・特殊ファイルの隔離、操作の許可や成功を保証しない。旧 File の文字列の入口は Top のままである。完全なハンドラで元の効果を消しても、節が別のパスに対して行う IO の効果は外側へ残る（[IO のモジュール](../03-interop/03-07-io-modules.md#file)）。
+ 
+-【決定】純粋な `Http.checkRequestIn` は、渡された要求の URL から実効のホストとポートを得て、明示した条件への所属を検査する。成功値は同じ要求のレコードと端点を保持し、`Http.requestInValue` は同じレコードを返す。Top は動的な検査を省く理由にはしない。この検査は、操作の許可、DNS の解決先、通信の成功、送る内容の制限を保証しない。端点の範囲に scheme を含めないため、固定した origin の制限も保証しない（[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)）。射影したレコードの更新は元の成功値を変えず、URL の変更には再検査を要する。
++【決定】純粋な `Http.checkRequestIn` は、渡された要求の URL から実効のホストとポートを得て、明示した条件への所属を検査する。成功値は同じ要求のレコードと端点を保持し、`Http.requestInValue` は同じレコードを返す。Top は動的な検査を省く理由にはしない。この検査は、操作の許可、DNS の解決先、網に依るアドレスやポートの変換（NAT64 など）、通信の成功、送る内容の制限を保証しない。
++
++【決定】IPv4 射影の IPv6（`::ffff:0:0/96`）は対象の検査で拒否する。これは IPv4 のノードを表すソケット API の形であり（[RFC 4291 §2.5.5.2](https://www.rfc-editor.org/rfc/rfc4291.html#section-2.5.5.2)、[RFC 3493 §3.7](https://www.rfc-editor.org/rfc/rfc3493.html#section-3.7)）、網に配置された変換器の動作とは分ける。NAT64 の既知の prefix `64:ff9b::/96` と網ごとの prefix は追加拒否せず、検査した IPv6 の endpoint と変換後の IPv4 の宛先との一致を保証しない（[RFC 6052 §2](https://www.rfc-editor.org/rfc/rfc6052.html#section-2)、[RFC 6146 §1.2.1](https://www.rfc-editor.org/rfc/rfc6146.html#section-1.2.1)）。IPv4 互換の IPv6 は非推奨であり、新しい実装に対応を要求しない形であるため、射影の形と同じ追加拒否には含めない（[RFC 4291 §2.5.5.1](https://www.rfc-editor.org/rfc/rfc4291.html#section-2.5.5.1)）。直接入力では既存の正規形の条件を保つ。
++
++端点の範囲に scheme を含めないため、固定した origin の制限も保証しない（[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)）。射影したレコードの更新は元の成功値を変えず、URL の変更には再検査を要する。
+ 
+ 【決定】`run` と `test` の `--allow-effects` は、検査に成功した実行対象の宣言上限が、許す組み込みエフェクトの集合に含まれるかを実行前に照合する。不足は E0512・終了状態2で拒否し、上限付き `test` は全入口の準備が成功するまで一つも開始しない。run は照合した検査済みプログラムをコンパイルし、test は照合・コンパイルした成果物を保持してそのまま実行する。理由: 照合した契約と実行する成果物を一致させ、後の入口の拒否までに先のテストが外部操作を行うことを防ぐためである。引数と開始条件は [CLI](../06-tooling/06-01-cli.md#実行前のエフェクト上限の照合)で定める。
+ 
+diff --git a/docs/design/07-quality/07-04-formal-semantics.md b/docs/design/07-quality/07-04-formal-semantics.md
+index a468857f..c5de4a87 100644
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -16,6 +16,8 @@
+ 
+ ## 仕様
+ 
++【決定】対象の文字列や URL の解析は、範囲の数値の代数から分ける。`Surface.ScopeSound.productionRules` と `productionRules_sound` は `pat`・`tgt`・`hostPattern`・`reqTarget` を引数に取り、全ての文字列を対象として受理することを要求しない。Rust の対象の検査が IPv4 射影の IPv6 を拒否しても、`Scope.Domain` の値・所属・被覆と `IPAddr.mapped_ne_of_v4` は変わらない。HTTP のモデルでは、URL の不良は `reqTarget = none`、取り出せた host の形式不良は endpoint 以外の種類の対象を返して `ModelHttp.checkRun` の `scopeFailure` に対応させる。`reqEndpoint` は後者から endpoint を得ない。したがって、射影の形の追加拒否は定理の前提・結論・信頼条件の変更を要しない。この対応は解析境界の読解による照合であり、Rust と Lean の全比較の成功を表さない。
++
+ ### 証明する性質
+ 
+ 【決定】段階 2 では、01-12 の性質 2（進行と保存）と性質 3（エフェクトの健全性）を証明する。理由: コア計算の規則そのものの誤りは、規則どおりに作った参照インタプリタと VM がともに誤るので、段階 1 の差分テストでは見つからないからである。

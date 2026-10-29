@@ -1,0 +1,20 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.05s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 11 tests
+test types::tests::scoped_effects_survive_rows_and_types_inside_failures ... ok
+test types::tests::constructor_fields_are_instantiated_and_missing_entries_return_none ... ok
+test types::tests::substitution_is_simultaneous_and_preserves_unbound_parameters ... ok
+test types::tests::function_type_display_groups_all_io_effects_and_keeps_other_effects ... ok
+test types::tests::function_type_display_keeps_nine_io_effects_separate ... ok
+test types::tests::function_contracts_affect_structure_hash_and_display ... ok
+test types::tests::width_type_display_preserves_legacy_names ... ok
+test types::tests::scoped_effect_display_keeps_ranges_beside_io_all ... ok
+test types::tests::scoped_effect_sets_preserve_structural_identity ... ok
+test syntax::parser::types::tests::declaration_constraints_are_reported_and_left_out_of_the_ast ... ok
+test syntax::parser::types::tests::uses_bracket_repairs_require_a_type_list_and_a_local_closing_bracket ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 1360 filtered out; finished in 0.01s
+

@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Range
+function main() -> Unit
+  bind result <- Range.checkInteger(minimum: 1, maximum: 10, value: 11)
+  return ()
+end function

@@ -148,6 +148,8 @@ pub enum ValKind<C> {
         id: BuiltinId,
         targs: TypeArgs,
         info: BuiltinInfo,
+        /// 受理した範囲の列。範囲変数を持たない宣言では空である（設計書 02-06「コア IR」）。
+        ranges: Vec<crate::types::scope::Range>,
     },
     /// 合成したトップレベルの関数の本体でだけ呼ぶ外部の関数（設計書 02-06「コア IR」）。
     External {
@@ -297,7 +299,11 @@ impl BuilderKind {
             Self::Bytes => (B::BYTES, vec![]),
             Self::List(t) => (B::LIST, vec![t.clone()]),
         };
-        Ty::Con(TyCon::Builtin(id), args)
+        Ty::Con(
+            TyCon::Builtin(id),
+            args,
+            crate::types::builtin::RangeIndex::TOP,
+        )
     }
 }
 
@@ -547,6 +553,8 @@ pub struct Program<C> {
     pub traits: BindingMap<TraitDef>,
     /// 宣言の型（型検査の `decl_types` の写し）。検査器が関数・操作・メソッドの型を引く
     pub schemes: BindingMap<Scheme>,
+    /// 標準署名の範囲の情報。未具体化の schemes と組で保持する。
+    pub range_signatures: BindingMap<crate::types::signature::RangeSignature>,
     /// `main` の束縛。`main` を検査しない経路（`typecheck` の `require_main` が偽。`test` の経路と、
     /// `main` を持たないプログラムを脱糖する単体テスト）では `None`（型検査の出力の `main` を写す）
     pub main: Option<BindingId>,

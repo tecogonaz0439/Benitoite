@@ -1,0 +1,1356 @@
+{
+  "recorded_at": "2026-10-29T08:15:39.979592+00:00",
+  "judgment_by": "R30.4c 担当 Codex、2026-10-29",
+  "base": "98b420af9bf9e6de4eea81bab140efb835529bd9",
+  "head": "98b420af9bf9e6de4eea81bab140efb835529bd9",
+  "branch": "m013/r30.4",
+  "index_unchanged": true,
+  "status": " M crates/benitoite/skill/SKILL.md\n M crates/benitoite/skill/references/idioms.md\n M crates/benitoite/skill/references/stdlib/Network.Http.md\n M crates/benitoite/src/builtins/funcs/http_client.rs\n M crates/benitoite/src/builtins/funcs/http_client/checked_request.rs\n M crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs\n M crates/benitoite/src/builtins/funcs/http_client/tests.rs\n M crates/benitoite/src/builtins/funcs/mod.rs\n M crates/benitoite/src/builtins/table.rs\n M crates/benitoite/src/prelude/stdlib/Network/Http.bnt\n M crates/benitoite/tests/io_modes.rs\n M crates/benitoite/tests/l32_http_client.rs\n M crates/benitoite/tests/network_faults.rs\n M crates/benitoite/tests/scoped_calls.rs\n M docs/design/01-spec/01-06-type-system.md\n M docs/design/01-spec/01-07-effects.md\n M docs/design/02-impl/02-08-vm.md\n M docs/design/02-impl/02-09-runtime.md\n M docs/design/03-interop/03-09-network.md\n M docs/design/07-quality/07-01-security-model.md\n M docs/design/07-quality/07-04-formal-semantics.md\n?? crates/benitoite/tests/scoped_calls/http_io.rs\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/changed-inputs.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/handler-inventory.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/implementation.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/line-counts.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/link-check.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/probe-builds.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-before-design.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-design.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-start-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-before.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-documentation.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-examples-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-examples-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-examples-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-examples-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-examples.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-examples.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-generate-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-generate.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-generate.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-review-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-review-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-review-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-review.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-sdk-source.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-searches.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-selected-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-selected-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-selected-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-selected-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-selected.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-selected.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-start-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-work-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-work-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4c-work-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/record-files.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/record-final.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/results.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/run-record.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-notes.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-sources.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_dot.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_empty.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_noport.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_other.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_path.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_space.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_two.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_upper.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_user.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_v6.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_zero.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/server.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/server.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_fnval.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_fnval2.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h1.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h2.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h3.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h4.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h5.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h6.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h7.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_handler.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_hof.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_lambda.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_pipe.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_top_under_narrow.bnt\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserve.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/intermediate.cnf\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/intermediate.der\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/leaf.cnf\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/leaf.der\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/root.der\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-sources.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.c\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/test-counts.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/type-handler-notes.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-test-notes.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-correction.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-correction.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/reviews/RV-R30.4.md\n",
+  "input_comparison": [
+    {
+      "path": "Cargo.lock",
+      "before_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "after_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "equal": true
+    },
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+      "after_sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/Cargo.toml",
+      "before_sha256": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+      "after_sha256": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/examples/gen_skill.rs",
+      "before_sha256": "1dfaede330b34cd5712bd010c0d4c5d69d3c0d88ba28e18c833c8599396fa297",
+      "after_sha256": "1dfaede330b34cd5712bd010c0d4c5d69d3c0d88ba28e18c833c8599396fa297",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "before_sha256": "ddd481513ce25677025faee0c70b8bf1bb6785ea7b0bc9a510f930fcec685d27",
+      "after_sha256": "205e925d2cb4409edc190d5ed6888cb03444585f1230f497380e0a8bb6eca2bb",
+      "equal": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "before_sha256": "211a58a7395cb43e1fd3713bc8d71cfaecf662e3e453be9db656259f66c4d318",
+      "after_sha256": "d085d7505b1142beb072803030fea936c982821fbc9b1977edc63ccaa491b019",
+      "equal": false
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Network.Http.md",
+      "before_sha256": "61a7b66042699494a050c2a975eb9223357c95b125a963430b57e62e29c3cbe0",
+      "after_sha256": "d214a9107414e6983b64b7fb19bf4478b8de153b185fc46e106a68fdd24f1e03",
+      "equal": false
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client.rs",
+      "before_sha256": "dd65697f3d40b0fee412acd03e850e86361adeee941213692af2935167d0c331",
+      "after_sha256": "dd65697f3d40b0fee412acd03e850e86361adeee941213692af2935167d0c331",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client/checked_request.rs",
+      "before_sha256": "47d37a5a6634cc14487f54a8f9da59773280b4f04ea80b32f5e72173910324e1",
+      "after_sha256": "47d37a5a6634cc14487f54a8f9da59773280b4f04ea80b32f5e72173910324e1",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs",
+      "before_sha256": "82e6a78044b2d93a0e468e80a2165f208ddb555d787d6bfe0342505fb83ff1f9",
+      "after_sha256": "82e6a78044b2d93a0e468e80a2165f208ddb555d787d6bfe0342505fb83ff1f9",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client/tests.rs",
+      "before_sha256": "48e5caea8c8818b64f7836983f22570d8ccce07f7011e191b0af766190bb3dbb",
+      "after_sha256": "48e5caea8c8818b64f7836983f22570d8ccce07f7011e191b0af766190bb3dbb",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/mod.rs",
+      "before_sha256": "c2c013237666f0bdb5049a911ca178acb5c1d7d7db86d3c57488d44d3a2bbf7d",
+      "after_sha256": "c2c013237666f0bdb5049a911ca178acb5c1d7d7db86d3c57488d44d3a2bbf7d",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/table.rs",
+      "before_sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0",
+      "after_sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/Network/Http.bnt",
+      "before_sha256": "7003d22af01401ba20baeb8e9f3f30a09e96f4690d4dc0825c26df26809eb597",
+      "after_sha256": "3afd06495aba92e02a6780fab4ce0392170ba649fcb8cb4bb2cc09e4c8856e8a",
+      "equal": false
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/builders.rs",
+      "before_sha256": "b3d552cc24de796a9b6c2c5d95b06484283873dc8c75eb6c0f12de0b3b77766f",
+      "after_sha256": "b3d552cc24de796a9b6c2c5d95b06484283873dc8c75eb6c0f12de0b3b77766f",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/convert.rs",
+      "before_sha256": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917",
+      "after_sha256": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/eval.rs",
+      "before_sha256": "439b96e8371db77b52fd8beba7d43815c80b5ef45a51112d3d14d86ec1523585",
+      "after_sha256": "439b96e8371db77b52fd8beba7d43815c80b5ef45a51112d3d14d86ec1523585",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/exit_report_tests.rs",
+      "before_sha256": "3e4b1d03a925cffaf3fc174f4534a9b74d301a77a191828bc1fa762a0056dd3a",
+      "after_sha256": "3e4b1d03a925cffaf3fc174f4534a9b74d301a77a191828bc1fa762a0056dd3a",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/index.rs",
+      "before_sha256": "99a392cad59d84bf848fc4758a83cf4608d0ed06fae39d58d0bd8ba471084f05",
+      "after_sha256": "99a392cad59d84bf848fc4758a83cf4608d0ed06fae39d58d0bd8ba471084f05",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/mod.rs",
+      "before_sha256": "69289b9b3b9df18324e4c23346d3a95d0bf1096e17fa17e79f3d2724a70ca795",
+      "after_sha256": "69289b9b3b9df18324e4c23346d3a95d0bf1096e17fa17e79f3d2724a70ca795",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/pattern.rs",
+      "before_sha256": "463ead9934a5c5c5777af8aac75ea56db5af733cd12c48fc357a8d232e16ac81",
+      "after_sha256": "463ead9934a5c5c5777af8aac75ea56db5af733cd12c48fc357a8d232e16ac81",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/resources.rs",
+      "before_sha256": "977d58b480657dbd04df86b1f4102ba5c619f629ca3d78b596e2ddcb7aaaf6b6",
+      "after_sha256": "977d58b480657dbd04df86b1f4102ba5c619f629ca3d78b596e2ddcb7aaaf6b6",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/tests.rs",
+      "before_sha256": "89f94828e7b695015476dc12bf0ece2262923e3c5c6c34b3795b2cfa384510c5",
+      "after_sha256": "89f94828e7b695015476dc12bf0ece2262923e3c5c6c34b3795b2cfa384510c5",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/refinterp/value.rs",
+      "before_sha256": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75",
+      "after_sha256": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/io_modes.rs",
+      "before_sha256": "ff6f774ea67f9d7024d7b9ba2ab98137f606ef518e393877454542d577c23366",
+      "after_sha256": "ff6f774ea67f9d7024d7b9ba2ab98137f606ef518e393877454542d577c23366",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/l32_http_client.rs",
+      "before_sha256": "78fb20b8f7538d4d20496dfe067ef76ccc20c6cc37de1c9d146ba7b59207009c",
+      "after_sha256": "78fb20b8f7538d4d20496dfe067ef76ccc20c6cc37de1c9d146ba7b59207009c",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/network_faults.rs",
+      "before_sha256": "017506592464a23be1bc33f433a118c202d13e0619f1f44e9a4b3f6948ee0116",
+      "after_sha256": "017506592464a23be1bc33f433a118c202d13e0619f1f44e9a4b3f6948ee0116",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/scoped_calls.rs",
+      "before_sha256": "26eba66f2ab5fdd44f0673e8e9691428db2796e3c202f1c40320d4dabbaf7e45",
+      "after_sha256": "26eba66f2ab5fdd44f0673e8e9691428db2796e3c202f1c40320d4dabbaf7e45",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/scoped_calls/http_io.rs",
+      "before_sha256": "cf4e864fb70bb81a74359cc0f8ad93d0a17eb5e0d04ee326ec07f166d636f039",
+      "after_sha256": "cf4e864fb70bb81a74359cc0f8ad93d0a17eb5e0d04ee326ec07f166d636f039",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/skill_docs.rs",
+      "before_sha256": "c52aaec0a32c874319e7dceae3824b45ffb3583518ab68b69c46942244191a73",
+      "after_sha256": "c52aaec0a32c874319e7dceae3824b45ffb3583518ab68b69c46942244191a73",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/skill_examples.rs",
+      "before_sha256": "6002d9749a84ef3e98188acca4a4ae9da6319392ce388b48397a000c750eece3",
+      "after_sha256": "6002d9749a84ef3e98188acca4a4ae9da6319392ce388b48397a000c750eece3",
+      "equal": true
+    },
+    {
+      "path": "deny.toml",
+      "before_sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+      "after_sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/changed-inputs.json",
+      "before_sha256": "37ef5c170fa109ebf7874101efa4fb8c1e09f52aca106339ccc1c20c5b928455",
+      "after_sha256": "37ef5c170fa109ebf7874101efa4fb8c1e09f52aca106339ccc1c20c5b928455",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest-time.log",
+      "before_sha256": "a9b379652947bdc5870783d7c6774b72b47a288ad622c2575fd01e05ce3a1cdb",
+      "after_sha256": "a9b379652947bdc5870783d7c6774b72b47a288ad622c2575fd01e05ce3a1cdb",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest.json",
+      "before_sha256": "205a43ef549fd2f90ba55ba4d1da3d1c5c382b998a5e318e29658044c0add32a",
+      "after_sha256": "205a43ef549fd2f90ba55ba4d1da3d1c5c382b998a5e318e29658044c0add32a",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest.log",
+      "before_sha256": "403e3d121b9efa29af36753fd3b72ad02e68b8cef78468ab6509e117b3b21bb2",
+      "after_sha256": "403e3d121b9efa29af36753fd3b72ad02e68b8cef78468ab6509e117b3b21bb2",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run-time.log",
+      "before_sha256": "e06a32ad3135a6cb2ca96e3a0728a7db2f252a6b29fab2bfd17ce64be6fcf80f",
+      "after_sha256": "e06a32ad3135a6cb2ca96e3a0728a7db2f252a6b29fab2bfd17ce64be6fcf80f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run.json",
+      "before_sha256": "ea99bd67f0070fd8f991b25348ca9e597fcc32c92ee046d5759db0902131ccbb",
+      "after_sha256": "ea99bd67f0070fd8f991b25348ca9e597fcc32c92ee046d5759db0902131ccbb",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run.log",
+      "before_sha256": "90388a7c4acce50403a9a876c23aa33c915365bd4873d99764eb5a74e49b6eb7",
+      "after_sha256": "90388a7c4acce50403a9a876c23aa33c915365bd4873d99764eb5a74e49b6eb7",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-time.log",
+      "before_sha256": "71b940fec49c04fa961731b7295e86040c0a767a91fee6f3960d61d636fae1d4",
+      "after_sha256": "71b940fec49c04fa961731b7295e86040c0a767a91fee6f3960d61d636fae1d4",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint.json",
+      "before_sha256": "0dc9836d9ea71653a421c63a8a4cd3d14d73fc4d9a57087d928ffdc8ab28daeb",
+      "after_sha256": "0dc9836d9ea71653a421c63a8a4cd3d14d73fc4d9a57087d928ffdc8ab28daeb",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint.log",
+      "before_sha256": "3678c0e942304b6bb91bb2042384cb5dac9261a5a560ceaafa7ee136e7e36b3e",
+      "after_sha256": "3678c0e942304b6bb91bb2042384cb5dac9261a5a560ceaafa7ee136e7e36b3e",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-state.json",
+      "before_sha256": "72e7d7d6dddb875566473b911e5756aa6a3d0ef5b45629de8f43a68e2303cd41",
+      "after_sha256": "72e7d7d6dddb875566473b911e5756aa6a3d0ef5b45629de8f43a68e2303cd41",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate-time.log",
+      "before_sha256": "3d3643510dd1a39e8f2cdd88efb0efc61918a46e696df64f179c69acb7d577e6",
+      "after_sha256": "3d3643510dd1a39e8f2cdd88efb0efc61918a46e696df64f179c69acb7d577e6",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate.json",
+      "before_sha256": "ace40ead3a9da4803280e2ea05ebaf065e24d1475018876f9748cb35ac5f785d",
+      "after_sha256": "ace40ead3a9da4803280e2ea05ebaf065e24d1475018876f9748cb35ac5f785d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate.log",
+      "before_sha256": "4eba6cceb5f273cf4fd7afe517685107c1fce5093810fd3f30284587ef8f76d0",
+      "after_sha256": "4eba6cceb5f273cf4fd7afe517685107c1fce5093810fd3f30284587ef8f76d0",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/handler-inventory.md",
+      "before_sha256": "9087f2fc250b45da05338169ed9d1f12ad3464ed3a20525ffbade86782b3b005",
+      "after_sha256": "9087f2fc250b45da05338169ed9d1f12ad3464ed3a20525ffbade86782b3b005",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run-time.log",
+      "before_sha256": "131ac13bec3bfe3796d6cb0a8ddb6e178fa1dbecb91279ffa43755987df852e7",
+      "after_sha256": "131ac13bec3bfe3796d6cb0a8ddb6e178fa1dbecb91279ffa43755987df852e7",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run.json",
+      "before_sha256": "8c84036bb0dfd1e4a2e759928ea125b88c81ac8941357f5a88df24d0d994978d",
+      "after_sha256": "8c84036bb0dfd1e4a2e759928ea125b88c81ac8941357f5a88df24d0d994978d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run.log",
+      "before_sha256": "20e969a92b250f8b26ca80c5fc5aeab554f5c01f01b5511f4bdb3e5e852ec780",
+      "after_sha256": "20e969a92b250f8b26ca80c5fc5aeab554f5c01f01b5511f4bdb3e5e852ec780",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-time.log",
+      "before_sha256": "8785efb706955a84e8022a3b695370ac2c70ccff3075986594bd19867566da61",
+      "after_sha256": "8785efb706955a84e8022a3b695370ac2c70ccff3075986594bd19867566da61",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap.json",
+      "before_sha256": "fe5f8f3ed0dc318bfeee77026ad3e181056470083a221b8771ac99330b5f099d",
+      "after_sha256": "fe5f8f3ed0dc318bfeee77026ad3e181056470083a221b8771ac99330b5f099d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap.log",
+      "before_sha256": "088b9fc1140cce2eb389932954761e0cc10c0488c38d58862258ce841927d03c",
+      "after_sha256": "088b9fc1140cce2eb389932954761e0cc10c0488c38d58862258ce841927d03c",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/implementation.patch",
+      "before_sha256": "c7f6d6b6034c00d491ec6d308c8d9325b15b9880e9c8b1d2fb48fdee42779478",
+      "after_sha256": "c7f6d6b6034c00d491ec6d308c8d9325b15b9880e9c8b1d2fb48fdee42779478",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/line-counts.json",
+      "before_sha256": "acf93d45e918c181bbcf2f42dfc2e145f380b2cd916180e019b65217ababb434",
+      "after_sha256": "acf93d45e918c181bbcf2f42dfc2e145f380b2cd916180e019b65217ababb434",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/link-check.json",
+      "before_sha256": "5c95bf72796f839b57ca64406a97d33bd4c7d3ea5d1451be19461c70eaaab778",
+      "after_sha256": "5c95bf72796f839b57ca64406a97d33bd4c7d3ea5d1451be19461c70eaaab778",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports-time.log",
+      "before_sha256": "44b3ab1a973cb3dfae2e4e234c4bcee3006869fd5e416e6013b5b3b52016515f",
+      "after_sha256": "44b3ab1a973cb3dfae2e4e234c4bcee3006869fd5e416e6013b5b3b52016515f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports.json",
+      "before_sha256": "a9a9cf34584d0337d6c63503d4818d2e99feb0ad4f447c58d9da0e7a54f512bf",
+      "after_sha256": "a9a9cf34584d0337d6c63503d4818d2e99feb0ad4f447c58d9da0e7a54f512bf",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports.log",
+      "before_sha256": "4d3c3e48e35fa64d2154ab29c0a189d1ddecee33b663fd3a393303d6817938f9",
+      "after_sha256": "4d3c3e48e35fa64d2154ab29c0a189d1ddecee33b663fd3a393303d6817938f9",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/probe-builds.json",
+      "before_sha256": "a859f2c02f1a3641780312dfc00e749329d0541fd10c82f06f728ca618765a68",
+      "after_sha256": "a859f2c02f1a3641780312dfc00e749329d0541fd10c82f06f728ca618765a68",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-before-design.patch",
+      "before_sha256": "6878ed3c2aec3af10db897a4c80710d448f8f92f267c8d655dbf65d7c2946c11",
+      "after_sha256": "6878ed3c2aec3af10db897a4c80710d448f8f92f267c8d655dbf65d7c2946c11",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-design.patch",
+      "before_sha256": "3d5f27e0b4bceca6aed0304f473b628b8d44788edc24703226723a06fc6b211e",
+      "after_sha256": "3d5f27e0b4bceca6aed0304f473b628b8d44788edc24703226723a06fc6b211e",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run-time.log",
+      "before_sha256": "b73089a4e23e4f965cb3beaf2c9ed2bc17f8caa2707ff8f0b22b562dd9dbc264",
+      "after_sha256": "b73089a4e23e4f965cb3beaf2c9ed2bc17f8caa2707ff8f0b22b562dd9dbc264",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run.json",
+      "before_sha256": "16c826083d235fe953dd6f5a651de56a871a9af06c9e4c0fa0c417b45b8c37d1",
+      "after_sha256": "16c826083d235fe953dd6f5a651de56a871a9af06c9e4c0fa0c417b45b8c37d1",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run.log",
+      "before_sha256": "0ac74eed4da301fa5712825afab82d8bf37110ba78f405567c12defe7c3419b3",
+      "after_sha256": "0ac74eed4da301fa5712825afab82d8bf37110ba78f405567c12defe7c3419b3",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review.json",
+      "before_sha256": "cf58c8c888997afe0bc635a1aa11ef48882028473cb9d6162da828c77a0b709d",
+      "after_sha256": "cf58c8c888997afe0bc635a1aa11ef48882028473cb9d6162da828c77a0b709d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review.py",
+      "before_sha256": "6d21f3e2d5bb795d3573c55d407f55a2ec54f599825e78875af0fb0949c5745c",
+      "after_sha256": "6d21f3e2d5bb795d3573c55d407f55a2ec54f599825e78875af0fb0949c5745c",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-start-state.json",
+      "before_sha256": "1a52f12e89b85060626b748226b2c1eaff27f320542ab1bdf66e8e5b4734557d",
+      "after_sha256": "1a52f12e89b85060626b748226b2c1eaff27f320542ab1bdf66e8e5b4734557d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run-time.log",
+      "before_sha256": "9ccb81943d719012617f62300a378dd38d43531ee4e7fe84a7de99e389cb2b4f",
+      "after_sha256": "9ccb81943d719012617f62300a378dd38d43531ee4e7fe84a7de99e389cb2b4f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run.json",
+      "before_sha256": "2239662e415c5bed04c4617f55eba0a72faff9b402a0ce9205b66653e806abe3",
+      "after_sha256": "2239662e415c5bed04c4617f55eba0a72faff9b402a0ce9205b66653e806abe3",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run.log",
+      "before_sha256": "3acc42ed96bfbd50affd2468377bc21f908963bdd6f48780da8ea0b2bea2c219",
+      "after_sha256": "3acc42ed96bfbd50affd2468377bc21f908963bdd6f48780da8ea0b2bea2c219",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/record-files.json",
+      "before_sha256": "22e7d644cf74b58802849ab3a79d7c34164396befad10fa15b2b05365baf642d",
+      "after_sha256": "22e7d644cf74b58802849ab3a79d7c34164396befad10fa15b2b05365baf642d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/record-final.py",
+      "before_sha256": "74d9650e24a27d6dd7f74403e67b993ba295d902a23ab8c3ff25c2fd05f27c11",
+      "after_sha256": "74d9650e24a27d6dd7f74403e67b993ba295d902a23ab8c3ff25c2fd05f27c11",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed-time.log",
+      "before_sha256": "6d1877f81b715c3c6117786f3eb1c66abbbb1f382ca9c729251e1605151be2f8",
+      "after_sha256": "6d1877f81b715c3c6117786f3eb1c66abbbb1f382ca9c729251e1605151be2f8",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed.json",
+      "before_sha256": "83880963cbaf4a8634fc527096de3ebbd21a4af63504e5ee1d858dc0b75e55f7",
+      "after_sha256": "83880963cbaf4a8634fc527096de3ebbd21a4af63504e5ee1d858dc0b75e55f7",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed.log",
+      "before_sha256": "0e0b4bb4ec3521e656c4d6f0dba56603337d521bf691b196d7325dc6a85372d8",
+      "after_sha256": "0e0b4bb4ec3521e656c4d6f0dba56603337d521bf691b196d7325dc6a85372d8",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/results.md",
+      "before_sha256": "b7d84a17559da9094386e60bd58648809062132a7e07b620d9df9f723d938ea7",
+      "after_sha256": "65462f580e2d010ee256753063f75cad4020319485067c690372da95a25d4b6c",
+      "equal": false
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/run-record.py",
+      "before_sha256": "28e05c41f7731ffbcf8c7829b7470a5120e1a887a980d40d986d10a1dca87fe2",
+      "after_sha256": "28e05c41f7731ffbcf8c7829b7470a5120e1a887a980d40d986d10a1dca87fe2",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http-time.log",
+      "before_sha256": "79561a3aa5ced32e8d94cbe841a73433fb1d84edaa886b5cb7f38576b101681d",
+      "after_sha256": "79561a3aa5ced32e8d94cbe841a73433fb1d84edaa886b5cb7f38576b101681d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http.json",
+      "before_sha256": "4b3676685e43a1ffd397423e581be0173fb66cb4c132a8cdabd0b1208cdde4f3",
+      "after_sha256": "4b3676685e43a1ffd397423e581be0173fb66cb4c132a8cdabd0b1208cdde4f3",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http.log",
+      "before_sha256": "63c4d1e5eae33575f6f07ef0d285b3cbc3ad47f81770ce1530174edc5cdab38f",
+      "after_sha256": "63c4d1e5eae33575f6f07ef0d285b3cbc3ad47f81770ce1530174edc5cdab38f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-notes.md",
+      "before_sha256": "19f1d51d32cc8ff1fb0d566d26fa8d6918de59c8dd73350762740456081dec73",
+      "after_sha256": "0a134abb13e13895ab0a37234c68929c31e913c5c2143d1f4587245630239828",
+      "equal": false
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-sources.json",
+      "before_sha256": "de7368f0615e00565dae160c38bafd9c26575e1e59786152105aef3dbd842fa8",
+      "after_sha256": "de7368f0615e00565dae160c38bafd9c26575e1e59786152105aef3dbd842fa8",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_dot.bnt",
+      "before_sha256": "21033b772e5e61dc71c81508b6ff36dd05a43e529bdb6b51e58baea66fd98a02",
+      "after_sha256": "21033b772e5e61dc71c81508b6ff36dd05a43e529bdb6b51e58baea66fd98a02",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_empty.bnt",
+      "before_sha256": "17ef2899f1f03ddd827c429724b21e577abb03fa71158a74a3980a76497563fe",
+      "after_sha256": "17ef2899f1f03ddd827c429724b21e577abb03fa71158a74a3980a76497563fe",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_noport.bnt",
+      "before_sha256": "c46464953e6daf54c1883847d2e41925140c4513de11596938d347bd6ed5651e",
+      "after_sha256": "c46464953e6daf54c1883847d2e41925140c4513de11596938d347bd6ed5651e",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_other.bnt",
+      "before_sha256": "29b00ff54847b6b4823a75913155680f1168a49e46a3cb64000fa90533d2d6b0",
+      "after_sha256": "29b00ff54847b6b4823a75913155680f1168a49e46a3cb64000fa90533d2d6b0",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_path.bnt",
+      "before_sha256": "0328ce8a4749e06bdf6b694765a0785a22d3ad8413300cce5e3b843034530f37",
+      "after_sha256": "0328ce8a4749e06bdf6b694765a0785a22d3ad8413300cce5e3b843034530f37",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_space.bnt",
+      "before_sha256": "322a06d5db97402f4e37ace0eeb882138e43e45ec06db6a4e8fca21767d94a7f",
+      "after_sha256": "322a06d5db97402f4e37ace0eeb882138e43e45ec06db6a4e8fca21767d94a7f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_two.bnt",
+      "before_sha256": "183ab7a5e047c4aed66e7e62583dac52b61321d93fe3d522fad7307707e154a4",
+      "after_sha256": "183ab7a5e047c4aed66e7e62583dac52b61321d93fe3d522fad7307707e154a4",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_upper.bnt",
+      "before_sha256": "4dafff229c6b742f5cf8ccb1e8bf5d149b21d14474d4b4060d5d4c277f8d4369",
+      "after_sha256": "4dafff229c6b742f5cf8ccb1e8bf5d149b21d14474d4b4060d5d4c277f8d4369",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_user.bnt",
+      "before_sha256": "81db874c6e94e64ac54666c81deefa418000fff4825c302b79acd6d642b57a76",
+      "after_sha256": "81db874c6e94e64ac54666c81deefa418000fff4825c302b79acd6d642b57a76",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_v6.bnt",
+      "before_sha256": "0e112031a8239360a8393c81cebdfb33afe4f9f07636a9dff55d6886da7dd920",
+      "after_sha256": "0e112031a8239360a8393c81cebdfb33afe4f9f07636a9dff55d6886da7dd920",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/h_zero.bnt",
+      "before_sha256": "e8585a879cace9e502291d852c4d5a3e9e713f8a899feee2805cf914cea4c677",
+      "after_sha256": "e8585a879cace9e502291d852c4d5a3e9e713f8a899feee2805cf914cea4c677",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/server.log",
+      "before_sha256": "dff6edbca984ccc594d5bee582c29ff74f80d8e695b797bc99b8b660e3b65fc3",
+      "after_sha256": "dff6edbca984ccc594d5bee582c29ff74f80d8e695b797bc99b8b660e3b65fc3",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/server.py",
+      "before_sha256": "f150ddc3495406d45819f8be71c04943256e9ae6aca8e1c0bf8006f49214433c",
+      "after_sha256": "f150ddc3495406d45819f8be71c04943256e9ae6aca8e1c0bf8006f49214433c",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_fnval.bnt",
+      "before_sha256": "93dbe5f070d2c2ff9fc4e7ab010ce08f858efae7355fc8f3e7b5a73402d3d5e3",
+      "after_sha256": "93dbe5f070d2c2ff9fc4e7ab010ce08f858efae7355fc8f3e7b5a73402d3d5e3",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_fnval2.bnt",
+      "before_sha256": "2b613ea25fca42507c0ace1d67c8de4b11fe5379861fa277d83631d81a20a1b9",
+      "after_sha256": "2b613ea25fca42507c0ace1d67c8de4b11fe5379861fa277d83631d81a20a1b9",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h1.bnt",
+      "before_sha256": "ed484034db0cbaecb8003d416176ee70bf31037f7f304bed53252d5f677f5975",
+      "after_sha256": "ed484034db0cbaecb8003d416176ee70bf31037f7f304bed53252d5f677f5975",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h2.bnt",
+      "before_sha256": "f9b64ad178d830da392bc4607c7b79c126179371c88fd41cf9d9ad0db9a04ab2",
+      "after_sha256": "f9b64ad178d830da392bc4607c7b79c126179371c88fd41cf9d9ad0db9a04ab2",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h3.bnt",
+      "before_sha256": "379ca71cf0ad72c6d46fe9e18e6ea8a581f98723e238dd3efcea511ef47994b8",
+      "after_sha256": "379ca71cf0ad72c6d46fe9e18e6ea8a581f98723e238dd3efcea511ef47994b8",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h4.bnt",
+      "before_sha256": "bcefe9f001b8256c32733a33bf0611e62e100e7513dae9f8811aca39914b6b92",
+      "after_sha256": "bcefe9f001b8256c32733a33bf0611e62e100e7513dae9f8811aca39914b6b92",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h5.bnt",
+      "before_sha256": "3aaa92494cb0db01b3c767358cc75119328cb3996cc4c9073441b67fcf08ef6b",
+      "after_sha256": "3aaa92494cb0db01b3c767358cc75119328cb3996cc4c9073441b67fcf08ef6b",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h6.bnt",
+      "before_sha256": "56acf012d53247fe646cacd5e6f415e297a6e2d983f202ba015c1db2954cd57a",
+      "after_sha256": "56acf012d53247fe646cacd5e6f415e297a6e2d983f202ba015c1db2954cd57a",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_h7.bnt",
+      "before_sha256": "08f61e0a2820e03cd546e5d760f2a62b2544d7594e8fcba4f27a6ac1c25dd367",
+      "after_sha256": "08f61e0a2820e03cd546e5d760f2a62b2544d7594e8fcba4f27a6ac1c25dd367",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_handler.bnt",
+      "before_sha256": "de974f8537f31b6cfff69c5140797de2d3347d1d391203935641050ad20baca7",
+      "after_sha256": "de974f8537f31b6cfff69c5140797de2d3347d1d391203935641050ad20baca7",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_hof.bnt",
+      "before_sha256": "a8fdfc75adba6232580f333fe41b9e3d2bc4655789a4266e5b1d5056c13ff669",
+      "after_sha256": "a8fdfc75adba6232580f333fe41b9e3d2bc4655789a4266e5b1d5056c13ff669",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_lambda.bnt",
+      "before_sha256": "440247ef95dcc14fae43846f112f3ee1303456afd5ed0ddd7d7541c991923cdc",
+      "after_sha256": "440247ef95dcc14fae43846f112f3ee1303456afd5ed0ddd7d7541c991923cdc",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_pipe.bnt",
+      "before_sha256": "bfb03588eeede59b31fe53110ce29c4177e463f95c8a50de006fa425c4908216",
+      "after_sha256": "bfb03588eeede59b31fe53110ce29c4177e463f95c8a50de006fa425c4908216",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/rv-probes/t_top_under_narrow.bnt",
+      "before_sha256": "2628967ed98147869f59aabed34268e02e0c19568525322e9afd89671c5bbb9f",
+      "after_sha256": "2628967ed98147869f59aabed34268e02e0c19568525322e9afd89671c5bbb9f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial-time.log",
+      "before_sha256": "6d1edb783d83731cf77f3dc941cd762594eaf72c8327b385292096d8657b038a",
+      "after_sha256": "6d1edb783d83731cf77f3dc941cd762594eaf72c8327b385292096d8657b038a",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial.json",
+      "before_sha256": "dcfedc2ffb942b73c6e7f1cb665bec7b22d34e625075e9651fc72c4b22dfb4c4",
+      "after_sha256": "dcfedc2ffb942b73c6e7f1cb665bec7b22d34e625075e9651fc72c4b22dfb4c4",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial.log",
+      "before_sha256": "fd275f9566d8b668cd4e0f1632807c9290cf3f795d12afac87181b6c01f969e0",
+      "after_sha256": "fd275f9566d8b668cd4e0f1632807c9290cf3f795d12afac87181b6c01f969e0",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserve.py",
+      "before_sha256": "2234715f77864af85b166a5f94748d2cf8ae8542ac543d85c9e0454c84aecb8e",
+      "after_sha256": "2234715f77864af85b166a5f94748d2cf8ae8542ac543d85c9e0454c84aecb8e",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved-state.json",
+      "before_sha256": "4141727b98e742eb0727a0d6246a593e04914bb25761a523b1332a461bdd857b",
+      "after_sha256": "4141727b98e742eb0727a0d6246a593e04914bb25761a523b1332a461bdd857b",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved.json",
+      "before_sha256": "c61485b2445efd149a30c071bac59acf6ce65768d9f21198cc97ad9b291a26dc",
+      "after_sha256": "c61485b2445efd149a30c071bac59acf6ce65768d9f21198cc97ad9b291a26dc",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/intermediate.cnf",
+      "before_sha256": "602d091645524be7a4bab43ae5500a894e4aa3fedf609d18e63641053c0564b8",
+      "after_sha256": "602d091645524be7a4bab43ae5500a894e4aa3fedf609d18e63641053c0564b8",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/intermediate.der",
+      "before_sha256": "60066a4b8b4af17b261d0e34c47b34940dec53e03b0ba134cffaaee111446fb2",
+      "after_sha256": "60066a4b8b4af17b261d0e34c47b34940dec53e03b0ba134cffaaee111446fb2",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/leaf.cnf",
+      "before_sha256": "18a1bf2479a133f0da337b500f9bae5055d4fba9f9e9f8f1fabf99bbaaf4b546",
+      "after_sha256": "18a1bf2479a133f0da337b500f9bae5055d4fba9f9e9f8f1fabf99bbaaf4b546",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/leaf.der",
+      "before_sha256": "abb4c4bec911765824f6acab18249a5f7097f40b3fb722fa480b77beb6589207",
+      "after_sha256": "abb4c4bec911765824f6acab18249a5f7097f40b3fb722fa480b77beb6589207",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/root.der",
+      "before_sha256": "a65bd929c5e02bf5e7826848247ef243503a276cb926e34b792cded9ec60b68e",
+      "after_sha256": "a65bd929c5e02bf5e7826848247ef243503a276cb926e34b792cded9ec60b68e",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-sources.json",
+      "before_sha256": "1c5311272f71a36e204920dd97c34a2da6244ebef2ced349a1ebbaafcc447c4f",
+      "after_sha256": "1c5311272f71a36e204920dd97c34a2da6244ebef2ced349a1ebbaafcc447c4f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.c",
+      "before_sha256": "9ddafbce8750e6b49c92ce4c054d94be0800bb74ec7dc241f5869bce1ed6635f",
+      "after_sha256": "9ddafbce8750e6b49c92ce4c054d94be0800bb74ec7dc241f5869bce1ed6635f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.json",
+      "before_sha256": "5eb9a174e21aa3403f0e5d8beafaabc858ea7339dc7435d7900859d01ef726fb",
+      "after_sha256": "5eb9a174e21aa3403f0e5d8beafaabc858ea7339dc7435d7900859d01ef726fb",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.md",
+      "before_sha256": "1cb654ca1c5918fc9c0b7ca6955ad8e8a41bd24403b9ccd92208f8217e5c96b5",
+      "after_sha256": "1cb654ca1c5918fc9c0b7ca6955ad8e8a41bd24403b9ccd92208f8217e5c96b5",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.py",
+      "before_sha256": "c35733b40ea103ec85de4863a286129e592aa16220c2ae8ccf42aca364ea52b1",
+      "after_sha256": "c35733b40ea103ec85de4863a286129e592aa16220c2ae8ccf42aca364ea52b1",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed-time.log",
+      "before_sha256": "2022db7bffec151e4b73de0d7ef87d30f06ec6101ac2fa3197348e604d5a4604",
+      "after_sha256": "2022db7bffec151e4b73de0d7ef87d30f06ec6101ac2fa3197348e604d5a4604",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed.json",
+      "before_sha256": "88583efc0dcbfaae5ceff72a8a54f55b0936797510db7170eb79a17aee6c195c",
+      "after_sha256": "88583efc0dcbfaae5ceff72a8a54f55b0936797510db7170eb79a17aee6c195c",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed.log",
+      "before_sha256": "09681e5e088af1fdbe4522aef6dab25a796c602e2329c281ab2dce93d72d4a68",
+      "after_sha256": "09681e5e088af1fdbe4522aef6dab25a796c602e2329c281ab2dce93d72d4a68",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial-time.log",
+      "before_sha256": "d88c215eb097199d12c84ca0d116e32715fef8f648b19934aa2eddc262527e50",
+      "after_sha256": "d88c215eb097199d12c84ca0d116e32715fef8f648b19934aa2eddc262527e50",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial.json",
+      "before_sha256": "77b062754d1ea03a5e082bfc9a2f80c8a5c52a3d38873c0ee3b2b3012d2ddeea",
+      "after_sha256": "77b062754d1ea03a5e082bfc9a2f80c8a5c52a3d38873c0ee3b2b3012d2ddeea",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial.log",
+      "before_sha256": "cbd55a4ee73af5945cd773219760892ef995b80eefa33cc0771effbe9c556786",
+      "after_sha256": "cbd55a4ee73af5945cd773219760892ef995b80eefa33cc0771effbe9c556786",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/test-counts.json",
+      "before_sha256": "b66eb73a832d00ffd3d925ac16ddfc2b8aacf884aa20d0bef34ce82fe96fef25",
+      "after_sha256": "b66eb73a832d00ffd3d925ac16ddfc2b8aacf884aa20d0bef34ce82fe96fef25",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/type-handler-notes.md",
+      "before_sha256": "a1a16a12b62b7644ad19c968999d896faf0a4263a88fed0ccafb922574a261b7",
+      "after_sha256": "a1a16a12b62b7644ad19c968999d896faf0a4263a88fed0ccafb922574a261b7",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent-time.log",
+      "before_sha256": "77ecf9f43839639bd356a2c8e188914c4ca521955455310a5f92bb0e9644a934",
+      "after_sha256": "77ecf9f43839639bd356a2c8e188914c4ca521955455310a5f92bb0e9644a934",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent.json",
+      "before_sha256": "6e6012224fbdc7bdfc0f7692be2a199b46e3b7fb3419e4fb3af42ee4a9a0703b",
+      "after_sha256": "6e6012224fbdc7bdfc0f7692be2a199b46e3b7fb3419e4fb3af42ee4a9a0703b",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent.log",
+      "before_sha256": "8742ece55eb33d5b857dac575fad3a2d0bc67d0a9d5f2712fddc747be8f13d40",
+      "after_sha256": "8742ece55eb33d5b857dac575fad3a2d0bc67d0a9d5f2712fddc747be8f13d40",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults-time.log",
+      "before_sha256": "331644110a75d0a5208a5ff3b9b95daa9cc96344b99a5308a6bdc94418c200da",
+      "after_sha256": "331644110a75d0a5208a5ff3b9b95daa9cc96344b99a5308a6bdc94418c200da",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults.json",
+      "before_sha256": "1aadd5d1347fc69ae403034c5094dd1ea48b306e12ea4c942d57a5cff6f81837",
+      "after_sha256": "1aadd5d1347fc69ae403034c5094dd1ea48b306e12ea4c942d57a5cff6f81837",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults.log",
+      "before_sha256": "32814532bdd43040ac8469e6167ff2ee374db9254ae557179237060332e1d761",
+      "after_sha256": "32814532bdd43040ac8469e6167ff2ee374db9254ae557179237060332e1d761",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax-time.log",
+      "before_sha256": "593221cffde39454b92f5108510656f4d7a368f17d8c7967f015ddcb99c1e17f",
+      "after_sha256": "593221cffde39454b92f5108510656f4d7a368f17d8c7967f015ddcb99c1e17f",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax.json",
+      "before_sha256": "977cb968840c96661c6d94b81c986bb16367bca64f524e84b5799d0231e180b4",
+      "after_sha256": "977cb968840c96661c6d94b81c986bb16367bca64f524e84b5799d0231e180b4",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax.log",
+      "before_sha256": "af4539abbff6a278e9b117bb353181120c05e98011ecc91a905dedc9b1cd40a1",
+      "after_sha256": "af4539abbff6a278e9b117bb353181120c05e98011ecc91a905dedc9b1cd40a1",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final-time.log",
+      "before_sha256": "5fdb1192a061cf732bd4bacab8cd1862d138983471ac733111a731057486825c",
+      "after_sha256": "5fdb1192a061cf732bd4bacab8cd1862d138983471ac733111a731057486825c",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final.json",
+      "before_sha256": "debee9ce8f32c7192e316aa5eca416e7e094d5990e407a9a8fe5967f477d3e71",
+      "after_sha256": "debee9ce8f32c7192e316aa5eca416e7e094d5990e407a9a8fe5967f477d3e71",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final.log",
+      "before_sha256": "4cad102f6c5b7fc7907ec6ac7eee634f2ceb8be208659103f6e94f6da2f2b1a2",
+      "after_sha256": "4cad102f6c5b7fc7907ec6ac7eee634f2ceb8be208659103f6e94f6da2f2b1a2",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped-time.log",
+      "before_sha256": "79166b7248ac794e17c71ac3c571b1b92ee17fc148df5ad6bf2568c7fc31ecf1",
+      "after_sha256": "79166b7248ac794e17c71ac3c571b1b92ee17fc148df5ad6bf2568c7fc31ecf1",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped.json",
+      "before_sha256": "8f01b29d13cdbe6358b294581a41635898b750176df4cf2c6eec4623da2c4dee",
+      "after_sha256": "8f01b29d13cdbe6358b294581a41635898b750176df4cf2c6eec4623da2c4dee",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped.log",
+      "before_sha256": "7068baca237c9b6ebd78fcdce1b22f7757996f4d975e590a8f716ce94762a4dd",
+      "after_sha256": "7068baca237c9b6ebd78fcdce1b22f7757996f4d975e590a8f716ce94762a4dd",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-test-notes.md",
+      "before_sha256": "201e9d655512cedc6fb3ab679923fb5aa4779cd60dc4b6881bcadb895f329e59",
+      "after_sha256": "201e9d655512cedc6fb3ab679923fb5aa4779cd60dc4b6881bcadb895f329e59",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-correction.json",
+      "before_sha256": "6a083096391b9988ee3422f22b9c65c9c6fa8366fdadc16beb8180d325b36ee9",
+      "after_sha256": "6a083096391b9988ee3422f22b9c65c9c6fa8366fdadc16beb8180d325b36ee9",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-correction.patch",
+      "before_sha256": "a60ce5cf50347d75cdbc073c8db60c44460fe69e666510d25d6eac347a1dcea3",
+      "after_sha256": "a60ce5cf50347d75cdbc073c8db60c44460fe69e666510d25d6eac347a1dcea3",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run-time.log",
+      "before_sha256": "e8defe67c44a974bbadc28c465d1c5e161946549dbcc9b70e4699a5f01a69d9d",
+      "after_sha256": "e8defe67c44a974bbadc28c465d1c5e161946549dbcc9b70e4699a5f01a69d9d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run.json",
+      "before_sha256": "3714968a0b7d0ae3252cd95215db5c73fad3b7bec30ae50bc552b1483d05b470",
+      "after_sha256": "3714968a0b7d0ae3252cd95215db5c73fad3b7bec30ae50bc552b1483d05b470",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run.log",
+      "before_sha256": "ffc4123ba6bd28c6e07993042dd34eb10720e4fa2fa20af54f607ad95682844d",
+      "after_sha256": "ffc4123ba6bd28c6e07993042dd34eb10720e4fa2fa20af54f607ad95682844d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed-time.log",
+      "before_sha256": "1b8d0d4fdf2955c5bcff36d100b897b95f05fdbb9bb675d66c4ebc9dcfdd27c4",
+      "after_sha256": "1b8d0d4fdf2955c5bcff36d100b897b95f05fdbb9bb675d66c4ebc9dcfdd27c4",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed.json",
+      "before_sha256": "c7b5fc1d649aef7f965f30f3df2ab45ab55e175473fabc32aaaacd8777ef311b",
+      "after_sha256": "c7b5fc1d649aef7f965f30f3df2ab45ab55e175473fabc32aaaacd8777ef311b",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed.log",
+      "before_sha256": "d2d381d4a5f4d6176bf27e38ad28d966e519b29a344802ee40c3c12cb633c0bd",
+      "after_sha256": "d2d381d4a5f4d6176bf27e38ad28d966e519b29a344802ee40c3c12cb633c0bd",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-time.log",
+      "before_sha256": "277cd953e26eafa013746d69c70f31747b7899cc5aac10e4e17ca2ac64447f24",
+      "after_sha256": "277cd953e26eafa013746d69c70f31747b7899cc5aac10e4e17ca2ac64447f24",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run.json",
+      "before_sha256": "36838cb514c72e257a302afaa99c440599e18e49459e0721f1e2f9e380d2a95a",
+      "after_sha256": "36838cb514c72e257a302afaa99c440599e18e49459e0721f1e2f9e380d2a95a",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run.log",
+      "before_sha256": "6bc0d93fb1f7e022b618717f1c1f83cf055d9df88cb94cd7a232f0f1de2e6d0b",
+      "after_sha256": "6bc0d93fb1f7e022b618717f1c1f83cf055d9df88cb94cd7a232f0f1de2e6d0b",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-time.log",
+      "before_sha256": "5e6e4299a05580a6cfd41a1eeb16fdb0a23ab551de0eb7ee250b51ad1ae8090d",
+      "after_sha256": "5e6e4299a05580a6cfd41a1eeb16fdb0a23ab551de0eb7ee250b51ad1ae8090d",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining.json",
+      "before_sha256": "8e5fcfca5e51c4402251eed81383479108aad655049eb4943ac4e6b612e4b0ec",
+      "after_sha256": "8e5fcfca5e51c4402251eed81383479108aad655049eb4943ac4e6b612e4b0ec",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining.log",
+      "before_sha256": "0c119b25cf34932f98eafc236a96bf2449dd803a05e3471f6d2359cbbdf8ed7b",
+      "after_sha256": "0c119b25cf34932f98eafc236a96bf2449dd803a05e3471f6d2359cbbdf8ed7b",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-time.log",
+      "before_sha256": "0a45619e4b48f68c535df665da21e116877aa2a7e30ba2a9aefdb11c228d1042",
+      "after_sha256": "0a45619e4b48f68c535df665da21e116877aa2a7e30ba2a9aefdb11c228d1042",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work.json",
+      "before_sha256": "6053bbd6de6c0e8d7ccf47b6001be53378709e098458afca5e01036bb5202719",
+      "after_sha256": "6053bbd6de6c0e8d7ccf47b6001be53378709e098458afca5e01036bb5202719",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work.log",
+      "before_sha256": "e0e91a8548cd216829c7979bd68f07d5b1729e3cf051d977c97f37d44ba8c946",
+      "after_sha256": "e0e91a8548cd216829c7979bd68f07d5b1729e3cf051d977c97f37d44ba8c946",
+      "equal": true
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/reviews/RV-R30.4.md",
+      "before_sha256": "190641b266b671f10f2fb9f53f305972d5a60a0b4966eae56c2b0dbf57937320",
+      "after_sha256": "190641b266b671f10f2fb9f53f305972d5a60a0b4966eae56c2b0dbf57937320",
+      "equal": true
+    },
+    {
+      "path": "docs/design/01-spec/01-06-type-system.md",
+      "before_sha256": "c8112e1bd149dff2fc8873a4a74bc8c15122790612885ae2bd0378c0547e276c",
+      "after_sha256": "c8112e1bd149dff2fc8873a4a74bc8c15122790612885ae2bd0378c0547e276c",
+      "equal": true
+    },
+    {
+      "path": "docs/design/01-spec/01-07-effects.md",
+      "before_sha256": "2a5a57ea205101158b94971ec34cddd1f0554b61adba0758e6f36292a9f533e1",
+      "after_sha256": "2a5a57ea205101158b94971ec34cddd1f0554b61adba0758e6f36292a9f533e1",
+      "equal": true
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "before_sha256": "dc2e1cabcd0dd238377a7efa4108f8a6428342647285f51d79062e9b906c7aa7",
+      "after_sha256": "dc2e1cabcd0dd238377a7efa4108f8a6428342647285f51d79062e9b906c7aa7",
+      "equal": true
+    },
+    {
+      "path": "docs/design/02-impl/02-08-vm.md",
+      "before_sha256": "aff8c80e673cc4cbe1843375b14a2d6468cbae9c819bd6cf96bc686937196be6",
+      "after_sha256": "1ba16e8b571642ef8bca947edc988bcf2572414e4022ac3268fa217e843cacee",
+      "equal": false
+    },
+    {
+      "path": "docs/design/02-impl/02-09-runtime.md",
+      "before_sha256": "f510161731896aa8c886c8c38c46354fd51a44b81b477dc6e7f4ab5247943b88",
+      "after_sha256": "f510161731896aa8c886c8c38c46354fd51a44b81b477dc6e7f4ab5247943b88",
+      "equal": true
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "before_sha256": "07aa8cf6e570c8bb5f981381a4c6b0665d45c1644e3dbf8e0ee6d3761f7c9fc9",
+      "after_sha256": "07aa8cf6e570c8bb5f981381a4c6b0665d45c1644e3dbf8e0ee6d3761f7c9fc9",
+      "equal": true
+    },
+    {
+      "path": "docs/design/07-quality/07-01-security-model.md",
+      "before_sha256": "ae33c5a878d658f061e3b5be20564cd4cf6a48838efe33c344e4562713a836e4",
+      "after_sha256": "ebf8b18cd11b02769649f8fc5a15b4abab77b6b2cbaf1c30e12402e4fbc18b8b",
+      "equal": false
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "before_sha256": "625c0c25817322ba263e8c28cd2b18d4f8d7b798fb464dc306e39edc66a44356",
+      "after_sha256": "3471112c28dca06e04c26f995a4677228347cda798823826d57f84fce0d0792d",
+      "equal": false
+    },
+    {
+      "path": "fuzz/Cargo.lock",
+      "before_sha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+      "after_sha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+      "equal": true
+    },
+    {
+      "path": "fuzz/Cargo.toml",
+      "before_sha256": "d8045b5ce1533133739c8b3e53c09c7d88fb0f7ce8252f5640028a73d14a16e2",
+      "after_sha256": "d8045b5ce1533133739c8b3e53c09c7d88fb0f7ce8252f5640028a73d14a16e2",
+      "equal": true
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "before_sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "after_sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+      "equal": true
+    },
+    {
+      "path": "scripts/check-formal.sh",
+      "before_sha256": "6588aa1056907fbd6717211d9adfed2c257ca1ee2c35df76d9787fa97c2bf519",
+      "after_sha256": "6588aa1056907fbd6717211d9adfed2c257ca1ee2c35df76d9787fa97c2bf519",
+      "equal": true
+    },
+    {
+      "path": "scripts/check-heap.sh",
+      "before_sha256": "241426346cc2b0d15a0187e7d8af5bdeca9ad4f3523d1b9377b02711591a2e34",
+      "after_sha256": "241426346cc2b0d15a0187e7d8af5bdeca9ad4f3523d1b9377b02711591a2e34",
+      "equal": true
+    },
+    {
+      "path": "scripts/check.sh",
+      "before_sha256": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+      "after_sha256": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+      "equal": true
+    },
+    {
+      "path": "scripts/check/advisories.py",
+      "before_sha256": "865e889e1537f857e952bebce6445b91f45fa556e07e1d40cd07bff48badd055",
+      "after_sha256": "865e889e1537f857e952bebce6445b91f45fa556e07e1d40cd07bff48badd055",
+      "equal": true
+    },
+    {
+      "path": "scripts/check/fixtures/legacy-commands.json",
+      "before_sha256": "88c79cc690e7dfbeb718ba7ec73eeb732d3206cc9bfada2f720321fcc1993db5",
+      "after_sha256": "88c79cc690e7dfbeb718ba7ec73eeb732d3206cc9bfada2f720321fcc1993db5",
+      "equal": true
+    },
+    {
+      "path": "scripts/check/formal_interval.py",
+      "before_sha256": "408b3c694a7d67511cb53d08c1bbef969c4bd3295c030d90ed377df7341a5417",
+      "after_sha256": "408b3c694a7d67511cb53d08c1bbef969c4bd3295c030d90ed377df7341a5417",
+      "equal": true
+    },
+    {
+      "path": "scripts/check/interval_artifacts.py",
+      "before_sha256": "f36d6af2b0a54be678248cdfb622bc7fe5a7cd902a28c395b39b328e972a011c",
+      "after_sha256": "f36d6af2b0a54be678248cdfb622bc7fe5a7cd902a28c395b39b328e972a011c",
+      "equal": true
+    },
+    {
+      "path": "scripts/check/run_ignored.py",
+      "before_sha256": "38aec93a54b08ff11e67f28fda62a55ed24b775875abbe73234eaa1323b1b0bf",
+      "after_sha256": "38aec93a54b08ff11e67f28fda62a55ed24b775875abbe73234eaa1323b1b0bf",
+      "equal": true
+    },
+    {
+      "path": "scripts/check/test_policy.py",
+      "before_sha256": "c8c4a839a17efa6b86a7f57db830674ed7d75299352d42eb60d9271c08593432",
+      "after_sha256": "c8c4a839a17efa6b86a7f57db830674ed7d75299352d42eb60d9271c08593432",
+      "equal": true
+    },
+    {
+      "path": "scripts/fuzz-seed.sh",
+      "before_sha256": "e0e87e6e307d4050e501e197afd1976126acedc29d088f2bca6f0df363b4ea97",
+      "after_sha256": "e0e87e6e307d4050e501e197afd1976126acedc29d088f2bca6f0df363b4ea97",
+      "equal": true
+    },
+    {
+      "path": "scripts/fuzz-short.sh",
+      "before_sha256": "6eefab7bb8fb701d8806518a6a2604773d6a21ae99be7c89934b6591e98f375b",
+      "after_sha256": "6eefab7bb8fb701d8806518a6a2604773d6a21ae99be7c89934b6591e98f375b",
+      "equal": true
+    },
+    {
+      "path": "scripts/release/about.hbs",
+      "before_sha256": "b2a6cb5fda8ee07d4392d9ef5ed4efc286191bc77555062ab77fd61612b257fb",
+      "after_sha256": "b2a6cb5fda8ee07d4392d9ef5ed4efc286191bc77555062ab77fd61612b257fb",
+      "equal": true
+    },
+    {
+      "path": "scripts/release/about.toml",
+      "before_sha256": "580b205a20da3d21611dc3be32f16fb4804a97755056f894cd90785bdc454906",
+      "after_sha256": "580b205a20da3d21611dc3be32f16fb4804a97755056f894cd90785bdc454906",
+      "equal": true
+    },
+    {
+      "path": "scripts/release/licenses.sh",
+      "before_sha256": "32c4e04061bb70ed436aaf06ff032ebc1a4ccefd00bb2ed6876105f596220da1",
+      "after_sha256": "32c4e04061bb70ed436aaf06ff032ebc1a4ccefd00bb2ed6876105f596220da1",
+      "equal": true
+    }
+  ],
+  "changed_existing_files": [
+    "crates/benitoite/skill/SKILL.md",
+    "crates/benitoite/skill/references/idioms.md",
+    "crates/benitoite/skill/references/stdlib/Network.Http.md",
+    "crates/benitoite/src/prelude/stdlib/Network/Http.bnt",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/results.md",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-notes.md",
+    "docs/design/02-impl/02-08-vm.md",
+    "docs/design/07-quality/07-01-security-model.md",
+    "docs/design/07-quality/07-04-formal-semantics.md"
+  ],
+  "rust_sources_and_tests_unchanged": true,
+  "bnt_declarations_unchanged": true,
+  "review_and_rv_probes_unchanged": true,
+  "config_hashes": {
+    "Cargo.toml": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+    "Cargo.lock": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "fuzz/Cargo.toml": "d8045b5ce1533133739c8b3e53c09c7d88fb0f7ce8252f5640028a73d14a16e2",
+    "fuzz/Cargo.lock": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+    "deny.toml": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+    "rust-toolchain.toml": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+    ".cargo/config.toml": "cfa18b92df6134d8b83cbdd1527a08ad31a913cd17b6eac019cc362207e92254",
+    "crates/benitoite/Cargo.toml": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+    "crates/benitoite/build.rs": "d1714c4a92fb57bffeb259581697e92e43fba793984477c701c88f46f52a8d1c",
+    "crates/benitoite/examples/gen_skill.rs": "1dfaede330b34cd5712bd010c0d4c5d69d3c0d88ba28e18c833c8599396fa297",
+    "crates/benitoite/src/cli/tools/skill/generate.rs": "c57083794a25862c7c452735a19dcd2c254cb982de6e553d602c6c10d45ce846",
+    "crates/benitoite/src/cli/tools/skill/bundle.rs": "c0f7bb1aaa810ed900721ffca81e1399eaa94695334f1fef9d7bd1c45318cd0e",
+    "scripts/check.sh": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+    "tools/spec-coverage/spec_coverage.py": "e83327c94896d8e03d2f4f4b48a95ff445222d215275b27acf10f76f94816bd5",
+    "formal/lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+  },
+  "tools": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "python": "3.9.6",
+    "platform": "macOS-27.0.1-arm64-arm-64bit"
+  },
+  "same_environment_as_previous": true,
+  "prose_comparison": {
+    "crates/benitoite/skill/SKILL.md": {
+      "headings_unchanged": true,
+      "code_blocks": true
+    },
+    "crates/benitoite/skill/references/idioms.md": {
+      "headings_unchanged": true,
+      "code_blocks": true
+    },
+    "crates/benitoite/skill/references/stdlib/Network.Http.md": {
+      "headings_unchanged": true,
+      "code_blocks": "生成された宣言の doc コメントだけを訂正"
+    },
+    "docs/design/02-impl/02-08-vm.md": {
+      "headings_unchanged": true,
+      "code_blocks": true
+    },
+    "docs/design/07-quality/07-01-security-model.md": {
+      "headings_unchanged": true,
+      "code_blocks": true
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "headings_unchanged": true,
+      "code_blocks": true
+    }
+  },
+  "links_checked": 234,
+  "diff_check_exit_code": 0,
+  "working_diff_sha256": "8714d8b17c3c58f082e31e184c324a718b71131eee98dea161331bce4f5f0c0d",
+  "untracked_test_input_sha256": "cf4e864fb70bb81a74359cc0f8ad93d0a17eb5e0d04ee326ec07f166d636f039",
+  "reused_results": {
+    "work": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9"
+      ],
+      "check_exit_code": 1,
+      "outer_wall_seconds": 97.650452541,
+      "maxrss_raw": 2466119680,
+      "maxrss_unit": "bytes",
+      "record_sha256": "6053bbd6de6c0e8d7ccf47b6001be53378709e098458afca5e01036bb5202719",
+      "log_sha256": "e0e91a8548cd216829c7979bd68f07d5b1729e3cf051d977c97f37d44ba8c946"
+    },
+    "registry-fixed": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "benitoite",
+        "--lib",
+        "builtins::table::tests::table_names_parts_capabilities_and_schemes_are_consistent",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 7.4606657919999995,
+      "maxrss_raw": 2919251968,
+      "maxrss_unit": "bytes",
+      "record_sha256": "83880963cbaf4a8634fc527096de3ebbd21a4af63504e5ee1d858dc0b75e55f7",
+      "log_sha256": "0e0b4bb4ec3521e656c4d6f0dba56603337d521bf691b196d7325dc6a85372d8"
+    },
+    "work-remaining": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9",
+        "--only",
+        "fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally",
+        "--test",
+        "*"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 395.02251775,
+      "maxrss_raw": 1507786752,
+      "maxrss_unit": "bytes",
+      "record_sha256": "8e5fcfca5e51c4402251eed81383479108aad655049eb4943ac4e6b612e4b0ec",
+      "log_sha256": "0c119b25cf34932f98eafc236a96bf2449dd803a05e3471f6d2359cbbdf8ed7b"
+    },
+    "ports": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "benitoite",
+        "--test",
+        "network_faults",
+        "get_send_and_send_in_expose_all_four_fault_kinds_through_run_and_cli",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 4.825821083,
+      "maxrss_raw": 1374961664,
+      "maxrss_unit": "bytes",
+      "record_sha256": "a9a9cf34584d0337d6c63503d4818d2e99feb0ad4f447c58d9da0e7a54f512bf",
+      "log_sha256": "4d3c3e48e35fa64d2154ab29c0a189d1ddecee33b663fd3a393303d6817938f9"
+    },
+    "final-lint": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9",
+        "--only",
+        "fmt,lint_default"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 8.628107541,
+      "maxrss_raw": 1469186048,
+      "maxrss_unit": "bytes",
+      "record_sha256": "0dc9836d9ea71653a421c63a8a4cd3d14d73fc4d9a57087d928ffdc8ab28daeb",
+      "log_sha256": "3678c0e942304b6bb91bb2042384cb5dac9261a5a560ceaafa7ee136e7e36b3e"
+    },
+    "heap": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9",
+        "--only",
+        "doc_default,heap_local,stress_local",
+        "--test",
+        "runtime_builtins",
+        "--test",
+        "vm_handlers",
+        "--test",
+        "io_modes",
+        "--test",
+        "l32_http_client"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 120.93307975,
+      "maxrss_raw": 2346614784,
+      "maxrss_unit": "bytes",
+      "record_sha256": "fe5f8f3ed0dc318bfeee77026ad3e181056470083a221b8771ac99330b5f099d",
+      "log_sha256": "088b9fc1140cce2eb389932954761e0cc10c0488c38d58862258ce841927d03c"
+    }
+  },
+  "local_absolute_path_leaks": [],
+  "excluded": "lake build・check-formal.sh・short は実行しない"
+}

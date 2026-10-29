@@ -61,7 +61,7 @@ inductive IsIf : Expr → Prop
 /-- E_Binary と同じ連結演算子の前提。部分が二つ以上の補間だけが要求する。 -/
 def StringAddOk (B : Builtins) (op : OpPrim) (C : List TParam) : Prop :=
   ∃ b ts s, op (.binary .add) (.base .string) = some (b, ts) ∧ ts = [] ∧
-    B.sig b = some s ∧ ts.length = s.ntys ∧ s.neffs = 0 ∧ s.admits C ts ∧
+    B.sig b = some s ∧ ts.length = s.ntys ∧ (s.neffs = 0 ∧ s.nranges = 0) ∧ s.admits C ts ∧
     fnTy s.names s.params s.ret s.eff ts [] = .fn ["left", "right"] [.base .string, .base .string] (.base .string) Eff.empty
 
 /-- 解決済みの Show の辞書とメソッドを、宣言表の純粋な一引数の契約で検査する。
@@ -76,9 +76,24 @@ def DieShowOk (D : Declarations) (B : Builtins) (C : List TParam)
 /-- 既存の終了操作の種類・所属エフェクトと、T への具体化を検査する。 -/
 def DieExitOk (B : Builtins) (C : List TParam) (exit : PrimName) (t : Ty) : Prop :=
   ∃ s, B.sig exit = some s ∧ s.kind = .exit ∧ s.opEff = some "Process.Exit" ∧
-    s.ntys = 1 ∧ s.neffs = 0 ∧ NamesWF s.names s.params ∧ s.admits C [t] ∧
+    s.ntys = 1 ∧ (s.neffs = 0 ∧ s.nranges = 0) ∧ NamesWF s.names s.params ∧ s.admits C [t] ∧
     fnTy s.names s.params s.ret s.eff [t] [] =
       .fn ["code"] [.base .integer] t (Eff.single "Process.Exit")
+
+/-- 表層の型検査器が捕捉した組み込みの操作の節に与える添字（判断 11、L40.5）。組み込みの操作でエフェクトの名前 l を
+持つなら、保護本体の効果 e の規則の値 `e.clauseRange l`（Release の `Eff.clauseRange`）、それ以外は Top とする。
+コアの型付けは規則の値と Top を許すが（`Release.ClauseIxOk`）、表層の型付けは規則の値だけで型付ける。型検査器が
+添字を一つに選ぶことの表しである。利用者の操作の型は添字によらない（`opSigAt_user`）。検査器はこの値を候補の原子の
+一覧の上で計算する（`Surface/ClauseIxRule.lean` の `clauseIxIn`）。 -/
+noncomputable def clauseIx (B : Builtins) (e : Eff) : OpRef → Scope.Domain.Range
+  | .prim b =>
+    match B.sig b with
+    | some s =>
+      match s.opEff with
+      | some l => e.clauseRange l
+      | none => .top
+    | none => .top
+  | _ => .top
 
 mutual
   inductive HasTypeQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
@@ -126,26 +141,29 @@ mutual
         DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) →
         ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length →
         (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) →
-        (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
+        (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) →
         MethodRowsAdmissible C Q ms es →
         SingleTy Q (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) →
         HasTypeQ D B opPrim Q Δ C Γ R p (.methName d m ss es us names ps)
           (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) Eff.empty
-    -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じ admits を検査する。
-    | E_Prim {Δ C Γ R p b s ts es} :
-        B.sig b = some s → NamesWF s.names s.params → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
-        PrimitiveAdmissible C s Q ts es →
-        SingleTy Q (fnTy s.names s.params s.ret s.eff ts es) →
-        HasTypeQ D B opPrim Q Δ C Γ R p (.primName b ts es) (fnTy s.names s.params s.ret s.eff ts es) Eff.empty
+    -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じく、型検査器が選んだ範囲の列 rs で具体化した署名
+    -- `s.inst rs` と、範囲の具体化の許容 `RangeAdmissible` で型付ける。
+    | E_Prim {Δ C Γ R p b s ts es rs} :
+        B.sig b = some s → B.RangeAdmissible b s rs → NamesWF (s.inst rs).names (s.inst rs).params →
+        ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
+        PrimitiveAdmissible C (s.inst rs) Q ts es →
+        SingleTy Q (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) →
+        HasTypeQ D B opPrim Q Δ C Γ R p (.primName b ts es rs)
+          (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) Eff.empty
     -- 01-12「ハンドラ」: 操作を値として使う。V-Op と同じ宣言と制約を検査する。
     | E_Raise {Δ C Γ R p t e} :
-        Ty.WF C.length t → Ty.WF C.length e →
+        Ty.WF 0 C.length t → Ty.WF 0 C.length e →
         HasTypeQ D B opPrim Q Δ C Γ R p (.raise t e)
           (.fn ["error"] [e] t (Eff.singleFail e)) Eff.empty
     | E_HandleFail {Δ C Γ R p E t body clause eb Rest ec} :
         HasBlockQ D B opPrim Q Δ C Γ R .other body t eb →
         Eff.Sub eb (Eff.union (Eff.singleFail E) Rest) → NoFail Q Rest →
-        Ty.WF C.length E → Ty.WF C.length t → Eff.WF C.length ec →
+        Ty.WF 0 C.length E → Ty.WF 0 C.length t → Eff.WF 0 C.length ec →
         HasBlockQ D B opPrim Q [] (({} : TParam) :: C)
           (none :: some (E.shift 1 0) :: shiftEnv 1 Γ) (R.map (Ty.shift 1 0)) .other
           clause (t.shift 1 0) (Eff.shift 1 0 ec) →
@@ -281,16 +299,17 @@ mutual
         NamesWF (args.holeNames (positionalNames args.positions.length)) args.holeTypes →
         HasHoleArgsQ D B opPrim Q [] C (hideConts Γ) (some r) args
           (cd.args.map (Ty.subst ts [])) εargs →
-        Ty.Le (.data cd.data ts) r → Eff.VarsIn C.length (fun _ => True) εargs →
+        Ty.Le (.data cd.data ts) r → Eff.VarsIn 0 C.length (fun _ => True) εargs →
         HasTypeQ D B opPrim Q Δ C Γ R p (.partialCon c ts args)
           (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs)) Eff.empty
     -- 01-12「演算子」: e1 ⊕ e2。01-06「演算子の型付け」「等値の型」。
     -- 算術と比較の型の集まりは Operator.allowed、等値の制約は B.sig の admits、結果型は fnTy で検査する。02-06 に従い eq/ne だけ [T]。
-    -- 算術は (T,T)→T、比較と等値は (T,T)→Boolean という表を B.sig に与える。
+    -- 算術は (T,T)→T、比較と等値は (T,T)→Boolean という表を B.sig に与える。演算子の項目は範囲の変数を持たない
+    -- （`s.nranges = 0`。OpPrim は範囲の列を与えず、脱糖は空の範囲の列を書く）。
     | E_Binary {Δ C Γ R p o t b ts s lhs rhs a εl εr} :
         (Operator.binary o).allowed t = true →
         opPrim (.binary o) t = some (b, ts) → ts = (Operator.binary o).typeArgs t →
-        B.sig b = some s → NamesWF s.names s.params → ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
+        B.sig b = some s → NamesWF s.names s.params → ts.length = s.ntys → s.neffs = 0 ∧ s.nranges = 0 → s.admits C ts →
         fnTy s.names s.params s.ret s.eff ts [] = .fn ["left", "right"] [t, t] a Eff.empty →
         HasTypeQ D B opPrim Q Δ C Γ R .other lhs t εl → HasTypeQ D B opPrim Q Δ C Γ R .other rhs t εr →
         HasTypeQ D B opPrim Q Δ C Γ R p (.binary o t lhs rhs) a (Eff.union εl εr)
@@ -298,7 +317,7 @@ mutual
     | E_Neg {Δ C Γ R p t b ts s e ε} :
         Operator.neg.allowed t = true →
         opPrim .neg t = some (b, ts) → ts = [] → B.sig b = some s →
-        ts.length = s.ntys → s.neffs = 0 → s.admits C ts →
+        ts.length = s.ntys → s.neffs = 0 ∧ s.nranges = 0 → s.admits C ts →
         fnTy s.names s.params s.ret s.eff ts [] = .fn ["value"] [t] t Eff.empty →
         HasTypeQ D B opPrim Q Δ C Γ R .other e t ε → HasTypeQ D B opPrim Q Δ C Γ R p (.neg t e) t ε
     -- 01-12「演算子」: not e。01-06「式と文の型」: Boolean。
@@ -317,11 +336,11 @@ mutual
         HasTypeQ D B opPrim Q Δ C Γ R p (.or lhs rhs) (.base .boolean) (Eff.union εl εr)
     -- 01-12「リスト、ラムダ、条件分岐、match」: [e1,…,en]。01-06「式と文の型」。
     | E_List {Δ C Γ R p a es ε} :
-        Ty.WF C.length a → HasEachQ D B opPrim Q Δ C Γ R es a ε →
+        Ty.WF 0 C.length a → HasEachQ D B opPrim Q Δ C Γ R es a ε →
         HasTypeQ D B opPrim Q Δ C Γ R p (.list a es) (.list a) ε
     -- 01-06「式と文の型」: 要素は T、展開の式は List[T]。concat_T は純粋な直接の頭。
     | E_ListSpread {Δ C Γ R p a f h before spread after εb εs εa} :
-        Ty.WF C.length a → directCallee f = some h →
+        Ty.WF 0 C.length a → directCallee f = some h →
         HasTypeQ D B opPrim Q Δ C Γ R .other f (.fn ["xs", "ys"] [.list a, .list a] (.list a) Eff.empty) Eff.empty →
         HasEachQ D B opPrim Q Δ C Γ R before a εb →
         HasTypeQ D B opPrim Q Δ C Γ R .other spread (.list a) εs →
@@ -372,7 +391,7 @@ mutual
         HasTypeQ D B opPrim Q Δ C Γ (some r) .tail (.returnE a e) r ε
     -- 01-12「return」: 末尾でない位置。01-12「関数の境界と escape」: 任意の結果型。
     | E_ReturnOther {Δ C Γ r a e ε} :
-        Ty.WF C.length a → HasTypeQ D B opPrim Q Δ C Γ (some r) .other e r ε →
+        Ty.WF 0 C.length a → HasTypeQ D B opPrim Q Δ C Γ (some r) .other e r ε →
         HasTypeQ D B opPrim Q Δ C Γ (some r) .other (.returnE a e) a ε
     -- 01-12「関数の境界と escape」: Result の try。01-09「try」: E は同じ型であり、変換しない。
     -- Inhabits は同じデータ型の全構成子を含むため、二つの分岐の網羅性を別に検査する。
@@ -418,8 +437,8 @@ mutual
     -- 01-10「リソースの型」「with の構文」: 本体の型と、束縛・本体・解放のエフェクトの和。
     -- 01-12「解放の枠」: 本体は非末尾位置。束縛は後続のリソースの式にも見える。
     | E_With {Δ C Γ R p o e body a εe εbody} :
-        B.isResource o = true → HasTypeQ D B opPrim Q Δ C Γ R .other e (.opaque o) εe →
-        HasBlockQ D B opPrim Q (none :: Δ) C (some (.opaque o) :: Γ) R .other body a εbody →
+        B.isResource o = true → HasTypeQ D B opPrim Q Δ C Γ R .other e (.opaqueTop o) εe →
+        HasBlockQ D B opPrim Q (none :: Δ) C (some (.opaqueTop o) :: Γ) R .other body a εbody →
         HasTypeQ D B opPrim Q Δ C Γ R p (.withE o e body) a
           (Eff.union εe (Eff.union εbody (Eff.single stateEff)))
     -- 01-06「明示遅延の型」、01-12「ストア」「関数の境界」「ハンドラ」: 純粋な本体。
@@ -431,15 +450,16 @@ mutual
     | E_Handle {Δ C Γ R p body cs t εbody ε} :
         HasBlockQ D B opPrim Q Δ C Γ R .other body t εbody →
         Eff.Sub εbody (Eff.union ε (handled D.patternProgram B cs.skeleton)) →
-        HasClausesQ D B opPrim Q Δ C Γ R cs t ε →
+        HasClausesQ D B opPrim Q Δ C Γ R εbody cs t ε →
         HasTypeQ D B opPrim Q Δ C Γ R p (.handleE body cs) t ε
     -- 同節: C-Resume。引数の計算と再開は同じ許容エフェクト ε で検査する。
     | E_Resume {Δ C Γ R p k e b t ε} :
         Γ[k]? = some (some (.cont b t ε)) → HasTypeQ D B opPrim Q Δ C Γ R .other e b ε →
         HasTypeQ D B opPrim Q Δ C Γ R p (.resume k e) t ε
-    -- 01-06「エフェクトの包含」「式のエフェクト」。最も外側の関数型だけを広げる。
+    -- 01-06「エフェクトの包含」「式のエフェクト」。最も外側の関数型だけを広げる。効果は判断 5 の一原子の被覆で広げる
+    -- （L40.6c）。
     | E_Sub {Δ C Γ R p e a a' ε ε'} :
-        HasTypeQ D B opPrim Q Δ C Γ R p e a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn C.length (fun _ => True) a' →
+        HasTypeQ D B opPrim Q Δ C Γ R p e a ε → Ty.Le a a' → Eff.Covers ε' ε → Ty.VarsIn 0 C.length (fun _ => True) a' →
         HasTypeQ D B opPrim Q Δ C Γ R p e a' ε'
 
   inductive HasTypesQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
@@ -467,13 +487,13 @@ mutual
         HasTypeQ D B opPrim Q Δ C Γ R .other e a ε → HasHoleArgsQ D B opPrim Q Δ C Γ R args as εs →
         HasHoleArgsQ D B opPrim Q Δ C Γ R (.expr label position e args) (a :: as) (Eff.union ε εs)
     | hole {Δ C Γ R label position t a args as ε} :
-        Ty.Le t a → Ty.VarsIn C.length (fun _ => True) a → HasHoleArgsQ D B opPrim Q Δ C Γ R args as ε →
+        Ty.Le t a → Ty.VarsIn 0 C.length (fun _ => True) a → HasHoleArgsQ D B opPrim Q Δ C Γ R args as ε →
         HasHoleArgsQ D B opPrim Q Δ C Γ R (.hole label position t args) (a :: as) ε
 
   inductive HasArmsQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
       BuilderCtx → List TParam → List (Option Ty) → Option Ty → Position → Arms → Ty → Ty → Eff → Prop
     -- 空の分岐でも結果型の WF を要求する（Release.HasTypeArmsQ.nil）。
-    | nil {Δ C Γ R p a b} : Ty.WF C.length b →
+    | nil {Δ C Γ R p a b} : Ty.WF 0 C.length b →
         HasArmsQ D B opPrim Q Δ C Γ R p .nil a b Eff.empty
     | plain {Δ C Γ R p alts body rest a b ε εs δ} :
         Alternative.Valid alts → AltsTy D.patternProgram (Alternative.toCoreList alts) a δ →
@@ -487,17 +507,18 @@ mutual
         HasArmsQ D B opPrim Q Δ C Γ R p rest a b εs →
         HasArmsQ D B opPrim Q Δ C Γ R p (.cons alts (some guard) body rest) a b (Eff.union ε εs)
 
-  /-- C-Handle の節と同じ環境。操作の引数と継続の引数は宣言の型をそのまま使う。 -/
+  /-- C-Handle の節と同じ環境。添字 `εb` は保護本体の効果であり、操作の型は `εb` から選んだ節の添字 `clauseIx B εb o`
+  で具体化する（L30.1 の `opSigAt`、判断 11）。 -/
   inductive HasClausesQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
-      BuilderCtx → List TParam → List (Option Ty) → Option Ty → Clauses → Ty → Eff → Prop
-    | nil {Δ C Γ R t ε} : HasClausesQ D B opPrim Q Δ C Γ R .nil t ε
-    | cons {Δ C Γ R o n ntys body cs t ε sg ndicts} :
-        opSig D.patternProgram B o = some sg → NamesWF sg.names sg.params → (ndicts = opDictCount D.patternProgram o ∧ ndicts + n = sg.params.length) → ntys = sg.tparams.length → Eff.WF C.length ε →
+      BuilderCtx → List TParam → List (Option Ty) → Option Ty → Eff → Clauses → Ty → Eff → Prop
+    | nil {Δ C Γ R εb t ε} : HasClausesQ D B opPrim Q Δ C Γ R εb .nil t ε
+    | cons {Δ C Γ R εb o n ntys body cs t ε sg ndicts} :
+        opSigAt D.patternProgram B (clauseIx B εb o) o = some sg → NamesWF sg.names sg.params → (ndicts = opDictCount D.patternProgram o ∧ ndicts + n = sg.params.length) → ntys = sg.tparams.length → Eff.WF 0 C.length ε →
         HasBlockQ D B opPrim Q [] (sg.tparams ++ C)
           (some (.cont sg.ret (t.shift ntys 0) (Eff.shift ntys 0 ε)) :: (binds sg.params ++ shiftEnv ntys Γ))
           (R.map (Ty.shift ntys 0)) .other body (t.shift ntys 0) (Eff.shift ntys 0 ε) →
-        HasClausesQ D B opPrim Q Δ C Γ R cs t ε →
-        HasClausesQ D B opPrim Q Δ C Γ R (.cons o n ntys body cs ndicts) t ε
+        HasClausesQ D B opPrim Q Δ C Γ R εb cs t ε →
+        HasClausesQ D B opPrim Q Δ C Γ R εb (.cons o n ntys body cs ndicts) t ε
 
   inductive HasBlockQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
       BuilderCtx → List TParam → List (Option Ty) → Option Ty → Position → Block → Ty → Eff → Prop
@@ -546,9 +567,9 @@ mutual
         HasTypeQ D B opPrim Q Δ C Γ R .other e t ε →
         HasBlockQ D B opPrim Q (List.replicate δ.length none ++ Δ) C (binds δ ++ Γ) R p rest a εs →
         HasBlockQ D B opPrim Q Δ C Γ R p (.bindPat k pat t e rest) a (Eff.union ε εs)
-    -- 01-06「エフェクトの包含」: 分岐のブロックの結果を受け入れる。
+    -- 01-06「エフェクトの包含」: 分岐のブロックの結果を受け入れる。効果は判断 5 の一原子の被覆で広げる（L40.6c）。
     | B_Sub {Δ C Γ R p body a a' ε ε'} :
-        HasBlockQ D B opPrim Q Δ C Γ R p body a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn C.length (fun _ => True) a' →
+        HasBlockQ D B opPrim Q Δ C Γ R p body a ε → Ty.Le a a' → Eff.Covers ε' ε → Ty.VarsIn 0 C.length (fun _ => True) a' →
         HasBlockQ D B opPrim Q Δ C Γ R p body a' ε'
 end
 
@@ -588,8 +609,8 @@ mutual
         exact .E_FunDicts h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10
     | .E_MethName h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12 =>
         exact .E_MethName h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12
-    | .E_Prim h0 h1 h2 h3 h4 h5 h6 =>
-        exact .E_Prim h0 h1 h2 h3 h4 h5 h6
+    | .E_Prim h0 hr h1 h2 h3 h4 h5 h6 =>
+        exact .E_Prim h0 hr h1 h2 h3 h4 h5 h6
     | .E_Raise h0 h1 =>
         exact .E_Raise h0 h1
     | .E_HandleFail h0 h1 h2 h3 h4 h5 h6 =>
@@ -733,9 +754,9 @@ mutual
     | .guarded h0 h1 h2 h3 h4 =>
         exact .guarded h0 h1 (HasTypeQ.congrΔ h2 (BuilderCtx.sameKinds_values hΔ _)) (HasBlockQ.congrΔ h3 (BuilderCtx.sameKinds_values hΔ _)) (HasArmsQ.congrΔ h4 hΔ)
   /-- 同じ構築器の種類を持つ文脈へ導出を移す。 -/
-  theorem HasClausesQ.congrΔ {D B op Q Δ Δ' C Γ R cs t ε}
-      (h : HasClausesQ D B op Q Δ C Γ R cs t ε) (hΔ : ∀ i, Δ.kindAt i = Δ'.kindAt i) :
-      HasClausesQ D B op Q Δ' C Γ R cs t ε := by
+  theorem HasClausesQ.congrΔ {D B op Q Δ Δ' C Γ R εb cs t ε}
+      (h : HasClausesQ D B op Q Δ C Γ R εb cs t ε) (hΔ : ∀ i, Δ.kindAt i = Δ'.kindAt i) :
+      HasClausesQ D B op Q Δ' C Γ R εb cs t ε := by
     match h with
     | .nil =>
         exact .nil
@@ -788,8 +809,8 @@ mutual
         exact .E_FunDicts h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10
     | .E_MethName h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12 =>
         exact .E_MethName h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12
-    | .E_Prim h0 h1 h2 h3 h4 h5 h6 =>
-        exact .E_Prim h0 h1 h2 h3 h4 h5 h6
+    | .E_Prim h0 hr h1 h2 h3 h4 h5 h6 =>
+        exact .E_Prim h0 hr h1 h2 h3 h4 h5 h6
     | .E_Raise h0 h1 =>
         exact .E_Raise h0 h1
     | .E_HandleFail h0 h1 h2 h3 h4 h5 h6 =>
@@ -933,9 +954,9 @@ mutual
     | .guarded h0 h1 h2 h3 h4 =>
         exact .guarded h0 h1 (HasTypeQ.of_builderFree h2 (by simp_all only [Arms.BuilderFree])) (HasBlockQ.of_builderFree h3 (by simp_all only [Arms.BuilderFree])) (HasArmsQ.of_builderFree h4 (by simp_all only [Arms.BuilderFree]))
   /-- 構築器のない入力では構築器の種類の選択に依存しない。 -/
-  theorem HasClausesQ.of_builderFree {D B op Q Δ Δ' C Γ R cs t ε}
-      (h : HasClausesQ D B op Q Δ C Γ R cs t ε) (hf : cs.BuilderFree) :
-      HasClausesQ D B op Q Δ' C Γ R cs t ε := by
+  theorem HasClausesQ.of_builderFree {D B op Q Δ Δ' C Γ R εb cs t ε}
+      (h : HasClausesQ D B op Q Δ C Γ R εb cs t ε) (hf : cs.BuilderFree) :
+      HasClausesQ D B op Q Δ' C Γ R εb cs t ε := by
     match h with
     | .nil =>
         exact .nil
@@ -995,8 +1016,8 @@ theorem HasArmsQ.builderFree_iff {D B op Q Δ C Γ R p arms a b ε} (hf : arms.B
   ⟨fun h => h.of_builderFree hf, fun h => h.of_builderFree hf⟩
 
 /-- 空の Δ と任意の Δ は、構築器を含まない入力に同じ判断を与える。 -/
-theorem HasClausesQ.builderFree_iff {D B op Q Δ C Γ R cs t ε} (hf : cs.BuilderFree) :
-    HasClausesQ D B op Q Δ C Γ R cs t ε ↔ HasClausesQ D B op Q [] C Γ R cs t ε :=
+theorem HasClausesQ.builderFree_iff {D B op Q Δ C Γ R εb cs t ε} (hf : cs.BuilderFree) :
+    HasClausesQ D B op Q Δ C Γ R εb cs t ε ↔ HasClausesQ D B op Q [] C Γ R εb cs t ε :=
   ⟨fun h => h.of_builderFree hf, fun h => h.of_builderFree hf⟩
 
 /-- 空の Δ と任意の Δ は、構築器を含まない入力に同じ判断を与える。 -/
@@ -1218,7 +1239,7 @@ example (B : Builtins) (op : OpPrim) :
         (HasHoleArgs.expr (label := none) (position := 1) (a := boolTy)
           (ε := Eff.empty) (εs := Eff.empty) (HasType.E_Literal (l := .boolean true)) HasHoleArgs.nil))
   · exact Or.inl rfl
-  · exact ⟨fun _ h => Bool.noConfusion h, trivial⟩
+  · exact ⟨fun _ h => Bool.noConfusion h, trivial, fun _ h => Bool.noConfusion h⟩
 
 example (B : Builtins) (op : OpPrim) :
     HasType decls B op [] [] none .other (.conValue "Pair" [] ["first", "second"] [intTy, boolTy])

@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+
+function f() -> Result[String, IOError]
+  return handle File.readText(path: "/x") with
+    case File.readText(path) -> resume(Result.Ok("a"))
+  end handle
+end function
+
+function main() -> Unit
+  ()
+end function

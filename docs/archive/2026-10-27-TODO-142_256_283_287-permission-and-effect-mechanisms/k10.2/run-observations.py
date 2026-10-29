@@ -1,0 +1,44 @@
+"""既存の IO 境界の検査を外側で計時し、生の出力を保存する。"""
+import datetime
+import hashlib
+import json
+import resource
+import subprocess
+import time
+from pathlib import Path
+
+
+def require(ok, message):
+    if not ok:
+        raise AssertionError(message)
+
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+CASES = [
+    ("observation-file", "runtime_builtins", "file_in_operations_use_the_retained_path_and_preserve_values_and_errors"),
+    ("observation-http", "l32_http_client", "send_in_returns_redirects_without_connecting_to_location"),
+    ("observation-endpoint", "l32_http_client", "send_in_matches_effective_endpoint_and_explicit_host"),
+]
+
+def redact(text):
+    return text.replace(str(ROOT), "<wt>").replace(str(Path.home()), "<home>")
+
+expected = HERE / "observations-expected.json"
+expected_hash = hashlib.sha256(expected.read_bytes()).hexdigest()
+require((HERE / "observations-expected.json.sha256").read_text().split()[0] == expected_hash, 'run-observations.py:23: requirement failed')
+for label, target, name in CASES:
+    cmd = ["/usr/bin/time", "-p", "cargo", "test", "-p", "benitoite", "--test", target, name, "--", "--exact", "--nocapture"]
+    start = time.monotonic()
+    began = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    run = subprocess.run(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    elapsed = time.monotonic() - start
+    rss = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+    (HERE / (label + ".log")).write_text(redact(run.stdout))
+    result = {"argv": cmd, "startedUtc": began, "returncode": run.returncode, "outerSeconds": elapsed,
+              "maxRssBytesAuxiliary": rss, "expectedSha256": expected_hash,
+              "scope": "existing runtime test, default features; Direct and Request VM modes within each test"}
+    (HERE / (label + ".json")).write_text(json.dumps(result, indent=2) + "\n")
+    print(label, run.returncode, round(elapsed, 3), flush=True)
+    if run.returncode:
+        raise SystemExit(run.returncode)

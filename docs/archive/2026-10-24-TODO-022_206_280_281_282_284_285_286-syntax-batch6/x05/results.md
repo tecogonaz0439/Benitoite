@@ -134,7 +134,7 @@ VM の詳細は ZIP 内の `interval/comparison/vm/vm-summary.json`、`vm/range/
 
 ## 永続記録の保存範囲と容量
 
-元 ZIP は `<repo>/work/m012/records/x05a-run3-k1-records.zip`（gitignore）、**80,046,150バイト**、SHA-256 **`6986e19acfa40abad5507cca1583c7240f417ee96504b58b4ddd4da0e8e4aa9e`** である。[索引](../x05a/run3/k1-records-index.json)は12,064ファイルを列挙し、12,055ファイルを保存、16 MiB を超える再生成可能な大型入力9ファイルは本文を省いて大きさ・元ハッシュ・理由・`persisted:false` を残す。最終 manifest の12,063件との差1件は manifest 自身である。**報告・ログの省略は0件**であり、ハッシュだけの9入力を本文も読める記録とは扱わない。
+元 ZIP は [x05a-run3-k1-records.zip の索引とハッシュ](../work-copies/README.md#f475)（gitignore）、**80,046,150バイト**、SHA-256 **`6986e19acfa40abad5507cca1583c7240f417ee96504b58b4ddd4da0e8e4aa9e`** である。[索引](../x05a/run3/k1-records-index.json)は12,064ファイルを列挙し、12,055ファイルを保存、16 MiB を超える再生成可能な大型入力9ファイルは本文を省いて大きさ・元ハッシュ・理由・`persisted:false` を残す。最終 manifest の12,063件との差1件は manifest 自身である。**報告・ログの省略は0件**であり、ハッシュだけの9入力を本文も読める記録とは扱わない。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 X05b は ZIP の全収録ファイルを読み戻してハッシュを確認し、両 manifest の全12,063成果物・1,220入力の元ハッシュを索引に照合した。パスを伏せた1ファイルは元と保存後のハッシュを区別した。[点検器](../x05b/audit.py)・[読み戻し結果](../x05b/evidence-check.json)に結果を保存した。K1 の解析・評価・VM・全比較の再実行ではない。target の一時ログだけを引用元にせず、要約・索引・生ログを追跡する文書に残している。
 

@@ -36,14 +36,18 @@ theorem computes_funName {q f ts es} : ExprComputes q (.funName f ts es) := by
     (hq.declarations.1 f d (lookup_ok hd)).1.2.1
     (hq.declarations.1 f d (lookup_ok hd)).1.2.2 he.1 he.2, emptyEff_atoms _⟩
 
-theorem computes_primName {q b ts es} : ExprComputes q (.primName b ts es) := by
+theorem computes_primName {q b ts es rs} : ExprComputes q (.primName b ts es rs) := by
   intro mode Δ C Γ R p path hq he hΓ hR hB
   simp only [Expr.AtomsIn] at he
   apply computes_guard
   apply computes_lift_bind
   intro s hs
+  apply computes_lift_bind; intro _ _
+  apply computes_lift_bind; intro _ hc
   repeat (apply computes_lift_bind; intro _ _)
-  have ha := hq.builtins b s (lookup_ok hs)
+  have ha0 := hq.builtins b s (lookup_ok hs)
+  have ha := CheckRanges.inst_atoms ha0 (require_ok hc).1
+  rw [← CheckRanges.instSig_eq ha0 (require_ok hc).1] at ha
   exact computes_pure ⟨fnTyCheck_atoms ha.1 ha.2.1 ha.2.2 he.1 he.2, emptyEff_atoms _⟩
 
 theorem computes_opName {q o ts} : ExprComputes q (.opName o ts) := by
@@ -258,22 +262,22 @@ theorem computes_arms_cons {q alts guard body rest}
     exact computes_pure (union_atoms hε hs)
 
 theorem computes_clauses_nil {q} : ClausesComputes q .nil := by
-  intro mode Δ C Γ R path t ε hq he hΓ hR hB ht hε
+  intro mode Δ C Γ R path εb t ε hq he hΓ hR hB ht hε
   exact computes_pure (emptyEff_atoms _)
 
 theorem computes_clauseTypes_nil {q} : ClauseTypesComputes q .nil := by
-  intro Δ C Γ R path t ε hq he hΓ hR hB ht hε
+  intro Δ C Γ R path εb t ε hq he hΓ hR hB ht hε
   exact computes_pure ht
 
 theorem computes_clauses_cons {q o n ntys body rest ndicts}
     (ihb : BlockComputes q body) (ihr : ClausesComputes q rest) :
     ClausesComputes q (.cons o n ntys body rest ndicts) := by
-  intro mode Δ C Γ R path t ε hq he hΓ hR hB ht hε
+  intro mode Δ C Γ R path εb t ε hq he hΓ hR hB ht hε
   simp only [Clauses.AtomsIn] at he
   apply computes_lift_bind
   intro sg hsg
   repeat (apply computes_lift_bind; intro _ _)
-  have hsg := opSig_atoms hq.declarations hq.builtins (lookup_ok hsg)
+  have hsg := opSigAt_atoms hq.declarations hq.builtins (by rw [← clauseOpSigIn_eq_opSigAt]; exact lookup_ok hsg)
   apply computes_accept_bind (ihb _ [] _ _ _ _ _ hq he.1 (clauseEnv_atoms hsg.1 hsg.2 ht hε hΓ) (returnAtoms_shift hR ntys) (BuilderInvariant.empty _ _ _))
   intro εb hb
   apply computes_bind computes_get
@@ -281,7 +285,7 @@ theorem computes_clauses_cons {q o n ntys body rest ndicts}
   split
   all_goals
     repeat (apply computes_lift_bind; intro _ _)
-    apply computes_bind (ihr _ Δ _ _ _ _ _ _ hq he.2 hΓ hR hB ht hε)
+    apply computes_bind (ihr _ Δ _ _ _ _ _ _ _ hq he.2 hΓ hR hB ht hε)
     intro εs hs
     exact computes_pure (union_atoms
       (substEffAt_atoms hb (tysAtoms_replicate (show Ty.AtomsIn q.atoms (.base .unit) from trivial) ntys) (by simp) 0) hs)
@@ -289,12 +293,12 @@ theorem computes_clauses_cons {q o n ntys body rest ndicts}
 theorem computes_clauseTypes_cons {q o n ntys body rest ndicts}
     (ihb : BlockComputes q body) (ihr : ClauseTypesComputes q rest) :
     ClauseTypesComputes q (.cons o n ntys body rest ndicts) := by
-  intro Δ C Γ R path t ε hq he hΓ hR hB ht hε
+  intro Δ C Γ R path εb t ε hq he hΓ hR hB ht hε
   simp only [Clauses.AtomsIn] at he
   apply computes_lift_bind
   intro sg hsg
   repeat (apply computes_lift_bind; intro _ _)
-  have hsg := opSig_atoms hq.declarations hq.builtins (lookup_ok hsg)
+  have hsg := opSigAt_atoms hq.declarations hq.builtins (by rw [← clauseOpSigIn_eq_opSigAt]; exact lookup_ok hsg)
   apply computes_bind (ihb _ [] _ _ _ _ _ hq he.1 (clauseEnv_atoms hsg.1 hsg.2 ht hε hΓ) (returnAtoms_shift hR ntys) (BuilderInvariant.empty _ _ _))
   rintro ⟨a, δ⟩ ⟨ha, hδ⟩
   apply computes_lift_bind
@@ -302,7 +306,7 @@ theorem computes_clauseTypes_cons {q o n ntys body rest ndicts}
   apply computes_lift_bind
   intro j hj
   have ha' := substTy_atoms (es := ([] : List Eff)) ha (tysAtoms_replicate (show Ty.AtomsIn q.atoms (.base .unit) from trivial) ntys) (by simp)
-  exact ihr Δ _ _ _ _ _ _ hq he.2 hΓ hR hB (join_atoms ht ha' hj) hε
+  exact ihr Δ _ _ _ _ _ _ _ hq he.2 hΓ hR hB (join_atoms ht ha' hj) hε
 
 
 theorem computes_block_builderBind {q k rest} (ihr : BlockComputes q rest) :

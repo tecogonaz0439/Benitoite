@@ -1,0 +1,481 @@
+{
+  "version": 1,
+  "baseline": "c3ca4504dae42271df7336aca41d0a6d5447d0e3",
+  "basis": "公開契約とScope規則から比較実行前に手書き。Rust/Lean出力を期待値へ使わない",
+  "rule": "期待値だけを変更しない。誤りは初稿・不一致を保存して入力側を訂正するか停止する",
+  "cases": [
+    {
+      "name": "host-one",
+      "file": "host-one.bnt",
+      "sha256": "2077959f74444d6d84246c71d2bc5bfcc95d6ec192936fe4f184c73e4c8f6d25",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"*.example.com\", 443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "host-many",
+      "file": "host-many.bnt",
+      "sha256": "f45b3231cc15df5f8d1c14c88043bb5ee3e78a342cef83ec52d90485d0eba882",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"**.example.com\", 443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "ipv4-exact",
+      "file": "ipv4-exact.bnt",
+      "sha256": "9e9884b65dd0f8389a367bc6618c70c1c2a46fc4cdf23f6bf6ed706b582d5a66",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"192.0.2.7\", 443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "ipv4-cidr",
+      "file": "ipv4-cidr.bnt",
+      "sha256": "2b2e6ccec0183988f63ccd4033f8bb6b1aff6a8b4be602204fc0aaba95145064",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"192.0.2.0/24\", 443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "ipv6-exact",
+      "file": "ipv6-exact.bnt",
+      "sha256": "6c00e33a523b2f476d2b4534c55345f7ec5d003bdea1e1e23703d4371f6419bd",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"2001:db8::7\", 443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "ipv6-cidr",
+      "file": "ipv6-cidr.bnt",
+      "sha256": "8c97f5031959e391b41e6bb1f747390a0d0694a5360b55b2d5ed3a05eb36e911",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"2001:db8::/32\", 443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "port-range",
+      "file": "port-range.bnt",
+      "sha256": "2cd387eccf0e2f7a7dff4e2082da81b92aeeb58c69b70f1227063644d3b20eda",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Http.checkRequestIn",
+          "index": "\"api.example.com\", 80..443"
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "path-tree",
+      "file": "path-tree.bnt",
+      "sha256": "786e6c7dbeef3306eaa22c42170a5c063658826e4ac537e30aa62807b9312dcf",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "required": [
+        {
+          "definition": "sample",
+          "surfacePreorder": 0,
+          "declaration": "Scope.checkPathIn",
+          "index": "\"/data/**\""
+        }
+      ],
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "request-retained",
+      "file": "request-retained.bnt",
+      "sha256": "bbadf5ee2fcd7d85735fd69d2b8dcb8b9e4deb73c03c7e13620e808f8f935d01",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "path-widen",
+      "file": "path-widen.bnt",
+      "sha256": "cbd03cc55f7e9f9962c445e29cf93580ddc879f1f877a12faabab0008df4ae4e",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "surface": {
+        "ok": true
+      }
+    },
+    {
+      "name": "shorthand-location",
+      "file": "shorthand-location.bnt",
+      "sha256": "5dffabf5b6678b61df5c3e1290a8c829981df2f6fbef75e7ad147453eefcc9cb",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 1,
+      "surface": {
+        "ok": true
+      },
+      "bounds": [
+        "\"/backup/**\"",
+        "\"/data/**\""
+      ],
+      "sourceLine": 4
+    },
+    {
+      "name": "old-ip",
+      "file": "old-ip.bnt",
+      "sha256": "a97acb5a01afe6872dfe5dfb21573e49d31f5141f01c5807d458730acecbf80b",
+      "exit": 0,
+      "definitions": 2,
+      "nonTopRangesMinimum": 0,
+      "surface": {
+        "ok": true
+      },
+      "compatibility": "旧ScopeのIP/CIDR・正規化したパターンの保存"
+    },
+    {
+      "name": "user-spelling",
+      "file": "user-spelling.bnt",
+      "sha256": "d2696ca286d0d9358fe24df01a4015a8c9ef35b48b274e010c60ecafffb8e22b",
+      "exit": 0,
+      "definitions": 2,
+      "nonTopRangesMinimum": 0,
+      "surface": {
+        "ok": true
+      },
+      "compatibility": "同じ綴りの利用者関数は標準規則として認定しない"
+    },
+    {
+      "name": "all-top",
+      "file": "all-top.bnt",
+      "sha256": "b41a3949065c35a590a574fce06bd885d4952f010bd151d6b170de6132836faf",
+      "exit": 0,
+      "definitions": 1,
+      "nonTopRangesMinimum": 0,
+      "nonTopRanges": 0,
+      "surface": {
+        "ok": true
+      },
+      "compatibility": "動的条件のTop"
+    },
+    {
+      "name": "required-not-covered",
+      "file": "required-not-covered.bnt",
+      "sha256": "82af33c459203742a6a149a25ee64d4f7b56264bdbfaa2ae1a5f6bb89d033d82",
+      "exit": 2,
+      "codes": [
+        "E0519"
+      ],
+      "reason": "notCovered",
+      "comparison": "required",
+      "leanCase": "path",
+      "requiredIndex": {
+        "path": {
+          "tree": [
+            "data"
+          ]
+        }
+      },
+      "contract": {
+        "path": {
+          "exact": [
+            "data",
+            "a"
+          ]
+        }
+      },
+      "key": {
+        "definition": "sample",
+        "surfacePreorder": 0
+      }
+    },
+    {
+      "name": "required-unknown",
+      "file": "required-unknown.bnt",
+      "sha256": "6434b8cf70988c1f81f8ef9c08b8fde7461ba409048bc81e93c93ce1756e8ab4",
+      "exit": 2,
+      "codes": [
+        "E0519"
+      ],
+      "reason": "unknownSource",
+      "comparison": "required",
+      "leanCase": "unknown-path",
+      "requiredIndex": "top",
+      "contract": {
+        "path": {
+          "tree": [
+            "data"
+          ]
+        }
+      },
+      "key": {
+        "definition": "sample",
+        "surfacePreorder": 0
+      }
+    },
+    {
+      "name": "request-widen-rejected",
+      "file": "request-widen-rejected.bnt",
+      "sha256": "2435c5d851a90e886ec7c667af34b42465d2fddae85b62c55800b23dfb9f2b19",
+      "exit": 2,
+      "codes": [
+        "E0519"
+      ],
+      "reason": "unknownSource",
+      "comparison": "required",
+      "leanCase": "widen-request",
+      "requiredIndex": "top",
+      "contract": {
+        "endpoint": {
+          "host": {
+            "name": {
+              "exact": [
+                "api",
+                "example",
+                "com"
+              ]
+            }
+          },
+          "ports": {
+            "lo": 443,
+            "hi": 443
+          }
+        }
+      },
+      "key": {
+        "definition": "sample",
+        "surfacePreorder": 0
+      }
+    },
+    {
+      "name": "effect-not-covered",
+      "file": "effect-not-covered.bnt",
+      "sha256": "f097ffa789d439f38daeb8f4ecce515f1402f4efa571ac3c42a195487b3a7d7d",
+      "exit": 2,
+      "codes": [
+        "E0519"
+      ],
+      "reason": "notCovered",
+      "comparison": "typing",
+      "leanCase": "effect-not-covered",
+      "leanReason": "effect exceeds the allowed effect"
+    },
+    {
+      "name": "effect-atomic",
+      "file": "effect-atomic.bnt",
+      "sha256": "ef86737285fe3d809dd4428d7c47136cecd870687e25d04163818b02c26370ad",
+      "exit": 2,
+      "codes": [
+        "E0519"
+      ],
+      "reason": "atomicCoverOnly",
+      "comparison": "typing",
+      "leanCase": "effect-atomic",
+      "leanReason": "effect exceeds the allowed effect"
+    },
+    {
+      "name": "effect-top",
+      "file": "effect-top.bnt",
+      "sha256": "da1cf0eec069ffce25c278602e9fc3a665b2db4ba157ef1930e2932578b87f90",
+      "exit": 2,
+      "codes": [
+        "E0519"
+      ],
+      "reason": "unknownSource",
+      "comparison": "typing",
+      "leanCase": "effect-top",
+      "leanReason": "effect exceeds the allowed effect",
+      "leanAtomReason": "unknownSource"
+    },
+    {
+      "name": "old-invalid-pattern",
+      "file": "old-invalid-pattern.bnt",
+      "sha256": "8e7ebea98ef08fc89dbee8d9faef064d8e02ff4d77f900a4c2108a4c1e5c26b5",
+      "exit": 2,
+      "codes": [
+        "E0459"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0459)"
+      ]
+    },
+    {
+      "name": "old-invalid-target",
+      "file": "old-invalid-target.bnt",
+      "sha256": "9307699ba22c146957943ffd0d1ab999c4993f3b34d0e8102cb278dbc5b1e31d",
+      "exit": 2,
+      "codes": [
+        "E0460"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0460)"
+      ]
+    },
+    {
+      "name": "old-invalid-ports",
+      "file": "old-invalid-ports.bnt",
+      "sha256": "40ef5d610ea80aa85559f1415b4612ca5bc3daf3b201b802587c033b249a2577",
+      "exit": 2,
+      "codes": [
+        "E0461"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0461)"
+      ]
+    },
+    {
+      "name": "old-outside",
+      "file": "old-outside.bnt",
+      "sha256": "2a376f92dd48c86e2ca6027393656116bb03b79207c6e2b04a57ee3d41439dbc",
+      "exit": 2,
+      "codes": [
+        "E0462"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0462)"
+      ]
+    },
+    {
+      "name": "new-invalid-pattern",
+      "file": "new-invalid-pattern.bnt",
+      "sha256": "f09090e140887b5ec58fa279898aa5745d1489cfe84fbe95ed367a48528e4d0e",
+      "exit": 2,
+      "codes": [
+        "E0459"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0459)"
+      ]
+    },
+    {
+      "name": "new-invalid-target",
+      "file": "new-invalid-target.bnt",
+      "sha256": "17ca95cb385509eef35e795b240bf4af6554ca22d16ecfd8f143b1ffa3a71abc",
+      "exit": 2,
+      "codes": [
+        "E0460"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0460)"
+      ]
+    },
+    {
+      "name": "new-invalid-ports",
+      "file": "new-invalid-ports.bnt",
+      "sha256": "17bfb91e00a641fe06bf0b6e6b782da9ab8e918df0dd70287c79ba2e57ecf465",
+      "exit": 2,
+      "codes": [
+        "E0461"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0461)"
+      ]
+    },
+    {
+      "name": "new-outside",
+      "file": "new-outside.bnt",
+      "sha256": "3e6b6f7613fbf556bf60bd3d1d59a3bd37e34e2caa800ec08eb08e23e5ab5282",
+      "exit": 2,
+      "codes": [
+        "E0462"
+      ],
+      "comparison": "excluded",
+      "excluded": [
+        "Some(E0462)"
+      ]
+    },
+    {
+      "name": "request-errors",
+      "file": "request-errors.bnt",
+      "sha256": "646a4b95bbc25990430c898a2defc9c86e85a3b877614781cdee1fb5affdb7f9",
+      "exit": 0,
+      "definitions": 2,
+      "nonTopRangesMinimum": 1,
+      "surface": {
+        "ok": true
+      },
+      "runStdout": "InvalidTarget\nInvalidUrl\nInvalidTarget\n",
+      "runEffects": "Console"
+    }
+  ]
+}

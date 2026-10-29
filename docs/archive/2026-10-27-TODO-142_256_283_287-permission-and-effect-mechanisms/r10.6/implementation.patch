@@ -1,0 +1,383 @@
+diff --git a/crates/benitoite/src/resolve/scope.rs b/crates/benitoite/src/resolve/scope.rs
+index eaf706f7..af087c39 100644
+--- a/crates/benitoite/src/resolve/scope.rs
++++ b/crates/benitoite/src/resolve/scope.rs
+@@ -154,7 +154,7 @@ impl Resolver<'_> {
+     }
+     fn scope_error(&mut self, name: &str, kind: Kind, span: Span, error: InvalidScope) {
+         if error == InvalidScope::Internal {
+-            self.internal(super::text::SCOPE_INTERNAL.into());
++            self.internal("scope normalization invariant failed".into());
+             return;
+         }
+         self.out.diagnostics.push(
+diff --git a/crates/benitoite/src/resolve/text.rs b/crates/benitoite/src/resolve/text.rs
+index bec8e4cc..7b94c825 100644
+--- a/crates/benitoite/src/resolve/text.rs
++++ b/crates/benitoite/src/resolve/text.rs
+@@ -42,11 +42,10 @@ pub(super) const BUILDER_LAZY: &str = "lazy";
+ pub(super) const BUILDER_PARTIAL: &str = "partial application";
+ pub(super) const BUILDER_CLAUSE: &str = "handler clause";
+ 
+-// 範囲引数の診断で使う種類と内部の誤り。
++// 範囲引数の診断で使う種類。
+ pub(super) const PATH_SCOPE: &str = "path string literal";
+ pub(super) const ENDPOINT_SCOPE: &str = "host string and port literal pairs";
+ pub(super) const HOST_SCOPE: &str = "host string literal";
+ pub(super) const NO_SCOPE_ARGUMENTS: &str = "no scope arguments";
+ pub(super) const TYPE_ARGUMENTS: &str = "type arguments";
+ pub(super) const SCOPE_ARGUMENTS: &str = "scope arguments";
+-pub(super) const SCOPE_INTERNAL: &str = "scope normalization invariant failed";
+diff --git a/crates/benitoite/src/typeck/context.rs b/crates/benitoite/src/typeck/context.rs
+index 7164ac23..dea36096 100644
+--- a/crates/benitoite/src/typeck/context.rs
++++ b/crates/benitoite/src/typeck/context.rs
+@@ -698,7 +698,14 @@ impl<'a, 'd> Body<'a, 'd> {
+         }
+         // 範囲を先に確定し、型／行の代入に未具体化の変数を渡さない
+         // （設計書 02-05「型とエフェクトの表現」）。
+-        let s = if let Some(ranges) = self.decls.out.range_signatures.get(binding) {
++        // 変数0個の署名は宣言時に検査済みなので、そのまま型／行の具体化へ渡す。
++        let s = if let Some(ranges) = self
++            .decls
++            .out
++            .range_signatures
++            .get(binding)
++            .filter(|ranges| ranges.range_count() != 0)
++        {
+             let operation = self
+                 .decls
+                 .resolved
+@@ -708,7 +715,7 @@ impl<'a, 'd> Body<'a, 'd> {
+             let Some(s) = ranges.instantiate_top(&s, operation) else {
+                 self.diagnostic(crate::runtime::report::internal_diagnostic(
+                     "check",
+-                    super::text::INVALID_RANGE_INSTANTIATION,
++                    "standard signature scope instantiation did not produce closed indices",
+                     None,
+                     crate::runtime::report::FaultThread::Stage,
+                 ));
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index bce264f4..aff08d29 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -1326,7 +1326,7 @@ fn check_range_signatures(d: &mut Decls<'_>) {
+             d.diagnostics
+                 .push(crate::runtime::report::internal_diagnostic(
+                     "check",
+-                    super::text::INVALID_RANGE_SIGNATURE,
++                    "invalid scope indices or range metadata in a declaration signature",
+                     None,
+                     crate::runtime::report::FaultThread::Stage,
+                 ));
+diff --git a/crates/benitoite/src/typeck/text.rs b/crates/benitoite/src/typeck/text.rs
+index ad0698b7..6c086b86 100644
+--- a/crates/benitoite/src/typeck/text.rs
++++ b/crates/benitoite/src/typeck/text.rs
+@@ -105,10 +105,3 @@ pub(super) fn coverage_limits() -> String {
+         "{MAX_COVERAGE_WORK} search cells, {MAX_COVERAGE_ENUM_WORK} enumeration/key steps, {MAX_COVERAGE_MEMO_CELLS} memo cells, {MAX_COVERAGE_KEY_BYTES} key bytes"
+     )
+ }
+-
+-/// 標準署名の認定を満たさない内部の表への診断。
+-pub(super) const INVALID_RANGE_SIGNATURE: &str =
+-    "invalid scope indices or range metadata in a declaration signature";
+-/// 範囲を確定できない標準署名の具体化への診断。
+-pub(super) const INVALID_RANGE_INSTANTIATION: &str =
+-    "standard signature scope instantiation did not produce closed indices";
+diff --git a/crates/benitoite/src/types/builtin.rs b/crates/benitoite/src/types/builtin.rs
+index 5136aa7a..acbba3d6 100644
+--- a/crates/benitoite/src/types/builtin.rs
++++ b/crates/benitoite/src/types/builtin.rs
+@@ -48,6 +48,7 @@ impl BuiltinTypeId {
+     pub const TASK_GROUP: BuiltinTypeId = BuiltinTypeId(15);
+     pub const IO_ERROR: BuiltinTypeId = BuiltinTypeId(16);
+     pub const NETWORK_ERROR: BuiltinTypeId = BuiltinTypeId(17);
++    pub const REGEX_PATTERN: BuiltinTypeId = BuiltinTypeId(21);
+     pub const INTEGER8: BuiltinTypeId = BuiltinTypeId(25);
+     pub const INTEGER16: BuiltinTypeId = BuiltinTypeId(26);
+     pub const INTEGER32: BuiltinTypeId = BuiltinTypeId(27);
+@@ -408,12 +409,15 @@ impl BuiltinEffectId {
+     /// `IO.All`。型検査が宣言の型と型注釈を内部の型に移すときに、`in_io_all` の項目の集合に置き換える。
+     /// `EffectSet` には現れない
+     pub const IO_ALL: BuiltinEffectId = BuiltinEffectId(1);
++    pub const FILE_READ: BuiltinEffectId = BuiltinEffectId(4);
++    pub const FILE_WRITE: BuiltinEffectId = BuiltinEffectId(5);
++    pub const HTTP_CONNECT: BuiltinEffectId = BuiltinEffectId(12);
+ 
+     /// 対象の範囲を持つ標準エフェクトの種類。名前解決の後の識別番号だけを認定する。
+     pub fn scope_kind(self) -> Option<super::scope::Kind> {
+-        match self.0 {
+-            4 | 5 => Some(super::scope::Kind::Path),
+-            12 => Some(super::scope::Kind::Endpoint),
++        match self {
++            Self::FILE_READ | Self::FILE_WRITE => Some(super::scope::Kind::Path),
++            Self::HTTP_CONNECT => Some(super::scope::Kind::Endpoint),
+             _ => None,
+         }
+     }
+diff --git a/crates/benitoite/src/types/mod.rs b/crates/benitoite/src/types/mod.rs
+index fdaabf2f..0f1c1e4d 100644
+--- a/crates/benitoite/src/types/mod.rs
++++ b/crates/benitoite/src/types/mod.rs
+@@ -1055,7 +1055,7 @@ mod tests {
+     fn function_type_display_groups_all_io_effects_and_keeps_other_effects() {
+         let mut effects = io_all_for_display();
+         effects.insert_name(EffectName::Builtin(
+-            BuiltinEffectId(12),
++            BuiltinEffectId::HTTP_CONNECT,
+             builtin::RangeIndex::TOP,
+         ));
+         effects.insert_var(EffVar(0));
+diff --git a/crates/benitoite/src/types/signature.rs b/crates/benitoite/src/types/signature.rs
+index 5d09337a..fbdd6a4e 100644
+--- a/crates/benitoite/src/types/signature.rs
++++ b/crates/benitoite/src/types/signature.rs
+@@ -109,24 +109,45 @@ impl RangeSignature {
+         let Ok(count) = u32::try_from(self.kinds.len()) else {
+             return false;
+         };
+-        if scheme.param_names.len() != scheme.params.len()
+-            || scheme.param_names.iter().collect::<std::collections::BTreeSet<_>>().len() != scheme.param_names.len()
+-            || !scheme.params.iter().all(|ty| ty.indices_valid(count) && self.type_valid(ty))
+-            || !scheme.ret.indices_valid(count) || !self.type_valid(&scheme.ret)
+-            || !scheme.effects.indices_valid(count) || !self.effects_valid(&scheme.effects)
+-            || (operation && (!scheme.ret.indices_valid(0) || !scheme.effect_params.is_empty()))
+-            || !scheme.params.iter().all(|ty| {
+-                matches!(ty, Ty::Con(TyCon::Builtin(id), args, _) if id.value_kind().is_some() && args.is_empty())
+-                    || ty.indices_valid(0)
+-            })
+-        { return false; }
+-        if let RangeAdmission::Covers { outer, inner } = self.admission {
+-            let a = usize::try_from(outer).ok().and_then(|i| self.kinds.get(i));
+-            let b = usize::try_from(inner).ok().and_then(|i| self.kinds.get(i));
+-            if a.is_none() || a != b {
+-                return false;
++        self.declaration_valid(scheme, count, operation)
++            && self.admission_valid()
++            && self.io_shape_valid(scheme, count, operation)
++    }
++
++    fn declaration_valid(&self, scheme: &Scheme, count: u32, operation: bool) -> bool {
++        let names = scheme
++            .param_names
++            .iter()
++            .collect::<std::collections::BTreeSet<_>>();
++        let valid_param = |ty: &Ty| {
++            ty.indices_valid(count)
++                && self.type_valid(ty)
++                && (matches!(ty, Ty::Con(TyCon::Builtin(id), args, _)
++                    if id.value_kind().is_some() && args.is_empty())
++                    || ty.indices_valid(0))
++        };
++        scheme.param_names.len() == scheme.params.len()
++            && names.len() == scheme.param_names.len()
++            && scheme.params.iter().all(valid_param)
++            && scheme.ret.indices_valid(count)
++            && self.type_valid(&scheme.ret)
++            && scheme.effects.indices_valid(count)
++            && self.effects_valid(&scheme.effects)
++            && (!operation || (scheme.ret.indices_valid(0) && scheme.effect_params.is_empty()))
++    }
++
++    fn admission_valid(&self) -> bool {
++        match self.admission {
++            RangeAdmission::Any => true,
++            RangeAdmission::Covers { outer, inner } => {
++                let outer = usize::try_from(outer).ok().and_then(|i| self.kinds.get(i));
++                let inner = usize::try_from(inner).ok().and_then(|i| self.kinds.get(i));
++                outer.is_some() && outer == inner
+             }
+         }
++    }
++
++    fn io_shape_valid(&self, scheme: &Scheme, count: u32, operation: bool) -> bool {
+         if operation
+             && (scheme.effects.names.len() != 1
+                 || !scheme.effects.vars.is_empty()
+@@ -170,12 +191,8 @@ impl RangeSignature {
+ 
+     /// 個数・種類と項目の追加条件を照合する。Top の列も個数と種類は検査する。
+     pub fn admits(&self, ranges: &[Range]) -> bool {
+-        if let RangeAdmission::Covers { outer, inner } = self.admission {
+-            let outer = usize::try_from(outer).ok().and_then(|i| self.kinds.get(i));
+-            let inner = usize::try_from(inner).ok().and_then(|i| self.kinds.get(i));
+-            if outer.is_none() || outer != inner {
+-                return false;
+-            }
++        if !self.admission_valid() {
++            return false;
+         }
+         if ranges.len() != self.kinds.len()
+             || !ranges
+@@ -322,7 +339,7 @@ mod tests {
+     // callback内の変数・操作の戻り値・効果側の種類の食い違いを捕まえられない。
+     #[test]
+     fn io_signature_validates_target_position_and_all_effect_indices() -> Result<(), String> {
+-        let read = BuiltinEffectId(4);
++        let read = BuiltinEffectId::FILE_READ;
+         let mut scheme = pure(vec![path(RangeIndex::var(0))], unit());
+         scheme
+             .effects
+@@ -374,9 +391,10 @@ mod tests {
+         mixed.effects.insert_failure(unit());
+         assert!(!old_shape.signature_valid(&mixed, true));
+         mixed.effects = closed.effects.clone();
+-        mixed
+-            .effects
+-            .insert_name(EffectName::Builtin(BuiltinEffectId(12), RangeIndex::TOP));
++        mixed.effects.insert_name(EffectName::Builtin(
++            BuiltinEffectId::HTTP_CONNECT,
++            RangeIndex::TOP,
++        ));
+         assert!(!old_shape.signature_valid(&mixed, true));
+         for (target, effect) in [(1, 0), (0, 1)] {
+             let mut invalid = scheme.clone();
+@@ -417,7 +435,10 @@ mod tests {
+         failure.effects.insert_failure(path(RangeIndex::var(1)));
+         assert!(!pure_signature.signature_valid(&failure, false));
+         failure.effects = scheme.effects.clone();
+-        failure.effects.names = vec![EffectName::Builtin(BuiltinEffectId(12), RangeIndex::var(0))];
++        failure.effects.names = vec![EffectName::Builtin(
++            BuiltinEffectId::HTTP_CONNECT,
++            RangeIndex::var(0),
++        )];
+         assert!(!pure_signature.signature_valid(&failure, false));
+         for id in [
+             BuiltinTypeId::IO_ERROR,
+@@ -426,7 +447,7 @@ mod tests {
+             BuiltinTypeId::REFERENCE,
+             BuiltinTypeId::LAZY,
+             BuiltinTypeId::TASK_GROUP,
+-            BuiltinTypeId(21),
++            BuiltinTypeId::REGEX_PATTERN,
+         ] {
+             assert!(!Ty::Con(TyCon::Builtin(id), vec![], RangeIndex::var(0)).indices_valid(1));
+         }
+@@ -439,13 +460,13 @@ mod tests {
+     fn atom_ranges_remain_structural_and_substitution_is_independent() -> Result<(), String> {
+         let range =
+             Range::Path(PathPattern::parse("/data/input").map_err(|error| format!("{error:?}"))?);
+-        let atom = |id, ix| EffectName::Builtin(BuiltinEffectId(id), ix);
++        let atom = |id, ix| EffectName::Builtin(id, ix);
+         let atoms = [
+-            atom(4, RangeIndex::TOP),
+-            atom(4, RangeIndex::fixed(range.clone())),
+-            atom(4, RangeIndex::var(0)),
+-            atom(4, RangeIndex::var(1)),
+-            atom(5, RangeIndex::var(0)),
++            atom(BuiltinEffectId::FILE_READ, RangeIndex::TOP),
++            atom(BuiltinEffectId::FILE_READ, RangeIndex::fixed(range.clone())),
++            atom(BuiltinEffectId::FILE_READ, RangeIndex::var(0)),
++            atom(BuiltinEffectId::FILE_READ, RangeIndex::var(1)),
++            atom(BuiltinEffectId::FILE_WRITE, RangeIndex::var(0)),
+         ];
+         for a in &atoms {
+             for b in &atoms {
+@@ -459,8 +480,11 @@ mod tests {
+             5
+         );
+         let mut effects = EffectSet::empty();
+-        effects.insert_name(atom(4, RangeIndex::var(0)));
+-        effects.insert_name(atom(4, RangeIndex::fixed(range.clone())));
++        effects.insert_name(atom(BuiltinEffectId::FILE_READ, RangeIndex::var(0)));
++        effects.insert_name(atom(
++            BuiltinEffectId::FILE_READ,
++            RangeIndex::fixed(range.clone()),
++        ));
+         effects.insert_var(EffVar(0));
+         effects.insert_failure(Ty::Fn(Box::new(FnTy {
+             param_names: vec!["value".into()],
+@@ -472,7 +496,7 @@ mod tests {
+         assert!(effects.indices_valid(1));
+         assert_eq!(effects.instantiate_ranges(&[]), effects);
+         let mut image = EffectSet::empty();
+-        image.insert_name(atom(4, RangeIndex::var(0)));
++        image.insert_name(atom(BuiltinEffectId::FILE_READ, RangeIndex::var(0)));
+         let images = [image];
+         let types = [TypeArg::Ty(path(RangeIndex::TOP))];
+         let ranges = [range];
+diff --git a/docs/design/00-overview/00-04-glossary.md b/docs/design/00-overview/00-04-glossary.md
+index 333a0a51..efe9bdcf 100644
+--- a/docs/design/00-overview/00-04-glossary.md
++++ b/docs/design/00-overview/00-04-glossary.md
+@@ -150,8 +150,17 @@
+ | 検査、実行 | check, run | 処理系の段のうち、型検査までを検査、それより後を実行と呼ぶ。実行は検査を通ったスクリプトに対してだけ行う | [全体像](00-02-architecture.md) |
+ | 段 | stage | 処理系がスクリプトを順に処理する単位（字句解析、構文解析、名前解決、型検査など） | [パイプライン](../02-impl/02-01-pipeline.md) |
+ | 診断 | diagnostic | 処理系が、誤りや注意をソース上の位置とともに報告するもの。検査の誤りと警告がある | [診断エンジン](../02-impl/02-10-diagnostics.md) |
+-| 範囲引数 | scope argument | 標準の範囲付きエフェクトの対象、または `Scope.PathIn`・`Http.RequestIn` の添字を指定する、角括弧内の閉じたパターン。型引数と区別する | [構文](../01-spec/01-02-syntax.md#エフェクトの宣言とハンドラ初回リリース版)、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
++| 範囲引数 | scope argument | 標準の範囲付きのエフェクトの対象、または `Scope.PathIn`・`Http.RequestIn` の添字を指定する、角括弧内の閉じたパターン。型引数と区別する | [構文](../01-spec/01-02-syntax.md#エフェクトの宣言とハンドラ初回リリース版)、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
+ | エフェクトの原子 | effect atom | 一つのエフェクトの名前と範囲の組。名前と正規化後の範囲で同一性を判定する | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
++| 範囲付きのエフェクト | — | 操作の対象の範囲を名前とともに表すエフェクト。`File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組の範囲を持つ。範囲は静的な注釈であり、実行時の権限を与えない | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
++| 範囲、閉じた範囲 | range | 操作の対象の集合を表す静的な情報。範囲変数を含まず、Top、パスの完全一致か木、ホスト名・IP とポートの組を表す | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#操作の対象の範囲の領域と被覆) |
++| Top | top | 操作の対象を静的に絞らない範囲。範囲の省略は Top を表し、Top を覆うのは Top だけである。具体的なパターンがその種類の全対象を含む場合も、Top と同一視しない | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
++| 範囲の添字 | — | エフェクトの原子か名前の型が持つ、範囲を表す位置の内容。閉じた範囲と、標準署名の内部の範囲変数を区別する。範囲付きの値型では、添字が異なれば別の型である | [型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)、[型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現) |
++| 範囲変数、範囲の変数 | range variable | 標準署名の内部で、具体化する範囲を番号で表す変数。利用者は宣言できず、確定したプログラムの型と項には残せない。「範囲の変数」は、形式化の写しで同じ概念に使う表記である | [型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#表記) |
++| 範囲付きの値型 | — | 対象の範囲を不変の添字として持つ、認定された不透明標準型。`Scope.PathIn` と `Http.RequestIn` だけを認定し、裸の型は Top を持つ | [型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型) |
++| 被覆 | — | 範囲では、内側の一範囲の全対象を外側の一範囲に含められると判定する関係。Top を覆うのは Top だけである。名前を持つエフェクトの原子では、同じ名前の一原子が必要な一原子を覆うこと。複数の原子の和では一原子を覆わない。効果集合の行と Fail の型は構造上の所属で調べる | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)、[型システム](../01-spec/01-06-type-system.md#エフェクトの包含) |
++| 構造上の包含 | — | エフェクトの集合の各原子と Fail の型が、同一の要素として外側の集合に属すること。名前と範囲が異なる原子を被覆によって同一視せず、被覆とは区別する | [型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#エフェクトの名前と開始状態) |
++| 許可の関係 | — | 形式化において、効果の上限が操作の名前と対象の組を許すことを表す関係 `Eff.Allows`。名前に対象の種類を与える関数と、同じ名前の閉じた範囲への対象の所属を使う。種類を持たない名前と範囲変数の原子は何も許さない。実行時の権限制御とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#エフェクトの名前と開始状態) |
+ | 契約、権限 | contract, permission | 契約は、関数の型とエフェクトの注釈が表す、関数が受け取るもの・返すもの・行いうる操作の約束。権限は、利用者が実行を許可する操作の範囲 | [目的と設計原則](00-01-goals.md)、[全体像](00-02-architecture.md) |
+ | 実行時の権限制御 | — | 実行の途中で、利用者が許可していない操作を処理系が拒否し、実行時エラーにすること。エフェクトの静的な追跡とは別の機構である。初回リリース版には含めない | [目的と設計原則](00-01-goals.md)、[セキュリティモデル](../07-quality/07-01-security-model.md) |
+ | スタンドアロンモード | standalone mode | 処理系をサーバとして動かさずに、コマンド `benitoite` にスクリプトを指定して実行する形。初回リリース版の実行の形はこれだけであり、実行時の権限制御を行わない | [ロードマップ](00-03-roadmap.md)、[CLI](../06-tooling/06-01-cli.md) |
+@@ -234,7 +243,7 @@
+ | ネットワークの操作 | — | `Benitoite.Network` の下のモジュールのエフェクトの操作（HTTP の待ち受けと接続など）。本文で「IO」と書くときの `IO.All` の操作とは区別する。IO とネットワークの操作を合わせて、外部に作用する操作と呼ぶ | [エフェクト](../01-spec/01-07-effects.md)、[ネットワークのモジュール](../03-interop/03-09-network.md) |
+ | 操作 | operation | エフェクトの宣言が定める、そのエフェクトを生じる関数。エフェクトを宣言したモジュールの関数であり、ほかの関数と同じく `モジュール名.操作名(引数)` の形で呼ぶ。組み込みのエフェクトの操作は、`Benitoite.IO` の下のモジュールの IO の関数と、`Benitoite.Network` の下のモジュールのネットワークの関数である | [エフェクト](../01-spec/01-07-effects.md) |
+ | エフェクト変数 | effect variable | 関数の宣言で `effect E` と宣言し、使うたびにエフェクトの集合で置き換える名前。高階関数が、受け取る関数のエフェクトをそのまま自分のエフェクトとするために使う | [型システム](../01-spec/01-06-type-system.md) |
+-| エフェクトの包含 | — | エフェクトの集合 X の関数を、X を含む集合 Y の関数が求められる位置に使ってよいという規則。値が流れ込むすべての位置（引数、リストの要素、分岐、型注釈、関数の本体）で、型の最も外側の関数の型にだけ働く | [型システム](../01-spec/01-06-type-system.md) |
++| エフェクトの包含 | — | エフェクトの集合 X の関数を、X の名前の原子を同名の一原子で覆い、X の行と Fail の型を構造上に含む集合 Y の関数が求められる位置に使ってよいという規則。値が流れ込むすべての位置（引数、リストの要素、分岐、型注釈、関数の本体）で、型の最も外側の関数の型にだけ働く | [型システム](../01-spec/01-06-type-system.md) |
+ | 型構成子 | type constructor | 型引数を与えると型になるもの。`List`・`Option`・利用者が型パラメータを付けて宣言した型など。高カインド型では、`F[_]` の型パラメータに型構成子を渡せる | [型システム](../01-spec/01-06-type-system.md) |
+ | 観察可能な振る舞い、実装の詳細 | observable behavior, implementation detail | 観察可能な振る舞いは、テストの対象の利用者が目にする結果（処理系の段の公開の関数が返す結果、診断、スクリプトの出力と終了状態）。実装の詳細は、それ以外の内部の作り（非公開の関数、中間のデータの形）。テストは観察可能な振る舞いを確かめる | [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md) |
+ | テストダブル | test double | テストで、本物の依存の代わりに使う偽物の総称。処理系では、処理系の外にある依存（ファイル・プロセスなど）にだけ使い、テスト用のハンドラ表がこれに当たる | [処理系のテスト戦略](../07-quality/07-03-compiler-testing.md) |
+diff --git a/docs/design/01-spec/01-12-core-calculus.md b/docs/design/01-spec/01-12-core-calculus.md
+index 167537ee..edba85e7 100644
+--- a/docs/design/01-spec/01-12-core-calculus.md
++++ b/docs/design/01-spec/01-12-core-calculus.md
+@@ -41,7 +41,7 @@
+ 
+ 型付け規則は、横線の上に前提を、下に結論を書く。
+ 
+-【方針】形式化した Release では、エフェクトの名前の原子と不透明型は範囲の位置 `ix` を持ち、`L[ix]`・`O[ix]` と書く（Lean の `Atom.name l ix`・`Ty.opaque o ix`）。範囲の位置は `ix ::= fixed R | rvar i` であり、`R` は後述の「操作の対象の範囲の領域と被覆」の閉じた範囲、`rvar i` は組み込みの署名の表の項目の i 番目の範囲の変数である（`Scope.Signature.Ix`）。範囲の位置のない綴り `L`・`O` は、範囲の位置が Top の `L[Top]`・`O[Top]` を表す。形式化はこれを明示の Top の構築関数 `Atom.nameTop l`・`Ty.opaqueTop o` で書き、既定引数と暗黙の変換を置かない。理由: 既定引数や暗黙の変換を置くと、範囲を見るべきパターンや言明が字面を変えずに Top だけの意味になり、どこを Top に限ったかが定義に残らないためである。現在の表層言語と Rust の処理系は、範囲の位置が Top の原子と不透明型だけを作る。プログラムの型と項は範囲の変数 `rvar i` を持たない（後述の「型付け規則」）。
++【方針】形式化した Release では、エフェクトの名前の原子と不透明型は範囲の位置 `ix` を持ち、`L[ix]`・`O[ix]` と書く（Lean の `Atom.name l ix`・`Ty.opaque o ix`）。範囲の位置は `ix ::= fixed R | rvar i` であり、`R` は後述の「操作の対象の範囲の領域と被覆」の閉じた範囲、`rvar i` は組み込みの署名の表の項目の i 番目の範囲の変数である（`Scope.Signature.Ix`）。範囲の位置のない綴り `L`・`O` は、範囲の位置が Top の `L[Top]`・`O[Top]` を表す。形式化はこれを明示の Top の構築関数 `Atom.nameTop l`・`Ty.opaqueTop o` で書き、既定引数と暗黙の変換を置かない。理由: 既定引数や暗黙の変換を置くと、範囲を見るべきパターンや言明が字面を変えずに Top だけの意味になり、どこを Top に限ったかが定義に残らないためである。現在の表層言語と Rust の処理系は、標準の範囲付きのエフェクトと値型の注釈から閉じた範囲の添字を作る。範囲を省略した注釈は Top を表す（[エフェクト](01-07-effects.md#閉じた範囲引数)、[型システム](01-06-type-system.md#範囲付きの不透明標準型)）。プログラムの型と項は範囲の変数 `rvar i` を持たない（後述の「型付け規則」）。
+ 
+ `n̄` は宣言順の契約名の並びである。`NamesWF(n̄, Ā)` は、名前と引数の型の個数が等しく、名前に重複がないことを表す。関数型 `(n̄:Ā) → B ! ε` は Lean の `Ty.fn names params ret eff`、ラムダ `λ[n̄](x̄:Ā). M` は `Val.lam names params body` に対応する。`n̄` と本体の局所変数 `x̄` は独立であり、局所変数を付け替えても契約名は変えない。定義 `fn f[ᾱ; ρ̄](n̄; x̄:Ā) : B ! ε = M` と、組み込み・操作・メソッドの宣言も同じ契約名の並びを持つ。
+ 
+diff --git a/docs/design/02-impl/02-03-frontend.md b/docs/design/02-impl/02-03-frontend.md
+index 9f7046fa..5d880093 100644
+--- a/docs/design/02-impl/02-03-frontend.md
++++ b/docs/design/02-impl/02-03-frontend.md
+@@ -251,14 +251,14 @@ record  resume  return  shadow  then  trait  true  try  type  uses  with
+ 
+ - `(` で始まる型は、中の型を解析して `)` を求め、括弧の型のノードを作る。括弧の型は、中の型と同じ型を表す。
+ - 関数の型は、`function`、引数の型の並び、`->`、戻り値の型を解析した後、次の字句が `uses` であれば、その関数の型の `uses` の並びとして読む。戻り値の型が関数の型であれば、その戻り値の型の解析の中で先に `uses` を読むので、`uses` は最も内側の関数の型に付く。
+-- `uses` の並びの要素は、修飾した名前（`QualUpper`。`Console.Write`、`IO.All`）である。並びは、最初の要素を読んだ後、次の字句が `,` で、その次の字句が大文字の識別子である間、`,` と次の要素を並びに加える。`,` の次が大文字の識別子でなければ、`,` を読まずに並びを終える（その `,` は外側の並びの区切りになる）。
++- `uses` の並びの要素は、修飾した名前と任意の型引数か範囲引数を持つ参照（`EffectRef`。`Console.Write`、`IO.All`、`Failure.Fail[String]`、`File.Read["/data/**"]`）である。引数の構文は[構文](../01-spec/01-02-syntax.md#エフェクトの宣言とハンドラ初回リリース版)に従い、元の範囲引数群と要素の位置を保つ。並びは、最初の要素を読んだ後、次の字句が `,` で、その次の字句が大文字の識別子である間、`,` と次の要素を並びに加える。`,` の次が大文字の識別子でなければ、`,` を読まずに並びを終える（その `,` は外側の並びの区切りになる）。
+ - 並びに読んだ名前がエフェクトの名前であるかは、構文解析器は判定しない。エフェクトでない名前は名前解決が報告する（[名前解決とモジュール読込](02-04-resolver.md)）。ただし、並びの 2 番目以降の修飾のない要素の直後に `[` が来たとき（`function(function() -> Unit uses Console.Write, List[Integer]) -> Unit`）は E0209 の構文エラーとし、`uses` を持つ関数の型を括弧で囲むよう示す。主な位置は、最後に読んだ名前から対応する `]` までとする。型の並び（関数の型の引数か型引数）の要素の関数の型に限り、開始位置と対応する `]` が分かる場合は、関数の型の先頭に `(`、直前のエフェクトの後に `)` を挿入する置き換えを付ける。宣言とラムダの `uses`、宣言の引数・戻り値・レコードのフィールド・束縛の注釈の型には置き換えを付けない。対応する `]` は括弧の外へ閉じる `)`、文の終わりの改行、`end` を越えて探さない。対応する `]` がなければ、主な位置は `[` の一文字とし、置き換えを付けない。理由: 型引数を含む範囲を示し、誤りを解消できる形が分かる場合だけ編集を提示するためである。
+ 
+ 関数の宣言の `->` の後の戻り値の型も、この規則で読む。`function f() -> function() -> Integer uses Console.Write ... end function` の `uses Console.Write` は戻り値の関数の型に付き、`f` 自身は `uses` を持たない。
+ 
+ 型パラメータの宣言の `F[_]` は、`_` の数を型パラメータの宣言のノードの欄に入れる。制約の並びは `&` で区切って読む（[構文](../01-spec/01-02-syntax.md)の「型クラス（初回リリース版）」）。
+ 
+-【決定】ファイル位置の `uses` は、関数型の並びの E0209 の回復を使わず、型引数付きのエフェクト参照をすべての位置で読む。NEWLINE と EOF を末尾とし、コンマ後の改行は既存の継続規則に従う。空の並び・遅い宣言・二度目は E0261 とし、後続の宣言を残す。import が後に来る場合は E0219、メタデータが後に来る場合は E0252 とする。本体なしの外部関数の次行の `uses` は本体へ吸収せず、遅いファイルの宣言として回復する。
++【決定】ファイル位置の `uses` は、関数型の並びの E0209 の回復を使わず、型引数か範囲引数を持つエフェクト参照をすべての位置で読む。NEWLINE と EOF を末尾とし、コンマ後の改行は既存の継続規則に従う。空の並び・遅い宣言・二度目は E0261 とし、後続の宣言を残す。import が後に来る場合は E0219、メタデータが後に来る場合は E0252 とする。本体なしの外部関数の次行の `uses` は本体へ吸収せず、遅いファイルの宣言として回復する。
+ 
+ 【決定】角括弧の最初の字句が型を始める場合は型引数、その他は範囲引数の候補として保持する。範囲の候補は文字列とポートの字句を区別し、補間・式・定数参照等は不正な要素として残す。名前を解決した後に E0520 または E0513 へ分担する。閉じ括弧を対応付けられない場合は従来の構文診断とする。
+ 
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index fe798a1b..402f98de 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -475,11 +475,11 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ 
+ 【決定】値の種類と原子の種類は、組み込みの型・エフェクトの識別番号から一箇所で引く。値の種類は `Scope.PathIn` がパス、`Http.RequestIn` が端点、範囲付き原子の種類は `File.Read`・`File.Write` がパス、`Http.Connect` が端点である。名前解決は標準モジュールの束縛をこれらの番号に結び付ける。同じ綴りの利用者の型・関数は認定しない。
+ 
+-【決定】認定した標準署名には、範囲変数の個数・番号順の種類・許容条件・IO の対象位置を `RangeSignature` に保持し、解決済みの束縛から `TypeckOutput.range_signatures` で参照する。範囲の列は、個数と各範囲の種類が一致し、`any` または `covers i j` の条件を満たさなければならない。後者は i 番目の一範囲が j 番目を覆う条件であり、番号の範囲外と種類の不一致も断る。Top の列でも個数と種類、許容条件の検査は省かない。
++【決定】認定した標準署名には、範囲変数の個数・番号順の種類・許容条件・IO の対象位置を `RangeSignature` に保持し、解決済みの束縛から `TypeckOutput.range_signatures` で参照する。範囲の列は、個数と各範囲の種類が一致し、`any` または `covers i j` の条件を満たさなければならない。後者は j 番目（outer）の一範囲が i 番目（inner）を覆う条件であり、Rust の `Covers { outer, inner }` はこの二つの番号を名前付きの欄に保持する。すべて Top の列は許容条件を満たすものとする。個数・種類と `Covers` の番号・種類の妥当性は、すべて Top の列でも検査する。
+ 
+ 署名の検査は、型・効果の中の範囲変数の番号と種類を照合する。引数の範囲変数は最上位の認定済み不透明値型だけに置き、ほかの引数の型の内部には置かない。IO の戻り値にも範囲変数を置かず、IO の署名には行パラメータを宣言できない。対象のない IO と旧 Top の IO は範囲変数を持たず、効果を一原子に限る。単一対象の IO は一つの範囲変数を持ち、指定した引数位置の値型と効果の一原子に同じ番号を使う。資源の添字は Top、演算子・負号・連結・die の署名は範囲変数なしに限る。
+ 
+-具体化は型の添字、潜在効果、Fail の内部、原子の添字へ同じ範囲の列を適用する。型／行の代入は範囲の添字を保持する。通常の標準名の具体化では範囲を先に Top で具体化し、その後に型／行を代入する。列が不足した場合は変数を残し、確定した型と効果の検査で断る。理由: 標準署名の変数を利用者の型と区別し、未確定の変数を Top とみなして受理しないためである。
++具体化は型の添字、潜在効果、Fail の内部、原子の添字へ同じ範囲の列を適用する。型／行の代入は範囲の添字を保持する。通常の標準名の具体化では範囲を先に Top で具体化し、その後に型／行を代入する。範囲変数0個の署名は、宣言時に検査済みの型をそのまま型／行の具体化へ渡し、署名の再検査と空の範囲の列の適用を繰り返さない。列が不足した場合は変数を残し、確定した型と効果の検査で断る。理由: 標準署名の変数を利用者の型と区別し、未確定の変数を Top とみなして受理しないためである。
+ 
+ 【方針】型の形は、値の型と、型引数を一つとる型構成子の二つである（[型システム](../01-spec/01-06-type-system.md)の「高カインド型（初回リリース版）」）。宣言の検査は、型を書く位置ごとに求める形と書いた型の形が合うかを検査する。単一化は次の規則を加える。
+ 

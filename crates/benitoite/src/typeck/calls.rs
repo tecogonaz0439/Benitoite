@@ -169,7 +169,12 @@ pub(super) fn generate(
         reason: reason(value.span(), ReasonKind::CallArg { index: 1 }),
         hole: false,
     });
-    let callee = callee.unwrap_or_else(|| ctx.expr(&e.callee));
+    let callee = callee.unwrap_or_else(|| {
+        let previous = ctx.active_scope_call.replace(e.id);
+        let ty = ctx.expr(&e.callee);
+        ctx.active_scope_call = previous;
+        ty
+    });
     if let Some(ret) = &partial_ret
         && let ITy::Fn(f) = ctx.solver.zonk(&callee)
     {
@@ -218,6 +223,11 @@ pub(super) fn generate(
     let ret = partial_ret.unwrap_or_else(|| ctx.fresh_ty());
     let effect = ctx.fresh_effect();
     ctx.add(Constraint::EffSub {
+        relation: if partial {
+            crate::typeck::infer::EffectRelation::Structural
+        } else {
+            crate::typeck::infer::EffectRelation::Cover
+        },
         sub: effect.clone(),
         sup: ctx.effect.clone(),
         reason: reason(e.span, ReasonKind::CallEffect),
@@ -671,8 +681,13 @@ pub(super) fn builder(
             BuilderClass::String => ITy::Con(
                 TyCon::Builtin(B::LIST),
                 vec![super::generate::basic(B::STRING)],
+                crate::types::builtin::RangeIndex::TOP,
             ),
-            BuilderClass::List => ITy::Con(TyCon::Builtin(B::LIST), vec![element]),
+            BuilderClass::List => ITy::Con(
+                TyCon::Builtin(B::LIST),
+                vec![element],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
             BuilderClass::Bytes => super::generate::basic(B::BYTES),
         }),
         None | Some(BuilderOp::Copy | BuilderOp::Length) => {}
@@ -744,6 +759,7 @@ pub(super) fn builder(
         ctx.add(constraint);
     }
     ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Cover,
         sub: effect,
         sup: ctx.effect.clone(),
         reason: reason(e.span, ReasonKind::CallEffect),

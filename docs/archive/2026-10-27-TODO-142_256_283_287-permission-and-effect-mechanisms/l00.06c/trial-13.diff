@@ -1,0 +1,2901 @@
+diff --git a/formal/Benitoite/Exchange/Builtins.lean b/formal/Benitoite/Exchange/Builtins.lean
+index 5f6d3557..1c518993 100644
+--- a/formal/Benitoite/Exchange/Builtins.lean
++++ b/formal/Benitoite/Exchange/Builtins.lean
+@@ -193,12 +193,12 @@ def BuiltinInput.toBuiltinMaterial (b : BuiltinInput) : Benitoite.Surface.CheckT
+     ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get",
+     ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"⟩
+ 
+-def BuiltinInput.effectOps (b : BuiltinInput) (name : Benitoite.Release.EffName) :
++def BuiltinInput.effectOps (b : BuiltinInput) (name : Benitoite.Release.EffBase) :
+     Option (List Benitoite.Release.PrimName) :=
+   (b.effects.find? (fun e => e.name == name)).map EffectEntry.ops
+ 
+ /-- リソースの識別子を opaque 名の先頭から読む。Task[T] の引数は判定に使わない。 -/
+-def BuiltinInput.isResource (b : BuiltinInput) (name : Benitoite.Release.OpaqueName) : Bool :=
++def BuiltinInput.isResource (b : BuiltinInput) (name : String) : Bool :=
+   match (name.splitOn ":").head?.bind String.toNat? with
+   | some id => b.resources.contains id
+   | none => false
+diff --git a/formal/Benitoite/Exchange/Convert.lean b/formal/Benitoite/Exchange/Convert.lean
+index 569c817d..474f04c7 100644
+--- a/formal/Benitoite/Exchange/Convert.lean
++++ b/formal/Benitoite/Exchange/Convert.lean
+@@ -6,7 +6,7 @@ open Lean
+ 
+ /-- Fail は名前の原子と区別し、支持はエラー型の内部まで収集する。 -/
+ def Atom.toRelease : Atom → Option Benitoite.Release.Atom
+-  | .name s => some (.name s)
++  | .name s => some (.name (.top s))
+   | .rho i => some (.rho i)
+   | .fail _ => none
+ 
+@@ -57,7 +57,7 @@ def checkNames (names : List String) (arity : Nat) : Except String Unit := do
+ mutual
+   partial def Ty.toRelease : Ty → Except String Benitoite.Release.Ty
+     | .base n => return .base (← baseTy n)
+-    | .opaque n => return .opaque n
++    | .opaque n => return .opaque (.top n)
+     | .data n ts => return .data n (← ts.mapM Ty.toRelease)
+     | .list t => return .list (← t.toRelease)
+     | .fn names ps r e => do
+@@ -84,7 +84,9 @@ end
+ mutual
+   partial def fromTy (atoms : Eff) : Benitoite.Release.Ty → Except String Ty
+     | .base t => return .base (baseName t)
+-    | .opaque n => return .opaque n
++    | .opaque n =>
++        -- 比較の試行（案 (ii)）: 交換の形式は添字を持たないので、Top 以外を書き出さない。
++        if n.index = .top then return .opaque n.base else throw "scoped opaque type is not exchanged"
+     | .data n ts => return .data n (← ts.mapM (fromTy atoms))
+     | .list t => return .list (← fromTy atoms t)
+     | .fn names ps r e => return .fn names (← ps.mapM (fromTy atoms)) (← fromTy atoms r) (← fromEff atoms e)
+@@ -441,7 +443,7 @@ mutual
+     | .tryOptionDie t someCon noneCon exit e message =>
+       return .tryOptionDie (← t.toRelease) someCon noneCon exit
+         (← e.toSurface constants) (← message.mapM (Expr.toSurface constants))
+-    | .withE o e b => return .withE o (← e.toSurface constants) (← b.toSurface constants)
++    | .withE o e b => return .withE (.top o) (← e.toSurface constants) (← b.toSurface constants)
+     | .lazyE b => return .lazyE (← b.toSurface constants)
+     | .handleE b cs => return .handleE (← b.toSurface constants) (← toClauses constants cs)
+     | .resume k e => return .resume k (← e.toSurface constants)
+diff --git a/formal/Benitoite/Interval/BudgetChildrenExamples.lean b/formal/Benitoite/Interval/BudgetChildrenExamples.lean
+index 80e416e7..6bff25ce 100644
+--- a/formal/Benitoite/Interval/BudgetChildrenExamples.lean
++++ b/formal/Benitoite/Interval/BudgetChildrenExamples.lean
+@@ -96,7 +96,7 @@ private def output (source : Expr) := analyzeExpr {} {} 64 env key source
+ -- 束縛式の値を本体へ渡さず、本体内の定数の除算だけを候補とする。
+ #guard
+   let outside := AbstractEnv.ofLocals [.integer (normalize 0 0)]
+-  let source := .withE "Example.Resource" .unit
++  let source := .withE (.top "Example.Resource") .unit
+     (.seq division (.last (.binary .intDiv (.base .integer) one (.local 1))))
+   let result := analyzeExpr {} {} 64 outside key source
+   entries result.context = [(1, []), (2, [(2, .zeroDivisor)])] ∧
+@@ -104,7 +104,7 @@ private def output (source : Expr) := analyzeExpr {} {} 64 env key source
+       (initial.locals.length, integerAt initial 1)) = some (2, top) ∧
+     (result.context.independentRev.head?.bind fun entry => entry.initial.map fun initial =>
+       match lookup initial 0 with
+-      | some (.unknown (some (.opaque owner))) => owner == "Example.Resource"
++      | some (.unknown (some (.opaque owner))) => owner == .top "Example.Resource"
+       | _ => false) = some true ∧
+     result.context.next.surfacePreorder = 8 ∧ result.approx.warnings = []
+ 
+@@ -127,7 +127,7 @@ private def output (source : Expr) := analyzeExpr {} {} 64 env key source
+ 
+ -- 本体の根は番号0。with の本体に合成した block 式を挿入せず、内容は元の番号3から始まる。
+ #guard
+-  let seed : BodySeed := ⟨.function, .last (.withE "Example.Resource" .unit (.last division)), env⟩
++  let seed : BodySeed := ⟨.function, .last (.withE (.top "Example.Resource") .unit (.last division)), env⟩
+   let result := analyzeBody {} {} 64 "Example.bodyChildren" seed
+   entries result.context = [(2, []), (3, [(3, .zeroDivisor)])] ∧
+     result.context.next.surfacePreorder = 6 ∧ result.approx.warnings = [] ∧
+@@ -136,7 +136,7 @@ private def output (source : Expr) := analyzeExpr {} {} 64 env key source
+ -- with の本体で候補を保存した直後に、後続 Block の分類で停止する。
+ -- Block 自身の結果は停止でも、取得済みの候補を入力へ残す。
+ #guard
+-  let source := .withE "Example.Resource" .unit (.seq division (.last one))
++  let source := .withE (.top "Example.Resource") .unit (.seq division (.last one))
+   let result := analyzeExpr ⟨⟨14, 1000⟩, ⟨1000, 1000⟩⟩ {} 64 env key source
+   result.coverage = .stopped (.budget (.exceeded ⟨.body, .operations⟩)) ∧
+     entries result.context = [(1, []), (2, [(2, .zeroDivisor)])] ∧
+diff --git a/formal/Benitoite/Interval/FlowExamples.lean b/formal/Benitoite/Interval/FlowExamples.lean
+index 55c97076..5767f9b2 100644
+--- a/formal/Benitoite/Interval/FlowExamples.lean
++++ b/formal/Benitoite/Interval/FlowExamples.lean
+@@ -121,7 +121,7 @@ private def signature (result : FlowApprox (.base .integer)) :
+     signature (integerBlock ⟨"Example.afterIf", 0⟩ env afterIf) = (normalize 0 max64, true, []) ∧
+     (([.tryResult [.base .integer, .base .unit] "Result.Ok" "Result.Error"
+          (.returnE (.base .integer) one),
+-       .withE "Example.Resource" .unit (.last (.returnE (.base .integer) one)),
++       .withE (.top "Example.Resource") .unit (.last (.returnE (.base .integer) one)),
+        .handleE (.last (.returnE (.base .integer) one)) .nil] : List Expr).map
+       (fun expr => signature (integerExpr ⟨"Example.boundary", 0⟩ env expr))) =
+         [(top, true, []), (top, true, []), (top, true, [])]
+diff --git a/formal/Benitoite/Interval/SyntacticReachExamples.lean b/formal/Benitoite/Interval/SyntacticReachExamples.lean
+index a65784bf..aa8012ce 100644
+--- a/formal/Benitoite/Interval/SyntacticReachExamples.lean
++++ b/formal/Benitoite/Interval/SyntacticReachExamples.lean
+@@ -46,7 +46,7 @@ example :
+ -- 同じ部分木を独立した入力にすれば、その根からの範囲となる。
+ -- 親の with/handle の範囲を広げることとは区別する。
+ example :
+-    targets (.withE "Example.Resource" division (.last division)) = [] ∧
++    targets (.withE (.top "Example.Resource") division (.last division)) = [] ∧
+     targets (.handleE (.last division) .nil) = [] ∧
+     targets division = [(7, some .intDiv)] := by
+   simp only [targets, division, one, zero, syntacticReachExpr, syntacticReachChildren]
+diff --git a/formal/Benitoite/Release/Assumptions.lean b/formal/Benitoite/Release/Assumptions.lean
+index 469c41e4..6d58a7b2 100644
+--- a/formal/Benitoite/Release/Assumptions.lean
++++ b/formal/Benitoite/Release/Assumptions.lean
+@@ -23,14 +23,14 @@ def ClosedSat (B : Builtins) (C0 C1 : List TParam) (ts : List Ty) : Prop :=
+ def PrimSig.StoreShape (s : PrimSig) : Prop :=
+   match s.kind with
+   | .refNew => s.names = ["value"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.tvar 0] ∧ s.ret = .reference (.tvar 0) ∧
+-      s.eff = Eff.single stateEff
++      s.eff = Eff.single (.top stateEff)
+   | .refGet => s.names = ["reference"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.reference (.tvar 0)] ∧ s.ret = .tvar 0 ∧
+-      s.eff = Eff.single stateEff
++      s.eff = Eff.single (.top stateEff)
+   | .refSet => s.names = ["reference", "value"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.reference (.tvar 0), .tvar 0] ∧
+-      s.ret = .base .unit ∧ s.eff = Eff.single stateEff
++      s.ret = .base .unit ∧ s.eff = Eff.single (.top stateEff)
+   | .refUpdate => s.names = ["reference", "f"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧
+       s.params = [.reference (.tvar 0), .fn ["value"] [.tvar 0] (.tvar 0) Eff.empty] ∧
+-      s.ret = .base .unit ∧ s.eff = Eff.single stateEff
++      s.ret = .base .unit ∧ s.eff = Eff.single (.top stateEff)
+   | .force => s.names = ["value"] ∧ s.ntys = 1 ∧ s.neffs = 0 ∧ s.params = [.lazy (.tvar 0)] ∧ s.ret = .tvar 0 ∧
+       s.eff = Eff.empty
+   | .pure => True
+@@ -55,27 +55,28 @@ structure Builtins.Assumptions (P : Program) (B : Builtins) : Prop where
+   admits_local : ∀ b s C1 C0 ts, B.sig b = some s → (∀ t ∈ ts, Ty.WF C1.length t) →
+     s.admits C1 ts → s.admits (C1 ++ C0) ts
+   /-- δ の型の保存（IO を行わない組み込みの関数）。 -/
+-  delta_typed : ∀ Ψ b s ts es ws, B.sig b = some s → s.kind = .pure →
+-    ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    ∃ o, B.delta b ts es ws = some o ∧ (∀ n, o ≠ .exit n) ∧ OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
++  delta_typed : ∀ Ψ b s R ts es ws, B.sig b = some s → s.kind = .pure →
++    ts.length = s.ntys → es.length = s.neffs → (s.inst R).admits [] ts →
++    HasTypeVs P B Ψ [] [] ws ((s.inst R).params.map (Ty.subst ts es)) →
++    ∃ o, B.delta b ts es ws = some o ∧ (∀ n, o ≠ .exit n) ∧ OutcomeTy P B Ψ o (Ty.subst ts es (s.inst R).ret)
+   /-- IO の応答の型。IO を行う関数の応答は値か `error(r)`、プロセスの終了の関数の応答は `exit(n)` か
+   `error(r)` である。 -/
+   io_kind : ∀ b s ts es ws o, B.sig b = some s → B.ioResponse b ts es ws o →
+     (s.kind = .io ∧ ∀ n, o ≠ .exit n) ∨ (s.kind = .exit ∧ ∀ v, o ≠ .val v)
+-  io_typed : ∀ Ψ b s ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+-    ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
++  io_typed : ∀ Ψ b s R ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
++    ts.length = s.ntys → es.length = s.neffs → (s.inst R).admits [] ts →
++    HasTypeVs P B Ψ [] [] ws ((s.inst R).params.map (Ty.subst ts es)) →
++    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst R).ret)
+   /-- IO の応答の存在。 -/
+-  io_exists : ∀ Ψ b s ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+-    ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
++  io_exists : ∀ Ψ b s R ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
++    ts.length = s.ntys → es.length = s.neffs → (s.inst R).admits [] ts →
++    HasTypeVs P B Ψ [] [] ws ((s.inst R).params.map (Ty.subst ts es)) →
+     ∃ o, B.ioResponse b ts es ws o
+   /-- IO を行う組み込みの関数は、組み込みのエフェクトの操作であり、型のエフェクトはそのエフェクトの
+   名前だけである。 -/
+   io_op : ∀ b s, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+-    ∃ l bs, s.opEff = some l ∧ s.eff = Eff.single l ∧ s.neffs = 0 ∧ B.effects l = some bs ∧ b ∈ bs
++    ∃ l bs, s.opEff = some l ∧ s.eff = Eff.single (.top l) ∧ s.neffs = 0 ∧ B.effects l = some bs ∧ b ∈ bs ∧
++      (∀ p, s.target = some p → ∃ o, s.params[p]? = some (.opaque o) ∧ o.index = .top)
+   /-- 組み込みのエフェクトの操作は、そのエフェクトを `opEff` に持つ、IO を行う組み込みの関数である。 -/
+   effect_ops : ∀ l bs b, B.effects l = some bs → b ∈ bs →
+     ∃ s, B.sig b = some s ∧ (s.kind = .io ∨ s.kind = .exit) ∧ s.opEff = some l
+@@ -89,7 +90,7 @@ structure Builtins.Assumptions (P : Program) (B : Builtins) : Prop where
+   ref_get : ∃ s, B.sig B.refGet = some s ∧ s.kind = .refGet
+   ref_set : ∃ s, B.sig B.refSet = some s ∧ s.kind = .refSet
+   /-- 解放の事象には、起こりうる応答が少なくとも一つある。 -/
+-  release_exists : ∀ Ψ v o, HasTypeV P B Ψ [] [] v (.opaque o) → B.isResource o = true →
++  release_exists : ∀ Ψ v o, HasTypeV P B Ψ [] [] v (.opaque (.top o)) → B.isResource o = true →
+     ∃ r, B.releaseResponse v r
+ 
+ /-- エフェクトの宣言が、操作の宣言と合っている。利用者が宣言したエフェクトの名前は、組み込みのエフェクトの
+diff --git a/formal/Benitoite/Release/Atom.lean b/formal/Benitoite/Release/Atom.lean
+index 52da9050..d9328424 100644
+--- a/formal/Benitoite/Release/Atom.lean
++++ b/formal/Benitoite/Release/Atom.lean
+@@ -9,10 +9,26 @@ namespace Benitoite.Release
+ 
+ /-- エフェクトの名前。01-12「エフェクトの名前と開始状態」の `L`。宣言したモジュールと名前の組を、
+ 一つの文字列で表す。 -/
+-abbrev EffName := String
++abbrev EffBase := String
++
++/-- 比較の試行（案 (ii)）: 名前の記述が持つ閉じた範囲。`top` は旧の名前だけの原子に当たる。 -/
++inductive NameScope where
++  | top
++  | pathExact (segs : List String)
++  | pathTree (stem : List String)
++  deriving DecidableEq, Repr
++
++/-- 比較の試行（案 (ii)）: 構造を持つ名前の記述。元の名前と閉じた範囲の組。 -/
++structure EffName where
++  base : EffBase
++  scope : NameScope
++  deriving DecidableEq, Repr
++
++/-- 比較の試行（案 (ii)、暗黙の変換なし）: 旧の名前を Top の記述として明示して構築する。 -/
++abbrev EffName.top (s : EffBase) : EffName := ⟨s, .top⟩
+ 
+ /-- 状態を扱う組み込みの関数と解放のエフェクト `State`（01-07「可変のセル（初回リリース版）」）。 -/
+-def stateEff : EffName := "State"
++def stateEff : EffBase := "State"
+ 
+ /-- エフェクトの原子。01-12 の `e ::= L | ρ`。 -/
+ inductive Atom where
+diff --git a/formal/Benitoite/Release/BuiltinTable.lean b/formal/Benitoite/Release/BuiltinTable.lean
+index bdbd8cec..46c61565 100644
+--- a/formal/Benitoite/Release/BuiltinTable.lean
++++ b/formal/Benitoite/Release/BuiltinTable.lean
+@@ -184,7 +184,7 @@ private def sampleDecls : List BuiltinDataDecl := [
+   ⟨"Nest", 1, [[.tvar 0], [.data "Nest" [.list (.tvar 0)]]]⟩,
+   ⟨"A", 2, [[.data "B" [.tvar 1, .tvar 0]]]⟩,
+   ⟨"B", 2, [[.tvar 0], [.data "A" [.tvar 1, .tvar 0]]]⟩,
+-  ⟨"R", 1, [[.tvar 0], [.opaque "IOError"]]⟩,
++  ⟨"R", 1, [[.tvar 0], [.opaque (.top "IOError")]]⟩,
+   ⟨"F", 0, [[.data "G" []]]⟩,
+   ⟨"G", 0, [[.base .float], [.data "F" []]]⟩]
+ private def sampleS : SummaryTable := dataSummaries sampleDecls
+@@ -227,7 +227,7 @@ example : dataSummaries [⟨"Pair", 2, [[.tvar 1, .tvar 0, .tvar 1]]⟩] =
+     [⟨"Pair", 2, ⟨false, [0, 1]⟩, ⟨false, [0, 1]⟩⟩] := by decide
+ example : dataSummaries [
+     ⟨"H", 0, [[.data "I" []]]⟩,
+-    ⟨"I", 0, [[.data "H" []], [.opaque "IOError"]]⟩] =
++    ⟨"I", 0, [[.data "H" []], [.opaque (.top "IOError")]]⟩] =
+     [⟨"H", 0, ⟨true, []⟩, ⟨false, []⟩⟩,
+      ⟨"I", 0, ⟨true, []⟩, ⟨false, []⟩⟩] := by decide
+ -- 関数などの中の Float と型パラメータは、要約の依存や鍵の条件に加えない。
+@@ -235,7 +235,7 @@ example : dataSummaries [⟨"Hidden", 1, [[
+     .fn ["value"] [.tvar 0] (.base .float) Eff.empty, .reference (.base .float),
+     .lazy (.tvar 0), .tapp 0 [.base .float]]]⟩] =
+     [⟨"Hidden", 1, ⟨true, []⟩, ⟨false, []⟩⟩] := by decide
+-example : [Ty.opaque "IOError", .reference (.base .integer), .lazy (.base .integer),
++example : [Ty.opaque (.top "IOError"), .reference (.base .integer), .lazy (.base .integer),
+     .cont (.base .integer) (.base .integer) Eff.empty, .dict "Eq" (.base .integer),
+     .ctor .list, .tapp 0 [.base .integer]].all (fun t => !satB [] [] t eqC) = true ∧
+     satB [] [] .bytes keyC = true ∧ satB [] [] (.set (.base .integer)) keyC = true := by decide
+diff --git a/formal/Benitoite/Release/Coverage.lean b/formal/Benitoite/Release/Coverage.lean
+index c7e9d4fb..3bbae380 100644
+--- a/formal/Benitoite/Release/Coverage.lean
++++ b/formal/Benitoite/Release/Coverage.lean
+@@ -2246,7 +2246,7 @@ example : ([ [[]], [[.wild, .wild]], [[.wild], [.wild, .wild]] ] : List (List (L
+ example : ([.const (.character 'a'), .range (.character 'a') (.character 'z'),
+     .range (.integer ⟨0, by decide⟩) (.character 'z'), .const (.boolean true), .const .unit,
+     .const (.string "97"), .const (.float 0.0), .const (.byte 97),
+-    .const (.decimal 97 0), .const (.opaque "O" 97),
++    .const (.decimal 97 0), .const (.opaque (.top "O") 97),
+     .const (.integer8 97), .const (.integer16 97), .const (.integer32 97),
+     .const (.unsignedInteger16 97), .const (.unsignedInteger32 97),
+     .const (.unsignedInteger64 97), .const (.float32 0x42c20000)] : List Pat).map
+diff --git a/formal/Benitoite/Release/Examples.lean b/formal/Benitoite/Release/Examples.lean
+index adc8a980..0219cc05 100644
+--- a/formal/Benitoite/Release/Examples.lean
++++ b/formal/Benitoite/Release/Examples.lean
+@@ -16,7 +16,7 @@ def unitTy : Ty := .base .unit
+ def int (n : Integer64Value) : Val := .const (.integer n)
+ 
+ def sig (tps : List TParam) (names : List String) (ps : List Ty) (r : Ty) (e : Eff) (k : PrimKind)
+-    (op : Option EffName := none) : PrimSig :=
++    (op : Option EffBase := none) : PrimSig :=
+   { tparams := tps, neffs := 0, names := names, params := ps, ret := r, eff := e,
+     admits := fun _ ts => ts.length = tps.length,
+     kind := k, opEff := op }
+@@ -26,13 +26,13 @@ def sig (tps : List TParam) (names : List String) (ps : List Ty) (r : Ty) (e : E
+ def builtins : Builtins where
+   sig
+     | "add" => some (sig [] ["left", "right"] [intTy, intTy] intTy Eff.empty .pure)
+-    | "print" => some (sig [] ["text"] [intTy] unitTy (Eff.single "Console.Write") .io (some "Console.Write"))
+-    | "exit" => some (sig [] ["code"] [intTy] unitTy (Eff.single "Process.Exit") .exit (some "Process.Exit"))
+-    | "new" => some (sig [{}] ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single stateEff) .refNew)
+-    | "get" => some (sig [{}] ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single stateEff) .refGet)
+-    | "set" => some (sig [{}] ["reference", "value"] [.reference (.tvar 0), .tvar 0] unitTy (Eff.single stateEff) .refSet)
++    | "print" => some (sig [] ["text"] [intTy] unitTy (Eff.single (.top "Console.Write")) .io (some "Console.Write"))
++    | "exit" => some (sig [] ["code"] [intTy] unitTy (Eff.single (.top "Process.Exit")) .exit (some "Process.Exit"))
++    | "new" => some (sig [{}] ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single (.top stateEff)) .refNew)
++    | "get" => some (sig [{}] ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single (.top stateEff)) .refGet)
++    | "set" => some (sig [{}] ["reference", "value"] [.reference (.tvar 0), .tvar 0] unitTy (Eff.single (.top stateEff)) .refSet)
+     | "update" => some (sig [{}] ["reference", "f"] [.reference (.tvar 0), .fn ["value"] [.tvar 0] (.tvar 0) Eff.empty] unitTy
+-        (Eff.single stateEff) .refUpdate)
++        (Eff.single (.top stateEff)) .refUpdate)
+     | "force" => some (sig [{}] ["value"] [.lazy (.tvar 0)] (.tvar 0) Eff.empty .force)
+     | _ => none
+   delta
+@@ -229,10 +229,10 @@ example : exec (.letIn (.app (.fnRef "f" [] []) []) (add (.var 0) (int ⟨100, b
+   decide
+ 
+ /-- `use` したリソースは、本体を終えた後に解放の事象を一つ起こす（E-Use、E-Release）。 -/
+-example : exec (.use (.const (.opaque "File" 1)) (.ret (int ⟨1, by decide⟩))) = (.returned 1, 1) := by decide
++example : exec (.use (.const (.opaque (.top "File") 1)) (.ret (int ⟨1, by decide⟩))) = (.returned 1, 1) := by decide
+ 
+ /-- 終了の状態は、継続に残る解放の枠を実行してから終わる（E-Exit、E-ExitRel）。 -/
+-example : exec (.use (.const (.opaque "File" 1)) (.app (.prim "exit" [] []) [int ⟨3, by decide⟩])) =
++example : exec (.use (.const (.opaque (.top "File") 1)) (.app (.prim "exit" [] []) [int ⟨3, by decide⟩])) =
+     (.exited 3, 2) := by decide
+ 
+ /-- `(MonoidInt[]()↑Semigroup).combine[;](1, 2)` は、上位の型クラスの辞書を取り出してから `combine` を呼び、
+diff --git a/formal/Benitoite/Release/Finite.lean b/formal/Benitoite/Release/Finite.lean
+index aac725c5..efc94814 100644
+--- a/formal/Benitoite/Release/Finite.lean
++++ b/formal/Benitoite/Release/Finite.lean
+@@ -15,7 +15,7 @@ mutual
+   /-- 型を構造再帰で比較する。非計算的な選択を使うのは atomsCompareWith s だけである。 -/
+   def tyCompareWith (s : List Atom) : Ty → Ty → Ordering
+     | .base a, .base b => compare a.rank b.rank
+-    | .opaque a, .opaque b => stringCompare a b
++    | .opaque a, .opaque b => (stringCompare a.base b.base).then (scopeCompare a.index b.index)
+     | .data d as, .data e bs => (stringCompare d e).then (tysCompareWith s as bs)
+     | .list a, .list b => tyCompareWith s a b
+     | .fn ns as a e, .fn ms bs b f =>
+diff --git a/formal/Benitoite/Release/Lemmas/BuilderTyping.lean b/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
+index 39c256b2..e94576f5 100644
+--- a/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
++++ b/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
+@@ -33,7 +33,7 @@ theorem HasTypeVQ.canonical_bytes {P B Ψ Q C v}
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+diff --git a/formal/Benitoite/Release/Lemmas/Canonical.lean b/formal/Benitoite/Release/Lemmas/Canonical.lean
+index c3dd9306..f19ac604 100644
+--- a/formal/Benitoite/Release/Lemmas/Canonical.lean
++++ b/formal/Benitoite/Release/Lemmas/Canonical.lean
+@@ -71,7 +71,7 @@ theorem HasTypeVQ.canonical_boolean {Ψ C v} (h : HasTypeVQ P B Ψ Q C [] v (.ba
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+@@ -102,7 +102,7 @@ theorem HasTypeVQ.canonical_ref {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.refe
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+@@ -136,7 +136,7 @@ theorem HasTypeVQ.canonical_lazy {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.laz
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+diff --git a/formal/Benitoite/Release/Lemmas/ContLemmas.lean b/formal/Benitoite/Release/Lemmas/ContLemmas.lean
+index fb4139c5..43f2b7c5 100644
+--- a/formal/Benitoite/Release/Lemmas/ContLemmas.lean
++++ b/formal/Benitoite/Release/Lemmas/ContLemmas.lean
+@@ -60,7 +60,7 @@ theorem ContTy.name_end {Ψ R ε k a b ε0 Re l} (h : ContTy P B Ψ R ε k a b 
+ 
+ /-- `State` はどの `handled(H)` にも含まれない。 -/
+ theorem handled_state (hdecl : P.EffectsOk B) (hb : B.Assumptions P) (hs : List Clause) :
+-    Eff.test (handled P B hs) (.name stateEff) = false := by
++    Eff.test (handled P B hs) (.name (.top stateEff)) = false := by
+   simp only [Eff.test, Eff.atoms, Eff.ofAtoms, handled, effOps]
+   have hp : P.effects stateEff = none := by
+     cases h : P.effects stateEff with
+@@ -72,7 +72,7 @@ theorem handled_state (hdecl : P.EffectsOk B) (hb : B.Assumptions P) (hs : List
+   rfl
+ 
+ theorem ContTy.state_end (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ R ε k a b ε0 Re}
+-    (h : ContTy P B Ψ R ε k a b ε0 Re) (hs : Eff.mem ε (.name stateEff)) : Eff.mem ε0 (.name stateEff) :=
++    (h : ContTy P B Ψ R ε k a b ε0 Re) (hs : Eff.mem ε (.name (.top stateEff))) : Eff.mem ε0 (.name (.top stateEff)) :=
+   h.name_end hs (fun hs _ => handled_state hdecl hb hs)
+ 
+ /-! ## 逆転 -/
+@@ -118,7 +118,7 @@ theorem ContTy.inv_update {Ψ R ε l k a b ε0 Re} (h : ContTy P B Ψ R ε (.upd
+ 
+ theorem ContTy.inv_release {Ψ R ε v k a b ε0 Re}
+     (h : ContTy P B Ψ R ε (.release v :: k) a b ε0 Re) :
+-    ∃ o, HasTypeV P B Ψ [] [] v (.opaque o) ∧ B.isResource o = true ∧ Eff.mem ε (.name stateEff) ∧
++    ∃ o, HasTypeV P B Ψ [] [] v (.opaque (.top o)) ∧ B.isResource o = true ∧ Eff.mem ε (.name (.top stateEff)) ∧
+       ContTy P B Ψ R ε k a b ε0 Re := by
+   generalize hk : (Frame.release v :: k) = k0 at h
+   induction h with
+@@ -160,7 +160,7 @@ theorem ContTy.inv_handle_tail {Ψ R ε hs k a b ε0 Re}
+ 
+ theorem ContTy.inv_drop {Ψ R ε κ k a b ε0 Re} (h : ContTy P B Ψ R ε (.drop κ :: k) a b ε0 Re) :
+     ∃ b' t' ε' R', Ψ κ = some (.cont b' t' ε' R') ∧
+-      (Eff.mem ε' (.name stateEff) → Eff.mem ε (.name stateEff)) ∧ ContTy P B Ψ R ε k a b ε0 Re := by
++      (Eff.mem ε' (.name (.top stateEff)) → Eff.mem ε (.name (.top stateEff))) ∧ ContTy P B Ψ R ε k a b ε0 Re := by
+   generalize hk : (Frame.drop κ :: k) = k0 at h
+   induction h with
+   | K_Drop hl hs hrest _ => cases hk; exact ⟨_, _, _, _, hl, hs, hrest⟩
+@@ -326,10 +326,10 @@ theorem ContTy.split {Ψ R ε a b E Re hs k2 k1}
+ /-- 継続の中の解放の枠と `drop` の枠が、末尾のエフェクト ε0 のもとで満たす性質。 -/
+ def FramesOk (P : Program) (B : Builtins) (Ψ : StoreTy) (ε0 : Eff) (k : Cont) : Prop :=
+   ∀ f ∈ k, match f with
+-    | .release v => (∃ o, HasTypeV P B Ψ [] [] v (.opaque o) ∧ B.isResource o = true) ∧
+-        Eff.mem ε0 (.name stateEff)
++    | .release v => (∃ o, HasTypeV P B Ψ [] [] v (.opaque (.top o)) ∧ B.isResource o = true) ∧
++        Eff.mem ε0 (.name (.top stateEff))
+     | .drop κ => ∃ b t e r, Ψ κ = some (.cont b t e r) ∧
+-        (Eff.mem e (.name stateEff) → Eff.mem ε0 (.name stateEff))
++        (Eff.mem e (.name (.top stateEff)) → Eff.mem ε0 (.name (.top stateEff)))
+     | _ => True
+ 
+ theorem ContTy.framesOk (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {Ψ R ε k a b ε0 Re}
+@@ -389,10 +389,10 @@ theorem releases_sub (k : Cont) : ∀ f ∈ releases k, f ∈ k ∧ ((∃ v, f =
+ /-- 解放の枠と `drop` の枠だけからなる継続を、今の継続の上に積んでも型が付く。 -/
+ theorem ContTy.prepend_releases {Ψ R ε k a b ε0 Re} (hk : ContTy P B Ψ R ε k a b ε0 Re) :
+     ∀ (l : Cont), (∀ f ∈ l, match f with
+-      | .release v => (∃ o, HasTypeV P B Ψ [] [] v (.opaque o) ∧ B.isResource o = true) ∧
+-          Eff.mem ε (.name stateEff)
++      | .release v => (∃ o, HasTypeV P B Ψ [] [] v (.opaque (.top o)) ∧ B.isResource o = true) ∧
++          Eff.mem ε (.name (.top stateEff))
+       | .drop κ => ∃ b t e r, Ψ κ = some (.cont b t e r) ∧
+-          (Eff.mem e (.name stateEff) → Eff.mem ε (.name stateEff))
++          (Eff.mem e (.name (.top stateEff)) → Eff.mem ε (.name (.top stateEff)))
+       | _ => False) →
+     ContTy P B Ψ R ε (l ++ k) a b ε0 Re
+   | [], _ => hk
+@@ -411,7 +411,7 @@ theorem ContTy.prepend_releases {Ψ R ε k a b ε0 Re} (hk : ContTy P B Ψ R ε
+ /-- E-DropRel などで、捨てる継続の `releases(K')` を `drop κ` の枠の位置に加えても型が付く。 -/
+ theorem ContTy.drop_releases (hdecl : P.EffectsOk B) (hb : B.Assumptions P)
+     {Ψ R ε k a b ε0 Re b' t' e' r' R'' ε'' k'}
+-    (hk : ContTy P B Ψ R ε k a b ε0 Re) (hcond : Eff.mem e' (.name stateEff) → Eff.mem ε (.name stateEff))
++    (hk : ContTy P B Ψ R ε k a b ε0 Re) (hcond : Eff.mem e' (.name (.top stateEff)) → Eff.mem ε (.name (.top stateEff)))
+     (hcell : ContTy P B Ψ R'' ε'' k' b' t' e' r') :
+     ContTy P B Ψ R ε (releases k' ++ k) a b ε0 Re := by
+   have hfr := hcell.framesOk hdecl hb
+diff --git a/formal/Benitoite/Release/Lemmas/EffectSound.lean b/formal/Benitoite/Release/Lemmas/EffectSound.lean
+index 6aefc56d..2d5349d0 100644
+--- a/formal/Benitoite/Release/Lemmas/EffectSound.lean
++++ b/formal/Benitoite/Release/Lemmas/EffectSound.lean
+@@ -17,13 +17,13 @@ theorem builtinOnly_empty : BuiltinOnly P B Eff.empty :=
+ 
+ /-- 組み込みのエフェクト L の操作 op を処理する `handle` の枠が継続にないとき、ε が L を含めば、継続の末尾も
+ L を許す。 -/
+-theorem ContTy.end_of_noHandler (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb Re l bs b0}
+-    (hk : ContTy P B Ψ R ε k a b Eb Re) (hbs : B.effects l = some bs) (hb0 : b0 ∈ bs)
++theorem ContTy.end_of_noHandler (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb Re} {l : EffName} {bs b0}
++    (hk : ContTy P B Ψ R ε k a b Eb Re) (hbs : B.effects l.base = some bs) (hb0 : b0 ∈ bs)
+     (hε : Eff.mem ε (.name l)) (hno : NoHandler k (.prim b0)) : Eff.mem Eb (.name l) := by
+-  have hPl : P.effects l = none := by
+-    cases e : P.effects l with
++  have hPl : P.effects l.base = none := by
++    cases e : P.effects l.base with
+     | none => rfl
+-    | some os => rw [hdecl.2.2 l os e] at hbs; cases hbs
++    | some os => rw [hdecl.2.2 l.base os e] at hbs; cases hbs
+   refine hk.name_end hε (fun hs hin => ?_)
+   have hh := hno hs hin
+   have hall : (bs.map OpRef.prim).all (handles hs) = false := by
+@@ -50,14 +50,15 @@ theorem no_event (hdecl : P.EffectsOk B) (hb : B.Assumptions P) {s : State}
+       Eff.Sub ε1 ε → ContTy P B Ψ R ε k a b' Eff.empty none → B.sig b0 = some s0 →
+       (s0.kind = .io ∨ s0.kind = .exit) → NoHandler k (.prim b0) → False := by
+     intro Ψ R a ε1 ε b' b0 ts es ws k s0 hm hε hk hsig hkd hno
+-    obtain ⟨s', hs', _, _, _, _, _, hsub⟩ := inv_prim_app hm
++    obtain ⟨s', R', hs', _, _, _, _, _, hsub⟩ := inv_prim_app hm
+     rw [hsig] at hs'; cases hs'
+-    obtain ⟨l, bs, _, heff, _, hbs, hb0⟩ := hb.io_op b0 _ hsig hkd
+-    have hl : Eff.mem ε (.name l) := by
++    obtain ⟨l, bs, hop, heff, _, hbs, hb0, _⟩ := hb.io_op b0 _ hsig hkd
++    obtain ⟨R'', heff'⟩ := PrimSig.inst_eff_single R' hop heff
++    have hl : Eff.mem ε (.name ⟨l, R''⟩) := by
+       apply hε.1; apply hsub.1
+-      rw [heff, Eff.substAt_single]
++      rw [heff', Eff.substAt_single]
+       exact (Eff.mem_single _ _).mpr rfl
+-    have := hk.end_of_noHandler hdecl hbs hb0 hl hno
++    have := hk.end_of_noHandler (l := ⟨l, R''⟩) hdecl hbs hb0 hl hno
+     simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at this
+   cases hst with
+   | E_IO hsig hkd hno _ =>
+diff --git a/formal/Benitoite/Release/Lemmas/FailureBase.lean b/formal/Benitoite/Release/Lemmas/FailureBase.lean
+index 3bb32247..158a579f 100644
+--- a/formal/Benitoite/Release/Lemmas/FailureBase.lean
++++ b/formal/Benitoite/Release/Lemmas/FailureBase.lean
+@@ -72,7 +72,7 @@ theorem captureEff_right (Rest ec : Eff) : Eff.Sub ec (captureEff Rest ec) :=
+ 
+ theorem captureEff_state {Rest ec eout}
+     (hr : Eff.Sub Rest eout) (hc : Eff.Sub ec eout)
+-    (hs : Eff.mem (captureEff Rest ec) (.name stateEff)) : Eff.mem eout (.name stateEff) := by
++    (hs : Eff.mem (captureEff Rest ec) (.name (.top stateEff))) : Eff.mem eout (.name (.top stateEff)) := by
+   rcases (Eff.mem_union _ _ _).mp ((Eff.mem_norm _ _).mp hs) with hs | hs
+   · exact hr.1 _ hs
+   · exact hc.1 _ hs
+diff --git a/formal/Benitoite/Release/Lemmas/FailureCont.lean b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+index 3e2d6a96..20925083 100644
+--- a/formal/Benitoite/Release/Lemmas/FailureCont.lean
++++ b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+@@ -247,6 +247,8 @@ theorem HasTypeVQ.inv_raise {Ψ Q C Γ v a T E}
+       obtain ⟨ht, he, hl'⟩ := hv.inv_raise heq
+       exact ⟨ht, he, hl'.trans hl⟩
+ 
++-- 比較の試行（案 (ii)）: 依存の場合分けが既定の上限（200000）をわずかに超える。
++set_option maxHeartbeats 250000 in
+ /-- Fail 専用の handle の入力上限と、外へ残す効果を取り出す。 -/
+ theorem HasTypeCQ.inv_handle_failure {Δl : LocalCtx} {Ψ Q C Γ R m' a ε m h}
+     (hh : HasTypeCQ P B Ψ Q C Γ R m' a ε Δl) (hm : m' = .handle m h)
+diff --git a/formal/Benitoite/Release/Lemmas/Inversion.lean b/formal/Benitoite/Release/Lemmas/Inversion.lean
+index e83edde7..96831034 100644
+--- a/formal/Benitoite/Release/Lemmas/Inversion.lean
++++ b/formal/Benitoite/Release/Lemmas/Inversion.lean
+@@ -89,13 +89,17 @@ theorem HasTypeVQ.fnRef_admissible {C Γ v T f ts es} (h : HasTypeVQ P B Ψ Q C
+   | .V_LocLazy _ => cases hv
+ 
+ theorem HasTypeVQ.inv_prim {C Γ v T b ts es} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .prim b ts es) :
+-    ∃ s, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits C ts ∧ NamesWF s.names s.params ∧
+-      Ty.Le (fnTy s.names s.params s.ret s.eff ts es) T := by
++    ∃ s R, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits C ts ∧
++      NamesWF (s.inst R).names (s.inst R).params ∧
++      Ty.Le (fnTy (s.inst R).names (s.inst R).params (s.inst R).ret (s.inst R).eff ts es) T := by
+   match h with
+-  | .V_Prim hs hnames had => cases hv; exact ⟨_, hs, had.typeCount, had.rowCount, had.admits, hnames, Ty.Le.refl _⟩
++  | .V_Prim hs hnames had =>
++      cases hv
++      exact ⟨_, _, hs, by simpa using had.typeCount, by simpa using had.rowCount, by simpa using had.admits,
++        hnames, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+-      obtain ⟨s, hs, hts, hes, had, hnames, hle'⟩ := inv_prim h hv
+-      exact ⟨s, hs, hts, hes, had, hnames, hle'.trans hle⟩
++      obtain ⟨s, R, hs, hts, hes, had, hnames, hle'⟩ := inv_prim h hv
++      exact ⟨s, R, hs, hts, hes, had, hnames, hle'.trans hle⟩
+   | .V_Var _ _ => cases hv
+   | .V_Const => cases hv
+   | .V_Fun .. => cases hv
+@@ -108,7 +112,7 @@ theorem HasTypeVQ.inv_prim {C Γ v T b ts es} (h : HasTypeVQ P B Ψ Q C Γ v T)
+ 
+ theorem HasTypeVQ.inv_op {C Γ v T o ts} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .op o ts) :
+     ∃ od, P.ops o = some od ∧ SatAll B C ts od.tparams ∧ NamesWF od.names od.params ∧
+-      Ty.Le (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) T := by
++      Ty.Le (fnTy od.names od.params od.ret (Eff.single (.top od.eff)) ts []) T := by
+   match h with
+   | .V_Op hod hnames hts => cases hv; exact ⟨_, hod, hts, hnames, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+@@ -352,8 +356,8 @@ theorem HasTypeCQ.inv_escape {Δl : LocalCtx} {C Γ R m T ε v} (h : HasTypeCQ P
+   | .C_ResumeL _ _ => cases hm
+ 
+ theorem HasTypeCQ.inv_use {Δl : LocalCtx} {C Γ R m' T ε v m} (h : HasTypeCQ P B Ψ Q C Γ R m' T ε Δl) (hm : m' = .use v m) :
+-    ∃ o b ε', HasTypeVQ P B Ψ Q C Γ v (.opaque o) ∧ B.isResource o = true ∧
+-      HasTypeCQ P B Ψ Q C Γ R m b ε' Δl ∧ Eff.mem ε' (.name stateEff) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
++    ∃ o b ε', HasTypeVQ P B Ψ Q C Γ v (.opaque (.top o)) ∧ B.isResource o = true ∧
++      HasTypeCQ P B Ψ Q C Γ R m b ε' Δl ∧ Eff.mem ε' (.name (.top stateEff)) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by
+   match h with
+   | .C_Use hv hr hm' hs => cases hm; exact ⟨_, _, _, hv, hr, hm', hs, Ty.Le.refl _, Eff.Sub.refl _⟩
+   | .C_Sub h hle hs _ =>
+diff --git a/formal/Benitoite/Release/Lemmas/OuterC.lean b/formal/Benitoite/Release/Lemmas/OuterC.lean
+index 5265ecd5..b2a9bfc0 100644
+--- a/formal/Benitoite/Release/Lemmas/OuterC.lean
++++ b/formal/Benitoite/Release/Lemmas/OuterC.lean
+@@ -30,11 +30,13 @@ theorem Admissible.outer (hb : B.Assumptions P) {C1 C0 tps ne Qs Qt ts es e}
+     typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
+     rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
+ 
+-theorem PrimitiveAdmissible.outer (hb : B.Assumptions P) {C1 C0 b s Q ts es}
+-    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 s Q ts es) :
+-    PrimitiveAdmissible (C1 ++ C0) s Q ts es :=
++theorem PrimitiveAdmissible.outer (hb : B.Assumptions P) {C1 C0 b s R Q ts es}
++    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 (s.inst R) Q ts es) :
++    PrimitiveAdmissible (C1 ++ C0) (s.inst R) Q ts es :=
+   { h with
+-    admits := hb.admits_local _ _ _ _ _ hs (fun t ht => (h.typeScope t ht).1) h.admits
++    admits := by
++      have ha : s.admits C1 ts := by simpa using h.admits
++      simpa using hb.admits_local _ _ _ _ _ hs (fun t ht => (h.typeScope t ht).1) ha
+     typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
+     rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
+ 
+diff --git a/formal/Benitoite/Release/Lemmas/PresBase.lean b/formal/Benitoite/Release/Lemmas/PresBase.lean
+index cd9db4c6..d948652d 100644
+--- a/formal/Benitoite/Release/Lemmas/PresBase.lean
++++ b/formal/Benitoite/Release/Lemmas/PresBase.lean
+@@ -177,8 +177,16 @@ theorem store_prim_inv (hb : B.Assumptions P) {Ψ R b ts es ws a ε1 s} (hsig :
+     (hm : HasTypeC P B Ψ [] [] R (.app (.prim b ts es) ws) a ε1) :
+     ∃ t, ts = [t] ∧ es = [] ∧ HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst [t] [])) ∧
+       Ty.Le (Ty.subst [t] [] s.ret) a ∧ Eff.Sub s.eff ε1 := by
+-  obtain ⟨s', hs', htl, hel, _, hargs, hle, hsub⟩ := inv_prim_app hm
++  obtain ⟨s', R', hs', htl, hel, _, hargs, hle, hsub⟩ := inv_prim_app hm
+   rw [hsig] at hs'; cases hs'
++  have hop : s.opEff = none := by
++    cases ho : s.opEff with
++    | none => rfl
++    | some l =>
++        rcases hb.opEff_io _ _ _ hsig ho with h | h
++        · exact absurd h hkd.2.1
++        · exact absurd h hkd.2.2
++  rw [PrimSig.inst_eq_of_opEff_none R' hop] at hargs hle hsub
+   have hsh := hb.store_shape b s hsig
+   have h1 : s.ntys = 1 ∧ s.neffs = 0 := by
+     unfold PrimSig.StoreShape at hsh
+@@ -209,7 +217,7 @@ theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
+     (hl : Ψ l = some (.ref t)) (hf : HasTypeV P B Ψ [] [] f (.fn ["value"] [t] t Eff.empty)) (ht : ClosedArgs [t]) :
+     HasTypeC P B Ψ [] [] R (.letIn (.app (.prim B.refGet [t] []) [.loc l])
+       (.letIn (.app (f.rename (· + 1)) [.var 0]) (.app (.prim B.refSet [t] []) [.loc l, .var 0])))
+-      (.base .unit) (Eff.single stateEff) := by
++      (.base .unit) (Eff.single (.top stateEff)) := by
+   obtain ⟨sg, hsg, hkg⟩ := hb.ref_get
+   obtain ⟨ss, hss, hks⟩ := hb.ref_set
+   have hshg := hb.store_shape _ _ hsg
+@@ -220,7 +228,7 @@ theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
+   obtain ⟨hsn, hs1, hs2, hs3, hs4, hs5⟩ := hshs
+   have htn : ∀ b' t' ε', t ≠ .cont b' t' ε' := (ht t (by simp)).2
+   refine .C_Let (a := t) ?_ (.C_Let (a := t) ?_ ?_)
+-  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
++  · have hv := HasTypeVQ.V_PrimTop (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
+       (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hsg) hg2 (by simp [hg1])
+       (hb.store_admits _ _ [] [t] hsg (by rw [hkg]; decide) (by rw [hkg]; decide) (by rw [hkg]; decide)
+         (by simp [hg1])) ht)
+@@ -230,7 +238,7 @@ theorem refUpdate_typed (hb : B.Assumptions P) {Ψ R l t f}
+     exact .C_App hv (.cons (.V_LocRef hl) .nil)
+   · have hf' := hf.rename (RenOk.shift [some t] [])
+     exact .C_Eff (.C_App hf' (.cons (.V_Var (i := 0) (by simp) htn) .nil)) (Eff.empty_sub _)
+-  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
++  · have hv := HasTypeVQ.V_PrimTop (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
+       (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hss) hs2 (by simp [hs1])
+       (hb.store_admits _ _ [] [t] hss (by rw [hks]; decide) (by rw [hks]; decide) (by rw [hks]; decide)
+         (by simp [hs1])) ht)
+diff --git a/formal/Benitoite/Release/Lemmas/PresMain.lean b/formal/Benitoite/Release/Lemmas/PresMain.lean
+index adf46aca..b69b4706 100644
+--- a/formal/Benitoite/Release/Lemmas/PresMain.lean
++++ b/formal/Benitoite/Release/Lemmas/PresMain.lean
+@@ -255,9 +255,9 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
+   | @E_Prim b0 ts es ws k σ s0 v hsig hkind hδ =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+       have resultWF := HasTypeCQ.wf hwf hb hm (envWF_nil 0) hσ.wf hmc
+-      obtain ⟨s', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm
++      obtain ⟨s', R', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm
+       rw [hsig] at hs'; cases hs'
+-      obtain ⟨o, hδ', _, hot⟩ := hb.delta_typed Ψ b0 _ ts es ws hsig hkind htl hel had hargs
++      obtain ⟨o, hδ', _, hot⟩ := hb.delta_typed Ψ b0 _ R' ts es ws hsig hkind htl hel (by simpa using had) hargs
+       rw [hδ] at hδ'; cases hδ'
+       exact stE_ret resultWF hσ hot.1 hle hk hot.2 hkc hσc
+   | E_Err =>
+@@ -266,9 +266,9 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
+   | @E_IO b0 ts es ws k σ s0 v hsig hkind _ hresp =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+       have resultWF := HasTypeCQ.wf hwf hb hm (envWF_nil 0) hσ.wf hmc
+-      obtain ⟨s', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm
++      obtain ⟨s', R', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm
+       rw [hsig] at hs'; cases hs'
+-      have hot := hb.io_typed Ψ b0 _ ts es ws _ hsig (Or.inl hkind) htl hel had hargs hresp
++      have hot := hb.io_typed Ψ b0 _ R' ts es ws _ hsig (Or.inl hkind) htl hel (by simpa using had) hargs hresp
+       exact stE_ret resultWF hσ hot.1 hle hk hot.2 hkc hσc
+   | E_IOErr =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+@@ -545,16 +545,12 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
+         (by simp [opSig, hod]) hsat hargs hle hsplit hc hκ
+   | @E_OpPrim b0 ts es ws k σ s0 k1 h k2 c κ hsig hkind hsplit hc hκ =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+-      obtain ⟨s', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm
++      obtain ⟨s', R', hs', htl, hel, had, hargs, hle, _⟩ := inv_prim_app hm
+       rw [hsig] at hs'; cases hs'
+-      obtain ⟨l, bs, hop, _, hne, _, _⟩ := hb.io_op b0 _ hsig hkind
+-      have : es = [] := List.eq_nil_of_length_eq_zero (hel.trans hne)
+-      subst this
+-      simp only [Comp.VarsIn] at hmc
+-      have hvc := hmc.1
+-      simp only [Val.VarsIn] at hvc
+-      exact pres_op_common hwf hb hσ hk hvc.1 hmc.2 hkc hσc (sg := ⟨s0.tparams, s0.names, s0.params, s0.ret, l⟩)
+-        (by simp [opSig, hsig, hop]) (hb.admits_sat b0 s0 [] ts hsig had) hargs hle hsplit hc hκ
++      -- 比較の試行（案 (ii)）: 捕捉した操作の節は表の署名（Top）の引数型で型付けされているが、引数は
++      -- 具体化した型 (s0.inst R').params を持つ。節の添字 S と所属の専用補題（判断 11）がない限り閉じない。
++      -- 試行の波及を見るために仮置きする（設計の未決。証明だけの変更ではない）。
++      sorry
+   | E_Resume hσκ =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+       obtain ⟨b', t', ε', hΨκ, hv, hle, hs'⟩ := hm.inv_resumeL rfl
+diff --git a/formal/Benitoite/Release/Lemmas/Preservation.lean b/formal/Benitoite/Release/Lemmas/Preservation.lean
+index 89d62eb5..3bce7e88 100644
+--- a/formal/Benitoite/Release/Lemmas/Preservation.lean
++++ b/formal/Benitoite/Release/Lemmas/Preservation.lean
+@@ -23,21 +23,21 @@ theorem Ty.Le.fn_fn' {names ps r ε names' as b ε'} (h : Ty.Le (.fn names ps r
+ 
+ theorem inv_prim_app {Ψ R b ts es ws a ε1}
+     (h : HasTypeC P B Ψ [] [] R (.app (.prim b ts es) ws) a ε1) :
+-    ∃ s, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits [] ts ∧
+-      HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) ∧ Ty.Le (Ty.subst ts es s.ret) a ∧
+-      Eff.Sub (Eff.substAt 0 ts es s.eff) ε1 := by
++    ∃ s R, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits [] ts ∧
++      HasTypeVs P B Ψ [] [] ws ((s.inst R).params.map (Ty.subst ts es)) ∧ Ty.Le (Ty.subst ts es (s.inst R).ret) a ∧
++      Eff.Sub (Eff.substAt 0 ts es (s.inst R).eff) ε1 := by
+   obtain ⟨names, as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
+-  obtain ⟨s, hs, hts, hes, had, hnames, hle2⟩ := hf.inv_prim rfl
++  obtain ⟨s, R', hs, hts, hes, had, hnames, hle2⟩ := hf.inv_prim rfl
+   rw [fnTy_eq] at hle2
+   obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+   subst hnames' hps hr
+-  exact ⟨s, hs, hts, hes, had, hargs, hle, hsub2.trans hsub⟩
++  exact ⟨s, R', hs, hts, hes, had, hargs, hle, hsub2.trans hsub⟩
+ 
+ theorem inv_op_app {Ψ R o ts ws a ε1}
+     (h : HasTypeC P B Ψ [] [] R (.app (.op o ts) ws) a ε1) :
+     ∃ od, P.ops o = some od ∧ SatAll B [] ts od.tparams ∧
+       HasTypeVs P B Ψ [] [] ws (od.params.map (Ty.subst ts [])) ∧ Ty.Le (Ty.subst ts [] od.ret) a ∧
+-      Eff.Sub (Eff.substAt 0 ts [] (Eff.single od.eff)) ε1 := by
++      Eff.Sub (Eff.substAt 0 ts [] (Eff.single (.top od.eff))) ε1 := by
+   obtain ⟨names, as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
+   obtain ⟨od, hod, hsat, hnames, hle2⟩ := hf.inv_op rfl
+   rw [fnTy_eq] at hle2
+diff --git a/formal/Benitoite/Release/Lemmas/Progress.lean b/formal/Benitoite/Release/Lemmas/Progress.lean
+index 06dac164..cf091fe9 100644
+--- a/formal/Benitoite/Release/Lemmas/Progress.lean
++++ b/formal/Benitoite/Release/Lemmas/Progress.lean
+@@ -76,7 +76,7 @@ theorem HasTypeVQ.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+   | .prim _ _ _, _, _, h => by
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+   | .op _ _, _, _, h => by
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+@@ -199,7 +199,7 @@ theorem findClause_of_handles {h : List Clause} {o : OpRef} (hh : handles h o =
+ /-- 継続のどの `handle` の枠も処理しない利用者の操作は、型の付いた状態では呼ばれない。 -/
+ theorem no_unhandled_user (hdecl : P.EffectsOk B) {Ψ R ε k a b Eb o od}
+     (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) (hod : P.ops o = some od)
+-    (hε : Eff.mem ε (.name od.eff)) (hno : NoHandler k (.user o)) : False := by
++    (hε : Eff.mem ε (.name (.top od.eff))) (hno : NoHandler k (.user o)) : False := by
+   obtain ⟨os, hos, hmem⟩ := hdecl.2.1 o od hod
+   have hend := hk.name_end hε (fun hs hin => by
+     have hh := hno hs hin
+@@ -324,13 +324,13 @@ theorem progress_exit (hb : B.Assumptions P) {Ψ σ R ε a b Eb k n rs} (hσ : S
+           · exact ⟨_, _, .E_ExitDropRel h⟩
+ 
+ /-- IO を行う組み込みの関数とプロセスの終了の関数の呼び出し。 -/
+-theorem progress_io (hb : B.Assumptions P) {Ψ σ b0 s ts es ws k} (hσ : StoreOk P B Ψ σ)
++theorem progress_io (hb : B.Assumptions P) {Ψ σ b0 s R ts es ws k} (hσ : StoreOk P B Ψ σ)
+     (hsig : B.sig b0 = some s) (hkd : s.kind = .io ∨ s.kind = .exit) (htl : ts.length = s.ntys)
+     (hel : es.length = s.neffs) (had : s.admits [] ts)
+-    (hargs : HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es))) :
++    (hargs : HasTypeVs P B Ψ [] [] ws ((s.inst R).params.map (Ty.subst ts es))) :
+     ∃ l s', Step P B (.run (.app (.prim b0 ts es) ws) k σ) l s' := by
+   by_cases hno : NoHandler k (.prim b0)
+-  · obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s ts es ws hsig hkd htl hel had hargs
++  · obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s R ts es ws hsig hkd htl hel (by simpa using had) hargs
+     rcases hb.io_kind b0 s ts es ws o hsig ho with ⟨hk, hne⟩ | ⟨hk, hne⟩
+     · cases o with
+       | val v => exact ⟨_, _, .E_IO hsig hk hno ho⟩
+@@ -349,10 +349,10 @@ theorem progress_io (hb : B.Assumptions P) {Ψ σ b0 s ts es ws k} (hσ : StoreO
+ theorem progress_prim (hb : B.Assumptions P) {Ψ σ R a ε1 b0 ts es ws k} (hσ : StoreOk P B Ψ σ)
+     (hm : HasTypeC P B Ψ [] [] R (.app (.prim b0 ts es) ws) a ε1) :
+     ∃ l s', Step P B (.run (.app (.prim b0 ts es) ws) k σ) l s' := by
+-  obtain ⟨s, hsig, htl, hel, had, hargs, _, _⟩ := inv_prim_app hm
++  obtain ⟨s, R, hsig, htl, hel, had, hargs, _, _⟩ := inv_prim_app hm
+   cases hkd : s.kind with
+   | pure =>
+-      obtain ⟨o, hδ, hne, _⟩ := hb.delta_typed Ψ b0 s ts es ws hsig hkd htl hel had hargs
++      obtain ⟨o, hδ, hne, _⟩ := hb.delta_typed Ψ b0 s R ts es ws hsig hkd htl hel (by simpa using had) hargs
+       cases o with
+       | val v => exact ⟨_, _, .E_Prim hsig hkd hδ⟩
+       | err r => exact ⟨_, _, .E_Err hsig hkd hδ⟩
+diff --git a/formal/Benitoite/Release/Lemmas/Regularity.lean b/formal/Benitoite/Release/Lemmas/Regularity.lean
+index 0da2aa04..4815cde8 100644
+--- a/formal/Benitoite/Release/Lemmas/Regularity.lean
++++ b/formal/Benitoite/Release/Lemmas/Regularity.lean
+@@ -153,10 +153,10 @@ mutual
+         · rw [hl]; exact Ty.VarsInList.wf _ hsc.1
+         · rw [hl]; exact Ty.VarsIn.wf _ hsc.2.1
+         · rw [hl]; exact Eff.VarsIn.wf _ hsc.2.2.1
+-    | .V_Prim hs hnames had =>
++    | .V_Prim (R := R) hs hnames had =>
+         have hts := had.typeCount
+         simp only [Val.VarsIn] at hv
+-        have hsc := hb.sig_scoped _ _ hs
++        have hsc := PrimSig.inst_scoped R (hb.sig_scoped _ _ hs)
+         unfold PrimSig.Scoped at hsc
+         obtain ⟨_, hsc⟩ := hsc
+         refine fnTy_wf (hnames := hnames) (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))
+diff --git a/formal/Benitoite/Release/Lemmas/StepSound.lean b/formal/Benitoite/Release/Lemmas/StepSound.lean
+index aaee0fa2..4c098293 100644
+--- a/formal/Benitoite/Release/Lemmas/StepSound.lean
++++ b/formal/Benitoite/Release/Lemmas/StepSound.lean
+@@ -236,10 +236,10 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
+               case h_2 | h_3 =>
+                 have hkd : s0.kind = .io ∨ s0.kind = .exit := by
+                   first | exact Or.inl ‹_› | exact Or.inr ‹_›
+-                obtain ⟨s1, hs1, htl, hel, had, hargs, _, _⟩ := inv_prim_app hm
++                obtain ⟨s1, R1, hs1, htl, hel, had, hargs, _, _⟩ := inv_prim_app hm
+                 have e0 := Option.some.inj (hsig.symm.trans hs1)
+                 subst e0
+-                obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s0 ts es _ hsig hkd htl hel had hargs
++                obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s0 R1 ts es _ hsig hkd htl hel (by simpa using had) hargs
+                 have hro := horacle _ _ _ _ _ ho
+                 split at h
+                 · rename_i k1 h' k2 e1
+diff --git a/formal/Benitoite/Release/Lemmas/TySubstMain.lean b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+index 5e1f2757..69fbfa1a 100644
+--- a/formal/Benitoite/Release/Lemmas/TySubstMain.lean
++++ b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+@@ -477,19 +477,19 @@ theorem Admissible.substTy (hb : B.Assumptions P) {C c tps ne Qs Qt Qt' ts es e
+   · simpa only [List.length_map] using h.sourceRows
+   · simpa only [List.length_map] using h.sourceQ
+ 
+-theorem PrimitiveAdmissible.substTy (hb : B.Assumptions P) {C c b s Q Q' ts es ts' es'}
+-    (hs : B.sig b = some s) (h : PrimitiveAdmissible C s Q ts es)
++theorem PrimitiveAdmissible.substTy (hb : B.Assumptions P) {C c b s R Q Q' ts es ts' es'}
++    (hs : B.sig b = some s) (h : PrimitiveAdmissible C (s.inst R) Q ts es)
+     (hc : c ≤ C.length) (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 e)
+     (hsat : SatAll B [] ts' (C.drop c)) (hr : RowTransport Q Q' es') :
+-    PrimitiveAdmissible (C.take c) s Q'
++    PrimitiveAdmissible (C.take c) (s.inst R) Q'
+       (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) := by
+   have htc : (C.take c).length = c := by simp; omega
+-  have had := h.admits
++  have had : s.admits C ts := by simpa using h.admits
+   rw [← List.take_append_drop c C] at had
+   have had' := hb.admits_subst _ _ _ _ _ _ es' hs had
+     ⟨fun t ht => (hts t ht).1, hsat.closed hb hts _⟩ hsat.1
+   rw [htc] at had'
+-  refine ⟨by simpa using h.typeCount, had', ?_, by simpa using h.rowCount, ?_, ?_, ?_,
++  refine ⟨by simpa using h.typeCount, by simpa using had', ?_, by simpa using h.rowCount, ?_, ?_, ?_,
+     h.noFailRows.compose_scoped h.sourceQ hr c ts'⟩
+   · intro t ht
+     obtain ⟨u, hu, rfl⟩ := List.mem_map.mp ht
+@@ -537,9 +537,9 @@ mutual
+         unfold Def.Scoped at hsc
+         rw [fnTy_substAt ⟨hsc.2.1, hsc.2.2.1, hsc.2.2.2.1⟩ had.types.1 had.rowCount]
+         exact .V_Fun hd hnames (had.substTy hb hc hts hes' hsat hrow)
+-    | .V_Prim hs hnames had =>
++    | .V_Prim (R := R) hs hnames had =>
+         simp only [Val.substTyAt]
+-        have hsc := hb.sig_scoped _ _ hs
++        have hsc := PrimSig.inst_scoped R (hb.sig_scoped _ _ hs)
+         unfold PrimSig.Scoped at hsc
+         rw [fnTy_substAt hsc.2 had.typeCount had.rowCount]
+         exact .V_Prim hs hnames (had.substTy hb hs hc hts hes' hsat hrow)
+diff --git a/formal/Benitoite/Release/Model.lean b/formal/Benitoite/Release/Model.lean
+index cc95e13d..e91212cf 100644
+--- a/formal/Benitoite/Release/Model.lean
++++ b/formal/Benitoite/Release/Model.lean
+@@ -19,7 +19,7 @@ def refGetSig : PrimSig where
+   names := ["reference"]
+   params := [.reference (.tvar 0)]
+   ret := .tvar 0
+-  eff := Eff.single stateEff
++  eff := Eff.single (.top stateEff)
+   admits := fun _ ts => ts.length = 1
+   kind := .refGet
+   opEff := none
+@@ -30,7 +30,7 @@ def refSetSig : PrimSig where
+   names := ["reference", "value"]
+   params := [.reference (.tvar 0), .tvar 0]
+   ret := .base .unit
+-  eff := Eff.single stateEff
++  eff := Eff.single (.top stateEff)
+   admits := fun _ ts => ts.length = 1
+   kind := .refSet
+   opEff := none
+@@ -55,7 +55,7 @@ theorem sig_cases {b s} (h : builtins.sig b = some s) : s = refGetSig ∨ s = re
+     · cases h; exact Or.inr rfl
+     · cases h
+ 
+-theorem single_no_rho (i : Nat) : Eff.test (Eff.single stateEff) (.rho i) = false := by
++theorem single_no_rho (i : Nat) : Eff.test (Eff.single (.top stateEff)) (.rho i) = false := by
+   simp [Eff.test, Eff.single, Eff.ofAtoms, Eff.atoms]
+ 
+ theorem assumptions (P : Program) : builtins.Assumptions P where
+@@ -79,12 +79,12 @@ theorem assumptions (P : Program) : builtins.Assumptions P where
+     intro b s C1 C0 ts h _ ha
+     rcases sig_cases h with rfl | rfl <;> exact ha
+   delta_typed := by
+-    intro Ψ b s ts es ws h hk
++    intro Ψ b s R ts es ws h hk
+     rcases sig_cases h with rfl | rfl <;> simp [refGetSig, refSetSig] at hk
+   io_kind := fun _ _ _ _ _ _ _ h => h.elim
+-  io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
++  io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
+   io_exists := by
+-    intro Ψ b s ts es ws h hk
++    intro Ψ b s R ts es ws h hk
+     rcases sig_cases h with rfl | rfl <;> simp [refGetSig, refSetSig] at hk
+   io_op := by
+     intro b s h hk
+@@ -326,8 +326,8 @@ example : ¬ Ty.Le (.fn ["value"] [.base .integer] (.base .integer) Eff.empty)
+ /-- Reference.get の契約名は型引数を置き換えても残る。 -/
+ example : HasTypeV emptyProgram builtins StoreTy.empty [] []
+     (.prim "Reference.get" [.base .integer] [])
+-    (.fn ["reference"] [.reference (.base .integer)] (.base .integer) (Eff.single stateEff)) := by
+-  have h := HasTypeVQ.V_Prim (Q := Qempty) (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
++    (.fn ["reference"] [.reference (.base .integer)] (.base .integer) (Eff.single (.top stateEff))) := by
++  have h := HasTypeVQ.V_PrimTop (Q := Qempty) (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
+     (C := []) (Γ := []) (b := "Reference.get") (s := refGetSig) (ts := [.base .integer])
+     (es := []) (by simp [builtins]) (by simp [NamesWF, refGetSig])
+     (PrimitiveAdmissible.of_noRows
+@@ -335,7 +335,7 @@ example : HasTypeV emptyProgram builtins StoreTy.empty [] []
+         Eff.VarsIn, Eff.single, Eff.ofAtoms]) rfl rfl rfl
+       (by intro t ht; simp only [List.mem_singleton] at ht; subst t
+           exact ⟨trivial, by intros; simp⟩))
+-  have he : Eff.substAt 0 [.base .integer] [] (Eff.single stateEff) = Eff.single stateEff :=
++  have he : Eff.substAt 0 [.base .integer] [] (Eff.single (.top stateEff)) = Eff.single (.top stateEff) :=
+     Eff.substAt_ofAtoms 0 _ _
+   simpa [fnTy_eq, refGetSig, Ty.subst, Ty.substAt, he, Ty.shift] using h
+ 
+diff --git a/formal/Benitoite/Release/Order/Atoms.lean b/formal/Benitoite/Release/Order/Atoms.lean
+index 2240d56a..b938d63f 100644
+--- a/formal/Benitoite/Release/Order/Atoms.lean
++++ b/formal/Benitoite/Release/Order/Atoms.lean
+@@ -46,9 +46,163 @@ private theorem charsCode_injective {cs ds : List Char} (h : charsCode cs = char
+         omega
+       exact congrArg (c :: ·) (ih ht)
+ 
++/-! 比較の試行（L00.06c、案 (ii)）: 構造を持つ名前の単射な符号化。名前と範囲の要素は任意の文字
++（`'\u0000'` を含む）を持てるので、文字の桁（1〜`codeBase - 1`）と別の二つの区切りの桁を使う。 -/
++
++/-- 名前の符号の桁の基数。文字の桁と二つの区切りの桁を収める。0 は列の終端だけに使う。 -/
++def digitBase : Nat := codeBase + 2
++
++/-- 名前と範囲の区切りの桁。文字の桁には現れない。 -/
++def sepName : Nat := codeBase
++
++/-- 範囲の要素の終わりの桁。文字の桁には現れない。 -/
++def sepSeg : Nat := codeBase + 1
++
++/-- 桁の列の符号。 -/
++def digitsCode : List Nat → Nat
++  | [] => 0
++  | d :: ds => d + digitBase * digitsCode ds
++
++/-- 文字列の文字の桁。 -/
++def charDigits (s : String) : List Nat := s.toList.map (fun c => c.toNat + 1)
++
++/-- 範囲の記述の桁。先頭は種類の桁、続いて各要素の文字の桁と終わりの桁。 -/
++def scopeDigits : NameScope → List Nat
++  | .top => [1]
++  | .pathExact segs => 2 :: segs.flatMap (fun x => charDigits x ++ [sepSeg])
++  | .pathTree stem => 3 :: stem.flatMap (fun x => charDigits x ++ [sepSeg])
++
++/-- 名前の記述の桁。元の名前の文字の桁、区切り、範囲の桁。 -/
++def nameDigits (s : EffName) : List Nat := charDigits s.base ++ sepName :: scopeDigits s.scope
++
++private theorem digitsCode_injective {xs ys : List Nat} (hx : ∀ d ∈ xs, 0 < d ∧ d < digitBase)
++    (hy : ∀ d ∈ ys, 0 < d ∧ d < digitBase) (h : digitsCode xs = digitsCode ys) : xs = ys := by
++  induction xs generalizing ys with
++  | nil =>
++    cases ys with
++    | nil => rfl
++    | cons d ds => have := (hy d (by simp)).1; simp [digitsCode] at h; omega
++  | cons c cs ih =>
++    cases ys with
++    | nil => have := (hx c (by simp)).1; simp [digitsCode] at h; omega
++    | cons d ds =>
++      have hc := (hx c (by simp)).2
++      have hd := (hy d (by simp)).2
++      have hr := congrArg (· % digitBase) h
++      simp only [digitsCode, Nat.add_mod, Nat.mul_mod_right, Nat.add_zero,
++        Nat.mod_eq_of_lt hc, Nat.mod_eq_of_lt hd] at hr
++      subst hr
++      have hm : digitBase * digitsCode cs = digitBase * digitsCode ds := by
++        simp only [digitsCode] at h; omega
++      have ht : digitsCode cs = digitsCode ds :=
++        Nat.eq_of_mul_eq_mul_left (by simp [digitBase]) hm
++      exact congrArg (c :: ·) (ih (fun x hm => hx x (by simp [hm])) (fun x hm => hy x (by simp [hm])) ht)
++
++private theorem charDigit_bound (c : Char) : 0 < c.toNat + 1 ∧ c.toNat + 1 < codeBase := by
++  have h := c.valid
++  simp only [UInt32.isValidChar, Nat.isValidChar] at h
++  change 0 < c.val.toNat + 1 ∧ c.val.toNat + 1 < 1114113
++  omega
++
++private theorem charDigits_bound {s : String} {d : Nat} (h : d ∈ charDigits s) : 0 < d ∧ d < codeBase := by
++  simp only [charDigits, List.mem_map] at h
++  obtain ⟨c, _, rfl⟩ := h
++  exact charDigit_bound c
++
++private theorem charDigits_injective {s t : String} (h : charDigits s = charDigits t) : s = t := by
++  apply String.toList_inj.mp
++  have aux : ∀ cs ds : List Char, cs.map (fun c => c.toNat + 1) = ds.map (fun c => c.toNat + 1) → cs = ds := by
++    intro cs
++    induction cs with
++    | nil => intro ds h; cases ds <;> simp_all
++    | cons c cs ih =>
++      intro ds h
++      cases ds with
++      | nil => simp at h
++      | cons d ds =>
++        simp only [List.map_cons, List.cons.injEq] at h
++        rw [Char.toNat_inj.mp (by omega : c.toNat = d.toNat), ih ds h.2]
++  exact aux _ _ h
++
++/-- 区切りの桁を含まない二つの前置きの後ろで区切ると、前置きと残りが一致する。 -/
++private theorem split_sep {sep : Nat} {xs xs' ys ys' : List Nat} (hx : sep ∉ xs) (hx' : sep ∉ xs')
++    (h : xs ++ sep :: ys = xs' ++ sep :: ys') : xs = xs' ∧ ys = ys' := by
++  induction xs generalizing xs' with
++  | nil =>
++    cases xs' with
++    | nil => simpa using h
++    | cons d ds => simp only [List.nil_append, List.cons_append, List.cons.injEq] at h
++                   exact absurd (h.1 ▸ List.mem_cons_self) hx'
++  | cons c cs ih =>
++    cases xs' with
++    | nil => simp only [List.nil_append, List.cons_append, List.cons.injEq] at h
++             exact absurd (h.1 ▸ List.mem_cons_self) hx
++    | cons d ds =>
++      simp only [List.cons_append, List.cons.injEq] at h
++      obtain ⟨rfl, h2⟩ := h
++      have := ih (fun m => hx (List.mem_cons_of_mem _ m)) (fun m => hx' (List.mem_cons_of_mem _ m)) h2
++      exact ⟨by rw [this.1], this.2⟩
++
++private theorem sepSeg_not_mem (s : String) : sepSeg ∉ charDigits s := fun h => by
++  have := (charDigits_bound h).2; simp only [sepSeg] at this; omega
++
++private theorem sepName_not_mem (s : String) : sepName ∉ charDigits s := fun h => by
++  have := (charDigits_bound h).2; simp only [sepName] at this; omega
++
++private theorem segs_injective {xs ys : List String}
++    (h : xs.flatMap (fun x => charDigits x ++ [sepSeg]) = ys.flatMap (fun x => charDigits x ++ [sepSeg])) :
++    xs = ys := by
++  induction xs generalizing ys with
++  | nil =>
++    cases ys with
++    | nil => rfl
++    | cons y ys => simp at h
++  | cons x xs ih =>
++    cases ys with
++    | nil => simp at h
++    | cons y ys =>
++      simp only [List.flatMap_cons, List.append_assoc, List.singleton_append] at h
++      have := split_sep (sepSeg_not_mem x) (sepSeg_not_mem y) h
++      rw [charDigits_injective this.1, ih this.2]
++
++private theorem scopeDigits_injective {r s : NameScope} (h : scopeDigits r = scopeDigits s) : r = s := by
++  cases r <;> cases s <;> simp only [scopeDigits, List.cons.injEq, reduceCtorEq, true_and] at h ⊢ <;> first | rfl | omega | exact congrArg _ (segs_injective h)
++
++private theorem nameDigits_bound {s : EffName} {d : Nat} (h : d ∈ nameDigits s) : 0 < d ∧ d < digitBase := by
++  have hseg : ∀ (xs : List String), d ∈ xs.flatMap (fun x => charDigits x ++ [sepSeg]) →
++      0 < d ∧ d < digitBase := by
++    intro xs hm
++    simp only [List.mem_flatMap, List.mem_append, List.mem_singleton] at hm
++    obtain ⟨x, _, hm | rfl⟩ := hm
++    · have := charDigits_bound hm; simp only [digitBase]; omega
++    · simp [sepSeg, digitBase, codeBase]
++  simp only [nameDigits, List.mem_append, List.mem_cons] at h
++  rcases h with h | rfl | h
++  · have := charDigits_bound h; simp only [digitBase]; omega
++  · simp [sepName, digitBase, codeBase]
++  · cases hs : s.scope with
++    | top => rw [hs] at h; simp [scopeDigits] at h; subst h; simp [digitBase, codeBase]
++    | pathExact segs =>
++      rw [hs] at h; simp only [scopeDigits, List.mem_cons] at h
++      rcases h with rfl | h
++      · simp [digitBase, codeBase]
++      · exact hseg segs h
++    | pathTree stem =>
++      rw [hs] at h; simp only [scopeDigits, List.mem_cons] at h
++      rcases h with rfl | h
++      · simp [digitBase, codeBase]
++      · exact hseg stem h
++
++/-- 構造を持つ名前の桁は単射である。 -/
++private theorem nameDigits_injective {s t : EffName} (h : nameDigits s = nameDigits t) : s = t := by
++  have := split_sep (sepName_not_mem s.base) (sepName_not_mem t.base) h
++  cases s; cases t
++  simp only at this
++  rw [charDigits_injective this.1, scopeDigits_injective this.2]
++
+ /-- 名前は偶数、行変数は奇数へ写す。 -/
+ def code : Atom → Nat
+-  | .name s => 2 * charsCode s.toList
++  | .name s => 2 * digitsCode (nameDigits s)
+   | .rho i => 2 * i + 1
+ 
+ /-- 符号の一致から原子の一致を導く。 -/
+@@ -57,8 +211,9 @@ theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
+   | name s =>
+     cases b with
+     | name t =>
+-      have hc : charsCode s.toList = charsCode t.toList := by simp only [code] at h; omega
+-      exact congrArg Atom.name (String.toList_inj.mp (charsCode_injective hc))
++      have hc : digitsCode (nameDigits s) = digitsCode (nameDigits t) := by simp only [code] at h; omega
++      exact congrArg Atom.name
++        (nameDigits_injective (digitsCode_injective (fun _ => nameDigits_bound) (fun _ => nameDigits_bound) hc))
+     | rho i => simp only [code] at h; omega
+   | rho i =>
+     cases b with
+diff --git a/formal/Benitoite/Release/Order/Types.lean b/formal/Benitoite/Release/Order/Types.lean
+index 3100f5de..5ac0e225 100644
+--- a/formal/Benitoite/Release/Order/Types.lean
++++ b/formal/Benitoite/Release/Order/Types.lean
+@@ -46,11 +46,36 @@ def TyCon.toTree : TyCon → Tree Label
+ theorem TyCon.toTree_injective {a b : TyCon} (h : a.toTree = b.toTree) : a = b := by
+   cases a <;> cases b <;> simp_all [TyCon.toTree, TyCon.rank, Tree.node.injEq]
+ 
++/-- 比較の試行（案 (ii)）: 名前の記述の範囲を木へ写す。 -/
++def NameScope.toTree : NameScope → Tree Label
++  | .top => .node (.rank 0) []
++  | .pathExact segs => .node (.rank 1) [.node (.texts segs) []]
++  | .pathTree stem => .node (.rank 2) [.node (.texts stem) []]
++
++theorem NameScope.toTree_injective {a b : NameScope} (h : a.toTree = b.toTree) : a = b := by
++  cases a <;> cases b <;> simp_all [NameScope.toTree, Tree.node.injEq]
++
++/-- 比較の試行（案 (ii)）: 範囲の構成子の順位。 -/
++def NameScope.rank : NameScope → Nat
++  | .top => 0 | .pathExact _ => 1 | .pathTree _ => 2
++
++/-- 比較の試行（案 (ii)）: 範囲を構成子の順位と欄で比較する。 -/
++def scopeCompare : NameScope → NameScope → Ordering
++  | .pathExact a, .pathExact b => List.compareLex stringCompare a b
++  | .pathTree a, .pathTree b => List.compareLex stringCompare a b
++  | a, b => compare a.rank b.rank
++
++theorem scopeCompare_eq_treeCompare (a b : NameScope) :
++    scopeCompare a b = treeCompare labelCompare a.toTree b.toTree := by
++  cases a <;> cases b <;>
++    simp [scopeCompare, NameScope.rank, NameScope.toTree, treeCompare, treesCompare,
++      labelCompare, Nat.compare_eq_ite_lt]
++
+ mutual
+   /-- 欄の境界を子の木で区切り、名前・引数・結果・潜在効果をすべて保持する。 -/
+   def Ty.toTree : Ty → Tree Label
+     | .base b => .node (.rank 0) [.node (.nat b.rank) []]
+-    | .opaque o => .node (.rank 1) [.node (.text o) []]
++    | .opaque o => .node (.rank 1) [.node (.text o.base) [], o.index.toTree]
+     | .data d args => .node (.rank 2) [.node (.text d) [], .node (.rank 0) (Ty.toTrees args)]
+     | .list a => .node (.rank 3) [a.toTree]
+     | .fn names params ret eff => .node (.rank 4)
+@@ -96,6 +121,10 @@ mutual
+       | exact congrArg Ty.ctor (TyCon.toTree_injective h)
+       | rfl
+       | skip
++    case opaque.opaque o p =>
++      obtain ⟨hb, hi⟩ := h
++      have hi := NameScope.toTree_injective hi
++      cases o; cases p; simp_all
+     case data.data =>
+       obtain ⟨rfl, h⟩ := h
+       exact congrArg (Ty.data _) (Ty.toTrees_injective h)
+@@ -159,7 +188,7 @@ mutual
+   /-- 型を構造再帰で比較する。非計算的な選択を使うのは atomsCompare だけである。 -/
+   noncomputable def tyCompare : Ty → Ty → Ordering
+     | .base a, .base b => compare a.rank b.rank
+-    | .opaque a, .opaque b => stringCompare a b
++    | .opaque a, .opaque b => (stringCompare a.base b.base).then (scopeCompare a.index b.index)
+     | .data d as, .data e bs => (stringCompare d e).then (tysCompare as bs)
+     | .list a, .list b => tyCompare a b
+     | .fn ns as a e, .fn ms bs b f =>
+@@ -203,7 +232,7 @@ mutual
+       tyCompare a b = treeCompare labelCompare a.toTree b.toTree := by
+     cases a <;> cases b <;> first | rfl |
+       simp [tyCompare, Ty.toTree, treeCompare, treesCompare,
+-        labelCompare, Nat.compare_eq_ite_lt,
++        labelCompare, Nat.compare_eq_ite_lt, scopeCompare_eq_treeCompare,
+         tyCompare_eq_treeCompare, tysCompare_eq_treesCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+ 
+   /-- 効果の直接比較も、同じ木の順序と一致する。 -/
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index 361a8d2c..b1696246 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -554,7 +554,7 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
+       Ψ l = some (.lazy a) → ContTy P B Ψ R ε k a b ε0 Re →
+       ContTy P B Ψ none ε (.update l :: k) a b ε0 Re
+   | K_Release {R ε v o k a b ε0 Re} :
+-      HasTypeV P B Ψ [] [] v (.opaque o) → B.isResource o = true → Eff.mem ε (.name stateEff) →
++      HasTypeV P B Ψ [] [] v (.opaque (.top o)) → B.isResource o = true → Eff.mem ε (.name (.top stateEff)) →
+       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
+   /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
+   | K_Handle {R ε εc h k t b ε0 Re} :
+@@ -569,7 +569,7 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
+   /-- K-Drop。捨てる継続の解放の枠を、この位置で実行できるように、κ の継続の型のエフェクトが `State` を
+   含むなら、ε も `State` を含む（01-12「確かめる性質」）。 -/
+   | K_Drop {R ε κ k a b ε0 Re b' t' ε' R'} :
+-      Ψ κ = some (.cont b' t' ε' R') → (Eff.mem ε' (.name stateEff) → Eff.mem ε (.name stateEff)) →
++      Ψ κ = some (.cont b' t' ε' R') → (Eff.mem ε' (.name (.top stateEff)) → Eff.mem ε (.name (.top stateEff))) →
+       ContTy P B Ψ R ε k a b ε0 Re →
+       ContTy P B Ψ R ε (.drop κ :: k) a b ε0 Re
+   /-- ガードは R = none、空のエフェクトで実行し、本体と再開先では元の R とエフェクトに戻る。 -/
+@@ -612,7 +612,7 @@ def StoreOk (P : Program) (B : Builtins) (Ψ : StoreTy) (σ : Store) : Prop :=
+ /-- 継続の末尾で許すエフェクト Eb は、Fail を含まない組み込みのエフェクトの名前の集合である。 -/
+ def BuiltinOnly (P : Program) (B : Builtins) (ε : Eff) : Prop :=
+   ε.fails = [] ∧
+-    ∀ a, Eff.mem ε a → ∃ l, a = .name l ∧ P.effects l = none ∧ (B.effects l).isSome
++    ∀ a, Eff.mem ε a → ∃ l, a = .name l ∧ P.effects l.base = none ∧ (B.effects l.base).isSome
+ 
+ /-! ## 状態の中の項が閉じていること -/
+ 
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index 11560da6..4bc5a9fd 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -342,7 +342,7 @@ structure ConDecl where
+ /-- 利用者が宣言したエフェクトの操作 `function op[ᾱ](x̄: Ā) -> B` の宣言。型は
+ `∀ᾱ. (Ā) → B ! {L}` である（01-06「エフェクトの宣言とハンドラの型付け（初回リリース版）」）。 -/
+ structure OpDecl where
+-  eff : EffName
++  eff : EffBase
+   tparams : List TParam
+   names : List String
+   params : List Ty
+@@ -401,7 +401,7 @@ structure Program where
+   cons : ConName → Option ConDecl
+   ops : OpName → Option OpDecl
+   /-- 利用者が宣言したエフェクトの操作の一覧。 -/
+-  effects : EffName → Option (List OpName)
++  effects : EffBase → Option (List OpName)
+   classes : ClassName → Option ClassDecl
+   impls : ImplName → Option ImplDecl
+ 
+diff --git a/formal/Benitoite/Release/Types.lean b/formal/Benitoite/Release/Types.lean
+index 76f0625b..1af0324c 100644
+--- a/formal/Benitoite/Release/Types.lean
++++ b/formal/Benitoite/Release/Types.lean
+@@ -22,7 +22,13 @@ abbrev FunName := String
+ abbrev PrimName := String
+ abbrev OpName := String
+ /-- 中身を見せない型の名前（`IOError`・`NetworkError`・リソースの型など）。01-12 の `O`。 -/
+-abbrev OpaqueName := String
++structure OpaqueName where
++  base : String
++  index : NameScope
++  deriving DecidableEq, Repr
++
++/-- 比較の試行（案 (ii)、暗黙の変換なし）: 旧の不透明名を Top の添字として明示して構築する。 -/
++abbrev OpaqueName.top (s : String) : OpaqueName := ⟨s, .top⟩
+ abbrev ClassName := String
+ abbrev ImplName := String
+ abbrev MethName := String
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 2f070c89..d8818abe 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -54,10 +54,83 @@ structure PrimSig where
+   admits : List TParam → List Ty → Prop
+   kind : PrimKind
+   /-- 組み込みのエフェクトの操作のとき、そのエフェクトの名前。 -/
+-  opEff : Option EffName
++  opEff : Option EffBase
++  /-- 比較の試行（案 (ii)）: 範囲を具体化できる対象の引数の位置。旧の署名は `none`。 -/
++  target : Option Nat := none
+ 
+ def PrimSig.ntys (s : PrimSig) : Nat := s.tparams.length
+ 
++/-- 比較の試行（案 (ii)）: 不透明名の添字を R に置き換える。 -/
++def Ty.withIndex (R : NameScope) : Ty → Ty
++  | .opaque o => .opaque { o with index := R }
++  | t => t
++
++/-- 比較の試行（案 (ii)）: 表の署名を範囲 R で具体化する。対象の位置の引数の型の添字と、効果の名前の範囲を
++同じ R にする。操作の名前（`PrimName`）は変えない。 -/
++def PrimSig.inst (s : PrimSig) (R : NameScope) : PrimSig :=
++  if R = .top then s else
++  match s.target, s.opEff with
++  | some p, some l =>
++      { s with params := s.params.mapIdx (fun i t => if i = p then Ty.withIndex R t else t),
++               eff := Eff.single ⟨l, R⟩ }
++  | _, _ => s
++
++/-- 比較の試行（案 (ii)）: Top の具体化は表の署名そのものである（旧 Top の対応）。 -/
++@[simp] theorem PrimSig.inst_top (s : PrimSig) : s.inst .top = s := by
++  unfold PrimSig.inst; simp
++
++/-- 比較の試行（案 (ii)）: 操作でない組み込みの関数は具体化しても変わらない。 -/
++theorem PrimSig.inst_eq_of_opEff_none {s : PrimSig} (R : NameScope) (h : s.opEff = none) : s.inst R = s := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> simp_all
++
++/-- 比較の試行（案 (ii)）: 具体化は型パラメータ・行の数・制約・種類・契約名・結果・操作の名前を変えない。 -/
++@[simp] theorem PrimSig.inst_tparams (s : PrimSig) (R : NameScope) : (s.inst R).tparams = s.tparams := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++@[simp] theorem PrimSig.inst_ntys (s : PrimSig) (R : NameScope) : (s.inst R).ntys = s.ntys := by
++  unfold PrimSig.ntys; simp
++@[simp] theorem PrimSig.inst_neffs (s : PrimSig) (R : NameScope) : (s.inst R).neffs = s.neffs := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++@[simp] theorem PrimSig.inst_admits (s : PrimSig) (R : NameScope) : (s.inst R).admits = s.admits := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++@[simp] theorem PrimSig.inst_kind (s : PrimSig) (R : NameScope) : (s.inst R).kind = s.kind := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++@[simp] theorem PrimSig.inst_names (s : PrimSig) (R : NameScope) : (s.inst R).names = s.names := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++@[simp] theorem PrimSig.inst_ret (s : PrimSig) (R : NameScope) : (s.inst R).ret = s.ret := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++@[simp] theorem PrimSig.inst_opEff (s : PrimSig) (R : NameScope) : (s.inst R).opEff = s.opEff := by
++  unfold PrimSig.inst; split
++  · rfl
++  · split <;> rfl
++
++/-- 比較の試行（案 (ii)）: 操作の具体化の効果は、同じ元の名前の一原子である。 -/
++theorem PrimSig.inst_eff_single {s : PrimSig} (R : NameScope) {l : EffBase} (ho : s.opEff = some l)
++    (he : s.eff = Eff.single (.top l)) : ∃ R', (s.inst R).eff = Eff.single ⟨l, R'⟩ := by
++  unfold PrimSig.inst; split
++  · exact ⟨.top, he⟩
++  · split
++    · rename_i p l' _ hl'
++      rw [ho] at hl'; cases hl'
++      exact ⟨R, rfl⟩
++    · exact ⟨.top, he⟩
++
++-- 比較の試行（案 (ii)）: 依存の場合分けが具体化を展開し続けないよう、具体化を既約にする。
++attribute [irreducible] PrimSig.inst
++
+ /-- 組み込みの関数と、01-12 がほかの章に委ねているもの。 -/
+ structure Builtins where
+   sig : PrimName → Option PrimSig
+@@ -68,9 +141,9 @@ structure Builtins where
+   /-- 事象 `release(V)` の応答として起こりうるもの。`none` が `ok`、`some r` が `error(r)`。 -/
+   releaseResponse : Val → Option ErrKind → Prop
+   /-- リソースの型か。リソースの型の解放のエフェクト `rel(O_r)` は `{State}` である。 -/
+-  isResource : OpaqueName → Bool
++  isResource : String → Bool
+   /-- 組み込みのエフェクトと、その操作。`State` は操作を持たない。 -/
+-  effects : EffName → Option (List PrimName)
++  effects : EffBase → Option (List PrimName)
+   /-- 型が組み込みの制約を満たすか（01-06「等値の型」「鍵の型（初回リリース版）」）。制約の並び `C` のもとで判定する。 -/
+   sat : List TParam → Ty → TParam → Prop
+   /-- `Reference.get` と `Reference.set` の名前。`Reference.update` の遷移が使う。 -/
+@@ -93,7 +166,7 @@ structure OpSig where
+   names : List String
+   params : List Ty
+   ret : Ty
+-  eff : EffName
++  eff : EffBase
+ 
+ def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
+   | .fail => none
+@@ -112,7 +185,7 @@ def opDictCount (P : Program) : OpRef → Nat
+   | .prim _ | .fail => 0
+ 
+ /-- エフェクト L の操作の一覧。利用者が宣言したエフェクトか、組み込みのエフェクト。 -/
+-def effOps (P : Program) (B : Builtins) (l : EffName) : Option (List OpRef) :=
++def effOps (P : Program) (B : Builtins) (l : EffBase) : Option (List OpRef) :=
+   match P.effects l with
+   | some os => some (os.map .user)
+   | none => (B.effects l).map (·.map .prim)
+@@ -124,7 +197,7 @@ def handles (h : List Clause) (o : OpRef) : Bool := h.any (fun c => c.op == o)
+ def handled (P : Program) (B : Builtins) (h : List Clause) : Eff := Eff.ofAtoms fun a =>
+   match a with
+   | .name l =>
+-      match effOps P B l with
++      match effOps P B l.base with
+       | some (o :: os) => (o :: os).all (handles h)
+       | _ => false
+   | .rho _ => false
+@@ -387,12 +460,13 @@ mutual
+         P.defs f = some d → NamesWF d.names d.params →
+         Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
+         HasTypeVQ P B Ψ Q C Γ (.fnRef f ts es) (fnTy d.names d.params d.ret d.eff ts es)
+-    | V_Prim {Γ b s ts es} :
+-        B.sig b = some s → NamesWF s.names s.params → PrimitiveAdmissible C s Q ts es →
+-        HasTypeVQ P B Ψ Q C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es)
++    | V_Prim {Γ b s R ts es} :
++        B.sig b = some s → NamesWF (s.inst R).names (s.inst R).params → PrimitiveAdmissible C (s.inst R) Q ts es →
++        HasTypeVQ P B Ψ Q C Γ (.prim b ts es)
++          (fnTy (s.inst R).names (s.inst R).params (s.inst R).ret (s.inst R).eff ts es)
+     | V_Op {Γ o od ts} :
+         P.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams →
+-        HasTypeVQ P B Ψ Q C Γ (.op o ts) (fnTy od.names od.params od.ret (Eff.single od.eff) ts [])
++        HasTypeVQ P B Ψ Q C Γ (.op o ts) (fnTy od.names od.params od.ret (Eff.single (.top od.eff)) ts [])
+     | V_Raise {Γ T E} :
+         Ty.WF C.length T → Ty.WF C.length E →
+         HasTypeVQ P B Ψ Q C Γ (.raise T E) (.fn ["error"] [E] T (Eff.singleFail E))
+@@ -482,8 +556,8 @@ mutual
+         HasTypeVQ P B Ψ Q C Γ v r → Ty.WF C.length a → HasTypeCQ P B Ψ Q C Γ (some r) (.escape v) a ε Δ
+     /-- C-Use。解放のエフェクト `rel(O_r) = {State}` を ε が含む。 -/
+     | C_Use {Δ Γ R v o m b ε} :
+-        HasTypeVQ P B Ψ Q C Γ v (.opaque o) → B.isResource o = true →
+-        HasTypeCQ P B Ψ Q C Γ R m b ε Δ → Eff.mem ε (.name stateEff) →
++        HasTypeVQ P B Ψ Q C Γ v (.opaque (.top o)) → B.isResource o = true →
++        HasTypeCQ P B Ψ Q C Γ R m b ε Δ → Eff.mem ε (.name (.top stateEff)) →
+         HasTypeCQ P B Ψ Q C Γ R (.use v m) b ε Δ
+     /-- C-Handle。 -/
+     | C_Handle {Δ Γ R m h t εm ε} :
+@@ -596,6 +670,14 @@ mutual
+     | .cons hv ht => exact .cons (hideBuilders_strengthen_val hv) (hideBuilders_strengthen_each ht)
+ end
+ 
++/-- 比較の試行（案 (ii)）: 表の署名をそのまま（Top で）使う組み込みの関数の値の型付け。 -/
++theorem HasTypeVQ.V_PrimTop {P : Program} {B : Builtins} {Ψ Q C Γ b s ts es} (hs : B.sig b = some s)
++    (hn : NamesWF s.names s.params) (ha : PrimitiveAdmissible C s Q ts es) :
++    HasTypeVQ P B Ψ Q C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es) := by
++  have h := HasTypeVQ.V_Prim (P := P) (Ψ := Ψ) (Γ := Γ) (R := .top) hs (by rw [PrimSig.inst_top]; exact hn)
++    (by rw [PrimSig.inst_top]; exact ha)
++  rwa [PrimSig.inst_top] at h
++
+ abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty
+ abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty
+ abbrev HasTypeEach (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeEachQ P B Ψ Qempty
+diff --git a/formal/Benitoite/Release/WellFormed.lean b/formal/Benitoite/Release/WellFormed.lean
+index 8f4d018f..ec963344 100644
+--- a/formal/Benitoite/Release/WellFormed.lean
++++ b/formal/Benitoite/Release/WellFormed.lean
+@@ -98,6 +98,29 @@ def PrimSig.Scoped (s : PrimSig) : Prop :=
+     Ty.VarsInList s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn s.ntys (· < s.neffs) s.ret ∧
+     Eff.VarsIn s.ntys (· < s.neffs) s.eff
+ 
++/-- 比較の試行（案 (ii)）: 添字の置き換えは型の変数の範囲を保つ。 -/
++theorem Ty.withIndex_varsIn {n : Nat} {pe : Nat → Prop} (R : NameScope) (t : Ty) (h : t.VarsIn n pe) :
++    (Ty.withIndex R t).VarsIn n pe := by
++  cases t <;> simp_all [Ty.withIndex, Ty.VarsIn]
++
++/-- 比較の試行（案 (ii)）: 表の署名を具体化しても、宣言した変数だけを使う。 -/
++theorem PrimSig.inst_scoped {s : PrimSig} (R : NameScope) (h : s.Scoped) : (s.inst R).Scoped := by
++  unfold PrimSig.inst
++  split
++  · exact h
++  split
++  · obtain ⟨hn, hp, hr, he⟩ := h
++    refine ⟨⟨by simp [hn.1], hn.2⟩, ?_, hr, ?_⟩
++    · rw [Ty.VarsInList.iff] at hp ⊢
++      intro a ha
++      rw [List.mem_mapIdx] at ha
++      obtain ⟨i, hi, rfl⟩ := ha
++      split
++      · exact Ty.withIndex_varsIn _ _ (hp _ (List.getElem_mem _))
++      · exact hp _ (List.getElem_mem _)
++    · simp [Eff.VarsIn, Eff.single, Eff.ofAtoms, Ty.VarsInList]
++  · exact h
++
+ /-- メソッドの型は、メソッドの型パラメータ（番号 `0..g-1`）と型クラスの引数（番号 g）と、メソッドのエフェクト変数
+ だけを使う。 -/
+ def MethSig.Scoped (ms : MethSig) : Prop :=
+diff --git a/formal/Benitoite/Scope/CompatExamples.lean b/formal/Benitoite/Scope/CompatExamples.lean
+index 798be7b6..7a4247d7 100644
+--- a/formal/Benitoite/Scope/CompatExamples.lean
++++ b/formal/Benitoite/Scope/CompatExamples.lean
+@@ -73,12 +73,42 @@ def embI : TopEmbedding RepresentationExamples.CandidateI.Atom where
+   to_of := RepresentationExamples.CandidateI.Atom.toRelease_ofRelease
+   of_to := RepresentationExamples.CandidateI.Atom.toRelease_eq_some
+ 
++/-- 比較の試行（L00.06c、案 (ii) を本番へ当てた状態）: 本番の原子が既に範囲を持つので、模型の範囲との
++対応は全単射になる。 -/
++def scopeII : NameScope → RepresentationExamples.CandidateII.Scope
++  | .top => .top
++  | .pathExact s => .pathExact s
++  | .pathTree s => .pathTree s
++
++def scopeRel : RepresentationExamples.CandidateII.Scope → NameScope
++  | .top => .top
++  | .pathExact s => .pathExact s
++  | .pathTree s => .pathTree s
++
++def atomII : Release.Atom → RepresentationExamples.CandidateII.Atom
++  | .name l => .name ⟨l.base, scopeII l.scope⟩
++  | .rho i => .rho i
++
++def atomRel? : RepresentationExamples.CandidateII.Atom → Option Release.Atom
++  | .name d => some (.name ⟨d.base, scopeRel d.scope⟩)
++  | .rho i => some (.rho i)
++
+ /-- 案 (ii) の原子（`Atom.name ⟨l, R⟩`）の埋め込み。 -/
+ def embII : TopEmbedding RepresentationExamples.CandidateII.Atom where
+-  ofRelease := RepresentationExamples.CandidateII.Atom.ofRelease
+-  toRelease? := RepresentationExamples.CandidateII.Atom.toRelease?
+-  to_of := RepresentationExamples.CandidateII.Atom.toRelease_ofRelease
+-  of_to := RepresentationExamples.CandidateII.Atom.eq_ofRelease_of_toRelease
++  ofRelease := atomII
++  toRelease? := atomRel?
++  to_of := by
++    intro a
++    cases a with
++    | name l => cases l with | mk b s => cases s <;> rfl
++    | rho i => rfl
++  of_to := by
++    intro x a h
++    cases x with
++    | name d =>
++      cases d with
++      | mk b s => cases s <;> (simp only [atomRel?, Option.some.injEq] at h; subst h; rfl)
++    | rho i => simp only [atomRel?, Option.some.injEq] at h; subst h; rfl
+ 
+ /-! ## 一般化した効果 -/
+ 
+@@ -346,10 +376,10 @@ abbrev Atom := RepresentationExamples.CandidateI.Atom
+ def SemCovers (e f : GEff Atom) : Prop := ∀ x, e.mem x → ∃ y, f.mem y ∧ RepresentationExamples.CandidateI.Atom.within x y = true
+ 
+ /-- `File.Read` の Top と `/data/a` の二原子。 -/
+-def wide : GEff Atom := ⟨fun x => x == .name "File.Read" .top || x == .name "File.Read" dataA, []⟩
++def wide : GEff Atom := ⟨fun x => x == .name (.top "File.Read") .top || x == .name (.top "File.Read") dataA, []⟩
+ 
+ /-- `File.Read` の Top の一原子。 -/
+-def top : GEff Atom := ⟨fun x => x == .name "File.Read" .top, []⟩
++def top : GEff Atom := ⟨fun x => x == .name (.top "File.Read") .top, []⟩
+ 
+ theorem wide_canonical : wide.Canonical := by
+   simp [GEff.Canonical, GEff.norm, GEff.failPart, wide, Eff.norm, Eff.fails]
+@@ -359,7 +389,7 @@ theorem top_canonical : top.Canonical := by
+ 
+ theorem wide_covers_top : SemCovers wide top := by
+   intro x hx
+-  refine ⟨.name "File.Read" .top, by simp [GEff.mem, top], ?_⟩
++  refine ⟨.name (.top "File.Read") .top, by simp [GEff.mem, top], ?_⟩
+   simp only [GEff.mem, wide, Bool.or_eq_true, beq_iff_eq] at hx
+   rcases hx with rfl | rfl <;> decide
+ 
+@@ -373,9 +403,9 @@ theorem top_covers_wide : SemCovers top wide := by
+ theorem semCovers_not_eq : SemCovers wide top ∧ SemCovers top wide ∧ wide ≠ top ∧
+     ¬ GEff.Sub wide top := by
+   refine ⟨wide_covers_top, top_covers_wide, fun h => ?_, fun h => ?_⟩
+-  · have := congrArg (fun e : GEff Atom => e.atoms (.name "File.Read" dataA)) h
++  · have := congrArg (fun e : GEff Atom => e.atoms (.name (.top "File.Read") dataA)) h
+     simp [wide, top, dataA] at this
+-  · have := h.1 (.name "File.Read" dataA) (by simp [GEff.mem, wide])
++  · have := h.1 (.name (.top "File.Read") dataA) (by simp [GEff.mem, wide])
+     simp [GEff.mem, top, dataA] at this
+ 
+ /-- したがって、意味の被覆の相互包含を前提にした等号の規則は、正規形に限っても偽である。 -/
+@@ -389,12 +419,12 @@ end SemanticExample
+ /-! ## 非空の例 -/
+ 
+ open RepresentationExamples in
+-#guard (embI.lift (Eff.single "File.Read")).atoms (.name "File.Read" .top)
++#guard (embI.lift (Eff.single (.top "File.Read"))).atoms (.name (.top "File.Read") .top)
+ open RepresentationExamples in
+-#guard !(embI.lift (Eff.single "File.Read")).atoms (.name "File.Read" CandidateI.dataA)
++#guard !(embI.lift (Eff.single (.top "File.Read"))).atoms (.name (.top "File.Read") CandidateI.dataA)
+ open RepresentationExamples in
+-#guard (embII.lift (Eff.single "File.Write")).atoms (.name ⟨"File.Write", .top⟩)
++#guard (embII.lift (Eff.single (.top "File.Write"))).atoms (.name ⟨"File.Write", .top⟩)
+ open RepresentationExamples in
+-#guard !(embII.lift (Eff.single "File.Write")).atoms (.name ⟨"File.Write", CandidateII.dataTree⟩)
++#guard !(embII.lift (Eff.single (.top "File.Write"))).atoms (.name ⟨"File.Write", CandidateII.dataTree⟩)
+ 
+ end Benitoite.Scope.CompatExamples
+diff --git a/formal/Benitoite/Scope/RepresentationExamplesI.lean b/formal/Benitoite/Scope/RepresentationExamplesI.lean
+index 797bf976..e4908c72 100644
+--- a/formal/Benitoite/Scope/RepresentationExamplesI.lean
++++ b/formal/Benitoite/Scope/RepresentationExamplesI.lean
+@@ -182,7 +182,7 @@ def within : Atom → Atom → Bool
+ 
+ /-- 名前は偶数、行変数は奇数。名前と範囲を対の符号で一つにする。 -/
+ def code : Atom → Nat
+-  | .name l r => 2 * ScopeRange.code.pair (Release.Atom.charsCode l.toList) r.code
++  | .name l r => 2 * ScopeRange.code.pair (Release.Atom.code (.name l)) r.code
+   | .rho i => 2 * i + 1
+ 
+ theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
+@@ -190,9 +190,9 @@ theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
+   | name l r =>
+     cases b with
+     | name m s =>
+-      have hp := pair_injective (show ScopeRange.code.pair (Release.Atom.charsCode l.toList) r.code =
+-        ScopeRange.code.pair (Release.Atom.charsCode m.toList) s.code by simp only [code] at h; omega)
+-      rw [String.toList_inj.mp (charsCode_injective hp.1), ScopeRange.code_injective hp.2]
++      have hp := pair_injective (show ScopeRange.code.pair (Release.Atom.code (.name l)) r.code =
++        ScopeRange.code.pair (Release.Atom.code (.name m)) s.code by simp only [code] at h; omega)
++      rw [Release.Atom.name.inj (Release.Atom.code_injective hp.1), ScopeRange.code_injective hp.2]
+     | rho j => simp only [code] at h; omega
+   | rho i =>
+     cases b with
+@@ -251,7 +251,7 @@ inductive ValTy where
+ def ValTy.ofReleaseOpaque (o : OpaqueName) : ValTy := .opaque o .top
+ 
+ /-- 標準の所有元が認定する範囲付きの値型の名前。所有元は今の不透明型と同じく名前の文字列に置く。 -/
+-def pathInName : OpaqueName := "Scope.PathIn"
++def pathInName : OpaqueName := .top "Scope.PathIn"
+ 
+ /-- `Scope.PathIn[R]` に当たる型。旧の裸の型は Top。 -/
+ def pathIn (r : ScopeRange) : ValTy := .opaque pathInName r
+@@ -284,7 +284,7 @@ structure Sig where
+   deriving DecidableEq, Repr
+ 
+ /-- `File.readTextIn` に当たる操作の具体化。識別子は範囲に依存しない。 -/
+-def readTextIn (r : ScopeRange) : Sig := ⟨"File.readTextIn", pathIn r, .name "File.Read" r⟩
++def readTextIn (r : ScopeRange) : Sig := ⟨"File.readTextIn", pathIn r, .name (.top "File.Read") r⟩
+ 
+ theorem readTextIn_op (r s : ScopeRange) : (readTextIn r).op = (readTextIn s).op := rfl
+ 
+@@ -308,15 +308,15 @@ example : (pathIn .top).Holds ["data", "b"] := ⟨rfl, trivial⟩
+ example : pathIn dataA ≠ pathIn .top := pathIn_ne_of_ne (by decide)
+ example : (pathIn .top) = ValTy.ofReleaseOpaque pathInName := rfl
+ 
+-#guard allows [.name "File.Read" .top] (.name "File.Read" dataA)
+-#guard allows [.name "File.Read" dataA] (.name "File.Read" dataA)
+-#guard !allows [.name "File.Read" dataA] (.name "File.Read" (.pathExact ["data", "b"]))
+-#guard !allows [.name "File.Read" dataA] (.name "File.Read" .top)
+-#guard !allows [.name "File.Write" .top] (.name "File.Read" dataA)
+-#guard (readTextIn dataA).effect == .name "File.Read" dataA
+-#guard Atom.toRelease? (.name "File.Read" dataA) == none
+-#guard Atom.toRelease? (Atom.ofRelease (.name "File.Read")) == some (.name "File.Read")
+-#guard liftAtoms (Release.Eff.single "File.Read").atoms (.name "File.Read" .top)
+-#guard !liftAtoms (Release.Eff.single "File.Read").atoms (.name "File.Read" dataA)
++#guard allows [.name (.top "File.Read") .top] (.name (.top "File.Read") dataA)
++#guard allows [.name (.top "File.Read") dataA] (.name (.top "File.Read") dataA)
++#guard !allows [.name (.top "File.Read") dataA] (.name (.top "File.Read") (.pathExact ["data", "b"]))
++#guard !allows [.name (.top "File.Read") dataA] (.name (.top "File.Read") .top)
++#guard !allows [.name (.top "File.Write") .top] (.name (.top "File.Read") dataA)
++#guard (readTextIn dataA).effect == .name (.top "File.Read") dataA
++#guard Atom.toRelease? (.name (.top "File.Read") dataA) == none
++#guard Atom.toRelease? (Atom.ofRelease (.name (.top "File.Read"))) == some (.name (.top "File.Read"))
++#guard liftAtoms (Release.Eff.single (.top "File.Read")).atoms (.name (.top "File.Read") .top)
++#guard !liftAtoms (Release.Eff.single (.top "File.Read")).atoms (.name (.top "File.Read") dataA)
+ 
+ end Benitoite.Scope.RepresentationExamples.CandidateI
+diff --git a/formal/Benitoite/Scope/RepresentationExamplesII.lean b/formal/Benitoite/Scope/RepresentationExamplesII.lean
+index a57bccf7..8e6e759f 100644
+--- a/formal/Benitoite/Scope/RepresentationExamplesII.lean
++++ b/formal/Benitoite/Scope/RepresentationExamplesII.lean
+@@ -78,26 +78,33 @@ inductive Ty where
+ 
+ /-! ## 旧 Top との対応 -/
+ 
++/-- 比較の試行（L00.06c、案 (ii) を本番へ当てた状態）: 本番の `Release.Atom` が既に範囲を持つので、
++旧の名前だけの原子をこの模型の中に写して置く。 -/
++inductive OldAtom where
++  | name (l : String)
++  | rho (i : Nat)
++  deriving DecidableEq, Repr
++
+ /-- 旧の原子を、Top の記述の原子として読む。 -/
+-def Atom.ofRelease : Benitoite.Release.Atom → Atom
++def Atom.ofRelease : OldAtom → Atom
+   | .name l => .name ⟨l, .top⟩
+   | .rho i => .rho i
+ 
+ /-- Top の記述の原子だけを旧の原子へ戻す。範囲付きの原子は旧の表現を持たない。 -/
+-def Atom.toRelease? : Atom → Option Benitoite.Release.Atom
++def Atom.toRelease? : Atom → Option OldAtom
+   | .name ⟨l, .top⟩ => some (.name l)
+   | .name _ => none
+   | .rho i => some (.rho i)
+ 
+-theorem Atom.toRelease_ofRelease (a : Benitoite.Release.Atom) : (Atom.ofRelease a).toRelease? = some a := by
++theorem Atom.toRelease_ofRelease (a : OldAtom) : (Atom.ofRelease a).toRelease? = some a := by
+   cases a <;> rfl
+ 
+-theorem Atom.ofRelease_injective {a b : Benitoite.Release.Atom} (h : Atom.ofRelease a = Atom.ofRelease b) :
++theorem Atom.ofRelease_injective {a b : OldAtom} (h : Atom.ofRelease a = Atom.ofRelease b) :
+     a = b := by
+   have := congrArg Atom.toRelease? h
+   simpa [Atom.toRelease_ofRelease] using this
+ 
+-theorem Atom.eq_ofRelease_of_toRelease {a : Atom} {b : Benitoite.Release.Atom} (h : a.toRelease? = some b) :
++theorem Atom.eq_ofRelease_of_toRelease {a : Atom} {b : OldAtom} (h : a.toRelease? = some b) :
+     a = Atom.ofRelease b := by
+   match a, h with
+   | .name ⟨l, .top⟩, h => cases h; rfl
+@@ -108,24 +115,24 @@ theorem Atom.toRelease_scoped {l : String} {R : Scope} (hR : R ≠ .top) : (Atom
+   cases R <;> simp_all [Atom.toRelease?]
+ 
+ /-- 旧の効果の所属関数を、Top の記述だけを含む所属関数として読む。 -/
+-def liftAtoms (f : Benitoite.Release.Atom → Bool) : Atom → Bool := fun a =>
++def liftAtoms (f : OldAtom → Bool) : Atom → Bool := fun a =>
+   match a.toRelease? with
+   | some b => f b
+   | none => false
+ 
+-theorem liftAtoms_ofRelease (f : Benitoite.Release.Atom → Bool) (a : Benitoite.Release.Atom) :
++theorem liftAtoms_ofRelease (f : OldAtom → Bool) (a : OldAtom) :
+     liftAtoms f (Atom.ofRelease a) = f a := by
+   simp [liftAtoms, Atom.toRelease_ofRelease]
+ 
+ /-- 旧の効果を読んだものは範囲付きの原子を含まない（旧 Top の効果に狭い範囲が紛れ込まない）。 -/
+-theorem liftAtoms_scoped (f : Benitoite.Release.Atom → Bool) {l : String} {R : Scope} (hR : R ≠ .top) :
++theorem liftAtoms_scoped (f : OldAtom → Bool) {l : String} {R : Scope} (hR : R ≠ .top) :
+     liftAtoms f (.name ⟨l, R⟩) = false := by
+   simp [liftAtoms, Atom.toRelease_scoped hR]
+ 
+ /-- 旧の不透明な型の名前は Top の添字の記述として読む。 -/
+-def Ty.ofReleaseOpaque (o : Benitoite.Release.OpaqueName) : Ty := .opaque ⟨o, .top⟩
++def Ty.ofReleaseOpaque (o : String) : Ty := .opaque ⟨o, .top⟩
+ 
+-theorem Ty.ofReleaseOpaque_injective {o p : Benitoite.Release.OpaqueName}
++theorem Ty.ofReleaseOpaque_injective {o p : String}
+     (h : Ty.ofReleaseOpaque o = Ty.ofReleaseOpaque p) : o = p := by
+   simp [Ty.ofReleaseOpaque] at h; exact h
+ 
+diff --git a/formal/Benitoite/Surface/BuilderExamples.lean b/formal/Benitoite/Surface/BuilderExamples.lean
+index 522f11d4..f7757998 100644
+--- a/formal/Benitoite/Surface/BuilderExamples.lean
++++ b/formal/Benitoite/Surface/BuilderExamples.lean
+@@ -11,11 +11,11 @@ private def intTy : Ty := .base .integer
+ private def strTy : Ty := .base .string
+ private def signature (kind : PrimKind) (ns : List String) (ps : List Ty) (ret : Ty)
+     (eff : Eff := Eff.empty) (ts : List TParam := []) : PrimSig :=
+-  ⟨ts, 0, ns, ps, ret, eff, fun _ _ => True, kind, none⟩
++  ⟨ts, 0, ns, ps, ret, eff, fun _ _ => True, kind, none, none⟩
+ private def entries : List (String × PrimSig) :=
+-  [("new", signature .refNew ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single stateEff) [{}]),
+-   ("get", signature .refGet ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single stateEff) [{}]),
+-   ("set", signature .refSet ["reference", "value"] [.reference (.tvar 0), .tvar 0] (.base .unit) (Eff.single stateEff) [{}]),
++  [("new", signature .refNew ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single (.top stateEff)) [{}]),
++   ("get", signature .refGet ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single (.top stateEff)) [{}]),
++   ("set", signature .refSet ["reference", "value"] [.reference (.tvar 0), .tvar 0] (.base .unit) (Eff.single (.top stateEff)) [{}]),
+    ("add", signature .pure ["left", "right"] [strTy, strTy] strTy),
+    ("join", signature .pure ["xs", "separator"] [.list strTy, strTy] strTy),
+    ("append", signature .pure ["xs", "x"] [.list intTy, intTy] (.list intTy)),
+@@ -110,12 +110,12 @@ example : kinds.all (fun r => match checkedBlock (.builderBind r .empty) with
+     | _ => false) = true := by decide
+ 
+ -- 通常の Reference.get を引数で呼べば、構築器が純粋でも State は残る。
+-private def stateInput : Input := { input with atoms := [.name stateEff] }
++private def stateInput : Input := { input with atoms := [.name (.top stateEff)] }
+ private def referenceArg : Expr := .call (.primName "get" [strTy] []) [none] [0]
+   (.cons (.local 1) .nil)
+ example : (match checkBlock stateInput .strict [] [some (.reference strTy)] none .other []
+     (.builderBind .string (.last (.builderOp .append 0 (.cons referenceArg .nil) .string))) with
+-    | .ok (t, ε) => tyEq stateInput.atoms t (.base .unit) && effEq stateInput.atoms ε (Eff.single stateEff)
++    | .ok (t, ε) => tyEq stateInput.atoms t (.base .unit) && effEq stateInput.atoms ε (Eff.single (.top stateEff))
+     | .error _ => false) = true := by decide
+ 
+ private def copyAt (i : Nat) : Expr := .builderOp .copy i .nil .string
+@@ -150,28 +150,28 @@ private def hiddenBuilder (r : Result α) : Bool := match r with
+ 
+ -- 捕捉の各境界に外側のセルを渡した場合は拒否する。同じ失敗を理由も含めて検査する。
+ private def captureBoundaries : List Expr :=
+-  [.lam [] [] strTy (Eff.single stateEff) (.last (.returnE strTy (copyAt 0))),
++  [.lam [] [] strTy (Eff.single (.top stateEff)) (.last (.returnE strTy (copyAt 0))),
+    .lazyE (.last (copyAt 0)),
+    .partialCall (.primName "add" [] []) ["left", "right"]
+-     (.expr (some "left") 0 (copyAt 0) (.hole (some "right") 1 strTy .nil)) strTy (Eff.single stateEff),
++     (.expr (some "left") 0 (copyAt 0) (.hole (some "right") 1 strTy .nil)) strTy (Eff.single (.top stateEff)),
+    .partialCall (.ite (.literal (.boolean true))
+       (.seq (appendAt 0 "x") (.last (.primName "add" [] []))) (.last (.primName "add" [] [])))
+      ["left", "right"] (.hole (some "left") 0 strTy (.hole (some "right") 1 strTy .nil))
+-     strTy (Eff.single stateEff)]
++     strTy (Eff.single (.top stateEff))]
+ example : captureBoundaries.all (fun e => hiddenBuilder (checkedBlock (declared (.last e)))) = true := by decide
+-example : checkedBlock (declared (.last (.lam [] [] strTy (Eff.single stateEff) (.last (.returnE strTy (copyAt 0)))))) =
++example : checkedBlock (declared (.last (.lam [] [] strTy (Eff.single (.top stateEff)) (.last (.returnE strTy (copyAt 0)))))) =
+     .error ⟨[0, 0, 0, 0, 0], "invalid local builder kind"⟩ := by rfl
+ 
+ -- 専用名そのものの return と、タスクへ渡す関数の本体からの操作は拒否する。
+ example : checkBlock input .strict [] [] (some strTy) .tail []
+     (declared (.last (.returnE strTy (.local 0)))) =
+     .error ⟨[0, 0, 0], "local is missing or hidden"⟩ := by rfl
+-private def taskDecl : FunDecl := ⟨[], 0, ["f"], [.fn [] [] strTy (Eff.single stateEff)], .base .unit, Eff.empty, []⟩
++private def taskDecl : FunDecl := ⟨[], 0, ["f"], [.fn [] [] strTy (Eff.single (.top stateEff))], .base .unit, Eff.empty, []⟩
+ private def taskInput : Input := { input with D := { decls with
+     funs := fun f => if f == "task" then (some taskDecl) else decls.funs f } }
+ example : hiddenBuilder (checkBlock taskInput .strict [] [] none .other []
+     (declared (.last (.call (.funName "task" [] []) [some "f"] [0]
+-      (.cons (.lam [] [] strTy (Eff.single stateEff) (.last (.returnE strTy (copyAt 0)))) .nil))))) = true := by decide
++      (.cons (.lam [] [] strTy (Eff.single (.top stateEff)) (.last (.returnE strTy (copyAt 0)))) .nil))))) = true := by decide
+ 
+ -- copy を先に通常値へ束縛すれば、その値をラムダと部分適用に捕捉できる。
+ private def snapshotLambda : Block := declared
+@@ -206,7 +206,7 @@ private def handleInput : Input := { input with
+   D := { decls with
+     ops := Release.Examples.program.ops,
+     effects := Release.Examples.program.effects },
+-  atoms := [.name stateEff, .name "Ask"] }
++  atoms := [.name (.top stateEff), .name (.top "Ask")] }
+ private def suspendedBody : Block := declared
+   (.seq (appendAt 0 "before")
+     (.discard (.call (.opName "ask" []) [] [] .nil)
+@@ -291,10 +291,10 @@ private def blockAppend : Block := declared
+ example : checkedBlock blockAppend = .ok (strTy, Eff.empty) := by rfl
+ example : returnedText blockAppend = some "block" := by decide
+ -- 通常の Reference の State は block の出口でも残る。
+-example : (checkExpr { input with atoms := [.name stateEff] } .strict []
++example : (checkExpr { input with atoms := [.name (.top stateEff)] } .strict []
+     [some (.reference strTy)] none .other []
+     (.block (.last (.call (.primName "get" [strTy] []) [none] [0] (.cons (.local 0) .nil))))).map
+-      (fun (t,e) => tyEq [.name stateEff] t strTy && effEq [.name stateEff] e (Eff.single stateEff)) =
++      (fun (t,e) => tyEq [.name (.top stateEff)] t strTy && effEq [.name (.top stateEff)] e (Eff.single (.top stateEff))) =
+     .ok true := by rfl
+ 
+ private def pickBody : Block :=
+diff --git a/formal/Benitoite/Surface/Check.lean b/formal/Benitoite/Surface/Check.lean
+index a1133e20..956e2acb 100644
+--- a/formal/Benitoite/Surface/Check.lean
++++ b/formal/Benitoite/Surface/Check.lean
+@@ -158,10 +158,10 @@ def checkDieExit (q : Input) (C : List TParam) (path : List Nat)
+     (decide (s.kind = .exit) && (s.opEff == some "Process.Exit") &&
+       (s.ntys == 1) && (s.neffs == 0) && namesWF s.names s.params)
+   require path "die exit type arguments are not admitted" (q.admitsDec exit C [t])
+-  require path "Process.Exit effect is outside atoms" (q.atoms.contains (.name "Process.Exit"))
++  require path "Process.Exit effect is outside atoms" (q.atoms.contains (.name (.top "Process.Exit")))
+   require path "die exit type mismatch"
+     (tyEq q.atoms (fnTyCheck q.atoms s.names s.params s.ret s.eff [t] [])
+-      (.fn ["code"] [.base .integer] t (singleEff q.atoms (.name "Process.Exit"))))
++      (.fn ["code"] [.base .integer] t (singleEff q.atoms (.name (.top "Process.Exit")))))
+ 
+ /-- 継続の番号は Γ の末尾から数えた束縛の位置 Γ.length - (k + 1)。
+ 先頭への束縛追加で変わらない。節の継続は Γ.length + n であり、
+@@ -294,8 +294,8 @@ mutual
+         require path "operation contract names are not well formed" (namesWF od.names od.params)
+         require path "operation type arguments fail constraints" (satAll q.satDec C ts od.tparams)
+         require path "operation needs dictionaries" od.dictParams.isEmpty
+-        require path "operation effect is outside atoms" (q.atoms.contains (.name od.eff))
+-        pure (fnTyCheck q.atoms od.names od.params od.ret (singleEff q.atoms (.name od.eff)) ts [], emptyEff)
++        require path "operation effect is outside atoms" (q.atoms.contains (.name (.top od.eff)))
++        pure (fnTyCheck q.atoms od.names od.params od.ret (singleEff q.atoms (.name (.top od.eff))) ts [], emptyEff)
+     | .opDicts o ts ds names ps => do
+         let od ← lookup path "unknown operation" (q.D.ops o)
+         require path "operation contract names are not well formed" (namesWF od.names od.params)
+@@ -306,8 +306,8 @@ mutual
+         require path "operation contract annotation mismatch" (names == od.valueNames)
+         require path "operation parameter annotation mismatch" (tysEq q.atoms ps (substParams q.atoms ts [] od.valueParams))
+         checkDicts q C Γ (child path 0) ds (substParams q.atoms ts [] od.dictTys)
+-        require path "operation effect is outside atoms" (q.atoms.contains (.name od.eff))
+-        pure (fnTyCheck q.atoms od.valueNames od.valueParams od.ret (singleEff q.atoms (.name od.eff)) ts [], emptyEff)
++        require path "operation effect is outside atoms" (q.atoms.contains (.name (.top od.eff)))
++        pure (fnTyCheck q.atoms od.valueNames od.valueParams od.ret (singleEff q.atoms (.name (.top od.eff))) ts [], emptyEff)
+     | .nullCon c ts => do
+         let cd ← lookup path "unknown constructor" (q.D.cons c)
+           (fun _ => true)
+@@ -577,7 +577,7 @@ mutual
+             checkDieShow q C Γ (child path 2) dict method et
+             checkDieExit q C path exit t
+             checkDieMessageR q mode Δ C Γ (child path 1) message
+-            pure (t, union q ε (singleEff q.atoms (.name "Process.Exit")))
++            pure (t, union q ε (singleEff q.atoms (.name (.top "Process.Exit"))))
+         | _ => throw ⟨child path 0, "try input is not a Result"⟩
+     | .tryOptionDie t someCon noneCon exit e message => do
+         let cds ← lookup path "unknown Option success constructor" (q.D.cons someCon)
+@@ -593,14 +593,15 @@ mutual
+             require path "Option try is not exhaustive" (tryOptionExhaustive q.D q.ctors d t someCon noneCon)
+             checkDieExit q C path exit t
+             checkDieMessageR q mode Δ C Γ (child path 1) message
+-            pure (t, union q ε (singleEff q.atoms (.name "Process.Exit")))
++            pure (t, union q ε (singleEff q.atoms (.name (.top "Process.Exit"))))
+         | _ => throw ⟨child path 0, "try input is not an Option"⟩
+     | .withE o e body => do
+-        require path "with type is not a resource" (q.B.isResource o)
+-        require path "State effect is outside atoms" (q.atoms.contains (.name stateEff))
++        -- 比較の試行（案 (ii)、暗黙の変換なし）: 資源の型は Top の添字に限る。
++        require path "with type is not a resource" (o.index == .top && q.B.isResource o.base)
++        require path "State effect is outside atoms" (q.atoms.contains (.name (.top stateEff)))
+         let εe ← accept q C.length (child path 0) (.opaque o) (← checkExprR q mode Δ C Γ R .other (child path 0) e)
+         let (a, εb) ← checkBlockR q mode (none :: Δ) C (some (.opaque o) :: Γ) R .other (child path 1) body
+-        pure (a, union q εe (union q εb (singleEff q.atoms (.name stateEff))))
++        pure (a, union q εe (union q εb (singleEff q.atoms (.name (.top stateEff)))))
+     | .lazyE body => do
+         let (a, ε) ← checkBlockR q mode [] C (hideConts Γ) none .other (child path 0) body
+         acceptEff q (child path 0) emptyEff ε
+diff --git a/formal/Benitoite/Surface/CheckComputeControl.lean b/formal/Benitoite/Surface/CheckComputeControl.lean
+index 55c3f78e..b40d68d0 100644
+--- a/formal/Benitoite/Surface/CheckComputeControl.lean
++++ b/formal/Benitoite/Surface/CheckComputeControl.lean
+@@ -17,7 +17,7 @@ private theorem option_computes_atoms {atoms t cs cn exit e message} :
+   cases message <;> simp only [Expr.AtomsIn]
+ 
+ theorem checkDieExit_contains {q C path exit t u}
+-    (h : checkDieExit q C path exit t = .ok u) : .name "Process.Exit" ∈ q.atoms := by
++    (h : checkDieExit q C path exit t = .ok u) : .name (.top "Process.Exit") ∈ q.atoms := by
+   obtain ⟨s, hs, h⟩ := bind_ok h
+   obtain ⟨u, hu, h⟩ := bind_ok h
+   obtain ⟨u, hu, h⟩ := bind_ok h
+diff --git a/formal/Benitoite/Surface/CheckCounterexamples.lean b/formal/Benitoite/Surface/CheckCounterexamples.lean
+index 87e50e27..5540bb02 100644
+--- a/formal/Benitoite/Surface/CheckCounterexamples.lean
++++ b/formal/Benitoite/Surface/CheckCounterexamples.lean
+@@ -25,7 +25,7 @@ private def builtins : Builtins :=
+ private def input : Input :=
+   { D := decls, B := builtins, satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => false,
+     opPrim := fun _ _ => none,
+-    ctors := fun n => if n == "Option" then ["Option.Some","Option.None"] else [], atoms := [.name "Pick"] }
++    ctors := fun n => if n == "Option" then ["Option.Some","Option.None"] else [], atoms := [.name (.top "Pick")] }
+ private def partialAdd (e : Expr) : Expr :=
+   .partialCall (.funName "add" [] []) ["left", "right"] (.expr (some "left") 0 e (.hole (some "right") 1 intTy .nil)) intTy emptyEff
+ private def make : Def :=
+diff --git a/formal/Benitoite/Surface/CheckExamples.lean b/formal/Benitoite/Surface/CheckExamples.lean
+index bbacabed..1e7be058 100644
+--- a/formal/Benitoite/Surface/CheckExamples.lean
++++ b/formal/Benitoite/Surface/CheckExamples.lean
+@@ -12,7 +12,7 @@ private def eInt (n : Integer64Literal) : Expr := .literal (.integer n)
+ private def eTrue : Expr := .literal (.boolean true)
+ private def eFalse : Expr := .literal (.boolean false)
+ private def atoms : List Atom :=
+-  [.name "State", .name "Console.Write", .name "A", .name "B"]
++  [.name (.top "State"), .name (.top "Console.Write"), .name (.top "A"), .name (.top "B")]
+ private def emptyDecls : Declarations := { funs := fun _ => none, cons := fun _ => none }
+ private def input (D : Declarations := emptyDecls) : Input :=
+   { D, B := Release.Examples.builtins, satDec := fun _ _ _ => true,
+@@ -29,11 +29,11 @@ private def got (x : Result Inferred) (a : Ty) (ε : Eff := emptyEff) : Bool :=
+ -- ラムダの型の名前と、条件分岐による外側のエフェクトの結び。
+ private def fn (eff : Eff) : Expr :=
+   .lam ["value"] [intTy] intTy eff (.last (.returnE unitTy (.local 0)))
+-example : got (run (.ite eTrue (.last (fn (Eff.single "A"))) (.last (fn (Eff.single "B")))))
+-    (.fn ["value"] [intTy] intTy (Eff.union (Eff.single "A") (Eff.single "B"))) = true := by decide
+-example : got (run (.elseIf eFalse (.last (fn (Eff.single "A")))
+-    (.ite eTrue (.last (fn (Eff.single "B"))) (.last (fn emptyEff)))))
+-    (.fn ["value"] [intTy] intTy (Eff.union (Eff.single "A") (Eff.single "B"))) = true := by decide
++example : got (run (.ite eTrue (.last (fn (Eff.single (.top "A")))) (.last (fn (Eff.single (.top "B"))))))
++    (.fn ["value"] [intTy] intTy (Eff.union (Eff.single (.top "A")) (Eff.single (.top "B")))) = true := by decide
++example : got (run (.elseIf eFalse (.last (fn (Eff.single (.top "A"))))
++    (.ite eTrue (.last (fn (Eff.single (.top "B")))) (.last (fn emptyEff)))))
++    (.fn ["value"] [intTy] intTy (Eff.union (Eff.single (.top "A")) (Eff.single (.top "B")))) = true := by decide
+ example : got (run (.ifOnly eFalse (.lastDiscard (eInt ⟨1, by decide⟩)))) unitTy = true := by decide
+ 
+ -- return の末尾と非末尾、および遅延境界での遮蔽。
+@@ -135,15 +135,15 @@ example : ([none, some (.literal (.string ""))] : List (Option Expr)).map (fun m
+ section DieChecks
+ 
+ private def strTy : Ty := .base .string
+-private def errorTy : Ty := .opaque "Failure"
++private def errorTy : Ty := .opaque (.top "Failure")
+ private def resultTy : Ty := .data "Result" [intTy, errorTy]
+ private def optionTy : Ty := .data "Option" [intTy]
+-private def dieAtoms : List Atom := [.name "Process.Exit", .name "A"]
++private def dieAtoms : List Atom := [.name (.top "Process.Exit"), .name (.top "A")]
+ private def showSig : MethSig :=
+   { tparams := [], neffs := 0, names := ["x"], params := [.tvar 0], ret := strTy, eff := emptyEff }
+ private def exitSig : PrimSig :=
+   { tparams := [{}], neffs := 0, names := ["code"], params := [intTy], ret := .tvar 0,
+-    eff := Eff.single "Process.Exit", kind := .exit, opEff := some "Process.Exit",
++    eff := Eff.single (.top "Process.Exit"), kind := .exit, opEff := some "Process.Exit",
+     admits := fun _ ts => ts.length = 1 }
+ private def dieInput (ms : MethSig := showSig) (sg : PrimSig := exitSig) : Input :=
+   { tryInput closedView with
+@@ -154,7 +154,7 @@ private def dieInput (ms : MethSig := showSig) (sg : PrimSig := exitSig) : Input
+       sig := fun b => if b == "prim:8" then some sg else none } }
+ private def resultEnv : List (Option Ty) :=
+   [some resultTy, some (.dict "class:7" errorTy), some strTy,
+-    some (.fn [] [] resultTy (Eff.single "A"))]
++    some (.fn [] [] resultTy (Eff.single (.top "A")))]
+ private def optionEnv : List (Option Ty) := [some optionTy]
+ private def resultDie (message : Option Expr := none) : Expr :=
+   .tryResultDie intTy "Ok" "Err" (.local 1) "meth:9" "prim:8" (.local 0) message
+@@ -163,7 +163,7 @@ private def optionDie (message : Option Expr := none) : Expr :=
+ private def dieRun (q : Input) (env : List (Option Ty)) (e : Expr)
+     (r : Option Ty := none) (p : Position := .other) : Result Inferred :=
+   checkExpr q .strict [] env r p [] e
+-private def dieGot (r : Result Inferred) (eff : Eff := Eff.single "Process.Exit") : Result Bool :=
++private def dieGot (r : Result Inferred) (eff : Eff := Eff.single (.top "Process.Exit")) : Result Bool :=
+   r.map fun (t, ε) => tyEq dieAtoms t intTy && effEq dieAtoms ε eff
+ 
+ -- 同じ表で任意の R・位置・任意の説明を検査する。Option は辞書を持たない。
+@@ -178,7 +178,7 @@ example : ([none, some unitTy, some intTy, some resultTy] : List (Option Ty)).ma
+ example : dieGot (dieRun (dieInput) resultEnv
+     (.tryResultDie intTy "Ok" "Err" (.local 1) "meth:9" "prim:8"
+       (.call (.local 3) [] [] .nil) (some (.local 2))))
+-    (Eff.union (Eff.single "A") (Eff.single "Process.Exit")) = .ok true := by rfl
++    (Eff.union (Eff.single (.top "A")) (Eff.single (.top "Process.Exit"))) = .ok true := by rfl
+ example : dieGot (dieRun (dieInput) optionEnv (optionDie (some
+     (.call (.lam [] [] strTy emptyEff (.last (.returnE unitTy (.literal (.string "message")))))
+       [] [] .nil)))) = .ok true := by rfl
+@@ -186,7 +186,7 @@ example : dieGot (dieRun (dieInput) optionEnv (optionDie (some
+ -- 一条件だけを変えたメソッドの契約を、すべて同じ拒否位置で検査する。
+ example : ([{ showSig with tparams := [{}] }, { showSig with neffs := 1 },
+     { showSig with names := ["other"] }, { showSig with params := [intTy] },
+-    { showSig with ret := intTy }, { showSig with eff := Eff.single "A" }] : List MethSig).map
++    { showSig with ret := intTy }, { showSig with eff := Eff.single (.top "A") }] : List MethSig).map
+     (fun ms => dieRun (dieInput ms) resultEnv (resultDie)) =
+     List.replicate 6 (.error ⟨[2], "invalid die display method contract"⟩) := by rfl
+ example : dieRun (dieInput) [some resultTy, some (.dict "class:7" unitTy)] (resultDie) =
+@@ -211,13 +211,13 @@ example : ([{ exitSig with names := ["other"] }, { exitSig with params := [strTy
+     List.replicate 4 (.error ⟨[], "die exit type mismatch"⟩) := by rfl
+ example : dieRun { dieInput with admitsDec := fun _ _ _ => false } optionEnv (optionDie) =
+     .error ⟨[], "die exit type arguments are not admitted"⟩ := by rfl
+-example : dieRun { dieInput with atoms := [.name "A"] } optionEnv (optionDie) =
++example : dieRun { dieInput with atoms := [.name (.top "A")] } optionEnv (optionDie) =
+     .error ⟨[], "Process.Exit effect is outside atoms"⟩ := by rfl
+ 
+ -- 純粋性の失敗は説明自身の位置。return と resume は説明の遮蔽した境界で拒否する。
+ private def impureMessage : Expr := .call (.local 1) [] [] .nil
+ example : dieRun (dieInput)
+-    (optionEnv ++ [some (.fn [] [] strTy (Eff.single "A"))])
++    (optionEnv ++ [some (.fn [] [] strTy (Eff.single (.top "A")))])
+     (optionDie (some impureMessage)) =
+     .error ⟨[1], "effect exceeds the allowed effect"⟩ := by rfl
+ example : dieRun (dieInput) optionEnv (optionDie (some (eInt ⟨0, by decide⟩))) =
+@@ -266,9 +266,9 @@ private def effectfulClauseHandle : Expr :=
+       (.seq (.call (.local 2) [some "value"] [0] (.cons (eInt ⟨7, by decide⟩) .nil))
+         (.last (.resume 0 (.local 1)))) .nil)
+ private def clauseEffectEnv : List (Option Ty) :=
+-  [some (.fn ["value"] [intTy] unitTy (Eff.single "B"))]
++  [some (.fn ["value"] [intTy] unitTy (Eff.single (.top "B")))]
+ example : got (checkExpr opInput .strict [] clauseEffectEnv none .other []
+-    effectfulClauseHandle) intTy (Eff.single "B") = true := by decide
++    effectfulClauseHandle) intTy (Eff.single (.top "B")) = true := by decide
+ example : checkExpr opInput .strict [] clauseEffectEnv none .other []
+     (.lam [] [] intTy emptyEff (.last (.returnE unitTy effectfulClauseHandle))) =
+     .error ⟨[0], "effect exceeds the allowed effect"⟩ := by rfl
+@@ -377,21 +377,21 @@ private def renderForms (t : Ty) : List Expr :=
+   [renderCall t,
+    .call (.paren (renderValue t)) [some "value"] [0] (.cons (.local 1) .nil),
+    .call (.partialCall (renderValue t) ["value"] (.hole none 0 t .nil)
+-     (.base .string) (Eff.single "A")) [none] [0] (.cons (.local 1) .nil),
++     (.base .string) (Eff.single (.top "A"))) [none] [0] (.cons (.local 1) .nil),
+    .pipe (.local 1) (renderValue t),
+    .pipe (.local 1) (.call (renderValue t) [] [] .nil),
+-   .handleE (.bind .bind (.fn ["value"] [t] (.base .string) (Eff.single "A")) (renderValue t)
++   .handleE (.bind .bind (.fn ["value"] [t] (.base .string) (Eff.single (.top "A"))) (renderValue t)
+      (.last (.call (.local 0) [some "value"] [0] (.cons (.local 2) .nil))))
+      (.cons (.user "render") 1 1 (renderClause (.clause ⟨2, 1, 1⟩ 0)) .nil 1)]
+ 
+ example : ([intTy, .base .string] : List Ty).map (fun t =>
+     got (checkExpr renderInput .strict [] (renderEnv t) none .other [] (renderValue t))
+-      (.fn ["value"] [t] (.base .string) (Eff.single "A"))) = [true, true] := by decide
++      (.fn ["value"] [t] (.base .string) (Eff.single (.top "A")))) = [true, true] := by decide
+ 
+ example : ([intTy, .base .string] : List Ty).map (fun t =>
+     (renderForms t).map fun e => got
+       (checkExpr renderInput .strict [] (renderEnv t) none .other [] e)
+-      (.base .string) (if e matches .handleE .. then emptyEff else Eff.single "A")) =
++      (.base .string) (if e matches .handleE .. then emptyEff else Eff.single (.top "A"))) =
+     [[true, true, true, true, true, true], [true, true, true, true, true, true]] := by decide
+ 
+ -- 操作値を純粋な関数だと扱う注釈は拒否する。作成時の純粋性と潜在効果を混同しない。
+@@ -444,7 +444,7 @@ private def builtins : Builtins :=
+   { renderBuiltins with
+     sig := fun b => match b with
+       | "first" | "second" => some (Release.Examples.sig [] [] [] intTy
+-          (Eff.single "B") .io (some "B"))
++          (Eff.single (.top "B")) .io (some "B"))
+       | "append" => some (Release.Examples.sig [] ["left", "right"] [strTy, strTy]
+           strTy emptyEff .pure)
+       | "tagInt" => some (Release.Examples.sig [] ["value"] [intTy] strTy emptyEff .pure)
+@@ -469,7 +469,7 @@ private def directCall : Expr := .call (pairHead) [some "second", some "first"]
+ private def partialPair : Expr :=
+   .partialCall (pairHead) ["first", "second"]
+     (.expr (some "second") 1 (readArg "second") (.hole (some "first") 0 intTy .nil))
+-    strTy (unionEff atoms (Eff.single "A") (Eff.single "B"))
++    strTy (unionEff atoms (Eff.single (.top "A")) (Eff.single (.top "B")))
+ 
+ -- 宣言順と逆に書いた引数、値化した頭、穴、パイプを同じ契約へ接続する。
+ private def calls : List Expr :=
+@@ -477,7 +477,7 @@ private def calls : List Expr :=
+    .call (.paren (pairHead)) [some "second", some "first"] [1, 0] pairArgs,
+    .call (.partialCall (pairHead) ["first", "second"]
+      (.hole (some "second") 1 intTy (.hole (some "first") 0 intTy .nil))
+-     strTy (Eff.single "A")) [some "second", some "first"] [0, 1] pairArgs,
++     strTy (Eff.single (.top "A"))) [some "second", some "first"] [0, 1] pairArgs,
+    .pipe (readArg "first")
+      (.call (pairHead) [some "second"] [1] (.cons (readArg "second") .nil)),
+    .call partialPair [some "first"] [0] (.cons (readArg "first") .nil)]
+@@ -497,12 +497,12 @@ private def handledPair (e : Expr) (depth : Nat := 1) (swapped : Bool := false)
+   .handleE (.last e) (.cons (.user "pair") 2 1 (pairClause depth swapped) .nil 2)
+ 
+ example : calls.map (fun e => got (checkExpr q .strict [] env none .other [] e)
+-    strTy (Eff.union (Eff.single "A") (Eff.single "B"))) =
++    strTy (Eff.union (Eff.single (.top "A")) (Eff.single (.top "B")))) =
+     [true, true, true, true, true] := by decide
+ example : calls.map (fun e => got (checkExpr q .strict [] env none .other [] (handledPair e))
+-    strTy (Eff.single "B")) = [true, true, true, true, true] := by decide
++    strTy (Eff.single (.top "B"))) = [true, true, true, true, true] := by decide
+ example : got (checkExpr q .strict [] env none .other [] partialPair)
+-    (.fn ["first"] [intTy] strTy (Eff.union (Eff.single "A") (Eff.single "B"))) = true := by decide
++    (.fn ["first"] [intTy] strTy (Eff.union (Eff.single (.top "A")) (Eff.single (.top "B")))) = true := by decide
+ 
+ -- 辞書の順序と上位クラスの根拠を独立に拒否する。
+ example : checkExpr q .strict [] env none .other []
+@@ -557,7 +557,7 @@ example : calls.map result =
+ private def fancyDecl : OpDecl :=
+   { renderDecl with params := [.dict "Fancy" (.tvar 0), .tvar 0], dictParams := [("Fancy", 0)] }
+ private def fancyInput : Input :=
+-  { q with atoms := .name "R" :: q.atoms, D := { declarations with
++  { q with atoms := .name (.top "R") :: q.atoms, D := { declarations with
+       ops := fun o => match o with
+         | "fancy" => some fancyDecl
+         | "render" => some { renderDecl with eff := "R" }
+@@ -567,7 +567,7 @@ private def fancyInput : Input :=
+ private def fancyBody (d : DictEv) (forward : Bool) : Expr :=
+   if forward then
+     -- 内側ラムダで受け取った辞書を操作値へ捕え、局所束縛の後で呼ぶ。
+-    .handleE (.bind .bind (.fn ["value"] [.tvar 0] strTy (Eff.single "R"))
++    .handleE (.bind .bind (.fn ["value"] [.tvar 0] strTy (Eff.single (.top "R")))
+       (.opDicts "render" [.tvar 0] [.super d "Show"] ["value"] [.tvar 0])
+       (.last (.call (.local 0) [some "value"] [0] (.cons (.local 3) .nil))))
+       (.cons (.user "render") 1 1 (renderClause (.clause ⟨6, 1, 1⟩ 0)) .nil 1)
+@@ -601,8 +601,8 @@ example : [false, true].map fancyResult = [some "7", some "7"] := by decide
+ end OperationDictionaries
+ 
+ -- リソースの State と、純粋な補間・直接の連結関数の契約。
+-example : got (checkExpr (input) .strict [] [some (.opaque "File")] none .other []
+-    (.withE "File" (.local 0) (.last (eInt ⟨1, by decide⟩)))) intTy (Eff.single "State") = true := by decide
++example : got (checkExpr (input) .strict [] [some (.opaque (.top "File"))] none .other []
++    (.withE (.top "File") (.local 0) (.last (eInt ⟨1, by decide⟩)))) intTy (Eff.single (.top "State")) = true := by decide
+ private def collectionBuiltins : Builtins :=
+   { Release.Examples.builtins with sig := fun b => match b with
+       | "concat" => some (Release.Examples.sig [] ["xs", "ys"] [.list intTy, .list intTy]
+@@ -744,7 +744,7 @@ example : checkExpr formatInput .strict [] [some (.base .string),
+     .error ⟨[1], "interpolation converter is not a direct callee"⟩ := by rfl
+ 
+ -- 直接の頭でも呼び出しの契約が非純粋なら拒否する。
+-example : checkExpr (typedInput (.base .string) { formatSig with eff := Eff.single "A" })
++example : checkExpr (typedInput (.base .string) { formatSig with eff := Eff.single (.top "A") })
+     .strict [] [some (.base .string)] none .other [] (single (.base .string) spec) =
+     .error ⟨[1, 0], "type is not included in the expected type"⟩ := by rfl
+ 
+@@ -759,7 +759,7 @@ example : got (checkExpr formatInput .strict [] [] none .other []
+     (.interpolation [.formatted (.base .string) spec]
+       (.cons (.block (.seq printed (.last value))) .nil)
+       (.cons (.primName "%Format.String" [] []) .nil)))
+-    (.base .string) (Eff.single "Console.Write") = true := by decide
++    (.base .string) (Eff.single (.top "Console.Write")) = true := by decide
+ 
+ -- 引数名・七定数型・結果型も固定シグネチャの一部である。
+ example : [ { formatSig with names := ["v", "kind", "align", "sign", "alternate", "zero", "width", "precision"] },
+@@ -840,7 +840,7 @@ private def dieMainBody : Block :=
+     (some (.literal (.string "message"))))
+ private def dieMaterials (badNames : Bool := false) : CheckTables.Materials :=
+   { materials with
+-    defs := [("main", { mainDef with eff := Eff.single "Process.Exit", body := dieMainBody })],
++    defs := [("main", { mainDef with eff := Eff.single (.top "Process.Exit"), body := dieMainBody })],
+     data := [⟨"Result", 2, [("Ok", ⟨"Result", 2, [.tvar 0]⟩),
+       ("Err", ⟨"Result", 2, [.tvar 1]⟩)]⟩],
+     classes := materials.classes ++ [("class:7", ⟨[], [("meth:9", showSig)]⟩)],
+@@ -848,7 +848,7 @@ private def dieMaterials (badNames : Bool := false) : CheckTables.Materials :=
+       [("meth:9", ⟨[if badNames then "other" else "x"],
+         .last (.returnE unitTy (.literal (.string "failure")))⟩)]⟩)] }
+ private def dieRaw : List (PrimName × CheckTables.PrimMaterial) :=
+-  [("prim:8", ⟨[{}], ["code"], 0, [intTy], .tvar 0, Eff.single "Process.Exit", .exit,
++  [("prim:8", ⟨[{}], ["code"], 0, [intTy], .tvar 0, Eff.single (.top "Process.Exit"), .exit,
+     some "Process.Exit"⟩)]
+ private def dieBuiltinMaterial : CheckTables.BuiltinMaterial :=
+   { builtinMaterial with effects := [("Process.Exit", ["prim:8"])] }
+diff --git a/formal/Benitoite/Surface/CheckSoundBasicExpr.lean b/formal/Benitoite/Surface/CheckSoundBasicExpr.lean
+index 89e734b6..a087bfe7 100644
+--- a/formal/Benitoite/Surface/CheckSoundBasicExpr.lean
++++ b/formal/Benitoite/Surface/CheckSoundBasicExpr.lean
+@@ -195,7 +195,7 @@ theorem opName_case {q o ts} : CaseSound q (.expr (.opName o ts)) := by
+   have hd' := lookup_ok hd
+   have ha := hq.declarations.2.2.1 o od hd'
+   refine ⟨?_, fnTyCheck_atoms ha.1 ha.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok heff).1)) he (by simp), emptyEff_atoms _⟩
+-  rw [fnTyCheck_eq od.names od.params od.ret (singleEff q.atoms (.name od.eff)) ts [] (tysAtoms_iff.mp he) (by simp) ha.1 ha.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok heff).1)), singleEff_eq_contains (require_ok heff).1]
++  rw [fnTyCheck_eq od.names od.params od.ret (singleEff q.atoms (.name (.top od.eff))) ts [] (tysAtoms_iff.mp he) (by simp) ha.1 ha.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok heff).1)), singleEff_eq_contains (require_ok heff).1]
+   exact .E_Op hd' ((namesWF_spec _ _).mp (require_ok hNames).1) (satAll_sound hq.sat (require_ok hsat).1) (List.isEmpty_iff.mp (require_ok hDict).1)
+ 
+ theorem opDicts_case {q o ts ds names ps} : CaseSound q (.expr (.opDicts o ts ds names ps)) := by
+diff --git a/formal/Benitoite/Surface/CheckSoundControl.lean b/formal/Benitoite/Surface/CheckSoundControl.lean
+index a09258c5..2807cfb3 100644
+--- a/formal/Benitoite/Surface/CheckSoundControl.lean
++++ b/formal/Benitoite/Surface/CheckSoundControl.lean
+@@ -196,7 +196,13 @@ theorem with_case {q o e body} : CaseSound q (.expr (.withE o e body)) := by
+   refine ⟨?_, bs.2.1, union_atoms htAtoms (union_atoms bs.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1)))⟩
+   rw [union_eq htAtoms (union_atoms bs.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1))), union_eq bs.2.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok hstate).1)),
+     singleEff_eq_contains (require_ok hstate).1]
+-  exact .E_With (require_ok hresource).1 ht bs.1
++  -- 比較の試行（案 (ii)、暗黙の変換なし）: 検査器は資源の型を Top の添字に限る。
++  obtain ⟨hidx, hres⟩ := Bool.and_eq_true_iff.mp (require_ok hresource).1
++  cases o with
++  | mk ob oi =>
++    simp only [beq_iff_eq] at hidx
++    subst hidx
++    exact .E_With hres ht bs.1
+ 
+ theorem lazy_case {q body} : CaseSound q (.expr (.lazyE body)) := by
+   intro ih
+diff --git a/formal/Benitoite/Surface/CheckSoundDie.lean b/formal/Benitoite/Surface/CheckSoundDie.lean
+index 986a019e..1c4312f4 100644
+--- a/formal/Benitoite/Surface/CheckSoundDie.lean
++++ b/formal/Benitoite/Surface/CheckSoundDie.lean
+@@ -41,7 +41,7 @@ theorem checkDieShow_sound {q C Γ path dict method errorTy u}
+ 
+ theorem checkDieExit_sound {q C path exit t u} (hq : q.Sound) (ht : t.AtomsIn q.atoms)
+     (h : checkDieExit q C path exit t = .ok u) :
+-    DieExitOk q.B C exit t ∧ q.atoms.contains (.name "Process.Exit") = true := by
++    DieExitOk q.B C exit t ∧ q.atoms.contains (.name (.top "Process.Exit")) = true := by
+   obtain ⟨sg, hs, h⟩ := bind_ok h
+   obtain ⟨u1, hv, h⟩ := bind_ok h
+   obtain ⟨u2, ha, h⟩ := bind_ok h
+@@ -52,7 +52,7 @@ theorem checkDieExit_sound {q C path exit t u} (hq : q.Sound) (ht : t.AtomsIn q.
+   have sa := hq.builtins exit sg (lookup_ok hs)
+   have eq := tyEq_sound (fnTyCheck_atoms (ts := [t]) (es := []) sa.1 sa.2.1 sa.2.2 ⟨ht, trivial⟩ (by simp))
+     (show Ty.AtomsIn q.atoms (.fn ["code"] [.base .integer] t
+-      (singleEff q.atoms (.name "Process.Exit"))) from ⟨⟨trivial, trivial⟩, ht, singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok he).1)⟩)
++      (singleEff q.atoms (.name (.top "Process.Exit")))) from ⟨⟨trivial, trivial⟩, ht, singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok he).1)⟩)
+     (require_ok h).1
+   rw [fnTyCheck_eq sg.names sg.params sg.ret sg.eff [t] []
+     (by intro u hu; simp only [List.mem_singleton] at hu; subst u; exact ht) (by simp)
+diff --git a/formal/Benitoite/Surface/CheckTables.lean b/formal/Benitoite/Surface/CheckTables.lean
+index 848c4128..174e91b5 100644
+--- a/formal/Benitoite/Surface/CheckTables.lean
++++ b/formal/Benitoite/Surface/CheckTables.lean
+@@ -39,7 +39,7 @@ structure PrimMaterial where
+   ret : Ty
+   eff : Eff
+   kind : PrimKind
+-  opEff : Option EffName
++  opEff : Option EffBase
+ 
+ /-- 制約の判定を同じ材料から束縛し、契約名を保つ。 -/
+ def PrimMaterial.toPrimSig (m : PrimMaterial)
+@@ -50,17 +50,17 @@ def PrimMaterial.toPrimSig (m : PrimMaterial)
+ 
+ /-- 型の JSON に依存しない組み込みの実行環境の材料。 -/
+ structure BuiltinMaterial where
+-  effects : List (EffName × List PrimName)
++  effects : List (EffBase × List PrimName)
+   resources : List Nat
+   refGet : PrimName
+   refSet : PrimName
+ 
+ /-- 有限のエフェクト表から操作名を取り出す。 -/
+-def BuiltinMaterial.effectOps (b : BuiltinMaterial) (name : EffName) : Option (List PrimName) :=
++def BuiltinMaterial.effectOps (b : BuiltinMaterial) (name : EffBase) : Option (List PrimName) :=
+   lookup b.effects name
+ 
+ /-- 不透明な型の名前の先頭にあるリソース識別子を照合する。 -/
+-def BuiltinMaterial.isResource (b : BuiltinMaterial) (name : OpaqueName) : Bool :=
++def BuiltinMaterial.isResource (b : BuiltinMaterial) (name : String) : Bool :=
+   match (name.splitOn ":").head?.bind String.toNat? with
+   | some id => b.resources.contains id
+   | none => false
+@@ -143,7 +143,7 @@ structure Materials where
+   accessors : List (FunName × (ConName × Nat))
+   data : List DataMaterial
+   ops : List (OpName × OpDecl)
+-  effects : List (EffName × List OpName)
++  effects : List (EffBase × List OpName)
+   classes : List (ClassName × ClassMaterial)
+   impls : List (ImplName × ImplMaterial)
+   trustedFuns : List (FunName × FunDecl)
+@@ -189,7 +189,7 @@ def implNamesOk (m : Materials) (methods supers : List String) : Bool :=
+ structure Names where
+   defs : List FunName
+   impls : List ImplName
+-  effects : List EffName
++  effects : List EffBase
+   methods : List MethName
+   supers : List ClassName
+ 
+diff --git a/formal/Benitoite/Surface/CheckToolsExamples.lean b/formal/Benitoite/Surface/CheckToolsExamples.lean
+index 8d24b572..d0661bf1 100644
+--- a/formal/Benitoite/Surface/CheckToolsExamples.lean
++++ b/formal/Benitoite/Surface/CheckToolsExamples.lean
+@@ -7,10 +7,10 @@ import Benitoite.Release.BuiltinTable
+ namespace Benitoite.Surface.CheckTools.Examples
+ open Benitoite.Release
+ 
+-private def atoms : List Atom := [.name "IO", .name "State", .rho 0, .rho 2]
++private def atoms : List Atom := [.name (.top "IO"), .name (.top "State"), .rho 0, .rho 2]
+ private def intTy : Ty := .base .integer
+ private def boolTy : Ty := .base .boolean
+-private def ioEff : Eff := Eff.single "IO"
++private def ioEff : Eff := Eff.single (.top "IO")
+ private def rhoEff : Eff := Eff.ofAtoms fun a => a == .rho 0
+ private def gotTypes (xs : Option (List Ty)) (ts : List Ty) : Bool :=
+   match xs with
+@@ -20,18 +20,18 @@ private def gotTypes (xs : Option (List Ty)) (ts : List Ty) : Bool :=
+ -- エフェクトの包含、等しさ、原子を保持する構築。
+ example : effSub atoms emptyEff ioEff = true := by decide
+ example : effSub atoms ioEff emptyEff = false := by decide
+-example : effEq atoms ioEff (singleEff atoms (.name "IO")) = true := by decide
++example : effEq atoms ioEff (singleEff atoms (.name (.top "IO"))) = true := by decide
+ example : effEq atoms ioEff rhoEff = false := by decide
+ example : Eff.mem (singleEff atoms (.rho 0)) (.rho 0) := by decide
+-example : Eff.test (singleEff atoms (.name "Unknown")) (.name "Unknown") = true := by decide
++example : Eff.test (singleEff atoms (.name (.top "Unknown"))) (.name (.top "Unknown")) = true := by decide
+ example : Eff.mem (unionEff atoms ioEff rhoEff) (.rho 0) := by decide
+-example : Eff.test (unionEff atoms ioEff (Eff.single "Unknown")) (.name "Unknown") = true := by decide
++example : Eff.test (unionEff atoms ioEff (Eff.single (.top "Unknown"))) (.name (.top "Unknown")) = true := by decide
+ example : Eff.test emptyEff (.rho 2) = false := rfl
+-example : Eff.mem (Eff.substRho [ioEff] rhoEff) (.name "IO") := by decide
++example : Eff.mem (Eff.substRho [ioEff] rhoEff) (.name (.top "IO")) := by decide
+ example : Eff.mem (Eff.substRho [ioEff] (Eff.ofAtoms fun a => a == .rho 2)) (.rho 2) := by decide
+ 
+ -- 型の全構成、並行した型リスト、外側だけのエフェクトの包含。
+-private def richTypes : List Ty := [intTy, .opaque "O", .data "D" [intTy], .list intTy,
++private def richTypes : List Ty := [intTy, .opaque (.top "O"), .data "D" [intTy], .list intTy,
+   .fn ["value"] [intTy] boolTy ioEff, .tvar 1, .reference intTy, .lazy intTy,
+   .cont intTy boolTy rhoEff, .map intTy boolTy, .set intTy, .bytes,
+   .dict "Eq" intTy, .tapp 0 [intTy], .ctor (.data "D"), .ctor .list,
+@@ -80,7 +80,7 @@ example : wfTy atoms 1 (.tvar 1) = false := by decide
+ example : wfTy atoms 1 (.tapp 1 [intTy]) = false := by decide
+ example : exprExits (.ite .unit (.last (.returnE intTy .unit)) (.last (.returnE intTy .unit))) = true := by decide
+ example : exprExits (.constE intTy (.returnE intTy .unit)) = false := by decide
+-example : exprExits (.paren (.withE "R" .unit (.last (.returnE intTy .unit)))) = true := by decide
++example : exprExits (.paren (.withE (.top "R") .unit (.last (.returnE intTy .unit)))) = true := by decide
+ example : exprExits (.elseIf .unit (.last (.returnE intTy .unit)) (.returnE intTy .unit)) = true := by decide
+ example : exprExits (.matchE intTy .unit .nil) = true := by decide
+ example : blockExits (.seq (.returnE intTy .unit) .empty) = true := by decide
+@@ -240,7 +240,7 @@ private def q : Input :=
+         else none,
+       classes := fun c => if c == "Combine" then some classDecl else none },
+     B := stringBuiltins, satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => true,
+-    opPrim := stringOp, ctors := ctors, atoms := .name "Ask" :: atoms }
++    opPrim := stringOp, ctors := ctors, atoms := .name (.top "Ask") :: atoms }
+ private def fn : Ty := .fn ["a", "b"] [intTy, boolTy] intTy emptyEff
+ private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)
+ private def reversedHoles : HoleArgs := .hole (some "b") 1 boolTy (.hole (some "a") 0 intTy .nil)
+@@ -333,7 +333,7 @@ example : (run [] (.conValue "Pair" [intTy] ["arg1", "arg2"] [intTy, boolTy])).m
+ 
+ -- 操作と辞書を通るメソッドも、同じ逆順呼び出しを受け入れる。
+ example : got (run [] (.call (.opName "ask" []) [some "b", some "a"] [1, 0] reversed))
+-    intTy (Eff.single "Ask") = true := by rfl
++    intTy (Eff.single (.top "Ask")) = true := by rfl
+ example : got (run [some (.dict "Combine" intTy)]
+     (.call (.methName (.local 0) "combine" [] [] [] ["a", "b"] [intTy, boolTy])
+       [some "b", some "a"] [1, 0] reversed)) intTy = true := by rfl
+diff --git a/formal/Benitoite/Surface/Examples.lean b/formal/Benitoite/Surface/Examples.lean
+index 1b9919c2..de618832 100644
+--- a/formal/Benitoite/Surface/Examples.lean
++++ b/formal/Benitoite/Surface/Examples.lean
+@@ -81,14 +81,14 @@ private theorem mainExpr_typed (Γ : List (Option Ty)) (R : Option Ty) (pos : Po
+         simp [MethSig.Scoped, chooseSig, Ty.VarsInList, Ty.VarsIn, Eff.VarsIn, Eff.empty, NamesWF]) rfl)
+     simpa [methodValue, chooseSig, Ty.subst, Ty.substAt, Eff.substAt_empty, Ty.shift, intTy] using h (by simp [SingleTy, SingleTys, SingleEff, SingleFail, chooseSig, intTy, Ty.subst, Ty.substAt, Ty.shift, Eff.empty, Eff.fails])
+   have hr : HasType program.declarations builtins opPrim [] Γ R .other
+-      readCall intTy (Eff.single "Read") := by
++      readCall intTy (Eff.single (.top "Read")) := by
+     have hop := HasType.E_Op (Δ := []) (Q := Qempty) (D := program.declarations) (B := builtins) (opPrim := opPrim)
+       (C := []) (Γ := Γ) (R := R) (p := Position.other) (o := "read") (od := readOp) (ts := [])
+       rfl (by simp [readOp, NamesWF]) ⟨rfl, by intro i t tp hi _; cases hi⟩ rfl
+-    have he : Eff.substAt 0 [] [] (Eff.single "Read") = Eff.single "Read" :=
++    have he : Eff.substAt 0 [] [] (Eff.single (.top "Read")) = Eff.single (.top "Read") :=
+       Eff.substAt_ofAtoms 0 [] _
+     have hf : HasType program.declarations builtins opPrim [] Γ R .other
+-        (.opName "read" []) (.fn ["value"] [intTy] intTy (Eff.single "Read")) Eff.empty := by
++        (.opName "read" []) (.fn ["value"] [intTy] intTy (Eff.single (.top "Read"))) Eff.empty := by
+       simpa [fnTy_eq, readOp, intTy, Ty.subst, Ty.substAt, he] using hop
+     have hp : CallOk ["value"] [intTy] false [some "value"] [0] := by
+       exact ⟨by simp [NamesWF], rfl, List.Perm.refl _, Or.inr (Or.inr ⟨rfl, by intro label h; simp at h; subst label; rfl⟩)⟩
+@@ -104,10 +104,10 @@ private theorem mainExpr_typed (Γ : List (Option Ty)) (R : Option Ty) (pos : Po
+   apply HasType.E_Handle (HasBlock.B_Last (by simpa [union_empty_left, union_empty_right] using hb))
+   · constructor
+     · intro a ha
+-      have he : a = .name "Read" := (Eff.mem_single "Read" a).mp ha
++      have he : a = .name (.top "Read") := (Eff.mem_single (.top "Read") a).mp ha
+       subst a
+       rfl
+-    · intro t ht; exact (Eff.memFail_single "Read" t).mp ht |>.elim
++    · intro t ht; exact (Eff.memFail_single (.top "Read") t).mp ht |>.elim
+   · apply HasClauses.cons
+       (sg := { tparams := [], names := ["value"], params := [intTy], ret := intTy, eff := "Read" })
+       rfl (by simp [NamesWF]) ⟨rfl, rfl⟩ rfl
+@@ -351,7 +351,7 @@ example :
+   simp [Expr.Scoped, DictEv.Scoped, Ty.VarsIn]
+ 
+ -- 子にしかないエフェクト原子と、辞書の型引数の原子も収集範囲から落とさない。
+-private def effectfulTy : Ty := .fn [] [] intTy (Eff.single "Hidden")
++private def effectfulTy : Ty := .fn [] [] intTy (Eff.single (.top "Hidden"))
+ private def annotated : Expr := .returnE effectfulTy .unit
+ example :
+     (Expr.tryOptionDie intTy "Some" "None" "Process.exit" .unit none).AtomsIn [] ∧
+@@ -403,7 +403,7 @@ private theorem dieCtors_complete : CtorsComplete dieProgram.declarations.patter
+         · cases h
+ private def dieExitSig : PrimSig :=
+   { tparams := [{}], neffs := 0, names := ["code"], params := [intTy], ret := .tvar 0,
+-    eff := Eff.single "Process.Exit", kind := .exit, opEff := some "Process.Exit",
++    eff := Eff.single (.top "Process.Exit"), kind := .exit, opEff := some "Process.Exit",
+     admits := fun _ ts => ts.length = 1 }
+ private def dieBuiltins : Builtins :=
+   { builtins with
+@@ -414,7 +414,7 @@ private theorem dieExit_ok (C : List TParam) (t : Ty) (ht : t.Canonical) : DieEx
+   · simp [dieExitSig, NamesWF]
+   · simp [dieExitSig, fnTy, Ty.subst, Ty.substAt, Ty.shift_zero 0 t ht, intTy]
+     exact Eff.substAt_ofAtoms 0 [t] _
+-private def errorTy : Ty := .opaque "ErrorWithoutShowImpl"
++private def errorTy : Ty := .opaque (.top "ErrorWithoutShowImpl")
+ private def resultTy : Ty := .data "Result" [intTy, errorTy]
+ private def optionTy : Ty := .data "Option" [intTy]
+ private def resultEnv : List (Option Ty) :=
+@@ -425,8 +425,8 @@ private def resultDie : Expr :=
+ -- R は None でも Result/Option 以外でもよい。エラーの表示は受け取った辞書を使う。
+ private theorem resultDie_typed (R : Option Ty) (pos : Position) :
+     HasType dieProgram.declarations dieBuiltins opPrim [] resultEnv R pos resultDie
+-      intTy (Eff.single "Process.Exit") := by
+-  apply HasType.E_Sub (ε := Eff.union Eff.empty (Eff.single "Process.Exit")) _ (.refl _)
++      intTy (Eff.single (.top "Process.Exit")) := by
++  apply HasType.E_Sub (ε := Eff.union Eff.empty (Eff.single (.top "Process.Exit"))) _ (.refl _)
+     (by rw [union_empty_left _ (by rfl)]; exact .refl _) (by trivial)
+   apply HasType.E_TryResultDie (cdo := ⟨"Result", 2, [.tvar 0]⟩)
+     (cde := ⟨"Result", 2, [.tvar 1]⟩) rfl rfl rfl rfl rfl rfl rfl
+@@ -441,7 +441,7 @@ private theorem resultDie_typed (R : Option Ty) (pos : Position) :
+ example (R : Option Ty) : HasType dieProgram.declarations dieBuiltins opPrim []
+     [some optionTy, some (.cont intTy intTy Eff.empty)] R .other
+     (.tryOptionDie intTy "Some" "None" "exit" (.local 0) none)
+-    intTy (Eff.union Eff.empty (Eff.single "Process.Exit")) := by
++    intTy (Eff.union Eff.empty (Eff.single (.top "Process.Exit"))) := by
+   apply HasType.E_TryOptionDie (cds := ⟨"Option", 1, [.tvar 0]⟩)
+     (cdn := ⟨"Option", 1, []⟩) rfl rfl rfl rfl rfl rfl rfl
+     (.E_Local rfl (by intro _ _ _ h; cases h))
+@@ -483,7 +483,7 @@ private theorem dieSigs_scoped : ∀ b s, dieBuiltins.sig b = some s → s.Scope
+ 
+ -- 型付けの導出から全体の型保存を実際に呼び、説明の自由変数と辞書の移動を検査する。
+ example : HasTypeC (desugarProgram opPrim dieProgram) dieBuiltins StoreTy.empty [] resultEnv
+-    (some (.base .boolean)) (desugarExpr opPrim .other resultDie) intTy (Eff.single "Process.Exit") := by
++    (some (.base .boolean)) (desugarExpr opPrim .other resultDie) intTy (Eff.single (.top "Process.Exit")) := by
+   refine HasType.desugar (view := closedView) (pe := fun _ => True) dieProgram_wf dieSigs_scoped
+     (resultDie_typed _ _) (by simp [resultDie, resultEnv, Expr.Scoped, DictEv.Scoped, intTy, Ty.VarsIn]) ?_ (by intro r h; cases h; trivial)
+   change EnvClean 0 [some resultTy, some (.dict "Show" errorTy), some (.base .string)]
+diff --git a/formal/Benitoite/Surface/FailureExamples.lean b/formal/Benitoite/Surface/FailureExamples.lean
+index aa2fb131..8d72502c 100644
+--- a/formal/Benitoite/Surface/FailureExamples.lean
++++ b/formal/Benitoite/Surface/FailureExamples.lean
+@@ -46,7 +46,7 @@ private def builtins : Builtins := {
+ private def input : Input := {
+   D := declarations, B := builtins, satDec := fun _ _ _ => true,
+   admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [],
+-  atoms := [.name "State", .name "IO", .rho 0, .rho 1] }
++  atoms := [.name (.top "State"), .name (.top "IO"), .rho 0, .rho 1] }
+ private def check (e : Expr) := checkExpr input .strict [] [] none .other [] e
+ private def hasResult (e : Expr) (t : Ty) (eff : Eff) : Bool :=
+   match check e with
+@@ -113,14 +113,14 @@ private def leaksRigid : Expr := .handleFail strTy intTy (.last raised)
+   (.last (raiseAt intTy (.tvar 0) (call0 (.funName "Other.arbitrary" [.tvar 0] []))))
+ example : reason (check leaksRigid) = some "Fail clause effect mentions its rigid result type" := by decide
+ -- 通常の効果は捕捉後にも残す。節のFailとの合流も失わない。
+-private def ioBody : Expr := call0 (.funName "Other.twoRows" [] [failString, .mk (fun a => a == .name "IO") []])
++private def ioBody : Expr := call0 (.funName "Other.twoRows" [] [failString, .mk (fun a => a == .name (.top "IO")) []])
+ example : hasResult (.handleFail strTy intTy (.last ioBody) (.last value))
+-    intTy (.mk (fun a => a == .name "IO") []) = true := by decide
++    intTy (.mk (fun a => a == .name (.top "IO")) []) = true := by decide
+ 
+ -- Showや等値の制約を持たないエラー値でも捕捉できる。
+-example : (checkExpr input .strict [] [some (.opaque "Secret")] none .other []
+-    (.handleFail (.opaque "Secret") intTy
+-      (.last (raiseAt intTy (.opaque "Secret") (.local 0))) (.last value))).isOk = true := by decide
++example : (checkExpr input .strict [] [some (.opaque (.top "Secret"))] none .other []
++    (.handleFail (.opaque (.top "Secret")) intTy
++      (.last (raiseAt intTy (.opaque (.top "Secret")) (.local 0))) (.last value))).isOk = true := by decide
+ -- 節から持ち出すラムダはエラー値を捕え、利用不能な継続には触れない。
+ private def escapedTy : Ty := .fn [] [] strTy emptyEff
+ example : (check (.handleFail strTy escapedTy
+diff --git a/formal/Benitoite/Surface/FiniteExamples.lean b/formal/Benitoite/Surface/FiniteExamples.lean
+index 22bfc2ec..76e60483 100644
+--- a/formal/Benitoite/Surface/FiniteExamples.lean
++++ b/formal/Benitoite/Surface/FiniteExamples.lean
+@@ -7,17 +7,17 @@ open Benitoite.Release
+ 
+ private def unitTy : Ty := .base .unit
+ private def stringTy : Ty := .base .string
+-private def aTy : Ty := .fn [] [] unitTy (Eff.single "a")
+-private def bTy : Ty := .fn [] [] unitTy (Eff.single "b")
+-private def atoms : List Atom := [.name "b", .name "a"]
++private def aTy : Ty := .fn [] [] unitTy (Eff.single (.top "a"))
++private def bTy : Ty := .fn [] [] unitTy (Eff.single (.top "b"))
++private def atoms : List Atom := [.name (.top "b"), .name (.top "a")]
+ private def raw : Eff := .mk (fun _ => false) [aTy, stringTy, bTy, aTy]
+-private def rawOther : Eff := .mk (fun a => (a == .name "irrelevant") && false) [aTy, stringTy, bTy, aTy]
++private def rawOther : Eff := .mk (fun a => (a == .name (.top "irrelevant")) && false) [aTy, stringTy, bTy, aTy]
+ private def sorted : Eff := .mk (fun _ => false) [stringTy, bTy, aTy]
+ 
+ -- 符号の最小の相違点を使い、候補の並びや重複を比較順にしない。
+ example : effEq atoms (Eff.normWith atoms raw) sorted = true := rfl
+-example : effEq [.name "a", .name "b", .name "b", .name "unused"]
+-    (Eff.normWith [.name "a", .name "b", .name "b", .name "unused"] raw) sorted = true := rfl
++example : effEq [.name (.top "a"), .name (.top "b"), .name (.top "b"), .name (.top "unused")]
++    (Eff.normWith [.name (.top "a"), .name (.top "b"), .name (.top "b"), .name (.top "unused")] raw) sorted = true := rfl
+ 
+ -- 生の比較には正規形を求めず、順序と重複を変えた列とは区別する。
+ example : effEq atoms raw rawOther = true := rfl
+@@ -26,15 +26,15 @@ example : canonicalEff atoms raw = false ∧ canonicalEff atoms sorted = true :=
+ example : effSub atoms raw sorted = true ∧ effSub atoms sorted raw = true := ⟨rfl, rfl⟩
+ 
+ private def template : Ty := .fn [] [] unitTy (.mk (fun a => a == .rho 0) [.tvar 0])
+-private def row : Eff := .mk (fun a => a == .name "state") [stringTy]
++private def row : Eff := .mk (fun a => a == .name (.top "state")) [stringTy]
+ private def substituted : Ty := .fn [] [] unitTy
+-  (.mk (fun a => a == .name "state") [stringTy, aTy])
+-private def substAtoms : List Atom := [.name "state", .rho 0, .name "a"]
++  (.mk (fun a => a == .name (.top "state")) [stringTy, aTy])
++private def substAtoms : List Atom := [.name (.top "state"), .rho 0, .name (.top "a")]
+ 
+ -- Fail型の置換像に含まれる潜在効果と、行の像からのFailを両方保持する。
+ example : tyEq substAtoms (substTyAt substAtoms 0 [aTy] [row] template) substituted = true := rfl
+ example : (Eff.collectAtoms substAtoms
+-    (.mk (fun _ => false) [substituted])).contains (.name "a") = true := rfl
++    (.mk (fun _ => false) [substituted])).contains (.name (.top "a")) = true := rfl
+ 
+ -- 型内部の移動後にも、一般の列を固定順で整列する。
+ example : tyEq []
+@@ -49,7 +49,7 @@ example : wfTy [] 0 (.fn [] [] unitTy (.mk (fun _ => false) [.cont unitTy unitTy
+   ⟨rfl, rfl⟩
+ 
+ -- 型の比較に使う支持を空にしても、和から原子を切り捨てない。
+-example : Eff.test (unionEff [] (Eff.single "outside") Eff.empty) (.name "outside") = true := rfl
++example : Eff.test (unionEff [] (Eff.single (.top "outside")) Eff.empty) (.name (.top "outside")) = true := rfl
+ 
+ -- Failのない旧効果の正規化は、任意の原子関数で簡約できる。
+ example (f : Atom → Bool) : Eff.normWith [] (.mk f []) = .mk f [] := rfl
+diff --git a/formal/Benitoite/Surface/Lemmas/CallHead.lean b/formal/Benitoite/Surface/Lemmas/CallHead.lean
+index 18f84a50..96b00713 100644
+--- a/formal/Benitoite/Surface/Lemmas/CallHead.lean
++++ b/formal/Benitoite/Surface/Lemmas/CallHead.lean
+@@ -114,7 +114,7 @@ theorem HasTypeQ.inv_opDicts {Δb : BuilderCtx} {D B op C Γ R pos o ts ds names
+       d.names = internalNames ds.length ++ d.valueNames ∧ names = d.valueNames ∧
+       ps = d.valueParams.map (Ty.subst ts []) ∧
+       DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) ∧
+-      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) T := by
++      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single (.top d.eff)) ts []) T := by
+   generalize he : Expr.opDicts o ts ds names ps = e at h
+   generalize hT : T = a at h
+   subst T
+@@ -126,7 +126,7 @@ theorem HasTypeQ.inv_opDicts {Δb : BuilderCtx} {D B op C Γ R pos o ts ds names
+       d.names = internalNames ds.length ++ d.valueNames ∧ names = d.valueNames ∧
+       ps = d.valueParams.map (Ty.subst ts []) ∧
+       DictEv.HasTypes D B C Γ ds (d.dictTys.map (Ty.subst ts [])) ∧
+-      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) a)
++      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single (.top d.eff)) ts []) a)
+     (motive_2 := fun _ _ _ _ _ _ _ _ => True)
+     (motive_3 := fun _ _ _ _ _ _ _ _ => True)
+     (motive_4 := fun _ _ _ _ _ _ _ _ => True)
+diff --git a/formal/Benitoite/Surface/Lemmas/Dict.lean b/formal/Benitoite/Surface/Lemmas/Dict.lean
+index d4111abf..1ff894cf 100644
+--- a/formal/Benitoite/Surface/Lemmas/Dict.lean
++++ b/formal/Benitoite/Surface/Lemmas/Dict.lean
+@@ -12,11 +12,11 @@ theorem op_dicts_typed {p : Program} {B op Q C Γ R o od ts ds ws}
+     (hws : HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C Γ ws
+       (od.valueParams.map (Ty.subst ts []))) :
+     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
+-      (.app (.op o ts) (DictEv.toValList ds ++ ws)) (od.ret.subst ts []) (Eff.single od.eff) := by
++      (.app (.op o ts) (DictEv.toValList ds ++ ws)) (od.ret.subst ts []) (Eff.single (.top od.eff)) := by
+   have hv := HasTypeVQ.V_Op (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty)
+     (Q := Q) (Γ := Γ) hd hn ht
+   rw [fnTy_eq, hp, List.map_append] at hv
+-  have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
++  have he : Eff.substAt 0 ts [] (Eff.single (.top od.eff)) = Eff.single (.top od.eff) :=
+     Eff.substAt_ofAtoms 0 [] _
+   rw [he] at hv
+   exact .C_App hv ((DictEv.HasTypes.toVal op hds).append hws)
+@@ -31,15 +31,15 @@ theorem op_value_typed {p : Program} {B op Q view C Γ Γc o od ts ds ps}
+     (hds : DictEv.HasTypes (p.declarationsFor view) B C Γ ds (od.dictTys.map (Ty.subst ts [])))
+     (hΓc : RenOk Γ Γc id)
+     (hc : Ty.VarsInList C.length (fun _ => True) ps)
+-    (hw : Ty.WF C.length (.fn od.valueNames ps (od.ret.subst ts []) (Eff.single od.eff))) :
++    (hw : Ty.WF C.length (.fn od.valueNames ps (od.ret.subst ts []) (Eff.single (.top od.eff)))) :
+     HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C Γc
+       (.lam od.valueNames ps (.app (.op o ts)
+         (Val.renameList (· + ps.length) (DictEv.toValList ds) ++ boundVars ps.length)))
+-      (.fn od.valueNames ps (od.ret.subst ts []) (Eff.single od.eff)) := by
++      (.fn od.valueNames ps (od.ret.subst ts []) (Eff.single (.top od.eff))) := by
+   have hv := (DictEv.HasTypes.toVal (Q := Q) op (DictEv.HasTypes.hide hds)).rename hΓc.hide
+   simp only [Val.renameList_id] at hv
+   have hs := hv.rename (RenOk.shift (binds ps) (hideConts Γc))
+-  have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
++  have he : Eff.substAt 0 ts [] (Eff.single (.top od.eff)) = Eff.single (.top od.eff) :=
+     Eff.substAt_ofAtoms 0 [] _
+   apply HasTypeVQ.V_Lam hn hw
+   change HasTypeCQ _ _ StoreTy.empty _ _ _ _ _ _ _
+diff --git a/formal/Benitoite/Surface/Lemmas/Extensions.lean b/formal/Benitoite/Surface/Lemmas/Extensions.lean
+index 46b2eb80..bd3e1910 100644
+--- a/formal/Benitoite/Surface/Lemmas/Extensions.lean
++++ b/formal/Benitoite/Surface/Lemmas/Extensions.lean
+@@ -136,7 +136,7 @@ theorem stringAdd_typed {op R v w} (hsig : ∀ b s, B.sig b = some s → s.Scope
+     · rw [heq.1]
+       decide
+   rw [← hfn]
+-  apply HasTypeVQ.V_Prim hs hn
++  apply HasTypeVQ.V_PrimTop hs hn
+   subst ts
+   exact PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha (by simp)
+ 
+diff --git a/formal/Benitoite/Surface/Lemmas/ReturnTry.lean b/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
+index d7a1159e..2ec10949 100644
+--- a/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
++++ b/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
+@@ -177,9 +177,9 @@ theorem tryOption_typed {C Γ R pos cs cn cds cdn e t u ε}
+ theorem DieExitOk.app_typed {P B C Γ R exit t} (h : DieExitOk B C exit t)
+     (hsig : ∀ b s, B.sig b = some s → s.Scoped) (hty : TyOK C.length t) :
+     HasTypeCQ P B StoreTy.empty Q C Γ R
+-      (.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]) t (Eff.single "Process.Exit") Δl := by
++      (.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]) t (Eff.single (.top "Process.Exit")) Δl := by
+   obtain ⟨s, hs, _, _, ht, he, hn, ha, hf⟩ := h
+-  have hv := HasTypeVQ.V_Prim (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs hn
++  have hv := HasTypeVQ.V_PrimTop (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs hn
+     (PrimitiveAdmissible.of_noRows (hsig _ _ hs) he
+       (by simpa using ht.symm) ha (by
+         intro a hm
+@@ -197,7 +197,7 @@ theorem dieFailure_typed {P B C Γ R t exit cause message}
+     (hm : ∀ m, message = some m →
+       HasTypeCQ P B StoreTy.empty Q C (hideConts Γ) none m (.base .string) Eff.empty Δl) :
+     HasTypeCQ P B StoreTy.empty Q C (xs ++ Γ) R
+-      (dieFailure t exit xs.length cause message) t (Eff.single "Process.Exit") (LocalCtx.extend xs.length Δl) := by
++      (dieFailure t exit xs.length cause message) t (Eff.single (.top "Process.Exit")) (LocalCtx.extend xs.length Δl) := by
+   cases message with
+   | none => exact .C_Let (HasTypeCQ.weakenEff hc (Eff.empty_sub _)) (DieExitOk.app_typed hx hsig hty)
+   | some m =>
+@@ -240,7 +240,7 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
+       (desugarExpr op .other m) (.base .string) Eff.empty Δl) :
+     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γc R
+       (desugarExpr op pos (.tryResultDie t ok err dict showMethod exit e message))
+-      t (Eff.union ε (Eff.single "Process.Exit")) Δl := by
++      t (Eff.union ε (Eff.single (.top "Process.Exit"))) Δl := by
+   have ht := hc.1
+   have het := hc.2.1
+   have hetzero := Ty.shift_zero 0 et ((Ty.VarsIn.wf et het).canonical et)
+@@ -290,7 +290,7 @@ theorem tryResultDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
+       obtain ⟨msg, hmsg, rfl⟩ := Option.map_eq_some_iff.mp h
+       exact hm msg hmsg
+     have hf := dieFailure_typed [some et, some (.data cdo.data [t, et])] hx hsig ht hshow hmsg
+-    apply HasTypeCQ.weakenEff (δ := Eff.union ε (Eff.single "Process.Exit")) _ (eff_right _ _)
++    apply HasTypeCQ.weakenEff (δ := Eff.union ε (Eff.single (.top "Process.Exit"))) _ (eff_right _ _)
+     cases message <;> simpa [binds, LocalCtx.extend_add] using hf
+   · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
+       Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+@@ -309,7 +309,7 @@ theorem tryOptionDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
+     (hm : ∀ m, message = some m → HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C (hideConts Γ) none
+       (desugarExpr op .other m) (.base .string) Eff.empty Δl) :
+     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R
+-      (desugarExpr op pos (.tryOptionDie t cs cn exit e message)) t (Eff.union ε (Eff.single "Process.Exit")) Δl := by
++      (desugarExpr op pos (.tryOptionDie t cs cn exit e message)) t (Eff.union ε (Eff.single (.top "Process.Exit"))) Δl := by
+   have ht := hc.1
+   have htzero := Ty.shift_zero 0 t ((Ty.VarsIn.wf t ht).canonical t)
+   have hw := Ty.VarsIn.wf _ ht
+@@ -334,7 +334,7 @@ theorem tryOptionDie_typed (hsig : ∀ b s, B.sig b = some s → s.Scoped)
+       exact hm msg hmsg
+     have hf := dieFailure_typed (R := R) [some (.data cds.data [t])] hx hsig ht
+       (HasTypeCQ.C_Return (HasTypeVQ.V_Const (c := .string "expected a value, got Option.None"))) hmsg
+-    apply HasTypeCQ.weakenEff (δ := Eff.union ε (Eff.single "Process.Exit")) _ (eff_right _ _)
++    apply HasTypeCQ.weakenEff (δ := Eff.union ε (Eff.single (.top "Process.Exit"))) _ (eff_right _ _)
+     cases message <;> simpa [binds, LocalCtx.extend_add] using hf
+   · simpa only [unguardedPats_mkArm_cons, unguardedPats] using
+       Exhaustive.consCongr (Q := desugarProgram op p) (P := p.declarations.patternProgram) rfl hex
+diff --git a/formal/Benitoite/Surface/Lemmas/Typing.lean b/formal/Benitoite/Surface/Lemmas/Typing.lean
+index f9c5f91d..0308246a 100644
+--- a/formal/Benitoite/Surface/Lemmas/Typing.lean
++++ b/formal/Benitoite/Surface/Lemmas/Typing.lean
+@@ -303,8 +303,8 @@ example (p : Program) (B : Builtins) (op : OpPrim)
+     (hd : p.ops "fixed" = some fixedOp) :
+     HasTypeCQ (desugarProgram op p) B StoreTy.empty Q []
+       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)] none
+-      (desugarExpr op .other (.partialCall (.local 0) ["a", "b", "c"] mixedHoles (.base .integer) (Eff.single "Fixed")))
+-      (.fn ["b", "a"] [.base .boolean, .base .integer] (.base .integer) (Eff.single "Fixed")) Eff.empty := by
++      (desugarExpr op .other (.partialCall (.local 0) ["a", "b", "c"] mixedHoles (.base .integer) (Eff.single (.top "Fixed"))))
++      (.fn ["b", "a"] [.base .boolean, .base .integer] (.base .integer) (Eff.single (.top "Fixed"))) Eff.empty := by
+   have hf : HasTypeQ (p.declarationsFor view) B op Q [] []
+       [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)]
+       (some (.base .integer)) .other (.local 0)
+@@ -320,19 +320,19 @@ example (p : Program) (B : Builtins) (op : OpPrim)
+   have hm : ArgTypesQ (desugarProgram op p) B Q []
+       (binds mixedHoles.holeTypes ++ hideConts
+         [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+-      (some (.base .integer)) (Eff.single "Fixed") [] (desugarHoleArgs op mixedHoles.holeTypes.length mixedHoles)
++      (some (.base .integer)) (Eff.single (.top "Fixed")) [] (desugarHoleArgs op mixedHoles.holeTypes.length mixedHoles)
+       (sourceTypes [.base .integer, .base .boolean, .base .integer] mixedHoles.positions) := by
+     have hfixed : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q []
+         (binds mixedHoles.holeTypes ++ hideConts
+           [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+         (some (.base .integer)) (desugarExpr op .other (.call (.opName "fixed" []) [] [] .nil))
+-        (.base .integer) (Eff.single "Fixed") := by
+-      have heff : Eff.substAt 0 [] [] (Eff.single "Fixed") = Eff.single "Fixed" :=
++        (.base .integer) (Eff.single (.top "Fixed")) := by
++      have heff : Eff.substAt 0 [] [] (Eff.single (.top "Fixed")) = Eff.single (.top "Fixed") :=
+         Eff.substAt_ofAtoms 0 [] _
+       have hv : HasTypeVQ (desugarProgram op p) B StoreTy.empty Q []
+           (binds mixedHoles.holeTypes ++ hideConts
+             [some (.fn ["a", "b", "c"] [.base .integer, .base .boolean, .base .integer] (.base .integer) Eff.empty)])
+-          (.op "fixed" []) (.fn [] [] (.base .integer) (Eff.single "Fixed")) := by
++          (.op "fixed" []) (.fn [] [] (.base .integer) (Eff.single (.top "Fixed"))) := by
+         simpa only [fnTy_eq, fixedOp, Ty.subst, Ty.substAt, heff, List.map_nil] using
+           (HasTypeVQ.V_Op (P := desugarProgram op p) (B := B) (Ψ := StoreTy.empty)
+             (C := []) (Γ := binds mixedHoles.holeTypes ++ hideConts
+@@ -449,10 +449,10 @@ mutual
+         apply HasTypeCQ.C_Meth hv (classDecl_desugared hc) hm hn ht hscope hrows
+         have hargs := hus.append (boundVars_typed (scopedList_clean sc.2.2.2.2.2))
+         simpa only [binds_length, hp, List.take_append_drop] using hargs
+-    | .E_Prim hs hn ht he ha hrows _ => exact .C_Return (.V_Prim hs hn hrows)
++    | .E_Prim hs hn ht he ha hrows _ => exact .C_Return (.V_PrimTop hs hn hrows)
+     | .E_Op hd hn ht _ => exact .C_Return (.V_Op hd hn ht)
+     | .E_OpDicts (od := od) (ps := ps) (ts := ts) hd hcore hn ht hpref hnames hns hp hds =>
+-        have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
++        have he : Eff.substAt 0 ts [] (Eff.single (.top od.eff)) = Eff.single (.top od.eff) :=
+           Eff.substAt_ofAtoms 0 [] _
+         rw [desugarExpr, fnTy_eq, ← hp, hns, he]
+         apply HasTypeCQ.C_Return
+@@ -616,7 +616,7 @@ mutual
+         apply HasTypeCQ.weakenEff (δ := Eff.union _ _)
+         · apply HasTypeCQ.C_App (names := ["left", "right"])
+           · rw [← hfn]
+-            apply HasTypeVQ.V_Prim hs hn
++            apply HasTypeVQ.V_PrimTop hs hn
+             apply PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha
+             intro a ha
+             have hc := varsInList_mem (operator_typeArgs_scoped sc.1 (.binary o)) (by simpa only [hts] using ha)
+@@ -630,7 +630,7 @@ mutual
+         apply HasTypeCQ.weakenEff (δ := ε)
+         · apply HasTypeCQ.C_App (names := ["value"])
+           · rw [← hfn]
+-            apply HasTypeVQ.V_Prim hs (hsig _ _ hs).1
++            apply HasTypeVQ.V_PrimTop hs (hsig _ _ hs).1
+             apply PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha
+             intro a ha
+             have hc := varsInList_mem (operator_typeArgs_scoped sc.1 .neg) (by simpa only [hts, Operator.typeArgs] using ha)
+diff --git a/formal/Benitoite/Surface/LogExamples.lean b/formal/Benitoite/Surface/LogExamples.lean
+index ad5797d5..1a18fc65 100644
+--- a/formal/Benitoite/Surface/LogExamples.lean
++++ b/formal/Benitoite/Surface/LogExamples.lean
+@@ -18,7 +18,7 @@ private def valueTy : Ty := .data "Log.Value" []
+ private def attributeTy : Ty := .data "Log.Attribute" []
+ private def locationTy : Ty := .data "SourceLocation.Location" []
+ private def recordTy : Ty := .data "Log.Record" []
+-private def atoms : List Atom := [.name "Log", .name "Console.Write"]
++private def atoms : List Atom := [.name (.top "Log"), .name (.top "Console.Write")]
+ 
+ private def enumData (name : String) (cs : List String) : DataMaterial :=
+   ⟨name, 0, cs.map fun c => (c, ⟨name, 0, []⟩)⟩
+@@ -97,23 +97,23 @@ private def result (e : Expr) (t : Ty) (eff : Eff) : Result Bool :=
+   (checkExpr input .strict [] [] none .other [] e).map fun (a, ε) =>
+     tyEq atoms a t && effEq atoms ε eff
+ 
+-theorem emit_checked : result emit unitTy (Eff.single "Log") = .ok true := by rfl
+-theorem enabled_checked : result enabled boolTy (Eff.single "Log") = .ok true := by rfl
++theorem emit_checked : result emit unitTy (Eff.single (.top "Log")) = .ok true := by rfl
++theorem enabled_checked : result enabled boolTy (Eff.single (.top "Log")) = .ok true := by rfl
+ theorem handled_checked :
+     result (handled emit) unitTy Eff.empty = .ok true ∧
+     result (handled enabled) boolTy Eff.empty = .ok true := by constructor <;> rfl
+ theorem forwarded_checked :
+-    result (handled emit true) unitTy (Eff.single "Log") = .ok true ∧
+-    result (handled enabled true) boolTy (Eff.single "Log") = .ok true := by
++    result (handled emit true) unitTy (Eff.single (.top "Log")) = .ok true ∧
++    result (handled enabled true) boolTy (Eff.single (.top "Log")) = .ok true := by
+   constructor <;> rfl
+ theorem console_remains_checked :
+-    result (handled emit false true) unitTy (Eff.single "Console.Write") = .ok true := by rfl
++    result (handled emit false true) unitTy (Eff.single (.top "Console.Write")) = .ok true := by rfl
+ 
+ /-- 不完全な節の列だけではLogを消せない。 -/
+ theorem incomplete_handler_retains_log :
+     result (.handleE (.last emit)
+       (.cons (.prim "Log.emit") 1 0 (.last (.resume 0 .unit)) .nil))
+-      unitTy (Eff.single "Log") = .ok true := by rfl
++      unitTy (Eff.single (.top "Log")) = .ok true := by rfl
+ 
+ private def entryDef (e : Expr) (ret : Ty) (eff : Eff) : Def :=
+   { tparams := [], neffs := 0, names := [], params := [], ret, eff,
+@@ -122,11 +122,11 @@ private def entryDef (e : Expr) (ret : Ty) (eff : Eff) : Def :=
+ /-- 同じ宣言表で、純粋・送り直し・Console出力の通常関数をまとめて検査する。 -/
+ def programMaterials : Materials :=
+   { materials with defs :=
+-    [("emit", entryDef emit unitTy (Eff.single "Log")),
+-     ("enabled", entryDef enabled boolTy (Eff.single "Log")),
++    [("emit", entryDef emit unitTy (Eff.single (.top "Log"))),
++     ("enabled", entryDef enabled boolTy (Eff.single (.top "Log"))),
+      ("silent", entryDef (handled emit) unitTy Eff.empty),
+-     ("forward", entryDef (handled emit true) unitTy (Eff.single "Log")),
+-     ("console", entryDef (handled emit false true) unitTy (Eff.single "Console.Write"))] }
++     ("forward", entryDef (handled emit true) unitTy (Eff.single (.top "Log"))),
++     ("console", entryDef (handled emit false true) unitTy (Eff.single (.top "Console.Write")))] }
+ 
+ set_option maxHeartbeats 800000 in
+ theorem program_checked :
+diff --git a/formal/Benitoite/Surface/NoFailCheckExamples.lean b/formal/Benitoite/Surface/NoFailCheckExamples.lean
+index ccc69ceb..318734d7 100644
+--- a/formal/Benitoite/Surface/NoFailCheckExamples.lean
++++ b/formal/Benitoite/Surface/NoFailCheckExamples.lean
+@@ -28,7 +28,7 @@ example :
+     [rowTransportCheck [.rho 0] [true] [] [failString],
+      rowTransportCheck [] [true] [] [],
+      rowTransportCheck [.rho 0] [true] [] [rowOnly],
+-     rowTransportCheck [.name stateEff] [true] [] [Eff.single stateEff],
++     rowTransportCheck [.name (.top stateEff)] [true] [] [Eff.single (.top stateEff)],
+      rowTransportCheck [.rho 0] [true] [true] [rowOnly],
+      rowTransportCheck [] [false] [] [failInt]] =
+       [false, false, false, true, true, true] := by
+@@ -45,7 +45,7 @@ example : ¬ RowTransport (Qsig [] unitTy failAndRow) Qempty [failString] := by
+   exact hf.not_memFail stringTy hm
+ 
+ /-- NoFail は最外の条件であり、名前の種類や内部の Fail 型の比較は不要である。 -/
+-example : NoFail Qempty (Eff.single stateEff) := by
++example : NoFail Qempty (Eff.single (.top stateEff)) := by
+   refine ⟨rfl, ?_⟩
+   intro i hi
+   have he := (Eff.mem_single _ _).mp hi
+diff --git a/formal/Benitoite/Surface/Syntax.lean b/formal/Benitoite/Surface/Syntax.lean
+index 2b43cd09..b9319714 100644
+--- a/formal/Benitoite/Surface/Syntax.lean
++++ b/formal/Benitoite/Surface/Syntax.lean
+@@ -541,7 +541,7 @@ structure Declarations where
+   /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
+   conFields : ConName → Option (List String) := fun _ => none
+   ops : OpName → Option OpDecl := fun _ => none
+-  effects : EffName → Option (List OpName) := fun _ => none
++  effects : EffBase → Option (List OpName) := fun _ => none
+   classes : ClassName → Option Release.ClassDecl := fun _ => none
+   impls : ImplName → Option ImplSig := fun _ => none
+ 
+@@ -622,7 +622,7 @@ structure Program where
+   /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
+   conFields : ConName → Option (List String) := fun _ => none
+   ops : OpName → Option OpDecl := fun _ => none
+-  effects : EffName → Option (List OpName) := fun _ => none
++  effects : EffBase → Option (List OpName) := fun _ => none
+   classes : ClassName → Option Release.ClassDecl := fun _ => none
+   impls : ImplName → Option ImplDecl := fun _ => none
+ 
+diff --git a/formal/Benitoite/Surface/Typing.lean b/formal/Benitoite/Surface/Typing.lean
+index 56b7a595..72e2889f 100644
+--- a/formal/Benitoite/Surface/Typing.lean
++++ b/formal/Benitoite/Surface/Typing.lean
+@@ -78,7 +78,7 @@ def DieExitOk (B : Builtins) (C : List TParam) (exit : PrimName) (t : Ty) : Prop
+   ∃ s, B.sig exit = some s ∧ s.kind = .exit ∧ s.opEff = some "Process.Exit" ∧
+     s.ntys = 1 ∧ s.neffs = 0 ∧ NamesWF s.names s.params ∧ s.admits C [t] ∧
+     fnTy s.names s.params s.ret s.eff [t] [] =
+-      .fn ["code"] [.base .integer] t (Eff.single "Process.Exit")
++      .fn ["code"] [.base .integer] t (Eff.single (.top "Process.Exit"))
+ 
+ mutual
+   inductive HasTypeQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
+@@ -153,7 +153,7 @@ mutual
+     | E_Op {Δ C Γ R p o od ts} :
+         D.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams → od.dictParams = [] →
+         HasTypeQ D B opPrim Q Δ C Γ R p (.opName o ts)
+-          (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) Eff.empty
++          (fnTy od.names od.params od.ret (Eff.single (.top od.eff)) ts []) Eff.empty
+     | E_OpDicts {Δ C Γ R p o od ts ds names ps} :
+         D.ops o = some od → NamesWF od.names od.params →
+         NamesWF od.valueNames od.valueParams → SatAll B C ts od.tparams →
+@@ -162,7 +162,7 @@ mutual
+         names = od.valueNames → ps = od.valueParams.map (Ty.subst ts []) →
+         DictEv.HasTypes D B C Γ ds (od.dictTys.map (Ty.subst ts [])) →
+         HasTypeQ D B opPrim Q Δ C Γ R p (.opDicts o ts ds names ps)
+-          (fnTy od.valueNames od.valueParams od.ret (Eff.single od.eff) ts []) Eff.empty
++          (fnTy od.valueNames od.valueParams od.ret (Eff.single (.top od.eff)) ts []) Eff.empty
+     -- 01-12「名前とリテラル」: 引数のない構成子。01-05「値の構築」。
+     | E_NullCon {Δ C Γ R p c cd ts} :
+         D.cons c = some cd → ts.length = cd.ntys → cd.args = [] →
+@@ -403,7 +403,7 @@ mutual
+         (∀ m, message = some m →
+           HasTypeQ D B opPrim Q Δ C (hideConts Γ) none .other m (.base .string) Eff.empty) →
+         HasTypeQ D B opPrim Q Δ C Γ R p (.tryResultDie t ok err dict showMethod exit e message)
+-          t (Eff.union ε (Eff.single "Process.Exit"))
++          t (Eff.union ε (Eff.single (.top "Process.Exit")))
+     | E_TryOptionDie {Δ C Γ R p someCon noneCon cds cdn e t ε exit message} :
+         D.cons someCon = some cds → D.cons noneCon = some cdn →
+         cds.ntys = 1 → cdn.ntys = 1 → cds.args = [.tvar 0] → cdn.args = [] →
+@@ -414,14 +414,14 @@ mutual
+         (∀ m, message = some m →
+           HasTypeQ D B opPrim Q Δ C (hideConts Γ) none .other m (.base .string) Eff.empty) →
+         HasTypeQ D B opPrim Q Δ C Γ R p (.tryOptionDie t someCon noneCon exit e message)
+-          t (Eff.union ε (Eff.single "Process.Exit"))
++          t (Eff.union ε (Eff.single (.top "Process.Exit")))
+     -- 01-10「リソースの型」「with の構文」: 本体の型と、束縛・本体・解放のエフェクトの和。
+     -- 01-12「解放の枠」: 本体は非末尾位置。束縛は後続のリソースの式にも見える。
+     | E_With {Δ C Γ R p o e body a εe εbody} :
+-        B.isResource o = true → HasTypeQ D B opPrim Q Δ C Γ R .other e (.opaque o) εe →
+-        HasBlockQ D B opPrim Q (none :: Δ) C (some (.opaque o) :: Γ) R .other body a εbody →
+-        HasTypeQ D B opPrim Q Δ C Γ R p (.withE o e body) a
+-          (Eff.union εe (Eff.union εbody (Eff.single stateEff)))
++        B.isResource o = true → HasTypeQ D B opPrim Q Δ C Γ R .other e (.opaque (.top o)) εe →
++        HasBlockQ D B opPrim Q (none :: Δ) C (some (.opaque (.top o)) :: Γ) R .other body a εbody →
++        HasTypeQ D B opPrim Q Δ C Γ R p (.withE (.top o) e body) a
++          (Eff.union εe (Eff.union εbody (Eff.single (.top stateEff))))
+     -- 01-06「明示遅延の型」、01-12「ストア」「関数の境界」「ハンドラ」: 純粋な本体。
+     -- R = none は try と途中の return を禁じ、hideConts は外側の継続を隠す。
+     | E_Lazy {Δ C Γ R p body a} :
+@@ -1152,15 +1152,15 @@ example (B : Builtins) (op : OpPrim) :
+ 
+ example (B : Builtins) (op : OpPrim) :
+     HasType decls B op [] [] none .other
+-      (.call (.opName "ask" []) [some "b", some "a"] [1, 0] reversed) intTy (Eff.single "Ask") := by
++      (.call (.opName "ask" []) [some "b", some "a"] [1, 0] reversed) intTy (Eff.single (.top "Ask")) := by
+   apply HasType.E_Call (names := ["a", "b"]) (ps := [intTy, boolTy])
+-    (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.single "Ask")
++    (εf := Eff.empty) (εargs := Eff.empty) (εcall := Eff.single (.top "Ask"))
+   · have h := HasType.E_Op (Δ := []) (Q := Qempty) (D := decls) (B := B) (opPrim := op) (C := []) (Γ := [])
+         (R := none) (p := .other) (o := "ask") (ts := []) (od := askDecl) rfl
+         (by unfold NamesWF askDecl; decide) ⟨rfl, by intro i t p h; simp at h⟩ rfl
+-    have he : Eff.substRho [] (Eff.single "Ask") = Eff.single "Ask" := by
++    have he : Eff.substRho [] (Eff.single (.top "Ask")) = Eff.single (.top "Ask") := by
+       exact Eff.substAt_ofAtoms 0 [] _
+-    simpa only [fnTy, askDecl, List.map_cons, List.map_nil, intTy, boolTy, Ty.subst, Ty.substAt, Ty.substTysAt_eq_map, List.map_map, show Eff.substAt 0 [] [] (Eff.single "Ask") = Eff.single "Ask" from he] using h
++    simpa only [fnTy, askDecl, List.map_cons, List.map_nil, intTy, boolTy, Ty.subst, Ty.substAt, Ty.substTysAt_eq_map, List.map_map, show Eff.substAt 0 [] [] (Eff.single (.top "Ask")) = Eff.single (.top "Ask") from he] using h
+   · dsimp [CallOk, NamesWF]
+     decide
+   · exact HasTypes.cons HasType.E_Literal (HasTypes.cons HasType.E_Literal HasTypes.nil)
+diff --git a/formal/SurfaceCheck/Validation.lean b/formal/SurfaceCheck/Validation.lean
+index ce8ce9e9..4aff538b 100644
+--- a/formal/SurfaceCheck/Validation.lean
++++ b/formal/SurfaceCheck/Validation.lean
+@@ -6,7 +6,7 @@ namespace SurfaceCheck.Validation
+ open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surface.CheckTools
+ open SurfaceCheck.Batch
+ private def q : Input := {
+-  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.name "A"] }
++  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.name (.top "A")] }
+ -- 継続が隠された誤りも、プレースホルダ引数の誤りも、不一致として扱う。
+ #guard category q {} [] (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "mismatched"
+ #guard category q { prims := ["unsupported"] } ["unsupported"] (.ok ()) == "outOfScope"
+@@ -15,7 +15,7 @@ private def q : Input := {
+ private def intTy : Ty := .base .integer
+ private def fn : Expr := .lam [] [] intTy emptyEff (.last (.returnE intTy (.literal (.integer ⟨1, by decide⟩))))
+ private def lazyWalk : WalkState := {
+-  nodes := #[⟨[0],.lazyE (.last fn),some (.lazy (.fn [] [] intTy (Eff.single "A")))⟩] }
++  nodes := #[⟨[0],.lazyE (.last fn),some (.lazy (.fn [] [] intTy (Eff.single (.top "A"))))⟩] }
+ #guard category q lazyWalk [] (.error ⟨[0],"type is not included in the expected type"⟩) == "lazyRestriction"
+ #guard category q lazyWalk [] (.error ⟨[0],"effect exceeds the allowed effect"⟩) == "mismatched"
+ #guard category q lazyWalk [] (.error ⟨[0,0,0,0],"type is not included in the expected type"⟩) == "mismatched"
+@@ -28,7 +28,7 @@ private def changes (e : Expr) (p : Position) : Nat :=
+ #guard changes tailMatch .other == 0
+ #guard changes (.lam [] [] intTy emptyEff (.last tailMatch)) .other == 1
+ #guard changes (.lazyE (.last tailMatch)) .tail == 0
+-#guard changes (.withE "File" .unit (.last tailMatch)) .tail == 0
++#guard changes (.withE (.top "File") .unit (.last tailMatch)) .tail == 0
+ #guard changes (.ite .unit (.last tailMatch) (.last tailMatch)) .tail == 2
+ #guard changes (.matchE (.base .unit) .unit (.single .wild (.last .unit) .nil)) .tail == 0
+ end SurfaceCheck.Validation

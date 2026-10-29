@@ -1,0 +1,19 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.62s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 5 tests
+test typeck::scope::tests::dedicated_bindings_and_handler_clauses_follow_surface_preorder ... ok
+test typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments ... ok
+test typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments ... ok
+test typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations ... ok
+
+thread 'typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters' (4327896) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+error: test failed, to rerun pass `-p benitoite --lib`
+
+Caused by:
+  process didn't exit successfully: `<wt>/target/debug/deps/benitoite-81c2c2cf772f4aa1 'typeck::scope' --nocapture` (signal: 6, SIGABRT: process abort signal)
+
+exit: 101
+wall_seconds: 13.688

@@ -1,0 +1,30 @@
+== python3 -B formal/tests/test_width_exchange.py exit=0 1s
+
+OK
+== python3 -B formal/tests/test_named_exchange.py exit=0 2s
+
+OK
+== python3 -B formal/tests/test_extensible_exchange.py exit=0 6s
+
+OK
+== python3 -B formal/tests/test_try_exchange.py exit=0 3s
+
+OK
+== python3 -B formal/tests/test_batch2_exchange.py exit=0 2s
+
+OK
+== python3 -B formal/tests/test_batch3_exchange.py exit=0 3s
+
+OK
+== python3 -B formal/tests/test_batch4_exchange.py exit=0 6s
+
+OK
+== python3 -B formal/tests/test_batch5_exchange.py exit=0 2s
+
+OK
+== python3 -B formal/tests/test_range_exchange.py exit=0 1s
+
+OK
+== python3 -B formal/tests/test_interval_exchange.py exit=0 3s
+{"calls": 144, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132
+total 29s

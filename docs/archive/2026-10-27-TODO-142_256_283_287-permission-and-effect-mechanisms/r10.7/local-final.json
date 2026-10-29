@@ -1,0 +1,29 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--lib",
+    "desugar_export",
+    "--test",
+    "desugar_export",
+    "--test",
+    "coverage_export"
+  ],
+  "invoked": [
+    "cargo",
+    "test",
+    "--lib",
+    "desugar_export",
+    "--test",
+    "desugar_export",
+    "--test",
+    "coverage_export"
+  ],
+  "started_at": "2026-10-28T13:44:47.026656+00:00",
+  "ended_at": "2026-10-28T13:45:05.814022+00:00",
+  "exit_code": 101,
+  "elapsed_seconds": 18.787310875000003,
+  "auxiliary_max_rss_bytes": 4228186112,
+  "auxiliary_max_rss_mib": 4032.3125,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

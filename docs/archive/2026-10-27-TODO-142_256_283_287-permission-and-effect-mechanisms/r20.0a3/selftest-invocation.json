@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "environment": {
+    "PYTHONPYCACHEPREFIX": "target/bench/pycache"
+  },
+  "exit_status": 0,
+  "elapsed_seconds": 89.53050462499999
+}

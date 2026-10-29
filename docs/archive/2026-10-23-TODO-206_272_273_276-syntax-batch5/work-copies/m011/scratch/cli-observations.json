@@ -1,0 +1,145 @@
+[
+  {
+    "name": "when_plain",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/when_plain.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.028102542,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0301\",\"message\":\"cannot find `k` in this scope\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":2,\"column\":7,\"offset\":27},\"end\":{\"line\":2,\"column\":8,\"offset\":28},\"label\":\"not found\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"a similar name exists: `f`\",\"edits\":[{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":2,\"column\":7,\"offset\":27},\"end\":{\"line\":2,\"column\":8,\"offset\":28},\"replacement\":\"f\"}]}]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0301\",\"message\":\"cannot find `log` in this scope\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":4,\"column\":1,\"offset\":44},\"end\":{\"line\":4,\"column\":4,\"offset\":47},\"label\":\"not found\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0301\",\"message\":\"cannot find `k` in this scope\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":4,\"column\":5,\"offset\":48},\"end\":{\"line\":4,\"column\":6,\"offset\":49},\"label\":\"not found\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"a similar name exists: `f`\",\"edits\":[{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":4,\"column\":5,\"offset\":48},\"end\":{\"line\":4,\"column\":6,\"offset\":49},\"replacement\":\"f\"}]}]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0301\",\"message\":\"cannot find `when` in this scope\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":5,\"column\":1,\"offset\":51},\"end\":{\"line\":5,\"column\":5,\"offset\":55},\"label\":\"not found\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0301\",\"message\":\"cannot find `n` in this scope\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":5,\"column\":11,\"offset\":61},\"end\":{\"line\":5,\"column\":12,\"offset\":62},\"label\":\"not found\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"a similar name exists: `f`\",\"edits\":[{\"file\":\"work/m011/scratch/inputs/when_plain.bnt\",\"start\":{\"line\":5,\"column\":11,\"offset\":61},\"end\":{\"line\":5,\"column\":12,\"offset\":62},\"replacement\":\"f\"}]}]}\n"
+  },
+  {
+    "name": "when_format",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/when_format.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015582791999999991,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected a pattern, found `+`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_format.bnt\",\"start\":{\"line\":5,\"column\":6,\"offset\":56},\"end\":{\"line\":5,\"column\":7,\"offset\":57},\"label\":\"unexpected `+`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  },
+  {
+    "name": "when_old",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/when_old.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015474165999999998,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0232\",\"message\":\"`when` does not start a branch\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_old.bnt\",\"start\":{\"line\":3,\"column\":1,\"offset\":34},\"end\":{\"line\":3,\"column\":5,\"offset\":38},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"write the branch as `case 1 ->`\",\"edits\":[]}]}\n"
+  },
+  {
+    "name": "when_guard_real_colon",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/when_guard_real_colon.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015505249999999998,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0232\",\"message\":\"`when` does not start a branch\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_guard_real_colon.bnt\",\"start\":{\"line\":3,\"column\":1,\"offset\":34},\"end\":{\"line\":3,\"column\":5,\"offset\":38},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"write the branch as `case x ->`\",\"edits\":[]}]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected the end of an interpolated string, found `:`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/when_guard_real_colon.bnt\",\"start\":{\"line\":3,\"column\":15,\"offset\":48},\"end\":{\"line\":3,\"column\":16,\"offset\":49},\"label\":\"unexpected `:`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  },
+  {
+    "name": "default_format",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/default_format.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015213082999999988,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected the end of an interpolated string, found `:`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/default_format.bnt\",\"start\":{\"line\":5,\"column\":15,\"offset\":65},\"end\":{\"line\":5,\"column\":16,\"offset\":66},\"label\":\"unexpected `:`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  },
+  {
+    "name": "default_old",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/default_old.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015500542000000006,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0239\",\"message\":\"`default` is not Benitoite syntax\",\"primary\":{\"file\":\"work/m011/scratch/inputs/default_old.bnt\",\"start\":{\"line\":3,\"column\":1,\"offset\":34},\"end\":{\"line\":3,\"column\":8,\"offset\":41},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"write `case _ ->`\",\"edits\":[]}]}\n"
+  },
+  {
+    "name": "lambda_format",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/lambda_format.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015480916000000011,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected a newline or the end of the block, found `:`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/lambda_format.bnt\",\"start\":{\"line\":2,\"column\":24,\"offset\":44},\"end\":{\"line\":2,\"column\":25,\"offset\":45},\"label\":\"unexpected `:`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  },
+  {
+    "name": "lambda_header_bad",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/lambda_header_bad.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.015208208,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0234\",\"message\":\"the return type is written after `->`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/lambda_header_bad.bnt\",\"start\":{\"line\":2,\"column\":22,\"offset\":42},\"end\":{\"line\":2,\"column\":23,\"offset\":43},\"label\":\"expected `->`\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"replace `:` with `->`\",\"edits\":[{\"file\":\"work/m011/scratch/inputs/lambda_header_bad.bnt\",\"start\":{\"line\":2,\"column\":22,\"offset\":42},\"end\":{\"line\":2,\"column\":23,\"offset\":43},\"replacement\":\"->\"}]}]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected a newline or the end of the block, found `:`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/lambda_header_bad.bnt\",\"start\":{\"line\":2,\"column\":33,\"offset\":53},\"end\":{\"line\":2,\"column\":34,\"offset\":54},\"label\":\"unexpected `:`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  },
+  {
+    "name": "number_precision",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/inputs/number_precision.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.01549645899999999,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected the end of an interpolated string, found `:`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/number_precision.bnt\",\"start\":{\"line\":2,\"column\":5,\"offset\":25},\"end\":{\"line\":2,\"column\":6,\"offset\":26},\"label\":\"unexpected `:`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0116\",\"message\":\"malformed floating-point literal `8.2f`\",\"primary\":{\"file\":\"work/m011/scratch/inputs/number_precision.bnt\",\"start\":{\"line\":2,\"column\":6,\"offset\":26},\"end\":{\"line\":2,\"column\":10,\"offset\":30},\"label\":\"a number must not be directly followed by a letter or `_`; separate words with a space, such as `2 mod 3`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  },
+  {
+    "name": "cli-valid-plain",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/cli-valid-plain.bnt"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.06573541699999999,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "cli-new-format",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "--diagnostics=json",
+      "work/m011/scratch/cli-new-format.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.016423541,
+    "stdout": "",
+    "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected a statement, found `when`\",\"primary\":{\"file\":\"work/m011/scratch/cli-new-format.bnt\",\"start\":{\"line\":6,\"column\":13,\"offset\":108},\"end\":{\"line\":6,\"column\":17,\"offset\":112},\"label\":\"unexpected `when`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0201\",\"message\":\"expected a pattern, found `+`\",\"primary\":{\"file\":\"work/m011/scratch/cli-new-format.bnt\",\"start\":{\"line\":6,\"column\":18,\"offset\":113},\"end\":{\"line\":6,\"column\":19,\"offset\":114},\"label\":\"unexpected `+`\"},\"secondary\":[],\"notes\":[],\"helps\":[]}\n"
+  }
+]

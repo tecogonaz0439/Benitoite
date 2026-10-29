@@ -1,0 +1,23 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "c567687ab7fd28d4d87aeed7721be794184efb6b",
+    "--dry-run"
+  ],
+  "exit_code": 0,
+  "started_utc": "2026-10-27T10:28:58.285129+00:00",
+  "ended_utc": "2026-10-27T10:28:58.361294+00:00",
+  "elapsed_seconds": 0.076099041,
+  "elapsed_method": "Python time.monotonic around subprocess.run",
+  "maximum_resident_set_size": {
+    "method": "resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss",
+    "raw": 10174464,
+    "raw_unit": "bytes (macOS)",
+    "MiB": 9.703125,
+    "GiB": 0.0094757080078125,
+    "scope": "この測定プロセスの子についてOSが報告した最大値。並行するプロセスの和・作業全体の最大ではない。OS time -lの値は未取得。"
+  }
+}

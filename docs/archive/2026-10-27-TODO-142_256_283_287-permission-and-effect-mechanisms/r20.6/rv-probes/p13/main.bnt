@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope as S
+import Lib.Scope
+function sample(path: String) -> Result[S.PathIn["/data/**"], S.ScopeError]
+ return match Scope.check(path) with
+ case Result.Ok(v) -> Result.Ok(S.widenPathIn(path: v))
+ case Result.Error(e) -> Result.Error(e)
+ end match
+end function
+function main() -> Unit
+ ()
+end function

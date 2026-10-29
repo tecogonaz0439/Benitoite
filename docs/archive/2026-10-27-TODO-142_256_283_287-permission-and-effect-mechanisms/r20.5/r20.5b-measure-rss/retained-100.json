@@ -1,0 +1,156 @@
+{
+  "accepted_selected_calls": 100,
+  "bodies": [
+    {
+      "calls": 100,
+      "definition": ".sample",
+      "metrics": {
+        "body_operations": 300,
+        "max_body_items": 100,
+        "max_whole_items": 100,
+        "stops": [],
+        "whole_operations": 300
+      },
+      "numbering_and_local_seconds": 0.000090875,
+      "numbering_candidates": [
+        {
+          "events": 1003,
+          "limit": 100000,
+          "numbering_seconds_median": 7.917e-6,
+          "samples_seconds": [
+            7.667e-6,
+            7.917e-6,
+            7.917e-6,
+            8.209e-6,
+            8.958e-6
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 1003,
+          "limit": 200000,
+          "numbering_seconds_median": 7.792e-6,
+          "samples_seconds": [
+            7.708e-6,
+            7.709e-6,
+            7.792e-6,
+            7.833e-6,
+            7.875e-6
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 1003,
+          "limit": 300000,
+          "numbering_seconds_median": 7.875e-6,
+          "samples_seconds": [
+            7.791e-6,
+            7.792e-6,
+            7.875e-6,
+            7.917e-6,
+            7.958e-6
+          ],
+          "stopped": "None"
+        }
+      ],
+      "numbering_operations": 1003,
+      "occurrences": 401,
+      "stopped": "None"
+    }
+  ],
+  "body_items_max": 100,
+  "body_operations_max": 300,
+  "candidates": [
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Items })",
+      "lost_ranges": 0,
+      "name": "small",
+      "numbering_operations": 1003,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": [
+        {
+          "preorder": 32,
+          "reason": "BudgetExceeded { scope: Body, resource: Items }"
+        }
+      ]
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 1003,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 1003,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "retained-100",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 0,
+  "limits": {
+    "body": {
+      "items": 100000,
+      "operations": 1000000
+    },
+    "whole": {
+      "items": 10000000,
+      "operations": 100000000
+    }
+  },
+  "narrow_rejections": [],
+  "occurrences": 401,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.000675708,
+  "sha256": "4e2e3e795178fe4de8a23f87b9f20d271511af8d8a6e5d062244ece385ead82b",
+  "source_bytes": 6856,
+  "typecheck_seconds": 0.022487542,
+  "whole_items_max": 100,
+  "whole_operations_total": 300
+}

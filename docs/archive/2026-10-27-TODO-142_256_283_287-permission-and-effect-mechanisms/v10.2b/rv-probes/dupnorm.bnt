@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit uses Http.Connect["A.example", 443, "a.example", 443]
+  ()
+end function

@@ -75,7 +75,13 @@ fn format_all_fourteen_heads_have_fixed_contracts_and_execute() {
     };
     use benitoite::runtime::heap::{Heap, Value as V};
     use benitoite::types::{Ty, TyCon, builtin::BuiltinTypeId as B};
-    let basic = |id| Ty::Con(TyCon::Builtin(id), vec![]);
+    let basic = |id| {
+        Ty::Con(
+            TyCon::Builtin(id),
+            vec![],
+            benitoite::types::builtin::RangeIndex::TOP,
+        )
+    };
     let mut heap = Heap::new(HeapConfig::default());
     heap.epoch(|ctx| {
         let text = ctx.alloc_str("猫", "format test").unwrap();
@@ -1477,7 +1483,18 @@ function main() -> Result[Unit, String]
                     case.get("port").unwrap()
                 ),
             };
-            format!("case Result.Ok(value) -> {comparison}\n case Result.Error(_) -> false")
+            // 関門: 保存した正規形を再び同じ入口へ渡す。IP/CIDRの表示が単に
+            // 期待文字列と一致するだけでなく、保存後も同じ対象を受理する契約を守る。
+            // 非正規形の保存や、射影時に最大prefixを取り違える退行は代数の単体検査では届かない。
+            let reused = match kind {
+                "host" => "dynamicHost(pattern: Scope.hostPattern(value), host: Scope.host(value))".to_owned(),
+                "path" => "dynamicPath(pattern: Scope.pathPattern(value), path: Scope.path(value))".to_owned(),
+                _ => "dynamicEndpoint(hostPattern: Scope.endpointHostPattern(value), host: Scope.endpointHost(value), minimumPort: Scope.endpointMinimumPort(value), maximumPort: Scope.endpointMaximumPort(value), port: Scope.endpointPort(value))".to_owned(),
+            };
+            let reused_comparison = comparison.replace("(value)", "(again)");
+            format!(
+                "case Result.Ok(value) -> {comparison} and match {reused} with\n case Result.Ok(again) -> {reused_comparison}\n case Result.Error(_) -> false\n end match\n case Result.Error(_) -> false"
+            )
         } else {
             let error = match result {
                 "InvalidPattern" => format!(
@@ -1540,6 +1557,669 @@ end function
         assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
         assert!(output.lock().unwrap().is_empty());
     }
+}
+
+// 関門: 新しい純粋入口の動的な所属判定・元のパス・失敗入力と優先順を、
+// 通常ソースからVMと参照実行器で守る。旧Checked型の検査はこの入口を通らず、
+// Topだけを見て検査を省く退行や、Okの保存後のGCでの消失を捕まえない。
+// 差し込み口は増やさず、同じResultの受け渡しと既存のstress環境を使う。
+#[test]
+fn scope_path_in_checks_dynamic_inputs_and_preserves_the_same_ok() {
+    let source = r#"
+import Benitoite.Unofficial.Scope
+function retain[T](value: T) -> T
+ return value
+end function
+function accepted(pattern: String, path: String) -> Boolean
+ bind original <- Scope.checkPathIn(pattern: pattern, path: path)
+ bind kept <- retain(original)
+ bind unused <- String.repeat(s: "猫", n: 4000)
+ return String.byteLength(unused) = 12000 and match kept with
+   case Result.Ok(value) -> Scope.pathInValue(path: value) = path and Scope.pathInValue(path: value) = path
+   case Result.Error(_) -> false
+ end match
+end function
+function rejected(pattern: String, path: String, expected: Integer) -> Boolean
+ return match Scope.checkPathIn(pattern: pattern, path: path) with
+   case Result.Error(Scope.ScopeError.InvalidPattern(input, reason)) -> expected = 1 and input = pattern and String.byteLength(reason) > 0
+   case Result.Error(Scope.ScopeError.InvalidTarget(input, reason)) -> expected = 2 and input = path and String.byteLength(reason) > 0
+   case Result.Error(Scope.ScopeError.OutsideScope(p, t)) -> expected = 3 and p = pattern and t = path
+   case _ -> false
+ end match
+end function
+function main() -> Result[Unit, String]
+ if not accepted(pattern: "/data/**", path: "/data") then return Result.Error("tree stem") end if
+ if not accepted(pattern: "/data/**", path: "/data/猫/*") then return Result.Error("same target spelling") end if
+ if not accepted(pattern: "/data/exact", path: "/data/exact") then return Result.Error("exact") end if
+ if not accepted(pattern: "/**", path: "/") then return Result.Error("root") end if
+ if not rejected(pattern: "/data/**", path: "/database/file", expected: 3) then return Result.Error("component membership") end if
+ if not rejected(pattern: "/data/exact", path: "/data/exact/child", expected: 3) then return Result.Error("exact excludes child") end if
+ if not rejected(pattern: "/data/*", path: "/data/child", expected: 1) then return Result.Error("invalid pattern") end if
+ if not rejected(pattern: "/data/**", path: "/data/../else", expected: 2) then return Result.Error("invalid target") end if
+ if not rejected(pattern: "/data/*", path: "relative", expected: 1) then return Result.Error("pattern before target") end if
+ bind direct <- Scope.checkPathIn(pattern: "/data/**", path: "/data/direct")
+ return match direct with
+   case Result.Ok(value) ->
+    bind text <- Scope.pathInValue(path: value)
+    if text = "/data/direct" then Result.Ok(()) else Result.Error("direct projection") end if
+   case Result.Error(_) -> Result.Error("direct check")
+ end match
+end function
+"#;
+    let program = compile(source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let end = run::run_program(
+            &program,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))),
+        );
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
+        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
+
+        let checked = pipeline::check_text(
+            "scope-path-in.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        let compared = differential::compare(
+            checked.program.unwrap(),
+            checked.sources,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))).input,
+            VmConfig::default(),
+            mode,
+            differential::CompareOptions {
+                require_returned: true,
+                ..Default::default()
+            },
+            Box::new(|| Ok(())),
+        );
+        match compared {
+            differential::Comparison::Matched => {}
+            differential::Comparison::Failed(reason)
+            | differential::Comparison::Excluded(reason) => panic!("{mode:?}: {reason}"),
+        }
+    }
+}
+
+// 関門: 通常ソースの純粋な検査→同じOkの保存→射影→五欄の参照を守る。
+// URL境界・既定port・IPの数値・動的条件の退行と、安全点後の要求の消失を
+// 捕まえる。既存Http.sendはこの純粋入口を通らない。差し込み口や裸の
+// RequestIn注釈を増やさず、両IO方式と既存の参照実行器を使う。
+#[test]
+fn http_request_in_checks_endpoints_and_retains_the_same_request() {
+    let mut source = String::from(
+        r#"
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Scope
+function retain[T](value: T) -> T
+ return value
+end function
+function accepted(pattern: String, lo: Integer, hi: Integer, url: String) -> Boolean
+ bind request <- Http.ClientRequest(method: "PATCH", url: url, headers: [Pair("X-Test", "same"), Pair("X-Test", "again")], body: String.toUTF8("猫"), timeoutMilliseconds: 1234)
+ bind original <- Http.checkRequestIn(hostPattern: pattern, minimumPort: lo, maximumPort: hi, request: request)
+ bind kept <- retain(original)
+ bind unused <- String.repeat(s: "猫", n: 4000)
+ return String.byteLength(unused) = 12000 and match kept with
+  case Result.Ok(value) ->
+   bind projected <- Http.requestInValue(request: value)
+   bind changed <- Http.ClientRequest(..projected, url: "https://outside.example/")
+   bind unchanged <- Http.requestInValue(request: value)
+   Http.ClientRequest.method(projected) = "PATCH" and Http.ClientRequest.url(projected) = url and
+    Http.ClientRequest.headers(projected) = [Pair("X-Test", "same"), Pair("X-Test", "again")] and
+    Http.ClientRequest.body(projected) = String.toUTF8("猫") and Http.ClientRequest.timeoutMilliseconds(projected) = 1234 and
+    Http.ClientRequest.url(changed) = "https://outside.example/" and Http.ClientRequest.url(unchanged) = url and
+    match Http.checkRequestIn(hostPattern: pattern, minimumPort: lo, maximumPort: hi, request: changed) with
+     case Result.Error(_) -> true
+     case Result.Ok(_) -> false
+    end match
+  case Result.Error(_) -> false
+ end match
+end function
+function rejected(pattern: String, lo: Integer, hi: Integer, url: String, expected: Integer) -> Boolean
+ return match Http.checkRequestIn(hostPattern: pattern, minimumPort: lo, maximumPort: hi, request: Http.clientRequest(method: "GET", url: url)) with
+  case Result.Error(Http.RequestCheckError.InvalidUrl(message)) -> expected = 1 and String.byteLength(message) > 0
+  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.InvalidPattern(input, reason))) -> expected = 2 and input = pattern and String.byteLength(reason) > 0
+  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.InvalidTarget(_, reason))) -> expected = 3 and String.byteLength(reason) > 0
+  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.InvalidPortRange(minimum, maximum))) -> expected = 4 and minimum = lo and maximum = hi
+  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.OutsideScope(input, _))) -> expected = 5 and input = pattern
+  case Result.Error(Http.RequestCheckError.Scope(Scope.ScopeError.PortOutsideScope(minimum, maximum, _))) -> expected = 6 and minimum = lo and maximum = hi
+  case _ -> false
+ end match
+end function
+function main() -> Result[Unit, String]
+"#,
+    );
+    for (i, (pattern, lo, hi, url)) in [
+        (
+            "api.example.com",
+            443,
+            443,
+            "https://API.EXAMPLE.COM/a?q=one%20two#fragment",
+        ),
+        ("*.example.com", 80, 80, "http://api.example.com"),
+        ("a0x.example", 80, 80, "http://a0x.example/"),
+        ("dead.beef", 80, 80, "http://dead.beef/"),
+        ("123.example", 80, 80, "http://123.example/"),
+        ("**.example.com", 443, 443, "https://deep.api.example.com:/"),
+        ("api.example.com", 80, 80, "HTTP://api.example.com:/"),
+        ("api.example.com", 443, 443, "http://api.example.com:443/"),
+        ("127.0.0.0/8", 0, 65535, "http://127.0.0.1:0/"),
+        ("::1", 80, 80, "http://[0:0:0:0:0:0:0:1]/"),
+        ("2001:db8::/32", 443, 443, "https://[2001:DB8:0:0:0:0:0:1]/"),
+        ("::/0", 443, 443, "https://[::1]/"),
+        ("::/0", 80, 80, "http://[::fffe:ffff:ffff]/"),
+        ("::/0", 80, 80, "http://[::1:0:0:0]/"),
+        ("::/0", 80, 80, "http://[::192.0.2.1]/"),
+        ("64:ff9b::/96", 80, 80, "http://[64:ff9b::192.0.2.1]/"),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        source.push_str(&format!(" if not accepted(pattern: {pattern:?}, lo: {lo}, hi: {hi}, url: {url:?}) then return Result.Error(\"accepted {i}\") end if\n"));
+    }
+    for (i, (pattern, lo, hi, url, expected)) in [
+        ("example.com", 0, 65535, "not a URL", 1),
+        ("example.com", 0, 65535, "ftp://example.com/", 1),
+        ("example.com", 0, 65535, "/relative", 1),
+        ("example.com", 0, 65535, "http:///path", 1),
+        ("example.com", 0, 65535, "https://example.com:65536/", 1),
+        ("example.com", 0, 65535, "https://example.com:xyz/", 1),
+        ("example.com", 0, 65535, "https://example.com:-1/", 1),
+        ("example.com", 0, 65535, "https://user@example.com/", 1),
+        ("example.com", 0, 65535, "https://example.com/%GG", 1),
+        ("example.com", 0, 65535, "https://example.com/猫", 1),
+        ("example.com", 0, 65535, "https://example.com/a\\b", 1),
+        ("example.com", 0, 65535, "https://example.com./", 3),
+        ("127.1", 0, 65535, "http://127.1/", 3),
+        ("123", 0, 65535, "http://123/", 3),
+        ("0x7f000001", 0, 65535, "http://0x7f000001/", 3),
+        ("127.0x.0.1", 0, 65535, "http://127.0x.0.1/", 3),
+        ("127.0x.1", 0, 65535, "http://127.0x.1/", 3),
+        ("**.1", 0, 65535, "http://0x7f.0x0.0x.1/", 3),
+        ("0x.1.2.3", 0, 65535, "http://0x.1.2.3/", 3),
+        ("127.0X.0.1", 0, 65535, "http://127.0X.0.1/", 3),
+        ("127.0.0.1", 0, 65535, "http://127.00.0.1/", 3),
+        ("127.0.0.1", 0, 65535, "http://999.0.0.1/", 3),
+        ("*.127.0.0.1", 0, 65535, "http://127.0.0.1/", 2),
+        ("bad..pattern", 0, 65535, "http://example.com/", 2),
+        ("example.com", -1, 443, "https://example.com/", 4),
+        ("example.com", 0, 65536, "https://example.com/", 4),
+        ("example.com", 444, 443, "https://example.com/", 4),
+        (
+            "example.com",
+            -9223372036854775807_i64,
+            9223372036854775807_i64,
+            "https://example.com/",
+            4,
+        ),
+        ("*.example.com", 0, 65535, "https://example.com/", 5),
+        ("other.example", 0, 65535, "https://example.com/", 5),
+        ("127.0.0.1", 0, 65535, "https://[::ffff:127.0.0.1]/", 3),
+        ("::/0", 0, 65535, "http://[::ffff:127.0.0.1]:18081/", 3),
+        ("::/0", 0, 65535, "http://[::FfFf:7F00:0001]:18081/", 3),
+        (
+            "::/0",
+            0,
+            65535,
+            "http://[0000:0000:0000:0000:0000:FFFF:7f00:0001]:18081/",
+            3,
+        ),
+        ("::/0", 0, 65535, "http://[::FFFF:7F00:1]:18081/", 3),
+        (
+            "::/0",
+            0,
+            65535,
+            "http://[0:0:0:0:0:FFFF:127.0.0.1]:18081/",
+            3,
+        ),
+        ("::/0", 0, 65535, "http://[::ffff:0.0.0.0]:18081/", 3),
+        (
+            "::/0",
+            0,
+            65535,
+            "http://[::ffff:255.255.255.255]:18081/",
+            3,
+        ),
+        (
+            "::ffff:0.0.0.0/96",
+            0,
+            65535,
+            "http://[::ffff:127.0.0.1]:18081/",
+            3,
+        ),
+        (
+            "::ffff:0.0.0.0/96",
+            0,
+            65535,
+            "http://[::FFFF:7F00:1]:18081/",
+            3,
+        ),
+        (
+            "::ffff:0.0.0.0/96",
+            0,
+            65535,
+            "http://[0:0:0:0:0:FFFF:127.0.0.1]:18081/",
+            3,
+        ),
+        (
+            "::ffff:0.0.0.0/96",
+            0,
+            65535,
+            "http://[::ffff:0.0.0.0]:18081/",
+            3,
+        ),
+        (
+            "::ffff:0.0.0.0/96",
+            0,
+            65535,
+            "http://[::ffff:255.255.255.255]:18081/",
+            3,
+        ),
+        (
+            "::ffff:127.0.0.1",
+            0,
+            65535,
+            "http://[::ffff:127.0.0.1]:18081/",
+            3,
+        ),
+        (
+            "::ffff:127.0.0.1",
+            0,
+            65535,
+            "http://[::FFFF:7F00:1]:18081/",
+            3,
+        ),
+        (
+            "::ffff:127.0.0.1",
+            0,
+            65535,
+            "http://[0:0:0:0:0:FFFF:127.0.0.1]:18081/",
+            3,
+        ),
+        (
+            "::ffff:127.0.0.1",
+            0,
+            65535,
+            "http://[::ffff:0.0.0.0]:18081/",
+            3,
+        ),
+        (
+            "::ffff:127.0.0.1",
+            0,
+            65535,
+            "http://[::ffff:255.255.255.255]:18081/",
+            3,
+        ),
+        ("example.com", 80, 80, "https://example.com/", 6),
+        ("example.com", 443, 443, "http://example.com/", 6),
+        ("bad..pattern", -1, -1, "ftp://example.com/", 1),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        source.push_str(&format!(" if not rejected(pattern: {pattern:?}, lo: {lo}, hi: {hi}, url: {url:?}, expected: {expected}) then return Result.Error(\"rejected {i}\") end if\n"));
+    }
+    source.push_str(" return Result.Ok(())\nend function\n");
+    let program = compile(&source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let end = run::run_program(
+            &program,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))),
+        );
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(end.main_error.is_none(), "{mode:?}: {end:?}");
+        assert!(end.reports.is_empty(), "{mode:?}: {end:?}");
+        let checked = pipeline::check_text(
+            "http-request-in.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        let compared = differential::compare(
+            checked.program.unwrap(),
+            checked.sources,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))).input,
+            VmConfig::default(),
+            mode,
+            differential::CompareOptions {
+                require_returned: true,
+                ..Default::default()
+            },
+            Box::new(|| Ok(())),
+        );
+        match compared {
+            differential::Comparison::Matched => {}
+            differential::Comparison::Failed(reason)
+            | differential::Comparison::Excluded(reason) => panic!("{mode:?}: {reason}"),
+        }
+    }
+}
+
+// 関門: 「同じレコードを返す」は言語の構造的等値だけでは区別できない。
+// 公開の組み込み呼出しとsame_objectで、射影が同値の複製を作る退行を捕まえる。
+// 通常ソースのテストが扱えない同一性だけをここで確認し、差し込み口は加えない。
+#[test]
+fn http_request_in_projection_and_widen_return_the_original_objects() {
+    use benitoite::builtins::iface::{CallCtx, Reply};
+    use benitoite::builtins::{builtin_decl, lookup_builtin};
+    use benitoite::runtime::heap::{FieldsKind, Heap, Value as V};
+    use benitoite::types::scope::{EndpointPattern, HostPattern, Port, PortRange, Range};
+    Heap::new(HeapConfig::default()).epoch(|ctx| {
+        let method = ctx.alloc_str("POST", "request identity").unwrap();
+        let url = ctx
+            .alloc_str("https://example.com/path?x=1", "request identity")
+            .unwrap();
+        let body = ctx.alloc_bytes(b"body", "request identity").unwrap();
+        let request = ctx
+            .alloc_fields(
+                FieldsKind::Ctor,
+                0,
+                &[method, url, V::EmptyList, body, V::Int(1234)],
+            )
+            .unwrap();
+        let pattern = ctx.alloc_str("example.com", "request identity").unwrap();
+        let narrow = Range::Endpoint(EndpointPattern {
+            host: HostPattern::parse("example.com").unwrap(),
+            ports: PortRange::new(Port::from_int(443).unwrap(), Port::from_int(443).unwrap())
+                .unwrap(),
+        });
+        let check = builtin_decl(lookup_builtin("Http.checkRequestIn").unwrap()).unwrap();
+        let outside = Range::Endpoint(EndpointPattern {
+            host: HostPattern::parse("other.example").unwrap(),
+            ports: PortRange::new(Port::from_int(443).unwrap(), Port::from_int(443).unwrap())
+                .unwrap(),
+        });
+        let Reply::Done(rejected) = (check.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(&[outside]),
+            &[pattern, V::Int(443), V::Int(443), request],
+        )
+        .unwrap() else {
+            panic!("check did not return")
+        };
+        assert_eq!(ctx.fields_header(rejected), Some((FieldsKind::Ctor, 1)));
+        let Reply::Done(result) = (check.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(std::slice::from_ref(&narrow)),
+            &[pattern, V::Int(443), V::Int(443), request],
+        )
+        .unwrap() else {
+            panic!("check did not return")
+        };
+        assert_eq!(ctx.fields_header(result), Some((FieldsKind::Ctor, 0)));
+        let checked = ctx.field(result, 0).unwrap();
+        let widen = builtin_decl(lookup_builtin("Http.widenRequestIn").unwrap()).unwrap();
+        let Reply::Done(widened) = (widen.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(&[narrow, Range::Top]),
+            &[checked],
+        )
+        .unwrap() else {
+            panic!("widen did not return")
+        };
+        assert!(ctx.same_object(checked, widened));
+        assert!(ctx.same_object(request, ctx.field(widened, 0).unwrap()));
+        assert_eq!(ctx.str(ctx.field(widened, 1).unwrap()), Some("example.com"));
+        assert!(matches!(ctx.field(widened, 2), Some(V::Int(443))));
+        let project = builtin_decl(lookup_builtin("Http.requestInValue").unwrap()).unwrap();
+        let Reply::Done(projected) = (project.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(&[Range::Top]),
+            &[widened],
+        )
+        .unwrap() else {
+            panic!("projection did not return")
+        };
+        assert!(ctx.same_object(request, projected));
+    });
+}
+
+// 関門: 静的な範囲を実行本体へ渡す境界と、拡大で値を作り直さない契約を守る。
+// 通常ソースでは成功値の同一性や型検証を通らない静的範囲の不一致を観測できない。
+// 既存の raw と same_object だけを使い、テスト専用の口は加えない。
+#[test]
+fn scope_path_in_checks_static_membership_and_widen_preserves_the_object() {
+    use benitoite::builtins::iface::{CallCtx, Reply};
+    use benitoite::builtins::{builtin_decl, lookup_builtin};
+    use benitoite::runtime::heap::{FieldsKind, Heap};
+    use benitoite::types::scope::{PathPattern, Range};
+    Heap::new(HeapConfig::default()).epoch(|ctx| {
+        let pattern = ctx.alloc_str("/**", "path identity").unwrap();
+        let path = ctx.alloc_str("/data/input", "path identity").unwrap();
+        let check = builtin_decl(lookup_builtin("Scope.checkPathIn").unwrap()).unwrap();
+        let narrow = Range::Path(PathPattern::parse("/data/**").unwrap());
+        let outside = Range::Path(PathPattern::parse("/other/**").unwrap());
+        let Reply::Done(rejected) = (check.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(&[outside]),
+            &[pattern, path],
+        )
+        .unwrap() else {
+            panic!("check did not return")
+        };
+        assert_eq!(ctx.fields_header(rejected), Some((FieldsKind::Ctor, 1)));
+        let Reply::Done(result) = (check.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(std::slice::from_ref(&narrow)),
+            &[pattern, path],
+        )
+        .unwrap() else {
+            panic!("check did not return")
+        };
+        assert_eq!(ctx.fields_header(result), Some((FieldsKind::Ctor, 0)));
+        let checked = ctx.field(result, 0).unwrap();
+        let widen = builtin_decl(lookup_builtin("Scope.widenPathIn").unwrap()).unwrap();
+        let Reply::Done(widened) = (widen.raw)(
+            &mut CallCtx::new(ctx, None, None, None).with_ranges(&[narrow, Range::Top]),
+            &[checked],
+        )
+        .unwrap() else {
+            panic!("widen did not return")
+        };
+        assert!(ctx.same_object(checked, widened));
+        assert!(ctx.same_object(path, ctx.field(widened, 0).unwrap()));
+    });
+}
+
+// 関門: raw の同一性検査では届かない、範囲の選択から両実行器への列の受け渡しを守る。
+// 明示拡大の行き先を Top と書き、拡大後の射影も事実なしで受理できる契約にする。
+#[test]
+fn scoped_widen_calls_round_trip_through_both_evaluators() {
+    let source = r#"import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+function pathRoundTrip() -> Boolean
+ bind result <- Scope.checkPathIn(pattern: "/data/**", path: "/data/a")
+ return match result with
+ case Result.Ok(value) ->
+  bind wide: Scope.PathIn <- Scope.widenPathIn(path: value)
+  bind text <- Scope.pathInValue(path: wide)
+  text = "/data/a"
+ case Result.Error(_) -> false
+ end match
+end function
+function requestRoundTrip() -> Boolean
+ bind request <- Http.ClientRequest(method: "PATCH", url: "https://api.example.com/a", headers: [Pair("X-Test", "same")], body: String.toUTF8("猫"), timeoutMilliseconds: 1234)
+ bind result <- Http.checkRequestIn(hostPattern: "api.example.com", minimumPort: 443, maximumPort: 443, request: request)
+ return match result with
+ case Result.Ok(value) ->
+  bind wide: Http.RequestIn <- Http.widenRequestIn(request: value)
+  bind original <- Http.requestInValue(request: wide)
+  Http.ClientRequest.url(original) = "https://api.example.com/a" and Http.ClientRequest.method(original) = "PATCH" and Http.ClientRequest.body(original) = String.toUTF8("猫")
+ case Result.Error(_) -> false
+ end match
+end function
+function main() -> Result[Unit, String]
+ if pathRoundTrip() and requestRoundTrip() then return Result.Ok(()) else return Result.Error("widen round trip") end if
+end function"#;
+    let program = compile(source);
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        let end = run::run_program(
+            &program,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))),
+        );
+        assert_eq!(end.end, EndKind::Returned, "{end:?}");
+        assert_eq!(end.exit_code, 0, "{end:?}");
+        assert!(end.main_error.is_none(), "{end:?}");
+        assert!(end.reports.is_empty(), "{end:?}");
+        let checked = pipeline::check_text(
+            "widen.bnt",
+            source.as_bytes(),
+            CheckOptions {
+                require_main: true,
+                deny_warnings: false,
+            },
+        );
+        assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+        match differential::compare(
+            checked.program.unwrap(),
+            checked.sources,
+            environment(mode, Arc::new(Mutex::new(Vec::new()))).input,
+            VmConfig::default(),
+            mode,
+            differential::CompareOptions {
+                require_returned: true,
+                ..Default::default()
+            },
+            Box::new(|| Ok(())),
+        ) {
+            differential::Comparison::Matched => {}
+            differential::Comparison::Failed(reason)
+            | differential::Comparison::Excluded(reason) => panic!("{mode:?}: {reason}"),
+        }
+    }
+}
+
+// 関門: 六操作の登録から実ファイルまでを通し、対象の取り違え、置換と追記の混同、
+// IOError の混同を独立したバイト列で検出する。Scope の既存同一性検査だけでは IO に届かない。
+// 作業ディレクトリの木に限る入力と効果を持つ関数から六操作を実行し、非 Top の接続も通す。
+// 外部ファイル以外を差し替えず、既存の VM/参照実行器の公開入口を使う。
+#[test]
+fn file_in_operations_use_the_retained_path_and_preserve_values_and_errors() {
+    let directory = std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR"))
+        .join(format!("file-in-runtime-{}", std::process::id()));
+    std::fs::create_dir_all(&directory).unwrap();
+    let directory = directory.canonicalize().unwrap();
+    let path = directory.join("actual");
+    let missing = directory.join("absent-parent/actual");
+    let decoy = directory.join("decoy");
+    std::fs::write(&decoy, b"untouched").unwrap();
+    let source = r#"import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+function checked(path: String) -> Result[Scope.PathIn, String]
+ return Scope.checkPathIn(pattern: "/**", path: path) |> Result.mapError(r: _, f: lambda(error) return "scope" end lambda)
+end function
+function missing[T](result: Result[T, IOError]) -> Boolean
+ return match result with
+ case Result.Error(error) -> IOError.kind(error) = IOErrorKind.NotFound
+ case Result.Ok(_) -> false
+ end match
+end function
+function io[T](result: Result[T, IOError]) -> Result[T, String]
+ return Result.mapError(r: result, f: lambda(error) return IOError.message(error) end lambda)
+end function
+function intercepted(path: Scope.PathIn) -> Result[String, IOError] uses File.Read
+ return handle File.readTextIn(path: path) with
+ case File.readTextIn(captured) ->
+  bind pad <- String.repeat(s: "x", n: 128)
+  bind text <- Scope.pathInValue(path: captured)
+  resume(Result.Ok(if String.characterCount(pad) = 128 then text else "wrong capture" end if))
+ end handle
+end function
+function checkedIn(path: String) -> Result[Scope.PathIn[$TREE], String]
+ bind result: Result[Scope.PathIn[$TREE], Scope.ScopeError] <- Scope.checkPathIn(pattern: $TREE, path: path)
+ return Result.mapError(r: result, f: lambda(error) return "scope" end lambda)
+end function
+function operate(path: Scope.PathIn[$TREE], absent: Scope.PathIn[$TREE]) -> Result[Unit, String] uses File.Read[$TREE], File.Write[$TREE]
+ if not (missing(File.readTextIn(path: absent)) and missing(File.readBytesIn(path: absent)) and
+         missing(File.writeTextIn(path: absent, text: "x")) and missing(File.appendTextIn(path: absent, text: "x")) and
+         missing(File.writeBytesIn(path: absent, content: Bytes.empty())) and missing(File.appendBytesIn(path: absent, content: Bytes.empty()))) then
+   return Result.Error("missing path")
+ end if
+ bind replaced <- File.writeTextIn(path: path, text: "猫")
+ bind first <- File.readTextIn(path: path)
+ bind appended <- File.appendTextIn(path: path, text: "!\n")
+ bind second <- File.readTextIn(path: path)
+ if io(replaced) <> Result.Ok(()) or io(appended) <> Result.Ok(()) or io(first) <> Result.Ok("猫") or io(second) <> Result.Ok("猫!\n") then
+   return Result.Error("text replace/append/read")
+ end if
+ bind binary <- Bytes.fromList([255u8, 0u8, 65u8])
+ bind wrote <- File.writeBytesIn(path: path, content: binary)
+ bind bytes <- File.readBytesIn(path: path)
+ bind invalid <- File.readTextIn(path: path)
+ bind invalidUTF8 <- match invalid with
+ case Result.Error(error) -> IOError.kind(error) = IOErrorKind.InvalidUTF8
+ case Result.Ok(_) -> false
+ end match
+ bind added <- File.appendBytesIn(path: path, content: Bytes.fromList([66u8, 10u8]))
+ bind final <- File.readBytesIn(path: path)
+ if io(wrote) = Result.Ok(()) and io(added) = Result.Ok(()) and io(bytes) = Result.Ok(binary) and invalidUTF8 and io(final) = Result.Ok(Bytes.fromList([255u8, 0u8, 65u8, 66u8, 10u8])) then
+   return Result.Ok(())
+ else
+   return Result.Error("binary replace/append/read")
+ end if
+end function
+function main() -> Result[Unit, String] uses File.Read, File.Write
+ bind handledPath <- try checked(path: $PATH) or return
+ if io(intercepted(path: handledPath)) <> Result.Ok($PATH) then return Result.Error("handler target") end if
+ bind path <- try checkedIn(path: $PATH) or return
+ bind absent <- try checkedIn(path: $MISSING) or return
+ return operate(path: path, absent: absent)
+end function"#
+        .replace(
+            "$TREE",
+            &format!("{:?}", format!("{}/**", directory.to_str().unwrap())),
+        )
+        .replace("$PATH", &format!("{:?}", path.to_str().unwrap()))
+        .replace("$MISSING", &format!("{:?}", missing.to_str().unwrap()));
+    let checked = pipeline::check_text(
+        "file-in.bnt",
+        source.as_bytes(),
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let core = pipeline::desugar_checked(checked.program.as_ref().unwrap()).unwrap();
+    assert!(benitoite::ir::check::check_program(&core).is_empty());
+    let program = pipeline::compile(&core, Arc::clone(&checked.sources)).unwrap();
+    for mode in [ExecMode::Direct, ExecMode::Request] {
+        std::fs::write(&path, b"old bytes to replace").unwrap();
+        let stdout = Arc::new(Mutex::new(Vec::new()));
+        let env = environment(mode, Arc::clone(&stdout));
+        let input = env.input.clone();
+        let end = run::run_program(&program, env);
+        assert_eq!(end.end, EndKind::Returned, "{mode:?}: {end:?}");
+        assert_eq!(end.exit_code, 0, "{mode:?}: {end:?}");
+        assert!(
+            end.main_error.is_none() && end.reports.is_empty(),
+            "{end:?}"
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), [255, 0, 65, 66, 10]);
+        std::fs::write(&path, b"old bytes to replace").unwrap();
+        let (reference, out, err) = differential::run_reference(&core, input);
+        assert!(
+            matches!(
+                differential::compare_results(
+                    &program,
+                    &checked.sources,
+                    &end,
+                    (&stdout.lock().unwrap(), &[]),
+                    reference,
+                    (&out, &err)
+                ),
+                differential::Comparison::Matched
+            ),
+            "{mode:?}"
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), [255, 0, 65, 66, 10]);
+        assert_eq!(std::fs::read(&decoy).unwrap(), b"untouched");
+        assert!(!missing.exists());
+    }
+    std::fs::remove_dir_all(directory).unwrap();
 }
 
 // 関門: 標準ソースの辞書選択と全ての損失なし変換を、独立した値の期待で守る。

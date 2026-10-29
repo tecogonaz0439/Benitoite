@@ -1,0 +1,20 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::traits::tests::standard_library_sources_and_dictionary_contracts' (6486719) panicked at crates/benitoite/src/typeck/traits/tests.rs:61:5:
+assertion `left == right` failed
+  left: 64
+ right: 63
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::traits::tests::standard_library_sources_and_dictionary_contracts ... FAILED
+
+failures:
+
+failures:
+    typeck::traits::tests::standard_library_sources_and_dictionary_contracts
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1413 filtered out; finished in 0.11s
+
+error: test failed, to rerun pass `-p benitoite --lib`

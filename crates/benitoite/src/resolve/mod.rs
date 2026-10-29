@@ -130,6 +130,8 @@ pub struct ResolveOutput {
     pub bindings: BindingMap<Binding>,
     /// 参照の表: 名前を使う箇所のノード番号 → 束縛の番号。解決できなかった名前は載せない
     pub refs: NodeMap<BindingId>,
+    /// 名前の種類を確認し正規化した閉じた範囲。非 Top の注釈だけを載せる。
+    pub scopes: NodeMap<crate::types::scope::Range>,
     /// 宣言したノードのノード番号 → 束縛の番号
     pub decls: NodeMap<BindingId>,
     /// 公開の表: モジュール → そのモジュールのトップレベルの名前 → 束縛の番号。
@@ -268,3 +270,5 @@ mod walk;
 pub(crate) mod test_support;
 #[cfg(test)]
 mod tests;
+
+mod scope;

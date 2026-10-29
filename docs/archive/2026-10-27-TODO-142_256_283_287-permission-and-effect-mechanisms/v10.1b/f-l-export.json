@@ -1,0 +1,12 @@
+{
+  "command": "cargo test --test desugar_export range_sources::export_range_sources -- --exact --nocapture",
+  "environment": {
+    "BENITOITE_DESUGAR_DIFF_DIR": "<wt>/target/v10.1b/export"
+  },
+  "startedAt": "2026-10-29T17:24:57.051769+00:00",
+  "finishedAt": "2026-10-29T17:25:06.587235+00:00",
+  "exit": 0,
+  "elapsedSeconds": 9.535399541999999,
+  "timeMode": "/usr/bin/time -p",
+  "rss": "-p は最大常駐量を表示しないため未取得"
+}

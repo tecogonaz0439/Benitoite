@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "typeck::scope::local_tests",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 101,
+  "elapsed_seconds": 13.810511167,
+  "maximum_resident_bytes": 3394306048,
+  "maximum_resident_mib": 3237.0625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; 子の最大値",
+  "stdout_log": "local-02.log"
+}

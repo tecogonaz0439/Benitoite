@@ -1,0 +1,117 @@
+{
+ "affected_modules": 243,
+ "checked_affected": 214,
+ "failed_modules": [
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Surface.CheckSoundBasicExpr"
+ ],
+ "error_diagnostics": 5,
+ "sorry_warnings_from_errors": 0,
+ "broken_declarations": 4,
+ "broken_files": 2,
+ "declarations": [
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Atom.toRelease",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Ty.toRelease",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def fromTy",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+   "decl": "theorem opName_case",
+   "errors": 2
+  }
+ ],
+ "files": [
+  "Benitoite/Exchange/Convert.lean",
+  "Benitoite/Surface/CheckSoundBasicExpr.lean"
+ ],
+ "unchecked_count": 29,
+ "unchecked": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "diagnostics": [
+  {
+   "kind": "error",
+   "file": "Benitoite/Exchange/Convert.lean",
+   "line": 9,
+   "col": 20,
+   "decl": "def Atom.toRelease",
+   "decl_line": 8,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Exchange/Convert.lean",
+   "line": 60,
+   "col": 26,
+   "decl": "def Ty.toRelease",
+   "decl_line": 58,
+   "msg": "Type mismatch"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Exchange/Convert.lean",
+   "line": 87,
+   "col": 6,
+   "decl": "def fromTy",
+   "decl_line": 85,
+   "msg": "Type mismatch"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+   "line": 198,
+   "col": 64,
+   "decl": "theorem opName_case",
+   "decl_line": 184,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+   "line": 184,
+   "col": 69,
+   "decl": "theorem opName_case",
+   "decl_line": 184,
+   "msg": "unsolved goals"
+  }
+ ]
+}

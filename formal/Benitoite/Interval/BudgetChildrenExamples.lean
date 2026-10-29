@@ -104,7 +104,7 @@ private def output (source : Expr) := analyzeExpr {} {} 64 env key source
       (initial.locals.length, integerAt initial 1)) = some (2, top) ∧
     (result.context.independentRev.head?.bind fun entry => entry.initial.map fun initial =>
       match lookup initial 0 with
-      | some (.unknown (some (.opaque owner))) => owner == "Example.Resource"
+      | some (.unknown (some (.opaqueTop owner))) => owner == "Example.Resource"
       | _ => false) = some true ∧
     result.context.next.surfacePreorder = 8 ∧ result.approx.warnings = []
 

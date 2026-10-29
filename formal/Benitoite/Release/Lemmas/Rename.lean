@@ -184,7 +184,7 @@ mutual
     | .V_Var hi hc => simp only [Val.rename]; exact .V_Var (hξ _ _ hi) hc
     | .V_Const => simp only [Val.rename]; exact .V_Const
     | .V_Fun hd hn had => simp only [Val.rename]; exact .V_Fun hd hn had
-    | .V_Prim hs hn had => simp only [Val.rename]; exact .V_Prim hs hn had
+    | .V_Prim hs hrs hn had => simp only [Val.rename]; exact .V_Prim hs hrs hn had
     | .V_Op hod hn hts => simp only [Val.rename]; exact .V_Op hod hn hts
     | .V_Raise ht he => simp only [Val.rename]; exact .V_Raise ht he
     | .V_Lam (ps := ps) hn hw hb =>
@@ -206,6 +206,8 @@ mutual
     | .V_Dict hi hts hvs => simp only [Val.rename]; exact .V_Dict hi hts (HasTypeVsQ.rename hvs hξ)
     | .V_Super hv hc hs => simp only [Val.rename]; exact .V_Super (HasTypeVQ.rename hv hξ) hc hs
     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.rename h hξ) hle hw
+    | .V_Checked hk hm => exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
 
   theorem HasTypeVsQ.rename {Ψ C Γ Δ ξ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hξ : RenOk Γ Δ ξ) :
       HasTypeVsQ P B Ψ Q C Δ (Val.renameList ξ vs) as := by
@@ -281,10 +283,10 @@ mutual
         rw [binds_length, hp.2.1] at hξ'
         exact .guarded hp (HasTypeCQ.rename hg hξ'.hide _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeCQ.rename hm hξ' _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeArmsQ.rename ht hξ Δl' hL)
 
-  theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+  theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
       (hξ : RenOk Γ Δ ξ)
       (Δl' : LocalCtx := Δl)
-      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε Δl' := by
+      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R εb (Clause.renameList ξ h) t ε Δl' := by
     match hc with
     | .nil => simp only [Clause.renameList]; exact .nil
     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
@@ -334,13 +336,13 @@ theorem hideBuilders_mono {Ψ Ψ' : StoreTy} (h : StoreTy.Sub Ψ Ψ') :
   | _ => simp [StoreTy.hideBuilders, hy]
 
 mutual
-  theorem HasTypeVQ.store {Ψ Ψ' C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
+  theorem HasTypeVQ.store {Q : NoFailCtx} {Ψ Ψ' C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) (hΨ : StoreTy.Sub Ψ Ψ') :
       HasTypeVQ P B Ψ' Q C Γ v a := by
     match h with
     | .V_Var hi hc => exact .V_Var hi hc
     | .V_Const => exact .V_Const
     | .V_Fun hd hn had => exact .V_Fun hd hn had
-    | .V_Prim hs hn had => exact .V_Prim hs hn had
+    | .V_Prim hs hrs hn had => exact .V_Prim hs hrs hn had
     | .V_Op hod hn hts => exact .V_Op hod hn hts
     | .V_Raise ht he => exact .V_Raise ht he
     | .V_Lam hn hw hb => exact .V_Lam hn hw (HasTypeCQ.store hb (hideBuilders_mono hΨ))
@@ -355,20 +357,22 @@ mutual
     | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVsQ.store hvs hΨ)
     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.store hv hΨ) hc hs
     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.store h hΨ) hle hw
+    | .V_Checked hk hm => exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc (HasTypeVQ.store ht hΨ)
 
-  theorem HasTypeVsQ.store {Ψ Ψ' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
+  theorem HasTypeVsQ.store {Q : NoFailCtx} {Ψ Ψ' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
       HasTypeVsQ P B Ψ' Q C Γ vs as := by
     match h with
     | .nil => exact .nil
     | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeVsQ.store hvs hΨ)
 
-  theorem HasTypeEachQ.store {Ψ Ψ' C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
+  theorem HasTypeEachQ.store {Q : NoFailCtx} {Ψ Ψ' C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a)
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeEachQ P B Ψ' Q C Γ vs a := by
     match h with
     | .nil => exact .nil
     | .cons hv hvs => exact .cons (HasTypeVQ.store hv hΨ) (HasTypeEachQ.store hvs hΨ)
 
-  theorem HasTypeCQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
+  theorem HasTypeCQ.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ R m a ε} (h : HasTypeCQ P B Ψ Q C Γ R m a ε Δl)
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeCQ P B Ψ' Q C Γ R m a ε Δl := by
     match h with
     | .C_BuilderLet hw hb => exact .C_BuilderLet hw (HasTypeCQ.store hb hΨ)
@@ -393,7 +397,7 @@ mutual
     | .C_Meth hv hc hm hnames hts hscope hes hws =>
         exact .C_Meth (HasTypeVQ.store hv hΨ) hc hm hnames hts hscope hes (HasTypeVsQ.store hws hΨ)
 
-  theorem HasTypeArmsQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
+  theorem HasTypeArmsQ.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ R arms a b ε} (h : HasTypeArmsQ P B Ψ Q C Γ R arms a b ε Δl)
       (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeArmsQ P B Ψ' Q C Γ R arms a b ε Δl := by
     match h with
     | .nil hw => exact .nil hw
@@ -401,13 +405,13 @@ mutual
     | .guarded hp hg hm ht =>
         exact .guarded hp (HasTypeCQ.store hg hΨ) (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
 
-  theorem HasTypeClausesQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R h t ε Δl := by
+  theorem HasTypeClausesQ.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
+      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R εb h t ε Δl := by
     match hc with
     | .nil => exact .nil
     | .cons hsg hnames hn hk hew hbody hrest =>
         exact .cons hsg hnames hn hk hew (HasTypeCQ.store hbody (hideBuilders_mono hΨ)) (HasTypeClausesQ.store hrest hΨ)
-  theorem HasFailureClause.store {Δl : LocalCtx} {Ψ Ψ' C Γ E R h t ε}
+  theorem HasFailureClause.store {Q : NoFailCtx} {Δl : LocalCtx} {Ψ Ψ' C Γ E R h t ε}
       (hc : HasFailureClause P B Ψ Q C Γ E R h t ε Δl) (hΨ : StoreTy.Sub Ψ Ψ') :
       HasFailureClause P B Ψ' Q C Γ E R h t ε Δl := by
     match hc with
@@ -421,9 +425,9 @@ theorem hideBuilders_weaken {P B Ψ Q C Γ R m a e}
   h.store (hideBuilders_sub Ψ)
 
 /-- 節の捕捉境界を二度隠しても同じ判断になる。 -/
-theorem HasTypeClausesQ.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ R cs t e}
-    (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) :
-    HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R cs t e Δl := by
+theorem HasTypeClausesQ.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ R εb cs t e}
+    (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t e Δl) :
+    HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R εb cs t e Δl := by
   match h with
   | .nil => exact .nil
   | .cons hs hn ha hk he hb ht =>
@@ -445,7 +449,7 @@ mutual
     | .V_Var hi hc => exact .V_Var (hideConts_get.mpr ⟨hi, hc⟩) hc
     | .V_Const => exact .V_Const
     | .V_Fun hd hn had => exact .V_Fun hd hn had
-    | .V_Prim hs hn had => exact .V_Prim hs hn had
+    | .V_Prim hs hrs hn had => exact .V_Prim hs hrs hn had
     | .V_Op hod hn hts => exact .V_Op hod hn hts
     | .V_Raise ht he => exact .V_Raise ht he
     | .V_Lam hn hw hb => refine .V_Lam hn hw ?_; rw [hideConts_hideConts]; exact hb
@@ -460,6 +464,8 @@ mutual
     | .V_Dict hi hts hvs => exact .V_Dict hi hts (HasTypeVsQ.hide hvs)
     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.hide hv) hc hs
     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.hide h) hle hw
+    | .V_Checked hk hm => exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
 
   theorem HasTypeVsQ.hide {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
       HasTypeVsQ P B Ψ Q C (hideConts Γ) vs as := by

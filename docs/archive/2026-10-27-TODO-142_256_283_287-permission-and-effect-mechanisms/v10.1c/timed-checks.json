@@ -1,0 +1,42 @@
+[
+  {
+    "name": "example-no-run",
+    "command": "cargo test -p benitoite --example wit_transfer_cost --no-run",
+    "exit_code": 1,
+    "start_utc": "2026-10-29T20:54:01.175955+00:00",
+    "elapsed_seconds": 31.641,
+    "maximum_rss_bytes": null,
+    "log": "example-no-run.log",
+    "exit_code_scope": "time -l の終了状態。Cargo 自身は別途取得していない"
+  },
+  {
+    "name": "lib-interpolation-formats",
+    "command": "cargo test -p benitoite --lib typeck::tests::interpolation_formats",
+    "exit_code": 1,
+    "start_utc": "2026-10-29T20:54:32.817024+00:00",
+    "elapsed_seconds": 6.577,
+    "maximum_rss_bytes": null,
+    "log": "lib-interpolation-formats.log",
+    "exit_code_scope": "time -l の終了状態。Cargo 自身は別途取得していない"
+  },
+  {
+    "name": "clippy-all-targets",
+    "command": "cargo clippy -p benitoite --all-targets",
+    "exit_code": 1,
+    "start_utc": "2026-10-29T20:54:39.394562+00:00",
+    "elapsed_seconds": 17.69,
+    "maximum_rss_bytes": null,
+    "log": "clippy-all-targets.log",
+    "exit_code_scope": "time -l の終了状態。Cargo 自身は別途取得していない"
+  },
+  {
+    "name": "fmt-check",
+    "command": "cargo fmt --check",
+    "exit_code": 1,
+    "start_utc": "2026-10-29T20:54:57.084993+00:00",
+    "elapsed_seconds": 2.704,
+    "maximum_rss_bytes": null,
+    "log": "fmt-check.log",
+    "exit_code_scope": "time -l の終了状態。Cargo 自身は別途取得していない"
+  }
+]

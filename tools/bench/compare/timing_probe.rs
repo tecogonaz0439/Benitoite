@@ -65,9 +65,20 @@ fn count_comp(comp: &Comp) -> usize {
     }
 }
 
+fn builtin_ty(id: types::builtin::BuiltinTypeId) -> Ty {
+    #[cfg(benitoite_range_index)]
+    {
+        Ty::Con(TyCon::Builtin(id), vec![], types::builtin::RangeIndex::TOP)
+    }
+    #[cfg(not(benitoite_range_index))]
+    {
+        Ty::Con(TyCon::Builtin(id), vec![])
+    }
+}
+
 fn irenv(n: usize) -> Result<serde_json::Value, Box<dyn Error>> {
     use base::{BindingId, Span};
-    let ty = Ty::Con(TyCon::Builtin(types::builtin::BuiltinTypeId::UNIT), vec![]);
+    let ty = builtin_ty(types::builtin::BuiltinTypeId::UNIT);
     let origin = Span {
         file: base::FileId(0),
         start: base::BytePos(0),
@@ -123,6 +134,8 @@ fn irenv(n: usize) -> Result<serde_json::Value, Box<dyn Error>> {
         adts: Default::default(),
         traits: Default::default(),
         schemes: Default::default(),
+        #[cfg(benitoite_range_signatures)]
+        range_signatures: Default::default(),
         main: None,
         main_returns_result: false,
         body_count: 0,
@@ -174,10 +187,7 @@ fn irenv(n: usize) -> Result<serde_json::Value, Box<dyn Error>> {
         kind: CompKind::If {
             cond: CoreVal {
                 kind: ValKind::Const(Const::Bool(true)),
-                ty: Ty::Con(
-                    TyCon::Builtin(types::builtin::BuiltinTypeId::BOOLEAN),
-                    vec![],
-                ),
+                ty: builtin_ty(types::builtin::BuiltinTypeId::BOOLEAN),
                 origin,
             },
             then_branch: Box::new(bound),

@@ -38,14 +38,34 @@ def refSetSig : PrimSig where
 def builtins : Builtins where
   sig := fun b => if b = "Reference.get" then some refGetSig
     else if b = "Reference.set" then some refSetSig else none
-  delta := fun _ _ _ _ => none
-  ioResponse := fun _ _ _ _ _ => False
+  delta := fun _ _ _ _ _ => none
+  ioResponse := fun _ _ _ _ _ _ => False
   releaseResponse := fun _ r => r = none
   isResource := fun _ => false
   effects := fun l => if l = stateEff then some [] else none
   sat := fun _ _ _ => True
   refGet := "Reference.get"
   refSet := "Reference.set"
+  -- 署名表のデータ（問 11）。この表のエフェクト（`State`）は対象を持たず、不透明型と資源の型は範囲付きの値型でない
+  -- （RV-PL10 中3 (b)）。範囲の変数を持つ項目がないので、具体化の制約は何も許さない（Top の列だけを許す）。
+  effKind := fun _ => none
+  valKind := fun _ => none
+  admitsR := fun _ _ => False
+
+/-- この表には範囲付きの値型がない（既存の不透明型と資源の型は `valKind = none`）。 -/
+theorem builtins_valKind (o : OpaqueName) : builtins.valKind o = none := rfl
+
+/-- この表のエフェクトの名前は対象の種類を持たない。 -/
+theorem builtins_effKind (l : EffName) : builtins.effKind l = none := rfl
+
+/-- この表の項目は範囲の変数を持たない。 -/
+theorem builtins_nranges {b s} (h : builtins.sig b = some s) : s.nranges = 0 := by
+  simp only [builtins] at h
+  split at h
+  · cases h; rfl
+  · split at h
+    · cases h; rfl
+    · cases h
 
 theorem sig_cases {b s} (h : builtins.sig b = some s) : s = refGetSig ∨ s = refSetSig := by
   simp only [builtins] at h
@@ -79,12 +99,12 @@ theorem assumptions (P : Program) : builtins.Assumptions P where
     intro b s C1 C0 ts h _ ha
     rcases sig_cases h with rfl | rfl <;> exact ha
   delta_typed := by
-    intro Ψ b s ts es ws h hk
+    intro Ψ b s rs ts es ws h hk
     rcases sig_cases h with rfl | rfl <;> simp [refGetSig, refSetSig] at hk
-  io_kind := fun _ _ _ _ _ _ _ h => h.elim
-  io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
+  io_kind := fun _ _ _ _ _ _ _ _ h => h.elim
+  io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
   io_exists := by
-    intro Ψ b s ts es ws h hk
+    intro Ψ b s rs ts es ws h hk
     rcases sig_cases h with rfl | rfl <;> simp [refGetSig, refSetSig] at hk
   io_op := by
     intro b s h hk
@@ -109,6 +129,9 @@ theorem assumptions (P : Program) : builtins.Assumptions P where
   ref_get := ⟨refGetSig, by simp [builtins], rfl⟩
   ref_set := ⟨refSetSig, by simp [builtins], rfl⟩
   release_exists := fun _ _ _ _ _ => ⟨none, rfl⟩
+  io_target := by
+    intro Ψ b s rs ts es ws o obs _ _ _ _ _ _ _ h
+    exact h.elim
 
 /-- 定義も宣言も持たないプログラム。 -/
 def emptyProgram : Program :=
@@ -127,7 +150,7 @@ theorem emptyProgram_effectsOk : emptyProgram.EffectsOk builtins :=
 example : ∀ s, Steps emptyProgram builtins (.run (.ret (.const .unit)) [] Store.empty) s →
     (∀ ev s', ¬ Step emptyProgram builtins s (some ev) s') ∧ ¬ UnhandledOp s :=
   effect_soundness emptyProgram_wellFormed emptyProgram_wellTyped emptyProgram_effectsOk
-    (assumptions emptyProgram) (.C_Return .V_Const) trivial
+    (assumptions emptyProgram).core (.C_Return .V_Const) trivial
 
 /-! ## 型クラスを使うプログラム
 
@@ -288,7 +311,7 @@ example : ∀ s, Steps classProgram builtins
       (.run (.meth (.super (.dict "DInt" [] []) "C") "m" [] [] []) [] Store.empty) s →
     (∀ ev s', ¬ Step classProgram builtins s (some ev) s') ∧ ¬ UnhandledOp s :=
   effect_soundness classProgram_wellFormed classProgram_wellTyped classProgram_effectsOk
-    (assumptions classProgram) super_call_typed
+    (assumptions classProgram).core super_call_typed
     (by simp [Comp.ClosedNoEffVars, Comp.VarsIn, Val.VarsIn, Ty.VarsInList, Val.VarsInList,
       Eff.VarsInList])
 
@@ -305,9 +328,9 @@ example : ¬ NamesWF [] [.base .integer] ∧
   simp [NamesWF]
 
 /-- コンテナの内側でも関数型の名前の整形式を検査する。 -/
-example : ¬ Ty.WF 0 (.list (.fn ["value", "value"]
+example : ¬ Ty.WF 0 0 (.list (.fn ["value", "value"]
     [.base .integer, .base .integer] (.base .integer) Eff.empty)) ∧
-    ¬ Ty.VarsIn 0 (fun _ => False)
+    ¬ Ty.VarsIn 0 0 (fun _ => False)
       (.reference (.fn [] [.base .integer] (.base .integer) Eff.empty)) := by
   simp [Ty.WF, Ty.VarsIn, NamesWF]
 
@@ -325,16 +348,19 @@ example : ¬ Ty.Le (.fn ["value"] [.base .integer] (.base .integer) Eff.empty)
 
 /-- Reference.get の契約名は型引数を置き換えても残る。 -/
 example : HasTypeV emptyProgram builtins StoreTy.empty [] []
-    (.prim "Reference.get" [.base .integer] [])
+    (.prim "Reference.get" [.base .integer] [] [])
     (.fn ["reference"] [.reference (.base .integer)] (.base .integer) (Eff.single stateEff)) := by
+  have hsc : refGetSig.Scoped := (assumptions emptyProgram).sig_scoped "Reference.get" refGetSig (by simp [builtins])
+  have h0 : refGetSig.nranges = 0 := rfl
+  have hinst := PrimSig.inst_nil_of_scoped hsc h0
+  have hpa : PrimitiveAdmissible [] refGetSig Qempty [.base .integer] [] := PrimitiveAdmissible.of_noRows hsc rfl rfl rfl
+    (by intro t ht; simp only [List.mem_singleton] at ht; subst t
+        exact ⟨trivial, by intros; simp⟩)
   have h := HasTypeVQ.V_Prim (Q := Qempty) (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
-    (C := []) (Γ := []) (b := "Reference.get") (s := refGetSig) (ts := [.base .integer])
-    (es := []) (by simp [builtins]) (by simp [NamesWF, refGetSig])
-    (PrimitiveAdmissible.of_noRows
-      (by simp [PrimSig.Scoped, refGetSig, PrimSig.ntys, NamesWF, Ty.VarsIn, Ty.VarsInList,
-        Eff.VarsIn, Eff.single, Eff.ofAtoms]) rfl rfl rfl
-      (by intro t ht; simp only [List.mem_singleton] at ht; subst t
-          exact ⟨trivial, by intros; simp⟩))
+    (C := []) (Γ := []) (b := "Reference.get") (s := refGetSig) (rs := []) (ts := [.base .integer])
+    (es := []) (by simp [builtins]) ((Builtins.rangeAdmissible_iff_nil h0 []).mpr rfl)
+    (by rw [hinst]; simp [NamesWF, refGetSig]) (by rw [hinst]; exact hpa)
+  rw [hinst] at h
   have he : Eff.substAt 0 [.base .integer] [] (Eff.single stateEff) = Eff.single stateEff :=
     Eff.substAt_ofAtoms 0 _ _
   simpa [fnTy_eq, refGetSig, Ty.subst, Ty.substAt, he, Ty.shift] using h
@@ -365,6 +391,7 @@ example : HasTypeV emptyProgram builtins StoreTy.empty [({} : TParam)] []
 theorem lambda_names_wellFormed {P B Ψ Q C Γ v a names ps body}
     (h : HasTypeVQ P B Ψ Q C Γ v a) (hv : v = .lam names ps body) : NamesWF names ps := by
   match h with
+  | .V_CheckedRequest .. => cases hv
   | .V_Lam hn hw _ => cases hv; exact hn
   | .V_Sub h _ hw => exact lambda_names_wellFormed h hv
   | .V_Var _ _ => cases hv
@@ -391,7 +418,7 @@ example : ∀ a, ¬ HasTypeV emptyProgram builtins StoreTy.empty [] []
   have hn := lambda_names_wellFormed h rfl
   simp [NamesWF] at hn
 
-example : step emptyProgram builtins (fun _ _ _ _ => .err "unused") (fun _ => none) (fun _ => 0)
+example : step emptyProgram builtins (fun _ _ _ _ => (.err "unused", [])) (fun _ => none) (fun _ => 0)
     (.run (.app firstLambda [.const (.integer ⟨7, by decide⟩), .const (.string "second")]) [] Store.empty) =
     some (none, .run (.ret (.const (.integer ⟨7, by decide⟩))) [.mark] Store.empty) := by
   rfl

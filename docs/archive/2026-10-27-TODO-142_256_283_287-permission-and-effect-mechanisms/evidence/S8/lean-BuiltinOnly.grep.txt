@@ -1,0 +1,12 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/EffectSound.lean:15:theorem builtinOnly_empty : BuiltinOnly P B Eff.empty :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/EffectSound.lean:83:    (hEb : BuiltinOnly P B Eb) : ¬ UnhandledOp s := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/PresHelpers.lean:31:theorem stateTy_iff {s : State} : StateTy P B s ↔ ∃ Eb, BuiltinOnly P B Eb ∧ StateTyE P B Eb s := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Progress.lean:201:    (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) (hod : P.ops o = some od)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Progress.lean:419:    (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Progress.lean:461:    (hk : ContTy P B Ψ R ε k a b Eb none) (hEb : BuiltinOnly P B Eb) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Progress.lean:506:    (hs : StateTyE P B Eb s) (hEb : BuiltinOnly P B Eb) : s.Final ∨ ∃ l s', Step P B s l s' := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:613:def BuiltinOnly (P : Program) (B : Builtins) (ε : Eff) : Prop :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:650:      ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:654:      ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:658:      StoreOk P B Ψ σ ∧ ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Semantics.lean:661:      StoreOk P B Ψ σ ∧ ContTy P B Ψ R ε k a b Eb none ∧ BuiltinOnly P B Eb ∧

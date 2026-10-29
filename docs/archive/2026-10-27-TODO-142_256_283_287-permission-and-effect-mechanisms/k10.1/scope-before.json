@@ -1,0 +1,22 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_named_declarations_smoke",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "start": "2026-10-29T11:20:13.540903+00:00",
+  "end": "2026-10-29T11:20:15.861091+00:00",
+  "exit": 101,
+  "time_exit": 101,
+  "seconds": 2.3198907920000003,
+  "max_rss_raw": 704200704,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 671.578125,
+  "max_rss_gib": 0.6558380126953125,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN), child process maximum, not concurrent sum"
+}

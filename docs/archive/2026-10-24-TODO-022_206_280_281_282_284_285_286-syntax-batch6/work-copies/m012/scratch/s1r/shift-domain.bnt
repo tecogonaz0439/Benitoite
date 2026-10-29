@@ -1,0 +1,8 @@
+function f(n: Integer) -> Integer
+  if n > 63 then return Integer.shiftLeft(a: 1, n: n) else return 0 end if
+end function
+
+function main() -> Unit
+  bind _ <- f(64)
+  return ()
+end function

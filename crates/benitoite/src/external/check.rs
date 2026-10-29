@@ -754,7 +754,7 @@ fn user_type_note(
     names: &TyNames<'_>,
     sources: &SourceTable,
 ) -> DiagBuilder {
-    if let Ty::Con(crate::types::TyCon::Adt(id), _) = ty
+    if let Ty::Con(crate::types::TyCon::Adt(id), _, _) = ty
         && let Some(def) = names.adts.get(*id)
         && matches!(def.name.as_str(), "Option" | "Result" | "Pair" | "Triple")
         && let Some(source) = sources.get(def.module.file())

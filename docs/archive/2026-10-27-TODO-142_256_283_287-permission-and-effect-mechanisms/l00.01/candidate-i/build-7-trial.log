@@ -1,0 +1,75 @@
+== wait-for-lock start 17:58:15
+== lock acquired 17:58:29 after 14s
+✔ [48/410] Built Benitoite.Release.TypeSubst (319ms)
+✔ [49/410] Built Benitoite.Release.TypeSubst:c.o (131ms)
+✔ [50/410] Built Benitoite.Release.Syntax (641ms)
+✖ [51/410] Building Benitoite.Release.TypeSubstLemmas (754ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeSubstLemmas.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeSubstLemmas.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeSubstLemmas.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeSubstLemmas.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeSubstLemmas.setup.json --json
+error: Benitoite/Release/TypeSubstLemmas.lean:89:7: Missing cases:
+(Atom.name _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeSubstLemmas.lean:96:16: Tactic `rfl` failed: The left-hand side
+  (match Atom.name l✝ r✝ with
+    | Atom.name l r => e.atoms (Atom.name l r)
+    | Atom.rho i => if i < es.length then false else e.atoms (Atom.rho i)) =
+    true
+is not definitionally equal to the right-hand side
+  match Atom.name l✝ r✝ with
+  | Atom.name l => e.mem (Atom.name l)
+  | Atom.rho i => es.length ≤ i ∧ e.mem (Atom.rho i)
+
+case h₁.name
+es : List Eff
+e : Eff
+l✝ : EffName
+r✝ : ScopeRange
+⊢ (match Atom.name l✝ r✝ with
+      | Atom.name l r => e.atoms (Atom.name l r)
+      | Atom.rho i => if i < es.length then false else e.atoms (Atom.rho i)) =
+      true ↔
+    match Atom.name l✝ r✝ with
+    | Atom.name l => e.mem (Atom.name l)
+    | Atom.rho i => es.length ≤ i ∧ e.mem (Atom.rho i)
+error: Benitoite/Release/TypeSubstLemmas.lean:131:30: Application type mismatch: The argument
+  ha
+has type
+  match Atom.name l✝ r✝ with
+  | Atom.name l => e.mem (Atom.name l)
+  | Atom.rho i => θ.rows.length ≤ i ∧ e.mem (Atom.rho i)
+but is expected to have type
+  e.mem ?m.112
+in the application
+  h.left ?m.112 ha
+✔ [67/410] Built Benitoite.Release.Syntax:c.o (292ms)
+✔ [68/410] Built Benitoite.Surface.BuilderSyntax (379ms)
+✔ [70/410] Built Benitoite.Release.Subst (616ms)
+✔ [86/410] Built Benitoite.Interval.Domain (602ms)
+✔ [101/410] Built Benitoite.Interval.Domain:c.o (253ms)
+✔ [102/410] Built Benitoite.Release.SubstExamples (487ms)
+✔ [103/410] Built Benitoite.Release.Order.Shift (484ms)
+✔ [104/410] Built Benitoite.Release.LocalRef (509ms)
+✔ [144/410] Built Benitoite.Surface.BuilderLower (467ms)
+✔ [169/410] Built Benitoite.Surface.FormatSpec (1.4s)
+✔ [325/410] Built Benitoite.Interval.Budget (947ms)
+✔ [408/410] Built Benitoite.Interval.BudgetExamples (277ms)
+Some required targets logged failures:
+- Benitoite.Release.TypeSubstLemmas
+error: build failed
+        2.94 real         7.64 user         3.09 sys
+           760561664  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              610271  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  44  voluntary context switches
+               38875  involuntary context switches
+          1388370701  instructions retired
+           549995440  cycles elapsed
+            28378336  peak memory footprint
+== exit 1

@@ -77,7 +77,7 @@ Rust のホスト・実ソース・文書・golden の期待値は [hosts.json](
 抽出した check/test 例の「診断なし」という期待との食い違いは **0件**。[一覧](../u01a/expectation-differences.json)に保存した。run の出力や error の部分文字列、golden の JSON 全文については既存テストの結果を [U01a の結果](../u01a/results.md)で確認する。
 本体ごと・全体の解析消費と予算上限への到達、定数展開の大きさ、外の事実なら未到達となる枝に独立解析が出した候補の分類は、この枝では取得していない。警告の減少を予算超過の件数に読み替えず、U01b が同じ一覧・ハッシュを使って区別する。
 
-生の全出力は `work/m012/records/u01a/all-raw.jsonl.gz`、個別診断と版・W/Rの対応は `all-observations.jsonl.gz`、抽出本文は `doc-examples.jsonl.gz` と `extracted.jsonl.gz` に保存した。永続記録の大きさと SHA-256 は [records-index.json](../u01a/records-index.json)にある。リポジトリには [全件集計](../u01a/all-counts.json)と `all-inputs-00.json` 以降の分割した索引を置く。
+生の全出力は [all-raw.jsonl.gz の索引とハッシュ](../work-copies/README.md#f300)、個別診断と版・W/Rの対応は `all-observations.jsonl.gz`、抽出本文は `doc-examples.jsonl.gz` と `extracted.jsonl.gz` に保存した。永続記録の大きさと SHA-256 は [records-index.json](../u01a/records-index.json)にある。リポジトリには [全件集計](../u01a/all-counts.json)と `all-inputs-00.json` 以降の分割した索引を置く。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 ## 消費と上限
 
@@ -139,7 +139,7 @@ U01b、2026-10-27。B_WORK `d1c590250126af256628baa409c833b894b353aa` の既定�
 
 通常入力の独立入力は34,752件、独立入力自身の候補は5件だった。4件は `int_overflow_{add,sub,mul,neg}.bnt`、1件は `runner/run-stopped.bnt` の call 引数内の閉じた算術であり、外の事実なら未到達となる枝からの候補は0件である。[分類と元位置](../u01b/consumption-details.json)に全件を保存した。候補数は旧定数警告との統合前であり、利用者へ出した警告数へ読み替えない。
 
-全件の生の観測は `work/m012/records/u01b/all-observations.jsonl.gz`、本体ごとの消費・根の終端・定数参照数は `normal-bodies.jsonl.gz` と `existing-dedicated-bodies.jsonl.gz` に保存した。[索引と SHA-256](../u01b/records-index.json)をリポジトリへ残し、1 MBを超える生の観測は索引だけを追跡する。Rust の文字列や動的生成入力の個別消費はこの1,217入口の測定へ追加しておらず、既存の lib・全統合の成功件数から推定しない。
+全件の生の観測は [all-observations.jsonl.gz の索引とハッシュ](../work-copies/README.md#f299)、本体ごとの消費・根の終端・定数参照数は `normal-bodies.jsonl.gz` と `existing-dedicated-bodies.jsonl.gz` に保存した。[索引と SHA-256](../u01b/records-index.json)をリポジトリへ残し、1 MBを超える生の観測は索引だけを追跡する。Rust の文字列や動的生成入力の個別消費はこの1,217入口の測定へ追加しておらず、既存の lib・全統合の成功件数から推定しない。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 
 ## U02b・U03a の追加例の消費（U03R）

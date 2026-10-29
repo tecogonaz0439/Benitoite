@@ -1,0 +1,91 @@
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index a8535283..ac613275 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -262,9 +262,10 @@ mutual
+     この値を作るのは組み込みの表の δ（検査の項目）である。 -/
+     | checked (t : Scope.Domain.Target)
+     /-- 検査済みの要求の値（決定の判断 7）。`Http.RequestIn[H,P]` の値に当たり、検査した要求 `req` と、検査で得た実効の
+-    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は閉じた不透明型の値であり、不透明型の定数として
+-    持つ。型と値の変数を持たないので、代入・改名・shift で変わらない。型付けは葉の規則 V-CheckedRequest だけで行う。 -/
+-    | checkedRequest (t : Scope.Domain.Target) (req : Const)
++    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は `Http.ClientRequest` のレコードの閉じた値
++    （空の型の文脈と値の文脈で型を持ち、型の変数を含まない値）である。閉じた値なので、代入・改名・shift はこの値を
++    変えない（中へ下りない）。型付けは規則 V-CheckedRequest だけで行う。 -/
++    | checkedRequest (t : Scope.Domain.Target) (req : Val)
+ 
+   inductive Comp where
+     | builderLet (kind : BuilderKind) (body : Comp)
+diff --git a/formal/Benitoite/Release/TargetTable.lean b/formal/Benitoite/Release/TargetTable.lean
+index 9c0399b6..f9ddae16 100644
+--- a/formal/Benitoite/Release/TargetTable.lean
++++ b/formal/Benitoite/Release/TargetTable.lean
+@@ -48,7 +48,7 @@ def ioErrorTy : Ty := .opaqueTop "IOError"
+ def networkErrorTy : Ty := .opaqueTop "NetworkError"
+ def scopeErrorTy : Ty := .opaqueTop "Scope.ScopeError"
+ def responseTy : Ty := .opaqueTop "Http.Response"
+-def clientRequestTy : Ty := .opaqueTop "Http.ClientRequest"
++def clientRequestTy : Ty := .data "Http.ClientRequest" []
+ def requestCheckErrorTy : Ty := .data "Http.RequestCheckError" []
+ 
+ /-- `Http.RequestCheckError` の構成子（問 23 の DET-04）。 -/
+@@ -131,8 +131,8 @@ def valKind : OpaqueName → Option Kind
+   | _ => none
+ 
+ /-- 範囲付きの値型の名前の値が保持する要求の型の名前（表のデータ）。 -/
+-def valContent : OpaqueName → Option OpaqueName
+-  | "Http.RequestIn" => some "Http.ClientRequest"
++def valContent : OpaqueName → Option Ty
++  | "Http.RequestIn" => some clientRequestTy
+   | _ => none
+ 
+ /-- 範囲の具体化の制約（表のデータ）。拡大は戻りの範囲 S が入力の範囲 R を覆う組だけを許す。 -/
+@@ -248,7 +248,7 @@ example : effKind "File.Read" = some .path ∧ effKind "File.Write" = some .path
+     effKind "Http.Connect" = some .endpoint ∧ effKind "Console.Write" = none := ⟨rfl, rfl, rfl, rfl⟩
+ example : valKind "Scope.PathIn" = some .path ∧ valKind "Http.RequestIn" = some .endpoint ∧
+     valKind "IOError" = none := ⟨rfl, rfl, rfl⟩
+-example : valContent "Http.RequestIn" = some "Http.ClientRequest" ∧ valContent "Scope.PathIn" = none :=
++example : valContent "Http.RequestIn" = some clientRequestTy ∧ valContent "Scope.PathIn" = none :=
+   ⟨rfl, rfl⟩
+ 
+ /-- 拡大の項目の具体化: 戻りの範囲が入力の範囲を覆う組だけを許す。 -/
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 4286e483..80610bb5 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -108,9 +108,9 @@ structure Builtins where
+   この制約によらず許す（`Builtins.RangeAdmissible`）。表のデータであり、正しさは信頼の対象である。既定は何も
+   許さない（Top の列だけを許す）。 -/
+   admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
+-  /-- 範囲付きの値型の名前の値が保持する要求の型の名前（`Http.RequestIn` は `Http.ClientRequest`）。検査済みの要求の
+-  値の葉の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
+-  valContent : OpaqueName → Option OpaqueName := fun _ => none
++  /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
++  要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
++  valContent : OpaqueName → Option Ty := fun _ => none
+ 
+ /-! ## 署名の具体化と範囲の具体化の許容 -/
+ 
+@@ -584,9 +584,10 @@ mutual
+     /-- V-CheckedRequest（検査済みの要求の値の葉の規則）。V-Checked の所属に加え、名前 o の値が保持する要求の型の
+     名前（表のデータ `valContent`）が n のとき、保持する要求は型 `n`（範囲が Top の不透明型）の定数である
+     （設計書 01-12「型付け規則」）。 -/
+-    | V_CheckedRequest {Γ o R t c n} :
+-        B.valKind o = some t.kind → R.Mem t → B.valContent o = some n → c.type = .opaqueTop n →
+-        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))
++    | V_CheckedRequest {Γ o R t req T} :
++        B.valKind o = some t.kind → R.Mem t → B.valContent o = some T →
++        HasTypeVQ P B Ψ Qempty [] [] req T →
++        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t req) (.opaque o (.fixed R))
+ 
+   inductive HasTypeVsQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop
+@@ -741,7 +742,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (hideBuilders_strengthen_val hv) hc hs
+     | .V_Sub hv hl hw => exact .V_Sub (hideBuilders_strengthen_val hv) hl hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
+-    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
++    | .V_CheckedRequest hk hm hc hr => exact .V_CheckedRequest hk hm hc (hideBuilders_strengthen_val hr)
+ 
+   theorem hideBuilders_strengthen_vals {P B Ψ Q C Γ vs ts}
+       (h : HasTypeVsQ P B Ψ Q C Γ vs ts) : HasTypeVsQ P B Ψ.hideBuilders Q C Γ vs ts := by

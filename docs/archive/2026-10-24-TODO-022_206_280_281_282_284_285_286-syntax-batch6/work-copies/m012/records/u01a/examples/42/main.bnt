@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses Process.Environment, Console.Write, Process.Exit
+  bind arguments <- Process.arguments()
+  Console.writeLine("arguments: ${List.length(arguments)}")
+  bind name <- match arguments with
+    case [first, ..] -> first
+    case [] -> "world"
+  end match
+  Console.writeLine("Hello, ${name}!")
+  bind unset <- try Process.environmentVariable("BENITOITE_SKILL_EXAMPLE_UNSET") or die
+  Console.writeLine(Option.unwrapOr(o: unset, fallback: "(not set)"))
+  return ()
+end function

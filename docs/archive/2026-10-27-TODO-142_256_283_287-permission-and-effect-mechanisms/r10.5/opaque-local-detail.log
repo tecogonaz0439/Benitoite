@@ -1,0 +1,30 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.14s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 2 tests
+
+thread 'opaque_standard_values_have_no_public_representation' (3114710) panicked at crates/benitoite/tests/scope_annotations.rs:1021:9:
+assertion `left == right` failed: import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+function sample(value: Scope.PathIn["/data/**"]) -> Unit
+ Scope.PathIn.path(value)
+end function
+
+[Diagnostic { kind: Check, severity: Error, code: Some(E0304), message: "`PathIn` is a type, not a module", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(133), end: BytePos(150) }, text: "" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: "E0304"
+ right: "E0303"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test opaque_standard_values_have_no_public_representation ... FAILED
+test opaque_standard_value_types_keep_their_invariant_scope ... ok
+
+failures:
+
+failures:
+    opaque_standard_values_have_no_public_representation
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 16 filtered out; finished in 0.53s
+
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

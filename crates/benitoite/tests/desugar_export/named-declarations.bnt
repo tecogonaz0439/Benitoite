@@ -1,0 +1,36 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+function identity(actual: Integer) -> Integer
+ return actual
+end function
+function make(captured: Integer) -> function(value: Integer) -> Integer
+ return lambda(value) return captured
+end function
+function project(path: String) -> String
+ bind checked: Result[S.PathIn["/data/**"], S.ScopeError] <- S.checkPathIn(pattern: "/data/**", path: path)
+ return match checked with
+ case Result.Ok(value) ->
+  bind text <- S.pathInValue(path: value)
+  text
+ case Result.Error(_) -> ""
+ end match
+end function
+function readScoped(path: String) -> Result[String, IOError] uses File.Read["/data/**"]
+ bind checked: Result[S.PathIn["/data/**"], S.ScopeError] <- S.checkPathIn(pattern: "/data/**", path: path)
+ return match checked with
+ case Result.Ok(value) ->
+  bind result <- File.readTextIn(path: value)
+  result
+ case Result.Error(_) -> Result.Ok("")
+ end match
+end function
+function requestProject(raw: Http.ClientRequest) -> Http.ClientRequest
+ bind result <- Http.checkRequestIn(hostPattern: "*.Example.com", minimumPort: 443, maximumPort: 443, request: raw)
+ return match result with
+ case Result.Ok(value) ->
+  bind request <- Http.requestInValue(request: value)
+  request
+ case Result.Error(_) -> raw
+ end match
+end function

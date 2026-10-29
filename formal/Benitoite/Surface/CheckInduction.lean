@@ -45,15 +45,15 @@ def ArmsSound (q : Input) (arms : Arms) : Prop :=
     HasArmsQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p arms a b ε ∧ ε.AtomsIn q.atoms
 
 def ClausesSound (q : Input) (cs : Clauses) : Prop :=
-  ∀ Δ C Γ R path t ε s s' actual, BuilderInvariant q C Γ Δ → q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
-    ReturnAtoms q.atoms R → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
-    checkClausesR q .strict Δ C Γ R path cs t ε s = .ok (actual, s') →
-    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms
+  ∀ Δ C Γ R path εb t ε s s' actual, BuilderInvariant q C Γ Δ → q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+    ReturnAtoms q.atoms R → εb.AtomsIn q.atoms → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
+    checkClausesR q .strict Δ C Γ R path εb cs t ε s = .ok (actual, s') →
+    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R εb cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms
 
 def ClauseTypesAtoms (q : Input) (cs : Clauses) : Prop :=
-  ∀ Δ C Γ R path t ε s s' out, BuilderInvariant q C Γ Δ → q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+  ∀ Δ C Γ R path εb t ε s s' out, BuilderInvariant q C Γ Δ → q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → t.AtomsIn q.atoms → ε.AtomsIn q.atoms → s.AtomsIn q.atoms →
-    inferClauseTypesR q Δ C Γ R path cs t ε s = .ok (out, s') → out.AtomsIn q.atoms
+    inferClauseTypesR q Δ C Γ R path εb cs t ε s = .ok (out, s') → out.AtomsIn q.atoms
 
 /-- Exprs の帰納法の仮定は二つの検査の契約、Clauses は厳密な契約と探索の保存。
 Expr・Exprs・HoleArgs・Arms・Clauses・Block に対する相互帰納法の motive とする。
@@ -182,8 +182,8 @@ theorem pipe_conCall_case_ih {q lhs c ts args}
 
 /-- ClauseTypesAtoms の場合は探索の保存補題から直接埋められる。 -/
 theorem clauseTypesAtoms (q : Input) (cs : Clauses) : ClauseTypesAtoms q cs :=
-  fun Δ C Γ R path t ε s s' out hB hq hc hΓ hR ht hε hs h =>
-    ((inferClauseTypesR_computes q cs Δ C Γ R path t ε hq hc hΓ hR hB ht hε) s s' out hs h).1
+  fun Δ C Γ R path εb t ε s s' out hB hq hc hΓ hR ht hε hs h =>
+    ((inferClauseTypesR_computes q cs Δ C Γ R path εb t ε hq hc hΓ hR hB ht hε) s s' out hs h).1
 
 def DictSound (q : Input) (d : DictEv) : Prop :=
   ∀ C Γ path a, q.Sound → d.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
@@ -233,14 +233,14 @@ theorem checkArms_of_mutual {q Δ C Γ R p path arms a b ε} (hs : MutualSoundne
   have typed := hs.arms arms Δ C Γ R p path a b {} s' ε hB hq ha hΓ hR hin hout hh
   exact typed
 
-theorem checkClauses_of_mutual {q Δ C Γ R path cs t ε actual} (hs : MutualSoundness q)
+theorem checkClauses_of_mutual {q Δ C Γ R path εb cs t ε actual} (hs : MutualSoundness q)
     (hB : BuilderInvariant q C Γ Δ)
     (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
-    (hR : ReturnAtoms q.atoms R) (ht : t.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms)
-    (h : checkClausesQ q .strict Δ C Γ R path cs t ε = .ok actual) :
-    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
+    (hR : ReturnAtoms q.atoms R) (hεb : εb.AtomsIn q.atoms) (ht : t.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms)
+    (h : checkClausesQ q .strict Δ C Γ R path εb cs t ε = .ok actual) :
+    HasClausesQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R εb cs t ε ∧ Eff.Sub actual ε ∧ actual.AtomsIn q.atoms := by
   obtain ⟨s', hh⟩ := run'_ok (guardResult_ok h)
-  have typed := (hs.clauses cs).1 Δ C Γ R path t ε {} s' actual hB hq hc hΓ hR ht hε hh
+  have typed := (hs.clauses cs).1 Δ C Γ R path εb t ε {} s' actual hB hq hc hΓ hR hεb ht hε hh
   exact typed
 
 theorem checkTypes_of_mutual {q Δ C Γ R path es ts ε} (hs : MutualSoundness q)
@@ -335,7 +335,7 @@ theorem checkDef_of_mutual {q path d}
     (hq.withNoFailRows (signatureQ d.neffs d.params d.ret d.eff)) hd.2 (Env.atoms_binds hd.1.1)
     (fun t ht => by cases ht; exact hd.1.2.1) hv
   refine ⟨(namesWF_spec _ _).mp (require_ok hNames).1, (lamBodyOk_spec _ _).mp (require_ok hu).1, ?_⟩
-  have hb' := accept_block_eff hb.1 hb.2.1 hd.1.2.1 hb.2.2 hd.1.2.2 hacc heff
+  have hb' := accept_block_effCover hb.1 hb.2.1 hd.1.2.1 hb.2.2 hd.1.2.2 hacc heff
   simpa only [hqs] using hb'
 
 end Benitoite.Surface.Check

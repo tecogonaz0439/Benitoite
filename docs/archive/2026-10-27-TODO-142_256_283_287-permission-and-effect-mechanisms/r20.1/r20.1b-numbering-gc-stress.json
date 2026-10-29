@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--features",
+    "gc-stress",
+    "--lib",
+    "typeck::scope::tests::shared_constants_stop_numbering_at_the_operation_budget",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "wall_seconds": 32.987
+}

@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+
+function main() -> Unit uses Console.Write
+  bind r <- Http.checkRequestIn(hostPattern: "a.example", minimumPort: 80, maximumPort: 80, request: Http.ClientRequest(method: "GET", url: "https://a.example/", headers: [], body: Bytes.empty(), timeoutMilliseconds: 1000))
+  match r with
+    case Result.Ok(_) -> Console.writeLine("ok")
+    case Result.Error(Http.RequestCheckError.Scope(e)) -> Console.writeLine("scope: ${Trait.Show.show(e)}")
+    case Result.Error(Http.RequestCheckError.InvalidUrl(m)) -> Console.writeLine("url: ${m}")
+  end match
+end function

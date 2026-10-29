@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(p: S.PathIn) -> S.PathIn["/data/a"]
+ return S.widenPathIn(path: p)
+end function

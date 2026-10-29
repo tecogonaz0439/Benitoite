@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses File.Read["/data/**", "/data/a"], Http.Connect["192.168.1.0/24", 80..81, "*.example.com", 443], File.Write, Console.Write
+  ()
+end function

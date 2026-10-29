@@ -68,7 +68,7 @@ Lean の定義・定理・前提・結論・公理、本番 Rust、型・シグ�
 
 `/usr/bin/time -l` は検査の成功後に `sysctl kern.clockrate: Operation not permitted` を報告した。**最大常駐量（maximum resident set size）は取得不能**であり、0とは扱わない。計測だけの失敗を理由に work を再実行していない。Lean の `-M 12288` を保ち、ビルドはこの work の一回だけである。Rust の全 lib と全統合は変更範囲に含まれないため起動していない。dry-run の53ファイルと本実行の56ファイルの違いは、その間に追加した検査の記録による。
 
-局所試行の2,682ファイル・106,225,546バイトを、`<repo>/work/m012/records/x05s-local-records.zip`（gitignore、6,181,464バイト）へ保存し、全項目を読み戻した。SHA-256 は `6079175ceb116fc2e0981afde5950bde37bc181acb347e2aa5790a919d3747be` である。[保存器](bundle.py)・[起動](bundle.json)・[全ファイルの索引](local-records-index.json)を残した。ZIP 内の名前はリポジトリからの相対パスであり、I/O の負例で使った相対リンクも記録している。1 MB を超える生の記録を追跡対象へ置いていない。
+局所試行の2,682ファイル・106,225,546バイトを、[x05s-local-records.zip の索引とハッシュ](../work-copies/README.md#f476)（gitignore、6,181,464バイト）へ保存し、全項目を読み戻した。SHA-256 は `6079175ceb116fc2e0981afde5950bde37bc181acb347e2aa5790a919d3747be` である。[保存器](bundle.py)・[起動](bundle.json)・[全ファイルの索引](local-records-index.json)を残した。ZIP 内の名前はリポジトリからの相対パスであり、I/O の負例で使った相対リンクも記録している。1 MB を超える生の記録を追跡対象へ置いていない。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 [最終点検器](audit.py)で、元の二ZIPの不変、局所ZIPの全ハッシュと圧縮入力の復元、結果のリンク、Python の構文、パスの伏せ方、`git diff --check`、本番 Rust と Lean の定義の不変を確認した。[点検結果](self-review.json)と[関係状態・環境・実行ファイルのハッシュ](source-state.json)に記録した。七つの比較実行ファイルと実 CLI の SHA-256 は2回目のK1の記録と一致し、Rust/Cargo 1.98.1・Lean 4.35.0・Lake 5.0.0-src+eb6cafb・elan 4.2.4・Python 3.9.6・macOS 27.0.1であった。work 後の変更は結果・保存・点検の記録だけである。
 

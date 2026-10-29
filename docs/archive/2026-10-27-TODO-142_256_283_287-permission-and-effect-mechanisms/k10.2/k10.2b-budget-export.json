@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=target/k10.2b-exports",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_range_budget_sources",
+    "--",
+    "--nocapture"
+  ],
+  "start": "2026-10-29T13:14:05.312739+00:00",
+  "end": "2026-10-29T13:14:05.858189+00:00",
+  "exit": 0,
+  "seconds": 0.5450440830000001,
+  "maxrssRaw": 78020608,
+  "maxrssUnit": "bytes",
+  "maxrssBytes": 78020608
+}

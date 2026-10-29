@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_range_sources.py", line 203, in <module>
+    main()
+  File "<wt>/formal/tests/test_range_sources.py", line 196, in main
+    reports=check_reports(args.cli,args.output/'report-subset')
+  File "<wt>/formal/tests/test_range_sources.py", line 86, in check_reports
+    require(result.returncode==expected['exit'], label+': exit')
+  File "<wt>/formal/tests/test_range_sources.py", line 18, in require
+    raise AssertionError(message)
+AssertionError: doc-error-check: exit
+real 8.07
+user 7.07
+sys 0.81

@@ -1,0 +1,157 @@
+== wait-for-lock start 20:03:58
+== lock acquired 20:03:59 after 1s
+✔ [130/417] Built Benitoite.Release.BuiltinTable (927ms)
+✔ [131/417] Built Benitoite.Release.BuiltinTable:c.o (182ms)
+✔ [132/417] Built Benitoite.Release.Semantics (1.3s)
+✖ [134/417] Building Benitoite.Release.Lemmas.FailureBase (525ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/FailureBase.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureBase.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureBase.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureBase.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureBase.setup.json --json
+error: Benitoite/Release/Lemmas/FailureBase.lean:75:46: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/FailureBase.lean:75:79: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+warning: Benitoite/Release/Lemmas/FailureBase.lean:88:8: declaration uses `sorry`
+✖ [135/417] Building Benitoite.Release.Assumptions (538ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Assumptions.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Assumptions.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Assumptions.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Assumptions.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Assumptions.setup.json --json
+error: Benitoite/Release/Assumptions.lean:26:25: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Assumptions.lean:28:25: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Assumptions.lean:30:47: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Assumptions.lean:33:47: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Assumptions.lean:78:50: Application type mismatch: The argument
+  l
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single l
+✖ [138/417] Building Benitoite.Release.Examples (1.5s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Examples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Examples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Examples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Examples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Examples.setup.json --json
+error: Benitoite/Release/Examples.lean:29:66: Application type mismatch: The argument
+  "Console.Write"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "Console.Write"
+error: Benitoite/Release/Examples.lean:30:65: Application type mismatch: The argument
+  "Process.Exit"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "Process.Exit"
+error: Benitoite/Release/Examples.lean:31:85: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Examples.lean:32:89: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Examples.lean:33:104: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Examples.lean:35:20: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Release/Examples.lean:232:38: Application type mismatch: The argument
+  "File"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Const.opaque "File"
+error: Benitoite/Release/Examples.lean:235:38: Application type mismatch: The argument
+  "File"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Const.opaque "File"
+✔ [139/417] Built Benitoite.Release.Lemmas.Inversion (8.0s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.FailureBase
+- Benitoite.Release.Assumptions
+- Benitoite.Release.Examples
+error: build failed
+        9.10 real        56.72 user         1.81 sys
+          1729839104  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              352012  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  24  voluntary context switches
+               46705  involuntary context switches
+          1428729311  instructions retired
+           624605834  cycles elapsed
+            55018768  peak memory footprint
+== exit 1

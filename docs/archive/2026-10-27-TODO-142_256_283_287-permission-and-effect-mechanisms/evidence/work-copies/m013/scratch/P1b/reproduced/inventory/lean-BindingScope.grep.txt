@@ -1,0 +1,17 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:552:  unfold rangeChecked rangeCheckedOrigin BindingScope.idAt
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:708:theorem BindingScope.fresh_shift (scope : BindingScope) (index : Nat) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:710:  simp [BindingScope.fresh, shift, Nat.add_comm]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Flow.lean:1538:    (BindingScope.fresh (BindingScope.fresh ⟨[0], 1⟩)).positions = [2, 1, 0] := by decide
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:708:theorem range_empty_valid (scope : BindingScope)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1083:      simp [rangeCheckedOrigin, RangeState.forget, RangeState.empty, BindingScope.idAt]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1687:      RangeState.empty, BindingScope.fresh, BindingScope.idAt, origin])
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:13:structure BindingScope where
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:19:def BindingScope.idAt (scope : BindingScope) (index : Nat) : Option Nat :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:23:def BindingScope.fresh (scope : BindingScope) : BindingScope :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:28:theorem BindingScope.fresh_idAt (scope : BindingScope) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:34:theorem BindingScope.fresh_distinct (scope : BindingScope)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:42:theorem BindingScope.fresh_valid (scope : BindingScope)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:46:  simp only [BindingScope.fresh, List.mem_cons] at member
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:88:  scope : BindingScope
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:103:def RangeState.empty (scope : BindingScope) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:114:theorem range_empty_models (scope : BindingScope) (env : ConcreteEnv) :

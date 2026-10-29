@@ -1,0 +1,12 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+warning: function `candidate_atoms` is never used
+  --> crates/benitoite/tests/desugar_export/builtins.rs:28:15
+   |
+28 | pub(super) fn candidate_atoms(input: &Value, table: &Value) -> Value {
+   |               ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+error: `benitoite` (test "desugar_export") generated 1 warning
+error: warnings are denied by `build.warnings` configuration

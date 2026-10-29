@@ -1,0 +1,29 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.52s
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-76dab913c43eb26d)
+
+running 1 test
+test scope_checked_values_preserve_inputs_and_runtime_errors ... FAILED
+
+failures:
+
+---- scope_checked_values_preserve_inputs_and_runtime_errors stdout ----
+
+thread 'scope_checked_values_preserve_inputs_and_runtime_errors' (6505213) panicked at crates/benitoite/tests/runtime_builtins.rs:1554:9:
+assertion `left == right` failed: Direct: RunEnd { exit_code: 1, end: MainError, main_error: Some("scope case 69"), die_failure: None, reports: [], heap: HeapStats { allocations: 1073, allocated_bytes: 86400, live_bytes: 5888, peak_heap_bytes: 7488, collections: 1122, pause_total_nanos: 15123999, pause_max_nanos: 29542, pause_nanos: [], roots_traced: 355663, frees: 965 } }
+  left: MainError
+ right: Returned
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    scope_checked_values_preserve_inputs_and_runtime_errors
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 28 filtered out; finished in 0.43s
+
+error: test failed, to rerun pass `-p benitoite --test runtime_builtins`
+
+command_exit=101
+real 8.86
+user 4.86
+sys 1.61

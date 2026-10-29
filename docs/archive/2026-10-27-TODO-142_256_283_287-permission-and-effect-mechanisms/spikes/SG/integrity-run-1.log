@@ -1,0 +1,80 @@
+Model.lean:522:14: error: unsolved goals
+case send
+t✝ : Base
+a✝ : EType context (Expr.var 0) t✝
+hf✝ : system.flows (system.join publicTrusted (label system context (Expr.var 0))) (system.sink Dest.exec)
+hf : (accept Dest.exec).snd = true
+⊢ False
+Model.lean:532:18: error: unsolved goals
+case ite.send
+a✝² : EType context ((Expr.var 0).equal (Expr.lit (Value.string "yes"))) Base.boolean
+a✝¹ :
+  Typed system context
+    (system.join publicTrusted (label system context ((Expr.var 0).equal (Expr.lit (Value.string "yes"))))) Cmd.skip
+t✝ : Base
+a✝ : EType context (Expr.lit (Value.string "/usr/bin/true")) t✝
+hf✝ :
+  system.flows
+    (system.join (system.join publicTrusted (label system context ((Expr.var 0).equal (Expr.lit (Value.string "yes")))))
+      (label system context (Expr.lit (Value.string "/usr/bin/true"))))
+    (system.sink Dest.exec)
+hf : (accept Dest.exec).snd = true
+⊢ False
+Model.lean:544:6: error: Type mismatch: After simplification, term
+  hk
+ has type
+  (FiniteSecrets.lattice 2).join empty empty k = true
+but is expected to have type
+  False
+Model.lean:551:23: warning: This simp argument is unused:
+  publicUntrusted
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, lattice, productLattice, taintLattice, label, context, publicTrusted]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:607:39: warning: This simp argument is unused:
+  Bool.true_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [runEndorse, ht.permitted, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:628:29: warning: This simp argument is unused:
+  Bool.true_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [runEndorse, hp, ↓reduceIte] at hv
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:650:10: error: Dependent elimination failed: Failed to solve equation
+  some v = Decidable.rec (fun h => (fun x => none) h) (fun h => (fun x => some (Value.string s)) h) instDecidableOr
+Model.lean:652:10: error: Dependent elimination failed: Failed to solve equation
+  some v = Decidable.rec (fun h => (fun x => none) h) (fun h => (fun x => some (Value.string s)) h) instDecidableOr
+"4.34.1"
+'SG.lattice_noninterference' depends on axioms: [propext]
+'SG.FiniteSecrets.phase_iff_generic' depends on axioms: [propext, Quot.sound]
+'SG.FiniteSecrets.phase_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.integrity_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsement_noninterference' depends on axioms: [propext, Quot.sound]
+'SG.Integrity.endorsed_command_approved' depends on axioms: [propext]
+'SG.Integrity.unconditional_endorsement_NI_false' depends on axioms: [propext, sorryAx, Quot.sound]
+        0.88 real         1.06 user         0.27 sys
+           723599360  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46798  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                8330  involuntary context switches
+          9785639204  instructions retired
+          4027057229  cycles elapsed
+           173366752  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

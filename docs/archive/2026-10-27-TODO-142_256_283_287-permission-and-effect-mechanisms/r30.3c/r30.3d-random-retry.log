@@ -1,0 +1,28 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/random_programs.rs (target/debug/deps/random_programs-595c1d9274dafea1)
+
+running 1 test
+test random_differential has been running for over 60 seconds
+test random_differential ... FAILED
+
+failures:
+
+---- random_differential stdout ----
+programs: 300, counterexamples: 0, elapsed: 66.676854833s, per program: 222.256182ms, gc-stress: false, coverage: {"alternative": 114, "bind-pattern": 51, "boolean": 1105, "closure": 151, "constant": 185, "data": 521, "dictionary": 22, "division-zero": 11, "force": 178, "function": 202, "guard": 114, "handler-state": 85, "if": 563, "integer": 2255, "lambda": 230, "lazy": 183, "list": 592, "list-pattern": 114, "match": 511, "nested-handle": 86, "no-resume": 31, "non-tail-resume": 24, "option": 724, "overflow": 11, "pair": 104, "range": 114, "record": 275, "record-update": 90, "recursion": 129, "reference-get": 129, "reference-new": 44, "reference-set": 129, "reference-update": 44, "result": 335, "string": 590, "tail-resume": 42, "trait": 22, "triple": 112, "try-option": 51, "try-result": 51}
+
+thread 'random_differential' (6673840) panicked at crates/benitoite/tests/random_programs.rs:218:9:
+random differential exceeded the 60 second budget: 66.676854833s
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    random_differential
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 66.68s
+
+error: test failed, to rerun pass `-p benitoite --test random_programs`
+
+command_exit=101
+real 66.84
+user 65.70
+sys 0.49

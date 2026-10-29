@@ -1,0 +1,187 @@
+[
+  {
+    "name": "width-add",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/width-add.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0655,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/width-add.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.0789,
+      "stdout": "",
+      "stderr": "runtime error[R0102]: integer overflow\n  --> work/m012/scratch/s1r/width-add.bnt:2:28\n   |\n 2 |   if n > 100s8 then return n + 100s8 else return 0s8 end if\n   |                            ^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/width-add.bnt:6:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "width-multiply",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/width-multiply.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0638,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/width-multiply.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.0779,
+      "stdout": "",
+      "stderr": "runtime error[R0102]: integer overflow\n  --> work/m012/scratch/s1r/width-multiply.bnt:2:27\n   |\n 2 |   if n > 64s8 then return n * 2s8 else return 0s8 end if\n   |                           ^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/width-multiply.bnt:6:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "width-subtract",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/width-subtract.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.064,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/width-subtract.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.0785,
+      "stdout": "",
+      "stderr": "runtime error[R0102]: integer overflow\n  --> work/m012/scratch/s1r/width-subtract.bnt:2:28\n   |\n 2 |   if n < 10u16 then return n - 20u16 else return 0u16 end if\n   |                            ^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/width-subtract.bnt:6:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "width-negate",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/width-negate.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0657,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/width-negate.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.078,
+      "stdout": "",
+      "stderr": "runtime error[R0102]: integer overflow\n  --> work/m012/scratch/s1r/width-negate.bnt:3:10\n   |\n 3 |   return -n\n   |          ^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/width-negate.bnt:7:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "width-join",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/width-join.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.065,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/width-join.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.0797,
+      "stdout": "",
+      "stderr": "runtime error[R0102]: integer overflow\n  --> work/m012/scratch/s1r/width-join.bnt:3:10\n   |\n 3 |   return n + 100s8\n   |          ^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/width-join.bnt:7:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "zero-bind",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/zero-bind.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0643,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/zero-bind.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.0779,
+      "stdout": "",
+      "stderr": "runtime error[R0101]: division by zero\n  --> work/m012/scratch/s1r/zero-bind.bnt:3:10\n   |\n 3 |   return t div n\n   |          ^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/zero-bind.bnt:7:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "shift-domain",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/shift-domain.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0651,
+    "stdout": "",
+    "stderr": "",
+    "run": {
+      "command": [
+        "target/debug/benitoite",
+        "run",
+        "work/m012/scratch/s1r/shift-domain.bnt"
+      ],
+      "exit": 1,
+      "seconds": 0.0785,
+      "stdout": "",
+      "stderr": "runtime error[R0701]: argument 2 of `Integer.shiftLeft` is out of range\n  --> work/m012/scratch/s1r/shift-domain.bnt:2:25\n   |\n 2 |   if n > 63 then return Integer.shiftLeft(a: 1, n: n) else return 0 end if\n   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: call trace (innermost first):\n             f    at work/m012/scratch/s1r/shift-domain.bnt:6:13\n             main\n   = note: functions left by tail calls are not shown\n"
+    }
+  },
+  {
+    "name": "http-record",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/http-record.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.1391,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "exit-domain",
+    "command": [
+      "target/debug/benitoite",
+      "check",
+      "work/m012/scratch/s1r/exit-domain.bnt"
+    ],
+    "exit": 0,
+    "seconds": 0.0654,
+    "stdout": "",
+    "stderr": ""
+  }
+]

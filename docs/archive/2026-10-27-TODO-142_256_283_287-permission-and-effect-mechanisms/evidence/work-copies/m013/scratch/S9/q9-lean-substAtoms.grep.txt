@@ -1,0 +1,18 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:98:      change EffR.mk (Eff.substAtoms [] a) (Ty.rawBindTys SubstEnv.identity fs ++ []) = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:45:def Eff.substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:62:theorem Eff.substAtoms_false (es : List Eff) : Eff.substAtoms es (fun _ => false) = fun _ => false := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:64:  cases a <;> simp [Eff.substAtoms]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:73:@[simp] theorem Eff.substAtoms_nil (a : Atom → Bool) : Eff.substAtoms [] a = a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:75:  cases x <;> simp [Eff.substAtoms]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:106:    | .mk a fs => .mk (Eff.substAtoms θ.rows a) (Ty.rawBindTys θ fs ++ Eff.rowFails θ.rows a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:88:    Eff.substAtoms es e.atoms a = true ↔
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:93:  simp only [Eff.substAtoms, Bool.or_eq_true, List.any_eq_true, List.mem_range, Bool.and_eq_true]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:116:    Eff.mem (Eff.rawBind θ e) a ↔ Eff.substAtoms θ.rows e.atoms a = true := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:152:    Eff.substAtoms (es.map Eff.norm) a = Eff.substAtoms es a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:154:  simp only [Eff.substAtoms, List.length_map, List.getElem?_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:220:      change EffR.mk (Eff.substAtoms (θ.rows.map Eff.norm) a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:437:  change Eff.norm (.mk (Eff.substAtoms [] a) []) = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:132:        have hx' : Eff.substAtoms θ.rows (Eff.atoms (.mk a fs)) x = true := hx
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteExamples.lean:32:private def substAtoms : List Atom := [.name "state", .rho 0, .name "a"]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteExamples.lean:35:example : tyEq substAtoms (substTyAt substAtoms 0 [aTy] [row] template) substituted = true := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteExamples.lean:36:example : (Eff.collectAtoms substAtoms

@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.99s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'export_named_declarations_smoke' (7600133) panicked at crates/benitoite/tests/desugar_export.rs:999:5:
+assertion `left == right` failed
+  left: Null
+ right: Object {"body": Object {"items": Number(512), "operations": Number(16384)}, "whole": Object {"items": Number(2048), "operations": Number(65536)}}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_named_declarations_smoke ... FAILED
+
+failures:
+
+failures:
+    export_named_declarations_smoke
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 46 filtered out; finished in 0.38s
+
+error: test failed, to rerun pass `--test desugar_export`
+real 2.31
+user 2.00
+sys 0.64

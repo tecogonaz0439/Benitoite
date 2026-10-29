@@ -161,7 +161,11 @@ class ExchangeTests(unittest.TestCase):
                     self.assertEqual(mismatch["definition"], "effectOrder (fn:100)")
                     self.assertIn("header.params[0].list.elem.fn.eff", mismatch["path"])
                     self.assertNotEqual(mismatch["expected"], mismatch["actual"])
-                    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"], effects)
+                    # 旧版の名前の原子は明示の Top の範囲の位置を加えて読む（corpus 15 の報告の形。L50.1）。
+                    explicit_top = [{"name": {**a["name"], "ix": {"fixed": "top"}}} if "name" in a else a
+                                    for a in effects]
+                    self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"],
+                                     explicit_top)
 
     def test_implementation_and_method_dictionaries(self):
         # 実装の T: Show とメソッドの U: Show は別の束縛である。

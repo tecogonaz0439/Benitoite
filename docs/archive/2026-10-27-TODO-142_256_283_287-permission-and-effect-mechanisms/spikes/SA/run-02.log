@@ -1,0 +1,65 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SA.lean:496:14: error(lean.unknownIdentifier): Unknown identifier `ports`
+SA.lean:496:8: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.188
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case mk.mk.mk.mk
+kind✝¹ : Kind
+pattern✝¹ : Pattern
+ports✝¹ : Interval
+nonempty✝¹ :
+  { kind := kind✝¹, pattern := pattern✝¹, ports := ports✝¹ }.ports.lo ≤
+    { kind := kind✝¹, pattern := pattern✝¹, ports := ports✝¹ }.ports.hi
+bounded✝¹ : { kind := kind✝¹, pattern := pattern✝¹, ports := ports✝¹ }.ports.hi ≤ 65535
+kind✝ : Kind
+pattern✝ : Pattern
+ports✝ : Interval
+nonempty✝ :
+  { kind := kind✝, pattern := pattern✝, ports := ports✝ }.ports.lo ≤
+    { kind := kind✝, pattern := pattern✝, ports := ports✝ }.ports.hi
+bounded✝ : { kind := kind✝, pattern := pattern✝, ports := ports✝ }.ports.hi ≤ 65535
+hp : pattern✝¹ = pattern✝
+hlo : ports✝¹.lo = ports✝.lo
+hhi : ports✝¹.hi = ports✝.hi
+x✝ : ?m.188
+⊢ ports✝¹ = ports✝
+SA.lean:480:89: error: unsolved goals
+a b : ClosedScope
+h :
+  (a.scope.kind = b.scope.kind ∧ patLe a.scope.pattern b.scope.pattern = true) ∧
+    portLe a.scope.ports b.scope.ports = true
+g :
+  (b.scope.kind = a.scope.kind ∧ patLe b.scope.pattern a.scope.pattern = true) ∧
+    portLe b.scope.ports a.scope.ports = true
+hp : a.scope.pattern = b.scope.pattern
+hl : b.scope.ports.lo ≤ a.scope.ports.lo ∧ a.scope.ports.lo ≤ b.scope.ports.hi
+gl : a.scope.ports.lo ≤ b.scope.ports.lo ∧ b.scope.ports.lo ≤ a.scope.ports.hi
+hh : b.scope.ports.lo ≤ a.scope.ports.hi ∧ a.scope.ports.hi ≤ b.scope.ports.hi
+gh : a.scope.ports.lo ≤ b.scope.ports.hi ∧ b.scope.ports.hi ≤ a.scope.ports.hi
+hlo : a.scope.ports.lo = b.scope.ports.lo
+hhi : a.scope.ports.hi = b.scope.ports.hi
+hs : a.scope = b.scope
+⊢ a = b
+SA.lean:496:19: error: expected token
+SA.lean:523:2: error: `simp` made no progress
+        0.78 real         1.03 user         0.27 sys
+           716390400  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46132  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                8783  involuntary context switches
+          8946145307  instructions retired
+          3876804142  cycles elapsed
+           167009688  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

@@ -1,0 +1,17 @@
+import Benitoite.Unofficial.IO.Console
+
+function floats() -> List[Float]
+  return [1.0, -1.0, -0.0]
+end function
+
+function decimals() -> List[Decimal]
+  return [79228162514264337593543950335m, -79228162514264337593543950335m, 1.25m]
+end function
+
+function text() -> String
+  return "18446744073709551615"
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(text())
+end function

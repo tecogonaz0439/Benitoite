@@ -1,0 +1,41 @@
+{
+  "command": [
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 94.04284304100001,
+  "maxrss_raw": 2971205632,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 2833.5625,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 94.067453042,
+  "recorded_at": "2026-10-29T09:10:18.307144+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r40.1/run-record.py",
+    "--child",
+    "compare-selftest",
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ]
+}

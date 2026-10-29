@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 37.00s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::scope::accept_tests::exceeded_reason_applies_to_top_at_every_location_but_preserves_literals' (5443588) panicked at crates/benitoite/src/typeck/scope/accept_tests.rs:217:9:
+assertion `left == right` failed
+  left: [[Exceeded]]
+ right: [[Known(Path(PathPattern { kind: Tree, stem: Path(["data"]) }))]]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::accept_tests::exceeded_reason_applies_to_top_at_every_location_but_preserves_literals ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::accept_tests::exceeded_reason_applies_to_top_at_every_location_but_preserves_literals
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1411 filtered out; finished in 0.15s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+real 38.68
+user 33.44
+sys 2.26

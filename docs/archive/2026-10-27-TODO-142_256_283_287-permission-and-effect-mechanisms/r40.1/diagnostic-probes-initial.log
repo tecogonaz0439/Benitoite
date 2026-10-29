@@ -1,0 +1,59 @@
+ask.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0513","message":"invalid type arguments for effect `Ask` (expected 0)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/ask.bnt","start":{"line":4,"column":32,"offset":77},"end":{"line":4,"column":41,"offset":86},"label":""},"secondary":[],"notes":[],"helps":[]}
+
+atom-multi.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"effect `File.Read[\"/**\"]` is not covered by one surrounding atom (atomicCoverOnly)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/atom-multi.bnt","start":{"line":5,"column":2,"offset":165},"end":{"line":5,"column":10,"offset":173},"label":"`File.Read[\"/**\"]` is not covered by `File.Read[\"/backup/**\"], File.Read[\"/data/**\"]`"},"secondary":[{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/atom-multi.bnt","start":{"line":4,"column":10,"offset":106},"end":{"line":4,"column":16,"offset":112},"label":"declared here"}],"notes":["two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked"],"helps":[{"message":"declare a surrounding scope that covers the required scope in one atom, or use a callee with a narrower scope","edits":[]}]}
+
+atom-single.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"effect `File.Read[\"/**\"]` is not covered by one surrounding atom (notCovered)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/atom-single.bnt","start":{"line":5,"column":2,"offset":151},"end":{"line":5,"column":10,"offset":159},"label":"`File.Read[\"/**\"]` is not covered by `File.Read[\"/data/**\"]`"},"secondary":[{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/atom-single.bnt","start":{"line":4,"column":10,"offset":106},"end":{"line":4,"column":16,"offset":112},"label":"declared here"}],"notes":["no one surrounding atom of the same name covers the required scope"],"helps":[{"message":"declare a surrounding scope that covers the required scope in one atom, or use a callee with a narrower scope","edits":[]}]}
+
+file-check.bnt: exit 0
+
+file-top-allow.bnt: exit 0
+
+file-top.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"effect `File.Read` is not covered by one surrounding atom (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/file-top.bnt","start":{"line":3,"column":9,"offset":111},"end":{"line":3,"column":39,"offset":141},"label":"`File.Read` is not covered by `File.Read[\"/**\"]`"},"secondary":[{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/file-top.bnt","start":{"line":2,"column":10,"offset":45},"end":{"line":2,"column":16,"offset":51},"label":"declared here"}],"notes":["the required scope is Top (all targets); only a surrounding Top atom of the same name covers it"],"helps":[{"message":"declare the same effect without scope arguments to allow Top, or use a callee whose declared scope is covered by the surrounding effects","edits":[]}]}
+
+path-multiple.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0520","message":"invalid scope arguments for `Scope.PathIn` (expected path string literal)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/path-multiple.bnt","start":{"line":2,"column":35,"offset":68},"end":{"line":2,"column":53,"offset":86},"label":"invalid scope argument"},"secondary":[],"notes":["found: [\"/data/**\", \"/x\"]"],"helps":[]}
+
+path-project-bind.bnt: exit 0
+
+path-project-nested.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of projection `Scope.pathInValue` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/path-project-nested.bnt","start":{"line":9,"column":25,"offset":316},"end":{"line":9,"column":42,"offset":333},"label":"`Scope.pathInValue` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 9"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+path-project-parameter-bare.bnt: exit 0
+
+path-project-parameter-narrow.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of projection `Scope.pathInValue` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/path-project-parameter-narrow.bnt","start":{"line":3,"column":28,"offset":119},"end":{"line":3,"column":45,"offset":136},"label":"`Scope.pathInValue` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 0"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+path-widen-bind.bnt: exit 0
+
+path-widen-nested.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of widening `Scope.widenPathIn` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/path-widen-nested.bnt","start":{"line":9,"column":25,"offset":334},"end":{"line":9,"column":42,"offset":351},"label":"`Scope.widenPathIn` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 9"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+path-widen-parameter-bare.bnt: exit 0
+
+path-widen-parameter-narrow.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of widening `Scope.widenPathIn` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/path-widen-parameter-narrow.bnt","start":{"line":3,"column":46,"offset":155},"end":{"line":3,"column":63,"offset":172},"label":"`Scope.widenPathIn` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 0"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+request-project-bind.bnt: exit 0
+
+request-project-nested.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of projection `Http.requestInValue` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-project-nested.bnt","start":{"line":9,"column":25,"offset":413},"end":{"line":9,"column":44,"offset":432},"label":"`Http.requestInValue` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 11"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+request-project-parameter-bare.bnt: exit 0
+
+request-project-parameter-narrow.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of projection `Http.requestInValue` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-project-parameter-narrow.bnt","start":{"line":3,"column":40,"offset":161},"end":{"line":3,"column":59,"offset":180},"label":"`Http.requestInValue` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 0"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+request-widen-bind.bnt: exit 0
+
+request-widen-nested.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of widening `Http.widenRequestIn` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-widen-nested.bnt","start":{"line":9,"column":25,"offset":433},"end":{"line":9,"column":44,"offset":452},"label":"`Http.widenRequestIn` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 11"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+
+request-widen-parameter-bare.bnt: exit 0
+
+request-widen-parameter-narrow.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of widening `Http.widenRequestIn` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-widen-parameter-narrow.bnt","start":{"line":3,"column":60,"offset":201},"end":{"line":3,"column":79,"offset":220},"label":"`Http.widenRequestIn` is not covered by `the required scope contract`"},"secondary":[],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","scope call: .sample at surface preorder 0"],"helps":[{"message":"the range arguments of this direct call must cover the ranges selected by the local Scope rule","edits":[]}]}
+

@@ -1,0 +1,73 @@
+Benitoite/Release/Lemmas/WidenTrial.lean:42:47: error(lean.invalidField): Invalid field `mono_end`: The environment does not contain `Benitoite.Release.ContTy.mono_end`, so it is not possible to project the field `mono_end` from an expression
+  h4
+of type `ContTy P B Ψ R ε k a b Eb none`
+Benitoite/Release/Lemmas/WidenTrial.lean:46:47: error(lean.invalidField): Invalid field `mono_end`: The environment does not contain `Benitoite.Release.ContTy.mono_end`, so it is not possible to project the field `mono_end` from an expression
+  h4
+of type `ContTy P B Ψ R ε k a b Eb none`
+Benitoite/Release/Lemmas/WidenTrial.lean:50:35: error(lean.invalidField): Invalid field `mono_end`: The environment does not contain `Benitoite.Release.ContTy.mono_end`, so it is not possible to project the field `mono_end` from an expression
+  h2
+of type `ContTy P B Ψ R ε k a b Eb none`
+Benitoite/Release/Lemmas/WidenTrial.lean:54:35: error(lean.invalidField): Invalid field `mono_end`: The environment does not contain `Benitoite.Release.ContTy.mono_end`, so it is not possible to project the field `mono_end` from an expression
+  h2
+of type `ContTy P B Ψ R ε k a b Eb none`
+Benitoite/Release/Lemmas/WidenTrial.lean:59:30: error(lean.invalidField): Invalid field `mono`: The environment does not contain `Benitoite.Release.StateTyE.match_1.mono`, so it is not possible to project the field `mono` from an expression
+  h
+of type
+  match s with
+  | State.run m k σ =>
+    ∃ Ψ R a b ε ε1,
+      StoreOk P B Ψ σ ∧
+        HasTypeC P B Ψ [] [] R m a ε1 ∧
+          ε1.Sub ε ∧ ContTy P B Ψ R ε k a b Eb none ∧ Comp.VarsIn 0 (fun x => True) m ∧ k.Closed ∧ σ.Closed
+  | State.matchRun v arms next k σ =>
+    ∃ Ψ R a b ε ε1,
+      StoreOk P B Ψ σ ∧
+        HasTypeC P B Ψ [] [] R (Comp.match v arms) a ε1 ∧
+          ε1.Sub ε ∧
+            ContTy P B Ψ R ε k a b Eb none ∧
+              Comp.VarsIn 0 (fun x => True) (Comp.match v arms) ∧ k.Closed ∧ σ.Closed ∧ MatchPrefix v arms next
+  | State.error rs k σ => ∃ Ψ R a b ε, StoreOk P B Ψ σ ∧ ContTy P B Ψ R ε k a b Eb none ∧ k.Closed ∧ σ.Closed
+  | State.exit n rs k σ => ∃ Ψ R a b ε, StoreOk P B Ψ σ ∧ ContTy P B Ψ R ε k a b Eb none ∧ k.Closed ∧ σ.Closed
+Benitoite/Release/Lemmas/WidenTrial.lean:111:18: error(lean.invalidField): Invalid field `name_end_ix`: The environment does not contain `Benitoite.Release.ContTy.name_end_ix`, so it is not possible to project the field `name_end_ix` from an expression
+  hk
+of type `ContTy P B Ψ R ε k a b Eb none`
+Benitoite/Release/Lemmas/WidenTrial.lean:107:34: error: unsolved goals
+P : Program
+B : Builtins
+m : Comp
+k : Cont
+σ : Store
+l : EffName
+r : Scope.Signature.Ix
+hr : r ≠ Scope.Signature.Ix.top
+hforce : ∀ (Ψ : StoreTy) (R : Option Ty) (a : Ty) (ε1 : Eff), HasTypeC P B Ψ [] [] R m a ε1 → ε1.mem (Atom.name l r)
+hno : ∀ (hs : List Clause), Frame.handleF hs ∈ k → (handled P B hs).test (Atom.nameTop l) = false
+Ψ : StoreTy
+R : Option Ty
+a b : Ty
+ε ε1 Eb : Eff
+hm : HasTypeC P B Ψ [] [] R m a ε1
+h1 : ε1.Sub ε
+hk : ContTy P B Ψ R ε k a b Eb none
+hEb : BuiltinOnly P B Eb
+⊢ False
+Benitoite/Release/Lemmas/WidenTrial.lean:202:48: error: unsolved goals
+⊢ Val.VarsInList 0 (fun x => False) []
+        0.50 real         0.33 user         0.17 sys
+           738689024  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               49629  page reclaims
+                2385  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 114  voluntary context switches
+                4452  involuntary context switches
+           611321827  instructions retired
+           167857694  cycles elapsed
+            11354832  peak memory footprint

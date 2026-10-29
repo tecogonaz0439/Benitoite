@@ -1,0 +1,186 @@
+== wait-for-lock start 04:33:45
+== lock acquired 04:33:45 after 0s
+✔ [102/448] Built Benitoite.Release.Typing (1.3s)
+✔ [103/448] Built Benitoite.Release.Typing:c.o (200ms)
+✔ [104/448] Built Benitoite.Release.BuilderContents (428ms)
+✔ [105/448] Built Benitoite.Release.LocalTyping (427ms)
+✔ [108/448] Built Benitoite.Release.TypeRegularity (619ms)
+✔ [110/448] Built Benitoite.Release.BuiltinTable (724ms)
+✔ [112/448] Built Benitoite.Release.BuilderExec (492ms)
+✔ [113/448] Built Benitoite.Release.Lemmas.Basic (350ms)
+✔ [116/448] Built Benitoite.Release.TypeBounds (774ms)
+✔ [118/448] Built Benitoite.Release.SubstEnv (606ms)
+✔ [120/448] Built Benitoite.Release.TypeCongruence (908ms)
+✔ [122/448] Built Benitoite.Release.TypeVariables (1.1s)
+✔ [124/448] Built Benitoite.Release.WellFormed (500ms)
+✔ [125/448] Built Benitoite.Release.TypeScopedSubst (487ms)
+✔ [128/448] Built Benitoite.Release.Admissible (809ms)
+✔ [130/448] Built Benitoite.Release.FailureEffects (854ms)
+✔ [131/448] Built Benitoite.Release.Lemmas.TyLemmas (945ms)
+✔ [133/448] Built Benitoite.Release.EffectCover (1.2s)
+✖ [134/448] Building Benitoite.Release.LocalScope (3.9s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/LocalScope.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/LocalScope.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/LocalScope.setup.json --json
+error: Benitoite/Release/LocalScope.lean:136:147: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl
+error: Benitoite/Release/LocalScope.lean:138:40: Application type mismatch: The argument
+  cs
+has type
+  Eff
+but is expected to have type
+  List Clause
+in the application
+  Clause.LocalRefsList depth places cs
+error: Benitoite/Release/LocalScope.lean:140:14: Tactic `assumption` failed
+
+P : Program
+B : Builtins
+Q : NoFailCtx
+depth : Nat
+places : Nat → Prop
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+cs : Eff
+t : List Clause
+ε : Ty
+h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε sorry
+hΔ : Δl.Scoped depth
+hΨ : Ψ.BuilderPlaces places
+⊢ Clause.LocalRefsList depth places sorry
+✔ [135/448] Built Benitoite.Release.Semantics (2.2s)
+✔ [137/448] Built Benitoite.Release.RangeIxExamples (564ms)
+✔ [138/448] Built Benitoite.Release.RangeWF (2.8s)
+✔ [140/448] Built Benitoite.Release.Assumptions (746ms)
+✔ [142/448] Built Benitoite.Release.Examples (1.0s)
+✔ [143/448] Built Benitoite.Release.RangeInst (2.4s)
+✔ [145/448] Built Benitoite.Release.ShapeOk (400ms)
+✖ [146/448] Building Benitoite.Release.Lemmas.Rename (8.9s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Rename.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Rename.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Rename.setup.json --json
+error: Benitoite/Release/Lemmas/Rename.lean:285:111: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl
+error: Benitoite/Release/Lemmas/Rename.lean:288:135: Application type mismatch: The argument
+  h
+has type
+  Eff
+but is expected to have type
+  List Clause
+in the application
+  Clause.renameList ξ h
+error: Benitoite/Release/Lemmas/Rename.lean:406:109: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl
+error: Benitoite/Release/Lemmas/Rename.lean:407:69: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ' Q C Γ R h t ε Δl
+error: Benitoite/Release/Lemmas/Rename.lean:427:46: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl
+error: Benitoite/Release/Lemmas/Rename.lean:428:54: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R cs t e Δl
+✖ [152/448] Building Benitoite.Release.Lemmas.Names (7.6s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Names.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Names.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Names.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Names.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Names.setup.json --json
+error: Benitoite/Release/Lemmas/Names.lean:197:115: Application type mismatch: The argument
+  Δl
+has type
+  LocalCtx
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl
+error: Benitoite/Release/Lemmas/Names.lean:198:31: Application type mismatch: The argument
+  cs
+has type
+  Eff
+but is expected to have type
+  List Clause
+in the application
+  Clause.LambdaNamesWFList cs
+error: Benitoite/Release/Lemmas/Names.lean:200:14: Tactic `assumption` failed
+
+Q : NoFailCtx
+P : Program
+B : Builtins
+Δl : LocalCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+R : Option Ty
+cs : Eff
+t : List Clause
+ε : Ty
+h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε sorry
+⊢ Clause.LambdaNamesWFList sorry
+✔ [153/448] Built Benitoite.Release.Lemmas.Closed (7.1s)
+✔ [156/448] Built Benitoite.Surface.Lemmas.ScopedRename (402ms)
+✔ [157/448] Built Benitoite.Release.Lemmas.VariableBind (632ms)
+✔ [158/448] Built Benitoite.Surface.Lemmas.ShiftClean (1.4s)
+✖ [159/448] Building Benitoite.Release.Lemmas.Inversion (19s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Inversion.setup.json --json
+error: Benitoite/Release/Lemmas/Inversion.lean:382:36: Application type mismatch: The argument
+  h
+has type
+  List Clause
+but is expected to have type
+  Eff
+in the application
+  @HasTypeClausesQ P B Ψ Q C Γ R h
+Some required targets logged failures:
+- Benitoite.Release.LocalScope
+- Benitoite.Release.Lemmas.Rename
+- Benitoite.Release.Lemmas.Names
+- Benitoite.Release.Lemmas.Inversion
+error: build failed
+       22.23 real       146.94 user         8.43 sys
+          2811314176  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1645984  page reclaims
+                 172  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 632  voluntary context switches
+              172390  involuntary context switches
+          1942374761  instructions retired
+           919059499  cycles elapsed
+            34063800  peak memory footprint
+== exit 1

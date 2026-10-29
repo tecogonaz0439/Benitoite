@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit": 101,
+  "wall_seconds": 5.364
+}

@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function sample(raw: String, req: Http.ClientRequest) -> Result[S.PathIn, S.ScopeError]
+ return S.checkPathIn(pattern: "/data/**", path: "relative")
+end function

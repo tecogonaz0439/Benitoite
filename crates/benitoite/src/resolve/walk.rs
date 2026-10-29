@@ -69,7 +69,9 @@ impl Resolver<'_> {
     fn ty_in_list(&mut self, ctx: &mut Ctx, ty: &TypeExpr, in_list: bool) {
         match ty {
             TypeExpr::Named(t) => {
-                self.name(ctx, t.id, &t.path, Position::Type);
+                if let Some(id) = self.name(ctx, t.id, &t.path, Position::Type) {
+                    self.type_scope(t, id);
+                }
                 for arg in &t.args {
                     self.ty_in_list(ctx, arg, true);
                 }

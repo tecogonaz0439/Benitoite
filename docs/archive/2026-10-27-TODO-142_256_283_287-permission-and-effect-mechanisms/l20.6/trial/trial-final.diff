@@ -1,0 +1,524 @@
+diff --git a/formal/Benitoite/Exchange/Builtins.lean b/formal/Benitoite/Exchange/Builtins.lean
+index 0c79d26d..cda4a023 100644
+--- a/formal/Benitoite/Exchange/Builtins.lean
++++ b/formal/Benitoite/Exchange/Builtins.lean
+@@ -239,7 +239,7 @@ def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Builtins :=
+   return {
+     sig := fun name => (sigs.find? (fun p => p.1 == name)).map Prod.snd
+     delta := fun _ _ _ _ _ => none
+-    ioResponse := fun _ _ _ _ _ => False
++    ioResponse := fun _ _ _ _ _ _ => False
+     releaseResponse := fun _ _ => False
+     isResource := b.isResource
+     effects := b.effectOps
+diff --git a/formal/Benitoite/Release/Assumptions.lean b/formal/Benitoite/Release/Assumptions.lean
+index 0a96ff2e..dd7c454c 100644
+--- a/formal/Benitoite/Release/Assumptions.lean
++++ b/formal/Benitoite/Release/Assumptions.lean
+@@ -63,17 +63,17 @@ structure Builtins.Assumptions (P : Program) (B : Builtins) : Prop where
+     ∃ o, B.delta b ts es rs ws = some o ∧ (∀ n, o ≠ .exit n) ∧ OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+   /-- IO の応答の型。IO を行う関数の応答は値か `error(r)`、プロセスの終了の関数の応答は `exit(n)` か
+   `error(r)` である。 -/
+-  io_kind : ∀ b s ts es ws o, B.sig b = some s → B.ioResponse b ts es ws o →
++  io_kind : ∀ b s ts es ws o obs, B.sig b = some s → B.ioResponse b ts es ws o obs →
+     (s.kind = .io ∧ ∀ n, o ≠ .exit n) ∨ (s.kind = .exit ∧ ∀ v, o ≠ .val v)
+-  io_typed : ∀ Ψ b s rs ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
++  io_typed : ∀ Ψ b s rs ts es ws o obs, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
+-    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
++    B.ioResponse b ts es ws o obs → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+   /-- IO の応答の存在。 -/
+   io_exists : ∀ Ψ b s rs ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
+-    ∃ o, B.ioResponse b ts es ws o
++    ∃ o obs, B.ioResponse b ts es ws o obs
+   /-- IO を行う組み込みの関数は、組み込みのエフェクトの操作であり、型のエフェクトはそのエフェクトの
+   名前だけである。 -/
+   io_op : ∀ b s, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+diff --git a/formal/Benitoite/Release/BuilderExamples.lean b/formal/Benitoite/Release/BuilderExamples.lean
+index 5d9af50b..e3093c3b 100644
+--- a/formal/Benitoite/Release/BuilderExamples.lean
++++ b/formal/Benitoite/Release/BuilderExamples.lean
+@@ -16,7 +16,7 @@ variable (P : Program) (B : Builtins)
+ 
+ /-- String は文字数ではなく UTF-8 のバイト数を返す。 -/
+ theorem unicode_length :
+-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
++    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
+       (.run (.builderOp .string .length (.loc 3) []) []
+         (Store.empty.set 3 (.builder (.string "あ")))) =
+     some (none, .run (.ret (.const (.integer ⟨3, by decide⟩))) []
+@@ -24,7 +24,7 @@ theorem unicode_length :
+ 
+ /-- appendAll は要素のソース順を保つ。 -/
+ theorem string_appendAll :
+-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
++    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
+       (.run (.builderOp .string .appendAll (.loc 3)
+         [.list [.const (.string "あ"), .const (.string "b")]]) []
+         (Store.empty.set 3 (.builder (.string "a")))) =
+@@ -33,7 +33,7 @@ theorem string_appendAll :
+ 
+ /-- List の追記も要素を逆転しない。 -/
+ theorem list_appendAll :
+-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
++    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
+       (.run (.builderOp (.list (.base .byte)) .appendAll (.loc 3)
+         [.list [.const (.byte 2), .const (.byte 3)]]) []
+         (Store.empty.set 3 (.builder (.list (.base .byte) [.const (.byte 1)])))) =
+@@ -43,7 +43,7 @@ theorem list_appendAll :
+ 
+ /-- Byte の最大値は追記できる。 -/
+ theorem byte_append :
+-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
++    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
+       (.run (.builderOp .bytes .append (.loc 3) [.const (.byte 255)]) []
+         (Store.empty.set 3 (.builder (.bytes [0])))) =
+     some (none, .run (.ret (.const .unit)) []
+@@ -51,7 +51,7 @@ theorem byte_append :
+ 
+ /-- Nat の抽象 Byte の範囲外は、元のセル内容を保持して失敗する。 -/
+ theorem invalid_byte_atomic :
+-    step P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0)
++    step P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0)
+       (.run (.builderOp .bytes .append (.loc 3) [.const (.byte 256)]) []
+         (Store.empty.set 3 (.builder (.bytes [7])))) =
+     some (none, .error [rBuilderInvalidByte] [] (Store.empty.set 3 (.builder (.bytes [7])))) := rfl
+@@ -79,7 +79,7 @@ theorem dedicatedProgram_typed {R} :
+ 
+ /-- 専用 new・通常 let・copy を通し、値と専用セルの内容を確認する。 -/
+ theorem dedicatedProgram_run :
+-    (match run P B (fun _ _ _ _ => .val (.const .unit)) (fun _ => none) (fun _ => 0) 5
++    (match run P B (fun _ _ _ _ => (.val (.const .unit), [])) (fun _ => none) (fun _ => 0) 5
+         (.run dedicatedProgram [] Store.empty) [] with
+       | (.run (.ret (.const (.string s))) [] σ, evs) => some (s, σ 0, evs)
+       | _ => none) = some ("あ", some (.builder (.string "あ")), []) := rfl
+diff --git a/formal/Benitoite/Release/Examples.lean b/formal/Benitoite/Release/Examples.lean
+index 0fd5b366..15598e7f 100644
+--- a/formal/Benitoite/Release/Examples.lean
++++ b/formal/Benitoite/Release/Examples.lean
+@@ -42,9 +42,9 @@ def builtins : Builtins where
+         else some (.err "IntegerOverflow")
+     | _, _, _, _, _ => none
+   ioResponse
+-    | "print", _, _, [_], o => o = .val (.const .unit)
+-    | "exit", _, _, [.const (.integer n)], o => o = .exit n.toInt
+-    | _, _, _, _, _ => False
++    | "print", _, _, [_], o, obs => o = .val (.const .unit) ∧ obs = []
++    | "exit", _, _, [.const (.integer n)], o, obs => o = .exit n.toInt ∧ obs = []
++    | _, _, _, _, _, _ => False
+   releaseResponse _ r := r = none
+   isResource o := o == "File"
+   effects
+@@ -57,8 +57,8 @@ def builtins : Builtins where
+   refSet := "set"
+ 
+ def oracle : Oracle
+-  | "exit", _, _, [.const (.integer n)] => .exit n.toInt
+-  | _, _, _, _ => .val (.const .unit)
++  | "exit", _, _, [.const (.integer n)] => (.exit n.toInt, [])
++  | _, _, _, _ => (.val (.const .unit), [])
+ 
+ def rel : Val → Option ErrKind := fun _ => none
+ 
+diff --git a/formal/Benitoite/Release/Lemmas/PresMain.lean b/formal/Benitoite/Release/Lemmas/PresMain.lean
+index 31ace167..c2c86f1a 100644
+--- a/formal/Benitoite/Release/Lemmas/PresMain.lean
++++ b/formal/Benitoite/Release/Lemmas/PresMain.lean
+@@ -264,12 +264,12 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
+   | E_Err =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+       exact stE_error hσ hk hkc hσc
+-  | @E_IO b0 ts es rs0 ws k σ s0 v hsig hkind _ hresp =>
++  | @E_IO b0 ts es rs0 ws k σ s0 v obs hsig hkind _ hresp =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+       have resultWF := HasTypeCQ.wf hwf hb hm (envWF_nil 0) hσ.wf hmc
+       obtain ⟨s', hs', htl, hel, had, hargs, hle, _, hrs⟩ := inv_prim_app hm
+       rw [hsig] at hs'; cases hs'
+-      have hot := hb.io_typed Ψ b0 _ rs0 ts es ws _ hsig (Or.inl hkind) hrs htl hel had hargs hresp
++      have hot := hb.io_typed Ψ b0 _ rs0 ts es ws _ _ hsig (Or.inl hkind) hrs htl hel had hargs hresp
+       exact stE_ret resultWF hσ hot.1 hle hk hot.2 hkc hσc
+   | E_IOErr =>
+       obtain ⟨Ψ, R, a, b, ε, ε1, hσ, hm, hε, hk, hmc, hkc, hσc⟩ := hs
+diff --git a/formal/Benitoite/Release/Lemmas/PrimRanges.lean b/formal/Benitoite/Release/Lemmas/PrimRanges.lean
+index 2a625202..4d7a9d14 100644
+--- a/formal/Benitoite/Release/Lemmas/PrimRanges.lean
++++ b/formal/Benitoite/Release/Lemmas/PrimRanges.lean
+@@ -76,14 +76,14 @@ def Builtins.DeltaTypedAt (P : Program) (B : Builtins) (b : PrimName) (s : PrimS
+ 
+ /-- `io_typed` の欄の本体。 -/
+ def Builtins.IOTypedAt (P : Program) (B : Builtins) (b : PrimName) (s : PrimSig) (rs : List Range) : Prop :=
+-  ∀ Ψ ts es ws o, (s.kind = .io ∨ s.kind = .exit) → ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
++  ∀ Ψ ts es ws o obs, (s.kind = .io ∨ s.kind = .exit) → ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
+-    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
++    B.ioResponse b ts es ws o obs → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+ 
+ /-- `io_exists` の欄の本体。 -/
+ def Builtins.IOExistsAt (P : Program) (B : Builtins) (b : PrimName) (s : PrimSig) (rs : List Range) : Prop :=
+   ∀ Ψ ts es ws, (s.kind = .io ∨ s.kind = .exit) → ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) → ∃ o, B.ioResponse b ts es ws o
++    HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) → ∃ o obs, B.ioResponse b ts es ws o obs
+ 
+ /-- 三つの欄は、量化した欄の一般形である（欄の字面は `Builtins.Assumptions` のとおり）。 -/
+ theorem Builtins.Assumptions.delta_typed_fieldNew {P : Program} {B : Builtins} (hb : B.Assumptions P) :
+@@ -92,8 +92,8 @@ theorem Builtins.Assumptions.delta_typed_fieldNew {P : Program} {B : Builtins} (
+ 
+ theorem Builtins.Assumptions.io_typed_fieldNew {P : Program} {B : Builtins} (hb : B.Assumptions P) :
+     B.FieldNew (B.IOTypedAt P) :=
+-  fun b s hs rs hrs Ψ ts es ws o hk htl hel had hargs hr =>
+-    hb.io_typed Ψ b s rs ts es ws o hs hk hrs htl hel had hargs hr
++  fun b s hs rs hrs Ψ ts es ws o obs hk htl hel had hargs hr =>
++    hb.io_typed Ψ b s rs ts es ws o obs hs hk hrs htl hel had hargs hr
+ 
+ theorem Builtins.Assumptions.io_exists_fieldNew {P : Program} {B : Builtins} (hb : B.Assumptions P) :
+     B.FieldNew (B.IOExistsAt P) :=
+@@ -108,17 +108,17 @@ def Builtins.DeltaTypedOld (P : Program) (B : Builtins) : Prop :=
+ 
+ /-- 旧の `io_typed`。 -/
+ def Builtins.IOTypedOld (P : Program) (B : Builtins) : Prop :=
+-  ∀ Ψ b s ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
++  ∀ Ψ b s ts es ws o obs, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
++    B.ioResponse b ts es ws o obs → OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
+ 
+ /-- 旧の `io_exists`。 -/
+ def Builtins.IOExistsOld (P : Program) (B : Builtins) : Prop :=
+   ∀ Ψ b s ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+     HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    ∃ o, B.ioResponse b ts es ws o
++    ∃ o obs, B.ioResponse b ts es ws o obs
+ 
+ /-- 旧の像の表（範囲の変数のない `PrimSig.Scoped` の項目だけの表）では、空の具体化は署名を変えない。 -/
+ theorem Builtins.RangeFree.inst_nil {B : Builtins} (hB : B.RangeFree) (hsc : ∀ b s, B.sig b = some s → s.Scoped)
+@@ -141,13 +141,13 @@ theorem Builtins.io_typed_iff_old {P : Program} {B : Builtins} (hB : B.RangeFree
+     (hsc : ∀ b s, B.sig b = some s → s.Scoped) : B.FieldNew (B.IOTypedAt P) ↔ B.IOTypedOld P := by
+   rw [Builtins.fieldNew_iff_old hB]
+   constructor
+-  · intro h Ψ b s ts es ws o hs hk htl hel had hargs hr
+-    have := h b s hs Ψ ts es ws o hk htl hel had
++  · intro h Ψ b s ts es ws o obs hs hk htl hel had hargs hr
++    have := h b s hs Ψ ts es ws o obs hk htl hel had
+     rw [hB.inst_nil hsc hs] at this
+     exact this hargs hr
+-  · intro h b s hs Ψ ts es ws o hk htl hel had hargs hr
++  · intro h b s hs Ψ ts es ws o obs hk htl hel had hargs hr
+     rw [hB.inst_nil hsc hs] at hargs ⊢
+-    exact h Ψ b s ts es ws o hs hk htl hel had hargs hr
++    exact h Ψ b s ts es ws o obs hs hk htl hel had hargs hr
+ 
+ theorem Builtins.io_exists_iff_old {P : Program} {B : Builtins} (hB : B.RangeFree)
+     (hsc : ∀ b s, B.sig b = some s → s.Scoped) : B.FieldNew (B.IOExistsAt P) ↔ B.IOExistsOld P := by
+@@ -372,7 +372,8 @@ def builtins : Builtins :=
+     delta := fun b _ _ _ ws => match b, ws with
+       | "Scope.pathInValue", [_] => some (.val (.const (.string "/data/a.txt")))
+       | _, _ => none
+-    ioResponse := fun b _ _ ws o => b = "File.writeTextIn" ∧ ws.length = 2 ∧ o = .val (.con "Ok" [] [.const .unit])
++    ioResponse := fun b _ _ ws o obs => b = "File.writeTextIn" ∧ ws.length = 2 ∧ o = .val (.con "Ok" [] [.const .unit]) ∧
++      obs = (match ws with | .checked t :: _ => [t] | _ => [])
+     effects := fun l => if l = "File.Write" then some ["File.writeTextIn"] else Model.builtins.effects l
+     valKind := fun o => if o = "Scope.PathIn" then some .path else none
+     admitsR := fun _ _ => True }
+@@ -448,9 +449,10 @@ theorem io_typed_example {P : Program} {Ψ : StoreTy} {R : Option Ty} :
+ /-- E_IO の場合（遷移）: 処理する節がなければ、応答の関係で進む。 -/
+ theorem io_step {P : Program} {σ : Store} :
+     Step P builtins (.run (.app (.prim "File.writeTextIn" [] [] [range]) [.checked target, .const (.string "x")]) [] σ)
+-      (some (.io "File.writeTextIn" [.checked target, .const (.string "x")] (.val (.con "Ok" [] [.const .unit]))))
++      (some (.io "File.writeTextIn" [.checked target, .const (.string "x")] (.val (.con "Ok" [] [.const .unit]))
++        [target]))
+       (.run (.ret (.con "Ok" [] [.const .unit])) [] σ) :=
+-  .E_IO (s := writeTextInSig) (by simp [builtins]) rfl (fun _ h => by cases h) ⟨rfl, rfl, rfl⟩
++  .E_IO (s := writeTextInSig) (by simp [builtins]) rfl (fun _ h => by cases h) ⟨rfl, rfl, rfl, rfl⟩
+ 
+ /-- E_OpPrim の場合: 節は操作の型を Top の列で具体化して型付ける（節の添字は Top）。 -/
+ theorem opSig_writeTextIn {P : Program} :
+diff --git a/formal/Benitoite/Release/Lemmas/Progress.lean b/formal/Benitoite/Release/Lemmas/Progress.lean
+index bd5f91d5..5de835a6 100644
+--- a/formal/Benitoite/Release/Lemmas/Progress.lean
++++ b/formal/Benitoite/Release/Lemmas/Progress.lean
+@@ -332,8 +332,8 @@ theorem progress_io (hb : B.Assumptions P) {Ψ σ b0 s ts es rs ws k} (hσ : Sto
+     (hargs : HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es))) :
+     ∃ l s', Step P B (.run (.app (.prim b0 ts es rs) ws) k σ) l s' := by
+   by_cases hno : NoHandler k (.prim b0)
+-  · obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s rs ts es ws hsig hkd hrs htl hel had hargs
+-    rcases hb.io_kind b0 s ts es ws o hsig ho with ⟨hk, hne⟩ | ⟨hk, hne⟩
++  · obtain ⟨o, obs, ho⟩ := hb.io_exists Ψ b0 s rs ts es ws hsig hkd hrs htl hel had hargs
++    rcases hb.io_kind b0 s ts es ws o obs hsig ho with ⟨hk, hne⟩ | ⟨hk, hne⟩
+     · cases o with
+       | val v => exact ⟨_, _, .E_IO hsig hk hno ho⟩
+       | err r => exact ⟨_, _, .E_IOErr hsig (Or.inl hk) hno ho⟩
+diff --git a/formal/Benitoite/Release/Lemmas/StepSound.lean b/formal/Benitoite/Release/Lemmas/StepSound.lean
+index 5c3e0ae1..d04080e3 100644
+--- a/formal/Benitoite/Release/Lemmas/StepSound.lean
++++ b/formal/Benitoite/Release/Lemmas/StepSound.lean
+@@ -101,7 +101,8 @@ theorem rel_resp (hb : B.Assumptions P) {rel : Val → Option ErrKind}
+ 
+ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Option ErrKind)
+     (fresh : Store → Nat)
+-    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
++    (horacle : ∀ b ts es ws o obs, B.ioResponse b ts es ws o obs →
++      B.ioResponse b ts es ws (oracle b ts es ws).1 (oracle b ts es ws).2)
+     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v))
+     (hfresh : ∀ σ : Store, (∃ n, ∀ l, n ≤ l → σ l = none) → σ (fresh σ) = none)
+     {Eb : Eff} {s : State} {l : Option Event} {s' : State}
+@@ -239,8 +240,8 @@ theorem step_soundE (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Opti
+                 obtain ⟨s1, hs1, htl, hel, had, hargs, _, _, hrs⟩ := inv_prim_app hm
+                 have e0 := Option.some.inj (hsig.symm.trans hs1)
+                 subst e0
+-                obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s0 _ ts es _ hsig hkd hrs htl hel had hargs
+-                have hro := horacle _ _ _ _ _ ho
++                obtain ⟨o, obs, ho⟩ := hb.io_exists Ψ b0 s0 _ ts es _ hsig hkd hrs htl hel had hargs
++                have hro := horacle _ _ _ _ _ _ ho
+                 split at h
+                 · rename_i k1 h' k2 e1
+                   split at h
+diff --git a/formal/Benitoite/Release/Model.lean b/formal/Benitoite/Release/Model.lean
+index d7a6bf20..289641b5 100644
+--- a/formal/Benitoite/Release/Model.lean
++++ b/formal/Benitoite/Release/Model.lean
+@@ -39,7 +39,7 @@ def builtins : Builtins where
+   sig := fun b => if b = "Reference.get" then some refGetSig
+     else if b = "Reference.set" then some refSetSig else none
+   delta := fun _ _ _ _ _ => none
+-  ioResponse := fun _ _ _ _ _ => False
++  ioResponse := fun _ _ _ _ _ _ => False
+   releaseResponse := fun _ r => r = none
+   isResource := fun _ => false
+   effects := fun l => if l = stateEff then some [] else none
+@@ -101,8 +101,8 @@ theorem assumptions (P : Program) : builtins.Assumptions P where
+   delta_typed := by
+     intro Ψ b s rs ts es ws h hk
+     rcases sig_cases h with rfl | rfl <;> simp [refGetSig, refSetSig] at hk
+-  io_kind := fun _ _ _ _ _ _ _ h => h.elim
+-  io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
++  io_kind := fun _ _ _ _ _ _ _ _ h => h.elim
++  io_typed := fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h => h.elim
+   io_exists := by
+     intro Ψ b s rs ts es ws h hk
+     rcases sig_cases h with rfl | rfl <;> simp [refGetSig, refSetSig] at hk
+@@ -414,7 +414,7 @@ example : ∀ a, ¬ HasTypeV emptyProgram builtins StoreTy.empty [] []
+   have hn := lambda_names_wellFormed h rfl
+   simp [NamesWF] at hn
+ 
+-example : step emptyProgram builtins (fun _ _ _ _ => .err "unused") (fun _ => none) (fun _ => 0)
++example : step emptyProgram builtins (fun _ _ _ _ => (.err "unused", [])) (fun _ => none) (fun _ => 0)
+     (.run (.app firstLambda [.const (.integer ⟨7, by decide⟩), .const (.string "second")]) [] Store.empty) =
+     some (none, .run (.ret (.const (.integer ⟨7, by decide⟩))) [.mark] Store.empty) := by
+   rfl
+diff --git a/formal/Benitoite/Release/RangeInst.lean b/formal/Benitoite/Release/RangeInst.lean
+index 985c96a9..b8dd1a18 100644
+--- a/formal/Benitoite/Release/RangeInst.lean
++++ b/formal/Benitoite/Release/RangeInst.lean
+@@ -1105,7 +1105,7 @@ example : ¬ ({ writeTextInSig with params := [.fn ["p"] [.opaque "Scope.PathIn"
+ 
+ /-- 表の制約が全てを許す表。 -/
+ private def anyAdmits : Builtins :=
+-  { sig := fun _ => none, delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False,
++  { sig := fun _ => none, delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ _ => False,
+     releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none,
+     sat := fun _ _ _ => True, refGet := "get", refSet := "set", admitsR := fun _ _ => True }
+ 
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index e78a1742..fbc20457 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -60,7 +60,7 @@ inductive State where
+ 
+ /-- 事象。IO の事象 `b(W̄) ↦ …` と、解放の事象 `release(V) ↦ ok | error(r)`。 -/
+ inductive Event where
+-  | io (b : PrimName) (ws : List Val) (o : Outcome)
++  | io (b : PrimName) (ws : List Val) (o : Outcome) (obs : List Scope.Domain.Target)
+   | release (v : Val) (r : Option ErrKind)
+ 
+ /-- `mark ▷ K`。 -/
+@@ -181,20 +181,20 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State 
+       B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.err r) →
+       Step P B (.run (.app (.prim b ts es rs) ws) k σ) none (.error [r] k σ)
+   /-- E-IO。組み込みの操作 b は、継続に b の節を持つ `handle` の枠がないときにだけ、E-IO を使う。 -/
+-  | E_IO {b ts es rs ws k σ s v} :
++  | E_IO {b ts es rs ws k σ s v obs} :
+       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.val v) →
+-      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.val v))) (.run (.ret v) k σ)
++      B.ioResponse b ts es ws (.val v) obs →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.val v) obs)) (.run (.ret v) k σ)
+   /-- E-IOErr。プロセスの終了の関数の、引数が定義域の外のときの応答も `error(r)` である（01-12「プロセスの終了」）。 -/
+-  | E_IOErr {b ts es rs ws k σ s r} :
++  | E_IOErr {b ts es rs ws k σ s r obs} :
+       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.err r) →
+-      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.err r))) (.error [r] k σ)
++      B.ioResponse b ts es ws (.err r) obs →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.err r) obs)) (.error [r] k σ)
+   /-- E-Exit。終了状態を指定したプロセスの終了の関数にだけ使う。 -/
+-  | E_Exit {b ts es rs ws k σ s n} :
++  | E_Exit {b ts es rs ws k σ s n obs} :
+       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.exit n) →
+-      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.exit n))) (.exit n [] k σ)
++      B.ioResponse b ts es ws (.exit n) obs →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.exit n) obs)) (.exit n [] k σ)
+   -- ストア
+   | E_RefNew {b ts es rs v k σ s l} :
+       B.sig b = some s → s.kind = .refNew → σ l = none →
+@@ -336,7 +336,7 @@ def State.Final : State → Prop
+ /-! ## 遷移を計算する関数 -/
+ 
+ /-- IO の応答を選ぶ関数（段階 A と同じく、同じ入力には同じ応答を返す）。 -/
+-abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome
++abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome × List Scope.Domain.Target
+ 
+ /-- 継続を、op を処理する最も内側の `handle` の枠で分ける。 -/
+ def splitHandler (o : OpRef) : Cont → Option (Cont × List Clause × Cont)
+@@ -433,9 +433,9 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
+                   | none => none
+               | none =>
+                   match s.kind, oracle b ts es ws with
+-                  | .io, .val v => some (some (.io b ws (.val v)), .run (.ret v) k σ)
+-                  | _, .err r => some (some (.io b ws (.err r)), .error [r] k σ)
+-                  | .exit, .exit n => some (some (.io b ws (.exit n)), .exit n [] k σ)
++                  | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (.ret v) k σ)
++                  | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k σ)
++                  | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k σ)
+                   | _, _ => none
+           | .refNew, [v] =>
+               let l := fresh σ
+diff --git a/formal/Benitoite/Release/Theorems.lean b/formal/Benitoite/Release/Theorems.lean
+index 8130c01f..bf21ed00 100644
+--- a/formal/Benitoite/Release/Theorems.lean
++++ b/formal/Benitoite/Release/Theorems.lean
+@@ -21,7 +21,8 @@ variable {P : Program} {B : Builtins}
+ /-- 型が付いた状態について、`step` が返す遷移は `Step` の遷移である。`oracle` と `rel` は、起こりうる応答が
+ あるときは、その一つを選ぶ。`fresh` は、有限なストアに中身のない場所を選ぶ。 -/
+ theorem step_sound (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Option ErrKind) (fresh : Store → Nat)
+-    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
++    (horacle : ∀ b ts es ws o obs, B.ioResponse b ts es ws o obs →
++      B.ioResponse b ts es ws (oracle b ts es ws).1 (oracle b ts es ws).2)
+     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v))
+     (hfresh : ∀ σ : Store, (∃ n, ∀ l, n ≤ l → σ l = none) → σ (fresh σ) = none)
+     {s : State} {l : Option Event} {s' : State} :
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index d03a23e6..7fd500fe 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -71,8 +71,9 @@ structure Builtins where
+   sig : PrimName → Option PrimSig
+   /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（01-12「実行の規則」）。 -/
+   delta : PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Option Outcome
+-  /-- IO を行う組み込みの関数の応答として起こりうるもの。 -/
+-  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
++  /-- IO を行う組み込みの関数の応答と、その応答で作用した対象の観測（有限列）として起こりうるもの
++  （問 8 の O1。観測は応答の関係に含める。設計書 01-12「実行の規則」）。 -/
++  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → List Scope.Domain.Target → Prop
+   /-- 事象 `release(V)` の応答として起こりうるもの。`none` が `ok`、`some r` が `error(r)`。 -/
+   releaseResponse : Val → Option ErrKind → Prop
+   /-- リソースの型か。リソースの型の解放のエフェクト `rel(O_r)` は `{State}` である。 -/
+diff --git a/formal/Benitoite/Surface/CheckCounterexamples.lean b/formal/Benitoite/Surface/CheckCounterexamples.lean
+index 5ddbbd51..fc8b8dcb 100644
+--- a/formal/Benitoite/Surface/CheckCounterexamples.lean
++++ b/formal/Benitoite/Surface/CheckCounterexamples.lean
+@@ -19,7 +19,7 @@ private def decls : Declarations :=
+       eff := "Pick", tparams := [], names := [], params := [], ret := intTy } else none }
+ private def builtins : Builtins :=
+   { sig := fun _ => none, delta := fun _ _ _ _ _ => none,
+-    ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
++    ioResponse := fun _ _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
+     isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False,
+     refGet := "get", refSet := "set" }
+ private def input : Input :=
+diff --git a/formal/Benitoite/Surface/CheckExamples.lean b/formal/Benitoite/Surface/CheckExamples.lean
+index c84edf35..72adb6dc 100644
+--- a/formal/Benitoite/Surface/CheckExamples.lean
++++ b/formal/Benitoite/Surface/CheckExamples.lean
+@@ -453,10 +453,10 @@ private def builtins : Builtins :=
+       | "append", [.const (.string a), .const (.string b)] => some (.val (.const (.string (a ++ b))))
+       | "tagInt", [.const (.integer n)] => some (.val (.const (.string ("tag" ++ toString n.toInt))))
+       | _, _ => renderBuiltins.delta b ts es rs vs
+-    ioResponse := fun b ts es vs out => match b, vs with
+-      | "first", [] => out = .val (.const (.integer ⟨7, by decide⟩))
+-      | "second", [] => out = .val (.const (.integer ⟨9, by decide⟩))
+-      | _, _ => renderBuiltins.ioResponse b ts es vs out
++    ioResponse := fun b ts es vs out obs => match b, vs with
++      | "first", [] => out = .val (.const (.integer ⟨7, by decide⟩)) ∧ obs = []
++      | "second", [] => out = .val (.const (.integer ⟨9, by decide⟩)) ∧ obs = []
++      | _, _ => renderBuiltins.ioResponse b ts es vs out obs
+     effects := fun e => if e == "B" then some ["first", "second"] else renderBuiltins.effects e }
+ private def q : Input := { renderInput with D := declarations, B := builtins }
+ private def env : List (Option Ty) :=
+@@ -533,8 +533,8 @@ private def program : Release.Program :=
+           methods := fun m => if m == "tag" then some (.app (.prim "tagInt" [] [] []) [.var 0]) else none }
+       | _ => renderProgram.impls i }
+ private def oracle : Oracle
+-  | "first", _, _, _ => .val (.const (.integer ⟨7, by decide⟩))
+-  | "second", _, _, _ => .val (.const (.integer ⟨9, by decide⟩))
++  | "first", _, _, _ => (.val (.const (.integer ⟨7, by decide⟩)), [])
++  | "second", _, _, _ => (.val (.const (.integer ⟨9, by decide⟩)), [])
+   | b, ts, es, vs => Release.Examples.oracle b ts es vs
+ 
+ -- 表示結果は辞書・値の配置を、事象列はソース順と一度だけの評価を観測する。
+@@ -546,7 +546,7 @@ private noncomputable def result (e : Expr) : Option String × List PrimName :=
+   let value := match s with
+     | .run (.ret (.const (.string text))) [] _ => some text
+     | _ => none
+-  (value, events.filterMap fun ev => match ev with | .io b _ _ => some b | _ => none)
++  (value, events.filterMap fun ev => match ev with | .io b _ _ _ => some b | _ => none)
+ 
+ example : calls.map result =
+     [(some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]),
+diff --git a/formal/Benitoite/Surface/CheckTables.lean b/formal/Benitoite/Surface/CheckTables.lean
+index 5a5c2d73..d487cdf9 100644
+--- a/formal/Benitoite/Surface/CheckTables.lean
++++ b/formal/Benitoite/Surface/CheckTables.lean
+@@ -98,7 +98,7 @@ def builtins (S : SummaryTable) (xs : List PrimEntry)
+     (b : BuiltinMaterial) : Builtins :=
+   { sig := fun n => (primLookup xs n).map PrimEntry.signature
+     delta := fun _ _ _ _ _ => none
+-    ioResponse := fun _ _ _ _ _ => False
++    ioResponse := fun _ _ _ _ _ _ => False
+     releaseResponse := fun _ _ => False
+     isResource := b.isResource
+     effects := b.effectOps
+diff --git a/formal/Benitoite/Surface/CheckToolsExamples.lean b/formal/Benitoite/Surface/CheckToolsExamples.lean
+index 4854a398..e3f37eaa 100644
+--- a/formal/Benitoite/Surface/CheckToolsExamples.lean
++++ b/formal/Benitoite/Surface/CheckToolsExamples.lean
+@@ -201,7 +201,7 @@ private def stringAddSig : PrimSig :=
+     kind := .pure, opEff := none }
+ private def stringBuiltins : Builtins :=
+   { sig := fun b => if b == "String.add" then some stringAddSig else none,
+-    delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False,
++    delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ _ => False,
+     releaseResponse := fun _ _ => False, isResource := fun _ => false,
+     effects := fun _ => none, sat := fun _ _ _ => True, refGet := "get", refSet := "set" }
+ private def stringOp : OpPrim
+diff --git a/formal/Benitoite/Surface/FailureExamples.lean b/formal/Benitoite/Surface/FailureExamples.lean
+index 2c8b5ff6..a4d96f89 100644
+--- a/formal/Benitoite/Surface/FailureExamples.lean
++++ b/formal/Benitoite/Surface/FailureExamples.lean
+@@ -40,7 +40,7 @@ private def declarations : Declarations := {
+   cons := fun _ => none }
+ private def builtins : Builtins := {
+   sig := fun _ => none, delta := fun _ _ _ _ _ => none,
+-  ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
++  ioResponse := fun _ _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
+   isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => True,
+   refGet := "get", refSet := "set" }
+ private def input : Input := {
+diff --git a/formal/SurfaceCheck/Validation.lean b/formal/SurfaceCheck/Validation.lean
+index 09480b6f..52b90be6 100644
+--- a/formal/SurfaceCheck/Validation.lean
++++ b/formal/SurfaceCheck/Validation.lean
+@@ -6,7 +6,7 @@ namespace SurfaceCheck.Validation
+ open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surface.CheckTools
+ open SurfaceCheck.Batch
+ private def q : Input := {
+-  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.nameTop "A"] }
++  D := { funs := fun _ => none, cons := fun _ => none }, B := { sig := fun _ => none, delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ _ => False, releaseResponse := fun _ _ => False, isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => False, refGet := "get", refSet := "set" }, satDec := fun _ _ _ => false, admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [], atoms := [.nameTop "A"] }
+ -- 継続が隠された誤りも、プレースホルダ引数の誤りも、不一致として扱う。
+ #guard category q {} [] (.error ⟨[0,1,0,2],"continuation is missing or hidden"⟩) == "mismatched"
+ #guard category q { prims := ["unsupported"] } ["unsupported"] (.ok ()) == "outOfScope"

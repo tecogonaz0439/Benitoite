@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.Console
+
+function evens(m: Map[String, Integer]) -> Map[String, Integer]
+  return Map.filter(m: m, p: lambda(key, value) return value mod 2 = 0 end lambda)
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(String.join(xs: Map.keys(evens(Map.fromList([Pair("a", 1), Pair("b", 2)]))), separator: ","))
+end function

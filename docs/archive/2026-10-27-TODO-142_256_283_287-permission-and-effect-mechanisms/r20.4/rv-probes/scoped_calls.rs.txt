@@ -1,0 +1,46 @@
+fn rv_probe_late_atom_from_later_clause() {
+    let remaining = r#"
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0"#;
+    for (label, tail) in [
+        ("direct", "return run(protected)".to_string()),
+        ("later clause", "return handle tick() with\n case tick() -> resume(run(protected))\n end handle".to_string()),
+    ] {
+        let source = format!(
+            r#"import Benitoite.Unofficial.IO.File
+effect Tick
+ function tick() -> Integer
+end effect
+function protected() -> Integer uses File.Read["/data/a"]
+ return 1
+end function
+function sample() -> Integer
+ bind run <- lambda(f)
+  return handle
+   f()
+  with
+  case File.readText(path) -> 0
+  {remaining}
+  end handle
+ end lambda
+ {tail}
+end function"#
+        );
+        let result = check(&source);
+        let errors: Vec<_> = result.diagnostics.iter().filter(|d| d.is_error()).map(|d| (d.code.map(|c| c.info().id), d.message.clone())).collect();
+        eprintln!("RVPROBE {label}: errors={errors:?}");
+        if errors.is_empty() {
+            let core = pipeline::desugar_checked(&result.program.unwrap()).unwrap();
+            let ir = benitoite::ir::check::check_program(&core);
+            eprintln!("RVPROBE {label}: ir={:?}", ir.iter().map(|e| e.message.clone()).collect::<Vec<_>>());
+        }
+    }
+}

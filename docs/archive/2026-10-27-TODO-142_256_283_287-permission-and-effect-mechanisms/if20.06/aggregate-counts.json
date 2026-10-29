@@ -1,0 +1,1429 @@
+{
+  "unit": "明示的な公開関数の宣言。補助経路は操作へ合算しない",
+  "aliases": {
+    "IF20.04/D118": "IF20.02/H13",
+    "IF20.05/A06": "IF20.04/D117"
+  },
+  "branches": {
+    "IF20.01": {
+      "raw": 26,
+      "unique": 26,
+      "direction": {
+        "両方": 25,
+        "出口": 1
+      },
+      "candidate": {
+        "保守的（秘密の結びとする）": 8,
+        "未対応で拒否": 13,
+        "契約を設ける": 5
+      }
+    },
+    "IF20.02": {
+      "raw": 16,
+      "unique": 16,
+      "direction": {
+        "両方": 8,
+        "入口": 1,
+        "内部の派生": 7
+      },
+      "candidate": {
+        "未対応で拒否": 9,
+        "契約を設ける": 7
+      }
+    },
+    "IF20.03": {
+      "raw": 17,
+      "unique": 17,
+      "direction": {
+        "両方": 12,
+        "入口": 3,
+        "出口": 1,
+        "内部の派生": 1
+      },
+      "candidate": {
+        "契約を設ける": 6,
+        "保守的（秘密の結びとする）": 8,
+        "未対応で拒否": 3
+      }
+    },
+    "IF20.04": {
+      "raw": 118,
+      "unique": 117,
+      "direction": {
+        "内部の派生": 109,
+        "両方": 8
+      },
+      "candidate": {
+        "契約を設ける": 117
+      }
+    },
+    "IF20.05": {
+      "raw": 8,
+      "unique": 7,
+      "direction": {
+        "出口": 4,
+        "内部の派生": 3
+      },
+      "candidate": {
+        "契約を設ける": 7
+      }
+    },
+    "IF20.06": {
+      "raw": 25,
+      "unique": 25,
+      "direction": {
+        "内部の派生": 14,
+        "両方": 3,
+        "入口": 8
+      },
+      "candidate": {
+        "未対応で拒否": 12,
+        "保守的（秘密の結びとする）": 9,
+        "契約を設ける": 4
+      }
+    }
+  },
+  "total": {
+    "raw": 210,
+    "unique": 208,
+    "direction": {
+      "両方": 56,
+      "出口": 6,
+      "入口": 12,
+      "内部の派生": 134
+    },
+    "candidate": {
+      "保守的（秘密の結びとする）": 25,
+      "未対応で拒否": 37,
+      "契約を設ける": 146
+    }
+  },
+  "operations": [
+    {
+      "id": "IF20.01/F01",
+      "operation": "F01 `File.readText`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F02",
+      "operation": "F02 `File.openReader`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F03",
+      "operation": "F03 `File.readLine`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F04",
+      "operation": "F04 `File.readBytes`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F05",
+      "operation": "F05 `File.readLines`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F06",
+      "operation": "F06 `File.exists`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F07",
+      "operation": "F07 `File.info`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F08",
+      "operation": "F08 `File.listDirectory`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F09",
+      "operation": "F09 `File.walk`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F10",
+      "operation": "F10 `File.canonicalize`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.01/F11",
+      "operation": "F11 `File.readChunk`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F12",
+      "operation": "F12 `File.writeText`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.01/F13",
+      "operation": "F13 `File.appendText`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.01/F14",
+      "operation": "F14 `File.writeBytes`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.01/F15",
+      "operation": "F15 `File.appendBytes`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.01/F16",
+      "operation": "F16 `File.createDirectory`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F17",
+      "operation": "F17 `File.remove`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F18",
+      "operation": "F18 `File.removeTree`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F19",
+      "operation": "F19 `File.rename`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F20",
+      "operation": "F20 `File.openWriter`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F21",
+      "operation": "F21 `File.write`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F22",
+      "operation": "F22 `File.writeLine`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F23",
+      "operation": "F23 `File.writeChunk`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F24",
+      "operation": "F24 `File.closeReader`",
+      "direction": "出口",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.01/F25",
+      "operation": "F25 `File.copy`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.01/F26",
+      "operation": "F26 `File.closeWriter`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H01",
+      "operation": "H01 `Http.listen`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H02",
+      "operation": "H02 `Http.listenerPort`",
+      "direction": "入口",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H03",
+      "operation": "H03 `Http.accept`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H04",
+      "operation": "H04 `Http.respond`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H05",
+      "operation": "H05 `Http.send`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H06",
+      "operation": "H06 `Http.requestOf`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H07",
+      "operation": "H07 `Http.closeListener`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H08",
+      "operation": "H08 `Http.closeExchange`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H09",
+      "operation": "H09 `Http.pathSegments`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H10",
+      "operation": "H10 `Http.serve`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.02/H11",
+      "operation": "H11 `Http.text`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H12",
+      "operation": "H12 `Http.html`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H13",
+      "operation": "H13 `Http.json`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H14",
+      "operation": "H14 `Http.header`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H15",
+      "operation": "H15 `Http.clientRequest`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.02/H16",
+      "operation": "H16 `Http.get`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.03/C01",
+      "operation": "C01 `Console.write`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.03/C02",
+      "operation": "C02 `Console.writeLine`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.03/C03",
+      "operation": "C03 `Console.writeError`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.03/C04",
+      "operation": "C04 `Console.writeErrorLine`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.03/C05",
+      "operation": "C05 `Console.readLine`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/C06",
+      "operation": "C06 `Console.readAll`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/C07",
+      "operation": "C07 `Console.readAllLines`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/C08",
+      "operation": "C08 `Console.readAllBytes`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/P01",
+      "operation": "P01 `Process.arguments`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/P02",
+      "operation": "P02 `Process.scriptDirectory`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/P03",
+      "operation": "P03 `Process.environmentVariable`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/P04",
+      "operation": "P04 `Process.workingDirectory`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.03/P05",
+      "operation": "P05 `Process.exit`",
+      "direction": "出口",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.03/P06",
+      "operation": "P06 `Process.run`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.03/P07",
+      "operation": "P07 `Process.runAttached`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.03/P08",
+      "operation": "P08 `Process.shell`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.03/P09",
+      "operation": "P09 `Process.command`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D001",
+      "operation": "D001 `Integer.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D002",
+      "operation": "D002 `Float.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D003",
+      "operation": "D003 `Decimal.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D004",
+      "operation": "D004 `Byte.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D005",
+      "operation": "D005 `Character.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D006",
+      "operation": "D006 `Character.toUppercase`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D007",
+      "operation": "D007 `Character.toLowercase`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D008",
+      "operation": "D008 `Integer8.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D009",
+      "operation": "D009 `Integer16.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D010",
+      "operation": "D010 `Integer32.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D011",
+      "operation": "D011 `UnsignedInteger16.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D012",
+      "operation": "D012 `UnsignedInteger32.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D013",
+      "operation": "D013 `UnsignedInteger64.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D014",
+      "operation": "D014 `Float32.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D015",
+      "operation": "D015 `Integer64.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D016",
+      "operation": "D016 `Float64.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D017",
+      "operation": "D017 `UnsignedInteger8.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D018",
+      "operation": "D018 `UnsignedInteger.toString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D019",
+      "operation": "D019 `String.byteLength`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D020",
+      "operation": "D020 `String.byteSlice`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D021",
+      "operation": "D021 `String.characterCount`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D022",
+      "operation": "D022 `String.characterAt`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D023",
+      "operation": "D023 `String.characterSlice`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D024",
+      "operation": "D024 `String.isEmpty`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D025",
+      "operation": "D025 `String.contains`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D026",
+      "operation": "D026 `String.startsWith`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D027",
+      "operation": "D027 `String.endsWith`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D028",
+      "operation": "D028 `String.byteIndexOf`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D029",
+      "operation": "D029 `String.split`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D030",
+      "operation": "D030 `String.lines`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D031",
+      "operation": "D031 `String.join`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D032",
+      "operation": "D032 `String.trim`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D033",
+      "operation": "D033 `String.replace`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D034",
+      "operation": "D034 `String.repeat`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D035",
+      "operation": "D035 `String.characters`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D036",
+      "operation": "D036 `String.fromCharacters`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D037",
+      "operation": "D037 `String.toUppercase`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D038",
+      "operation": "D038 `String.toLowercase`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D039",
+      "operation": "D039 `String.toUTF8`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D040",
+      "operation": "D040 `String.fromUTF8`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D041",
+      "operation": "D041 `String.displayWidth`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D042",
+      "operation": "D042 `String.displayWidthCJK`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D043",
+      "operation": "D043 `String.displayWidthPadStart`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D044",
+      "operation": "D044 `String.displayWidthPadEnd`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D045",
+      "operation": "D045 `String.displayWidthPadStartCJK`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D046",
+      "operation": "D046 `String.displayWidthPadEndCJK`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D047",
+      "operation": "D047 `Time.fromUnixSeconds`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D048",
+      "operation": "D048 `Time.fromUnixMilliseconds`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D049",
+      "operation": "D049 `Time.toUnixSeconds`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D050",
+      "operation": "D050 `Time.toUnixMilliseconds`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D051",
+      "operation": "D051 `Time.addMilliseconds`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D052",
+      "operation": "D052 `Time.differenceMilliseconds`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D053",
+      "operation": "D053 `Time.toDateTime`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D054",
+      "operation": "D054 `Time.fromDateTime`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D055",
+      "operation": "D055 `Time.formatISO8601`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D056",
+      "operation": "D056 `Time.parseISO8601`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D057",
+      "operation": "D057 `Time.format`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D058",
+      "operation": "D058 `IOError.message`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D059",
+      "operation": "D059 `IOError.kind`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D060",
+      "operation": "D060 `NetworkError.kind`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D061",
+      "operation": "D061 `NetworkError.message`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D062",
+      "operation": "D062 `Json.parse`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D063",
+      "operation": "D063 `Json.stringify`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D064",
+      "operation": "D064 `Json.stringifyPretty`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D065",
+      "operation": "D065 `Json.get`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D066",
+      "operation": "D066 `Json.at`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D067",
+      "operation": "D067 `Json.asString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D068",
+      "operation": "D068 `Json.asInteger`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D069",
+      "operation": "D069 `Json.asFloat`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D070",
+      "operation": "D070 `Json.asBoolean`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D071",
+      "operation": "D071 `Json.asArray`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D072",
+      "operation": "D072 `Json.asObject`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D073",
+      "operation": "D073 `Json.Codec.kind`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D074",
+      "operation": "D074 `Json.Codec.error`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D075",
+      "operation": "D075 `Json.Codec.prepend`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D076",
+      "operation": "D076 `Json.Codec.decodeObject`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D077",
+      "operation": "D077 `Json.Codec.decodeField`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D078",
+      "operation": "D078 `Json.Codec.missing`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D079",
+      "operation": "D079 `Json.Codec.rejectExtra`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D080",
+      "operation": "D080 `Json.Codec.encodeString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D081",
+      "operation": "D081 `Json.Codec.decodeString`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D082",
+      "operation": "D082 `Json.Codec.encodeBoolean`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D083",
+      "operation": "D083 `Json.Codec.decodeBoolean`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D084",
+      "operation": "D084 `Json.Codec.encodeInteger`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D085",
+      "operation": "D085 `Json.Codec.decodeInteger`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D086",
+      "operation": "D086 `Json.Codec.encodeFloat`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D087",
+      "operation": "D087 `Json.Codec.decodeFloat`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D088",
+      "operation": "D088 `Json.Codec.encodeOption`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D089",
+      "operation": "D089 `Json.Codec.decodeOption`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D090",
+      "operation": "D090 `Json.Codec.encodeList`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D091",
+      "operation": "D091 `Json.Codec.decodeList`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D092",
+      "operation": "D092 `Json.Codec.encodeMap`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D093",
+      "operation": "D093 `Json.Codec.decodeMap`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D094",
+      "operation": "D094 `Log.emit`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D095",
+      "operation": "D095 `Log.enabled`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D096",
+      "operation": "D096 `Log.attribute`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D097",
+      "operation": "D097 `Log.debug`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D098",
+      "operation": "D098 `Log.info`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D099",
+      "operation": "D099 `Log.warn`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D100",
+      "operation": "D100 `Log.error`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D101",
+      "operation": "D101 `Log.formatRecord`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D102",
+      "operation": "D102 `Log.withAttributes`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D103",
+      "operation": "D103 `Log.withTextLogger`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D104",
+      "operation": "D104 `Log.withSinks`",
+      "direction": "両方",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D105",
+      "operation": "D105 `SourceLocation.here`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D106",
+      "operation": "D106 `Encoding.base64Encode`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D107",
+      "operation": "D107 `Encoding.base64Decode`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D108",
+      "operation": "D108 `Encoding.base64UrlEncode`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D109",
+      "operation": "D109 `Encoding.base64UrlDecode`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D110",
+      "operation": "D110 `Csv.parse`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D111",
+      "operation": "D111 `Csv.parseWith`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D112",
+      "operation": "D112 `Csv.parseWithHeader`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D113",
+      "operation": "D113 `Csv.format`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D114",
+      "operation": "D114 `Csv.formatWith`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D115",
+      "operation": "D115 `Bytes.toHex`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D116",
+      "operation": "D116 `Bytes.toBinary`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D117",
+      "operation": "D117 `Test.Property.formatFailure`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.04/D118",
+      "operation": "D118 `Http.json`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A01",
+      "operation": "A01 `Assert.equal`",
+      "direction": "出口",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A02",
+      "operation": "A02 `Assert.notEqual`",
+      "direction": "出口",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A03",
+      "operation": "A03 `Assert.isTrue`",
+      "direction": "出口",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A04",
+      "operation": "A04 `Assert.fail`",
+      "direction": "出口",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A05",
+      "operation": "A05 `Property.check`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A06",
+      "operation": "A06 `Property.formatFailure`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A07",
+      "operation": "A07 `Failure.fromResult`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.05/A08",
+      "operation": "A08 `Failure.toResult`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.06/O01",
+      "operation": "O01 `Task.all`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O02",
+      "operation": "O02 `Task.allOk`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O03",
+      "operation": "O03 `Task.race`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O04",
+      "operation": "O04 `Task.withTimeout`",
+      "direction": "両方",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O05",
+      "operation": "O05 `Task.await`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O06",
+      "operation": "O06 `TaskGroup.open`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O07",
+      "operation": "O07 `TaskGroup.spawn`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O08",
+      "operation": "O08 `Reference.new`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O09",
+      "operation": "O09 `Reference.get`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O10",
+      "operation": "O10 `Reference.set`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O11",
+      "operation": "O11 `Reference.update`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O12",
+      "operation": "O12 `Lazy.force`",
+      "direction": "内部の派生",
+      "candidate": "未対応で拒否"
+    },
+    {
+      "id": "IF20.06/O13",
+      "operation": "O13 `Clock.sleep`",
+      "direction": "両方",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O14",
+      "operation": "O14 `Clock.monotonicMilliseconds`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O15",
+      "operation": "O15 `Clock.now`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O16",
+      "operation": "O16 `Clock.localOffsetMinutes`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O17",
+      "operation": "O17 `Random.integer`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O18",
+      "operation": "O18 `Random.float`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O19",
+      "operation": "O19 `Random.boolean`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O20",
+      "operation": "O20 `Random.shuffle`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O21",
+      "operation": "O21 `Random.choose`",
+      "direction": "入口",
+      "candidate": "保守的（秘密の結びとする）"
+    },
+    {
+      "id": "IF20.06/O22",
+      "operation": "O22 `Random.fromSeed`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.06/O23",
+      "operation": "O23 `Random.nextInteger`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.06/O24",
+      "operation": "O24 `Random.nextFloat`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    },
+    {
+      "id": "IF20.06/O25",
+      "operation": "O25 `Random.shuffleWith`",
+      "direction": "内部の派生",
+      "candidate": "契約を設ける"
+    }
+  ],
+  "auxiliary_note": "延べ表行数。同じ出口を異なる呼出し元・観測・段階から追う行の重複は除いていない。本文の表の範囲を参照",
+  "auxiliary_columns": [
+    "branch",
+    "rows",
+    "contract",
+    "conservative",
+    "reject",
+    "unconfirmed"
+  ],
+  "auxiliary_rows": [
+    [
+      "IF20.01",
+      7,
+      4,
+      0,
+      2,
+      1
+    ],
+    [
+      "IF20.02",
+      54,
+      16,
+      11,
+      27,
+      0
+    ],
+    [
+      "IF20.03",
+      49,
+      10,
+      15,
+      24,
+      0
+    ],
+    [
+      "IF20.04",
+      66,
+      46,
+      14,
+      5,
+      1
+    ],
+    [
+      "IF20.05",
+      87,
+      40,
+      26,
+      20,
+      1
+    ],
+    [
+      "IF20.06",
+      39,
+      4,
+      5,
+      29,
+      1
+    ]
+  ],
+  "auxiliary_total": {
+    "rows": 302,
+    "contract": 120,
+    "conservative": 71,
+    "reject": 107,
+    "unconfirmed": 4
+  }
+}

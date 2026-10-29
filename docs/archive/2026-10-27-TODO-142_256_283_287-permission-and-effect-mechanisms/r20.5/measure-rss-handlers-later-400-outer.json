@@ -1,0 +1,16 @@
+{
+  "command": [
+    "target/release/deps/benitoite-75ebea65efc3b7c6",
+    "typeck::scope::tests::measure_scope_budget",
+    "--exact",
+    "--ignored",
+    "--nocapture"
+  ],
+  "case": "handlers-later-400",
+  "exit": 0,
+  "wall_seconds": 1.3928180829999999,
+  "max_rss_raw": 69025792,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 65.828125,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); separate process for this invocation, not sum of child RSS"
+}

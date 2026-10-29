@@ -1,0 +1,28 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "c3ca4504dae42271df7336aca41d0a6d5447d0e3",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally,spec_examples,python_syntax,policy_selftest",
+    "--test",
+    "desugar_export",
+    "--test",
+    "coverage_export",
+    "--test",
+    "golden",
+    "--test",
+    "verify",
+    "--test",
+    "random_programs"
+  ],
+  "start": "2026-10-29T13:17:00.123948+00:00",
+  "end": "2026-10-29T13:22:26.713439+00:00",
+  "exit": 0,
+  "seconds": 326.588961958,
+  "maxrssRaw": 2265612288,
+  "maxrssUnit": "bytes",
+  "maxrssBytes": 2265612288
+}

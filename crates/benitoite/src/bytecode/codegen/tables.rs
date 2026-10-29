@@ -270,13 +270,15 @@ impl Gen<'_> {
             .iter()
             .find(|op| op.binding == binding)
             .ok_or_else(|| internal("unknown operation"))?;
-        let effect = match op.effect {
-            EffectName::User(_) => op
+        // 実行時の操作は宣言の束縛で識別する。範囲はIRの静的検査まで保持し、
+        // 実行時の操作名の一部にはしない（設計書 02-06「コア IR」）。
+        let effect = match &op.effect {
+            EffectName::User(_, _) => op
                 .name
                 .rsplit_once('.')
                 .map_or("", |(head, _)| head)
                 .to_string(),
-            EffectName::Builtin(id) => {
+            EffectName::Builtin(id, _) => {
                 let def = id.def().ok_or_else(|| internal("unknown builtin effect"))?;
                 def.module.last().map_or_else(
                     || def.name.to_string(),
@@ -345,14 +347,27 @@ impl Gen<'_> {
         id: BuiltinId,
         op: Option<BindingId>,
     ) -> CgResult<BuiltinRefIdx> {
-        if let Some(index) = self.builtin_index.get(&id) {
+        let signature = crate::builtins::table::builtin_range_signature(id)
+            .ok_or_else(|| internal("unknown builtin range signature"))?;
+        let ranges = vec![crate::types::scope::Range::Top; signature.kinds.len()];
+        self.scoped_builtin(id, op, &ranges)
+    }
+    pub(super) fn scoped_builtin(
+        &mut self,
+        id: BuiltinId,
+        op: Option<BindingId>,
+        ranges: &[crate::types::scope::Range],
+    ) -> CgResult<BuiltinRefIdx> {
+        let key = (id, ranges.to_vec());
+        if let Some(index) = self.builtin_index.get(&key) {
             return Ok(*index);
         }
         let decl = crate::builtins::builtin_decl(id).ok_or_else(|| internal("unknown builtin"))?;
         let index = BuiltinRefIdx(count(self.out.builtins.len())?);
-        self.builtin_index.insert(id, index);
+        self.builtin_index.insert(key, index);
         self.out.builtins.push(BuiltinRef {
             id,
+            ranges: ranges.to_vec(),
             arity: decl.arity,
             capability: decl.capability,
             op: None,

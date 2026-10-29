@@ -1,0 +1,456 @@
+{
+  "targets": [
+    {
+      "target": "lib_default",
+      "passed": 1391,
+      "failed": 0,
+      "ignored": 22,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 79.97
+    },
+    {
+      "target": "build_info",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 5,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.0
+    },
+    {
+      "target": "call_allocations",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 10.52
+    },
+    {
+      "target": "checked_args",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 7.21
+    },
+    {
+      "target": "cli_process",
+      "passed": 38,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 12.85
+    },
+    {
+      "target": "coverage_export",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 1.11
+    },
+    {
+      "target": "declarations",
+      "passed": 31,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 19.15
+    },
+    {
+      "target": "desugar_export",
+      "passed": 43,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 11.24
+    },
+    {
+      "target": "external_signals",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 1.28
+    },
+    {
+      "target": "fmt_command",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.17
+    },
+    {
+      "target": "golden",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 56.46
+    },
+    {
+      "target": "http_descriptor_exhaustion",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.37
+    },
+    {
+      "target": "http_exchange_release",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.88
+    },
+    {
+      "target": "interrupt_process",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 9.98
+    },
+    {
+      "target": "io_modes",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 1.17
+    },
+    {
+      "target": "l10_console_clock_process",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.85
+    },
+    {
+      "target": "l13_external_commands",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 6.19
+    },
+    {
+      "target": "l21_json",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.23
+    },
+    {
+      "target": "l23_csv",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.14
+    },
+    {
+      "target": "l24_time",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.1
+    },
+    {
+      "target": "l30_http_server",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 3.27
+    },
+    {
+      "target": "l31_http_serve_and_helpers",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.77
+    },
+    {
+      "target": "l32_http_client",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 12.12
+    },
+    {
+      "target": "named_arguments",
+      "passed": 22,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 2.62
+    },
+    {
+      "target": "network_faults",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.67
+    },
+    {
+      "target": "open_062",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 2.38
+    },
+    {
+      "target": "open_062_http",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.69
+    },
+    {
+      "target": "package_command",
+      "passed": 16,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 1.15
+    },
+    {
+      "target": "property_library",
+      "passed": 15,
+      "failed": 0,
+      "ignored": 2,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 8.17
+    },
+    {
+      "target": "random_programs",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 48.26
+    },
+    {
+      "target": "reference_examples",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 3.76
+    },
+    {
+      "target": "runtime_builtins",
+      "passed": 28,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 2.78
+    },
+    {
+      "target": "scope_annotations",
+      "passed": 18,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 2.69
+    },
+    {
+      "target": "scoped_calls",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 2.19
+    },
+    {
+      "target": "skill_docs",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.09
+    },
+    {
+      "target": "skill_examples",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 4.5
+    },
+    {
+      "target": "spec_examples",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 3.42
+    },
+    {
+      "target": "stdlib_doc_examples",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 2.82
+    },
+    {
+      "target": "test_command",
+      "passed": 52,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 4.6
+    },
+    {
+      "target": "verify",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 67.13
+    },
+    {
+      "target": "vm_handlers",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 12.84
+    },
+    {
+      "target": "vm_lazy",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.48
+    },
+    {
+      "target": "vm_reference_cells",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 5.76
+    }
+  ],
+  "integration_targets": 42,
+  "stage_10_20": [
+    {
+      "target": "checked_args",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 7.21
+    },
+    {
+      "target": "desugar_export",
+      "passed": 43,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 11.24
+    },
+    {
+      "target": "fmt_command",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 0.17
+    },
+    {
+      "target": "golden",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 56.46
+    },
+    {
+      "target": "random_programs",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 48.26
+    },
+    {
+      "target": "verify",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0,
+      "test_seconds": 67.13
+    }
+  ],
+  "passed": 1844,
+  "integration_passed": 453,
+  "failed": 0,
+  "integration_failed": 0,
+  "ignored": 32,
+  "integration_ignored": 10,
+  "filtered": 0,
+  "integration_filtered": 0
+}

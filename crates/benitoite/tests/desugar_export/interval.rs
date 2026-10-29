@@ -295,7 +295,7 @@ fn range_identities(p: &pipeline::CheckedProgram, table: &Value, input: &str) ->
             .as_array()
             .unwrap()
             .iter()
-            .find(|c| c["name"] == format!("con:{}:{tag}", data.0))
+            .find(|c| c["name"] == exchange::con_name(p, data, tag))
             .unwrap()["name"]
             .clone()
     };
@@ -580,7 +580,7 @@ pub(super) fn export_interval_identity() {
     fs::write(
         output.join("reader-corpus.json"),
         exchange::to_vec(&json!({
-        "kind":"interval-corpus","version":1,"surfaceVersion":14,"traversalVersion":1,
+        "kind":"interval-corpus","version":1,"surfaceVersion":15,"traversalVersion":1,
         "profile":"domain","inputs":inputs}))
         .unwrap(),
     )

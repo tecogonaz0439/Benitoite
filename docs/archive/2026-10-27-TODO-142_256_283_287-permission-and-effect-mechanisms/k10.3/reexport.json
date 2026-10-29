@@ -1,0 +1,23 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_desugar_corpus",
+    "--",
+    "--exact",
+    "--ignored",
+    "--nocapture"
+  ],
+  "startedAt": "2026-10-29T14:18:42.274812+00:00",
+  "exit": 0,
+  "outerSeconds": 1342.9213695830001,
+  "maxRssBytesAuxiliary": 707952640,
+  "maxRssMiB": 675.15625,
+  "maxRssGiB": 0.659332275390625,
+  "environment": {
+    "BENITOITE_DESUGAR_DIFF_DIR": "<wt>/target/desugar-diff/k10.3-reexport"
+  },
+  "rssMethod": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; bytes; 子プロセス一つの最大値であり同時使用量の合計ではない"
+}

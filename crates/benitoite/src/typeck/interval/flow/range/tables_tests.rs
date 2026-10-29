@@ -104,9 +104,23 @@ fn shift_tables_identify_all_resolved_declarations_and_lean_contracts() {
                 assert!(actual.effects.is_empty());
                 assert_eq!(actual.param_names, ["a", "n"]);
                 for (ty, builtin) in actual.params.iter().zip([operand, B::INTEGER]) {
-                    assert_eq!(*ty, Ty::Con(TyCon::Builtin(builtin), vec![]));
+                    assert_eq!(
+                        *ty,
+                        Ty::Con(
+                            TyCon::Builtin(builtin),
+                            vec![],
+                            crate::types::builtin::RangeIndex::TOP
+                        )
+                    );
                 }
-                assert_eq!(actual.ret, Ty::Con(TyCon::Builtin(operand), vec![]));
+                assert_eq!(
+                    actual.ret,
+                    Ty::Con(
+                        TyCon::Builtin(operand),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP
+                    )
+                );
                 (c.name, entry.declaration)
             })
             .collect();

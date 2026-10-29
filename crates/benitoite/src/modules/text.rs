@@ -53,3 +53,6 @@ pub(super) const SYNTAX_BATCH5_MIGRATION: &str = "recheck old derive records wit
 pub(super) const SYNTAX_BATCH6_CHANGE: &str =
     "each WASM Store limits live component handles to 100,000; excess allocation stops with R0906";
 pub(super) const SYNTAX_BATCH6_MIGRATION: &str = "review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md";
+
+pub(super) const SCOPED_EFFECT_OPERATIONS_CHANGE: &str = "scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled";
+pub(super) const SCOPED_EFFECT_OPERATIONS_HELP: &str = "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract";

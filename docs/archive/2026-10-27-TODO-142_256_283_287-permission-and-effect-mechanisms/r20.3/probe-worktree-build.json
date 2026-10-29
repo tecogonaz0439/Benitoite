@@ -1,0 +1,44 @@
+{
+  "command": [
+    "rustc",
+    "--edition=2024",
+    "-O",
+    "<wt>/tools/bench/compare/timing_probe.rs",
+    "--extern",
+    "benitoite=<wt>/target/debug/deps/libbenitoite-9bf96b90b06c0512.rlib",
+    "-L",
+    "dependency=<wt>/target/debug/deps",
+    "--extern",
+    "serde_json=<wt>/target/debug/deps/libserde_json-025fd2838c13a08a.rlib",
+    "-o",
+    "<wt>/target/bench/probe-worktree-r20.3/timing-probe",
+    "--cfg",
+    "benitoite_parser_pending",
+    "--cfg",
+    "benitoite_range_index",
+    "--cfg",
+    "benitoite_range_signatures"
+  ],
+  "exit": 0,
+  "seconds": 3.9534849160000003,
+  "maxrss_raw": 667680768,
+  "maxrss_unit": "bytes on macOS",
+  "probe_api": {
+    "parser_pending": true,
+    "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+    "range_index": true,
+    "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+    "range_signatures": true,
+    "core_ir_sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2"
+  },
+  "bridge_sources": {
+    "original_convert": "174a475708d745141d45ee2a3f24439df298f8ebc64d89b9cdd9ba751bf98530",
+    "original_value": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75",
+    "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+    "wrapper": "ae274c9fec11fbeac54888737bc7723578ac970a41e52b30070047b0a4c468e4",
+    "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+  },
+  "library": "<wt>/target/debug/deps/libbenitoite-9bf96b90b06c0512.rlib",
+  "library_sha256": "4da7a4f4c4238a78c582e55736eef31b48777f38e7d532680978b5578767dddb",
+  "probe_sha256": "abf6de6b44a0a5e736fb9b93b0ca800bed1747f8413023ba66c556f7644989e1"
+}

@@ -49,7 +49,7 @@ theorem joinStringFrom_scoped {nt pe op depth left rest}
   | nil => exact hl
   | cons w rest ih =>
       obtain ⟨b, hop⟩ := ha (by simp)
-      have hc : Comp.VarsIn nt pe (.app (.prim b [] []) [left, w.rename (· + depth)]) :=
+      have hc : Comp.VarsIn nt pe (.app (.prim b [] [] []) [left, w.rename (· + depth)]) :=
         ⟨⟨trivial, trivial⟩, hl, Val.VarsIn.renameScoped _ _ hr.1, trivial⟩
       cases rest with
       | nil => simpa only [joinStringFrom, hop] using hc

@@ -1,0 +1,739 @@
+diff -ruN formal/Benitoite/Release/Lemmas/BuilderTyping.lean <wt>/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
+--- formal/Benitoite/Release/Lemmas/BuilderTyping.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/BuilderTyping.lean	2026-10-27 20:09:50
+@@ -33,7 +33,7 @@
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+diff -ruN formal/Benitoite/Release/Lemmas/Canonical.lean <wt>/formal/Benitoite/Release/Lemmas/Canonical.lean
+--- formal/Benitoite/Release/Lemmas/Canonical.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/Canonical.lean	2026-10-27 20:10:29
+@@ -71,7 +71,7 @@
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+@@ -102,7 +102,7 @@
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+@@ -125,6 +125,41 @@
+       · simp only [Ty.reference.injEq] at h'; subst h'; exact ⟨l, rfl, hl⟩
+       · simp at h'
+ 
++/-- L00.06b の試行（案 (i)）: 閉じた値の不透明型の範囲は Top である。不透明型の閉じた値は定数だけであり、定数の型
++（`Const.type`）は Top の範囲の不透明型である。範囲付きの値の所属の規則を加えると、この補題は所属からの拡大の補題に
++置き換わる。 -/
++theorem HasTypeVQ.closed_opaque_top {Ψ C v o r} (h : HasTypeVQ P B Ψ Q C [] v (.opaque o r)) : r = .top := by
++  have hnf : ∀ names ps r' ε, (Ty.opaque o r) ≠ .fn names ps r' ε := by intros; simp
++  cases v with
++  | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
++  | const c =>
++      have := (h.inv_const rfl).eq_of_not_fn hnf
++      cases c <;> simp [Const.type] at this
++      exact this.2.symm
++  | fnRef f ts es =>
++      obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
++      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
++  | prim b ts es =>
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
++  | op o ts =>
++      obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
++      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
++  | raise T E =>
++      obtain ⟨_, _, hl⟩ := h.inv_raise rfl
++      have := hl.eq_of_not_fn hnf; simp at this
++  | lam names ps body =>
++      obtain ⟨_, _, _, _, hle⟩ := h.inv_lam rfl
++      have := hle.eq_of_not_fn hnf; simp at this
++  | con c ts args => obtain ⟨_, _, _, _, h'⟩ := h.inv_con rfl; simp at h'
++  | list elems => obtain ⟨_, _, h'⟩ := h.inv_list rfl; simp at h'
++  | mapV ks vs => obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
++  | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
++  | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
++  | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
++  | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
++  | loc l => rcases h.inv_loc rfl with ⟨_, _, h'⟩ | ⟨_, _, h'⟩ <;> simp at h'
++
+ /-- `Lazy[A]` の型の閉じた値は、明示遅延の場所である。 -/
+ theorem HasTypeVQ.canonical_lazy {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.lazy a)) :
+     ∃ l, v = .loc l ∧ Ψ l = some (.lazy a) := by
+@@ -136,7 +171,7 @@
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | prim b ts es =>
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+   | op o ts =>
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+@@ -175,6 +210,19 @@
+   | .nil, _ => simp at hi
+   | .cons hv _, 0 => simp at hi; subst a; exact ⟨_, rfl, hv⟩
+   | .cons _ ht, i + 1 => exact ht.lookup i (by simpa using hi)
++
++/-- L00.06b の試行（案 (i)）: 閉じた引数の列が具体化した署名の引数型を持つなら、具体化は表の署名そのものである。
++具体化が署名を変えるのは対象の位置が範囲 R ≠ Top の不透明型になるときだけであり、その位置の閉じた値はない
++（`closed_opaque_top`）。 -/
++theorem PrimSig.inst_eq_of_closed_args {Ψ C} {s : PrimSig} {R : ScopeRange} {ts es ws}
++    (h : HasTypeVsQ P B Ψ Q C [] ws ((s.inst R).params.map (Ty.subst ts es))) : s.inst R = s := by
++  rcases s.inst_cases R with he | ⟨hR, p, o, hp⟩
++  · exact he
++  · exfalso
++    have hp' : ((s.inst R).params.map (Ty.subst ts es))[p]? = some (.opaque o R) := by
++      simp [hp, Ty.subst, Ty.substAt]
++    obtain ⟨v, _, hv⟩ := h.lookup p hp'
++    exact hR hv.closed_opaque_top
+ 
+ /-- 同じ位置で型が付く値と型の並びを、同じ番号で選ぶ。 -/
+ theorem HasTypeVsQ.selectSlots_typed {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
+diff -ruN formal/Benitoite/Release/Lemmas/FailureBase.lean <wt>/formal/Benitoite/Release/Lemmas/FailureBase.lean
+--- formal/Benitoite/Release/Lemmas/FailureBase.lean	2026-10-27 20:12:39
++++ <wt>/formal/Benitoite/Release/Lemmas/FailureBase.lean	2026-10-27 20:14:18
+@@ -18,6 +18,12 @@
+   subst o
+   cases h
+ 
++/-- L00.06b の試行 A2: 節の添字で具体化した操作の型を持つ識別子も Fail ではない。 -/
++theorem opSigAt_ne_fail {S o sg} (h : opSigAt P B S o = some sg) : o ≠ .fail := by
++  intro heq
++  subst o
++  cases h
++
+ /-- 通常節の型付けは Fail を捕捉しない。 -/
+ theorem HasTypeClausesQ.no_failure {Δl : LocalCtx} {Ψ Q C Γ R h t ec}
+     (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec Δl) : handles h .fail = false := by
+@@ -26,7 +32,7 @@
+   | .cons hs _ _ _ _ _ ht =>
+     have ih := HasTypeClausesQ.no_failure ht
+     simp only [handles, List.any_cons, Clause.op, Bool.or_eq_false_iff]
+-    exact ⟨by simpa using opSig_ne_fail hs, ih⟩
++    exact ⟨by simpa using opSigAt_ne_fail hs, ih⟩
+ 
+ /-- Fail 節はちょうど一つであり、そのエラー型が注釈と一致する。 -/
+ theorem HasFailureClause.shape {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+diff -ruN formal/Benitoite/Release/Lemmas/Inversion.lean <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean
+--- formal/Benitoite/Release/Lemmas/Inversion.lean	2026-10-27 20:12:39
++++ <wt>/formal/Benitoite/Release/Lemmas/Inversion.lean	2026-10-27 20:01:50
+@@ -89,13 +89,17 @@
+   | .V_LocLazy _ => cases hv
+ 
+ theorem HasTypeVQ.inv_prim {C Γ v T b ts es} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .prim b ts es) :
+-    ∃ s, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits C ts ∧ NamesWF s.names s.params ∧
+-      Ty.Le (fnTy s.names s.params s.ret s.eff ts es) T := by
++    ∃ s R, B.sig b = some s ∧ ts.length = s.ntys ∧ es.length = s.neffs ∧ s.admits C ts ∧
++      NamesWF (s.inst R).names (s.inst R).params ∧
++      Ty.Le (fnTy (s.inst R).names (s.inst R).params (s.inst R).ret (s.inst R).eff ts es) T := by
+   match h with
+-  | .V_Prim hs hnames had => cases hv; exact ⟨_, hs, had.typeCount, had.rowCount, had.admits, hnames, Ty.Le.refl _⟩
++  | .V_Prim hs hnames had =>
++      cases hv
++      exact ⟨_, _, hs, by simpa using had.typeCount, by simpa using had.rowCount, by simpa using had.admits,
++        hnames, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+-      obtain ⟨s, hs, hts, hes, had, hnames, hle'⟩ := inv_prim h hv
+-      exact ⟨s, hs, hts, hes, had, hnames, hle'.trans hle⟩
++      obtain ⟨s, R, hs, hts, hes, had, hnames, hle'⟩ := inv_prim h hv
++      exact ⟨s, R, hs, hts, hes, had, hnames, hle'.trans hle⟩
+   | .V_Var _ _ => cases hv
+   | .V_Const => cases hv
+   | .V_Fun .. => cases hv
+diff -ruN formal/Benitoite/Release/Lemmas/OuterC.lean <wt>/formal/Benitoite/Release/Lemmas/OuterC.lean
+--- formal/Benitoite/Release/Lemmas/OuterC.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/OuterC.lean	2026-10-27 20:04:55
+@@ -30,11 +30,13 @@
+     typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
+     rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
+ 
+-theorem PrimitiveAdmissible.outer (hb : B.Assumptions P) {C1 C0 b s Q ts es}
+-    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 s Q ts es) :
+-    PrimitiveAdmissible (C1 ++ C0) s Q ts es :=
++theorem PrimitiveAdmissible.outer (hb : B.Assumptions P) {C1 C0 b s R Q ts es}
++    (hs : B.sig b = some s) (h : PrimitiveAdmissible C1 (s.inst R) Q ts es) :
++    PrimitiveAdmissible (C1 ++ C0) (s.inst R) Q ts es :=
+   { h with
+-    admits := hb.admits_local _ _ _ _ _ hs (fun t ht => (h.typeScope t ht).1) h.admits
++    admits := by
++      have := hb.admits_local _ _ C1 C0 _ hs (fun t ht => (h.typeScope t ht).1) (by simpa using h.admits)
++      simpa using this
+     typeScope := fun t ht => ⟨Ty.WF.mono (by simp) t (h.typeScope t ht).1, (h.typeScope t ht).2⟩
+     rowScope := fun f hf => Eff.WF.mono (by simp) f (h.rowScope f hf) }
+ 
+diff -ruN formal/Benitoite/Release/Lemmas/PresBase.lean <wt>/formal/Benitoite/Release/Lemmas/PresBase.lean
+--- formal/Benitoite/Release/Lemmas/PresBase.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/PresBase.lean	2026-10-27 20:10:57
+@@ -220,7 +220,7 @@
+   obtain ⟨hsn, hs1, hs2, hs3, hs4, hs5⟩ := hshs
+   have htn : ∀ b' t' ε', t ≠ .cont b' t' ε' := (ht t (by simp)).2
+   refine .C_Let (a := t) ?_ (.C_Let (a := t) ?_ ?_)
+-  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
++  · have hv := HasTypeVQ.V_PrimTop (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := []) (ts := [t]) (es := []) hsg (hb.sig_scoped _ _ hsg).1
+       (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hsg) hg2 (by simp [hg1])
+       (hb.store_admits _ _ [] [t] hsg (by rw [hkg]; decide) (by rw [hkg]; decide) (by rw [hkg]; decide)
+         (by simp [hg1])) ht)
+@@ -230,7 +230,7 @@
+     exact .C_App hv (.cons (.V_LocRef hl) .nil)
+   · have hf' := hf.rename (RenOk.shift [some t] [])
+     exact .C_Eff (.C_App hf' (.cons (.V_Var (i := 0) (by simp) htn) .nil)) (Eff.empty_sub _)
+-  · have hv := HasTypeVQ.V_Prim (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
++  · have hv := HasTypeVQ.V_PrimTop (Q := Qempty) (P := P) (Ψ := Ψ) (C := []) (Γ := [some t, some t]) (ts := [t]) (es := []) hss (hb.sig_scoped _ _ hss).1
+       (PrimitiveAdmissible.of_noRows (hb.sig_scoped _ _ hss) hs2 (by simp [hs1])
+       (hb.store_admits _ _ [] [t] hss (by rw [hks]; decide) (by rw [hks]; decide) (by rw [hks]; decide)
+         (by simp [hs1])) ht)
+diff -ruN formal/Benitoite/Release/Lemmas/PresHelpers.lean <wt>/formal/Benitoite/Release/Lemmas/PresHelpers.lean
+--- formal/Benitoite/Release/Lemmas/PresHelpers.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/PresHelpers.lean	2026-10-27 20:14:18
+@@ -121,7 +121,7 @@
+ 
+ theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
+     (hc : findClause hs o = some c) :
+-    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
++    ∃ S sg, opSigAt P B S o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
+       HasTypeC P B Ψ (sg.tparams ++ C)
+         (some (.cont sg.ret (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε)) :: (binds sg.params ++ shiftEnv c.ntys Γ))
+         (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε) := by
+@@ -135,7 +135,7 @@
+         subst hc
+         have : o' = o := by simpa [Clause.op] using heq
+         subst this
+-        exact ⟨_, hsg, hn, hk, hew, hbody.store (hideBuilders_sub _)⟩
++        exact ⟨_, _, hsg, hn, hk, hew, hbody.store (hideBuilders_sub _)⟩
+       · exact HasTypeClausesQ.find hrest hc
+ 
+ theorem findClause_op {hs : List Clause} {o c} (h : findClause hs o = some c) : c.op = o := by
+diff -ruN formal/Benitoite/Release/Lemmas/Preservation.lean <wt>/formal/Benitoite/Release/Lemmas/Preservation.lean
+--- formal/Benitoite/Release/Lemmas/Preservation.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/Preservation.lean	2026-10-27 20:17:59
+@@ -27,10 +27,13 @@
+       HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) ∧ Ty.Le (Ty.subst ts es s.ret) a ∧
+       Eff.Sub (Eff.substAt 0 ts es s.eff) ε1 := by
+   obtain ⟨names, as, b', ε', hf, hargs, hle, hsub⟩ := h.inv_app rfl
+-  obtain ⟨s, hs, hts, hes, had, hnames, hle2⟩ := hf.inv_prim rfl
++  obtain ⟨s, R', hs, hts, hes, had, hnames, hle2⟩ := hf.inv_prim rfl
+   rw [fnTy_eq] at hle2
+   obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2
+   subst hnames' hps hr
++  -- L00.06b の試行（案 (i)）: 閉じた引数があるので、具体化は表の署名そのものである。
++  have he := PrimSig.inst_eq_of_closed_args hargs
++  rw [he] at hargs hsub2 hle
+   exact ⟨s, hs, hts, hes, had, hargs, hle, hsub2.trans hsub⟩
+ 
+ theorem inv_op_app {Ψ R o ts ws a ε1}
+@@ -126,8 +129,20 @@
+     have hn := opSig_ne_fail hsg
+     exact ContTy.selected_ordinary hk hn ⟨rfl, hhandles, hno⟩)
+   have hRh : ∀ x, Rh = some x → Ty.WF 0 x := hk2.R_wf (fun x hx => by cases hx)
+-  obtain ⟨sg', hsg', harity, hntys, hew, hbody⟩ := hcl.find hc
+-  rw [hsg] at hsg'; cases hsg'
++  obtain ⟨S, sg2, hsg2, harity, hntys, hew, hbody⟩ := hcl.find hc
++  -- L00.06b の試行 A2（案 (i)）: 節は添字 S で具体化した操作の型で型付けされる。型パラメータ・結果は旧と同じで、
++  -- 引数型は対象の位置だけが違いうる。
++  obtain ⟨htp, _, hret, _, hpar⟩ := opSigAt_rel hsg hsg2
++  have hsat2 : SatAll B [] ts sg2.tparams := htp ▸ hsat
++  have hle2 : Ty.Le (Ty.subst ts [] sg2.ret) a := hret ▸ hle
++  have hargs2 : HasTypeVs P B Ψ [] [] ws (sg2.params.map (Ty.subst ts [])) := by
++    rcases hpar with hp | ⟨hS, p, o', hp⟩
++    · rw [hp]; exact hargs
++    · -- 未解決の義務: 呼び出しの引数は旧の（Top の）署名の型を持つ（`inv_prim_app`）。節は S ≠ Top の範囲の
++      -- 不透明型 `opaque o' S` を対象の位置に求める。閉じた値の範囲付きの所属の規則と、呼び出しの範囲 R が S に
++      -- 覆われること（保護本体の効果から S を選ぶ規則）がないと渡せない。
++      sorry
++  clear hsat hle hargs
+   -- 節の本体の型：Γ = [] なので環境のずらしは消え、T と Rh は閉じているのでずらしで変わらない。
+   have hshT : t.shift c.ntys 0 = t := Ty.shift_of_wf _ _ htw
+   have hshR : Rh.map (Ty.shift c.ntys 0) = Rh := by
+@@ -139,9 +154,9 @@
+   rw [hshT, hshR, hshE] at hbody
+   simp only [shiftEnv, List.map_nil, List.append_nil] at hbody
+   -- 型引数の置き換え（01-12 の E-Op の θ = [T̄/ᾱ]。01-12「型パラメータの組み込みの制約」）。
+-  have hsc := opSig_scoped hwf hb hsg
++  have hsc := opSigAt_scoped hwf hb hsg2
+   have hθ := HasTypeCQ.substTy (c := 0) hwf hb hbody (Nat.zero_le _) hts (by simp)
+-    (by simpa using hsat) (StoreFix.of_wf hΨwf ts) (RowTransport.refl Qempty)
++    (by simpa using hsat2) (StoreFix.of_wf hΨwf ts) (RowTransport.refl Qempty)
+   simp only [List.take_zero, envSubst, List.map_cons, Option.map_some, Ty.substAt] at hθ
+   have htθ : t.substAt 0 ts [] = t := Ty.substAt_nil_of_wf ts t htw
+   have hRθ : Rh.map (Ty.substAt 0 ts []) = Rh := by
+@@ -155,14 +170,14 @@
+     cases h' : Ψ κ with
+     | none => rfl
+     | some x => exact absurd hκ (hσ.2.2.1 _ _ h')
+-  have hlen : ts.length = sg.tparams.length := hsat.1
+-  have hretw : Ty.WF 0 (Ty.subst ts [] sg.ret) :=
++  have hlen : ts.length = sg2.tparams.length := hsat2.1
++  have hretw : Ty.WF 0 (Ty.subst ts [] sg2.ret) :=
+     Ty.subst_wf0 [] hts (by simp) (by rw [hlen]; exact Ty.VarsIn.wf _ hsc.2.2)
+-  have hparw : ∀ y ∈ sg.params.map (Ty.subst ts []), Ty.WF 0 y := by
++  have hparw : ∀ y ∈ sg2.params.map (Ty.subst ts []), Ty.WF 0 y := by
+     intro y hy
+     obtain ⟨z, hz, rfl⟩ := List.mem_map.mp hy
+     exact Ty.subst_wf0 [] hts (by simp) (by rw [hlen]; exact Ty.VarsIn.wf _ (varsInList_mem hsc.2.1 hz))
+-  let x : LocTy := .cont (Ty.subst ts [] sg.ret) t (Eff.norm εc) Rh
++  let x : LocTy := .cont (Ty.subst ts [] sg2.ret) t (Eff.norm εc) Rh
+   have hxwf : x.WF := ⟨hretw, htw, hRh, Eff.norm_WF εc hew, Eff.norm_idem εc⟩
+   have hsub' : StoreTy.Sub Ψ (Ψ.set κ x) := StoreTy.set_sub (Or.inl hΨκ)
+   have hΨ'κ : (Ψ.set κ x) κ = some x := by simp [StoreTy.set]
+@@ -172,18 +187,18 @@
+   · -- ストア
+     refine hσ.set hxwf (Or.inl hΨκ) ?_
+     refine ⟨_, _, _, _, hΨ'κ, ⟨k1, h, rfl⟩, R, ε, ?_⟩
+-    have hcell := (ContTy.K_Sub hk1 hle).resume_append ⟨k1, h, rfl⟩ (Ty.Le.refl t)
++    have hcell := (ContTy.K_Sub hk1 hle2).resume_append ⟨k1, h, rfl⟩ (Ty.Le.refl t)
+       (ContTy.K_Empty (Eff.Sub.refl (Eff.norm εc)) htw) (Eff.sub_norm_self εc)
+     simpa only [List.append_nil] using hcell.store hsub'
+   · -- 計算
+     have hθ' := hθ.store hsub'
+     simp only [Comp.substTy]
+-    rw [show some (Ty.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)) ::
+-          binds (sg.params.map (Ty.substAt 0 ts [])) =
+-        binds (sg.params.map (Ty.substAt 0 ts []) ++ [.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)]) by
++    rw [show some (Ty.cont (Ty.substAt 0 ts [] sg2.ret) t (Eff.norm εc)) ::
++          binds (sg2.params.map (Ty.substAt 0 ts [])) =
++        binds (sg2.params.map (Ty.substAt 0 ts []) ++ [.cont (Ty.substAt 0 ts [] sg2.ret) t (Eff.norm εc)]) by
+         rw [binds_snoc]] at hθ'
+     refine hθ'.instantiate (InstOk.snoc ?_ ⟨_, _, _, κ, rfl, ⟨hretw, htw, Eff.norm_WF εc hew, Eff.norm_idem εc⟩, rfl, hΨ'κ, hRh⟩)
+-    exact InstOk.of_values hb (hargs.store hsub') hparw hwsc
++    exact InstOk.of_values hb (hargs2.store hsub') hparw hwsc
+   · exact .K_Drop hΨ'κ (fun h' => hsub.1 _ ((Eff.mem_norm εc _).mp h')) (hk2.store hsub')
+   · -- 計算が閉じていること
+     have hmem : c ∈ h := List.mem_of_find?_eq_some hc
+@@ -194,7 +209,7 @@
+     · have := Comp.VarsIn.substTyAt (c := 0) [] (fun u hu => varsInList_mem htsc hu) (by simp) c.body
+         (by simpa using hb')
+       exact this
+-    · have hwlen := hargs.length_eq
++    · have hwlen := hargs2.length_eq
+       simp only [List.length_map] at hwlen
+       simp only [List.length_append, List.length_cons, List.length_nil]
+       omega
+diff -ruN formal/Benitoite/Release/Lemmas/Progress.lean <wt>/formal/Benitoite/Release/Lemmas/Progress.lean
+--- formal/Benitoite/Release/Lemmas/Progress.lean	2026-10-27 20:12:39
++++ <wt>/formal/Benitoite/Release/Lemmas/Progress.lean	2026-10-27 20:09:50
+@@ -76,7 +76,7 @@
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+   | .prim _ _ _, _, _, h => by
+-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
++      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this
+   | .op _ _, _, _, h => by
+       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
+diff -ruN formal/Benitoite/Release/Lemmas/Regularity.lean <wt>/formal/Benitoite/Release/Lemmas/Regularity.lean
+--- formal/Benitoite/Release/Lemmas/Regularity.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/Regularity.lean	2026-10-27 20:03:51
+@@ -153,10 +153,10 @@
+         · rw [hl]; exact Ty.VarsInList.wf _ hsc.1
+         · rw [hl]; exact Ty.VarsIn.wf _ hsc.2.1
+         · rw [hl]; exact Eff.VarsIn.wf _ hsc.2.2.1
+-    | .V_Prim hs hnames had =>
++    | .V_Prim (R := R) hs hnames had =>
+         have hts := had.typeCount
+         simp only [Val.VarsIn] at hv
+-        have hsc := hb.sig_scoped _ _ hs
++        have hsc := PrimSig.inst_scoped R (hb.sig_scoped _ _ hs)
+         unfold PrimSig.Scoped at hsc
+         obtain ⟨_, hsc⟩ := hsc
+         refine fnTy_wf (hnames := hnames) (Ty.WFList.iff.mp (Ty.VarsInList.wf _ hv.1))
+diff -ruN formal/Benitoite/Release/Lemmas/TySubstMain.lean <wt>/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+--- formal/Benitoite/Release/Lemmas/TySubstMain.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Lemmas/TySubstMain.lean	2026-10-27 20:14:18
+@@ -366,6 +366,33 @@
+         · cases h
+       · cases h
+ 
++/-- L00.06b の試行 A2（案 (i)）: 節の添字で具体化した操作の型も、型パラメータだけを使う。 -/
++theorem opSigAt_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {S o sg} (h : opSigAt P B S o = some sg) :
++    NamesWF sg.names sg.params ∧
++    Ty.VarsInList sg.tparams.length (fun _ => False) sg.params ∧
++      Ty.VarsIn sg.tparams.length (fun _ => False) sg.ret := by
++  cases o with
++  | fail => cases h
++  | user o => exact opSig_scoped hwf hb (o := .user o) h
++  | prim b =>
++      simp only [opSigAt] at h
++      split at h
++      · rename_i s hs
++        split at h
++        · rename_i l hl
++          simp only [Option.some.injEq] at h
++          subst h
++          have hio := hb.opEff_io _ _ _ hs hl
++          obtain ⟨_, _, _, _, hne, _, _⟩ := hb.io_op _ _ hs hio
++          have hsc := PrimSig.inst_scoped S (hb.sig_scoped _ _ hs)
++          unfold PrimSig.Scoped at hsc
++          simp only [PrimSig.inst_names, PrimSig.inst_ntys, PrimSig.inst_neffs, PrimSig.inst_ret] at hsc
++          rw [hne] at hsc
++          exact ⟨hsc.1, Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.1,
++            Ty.VarsIn.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.2.1⟩
++        · cases h
++      · cases h
++
+ theorem unguardedPats_substTy (c : Nat) (ts : List Ty) (es : List Eff) (arms : List Arm) :
+     unguardedPats (Arm.substTyAtList c ts es arms) = unguardedPats arms := by
+   induction arms with
+@@ -477,18 +504,19 @@
+   · simpa only [List.length_map] using h.sourceRows
+   · simpa only [List.length_map] using h.sourceQ
+ 
+-theorem PrimitiveAdmissible.substTy (hb : B.Assumptions P) {C c b s Q Q' ts es ts' es'}
+-    (hs : B.sig b = some s) (h : PrimitiveAdmissible C s Q ts es)
++theorem PrimitiveAdmissible.substTy (hb : B.Assumptions P) {C c b s R Q Q' ts es ts' es'}
++    (hs : B.sig b = some s) (h : PrimitiveAdmissible C (s.inst R) Q ts es)
+     (hc : c ≤ C.length) (hts : ClosedArgs ts') (hes : ∀ e ∈ es', Eff.WF 0 e)
+     (hsat : SatAll B [] ts' (C.drop c)) (hr : RowTransport Q Q' es') :
+-    PrimitiveAdmissible (C.take c) s Q'
++    PrimitiveAdmissible (C.take c) (s.inst R) Q'
+       (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) := by
+   have htc : (C.take c).length = c := by simp; omega
+   have had := h.admits
++  rw [PrimSig.inst_admits] at had
+   rw [← List.take_append_drop c C] at had
+   have had' := hb.admits_subst _ _ _ _ _ _ es' hs had
+     ⟨fun t ht => (hts t ht).1, hsat.closed hb hts _⟩ hsat.1
+-  rw [htc] at had'
++  rw [htc, ← PrimSig.inst_admits s R] at had'
+   refine ⟨by simpa using h.typeCount, had', ?_, by simpa using h.rowCount, ?_, ?_, ?_,
+     h.noFailRows.compose_scoped h.sourceQ hr c ts'⟩
+   · intro t ht
+@@ -537,9 +565,9 @@
+         unfold Def.Scoped at hsc
+         rw [fnTy_substAt ⟨hsc.2.1, hsc.2.2.1, hsc.2.2.2.1⟩ had.types.1 had.rowCount]
+         exact .V_Fun hd hnames (had.substTy hb hc hts hes' hsat hrow)
+-    | .V_Prim hs hnames had =>
++    | .V_Prim (R := R) hs hnames had =>
+         simp only [Val.substTyAt]
+-        have hsc := hb.sig_scoped _ _ hs
++        have hsc := PrimSig.inst_scoped R (hb.sig_scoped _ _ hs)
+         unfold PrimSig.Scoped at hsc
+         rw [fnTy_substAt hsc.2 had.typeCount had.rowCount]
+         exact .V_Prim hs hnames (had.substTy hb hs hc hts hes' hsat hrow)
+@@ -836,7 +864,7 @@
+           apply Eff.substAt_wf es' (fun t ht => (hts t ht).1) hes' ε
+           rw [hsat.1]
+           exact Eff.WF.mono (by simp; omega) ε hew) ?_ (HasTypeClausesQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
+-        have hsc := opSig_scoped hwf hb hsg
++        have hsc := opSigAt_scoped hwf hb hsg
+         have hc' : c + k ≤ (sg.tparams ++ C).length := by simp; omega
+         have hdrop : (sg.tparams ++ C).drop (c + k) = C.drop c := by
+           rw [hk, Nat.add_comm]; simp [List.drop_append]
+diff -ruN formal/Benitoite/Release/Model.lean <wt>/formal/Benitoite/Release/Model.lean
+--- formal/Benitoite/Release/Model.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/Model.lean	2026-10-27 20:11:09
+@@ -327,7 +327,7 @@
+ example : HasTypeV emptyProgram builtins StoreTy.empty [] []
+     (.prim "Reference.get" [.base .integer] [])
+     (.fn ["reference"] [.reference (.base .integer)] (.base .integer) (Eff.single stateEff)) := by
+-  have h := HasTypeVQ.V_Prim (Q := Qempty) (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
++  have h := HasTypeVQ.V_PrimTop (Q := Qempty) (P := emptyProgram) (B := builtins) (Ψ := StoreTy.empty)
+     (C := []) (Γ := []) (b := "Reference.get") (s := refGetSig) (ts := [.base .integer])
+     (es := []) (by simp [builtins]) (by simp [NamesWF, refGetSig])
+     (PrimitiveAdmissible.of_noRows
+diff -ruN formal/Benitoite/Release/Typing.lean <wt>/formal/Benitoite/Release/Typing.lean
+--- formal/Benitoite/Release/Typing.lean	2026-10-27 20:12:39
++++ <wt>/formal/Benitoite/Release/Typing.lean	2026-10-27 20:17:19
+@@ -55,9 +55,98 @@
+   kind : PrimKind
+   /-- 組み込みのエフェクトの操作のとき、そのエフェクトの名前。 -/
+   opEff : Option EffName
++  /-- L00.06b の試行（案 (i)）: 範囲を具体化できる対象の引数の位置。旧の署名は `none`。 -/
++  target : Option Nat := none
+ 
+ def PrimSig.ntys (s : PrimSig) : Nat := s.tparams.length
+ 
++/-- L00.06b の試行（案 (i)）: 表の署名を範囲 R で具体化する。対象の位置の引数が不透明型のときだけ、その型の
++範囲と効果の原子の範囲を同じ R にする。操作の名前（`PrimName`）と `opEff` は変えない。R = Top なら表の署名
++そのものである。 -/
++def PrimSig.inst (s : PrimSig) (R : ScopeRange) : PrimSig :=
++  if R = .top then s else
++  match s.target, s.opEff with
++  | some p, some l =>
++      match s.params[p]? with
++      | some (.opaque o _) =>
++          { s with params := s.params.set p (.opaque o R), eff := Eff.ofAtoms (fun a => a == .name l R) }
++      | _ => s
++  | _, _ => s
++
++/-- L00.06b の試行: Top の具体化は表の署名そのものである（旧 Top の対応）。 -/
++@[simp] theorem PrimSig.inst_top (s : PrimSig) : s.inst .top = s := by
++  unfold PrimSig.inst; simp
++
++/-- L00.06b の試行: 具体化が表の署名を変えるのは、R が Top でなく、対象の位置の引数が不透明型のときだけであり、
++そのとき具体化した署名のその位置の引数は範囲 R の不透明型である。 -/
++theorem PrimSig.inst_cases (s : PrimSig) (R : ScopeRange) :
++    s.inst R = s ∨ (R ≠ .top ∧ ∃ (p : Nat) (o : OpaqueName), (s.inst R).params[p]? = some (Ty.opaque o R)) := by
++  unfold PrimSig.inst
++  by_cases hR : R = .top
++  · left; simp [hR]
++  · simp only [hR, ite_false]
++    split
++    · rename_i p l _ _
++      split
++      · rename_i o r hp
++        right
++        refine ⟨hR, p, o, ?_⟩
++        have hlt : p < s.params.length := by
++          rcases (List.getElem?_eq_some_iff.mp hp) with ⟨h, _⟩; exact h
++        simp [hlt]
++      · left; rfl
++    · left; rfl
++
++/-- L00.06b の試行: 具体化の形。表の署名のままか、対象の位置の不透明型と効果の原子の範囲を R にしたものである。 -/
++theorem PrimSig.inst_eq (s : PrimSig) (R : ScopeRange) :
++    s.inst R = s ∨ ∃ (p : Nat) (o : OpaqueName) (r : ScopeRange) (l : EffName), s.params[p]? = some (Ty.opaque o r) ∧
++      s.inst R = { s with params := s.params.set p (.opaque o R), eff := Eff.ofAtoms (fun a => a == .name l R) } := by
++  unfold PrimSig.inst
++  split
++  · left; rfl
++  · split
++    · rename_i p l _ _
++      split
++      · rename_i o r hp
++        exact Or.inr ⟨p, o, r, l, hp, rfl⟩
++      · left; rfl
++    · left; rfl
++
++/-- L00.06b の試行: 具体化は型パラメータ・行の数・制約・種類・引数名・結果・操作の名前・引数の数を変えない。 -/
++theorem PrimSig.inst_fields (s : PrimSig) (R : ScopeRange) :
++    (s.inst R).tparams = s.tparams ∧ (s.inst R).neffs = s.neffs ∧ (s.inst R).admits = s.admits ∧
++      (s.inst R).kind = s.kind ∧ (s.inst R).names = s.names ∧ (s.inst R).ret = s.ret ∧
++      (s.inst R).opEff = s.opEff ∧ (s.inst R).params.length = s.params.length := by
++  unfold PrimSig.inst
++  split
++  · simp
++  · split
++    · split <;> simp
++    · simp
++
++@[simp] theorem PrimSig.inst_tparams (s : PrimSig) (R : ScopeRange) : (s.inst R).tparams = s.tparams :=
++  (s.inst_fields R).1
++@[simp] theorem PrimSig.inst_ntys (s : PrimSig) (R : ScopeRange) : (s.inst R).ntys = s.ntys := by
++  unfold PrimSig.ntys; simp
++@[simp] theorem PrimSig.inst_neffs (s : PrimSig) (R : ScopeRange) : (s.inst R).neffs = s.neffs :=
++  (s.inst_fields R).2.1
++@[simp] theorem PrimSig.inst_admits (s : PrimSig) (R : ScopeRange) : (s.inst R).admits = s.admits :=
++  (s.inst_fields R).2.2.1
++@[simp] theorem PrimSig.inst_kind (s : PrimSig) (R : ScopeRange) : (s.inst R).kind = s.kind :=
++  (s.inst_fields R).2.2.2.1
++@[simp] theorem PrimSig.inst_names (s : PrimSig) (R : ScopeRange) : (s.inst R).names = s.names :=
++  (s.inst_fields R).2.2.2.2.1
++@[simp] theorem PrimSig.inst_ret (s : PrimSig) (R : ScopeRange) : (s.inst R).ret = s.ret :=
++  (s.inst_fields R).2.2.2.2.2.1
++@[simp] theorem PrimSig.inst_opEff (s : PrimSig) (R : ScopeRange) : (s.inst R).opEff = s.opEff :=
++  (s.inst_fields R).2.2.2.2.2.2.1
++@[simp] theorem PrimSig.inst_params_length (s : PrimSig) (R : ScopeRange) :
++    (s.inst R).params.length = s.params.length :=
++  (s.inst_fields R).2.2.2.2.2.2.2
++
++-- L00.06b の試行: 依存の場合分けが具体化を展開し続けないよう、具体化を既約にする（案 (ii) の試行と同じ）。
++attribute [irreducible] PrimSig.inst
++
+ /-- 組み込みの関数と、01-12 がほかの章に委ねているもの。 -/
+ structure Builtins where
+   sig : PrimName → Option PrimSig
+@@ -106,6 +195,50 @@
+           | none => none
+       | none => none
+ 
++/-- L00.06b の試行 A2（案 (i)）: 節の添字 S で具体化した操作の型。組み込みの操作の引数型は表の署名を S で具体化した
++もの、それ以外は `opSig` と同じである。結果・型パラメータ・引数名・エフェクトの名前は S によらない。 -/
++def opSigAt (P : Program) (B : Builtins) (S : ScopeRange) (o : OpRef) : Option OpSig :=
++  match o with
++  | .prim b =>
++      match B.sig b with
++      | some s =>
++          match s.opEff with
++          | some l => some ⟨s.tparams, s.names, (s.inst S).params, s.ret, l⟩
++          | none => none
++      | none => none
++  | o => opSig P B o
++
++/-- L00.06b の試行 A2: Top の節の添字は旧の操作の型である。 -/
++theorem opSigAt_top (P : Program) (B : Builtins) (o : OpRef) : opSigAt P B .top o = opSig P B o := by
++  cases o <;> simp [opSigAt, opSig]
++
++/-- L00.06b の試行 A2: 節の添字で具体化した操作の型は、引数型の対象の位置だけが旧の操作の型と違いうる。 -/
++theorem opSigAt_rel {P : Program} {B : Builtins} {S : ScopeRange} {o : OpRef} {sg sg' : OpSig}
++    (h : opSig P B o = some sg) (h' : opSigAt P B S o = some sg') :
++    sg'.tparams = sg.tparams ∧ sg'.names = sg.names ∧ sg'.ret = sg.ret ∧ sg'.eff = sg.eff ∧
++      (sg'.params = sg.params ∨
++        (S ≠ .top ∧ ∃ (p : Nat) (o' : OpaqueName), sg'.params[p]? = some (Ty.opaque o' S))) := by
++  cases o with
++  | fail => cases h
++  | user o =>
++      simp only [opSigAt] at h'
++      rw [h] at h'; cases h'
++      exact ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩
++  | prim b =>
++      cases hs : B.sig b with
++      | none => simp [opSig, hs] at h
++      | some s =>
++          cases hl : s.opEff with
++          | none => simp [opSig, hs, hl] at h
++          | some l =>
++              simp only [opSig, hs, hl, Option.some.injEq] at h
++              simp only [opSigAt, hs, hl, Option.some.injEq] at h'
++              subst h h'
++              refine ⟨rfl, rfl, rfl, rfl, ?_⟩
++              rcases s.inst_cases S with he | ⟨hS, p, o', hp⟩
++              · left; simp [he]
++              · right; exact ⟨hS, p, o', hp⟩
++
+ /-- 操作の辞書数。組み込みの操作は辞書を持たない。 -/
+ def opDictCount (P : Program) : OpRef → Nat
+   | .user o => ((P.ops o).map fun d => d.dictParams.length).getD 0
+@@ -387,9 +520,10 @@
+         P.defs f = some d → NamesWF d.names d.params →
+         Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
+         HasTypeVQ P B Ψ Q C Γ (.fnRef f ts es) (fnTy d.names d.params d.ret d.eff ts es)
+-    | V_Prim {Γ b s ts es} :
+-        B.sig b = some s → NamesWF s.names s.params → PrimitiveAdmissible C s Q ts es →
+-        HasTypeVQ P B Ψ Q C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es)
++    | V_Prim {Γ b s R ts es} :
++        B.sig b = some s → NamesWF (s.inst R).names (s.inst R).params → PrimitiveAdmissible C (s.inst R) Q ts es →
++        HasTypeVQ P B Ψ Q C Γ (.prim b ts es)
++          (fnTy (s.inst R).names (s.inst R).params (s.inst R).ret (s.inst R).eff ts es)
+     | V_Op {Γ o od ts} :
+         P.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams →
+         HasTypeVQ P B Ψ Q C Γ (.op o ts) (fnTy od.names od.params od.ret (Eff.single od.eff) ts [])
+@@ -533,8 +667,8 @@
+   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+     | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
+-    | cons {Δ Γ R o n k body cs t ε sg} :
+-        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
++    | cons {Δ Γ R o n k body cs t ε sg S} :
++        opSigAt P B S o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
+         HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
+           (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
+           (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) [] →
+@@ -595,6 +729,14 @@
+     | .nil => exact .nil
+     | .cons hv ht => exact .cons (hideBuilders_strengthen_val hv) (hideBuilders_strengthen_each ht)
+ end
++
++/-- L00.06b の試行（案 (i)）: 表の署名をそのまま（Top で）使う組み込みの関数の値の型付け。 -/
++theorem HasTypeVQ.V_PrimTop {P : Program} {B : Builtins} {Ψ Q C Γ b s ts es} (hs : B.sig b = some s)
++    (hn : NamesWF s.names s.params) (ha : PrimitiveAdmissible C s Q ts es) :
++    HasTypeVQ P B Ψ Q C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es) := by
++  have h := HasTypeVQ.V_Prim (P := P) (Ψ := Ψ) (Γ := Γ) (R := .top) hs (by rw [PrimSig.inst_top]; exact hn)
++    (by rw [PrimSig.inst_top]; exact ha)
++  rwa [PrimSig.inst_top] at h
+ 
+ abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty
+ abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty
+diff -ruN formal/Benitoite/Release/WellFormed.lean <wt>/formal/Benitoite/Release/WellFormed.lean
+--- formal/Benitoite/Release/WellFormed.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Release/WellFormed.lean	2026-10-27 20:03:03
+@@ -98,6 +98,22 @@
+     Ty.VarsInList s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn s.ntys (· < s.neffs) s.ret ∧
+     Eff.VarsIn s.ntys (· < s.neffs) s.eff
+ 
++/-- L00.06b の試行（案 (i)）: 具体化は署名の変数の範囲を保つ。対象の位置の不透明型と範囲付きの原子は変数を含まない。 -/
++theorem PrimSig.inst_scoped {s : PrimSig} (R : ScopeRange) (h : s.Scoped) : (s.inst R).Scoped := by
++  rcases s.inst_eq R with he | ⟨p, o, r, l, hp, he⟩
++  · rw [he]; exact h
++  · rw [he]
++    obtain ⟨hn, hps, hr, he'⟩ := h
++    refine ⟨⟨by simpa using hn.1, hn.2⟩, ?_, hr, ?_⟩
++    · rw [Ty.VarsInList.iff] at hps ⊢
++      intro a ha
++      rcases List.mem_or_eq_of_mem_set ha with ha | ha
++      · exact hps a ha
++      · subst ha; simp [Ty.VarsIn]
++    · refine ⟨?_, by simp [Ty.VarsInList]⟩
++      intro i hi
++      simp at hi
++
+ /-- メソッドの型は、メソッドの型パラメータ（番号 `0..g-1`）と型クラスの引数（番号 g）と、メソッドのエフェクト変数
+ だけを使う。 -/
+ def MethSig.Scoped (ms : MethSig) : Prop :=
+diff -ruN formal/Benitoite/Surface/BuilderExamples.lean <wt>/formal/Benitoite/Surface/BuilderExamples.lean
+--- formal/Benitoite/Surface/BuilderExamples.lean	2026-10-27 20:12:39
++++ <wt>/formal/Benitoite/Surface/BuilderExamples.lean	2026-10-27 20:12:08
+@@ -11,7 +11,7 @@
+ private def strTy : Ty := .base .string
+ private def signature (kind : PrimKind) (ns : List String) (ps : List Ty) (ret : Ty)
+     (eff : Eff := Eff.empty) (ts : List TParam := []) : PrimSig :=
+-  ⟨ts, 0, ns, ps, ret, eff, fun _ _ => True, kind, none⟩
++  ⟨ts, 0, ns, ps, ret, eff, fun _ _ => True, kind, none, none⟩
+ private def entries : List (String × PrimSig) :=
+   [("new", signature .refNew ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single stateEff) [{}]),
+    ("get", signature .refGet ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single stateEff) [{}]),
+diff -ruN formal/Benitoite/Surface/Lemmas/Extensions.lean <wt>/formal/Benitoite/Surface/Lemmas/Extensions.lean
+--- formal/Benitoite/Surface/Lemmas/Extensions.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Surface/Lemmas/Extensions.lean	2026-10-27 20:10:57
+@@ -136,7 +136,7 @@
+     · rw [heq.1]
+       decide
+   rw [← hfn]
+-  apply HasTypeVQ.V_Prim hs hn
++  apply HasTypeVQ.V_PrimTop hs hn
+   subst ts
+   exact PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha (by simp)
+ 
+diff -ruN formal/Benitoite/Surface/Lemmas/ReturnTry.lean <wt>/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
+--- formal/Benitoite/Surface/Lemmas/ReturnTry.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Surface/Lemmas/ReturnTry.lean	2026-10-27 20:10:57
+@@ -179,7 +179,7 @@
+     HasTypeCQ P B StoreTy.empty Q C Γ R
+       (.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]) t (Eff.single "Process.Exit") Δl := by
+   obtain ⟨s, hs, _, _, ht, he, hn, ha, hf⟩ := h
+-  have hv := HasTypeVQ.V_Prim (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs hn
++  have hv := HasTypeVQ.V_PrimTop (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs hn
+     (PrimitiveAdmissible.of_noRows (hsig _ _ hs) he
+       (by simpa using ht.symm) ha (by
+         intro a hm
+diff -ruN formal/Benitoite/Surface/Lemmas/Typing.lean <wt>/formal/Benitoite/Surface/Lemmas/Typing.lean
+--- formal/Benitoite/Surface/Lemmas/Typing.lean	2026-10-27 19:51:20
++++ <wt>/formal/Benitoite/Surface/Lemmas/Typing.lean	2026-10-27 20:22:57
+@@ -449,7 +449,7 @@
+         apply HasTypeCQ.C_Meth hv (classDecl_desugared hc) hm hn ht hscope hrows
+         have hargs := hus.append (boundVars_typed (scopedList_clean sc.2.2.2.2.2))
+         simpa only [binds_length, hp, List.take_append_drop] using hargs
+-    | .E_Prim hs hn ht he ha hrows _ => exact .C_Return (.V_Prim hs hn hrows)
++    | .E_Prim hs hn ht he ha hrows _ => exact .C_Return (HasTypeVQ.V_PrimTop hs hn hrows)
+     | .E_Op hd hn ht _ => exact .C_Return (.V_Op hd hn ht)
+     | .E_OpDicts (od := od) (ps := ps) (ts := ts) hd hcore hn ht hpref hnames hns hp hds =>
+         have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
+@@ -616,7 +616,7 @@
+         apply HasTypeCQ.weakenEff (δ := Eff.union _ _)
+         · apply HasTypeCQ.C_App (names := ["left", "right"])
+           · rw [← hfn]
+-            apply HasTypeVQ.V_Prim hs hn
++            apply HasTypeVQ.V_PrimTop hs hn
+             apply PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha
+             intro a ha
+             have hc := varsInList_mem (operator_typeArgs_scoped sc.1 (.binary o)) (by simpa only [hts] using ha)
+@@ -630,7 +630,7 @@
+         apply HasTypeCQ.weakenEff (δ := ε)
+         · apply HasTypeCQ.C_App (names := ["value"])
+           · rw [← hfn]
+-            apply HasTypeVQ.V_Prim hs (hsig _ _ hs).1
++            apply HasTypeVQ.V_PrimTop hs (hsig _ _ hs).1
+             apply PrimitiveAdmissible.of_noRows (hsig _ _ hs) he ht ha
+             intro a ha
+             have hc := varsInList_mem (operator_typeArgs_scoped sc.1 .neg) (by simpa only [hts, Operator.typeArgs] using ha)
+@@ -888,7 +888,7 @@
+     match h with
+     | .nil => exact .nil
+     | .cons (ntys := ntys) (sg := sg) hop hnames hn hntys hw hb hs =>
+-        refine .cons (by exact hop) hnames hn.2 hntys hw ?_ (HasClausesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR ht)
++        refine .cons (S := .top) (by rw [opSigAt_top]; exact hop) hnames hn.2 hntys hw ?_ (HasClausesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR ht)
+         have hlen : (sg.tparams ++ C).length = C.length + ntys := by
+           simp only [List.length_append]; omega
+         have hsg := opSig_clean hwf hsig hop

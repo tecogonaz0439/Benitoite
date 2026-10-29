@@ -69,7 +69,7 @@ def prepare(source):
                 case["definitions"][role]["intervalObservation"] = {
                     "key": definition["matches"][0], "component": "normal", "excludeReturned": True}
                 # Errorのreturnは関数のreturned成分には残る。成功側のnormalとは区別する。
-    return {"version": 1, "profile": "range", "surfaceVersion": 14, "traversalVersion": 1,
+    return {"version": 1, "profile": "range", "surfaceVersion": 15, "traversalVersion": 1,
             "status": "A18aの比較入力。X01のinterval-corpusへの接続・X02の全比較・X03bのVM比較は未実施",
             "sourceHashes": {f.name: hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(source.glob("*.bnt"))},
             "definitions": list(definitions.values()), "cases": expected["cases"]}

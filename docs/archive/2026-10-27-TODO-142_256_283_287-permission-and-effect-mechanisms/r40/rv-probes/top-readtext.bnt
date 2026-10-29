@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.IO.File
+function main() -> Unit uses File.Read["/**"]
+ bind _ <- File.readText(path: "/etc/hosts")
+ ()
+end function

@@ -1,0 +1,296 @@
+== plan: level work against ddadf40d6d85b752717252c315cabe3f662c1cf8 (changed files not classified) (partial selection: --only fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test scoped_calls --test skill_docs --test skill_examples --test spec_examples --test stdlib_doc_examples --test test_command --test verify --test vm_handlers --test vm_lazy --test vm_reference_cells
+   [source_rules] because of --only (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of --only (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of --only (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.44s
+== tests_related
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 23 tests
+test closure::an_inferred_body_does_not_narrow_the_public_return_contract ... ok
+test closure::stage_closure_input_keeps_ranges_through_methods_constants_and_forgetting ... ok
+test acceptance_checks_definitions_before_implementation_methods ... ok
+test closure::scope_rejection_and_legacy_errors_leave_other_range_warnings_intact ... ok
+test closure::warning_candidates_do_not_change_scoped_type_acceptance ... ok
+test handler_selection::handler_selection_uses_callback_annotations_and_rejects_unsupported_entry_forms ... ok
+test function_values_holes_and_unannotated_widen_do_not_invent_ranges ... ok
+test closure::scope_exhaustion_changes_rejection_reason_without_changing_range_warnings ... ok
+test an_unrelated_handler_does_not_finalize_a_prior_scope_check_before_its_later_use ... ok
+test resolution::standard_import_names_cannot_be_redeclared ... ok
+test accepted_calls_keep_non_top_ranges_and_widen_uses_the_return_annotation ... ok
+test resolution::permitted_alias_keeps_scope_rules_and_effect_module_alias_is_rejected ... ok
+test handlers_remove_complete_names_and_keep_clause_io_at_its_own_scope ... ok
+test closure::range_budget_stop_does_not_erase_a_required_scope_selection ... ok
+test numbering_budget_applies_to_a_rule_after_the_expanding_constant ... ok
+test resolution::trait_methods_user_operations_and_module_names_do_not_gain_standard_rules ... ok
+test reversed_request_literals_are_rejected_before_scope_acceptance ... ok
+test numbering_and_local_budget_diagnostics_explain_different_losses ... ok
+test user_operation_clauses_keep_their_declared_fixed_scope ... ok
+test unannotated_checks_use_top_when_projection_or_join_requires_it ... ok
+test scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening ... ok
+test resolution::user_spellings_and_standard_like_import_aliases_are_ordinary_functions ... ok
+test resolution::indirect_six_declarations_keep_top_instead_of_recovering_a_direct_rule ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.98s
+
+     Running tests/skill_docs.rs (target/debug/deps/skill_docs-c12f2f6db089e671)
+
+running 8 tests
+test syntax_chapter_without_the_heading_is_rejected ... ok
+test every_file_under_skill_is_embedded ... ok
+test embedded_files_cover_every_skill_file ... ok
+test generated_documents_are_up_to_date ... ok
+test declarations_keep_extensible_and_omit_implementation_details ... ok
+test each_module_has_a_file_with_its_import_name ... ok
+test grammar_has_no_japanese_notes_and_keeps_every_rule ... ok
+test diagnostics_list_every_code_and_no_retired_code ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/skill_examples.rs (target/debug/deps/skill_examples-78abf7303726bbb4)
+
+running 4 tests
+test local_interval_warning_example_matches_the_golden_input ... ok
+test skill_md_is_short_and_lists_every_reference_document ... ok
+test example_checker_reports_document_and_line_of_a_wrong_output ... ok
+test code_examples_in_hand_written_documents_behave_as_written ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.38s
+
+     Running tests/spec_examples.rs (target/debug/deps/spec_examples-34c0c22f79f844a1)
+
+running 7 tests
+test unextracted_text_fences_are_rejected ... ok
+test loading_errors_are_counted_as_failures ... ok
+test broken_syntax_example_is_counted_as_unreadable ... ok
+test expected_failure_must_still_be_invalid ... ok
+test local_binding_violations_are_counted_and_fragment_shadow_is_allowed ... ok
+test numeric_spec_examples_behave_as_written ... ok
+test spec_and_appendix_examples_are_readable ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.35s
+
+     Running tests/stdlib_doc_examples.rs (target/debug/deps/stdlib_doc_examples-049e29dd29bcb651)
+
+running 1 test
+test standard_doc_examples_behave_as_written ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.68s
+
+     Running tests/test_command.rs (target/debug/deps/test_command-c0cac3b0f921f0d2)
+
+running 52 tests
+test an_unreadable_directory_runs_no_tests ... ok
+test check_rejects_explicit_execution_options_even_at_their_defaults ... ok
+test check_is_accepted_and_missing_paths_still_report_usage_errors ... ok
+test all_passing_tests_end_with_ok_and_no_failures_section ... ok
+test an_interrupt_request_ends_with_the_interrupted_summary ... ok
+test check_observes_interrupts_only_before_each_file ... ok
+test check_report_keeps_success_after_errors_and_diagnostic_indices ... ok
+test check_report_usage_errors_scan_options_in_both_orders ... ok
+test a_file_with_check_errors_is_not_run_but_others_are ... ok
+test check_report_keeps_completed_and_unstarted_targets_on_interrupt ... ok
+test check_report_preserves_contracts_descriptions_locations_and_source_identity ... ok
+test deadlock_reports_name_the_first_task_after_the_test_function ... ok
+test deny_warnings_skips_a_file_with_warnings ... ok
+test check_report_preserves_warning_promotion_and_program_shell_scope ... ok
+test a_file_without_tests_writes_only_the_summary ... ok
+test directory_walk_skips_settings_and_nested_package_roots ... ok
+test check_keeps_diagnostics_and_checks_files_after_errors ... ok
+test check_does_not_run_user_code_or_write_result_lines ... ok
+test die_source_fails_one_test_and_keeps_running ... ok
+test doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs ... ok
+test doc_report_preserves_partial_unknowns_and_option_rejections ... ok
+test doc_examples_use_public_imports_without_inheriting_private_names ... ok
+test a_directory_is_expanded_in_path_order_with_itself_as_the_root ... ok
+test doc_text_reports_escape_control_characters_in_example_ids ... ok
+test doc_expectations_fail_per_example_and_keep_running ... ok
+test json_lines_have_the_fields_in_order ... ok
+test limited_test_options_reject_invalid_or_check_only_invocations ... ok
+test doc_modes_share_discovery_and_version_two_reports ... ok
+test exit_status_prioritizes_internal_and_check_errors_over_test_failures ... ok
+test doc_run_checks_unhandled_effects_and_exact_stderr ... ok
+test failure_entry_contracts_are_checked_before_test_execution ... ok
+test limited_test_control_flow_matches_reported_effects ... ok
+test log_handlers_receive_expanded_source_locations ... ok
+test file_effects_reach_test_contracts_but_not_outer_doc_examples ... ok
+test log_default_events_are_captured_once_by_the_test_runner ... ok
+test ordinary_test_does_not_parse_documentation_examples ... ok
+test mixed_results_are_reported_in_the_text_form ... ok
+test log_test_report_and_effect_limits_use_the_canonical_name ... ok
+test max_call_stack_limits_each_test ... ok
+test limited_tests_recheck_reported_contracts_after_changes ... ok
+test prepared_sources_are_reused_and_the_next_file_is_prepared_after_execution ... ok
+test limited_tests_consume_the_prepared_artifacts_in_order ... ok
+test result_lines_escape_file_names_only_in_text_output ... ok
+test tests_of_imported_modules_run_only_when_their_file_is_given ... ok
+test property_results_use_ordinary_test_reports_and_check_never_runs_callbacks ... ok
+test task_origins_end_at_the_test_function ... ok
+test doc_prepares_all_entries_and_limits_before_any_execution ... ok
+test source_locations_execute_at_written_sites_and_original_doc_comments ... ok
+test check_report_and_execution_select_the_same_entries_and_functions ... ok
+test process_interrupt::sigint_stops_the_runner_with_the_interrupted_summary ... ok
+test limited_tests_reject_every_entry_before_any_execution ... ok
+test external_session_shares_preparation_and_isolates_each_test ... ok
+
+test result: ok. 52 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.40s
+
+     Running tests/verify.rs (target/debug/deps/verify-423cd9f8730c8115)
+
+running 3 tests
+test dedicated_builder_metadata_and_handle_inputs_reject_invalid_uses ... ok
+test reference_sets_depend_on_successful_size_checked_combination ... ok
+test golden_programs_and_seeded_single_site_mutations has been running for over 60 seconds
+test golden_programs_and_seeded_single_site_mutations ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 65.62s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-56e62052f06f776c)
+
+running 5 tests
+test file_uses_failure_contract_connects_to_vm_handlers ... ok
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.46s
+
+     Running tests/vm_lazy.rs (target/debug/deps/vm_lazy-cdb2cf46167ef187)
+
+running 1 test
+test scripts_execute_nested_captured_and_repeated_lazy_bodies ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+     Running tests/vm_reference_cells.rs (target/debug/deps/vm_reference_cells-e1a06c8f2d57adf7)
+
+running 2 tests
+test retried_update_trace_keeps_the_update_call_site ... ok
+test scripts_update_values_return_unit_and_release_frames_and_cycles ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.63s
+
+== source_rules
+== source_rules
+== skill_generated
+== spec_tally
+self-test passed (6 runner marker(s), first-release headings, directory tests, shebang, ignored fixtures, completion tables and invalid input)
+== spec_tally
+Specification sections without a test reference:
+  01-02 `return`
+  01-03 位置の式
+  01-05 不透明型
+  01-06 名前を持つ関数型の適合と推論
+  01-06 範囲付きの不透明標準型
+  01-07 ファイル単位のエフェクトの宣言
+  01-07 外部のライブラリのエフェクトと権限の表示（初回リリース版の後）
+  01-07 実行時の権限制御（サーバモード）
+  01-07 秘密の値とエフェクト（初回リリース版の後）
+  01-07 閉じた範囲引数
+  01-09 IO の失敗の種類
+  01-09 例外
+  01-09 外部のライブラリの誤りとの対応
+  01-09 失敗時に終了する処置
+  01-12 Logの通常宣言とハンドラの具体例
+  01-12 Resultの法則と二引数辞書の具体例
+  01-12 Scope の局所解析の予算と忘却
+  01-12 Scope の局所解析の接続定理
+  01-12 Scope の局所解析の状態と規則の表
+  01-12 Scope の局所解析の表層からの対応
+  01-12 Scope の必須の判定の受理と拒否の理由
+  01-12 `return`
+  01-12 die のモデル
+  01-12 エフェクトの名前と開始状態
+  01-12 ストア：可変のセルと明示遅延
+  01-12 トップレベルの定数
+  01-12 トップレベルの関数
+  01-12 パターン
+  01-12 ブロック
+  01-12 プロセスの終了
+  01-12 モジュール
+  01-12 リスト、ラムダ、条件分岐、match
+  01-12 リストの展開
+  01-12 レコード
+  01-12 値
+  01-12 区間解析のInteger64の減算・乗算・一般の負号の接続
+  01-12 区間解析のInteger64加算
+  01-12 区間解析のInteger64除算と剰余
+  01-12 区間解析のIntegerパターンと腕入口
+  01-12 区間解析のRangeの表層評価とResultの腕選択
+  01-12 区間解析のRangeの評価規則と小モデル
+  01-12 区間解析のResultの保存とOk束縛
+  01-12 区間解析のguardとreturnの局所規則
+  01-12 区間解析の予算の状態と計上
+  01-12 区間解析の予算付きの別本体の発見
+  01-12 区間解析の予算付きの局所走査
+  01-12 区間解析の予算付きの式とフロー
+  01-12 区間解析の単一ifと正常値の合流
+  01-12 区間解析の同じ成功値の直接射影
+  01-12 区間解析の土台の解析と健全性
+  01-12 区間解析の定数倍
+  01-12 区間解析の対象構文の評価関係
+  01-12 区間解析の局所環境と本体境界
+  01-12 区間解析の本体の識別と元の出現の対応
+  01-12 区間解析の束縛保存と単一比較
+  01-12 区間解析の検査全体の駆動
+  01-12 区間解析の減算と符号付き負号
+  01-12 区間解析の独立交換の読者
+  01-12 区間解析の独立入力の保存と保証
+  01-12 区間解析の直接引数と固定の定義域
+  01-12 区間解析の短絡と複合条件
+  01-12 区間解析の閉じた対象入力の評価
+  01-12 名前とリテラル
+  01-12 呼び出し
+  01-12 型の情報を付けた表層の構文と型付け
+  01-12 型クラス
+  01-12 型パラメータの組み込みの制約
+  01-12 型付きの失敗の表層検査
+  01-12 基本型とコレクションの型
+  01-12 契約名と型付け
+  01-12 契約名を持つ関数と呼び出し
+  01-12 定義
+  01-12 実行の規則
+  01-12 形式化した型付き失敗の捕捉
+  01-12 形式化した操作の制約と節の辞書
+  01-12 操作の対象の範囲の領域と被覆
+  01-12 整数の閉区間の領域
+  01-12 末尾呼び出しの保証の読み替え
+  01-12 検査済みの値の独立した小モデル
+  01-12 構文
+  01-12 構築器の分類と環境の対応
+  01-12 構築器の専用セルの内容と上限
+  01-12 構築器の専用操作と脱糖
+  01-12 構築器の局所宣言と捕捉
+  01-12 構築器の局所文脈と旧構文の意味
+  01-12 演算子
+  01-12 確かめる性質
+  01-12 範囲条件と実装の名前の検査
+  01-12 置き換えてよい等式
+  01-12 表層からの脱糖
+  01-12 表層のブロック式
+  01-12 表層の契約と値の配置
+  01-12 解放の枠と実行時エラーの継続：`with`
+  01-12 関数の境界と `escape`：途中の `return` と `try`
+Unfilled first-release acceptance conditions (未記入):
+  none
+selected checks passed
+real 114.48
+user 145.71
+sys 1.89

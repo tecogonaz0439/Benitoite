@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function main() -> Result[Unit, String] uses Http.Connect["127.0.0.1", 18411], Console.Write
+ bind original <- Http.ClientRequest(..Http.clientRequest(method: "GET", url: "http://127.0.0.1:18411/h_upper"), headers: [Pair("HOST", "127.0.0.1:18411")])
+ bind checked: Result[Http.RequestIn["127.0.0.1", 18411], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "127.0.0.1", minimumPort: 18411, maximumPort: 18411, request: original)
+ return match checked with
+  case Result.Error(_) -> Result.Error("check failed")
+  case Result.Ok(request) ->
+   match Http.sendIn(request: request) with
+    case Result.Error(error) -> Result.Error(NetworkError.message(error))
+    case Result.Ok(response) ->
+     Console.writeLine(Integer.toString(Http.Response.status(response)))
+     Result.Ok(())
+   end match
+ end match
+end function

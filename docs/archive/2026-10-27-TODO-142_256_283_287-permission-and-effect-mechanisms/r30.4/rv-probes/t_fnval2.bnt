@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function go(a: Http.RequestIn["127.0.0.1", 18411], r: Http.RequestIn) -> Unit uses Http.Connect["127.0.0.1", 18411]
+ bind f <- Http.sendIn
+ bind x <- f(request: a)
+ bind y <- f(request: r)
+ ()
+end function
+function main() -> Unit
+ ()
+end function

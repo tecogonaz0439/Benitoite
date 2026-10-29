@@ -1,0 +1,53 @@
+== grep -nE 'sorry' pm10.02/lean-run-01.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm10.02/lean-run-01.log
+status=1
+== lines with 'depends on axioms'
+status=1
+== declarations in model (theorem/def/inductive etc.)
+23:def KindSet (Kind : Type) : Type := Kind → Prop
+30:def Subset (A B : KindSet Kind) : Prop := ∀ k : Kind, A k → B k
+33:theorem Subset.refl (A : KindSet Kind) : Subset A A :=
+37:theorem Subset.trans {A B C : KindSet Kind}
+50:def traceKinds (tr : List Ev) : KindSet Kind :=
+55:theorem mem_traceKinds {tr : List Ev} {e : Ev} (he : e ∈ tr) :
+60:theorem traceKinds_subset_iff (tr : List Ev) (S : KindSet Kind) :
+77:def KindCheck (declared policy : KindSet Kind) : Prop := Subset declared policy
+81:def WithinDeclared (declared : KindSet Kind) (tr : List Ev) : Prop :=
+85:theorem events_subset_policy {declared policy : KindSet Kind} {tr : List Ev}
+92:theorem event_kind_in_policy {declared policy : KindSet Kind} {tr : List Ev} {e : Ev}
+101:theorem all_runs_within_policy {declared policy : KindSet Kind} (runs : List Ev → Prop)
+115:def KindSet.ofList {Kind : Type} (l : List Kind) : KindSet Kind := fun k => k ∈ l
+118:theorem KindSet.ofList_subset_iff {Kind : Type} (l : List Kind) (S : KindSet Kind) :
+127:theorem not_kindCheck_of_missing {declared policy : KindSet Kind} {k : Kind}
+132:theorem not_events_subset_of_missing {S : KindSet Kind} {tr : List Ev} {e : Ev}
+138:theorem traceKinds_singleton {e : Ev} {k : Kind} (hk : traceKinds kindOf [e] k) : kindOf e = k := by
+147:theorem kindCheck_iff_all_traces {declared policy : KindSet Kind}
+174:inductive Kind where
+180:inductive Event where
+186:def kindOf : Event → Kind
+192:def declared : KindSet Kind := KindSet.ofList [.console, .fileRead]
+195:def policy : KindSet Kind := KindSet.ofList [.console, .fileRead]
+198:def declaredWithHttp : KindSet Kind := KindSet.ofList [.console, .http]
+201:def trace : List Event := [.print "hello", .readFile "a.txt"]
+204:def traceWithHttp : List Event := [.print "hello", .get "https://example.com/"]
+207:theorem http_not_in_list : ¬ KindSet.ofList [Kind.console, .fileRead] .http := by
+214:theorem http_not_in_policy : ¬ policy .http := http_not_in_list
+216:theorem http_not_in_declared : ¬ declared .http := http_not_in_list
+218:theorem kindCheck_example : KindCheck declared policy := by
+222:theorem trace_within_declared : WithinDeclared kindOf declared trace := by
+233:theorem readFile_in_policy : policy (kindOf (.readFile "a.txt")) :=
+238:theorem trace_within_policy : Subset (traceKinds kindOf trace) policy :=
+242:theorem trace_has_fileRead : traceKinds kindOf trace .fileRead :=
+246:theorem declaredWithHttp_rejected : ¬ KindCheck declaredWithHttp policy :=
+249:theorem traceWithHttp_within_declared : WithinDeclared kindOf declaredWithHttp traceWithHttp := by
+261:theorem traceWithHttp_outside_policy : ¬ Subset (traceKinds kindOf traceWithHttp) policy :=
+267:theorem traceWithHttp_needs_within :
+count=38
+== #print axioms count
+38
+== 'does not depend on any axioms' count
+38
+== names declared but not printed
+== sorry/axiom/decide in source
+status=1

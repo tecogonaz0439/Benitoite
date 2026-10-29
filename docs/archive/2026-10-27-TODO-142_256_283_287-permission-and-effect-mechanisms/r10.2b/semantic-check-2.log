@@ -1,0 +1,209 @@
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0023]: this pattern has 2 fields, but the corresponding tuple variant has 3 fields
+   --> crates/benitoite/examples/derive_inventory/schema.rs:53:21
+    |
+ 53 |             Ty::Con(con, args) => {
+    |                     ^^^  ^^^^ expected 3 fields, found 2
+    |
+   ::: crates/benitoite/src/types/mod.rs:151:9
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |         -----  -------  ------------------- tuple variant has 3 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+ 53 |             Ty::Con(con, args, _) => {
+    |                              +++
+
+error[E0061]: this enum variant takes 3 arguments but 2 arguments were supplied
+   --> crates/benitoite/examples/derive_inventory/schema.rs:285:26
+    |
+285 |                       ret: Ty::Con(
+    |  __________________________^^^^^^^-
+286 | |                         TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::UNIT),
+287 | |                         vec![],
+288 | |                     ),
+    | |_____________________- argument #3 of type `RangeIndex` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:151:5
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |     ^^^
+help: provide the argument
+    |
+285 |                     ret: Ty::Con(
+286 |                         TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::UNIT),
+287 |                         vec![],
+288 ~                         /* RangeIndex */,
+289 ~                     ),
+    |
+
+error[E0023]: this pattern has 2 fields, but the corresponding tuple variant has 3 fields
+   --> crates/benitoite/examples/derive_inventory/mod.rs:115:21
+    |
+115 |             Ty::Con(con, args) => {
+    |                     ^^^  ^^^^ expected 3 fields, found 2
+    |
+   ::: crates/benitoite/src/types/mod.rs:151:9
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |         -----  -------  ------------------- tuple variant has 3 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+115 |             Ty::Con(con, args, _) => {
+    |                              +++
+
+error[E0023]: this pattern has 2 fields, but the corresponding tuple variant has 3 fields
+   --> crates/benitoite/tests/../examples/derive_inventory/schema.rs:53:21
+    |
+ 53 |             Ty::Con(con, args) => {
+    |                     ^^^  ^^^^ expected 3 fields, found 2
+    |
+   ::: crates/benitoite/src/types/mod.rs:151:9
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |         -----  -------  ------------------- tuple variant has 3 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+ 53 |             Ty::Con(con, args, _) => {
+    |                              +++
+
+error[E0061]: this enum variant takes 3 arguments but 2 arguments were supplied
+   --> crates/benitoite/tests/../examples/derive_inventory/schema.rs:285:26
+    |
+285 |                       ret: Ty::Con(
+    |  __________________________^^^^^^^-
+286 | |                         TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::UNIT),
+287 | |                         vec![],
+288 | |                     ),
+    | |_____________________- argument #3 of type `RangeIndex` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:151:5
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |     ^^^
+help: provide the argument
+    |
+285 |                     ret: Ty::Con(
+286 |                         TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::UNIT),
+287 |                         vec![],
+288 ~                         /* RangeIndex */,
+289 ~                     ),
+    |
+
+error[E0023]: this pattern has 2 fields, but the corresponding tuple variant has 3 fields
+   --> crates/benitoite/tests/../examples/derive_inventory/mod.rs:115:21
+    |
+115 |             Ty::Con(con, args) => {
+    |                     ^^^  ^^^^ expected 3 fields, found 2
+    |
+   ::: crates/benitoite/src/types/mod.rs:151:9
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |         -----  -------  ------------------- tuple variant has 3 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+115 |             Ty::Con(con, args, _) => {
+    |                              +++
+
+Some errors have detailed explanations: E0023, E0061.
+For more information about an error, try `rustc --explain E0023`.
+error: could not compile `benitoite` (example "derive_inventory") due to 3 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `benitoite` (test "declarations") due to 3 previous errors
+error[E0061]: this enum variant takes 3 arguments but 2 arguments were supplied
+   --> crates/benitoite/tests/desugar_export.rs:949:14
+    |
+949 |       let ty = benitoite::types::Ty::Con(
+    |  ______________^^^^^^^^^^^^^^^^^^^^^^^^^-
+950 | |         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+951 | |         vec![],
+952 | |     );
+    | |_____- argument #3 of type `RangeIndex` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:151:5
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |     ^^^
+help: provide the argument
+    |
+949 |     let ty = benitoite::types::Ty::Con(
+950 |         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+951 |         vec![],
+952 ~         /* RangeIndex */,
+953 ~     );
+    |
+
+error[E0061]: this enum variant takes 3 arguments but 2 arguments were supplied
+   --> crates/benitoite/tests/desugar_export.rs:973:14
+    |
+973 |       let ty = benitoite::types::Ty::Con(
+    |  ______________^^^^^^^^^^^^^^^^^^^^^^^^^-
+974 | |         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::INTEGER),
+975 | |         vec![],
+976 | |     );
+    | |_____- argument #3 of type `RangeIndex` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:151:5
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |     ^^^
+help: provide the argument
+    |
+973 |     let ty = benitoite::types::Ty::Con(
+974 |         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::INTEGER),
+975 |         vec![],
+976 ~         /* RangeIndex */,
+977 ~     );
+    |
+
+error[E0061]: this enum variant takes 3 arguments but 2 arguments were supplied
+   --> crates/benitoite/tests/desugar_export.rs:989:13
+    |
+989 |           == &benitoite::types::Ty::Con(
+    |  _____________^^^^^^^^^^^^^^^^^^^^^^^^^-
+990 | |             benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+991 | |             vec![],
+992 | |         ) {
+    | |_________- argument #3 of type `RangeIndex` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:151:5
+    |
+151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+    |     ^^^
+help: provide the argument
+    |
+989 |         == &benitoite::types::Ty::Con(
+990 |             benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
+991 |             vec![],
+992 ~             /* RangeIndex */,
+993 ~         ) {
+    |
+
+For more information about this error, try `rustc --explain E0061`.
+error: could not compile `benitoite` (test "desugar_export") due to 3 previous errors
+error[E0061]: this enum variant takes 3 arguments but 2 arguments were supplied
+    --> crates/benitoite/src/typeck/pattern_ext.rs:1142:22
+     |
+1142 |                 vec![crate::types::Ty::Con(TyCon::Builtin(B::STRING), vec![])]
+     |                      ^^^^^^^^^^^^^^^^^^^^^----------------------------------- argument #3 of type `RangeIndex` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:151:5
+     |
+ 151 |     Con(TyCon, Vec<Ty>, builtin::RangeIndex),
+     |     ^^^
+help: provide the argument
+     |
+1142 |                 vec![crate::types::Ty::Con(TyCon::Builtin(B::STRING), vec![], /* RangeIndex */)]
+     |                                                                             ++++++++++++++++++
+
+error: could not compile `benitoite` (lib test) due to 1 previous error

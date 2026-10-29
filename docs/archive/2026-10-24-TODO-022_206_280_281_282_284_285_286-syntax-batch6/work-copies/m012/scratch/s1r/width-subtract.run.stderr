@@ -1,0 +1,10 @@
+runtime error[R0102]: integer overflow
+  --> work/m012/scratch/s1r/width-subtract.bnt:2:28
+   |
+ 2 |   if n < 10u16 then return n - 20u16 else return 0u16 end if
+   |                            ^^^^^^^^^
+   |
+   = note: call trace (innermost first):
+             f    at work/m012/scratch/s1r/width-subtract.bnt:6:13
+             main
+   = note: functions left by tail calls are not shown

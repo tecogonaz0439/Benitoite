@@ -1,0 +1,10 @@
+runtime error[R0701]: argument 2 of `Integer.shiftLeft` is out of range
+  --> work/m012/scratch/s1r/shift-domain.bnt:2:25
+   |
+ 2 |   if n > 63 then return Integer.shiftLeft(a: 1, n: n) else return 0 end if
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: call trace (innermost first):
+             f    at work/m012/scratch/s1r/shift-domain.bnt:6:13
+             main
+   = note: functions left by tail calls are not shown

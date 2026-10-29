@@ -1,0 +1,26 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.IO.Console
+function show(r: Result[S.PathIn["/data/a"], S.ScopeError]) -> String
+ return match r with
+ case Result.Ok(v) -> "ok"
+ case Result.Error(e) -> "err"
+ end match
+end function
+function main() -> Unit uses Console.Write
+ bind a: Result[S.PathIn["/data/a"], S.ScopeError] <- S.checkPathIn(pattern: "/data/a", path: "/data/a")
+ match a with
+ case Result.Ok(v) ->
+  bind w: S.PathIn["/data/**"] <- S.widenPathIn(path: v)
+  Console.writeLine(S.pathInValue(path: v))
+ case Result.Error(e) -> Console.writeLine("E1")
+ end match
+ Console.writeLine(show(S.checkPathIn(pattern: "/data/a", path: "/data/b")))
+ Console.writeLine(show(S.checkPathIn(pattern: "/data/a", path: "/data/a/../a")))
+ Console.writeLine(show(S.checkPathIn(pattern: "/data/a", path: "/data//a")))
+ Console.writeLine(show(S.checkPathIn(pattern: "/data/a", path: "/data/a/")))
+ bind t <- S.checkPathIn(pattern: "/data/**", path: "/data")
+ match t with
+ case Result.Ok(v) -> Console.writeLine(S.pathInValue(path: v))
+ case Result.Error(e) -> Console.writeLine("E2")
+ end match
+end function

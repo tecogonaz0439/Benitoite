@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.Network.Http
+function identity(value: Http.ClientRequest) -> Unit
+ ()
+end function
+function sample(raw: Http.ClientRequest) -> Unit
+ bind checked: Result[Http.RequestIn["api.example", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: raw)
+ match checked with
+ case Result.Ok(value) ->
+ bind extracted: Http.ClientRequest <- Http.requestInValue(request: value)
+ return identity(value: extracted)
+ case Result.Error(_) -> ()
+ end match
+end function
+function main() -> Unit
+end function

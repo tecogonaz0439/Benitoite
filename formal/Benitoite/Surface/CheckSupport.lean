@@ -26,7 +26,7 @@ theorem diffEff_mono {atoms ε ε' h} (hh : Eff.Sub ε ε') :
     Eff.Sub (diffEff atoms ε h) (diffEff atoms ε' h) := Finite.diffEff_mono hh
 
 theorem singleEff_eq_contains {atoms : List Atom} {l : EffName}
-    (h : atoms.contains (.name l) = true) : singleEff atoms (.name l) = Eff.single l :=
+    (h : atoms.contains (.nameTop l) = true) : singleEff atoms (.nameTop l) = Eff.single l :=
   singleEff_eq (List.mem_of_elem_eq_true h)
 
 end Benitoite.Surface.CheckTools
@@ -127,7 +127,7 @@ mutual
     | .builderOp _ _ args k =>
         k.contents.AtomsIn atoms ∧ args.AtomsIn atoms
     | .constE t e => t.AtomsIn atoms ∧ e.AtomsIn atoms
-    | .funName _ ts es | .primName _ ts es =>
+    | .funName _ ts es | .primName _ ts es _ =>
         Tys.AtomsIn atoms ts ∧ ∀ ε ∈ es, ε.AtomsIn atoms
     | .funDicts _ ts es ds _ ps => Tys.AtomsIn atoms ts ∧
         (∀ ε ∈ es, ε.AtomsIn atoms) ∧ DictEvs.AtomsIn atoms ds ∧ Tys.AtomsIn atoms ps

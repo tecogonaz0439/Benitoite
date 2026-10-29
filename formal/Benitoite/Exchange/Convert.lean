@@ -4,19 +4,73 @@ import Benitoite.Surface.CheckTables
 namespace Benitoite.Exchange
 open Lean
 
-/-- Fail は名前の原子と区別し、支持はエラー型の内部まで収集する。 -/
+/-- Fail は名前の原子と区別し、支持はエラー型の内部まで収集する。範囲の位置はそのまま写す（旧版の入力は読み込みの前に
+明示の Top を持つ。`Exchange/Range.lean` の `legacyRangeNode`）。 -/
 def Atom.toRelease : Atom → Option Benitoite.Release.Atom
-  | .name s => some (.name s)
+  | .name s ix => some (.name s ix)
   | .rho i => some (.rho i)
   | .fail _ => none
+
+/-- Release の名前の原子と行の原子を交換の原子にする（`Atom.toRelease` の逆）。 -/
+def fromAtom : Benitoite.Release.Atom → Atom
+  | .name s ix => .name s ix
+  | .rho i => .rho i
+
+@[simp] theorem Atom.toRelease_fromAtom (a : Benitoite.Release.Atom) : (fromAtom a).toRelease = some a := by
+  cases a <;> rfl
+
+/-- Release の原子の列を交換の原子にして読み戻すと元の列になる。 -/
+theorem filterMap_toRelease_fromAtom (l : List Benitoite.Release.Atom) :
+    (l.map fromAtom).filterMap Atom.toRelease = l := by
+  induction l with
+  | nil => rfl
+  | cons a l ih => simp [ih]
+
+/-- 範囲が Top の名前の原子は、Release の Top の構築関数 `Atom.nameTop` に写る（Top の対応）。 -/
+theorem Atom.toRelease_top (s : String) :
+    (Atom.name s Scope.Signature.Ix.top).toRelease = some (.nameTop s) := rfl
+
+/-- 旧版の名前の原子の読み込み（明示の Top を加えてから読む）は、Release の Top の構築関数に写る（旧版の Top の対応）。 -/
+theorem legacy_atom_toRelease (l : String) :
+    (((legacyRangeNode (legacyNameAtomJson l)).getObjVal? "name" >>= decodeNameBody).map
+      (fun p => (Atom.name p.1 p.2).toRelease)) = .ok (some (.nameTop l)) := by
+  rw [legacy_name_atom_top]; rfl
+
+/-- 不透明型の葉の変換。範囲の位置をそのまま写す。 -/
+def opaqueToRelease (n : String) (ix : Scope.Signature.Ix) : Benitoite.Release.Ty := .opaque n ix
+
+/-- 旧版の不透明型の読み込みは、Release の Top の構築関数 `Ty.opaqueTop` に写る（旧版の Top の対応）。 -/
+theorem legacy_opaque_toRelease (n : String) :
+    (((legacyRangeNode (legacyOpaqueJson n)).getObjVal? "opaque" >>= decodeOpaqueBody).map
+      (fun p => opaqueToRelease p.1 p.2)) = .ok (.opaqueTop n) := by
+  rw [legacy_opaque_top]; rfl
 
 partial def collectAtoms : Json → Eff
   | .arr xs => xs.toList.flatMap collectAtoms
   | j@(.obj xs) => match (fromJson? j : Except String Atom) with
-      | .ok (.name n) => [.name n]
+      | .ok (.name n ix) => [.name n ix]
       | .ok (.rho i) => [.rho i]
       | _ => xs.toArray.toList.flatMap (fun (_, v) => collectAtoms v)
   | _ => []
+
+/-- JSON の組み込みの呼び出し（`prim`・`primName`）の名前と範囲の列を集める。範囲の列を持たない同名の欄
+（節の操作の参照 `OpRef.prim`）は呼び出しでないので数えない。 -/
+partial def collectPrimRanges : Json → List (String × List Scope.Domain.Range)
+  | .arr xs => xs.toList.flatMap collectPrimRanges
+  | j@(.obj xs) =>
+      let own := ["prim", "primName"].filterMap fun tag => (do
+        let o ← j.getObjVal? tag
+        let n ← o.getObjValAs? String "name"
+        let rs ← decodeRanges (← o.getObjVal? "ranges")
+        pure (n, rs) : Except String _).toOption
+      own ++ xs.toArray.toList.flatMap (fun (_, v) => collectPrimRanges v)
+  | _ => []
+
+/-- 署名の原子の範囲の変数を、呼び出しの範囲の列で具体化した原子（`Ix.inst` と同じ。列の外の番号の変数は作らない）。 -/
+def instAtoms (sig : Eff) (rs : List Scope.Domain.Range) : Eff :=
+  sig.filterMap fun a => match a with
+    | .name l (.rvar i) => rs[i]?.map fun r => .name l (.fixed r)
+    | _ => none
 
 def baseTy : String → Except String Benitoite.Release.BaseTy
   | "Integer" | "Integer64" => .ok .integer
@@ -54,10 +108,17 @@ def checkNames (names : List String) (arity : Nat) : Except String Unit := do
   if names.length != arity || names.eraseDups != names then
     throw "invalid parameter names"
 
+/-- 交換の効果の名前と行の原子の所属（Fail の原子は含めない）。 -/
+def Eff.readAtoms (e : Eff) : Benitoite.Release.Atom → Bool :=
+  fun a => (e.filterMap Atom.toRelease).contains a
+
+/-- Fail のない交換の効果の読み込み（`Eff.toRelease` が Fail のない効果について返す値）。 -/
+def Eff.namesToRelease (e : Eff) : Benitoite.Release.Eff := .mk (Eff.readAtoms e) []
+
 mutual
   partial def Ty.toRelease : Ty → Except String Benitoite.Release.Ty
     | .base n => return .base (← baseTy n)
-    | .opaque n => return .opaque n
+    | .opaque n ix => return opaqueToRelease n ix
     | .data n ts => return .data n (← ts.mapM Ty.toRelease)
     | .list t => return .list (← t.toRelease)
     | .fn names ps r e => do
@@ -75,16 +136,162 @@ mutual
 
   partial def Eff.toRelease (e : Eff) : Except String Benitoite.Release.Eff := do
     let atoms := (collectAtoms (toJson e)).filterMap Atom.toRelease
-    let names := e.filterMap Atom.toRelease
     let fails ← e.filterMap (fun a => match a with | .fail t => some t | _ => none) |>.mapM Ty.toRelease
+    -- Fail のない効果は全域の `Eff.namesToRelease` と同じ値になる（`normWith` は空の Fail 列を変えない）。
+    if fails.isEmpty then return Eff.namesToRelease e
     return Benitoite.Release.Eff.normWith atoms
-      ⟨(fun a => names.contains a), fails⟩
+      ⟨Eff.readAtoms e, fails⟩
 end
+
+/-- 効果 e が持つのに書き出しの一覧 `listed` にない原子を、候補 `univ` の中から探す（RV-L10 中2）。Release の効果は
+原子の述語なので、候補の外の原子は調べられない。候補が効果の原子を全て含むとき（`Eff.Support (· ∈ univ) e`）、
+`none` は効果の原子が全て一覧にあることを意味する（`unlistedAtom?_complete`）。 -/
+def unlistedAtom? (univ listed : List Benitoite.Release.Atom) (e : Benitoite.Release.Eff) :
+    Option Benitoite.Release.Atom :=
+  univ.find? fun a => Benitoite.Release.Eff.test e a && !listed.contains a
+
+theorem unlistedAtom?_eq_none {univ listed : List Benitoite.Release.Atom} {e : Benitoite.Release.Eff}
+    (h : unlistedAtom? univ listed e = none) :
+    ∀ a ∈ univ, Benitoite.Release.Eff.test e a = true → a ∈ listed := by
+  intro a ha he
+  have := List.find?_eq_none.mp h a ha
+  simp only [he, Bool.true_and, Bool.not_eq_true'] at this
+  simpa using this
+
+/-- 候補が効果の原子を全て含み、一覧にない原子が見つからなければ、効果の原子は全て一覧にある（黙って落とす原子がない）。 -/
+theorem unlistedAtom?_complete {univ listed : List Benitoite.Release.Atom} {e : Benitoite.Release.Eff}
+    (hs : ∀ a, Benitoite.Release.Eff.test e a = true → a ∈ univ) (h : unlistedAtom? univ listed e = none) :
+    ∀ a, Benitoite.Release.Eff.test e a = true → a ∈ listed :=
+  fun a he => unlistedAtom?_eq_none h a (hs a he) he
+
+/-- 名前と行の原子の書き出し。一覧 `atoms` の原子のうち所属 `f` が真のものを、原子の符号の順に重複なく並べる
+（Rust に内部の符号順を要求せず、両辺を同じ読者で正規化する `normalizeEff` と同じ順）。 -/
+def writeAtoms (atoms : Eff) (f : Benitoite.Release.Atom → Bool) : Eff :=
+  let listed := (atoms.filterMap Atom.toRelease).filter f
+  ((listed.mergeSort fun a b => decide (a.code ≤ b.code)).eraseDups).map fromAtom
+
+/-- 効果の名前と行の原子の書き出し（Fail の列を除く）。候補 `univ` の中に、効果が持つのに一覧にない原子があれば
+誤りにする（RV-L10 中2）。Release の効果は原子の述語なので、候補の外の原子は調べられない。候補が効果の原子を
+全て含むとき（`unlistedAtom?_complete` の前提）、成功は効果の原子が全て一覧にあることを意味する。候補を作るのは
+呼び出し側の義務であり、交換の入口は具体化した範囲と署名の表の原子まで含めた一覧を渡す（`exchangeAtoms`）。 -/
+def fromEffNames (atoms : Eff) (e : Benitoite.Release.Eff)
+    (univ : List Benitoite.Release.Atom := atoms.filterMap Atom.toRelease) : Except String Eff := do
+  let listed := atoms.filterMap Atom.toRelease
+  if let some a := unlistedAtom? (listed ++ univ) listed e then
+    throw s!"effect atom is not in the exchange atom list: {repr a}"
+  return writeAtoms atoms e.test
+
+/-! ### 名前と行の原子の書き出しの性質
+
+Release の効果は原子の述語なので、書き出しは一覧に相対的である。一覧が効果の原子を全て含むとき、書き出した
+効果を読むと元の効果に戻る（`readAtoms_writeAtoms`）。範囲付きの原子も同じである。原子が全て Top の効果を
+読んで書き戻すと、同じ効果を表し、Top の原子だけを持つ（`top_eff_roundtrip`。RV-L10 中2）。 -/
+
+theorem mem_writeAtoms_iff (atoms : Eff) (f : Release.Atom → Bool) (a : Release.Atom) :
+    a ∈ (writeAtoms atoms f).filterMap Exchange.Atom.toRelease ↔
+      a ∈ atoms.filterMap Exchange.Atom.toRelease ∧ f a = true := by
+  simp only [writeAtoms, List.filterMap_map]
+  have : (Exchange.Atom.toRelease ∘ fromAtom) = some := funext Exchange.Atom.toRelease_fromAtom
+  rw [this, List.filterMap_some, List.mem_eraseDups, List.mem_mergeSort, List.mem_filter]
+
+/-- 一覧が所属 `f` の原子を全て含めば、書き出した原子の列を読むと `f` に戻る。 -/
+theorem readAtoms_writeAtoms (atoms : Eff) (f : Release.Atom → Bool)
+    (h : ∀ a, f a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
+    Eff.readAtoms (writeAtoms atoms f) = f := by
+  funext a
+  apply Bool.eq_iff_iff.mpr
+  simp only [Eff.readAtoms, List.contains_iff_mem, mem_writeAtoms_iff]
+  exact ⟨fun h' => h'.2, fun h' => ⟨h a h', h'⟩⟩
+
+/-- 書き出した形は、読んで書き戻しても同じ列になる（交換の形の上の往復）。 -/
+theorem writeAtoms_readAtoms_writeAtoms (atoms : Eff) (f : Release.Atom → Bool)
+    (h : ∀ a, f a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
+    writeAtoms atoms (Eff.readAtoms (writeAtoms atoms f)) = writeAtoms atoms f := by
+  rw [readAtoms_writeAtoms atoms f h]
+
+/-- 一覧が効果の原子を全て含めば、名前と行の原子の書き出しは成功し、黙って落とす原子がない。 -/
+theorem fromEffNames_ok {atoms : Eff} {e : Release.Eff} (univ : List Release.Atom)
+    (h : ∀ a, Release.Eff.test e a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
+    fromEffNames atoms e univ = .ok (writeAtoms atoms e.test) := by
+  have hn : unlistedAtom? (atoms.filterMap Exchange.Atom.toRelease ++ univ)
+      (atoms.filterMap Exchange.Atom.toRelease) e = none := by
+    unfold unlistedAtom?
+    apply List.find?_eq_none.mpr
+    intro a _ ha
+    simp only [Bool.and_eq_true, Bool.not_eq_true'] at ha
+    have := h a ha.1
+    simp [this] at ha
+  simp only [fromEffNames, hn]; rfl
+
+/-- 候補 `univ` の中に、効果が持つのに一覧にない原子があれば、書き出しは誤りになる（黙って落とさない）。 -/
+theorem fromEffNames_error_of_unlisted {atoms : Eff} {e : Release.Eff} {univ : List Release.Atom} {a : Release.Atom}
+    (ha : a ∈ univ) (he : Release.Eff.test e a = true) (hn : a ∉ atoms.filterMap Exchange.Atom.toRelease) :
+    ∃ msg, fromEffNames atoms e univ = .error msg := by
+  cases hu : unlistedAtom? (atoms.filterMap Exchange.Atom.toRelease ++ univ)
+      (atoms.filterMap Exchange.Atom.toRelease) e with
+  | some b => simp only [fromEffNames, hu]; exact ⟨_, rfl⟩
+  | none =>
+    have := unlistedAtom?_eq_none hu a (List.mem_append_right _ ha) he
+    exact absurd this hn
+
+/-- 検査器の不変条件の形 `Eff.AtomsIn univ e`（効果の原子が候補 `univ` にある）から、`unlistedAtom?_complete` の
+前提が得られる。 -/
+theorem support_of_atomsIn {univ : List Release.Atom} {e : Release.Eff} (he : Release.Eff.AtomsIn univ e) :
+    ∀ a, Release.Eff.test e a = true → a ∈ univ :=
+  ((Release.Eff.support_iff e).mp he).1
+
+/-- 候補 `univ` が効果の原子を全て含むとき（検査器の `AtomsIn univ`）、書き出しが成功すれば、書き出した原子の列を
+読むと元の効果の所属に戻る（黙った欠落がない）。 -/
+theorem fromEffNames_complete_of_atomsIn {atoms : Eff} {e : Release.Eff} {univ : List Release.Atom} {xs : Eff}
+    (he : Release.Eff.AtomsIn univ e) (h : fromEffNames atoms e univ = .ok xs) :
+    Eff.readAtoms xs = e.test := by
+  unfold fromEffNames at h
+  cases hu : unlistedAtom? (atoms.filterMap Exchange.Atom.toRelease ++ univ)
+      (atoms.filterMap Exchange.Atom.toRelease) e with
+  | some b => simp [hu] at h; cases h
+  | none =>
+    simp only [hu] at h
+    cases h
+    apply readAtoms_writeAtoms
+    exact unlistedAtom?_complete (fun a ha => List.mem_append_right _ (support_of_atomsIn he a ha)) hu
+
+/-- 原子が Top の名前の原子か行の原子である（旧版の像。Fail は含めない）。 -/
+def Atom.IsTop : Atom → Prop
+  | .name _ ix => ix = Scope.Signature.Ix.top
+  | .rho _ => True
+  | .fail _ => False
+
+/-- 原子が全て Top の交換の効果（旧版の入力の像）は、一覧にあれば、読んで書き戻すと成功し、書き戻した効果は
+同じ効果を表し（`namesToRelease` が一致する）、Top の原子だけを持つ（RV-L10 中2）。 -/
+theorem top_eff_roundtrip {atoms xs : Eff} (univ : List Release.Atom)
+    (htop : ∀ x ∈ xs, Atom.IsTop x) (hin : ∀ x ∈ xs, x ∈ atoms) :
+    ∃ ys, fromEffNames atoms (Eff.namesToRelease xs) univ = .ok ys ∧
+      Eff.namesToRelease ys = Eff.namesToRelease xs ∧ ∀ y ∈ ys, Atom.IsTop y := by
+  have hsupp : ∀ a, Release.Eff.test (Eff.namesToRelease xs) a = true →
+      a ∈ atoms.filterMap Exchange.Atom.toRelease := by
+    intro a ha
+    simp only [Eff.namesToRelease, Release.Eff.test, Release.Eff.atoms, Eff.readAtoms,
+      List.contains_iff_mem, List.mem_filterMap] at ha ⊢
+    obtain ⟨x, hx, hxa⟩ := ha
+    exact ⟨x, hin x hx, hxa⟩
+  refine ⟨_, fromEffNames_ok univ hsupp, ?_, ?_⟩
+  · exact congrArg (fun f => Release.EffR.mk f []) (readAtoms_writeAtoms atoms _ hsupp)
+  · intro y hy
+    simp only [writeAtoms, List.mem_map, List.mem_eraseDups, List.mem_mergeSort, List.mem_filter] at hy
+    obtain ⟨a, ⟨_, ha⟩, rfl⟩ := hy
+    simp only [Eff.namesToRelease, Release.Eff.test, Release.Eff.atoms, Eff.readAtoms,
+      List.contains_iff_mem, List.mem_filterMap] at ha
+    obtain ⟨x, hx, hxa⟩ := ha
+    have ht := htop x hx
+    cases x with
+    | name l ix => simp only [Atom.toRelease, Option.some.injEq] at hxa; subst hxa; exact ht
+    | rho i => simp only [Atom.toRelease, Option.some.injEq] at hxa; subst hxa; trivial
+    | fail t => cases ht
 
 mutual
   partial def fromTy (atoms : Eff) : Benitoite.Release.Ty → Except String Ty
     | .base t => return .base (baseName t)
-    | .opaque n => return .opaque n
+    | .opaque n ix => return .opaque n ix
     | .data n ts => return .data n (← ts.mapM (fromTy atoms))
     | .list t => return .list (← fromTy atoms t)
     | .fn names ps r e => return .fn names (← ps.mapM (fromTy atoms)) (← fromTy atoms r) (← fromEff atoms e)
@@ -99,10 +306,11 @@ mutual
     | .ctor h => return .ctor (fromTyCon h)
     | _ => throw "unsupported Release type"
 
-  partial def fromEff (atoms : Eff) (e : Benitoite.Release.Eff) : Except String Eff := do
-    let names := atoms.filter fun a => a.toRelease.any (Benitoite.Release.Eff.test e)
-    let names := (names.mergeSort fun a b => decide ((a.toRelease.map (·.code)).getD 0 ≤
-      (b.toRelease.map (·.code)).getD 0)).eraseDups
+  /-- 効果を交換の原子の一覧 `atoms` で書き出す。名前と行の原子は `fromEffNames`（全域）が書き、一覧にない原子を
+  候補 `univ` の中に持つ効果は黙って落とさず誤りにする（RV-L10 中2）。Fail の列はこの後に書く。 -/
+  partial def fromEff (atoms : Eff) (e : Benitoite.Release.Eff)
+      (univ : List Benitoite.Release.Atom := atoms.filterMap Atom.toRelease) : Except String Eff := do
+    let names ← fromEffNames atoms e univ
     return names ++ (← e.fails.mapM (fun t => Atom.fail <$> fromTy atoms t))
 end
 
@@ -342,7 +550,7 @@ mutual
     | .handleFail e r b c => return .handleFail (← e.toRelease) (← r.toRelease) (← b.toSurface constants) (← c.toSurface constants)
     | .opName n ts => return .opName n (← ts.mapM Ty.toRelease)
     | .funName n ts es => return .funName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
-    | .primName n ts es => return .primName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
+    | .primName n ts es rs => return .primName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) rs
     | .nullCon n ts => return .nullCon n (← ts.mapM Ty.toRelease)
     | .conValue n ts names ps => return .conValue n (← ts.mapM Ty.toRelease) names (← ps.mapM Ty.toRelease)
     | .literal c => match c with
@@ -419,7 +627,7 @@ mutual
               let some name := Benitoite.Surface.FormatSpec.headName t
                 | throw "missing format head name"
               match heads.head? with
-              | some (.primName n [] []) =>
+              | some (.primName n [] [] _) =>
                   if n != name then throw "formatted interpolation head name mismatch"
               | _ => throw "formatted interpolation requires direct primitive head"
               heads := heads.drop 1
@@ -522,7 +730,8 @@ mutual
     | .op n ts => return .op n (← ts.mapM (fromTy atoms))
     | .const c => return .const (← fromConst c)
     | .fnRef n ts es => return .fnRef n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms))
-    | .prim n ts es => return .prim n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms))
+    -- 範囲の列を書き出す（corpus 15。RV-L20 軽5 の誤りを置き換えた）。
+    | .prim n ts es rs => return .prim n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms)) rs
     | .lam names ps b => return .lam names (← ps.mapM (fromTy atoms)) (← fromComp atoms dictCounts b)
     | .con n ts vs => return .con n (← ts.mapM (fromTy atoms)) (← vs.mapM (fromVal atoms dictCounts))
     | .list vs => return .list (← vs.mapM (fromVal atoms dictCounts))
@@ -727,7 +936,7 @@ partial def validateClauses (program : Benitoite.Surface.Program)
         let name ← o.getObjValAs? String "name"
         let some od := program.ops name | throw s!"missing operation: {name}"
         let e ← o.getObjValAs? Eff "eff"
-        if canonicalJson (toJson e) != toJson ([Atom.name od.eff]) then
+        if canonicalJson (toJson e) != toJson ([Atom.name od.eff Scope.Signature.Ix.top]) then
           throw "operation latent effect mismatch"
       if let .ok h := j.getObjVal? "handleE" then
         let cs ← (← h.getObjVal? "clauses").getArr?

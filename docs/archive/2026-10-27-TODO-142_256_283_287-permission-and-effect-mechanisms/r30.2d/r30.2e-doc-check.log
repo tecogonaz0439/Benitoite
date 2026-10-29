@@ -1,0 +1,24 @@
+== plan: level work against 42d22f72f0e1719f39d26abb9fa75c95d1b1f2ab (changed files not classified) (partial selection: --only python_syntax,migrate_selftests)
+   [python_syntax] because of --only (estimate: seconds)
+      command: check_python_tools (python3 -c ast.parse for tools/{bench,bench/compare,bench/compare/scenarios,skill-eval,spec-coverage,syntax-measure,syntax-measure/bntmeasure,source-migrate,try-actions-migrate,derive}/*.py)
+   [migrate_selftests] because of --only (estimate: several min (cache dependent))
+      command: python3 -B tools/source-migrate/test_source_migrate.py
+      command: cargo build -p benitoite --example try_actions_inventory
+      command: python3 -B tools/try-actions-migrate/test_migrate.py
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== python_syntax
+== migrate_selftests
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.011s
+
+OK
+== migrate_selftests
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+== migrate_selftests
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 4.109s
+
+OK
+selected checks passed

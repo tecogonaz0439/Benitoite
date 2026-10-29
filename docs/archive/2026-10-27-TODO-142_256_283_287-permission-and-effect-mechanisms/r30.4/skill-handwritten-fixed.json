@@ -1,0 +1,41 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "skill_examples",
+    "code_examples_in_hand_written_documents_behave_as_written",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 8.669674375,
+  "maxrss_raw": 1465368576,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 1397.484375,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 8.693358,
+  "recorded_at": "2026-10-29T07:12:46.244980+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.4/run-record.py",
+    "--child",
+    "skill-handwritten-fixed",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "skill_examples",
+    "code_examples_in_hand_written_documents_behave_as_written",
+    "--",
+    "--exact",
+    "--nocapture"
+  ]
+}

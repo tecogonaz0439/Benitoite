@@ -1,0 +1,901 @@
+diff --git a/formal/Benitoite/Release/CoverageTypes.lean b/formal/Benitoite/Release/CoverageTypes.lean
+index 0b8d0f88..1fb05497 100644
+--- a/formal/Benitoite/Release/CoverageTypes.lean
++++ b/formal/Benitoite/Release/CoverageTypes.lean
+@@ -125,6 +125,11 @@ mutual
+       cases b <;> simp only [erase] at he <;> try contradiction
+       obtain ⟨rfl, rfl⟩ := Ty.opaque.inj he
+       exact .checked
++    | checkedRequest =>
++      intro b he
++      cases b <;> simp only [erase] at he <;> try contradiction
++      obtain ⟨rfl, rfl⟩ := Ty.opaque.inj he
++      exact .checkedRequest
+   theorem inhabitsAll_erase_transfer {P : Program} {ts : List Ty} {vs : List Val}
+       (h : InhabitsAll P ts vs) : ∀ {us}, eraseTys ts = eraseTys us → InhabitsAll P us vs := by
+     cases h with
+diff --git a/formal/Benitoite/Release/Lemmas/BuilderTyping.lean b/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
+index ee93237a..dfb3065d 100644
+--- a/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
++++ b/formal/Benitoite/Release/Lemmas/BuilderTyping.lean
+@@ -50,6 +50,7 @@ theorem HasTypeVQ.canonical_bytes {P B Ψ Q C v}
+   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
+   | bytesV bs => exact ⟨bs, rfl⟩
+   | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
++  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
+   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
+   | loc l => rcases h.inv_loc rfl with ⟨_, _, he⟩ | ⟨_, _, he⟩ <;> cases he
+diff --git a/formal/Benitoite/Release/Lemmas/Canonical.lean b/formal/Benitoite/Release/Lemmas/Canonical.lean
+index aee0a791..d7394809 100644
+--- a/formal/Benitoite/Release/Lemmas/Canonical.lean
++++ b/formal/Benitoite/Release/Lemmas/Canonical.lean
+@@ -37,6 +37,7 @@ mutual
+     | .V_Dict _ _ _ => exact .dict
+     | .V_Super _ _ _ => exact .dict
+     | .V_Checked _ _ => exact .checked
++    | .V_CheckedRequest _ _ _ _ => exact .checkedRequest
+     | .V_Sub h hle hw =>
+         rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
+         · exact HasTypeVQ.inhabits' h hΓ
+@@ -89,6 +90,7 @@ theorem HasTypeVQ.canonical_boolean {Ψ C v} (h : HasTypeVQ P B Ψ Q C [] v (.ba
+   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
+   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+   | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
++  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
+   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
+   | loc l => rcases h.inv_loc rfl with ⟨_, _, h'⟩ | ⟨_, _, h'⟩ <;> simp at h'
+@@ -121,6 +123,7 @@ theorem HasTypeVQ.canonical_ref {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.refe
+   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
+   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+   | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
++  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
+   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
+   | loc l =>
+@@ -156,6 +159,7 @@ theorem HasTypeVQ.canonical_lazy {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.laz
+   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
+   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+   | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
++  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
+   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
+   | loc l =>
+@@ -223,6 +227,7 @@ theorem HasTypeEachQ.toVs {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) :
+ theorem HasTypeVQ.inv_list_wf {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .list elems) :
+     ∃ a, HasTypeEachQ P B Ψ Q C Γ elems a ∧ Ty.WF 0 C.length a ∧ T = .list a := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_List h hw => cases hv; exact ⟨_, h, hw, rfl⟩
+   | .V_Sub h hle hw =>
+       obtain ⟨a, he, hw, rfl⟩ := inv_list_wf h hv
+@@ -418,6 +423,7 @@ mutual
+     | .con _ _, .var _ | .con _ _, .const _ | .con _ _, .fnRef _ _ _ | .con _ _, .prim _ _ _ _
+     | .con _ _, .lam _ _ _ | .con _ _, .list _ | .con _ _, .op _ _ | .con _ _, .raise _ _ | .con _ _, .loc _ =>
+         simp [Pat.matchVal] at hm
++    | .const _, .checkedRequest _ _ | .con _ _, .checkedRequest _ _ => simp [Pat.matchVal] at hm
+ 
+   theorem Pat.matchList_closed {ps vs ws} (hv : Val.VarsInList 0 (fun _ => True) vs)
+       (hm : Pat.matchList ps vs = some ws) : Val.VarsInList 0 (fun _ => True) ws := by
+diff --git a/formal/Benitoite/Release/Lemmas/Closed.lean b/formal/Benitoite/Release/Lemmas/Closed.lean
+index c6138af6..74dd3480 100644
+--- a/formal/Benitoite/Release/Lemmas/Closed.lean
++++ b/formal/Benitoite/Release/Lemmas/Closed.lean
+@@ -166,6 +166,7 @@ mutual
+         exact Val.VarsInList.substTyAt es hts hes elems h
+     | .bytesV _, _ => by simp [Val.substTyAt, Val.VarsIn]
+     | .checked _, _ => by simp [Val.substTyAt, Val.VarsIn]
++    | .checkedRequest _ _, _ => by simp [Val.substTyAt, Val.VarsIn]
+     | .dict _ tys args, h => by
+         simp only [Val.VarsIn] at h; simp only [Val.substTyAt, Val.VarsIn]
+         exact ⟨Ty.VarsInList.substAt es hts hes tys h.1, Val.VarsInList.substTyAt es hts hes args h.2⟩
+@@ -288,6 +289,7 @@ mutual
+     | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.mono hn elems h
+     | .bytesV _, _ => by simp [Val.VarsIn]
+     | .checked _, _ => by simp [Val.VarsIn]
++    | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+     | .dict _ tys args, h => by
+         simp only [Val.VarsIn] at h ⊢
+         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.mono hn args h.2⟩
+@@ -379,6 +381,7 @@ mutual
+     | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.widen hn hd elems h
+     | .bytesV _, _ => by simp [Val.VarsIn]
+     | .checked _, _ => by simp [Val.VarsIn]
++    | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+     | .dict _ tys args, h => by
+         simp only [Val.VarsIn] at h ⊢
+         exact ⟨Ty.VarsInList.mono hn (fun _ h => h) _ h.1, Val.VarsInList.widen hn hd args h.2⟩
+@@ -471,6 +474,7 @@ mutual
+         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]; exact Val.VarsInList.renameLocal ξ hξ elems h
+     | .bytesV _, _ => by simp [Val.rename, Val.VarsIn]
+     | .checked _, _ => by simp [Val.rename, Val.VarsIn]
++    | .checkedRequest _ _, _ => by simp [Val.rename, Val.VarsIn]
+     | .dict _ _ args, h => by
+         simp only [Val.VarsIn] at h; simp only [Val.rename, Val.VarsIn]
+         exact ⟨h.1, Val.VarsInList.renameLocal ξ hξ args h.2⟩
+@@ -602,6 +606,7 @@ mutual
+         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]; exact Val.VarsInList.substScoped hσ hρ elems h
+     | .bytesV _, _ => by simp [Val.subst, Val.VarsIn]
+     | .checked _, _ => by simp [Val.subst, Val.VarsIn]
++    | .checkedRequest _ _, _ => by simp [Val.subst, Val.VarsIn]
+     | .dict _ _ args, h => by
+         simp only [Val.VarsIn] at h; simp only [Val.subst, Val.VarsIn]
+         exact ⟨h.1, Val.VarsInList.substScoped hσ hρ args h.2⟩
+diff --git a/formal/Benitoite/Release/Lemmas/Dict.lean b/formal/Benitoite/Release/Lemmas/Dict.lean
+index 25ab3d60..85066d49 100644
+--- a/formal/Benitoite/Release/Lemmas/Dict.lean
++++ b/formal/Benitoite/Release/Lemmas/Dict.lean
+@@ -244,6 +244,7 @@ theorem superStep_super_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B
+   | .mapV _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+   | .setV _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+   | .bytesV _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
++  | .checkedRequest _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+ 
+ /-- E-Super の一歩は、辞書の型と、型の変数を含まないことを保つ。 -/
+ theorem superStep_typed (hwf : P.WellFormed) (hwt : P.WellTyped B) (hb : B.CoreAssumptions P) {Ψ}
+diff --git a/formal/Benitoite/Release/Lemmas/FailureCont.lean b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+index aec7ef27..2502efa5 100644
+--- a/formal/Benitoite/Release/Lemmas/FailureCont.lean
++++ b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+@@ -241,6 +241,7 @@ theorem HasTypeVQ.inv_raise {Ψ Q C Γ v a T E}
+     (hv : HasTypeVQ P B Ψ Q C Γ v a) (heq : v = .raise T E) :
+     Ty.WF 0 C.length T ∧ Ty.WF 0 C.length E ∧ Ty.Le (.fn ["error"] [E] T (Eff.singleFail E)) a := by
+   match hv with
++  | .V_CheckedRequest .. => cases heq
+   | .V_Const => cases heq
+   | .V_Raise ht he => cases heq; exact ⟨ht, he, Ty.Le.refl _⟩
+   | .V_Sub hv hl _ =>
+diff --git a/formal/Benitoite/Release/Lemmas/Inversion.lean b/formal/Benitoite/Release/Lemmas/Inversion.lean
+index 89e7c729..26c7cb7b 100644
+--- a/formal/Benitoite/Release/Lemmas/Inversion.lean
++++ b/formal/Benitoite/Release/Lemmas/Inversion.lean
+@@ -25,6 +25,7 @@ theorem fnTy_eq (names : List String) (ps : List Ty) (r : Ty) (ε : Eff) (ts : L
+ theorem HasTypeVQ.inv_var {C Γ v T i} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .var i) :
+     ∃ a, Γ[i]? = some (some a) ∧ (∀ b t ε, a ≠ .cont b t ε) ∧ Ty.Le a T := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Var hi hc => cases hv; exact ⟨_, hi, hc, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨a, hi, hc, hle'⟩ := inv_var h hv
+@@ -42,6 +43,7 @@ theorem HasTypeVQ.inv_var {C Γ v T i} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v
+ theorem HasTypeVQ.inv_const {C Γ v T c} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .const c) :
+     Ty.Le c.type T := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv; exact Ty.Le.refl _
+   | .V_Sub h hle _ => exact (inv_const h hv).trans hle
+   | .V_Var _ _ => cases hv
+@@ -58,6 +60,7 @@ theorem HasTypeVQ.inv_fnRef {C Γ v T f ts es} (h : HasTypeVQ P B Ψ Q C Γ v T)
+     ∃ d, P.defs f = some d ∧ SatAll B C ts d.tparams ∧ es.length = d.neffs ∧ NamesWF d.names d.params ∧
+       Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Fun hd hnames had => cases hv; exact ⟨_, hd, had.types, had.rowCount, hnames, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨d, hd, hts, hes, hnames, hle'⟩ := inv_fnRef h hv
+@@ -76,6 +79,7 @@ theorem HasTypeVQ.fnRef_admissible {C Γ v T f ts es} (h : HasTypeVQ P B Ψ Q C
+     ∃ d, P.defs f = some d ∧
+       Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Fun hd _ had => cases hv; exact ⟨_, hd, had⟩
+   | .V_Sub h _ _ => exact fnRef_admissible h hv
+   | .V_Var _ _ => cases hv
+@@ -93,6 +97,7 @@ theorem HasTypeVQ.inv_prim {C Γ v T b ts es rs} (h : HasTypeVQ P B Ψ Q C Γ v
+       NamesWF (s.inst rs).names (s.inst rs).params ∧
+       Ty.Le (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) T := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Prim hs hrs hnames had =>
+       cases hv; exact ⟨_, hs, hrs, had.typeCount, had.rowCount, had.admits, hnames, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+@@ -112,6 +117,7 @@ theorem HasTypeVQ.inv_op {C Γ v T o ts} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv :
+     ∃ od, P.ops o = some od ∧ SatAll B C ts od.tparams ∧ NamesWF od.names od.params ∧
+       Ty.Le (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) T := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Op hod hnames hts => cases hv; exact ⟨_, hod, hts, hnames, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨od, hod, hts, hnames, hle'⟩ := inv_op h hv
+@@ -131,6 +137,7 @@ theorem HasTypeVQ.inv_lam_wf {C Γ v T names ps body} (h : HasTypeVQ P B Ψ Q C
+     ∃ r ε, Ty.WF 0 C.length (.fn names ps r ε) ∧ NamesWF names ps ∧
+       HasTypeCQ P B Ψ.hideBuilders Q C (binds ps ++ hideConts Γ) (some r) body r ε ∧ Ty.Le (.fn names ps r ε) T := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Lam hnames hw h => cases hv; exact ⟨_, _, hw, hnames, h, Ty.Le.refl _⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨r, ε, hwf, hnames, hb, hle'⟩ := inv_lam_wf h hv
+@@ -157,6 +164,7 @@ theorem HasTypeVQ.inv_con {C Γ v T c ts args} (h : HasTypeVQ P B Ψ Q C Γ v T)
+     ∃ cd, P.cons c = some cd ∧ ts.length = cd.ntys ∧
+       HasTypeVsQ P B Ψ Q C Γ args (cd.args.map (Ty.subst ts [])) ∧ T = .data cd.data ts := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Con hc hts hargs => cases hv; exact ⟨_, hc, hts, hargs, rfl⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨cd, hc, hts, hargs, rfl⟩ := inv_con h hv
+@@ -174,6 +182,7 @@ theorem HasTypeVQ.inv_con {C Γ v T c ts args} (h : HasTypeVQ P B Ψ Q C Γ v T)
+ theorem HasTypeVQ.inv_list {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .list elems) :
+     ∃ a, HasTypeEachQ P B Ψ Q C Γ elems a ∧ T = .list a := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_List h _ => cases hv; exact ⟨_, h, rfl⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨a, he, rfl⟩ := inv_list h hv
+@@ -191,6 +200,7 @@ theorem HasTypeVQ.inv_list {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (h
+ theorem HasTypeVQ.inv_loc {C Γ v T l} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .loc l) :
+     (∃ a, Ψ l = some (.ref a) ∧ T = .reference a) ∨ (∃ a, Ψ l = some (.lazy a) ∧ T = .lazy a) := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_LocRef hl => cases hv; exact Or.inl ⟨_, hl, rfl⟩
+   | .V_LocLazy hl => cases hv; exact Or.inr ⟨_, hl, rfl⟩
+   | .V_Sub h hle _ =>
+@@ -456,6 +466,7 @@ theorem HasTypeCQ.inv_resumeVar {Δl : LocalCtx} {C Γ R m T ε i v} (h : HasTyp
+ theorem HasTypeVQ.inv_mapV {C Γ v T ks vs} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .mapV ks vs) :
+     ∃ a b, T = .map a b := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv
+   | .V_Map _ _ _ _ _ _ => cases hv; exact ⟨_, _, rfl⟩
+   | .V_Sub h hle _ =>
+@@ -465,6 +476,7 @@ theorem HasTypeVQ.inv_mapV {C Γ v T ks vs} (h : HasTypeVQ P B Ψ Q C Γ v T) (h
+ theorem HasTypeVQ.inv_setV {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .setV elems) :
+     ∃ a, T = .set a := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv
+   | .V_Set _ _ _ => cases hv; exact ⟨_, rfl⟩
+   | .V_Sub h hle _ =>
+@@ -474,6 +486,7 @@ theorem HasTypeVQ.inv_setV {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (h
+ theorem HasTypeVQ.inv_bytesV {C Γ v T bs} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .bytesV bs) :
+     T = .bytes := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv
+   | .V_Bytes => rfl
+   | .V_Sub h hle _ =>
+@@ -487,16 +500,31 @@ theorem HasTypeVQ.inv_bytesV {C Γ v T bs} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv
+ theorem HasTypeVQ.inv_checked {C Γ v T t} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .checked t) :
+     ∃ o R, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv
+   | .V_Checked hk hm => cases hv; exact ⟨_, _, rfl, hk, hm⟩
+   | .V_Sub h hle _ =>
+       obtain ⟨o, R, rfl, hk, hm⟩ := inv_checked h hv
+       exact ⟨o, R, (hle.eq_of_not_fn_left (by intros; simp)).symm, hk, hm⟩
+ 
++/-- 検査済みの要求の値の逆転（V-CheckedRequest）。型は範囲付きの値型 `opaque o (fixed R)` であり、対象の所属は
++V-Checked と同じ。保持する要求は、表のデータ `valContent` が名前 o に与える型の名前 n の、範囲が Top の不透明型の
++定数である。V-Sub は不透明型を広げないので、導出の型はちょうど葉の規則が与えた型である。 -/
++theorem HasTypeVQ.inv_checkedRequest {C Γ v T t c} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .checkedRequest t c) :
++    ∃ o R n, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some n ∧
++      c.type = .opaqueTop n := by
++  match h with
++  | .V_Const => cases hv
++  | .V_CheckedRequest hk hm hc ht => cases hv; exact ⟨_, _, _, rfl, hk, hm, hc, ht⟩
++  | .V_Sub h hle _ =>
++      obtain ⟨o, R, n, rfl, hk, hm, hc, ht⟩ := inv_checkedRequest h hv
++      exact ⟨o, R, n, (hle.eq_of_not_fn_left (by intros; simp)).symm, hk, hm, hc, ht⟩
++
+ theorem HasTypeVQ.inv_dict {C Γ v T i ts vs} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .dict i ts vs) :
+     ∃ id, P.impls i = some id ∧ SatAll B C ts id.tparams ∧
+       HasTypeVsQ P B Ψ Q C Γ vs (id.dictTys.map (Ty.subst ts [])) ∧ T = .dict id.cls (id.target.subst ts []) := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv
+   | .V_Dict hi hts hvs => cases hv; exact ⟨_, hi, hts, hvs, rfl⟩
+   | .V_Sub h hle _ =>
+@@ -507,6 +535,7 @@ theorem HasTypeVQ.inv_super {C Γ v T w s} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv
+     ∃ cl τ cd, HasTypeVQ P B Ψ Q C Γ w (.dict cl τ) ∧ P.classes cl = some cd ∧ s ∈ cd.supers ∧
+       T = .dict s τ := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Const => cases hv
+   | .V_Super hw hc hs => cases hv; exact ⟨_, _, _, hw, hc, hs, rfl⟩
+   | .V_Sub h hle _ =>
+diff --git a/formal/Benitoite/Release/Lemmas/Irrelevant.lean b/formal/Benitoite/Release/Lemmas/Irrelevant.lean
+index 49039b3c..40271df9 100644
+--- a/formal/Benitoite/Release/Lemmas/Irrelevant.lean
++++ b/formal/Benitoite/Release/Lemmas/Irrelevant.lean
+@@ -91,6 +91,7 @@ mutual
+     | .V_Super hv _ _ => simp only [Val.subst, HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
+     | .V_Sub hv _ _ => exact HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs
+     | .V_Checked _ _ => rfl
++    | .V_CheckedRequest _ _ _ _ => rfl
+ 
+   theorem HasTypeVsQ.subst_congr {ρ η : Nat → LocalRef} {P B Ψ C Γ vs as σ τ}
+       (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hs : SubstAgree Γ σ τ) :
+diff --git a/formal/Benitoite/Release/Lemmas/Membership.lean b/formal/Benitoite/Release/Lemmas/Membership.lean
+index 2309ca49..2db32bd6 100644
+--- a/formal/Benitoite/Release/Lemmas/Membership.lean
++++ b/formal/Benitoite/Release/Lemmas/Membership.lean
+@@ -31,13 +31,22 @@ theorem HasTypeVQ.not_checked_of_noValKind (hB : B.NoValKind) {Ψ C Γ t T} :
+   rw [hB o] at hk
+   cases hk
+ 
++/-- 対象の種類を持たない表では、検査済みの要求の値はどの型も持たない（V-CheckedRequest が使えない）。 -/
++theorem HasTypeVQ.not_checkedRequest_of_noValKind (hB : B.NoValKind) {Ψ C Γ t c T} :
++    ¬ HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) T := by
++  intro h
++  obtain ⟨o, _, _, _, hk, _⟩ := h.inv_checkedRequest rfl
++  rw [hB o] at hk
++  cases hk
++
+ /-- 対象の種類を持たない表では、不透明型の閉じた値は旧の不透明型の定数だけであり、型の範囲は Top である。 -/
+ theorem HasTypeVQ.canonical_opaque_of_noValKind (hB : B.NoValKind) {Ψ C v o ix}
+     (h : HasTypeVQ P B Ψ Q C [] v (.opaque o ix)) :
+     ∃ n, v = .const (.opaque o n) ∧ ix = .fixed .top := by
+-  rcases h.canonical_opaque with hc | ⟨t, _, rfl, _, _, _⟩
++  rcases h.canonical_opaque with hc | ⟨t, _, rfl, _, _, _⟩ | ⟨t, _, c, _, rfl, _⟩
+   · exact hc
+   · exact absurd h (HasTypeVQ.not_checked_of_noValKind hB)
++  · exact absurd h (HasTypeVQ.not_checkedRequest_of_noValKind hB)
+ 
+ /-- 範囲が Top の不透明型の閉じた値の集合は、表によらず旧の不透明型の定数の全てを含む。 -/
+ theorem HasTypeVQ.const_opaqueTop {Ψ C o n} :
+@@ -60,21 +69,25 @@ theorem Model.builtins_noValKind : Model.builtins.NoValKind := Model.builtins_va
+ 
+ /-! ## 網羅性の値の形 -/
+ 
+-/-- 不透明型に属する値は、その型の不透明型の定数か、範囲付きの値型の検査済みの対象の値である。 -/
++/-- 不透明型に属する値は、その型の不透明型の定数か、範囲付きの値型の検査済みの対象の値か検査済みの要求の値で
++ある。 -/
+ theorem Inhabits.opaque_iff {o ix v} :
+     Inhabits P (.opaque o ix) v ↔
+-      (∃ c, v = .const c ∧ c.type = .opaque o ix) ∨ (∃ R t, ix = .fixed R ∧ v = .checked t) := by
++      (∃ c, v = .const c ∧ c.type = .opaque o ix) ∨ (∃ R t, ix = .fixed R ∧ v = .checked t) ∨
++        (∃ R t c, ix = .fixed R ∧ v = .checkedRequest t c) := by
+   constructor
+   · intro h
+     generalize ha : Ty.opaque o ix = a at h
+     revert ha
+     cases h with
+     | const => intro _; exact .inl ⟨_, rfl, rfl⟩
+-    | checked => intro ha; cases ha; exact .inr ⟨_, _, rfl, rfl⟩
++    | checked => intro ha; cases ha; exact .inr (.inl ⟨_, _, rfl, rfl⟩)
++    | checkedRequest => intro ha; cases ha; exact .inr (.inr ⟨_, _, _, rfl, rfl⟩)
+     | _ => intro ha; cases ha
+-  · rintro (⟨c, rfl, hc⟩ | ⟨R, t, rfl, rfl⟩)
++  · rintro (⟨c, rfl, hc⟩ | ⟨R, t, rfl, rfl⟩ | ⟨R, t, c, rfl, rfl⟩)
+     · rw [← hc]; exact .const
+     · exact .checked
++    · exact .checkedRequest
+ 
+ /-- 旧の不透明型の定数に当たるパターンは、変数か `_` だけである（定数・範囲・構成子・リストのパターンは
+ 不透明型の定数に当たらない）。 -/
+@@ -96,13 +109,16 @@ theorem Exhaustive.opaqueTop_iff {o ps} :
+   · intro h n
+     exact h _ (Inhabits.const (c := .opaque o n))
+   · intro h v hv
+-    rcases Inhabits.opaque_iff.mp hv with ⟨c, rfl, hc⟩ | ⟨R, t, -, rfl⟩
++    rcases Inhabits.opaque_iff.mp hv with ⟨c, rfl, hc⟩ | ⟨R, t, -, rfl⟩ | ⟨R, t, c, -, rfl⟩
+     · cases c <;> simp [Const.type] at hc
+       obtain ⟨rfl, -⟩ := hc
+       exact h _
+     · obtain ⟨p, hp, hm⟩ := h 0
+       refine ⟨p, hp, ?_⟩
+       rcases Pat.catchAll_of_matches_opaque hm with rfl | rfl <;> simp [Pat.matchVal]
++    · obtain ⟨p, hp, hm⟩ := h 0
++      refine ⟨p, hp, ?_⟩
++      rcases Pat.catchAll_of_matches_opaque hm with rfl | rfl <;> simp [Pat.matchVal]
+ 
+ /-! ## 閉じた非 Top の値の小例 -/
+ 
+diff --git a/formal/Benitoite/Release/Lemmas/MembershipBase.lean b/formal/Benitoite/Release/Lemmas/MembershipBase.lean
+index 5547b60f..0ef1ae76 100644
+--- a/formal/Benitoite/Release/Lemmas/MembershipBase.lean
++++ b/formal/Benitoite/Release/Lemmas/MembershipBase.lean
+@@ -34,6 +34,23 @@ theorem HasTypeVQ.checked_widen {Ψ C Γ t o R R'}
+   cases hT
+   exact .V_Checked hk (hs t hm)
+ 
++/-- 検査済みの要求の値の型付けは、ちょうど V-CheckedRequest が与えるものである。 -/
++theorem HasTypeVQ.checkedRequest_iff {Ψ C Γ t c T} :
++    HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) T ↔
++      ∃ o R n, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some n ∧
++        c.type = .opaqueTop n := by
++  constructor
++  · intro h; exact h.inv_checkedRequest rfl
++  · rintro ⟨o, R, n, rfl, hk, hm, hc, ht⟩; exact .V_CheckedRequest hk hm hc ht
++
++/-- 検査済みの要求の値の範囲の拡大（意味の包含）。保持する要求は変わらない。 -/
++theorem HasTypeVQ.checkedRequest_widen {Ψ C Γ t c o R R'}
++    (h : HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))) (hs : R.Sub R') :
++    HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R')) := by
++  obtain ⟨o', R0, n, hT, hk, hm, hc, ht⟩ := h.inv_checkedRequest rfl
++  cases hT
++  exact .V_CheckedRequest hk (hs t hm) hc ht
++
+ /-- 範囲の拡大（被覆）。被覆の判定の健全性（`Range.Covers.sound`）から得る。 -/
+ theorem HasTypeVQ.checked_widen_covers {Ψ C Γ t o R R'}
+     (h : HasTypeVQ P B Ψ Q C Γ (.checked t) (.opaque o (.fixed R))) (hc : R'.Covers R) :
+@@ -48,10 +65,13 @@ theorem HasTypeVQ.checked_widen_top {Ψ C Γ t o R}
+ 
+ /-! ## 閉じた値の標準形 -/
+ 
+-/-- 不透明型の閉じた値は、範囲が Top の型の不透明型の定数か、範囲付きの値型の検査済みの対象の値である。 -/
++/-- 不透明型の閉じた値は、範囲が Top の型の不透明型の定数か、範囲付きの値型の検査済みの対象の値か、検査済みの
++要求の値である。 -/
+ theorem HasTypeVQ.canonical_opaque {Ψ C v o ix} (h : HasTypeVQ P B Ψ Q C [] v (.opaque o ix)) :
+     (∃ n, v = .const (.opaque o n) ∧ ix = .fixed .top) ∨
+-      (∃ t R, v = .checked t ∧ ix = .fixed R ∧ B.valKind o = some t.kind ∧ R.Mem t) := by
++      (∃ t R, v = .checked t ∧ ix = .fixed R ∧ B.valKind o = some t.kind ∧ R.Mem t) ∨
++      (∃ t R c n, v = .checkedRequest t c ∧ ix = .fixed R ∧ B.valKind o = some t.kind ∧ R.Mem t ∧
++        B.valContent o = some n ∧ c.type = .opaqueTop n) := by
+   have hnf : ∀ names ps r ε, (Ty.opaque o ix) ≠ .fn names ps r ε := by intros; simp
+   cases v with
+   | var i => obtain ⟨_, hi, _⟩ := h.inv_var rfl; simp at hi
+@@ -63,7 +83,11 @@ theorem HasTypeVQ.canonical_opaque {Ψ C v o ix} (h : HasTypeVQ P B Ψ Q C [] v
+   | checked t =>
+       obtain ⟨o', R, hT, hk, hm⟩ := h.inv_checked rfl
+       cases hT
+-      exact .inr ⟨t, R, rfl, rfl, hk, hm⟩
++      exact .inr (.inl ⟨t, R, rfl, rfl, hk, hm⟩)
++  | checkedRequest t c =>
++      obtain ⟨o', R, n, hT, hk, hm, hc, ht⟩ := h.inv_checkedRequest rfl
++      cases hT
++      exact .inr (.inr ⟨t, R, c, n, rfl, rfl, hk, hm, hc, ht⟩)
+   | fnRef f ts es =>
+       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
+       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
+@@ -100,11 +124,12 @@ theorem _root_.Benitoite.Scope.Domain.Range.eq_top_of_top_sub {R : Scope.Domain.
+ /-- 閉じた値の範囲の拡大。拡大するのは最上位の不透明型の範囲だけである（葉の規則の補題）。 -/
+ theorem HasTypeVQ.widen_opaque {Ψ C v o R R'} (h : HasTypeVQ P B Ψ Q C [] v (.opaque o (.fixed R)))
+     (hs : R.Sub R') : HasTypeVQ P B Ψ Q C [] v (.opaque o (.fixed R')) := by
+-  rcases h.canonical_opaque with ⟨n, rfl, hix⟩ | ⟨t, R0, rfl, hix, -, -⟩
++  rcases h.canonical_opaque with ⟨n, rfl, hix⟩ | ⟨t, R0, rfl, hix, -, -⟩ | ⟨t, R0, c, n, rfl, hix, -⟩
+   · cases hix
+     rw [Scope.Domain.Range.eq_top_of_top_sub hs]
+     exact h
+   · exact h.checked_widen hs
++  · exact h.checkedRequest_widen hs
+ 
+ /-- 閉じた値の Top への拡大（L20.5 の `E_OpPrim` が、捕捉した引数を Top の型へ広げるときに使う）。 -/
+ theorem HasTypeVQ.widen_opaque_top {Ψ C v o R} (h : HasTypeVQ P B Ψ Q C [] v (.opaque o (.fixed R))) :
+diff --git a/formal/Benitoite/Release/Lemmas/Names.lean b/formal/Benitoite/Release/Lemmas/Names.lean
+index ac46b7a4..ade866e4 100644
+--- a/formal/Benitoite/Release/Lemmas/Names.lean
++++ b/formal/Benitoite/Release/Lemmas/Names.lean
+@@ -29,6 +29,7 @@ mutual
+     | .setV elems => Val.LambdaNamesWFList elems
+     | .bytesV _ => True
+     | .checked _ => True
++    | .checkedRequest _ _ => True
+     | .dict _ _ args => Val.LambdaNamesWFList args
+     | .super v _ => Val.LambdaNamesWF v
+ 
+@@ -83,6 +84,7 @@ mutual
+     | .setV elems => Val.VarsInNoLamNamesList n pe elems depth
+     | .bytesV _ => True
+     | .checked _ => True
++    | .checkedRequest _ _ => True
+     | .dict _ tys args => Ty.VarsInList 0 n pe tys ∧ Val.VarsInNoLamNamesList n pe args depth
+     | .super v _ => Val.VarsInNoLamNames n pe v depth
+ 
+@@ -152,6 +154,7 @@ mutual
+         simp only [Val.LambdaNamesWF]; exact HasTypeVQ.lambdaNamesWF hv
+     | .V_Sub hv _ hw => exact HasTypeVQ.lambdaNamesWF hv
+     | .V_Checked _ _ => trivial
++    | .V_CheckedRequest _ _ _ _ => trivial
+ 
+   theorem HasTypeVsQ.lambdaNamesWF {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
+       Val.LambdaNamesWFList vs := by
+@@ -250,6 +253,9 @@ mutual
+     | .checked _ => by
+         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
+           grind only
++    | .checkedRequest _ _ => by
++        simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF] <;>
++          grind only
+     | .dict _ tys args => by
+         simp only [Val.VarsIn, Val.VarsInNoLamNames, Val.LambdaNamesWF, Val.varsInList_iff_noLamNames n pe args] <;>
+           grind only
+diff --git a/formal/Benitoite/Release/Lemmas/NoFailContext.lean b/formal/Benitoite/Release/Lemmas/NoFailContext.lean
+index bc401fc8..d9dcac19 100644
+--- a/formal/Benitoite/Release/Lemmas/NoFailContext.lean
++++ b/formal/Benitoite/Release/Lemmas/NoFailContext.lean
+@@ -28,6 +28,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.q_mono hv hq) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.q_mono h hq) hle hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem HasTypeVsQ.q_mono {Ψ Q' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hq : QLe Q Q') :
+       HasTypeVsQ P B Ψ Q' C Γ vs as := by
+diff --git a/formal/Benitoite/Release/Lemmas/OuterC.lean b/formal/Benitoite/Release/Lemmas/OuterC.lean
+index 13bb60d0..37a1332a 100644
+--- a/formal/Benitoite/Release/Lemmas/OuterC.lean
++++ b/formal/Benitoite/Release/Lemmas/OuterC.lean
+@@ -81,6 +81,7 @@ mutual
+         exact .V_Super (HasTypeVQ.outer (depth := _) hb hv' hv) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.outer (depth := _) hb h hv) hle (Ty.WF.mono (by simp) _ hw)
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem HasTypeVsQ.outer {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ vs as} (h : HasTypeVsQ P B Ψ Q C1 Γ vs as)
+       (hv : Val.VarsInList C1.length (fun _ => True) vs depth) : HasTypeVsQ P B Ψ Q (C1 ++ C0) Γ vs as := by
+diff --git a/formal/Benitoite/Release/Lemmas/PresBase.lean b/formal/Benitoite/Release/Lemmas/PresBase.lean
+index 3c1c65f6..d1314022 100644
+--- a/formal/Benitoite/Release/Lemmas/PresBase.lean
++++ b/formal/Benitoite/Release/Lemmas/PresBase.lean
+@@ -42,6 +42,7 @@ mutual
+     | .setV elems, h => by simp only [Val.VarsIn] at h ⊢; exact Val.VarsInList.toTrue elems h
+     | .bytesV _, _ => by simp [Val.VarsIn]
+     | .checked _, _ => by simp [Val.VarsIn]
++    | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+     | .dict _ _ args, h => by
+         simp only [Val.VarsIn] at h ⊢
+         exact ⟨Ty.VarsInList.mono (Nat.le_refl _) (fun _ _ => trivial) _ h.1, Val.VarsInList.toTrue args h.2⟩
+diff --git a/formal/Benitoite/Release/Lemmas/Progress.lean b/formal/Benitoite/Release/Lemmas/Progress.lean
+index 92c38529..a2b5b787 100644
+--- a/formal/Benitoite/Release/Lemmas/Progress.lean
++++ b/formal/Benitoite/Release/Lemmas/Progress.lean
+@@ -34,6 +34,7 @@ theorem HasTypeVQ.canonical_fn_or_raise {Ψ C v names ps r ε} (h : HasTypeV P B
+   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
+   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+   | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
++  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
+   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
+ 
+@@ -95,6 +96,7 @@ theorem HasTypeVQ.canonical_dict (hwt : P.WellTyped B) {Ψ C} :
+   | .setV _, _, _, h => by obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
+   | .bytesV _, _, _, h => by have h' := h.inv_bytesV rfl; simp at h'
+   | .checked _, _, _, h => by obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
++  | .checkedRequest _ _, _, _, h => by obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+ 
+ /-- メソッドの呼び出しは、E-Meth か E-Super で遷移できる。 -/
+ theorem progress_meth (hwt : P.WellTyped B) {Ψ σ R a ε v m ss es ws k}
+diff --git a/formal/Benitoite/Release/Lemmas/Regularity.lean b/formal/Benitoite/Release/Lemmas/Regularity.lean
+index cd67a054..b4b6412b 100644
+--- a/formal/Benitoite/Release/Lemmas/Regularity.lean
++++ b/formal/Benitoite/Release/Lemmas/Regularity.lean
+@@ -199,6 +199,7 @@ mutual
+         simpa [Ty.WF] using this
+     | .V_Sub _ _ hw => exact hw
+     | .V_Checked _ _ => simp [Ty.WF]
++    | .V_CheckedRequest _ _ _ _ => simp [Ty.WF]
+ 
+   /-- 型付けの結果の型の正しさ（計算）。 -/
+   theorem HasTypeCQ.wf {Δl : LocalCtx} {depth : Nat} (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {Ψ C Γ R m a ε}
+diff --git a/formal/Benitoite/Release/Lemmas/Rename.lean b/formal/Benitoite/Release/Lemmas/Rename.lean
+index 682ae75f..8c6521d9 100644
+--- a/formal/Benitoite/Release/Lemmas/Rename.lean
++++ b/formal/Benitoite/Release/Lemmas/Rename.lean
+@@ -207,6 +207,7 @@ mutual
+     | .V_Super hv hc hs => simp only [Val.rename]; exact .V_Super (HasTypeVQ.rename hv hξ) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.rename h hξ) hle hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem HasTypeVsQ.rename {Ψ C Γ Δ ξ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hξ : RenOk Γ Δ ξ) :
+       HasTypeVsQ P B Ψ Q C Δ (Val.renameList ξ vs) as := by
+@@ -357,6 +358,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.store hv hΨ) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.store h hΨ) hle hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem HasTypeVsQ.store {Ψ Ψ' C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) (hΨ : StoreTy.Sub Ψ Ψ') :
+       HasTypeVsQ P B Ψ' Q C Γ vs as := by
+@@ -463,6 +465,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (HasTypeVQ.hide hv) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.hide h) hle hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem HasTypeVsQ.hide {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
+       HasTypeVsQ P B Ψ Q C (hideConts Γ) vs as := by
+diff --git a/formal/Benitoite/Release/Lemmas/StoreLemmas.lean b/formal/Benitoite/Release/Lemmas/StoreLemmas.lean
+index 12c0811b..f265539b 100644
+--- a/formal/Benitoite/Release/Lemmas/StoreLemmas.lean
++++ b/formal/Benitoite/Release/Lemmas/StoreLemmas.lean
+@@ -127,6 +127,7 @@ theorem HasTypeVQ.notCont {Ψ Q C Γ v a} (h : HasTypeVQ P B Ψ Q C Γ v a) : a.
+   | .V_Dict _ _ _ => intro b t ε e; cases e
+   | .V_Super _ _ _ => intro b t ε e; cases e
+   | .V_Checked _ _ => intro b t ε e; cases e
++  | .V_CheckedRequest _ _ _ _ => intro b t ε e; cases e
+   | .V_Sub h hle hw =>
+       rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
+       · exact HasTypeVQ.notCont h
+diff --git a/formal/Benitoite/Release/Lemmas/SubstTyping.lean b/formal/Benitoite/Release/Lemmas/SubstTyping.lean
+index ea71ebb7..f354843d 100644
+--- a/formal/Benitoite/Release/Lemmas/SubstTyping.lean
++++ b/formal/Benitoite/Release/Lemmas/SubstTyping.lean
+@@ -43,6 +43,7 @@ mutual
+     | .setV elems => by simp only [Val.rename, Val.renameList_id]
+     | .bytesV _ => rfl
+     | .checked _ => rfl
++    | .checkedRequest _ _ => rfl
+     | .dict _ _ args => by simp only [Val.rename, Val.renameList_id]
+     | .super v _ => by simp only [Val.rename, Val.rename_id]
+ 
+@@ -222,6 +223,7 @@ mutual
+     | .V_Super hv hc hs => simp only [Val.subst]; exact .V_Super (HasTypeVQ.subst (ρ := _) hv hσ) hc hs
+     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.subst (ρ := _) h hσ) hle hw
+     | .V_Checked hk hm => simp only [Val.subst]; exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => simp only [Val.subst]; exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem HasTypeVsQ.subst {ρ : Nat → LocalRef} {Ψ C Γ Δ R0 σ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
+       (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeVsQ P B Ψ Q C Δ (Val.substList σ vs ρ) as := by
+diff --git a/formal/Benitoite/Release/Lemmas/TargetSound.lean b/formal/Benitoite/Release/Lemmas/TargetSound.lean
+index 9c69fbf0..c9025749 100644
+--- a/formal/Benitoite/Release/Lemmas/TargetSound.lean
++++ b/formal/Benitoite/Release/Lemmas/TargetSound.lean
+@@ -85,7 +85,8 @@ theorem Builtins.TargetAgreement.obs_allowed (hc : B.CoreAssumptions P) (ht : B.
+       have hmemE : Eff.mem (s.inst [R]).eff (.name l (.fixed R)) := by
+         rw [PrimSig.inst_eff, he, Eff.instR_singleAt]
+         exact (Eff.mem_singleAt _ _ _).mpr rfl
+-      rcases hwt.canonical_opaque with ⟨n, rfl, hix⟩ | ⟨t0, R0, rfl, hix, hk0, hm0⟩
++      rcases hwt.canonical_opaque with ⟨n, rfl, hix⟩ | ⟨t0, R0, rfl, hix, hk0, hm0⟩ |
++          ⟨t0, R0, c0, n0, rfl, hix, hk0, hm0, -, -⟩
+       · cases hix
+         have hobs : ∀ t ∈ obs, t.kind = k := by
+           simpa [PrimSig.shapeAt, hs, hwp, Val.target?, Scope.Signature.ShapeTargets] using htgt
+@@ -102,6 +103,17 @@ theorem Builtins.TargetAgreement.obs_allowed (hc : B.CoreAssumptions P) (ht : B.
+           rw [hvk] at hk0
+           exact (Option.some.inj hk0).symm
+         exact ⟨k, R, hek, hmemE, hkind, hm0⟩
++      · cases hix
++        have hobs : obs = [t0] := by
++          simpa [PrimSig.shapeAt, hs, hwp, Val.target?, Scope.Signature.ShapeTargets] using htgt
++        subst hobs
++        intro t ht
++        rw [List.mem_singleton] at ht
++        subst ht
++        have hkind : t.kind = k := by
++          rw [hvk] at hk0
++          exact (Option.some.inj hk0).symm
++        exact ⟨k, R, hek, hmemE, hkind, hm0⟩
+ 
+ /-- 全体の信頼条件のもとでの同じ補題。 -/
+ theorem Builtins.Assumptions.obs_allowed (hA : B.Assumptions P)
+diff --git a/formal/Benitoite/Release/Lemmas/TySubstMain.lean b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+index 78ea85c3..bb8be68b 100644
+--- a/formal/Benitoite/Release/Lemmas/TySubstMain.lean
++++ b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+@@ -129,6 +129,24 @@ mutual
+         | tapp _ _ => exact .tapp
+         | ctor _ => exact .ctor
+         | _ => simp_all [Ty.substAt]
++    | .checkedRequest, t, hu => by
++        cases t with
++        | tvar i => exact .tvar
++        | «opaque» o ix =>
++            simp only [Ty.substAt, Ty.opaque.injEq] at hu
++            obtain ⟨rfl, rfl⟩ := hu
++            exact .checkedRequest
++        | fn names ps r ε => exact .fn
++        | reference a => exact .reference
++        | lazy a => exact .lazy
++        | cont b t ε => exact .cont
++        | map _ _ => exact .map
++        | set _ => exact .set
++        | bytes => exact .bytes
++        | dict _ _ => exact .dict
++        | tapp _ _ => exact .tapp
++        | ctor _ => exact .ctor
++        | _ => simp_all [Ty.substAt]
+     | .con (cd := cd) (ts := ts) hc hn hargs, t, hu => by
+         cases t with
+         | tvar i => exact .tvar
+@@ -676,6 +694,7 @@ mutual
+         rw [hsat.1]; exact Ty.WF.mono (by simp; omega) _ hw
+     | .V_Bytes => simp only [Val.substTyAt, Ty.substAt]; exact .V_Bytes
+     | .V_Checked hk hm => simp only [Val.substTyAt, Ty.substAt]; exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => simp only [Val.substTyAt, Ty.substAt]; exact .V_CheckedRequest hk hm hc ht
+     | .V_Dict (id := id) hi hsat' hvs =>
+         simp only [Val.substTyAt, Ty.substAt]
+         have hsc := hwf.2.2.2.2 _ _ hi
+diff --git a/formal/Benitoite/Release/LocalScope.lean b/formal/Benitoite/Release/LocalScope.lean
+index 803017f7..f3381566 100644
+--- a/formal/Benitoite/Release/LocalScope.lean
++++ b/formal/Benitoite/Release/LocalScope.lean
+@@ -27,7 +27,7 @@ mutual
+     | .con _ _ vs | .list vs | .setV vs | .dict _ _ vs => Val.LocalRefsList depth places vs
+     | .mapV ks vs => Val.LocalRefsList depth places ks ∧ Val.LocalRefsList depth places vs
+     | .super v _ => Val.LocalRefs depth places v
+-    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. => True
++    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
+   def Val.LocalRefsList (depth : Nat) (places : Nat → Prop) : List Val → Prop
+     | [] => True
+     | v :: vs => Val.LocalRefs depth places v ∧ Val.LocalRefsList depth places vs
+@@ -87,6 +87,7 @@ mutual
+         simp only [Val.LocalRefs]; exact HasTypeVQ.localRefs (depth := _) (places := places) hv
+     | .V_Sub hv _ hw => exact HasTypeVQ.localRefs (depth := _) (places := places) hv
+     | .V_Checked _ _ => trivial
++    | .V_CheckedRequest _ _ _ _ => trivial
+ 
+   theorem HasTypeVsQ.localRefs {depth : Nat} {places : Nat → Prop} {Ψ C Γ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as) :
+       Val.LocalRefsList depth places vs := by
+diff --git a/formal/Benitoite/Release/Model.lean b/formal/Benitoite/Release/Model.lean
+index f8395d90..a57cfafe 100644
+--- a/formal/Benitoite/Release/Model.lean
++++ b/formal/Benitoite/Release/Model.lean
+@@ -391,6 +391,7 @@ example : HasTypeV emptyProgram builtins StoreTy.empty [({} : TParam)] []
+ theorem lambda_names_wellFormed {P B Ψ Q C Γ v a names ps body}
+     (h : HasTypeVQ P B Ψ Q C Γ v a) (hv : v = .lam names ps body) : NamesWF names ps := by
+   match h with
++  | .V_CheckedRequest .. => cases hv
+   | .V_Lam hn hw _ => cases hv; exact hn
+   | .V_Sub h _ hw => exact lambda_names_wellFormed h hv
+   | .V_Var _ _ => cases hv
+diff --git a/formal/Benitoite/Release/ModelTargets.lean b/formal/Benitoite/Release/ModelTargets.lean
+index c4e8dfda..f2648b0c 100644
+--- a/formal/Benitoite/Release/ModelTargets.lean
++++ b/formal/Benitoite/Release/ModelTargets.lean
+@@ -78,9 +78,10 @@ def checkRun (pat : String → Option Range) (tgt : String → Option Target) (r
+       | _, _ => .val (.con "Err" (checkTys r) [scopeFailure])
+   | _ => .val (.con "Err" (checkTys r) [scopeFailure])
+ 
+-/-- 書き込みの観測。最初の引数が検査済みの対象の値なら、その対象一つである。 -/
++/-- 書き込みの観測。最初の引数が検査済みの対象の値（か検査済みの要求の値）なら、その対象一つである。 -/
+ def firstTarget : List Val → List Target
+   | .checked t :: _ => [t]
++  | .checkedRequest t _ :: _ => [t]
+   | _ => []
+ 
+ def exitCode : List Val → Int
+@@ -431,6 +432,8 @@ theorem assumptions (pat : String → Option Range) (tgt : String → Option Tar
+           Scope.Signature.ShapeTargets]
+       | .checked t :: _ => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
+           Val.target?, Scope.Signature.ShapeTargets]
++      | .checkedRequest t _ :: _ => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
++          Val.target?, Scope.Signature.ShapeTargets]
+       | .var _ :: _ | .const _ :: _ | .fnRef _ _ _ :: _ | .prim _ _ _ _ :: _ | .lam _ _ _ :: _ | .con _ _ _ :: _
+         | .list _ :: _ | .op _ _ :: _ | .raise _ _ :: _ | .loc _ :: _ | .mapV _ _ :: _ | .setV _ :: _
+         | .bytesV _ :: _ | .dict _ _ _ :: _ | .super _ _ :: _ =>
+diff --git a/formal/Benitoite/Release/Subst.lean b/formal/Benitoite/Release/Subst.lean
+index ca80dccc..4a168d04 100644
+--- a/formal/Benitoite/Release/Subst.lean
++++ b/formal/Benitoite/Release/Subst.lean
+@@ -65,6 +65,7 @@ mutual
+     | .dict i tys args => .dict i (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
+     | .super v cl => .super (Val.substTyAt c ts es v) cl
+     | .checked t => .checked t
++    | .checkedRequest t c => .checkedRequest t c
+ 
+   def Val.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Val → List Val
+     | [] => []
+@@ -143,6 +144,7 @@ mutual
+     | .dict i tys args => .dict i tys (Val.renameList ξ args)
+     | .super v cl => .super (Val.rename ξ v) cl
+     | .checked t => .checked t
++    | .checkedRequest t c => .checkedRequest t c
+ 
+   def Val.renameList (ξ : Nat → Nat) : List Val → List Val
+     | [] => []
+@@ -199,6 +201,7 @@ mutual
+     | .dict i tys args => .dict i tys (Val.substList σ args ρ)
+     | .super v cl => .super (Val.subst σ v ρ) cl
+     | .checked t => .checked t
++    | .checkedRequest t c => .checkedRequest t c
+ 
+   def Val.substList (σ : Nat → Val) (vs : List Val) (ρ : Nat → LocalRef := LocalRef.bound) : List Val :=
+     match vs with
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index a437dab3..4be47842 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -261,6 +261,10 @@ mutual
+     所属を前提に持つ葉の規則 V-Checked だけで行う（`HasTypeVQ.inv_checked`）。現在の形式化には、この値を作る遷移は
+     ない。 -/
+     | checked (t : Scope.Domain.Target)
++    /-- 検査済みの要求の値（決定の判断 7）。`Http.RequestIn[H,P]` の値に当たり、検査した要求 `req` と、検査で得た実効の
++    endpoint の対象 `t` を保持する（設計書 01-12「構文」）。保持する要求は閉じた不透明型の値であり、不透明型の定数として
++    持つ。型と値の変数を持たないので、代入・改名・shift で変わらない。型付けは葉の規則 V-CheckedRequest だけで行う。 -/
++    | checkedRequest (t : Scope.Domain.Target) (req : Const)
+ 
+   inductive Comp where
+     | builderLet (kind : BuilderKind) (body : Comp)
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index e4607235..2513ba04 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -71,6 +71,7 @@ def PrimSig.ntys (s : PrimSig) : Nat := s.tparams.length
+ /-- 値が保持する検査済みの対象（`Scope.Signature.ShapeTargets` の `target?`）。 -/
+ def Val.target? : Val → Option Scope.Domain.Target
+   | .checked t => some t
++  | .checkedRequest t _ => some t
+   | _ => none
+ 
+ /-- 署名の範囲の変数の個数（`rkinds` の長さ）。範囲の変数の番号はこの個数より小さい（`PrimSig.Scoped`）。 -/
+@@ -106,6 +107,9 @@ structure Builtins where
+   この制約によらず許す（`Builtins.RangeAdmissible`）。表のデータであり、正しさは信頼の対象である。既定は何も
+   許さない（Top の列だけを許す）。 -/
+   admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
++  /-- 範囲付きの値型の名前の値が保持する要求の型の名前（`Http.RequestIn` は `Http.ClientRequest`）。検査済みの要求の
++  値の葉の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
++  valContent : OpaqueName → Option OpaqueName := fun _ => none
+ 
+ /-! ## 署名の具体化と範囲の具体化の許容 -/
+ 
+@@ -443,6 +447,8 @@ mutual
+     パターンは検査済みの対象の値の中を調べないので、網羅性には変数か `_` の選択肢が要る。旧の像（範囲が Top の
+     不透明型）では不透明型の定数が既に属するので、網羅性の判断は変わらない（`Exhaustive.opaqueTop_iff`）。 -/
+     | checked {o R t} : Inhabits P (.opaque o (.fixed R)) (.checked t)
++    /-- 検査済みの要求の値も範囲付きの値型に属する（V-CheckedRequest に対応する）。 -/
++    | checkedRequest {o R t c} : Inhabits P (.opaque o (.fixed R)) (.checkedRequest t c)
+ 
+   inductive InhabitsAll (P : Program) : List Ty → List Val → Prop
+     | nil : InhabitsAll P [] []
+@@ -572,6 +578,12 @@ mutual
+     | V_Checked {Γ o R t} :
+         B.valKind o = some t.kind → R.Mem t →
+         HasTypeVQ P B Ψ Q C Γ (.checked t) (.opaque o (.fixed R))
++    /-- V-CheckedRequest（検査済みの要求の値の葉の規則）。V-Checked の所属に加え、名前 o の値が保持する要求の型の
++    名前（表のデータ `valContent`）が n のとき、保持する要求は型 `n`（範囲が Top の不透明型）の定数である
++    （設計書 01-12「型付け規則」）。 -/
++    | V_CheckedRequest {Γ o R t c n} :
++        B.valKind o = some t.kind → R.Mem t → B.valContent o = some n → c.type = .opaqueTop n →
++        HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))
+ 
+   inductive HasTypeVsQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop
+@@ -725,6 +737,7 @@ mutual
+     | .V_Super hv hc hs => exact .V_Super (hideBuilders_strengthen_val hv) hc hs
+     | .V_Sub hv hl hw => exact .V_Sub (hideBuilders_strengthen_val hv) hl hw
+     | .V_Checked hk hm => exact .V_Checked hk hm
++    | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+ 
+   theorem hideBuilders_strengthen_vals {P B Ψ Q C Γ vs ts}
+       (h : HasTypeVsQ P B Ψ Q C Γ vs ts) : HasTypeVsQ P B Ψ.hideBuilders Q C Γ vs ts := by
+diff --git a/formal/Benitoite/Release/WellFormed.lean b/formal/Benitoite/Release/WellFormed.lean
+index f31acf6e..4ae7ab77 100644
+--- a/formal/Benitoite/Release/WellFormed.lean
++++ b/formal/Benitoite/Release/WellFormed.lean
+@@ -40,6 +40,7 @@ mutual
+     | .dict _ tys args => Ty.VarsInList 0 n pe tys ∧ Val.VarsInList n pe args depth
+     | .super v _ => Val.VarsIn n pe v depth
+     | .checked _ => True
++    | .checkedRequest _ _ => True
+ 
+   def Val.VarsInList (n : Nat) (pe : Nat → Prop) (vs : List Val) (depth : Nat := 0) : Prop :=
+     match vs with
+diff --git a/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean b/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean
+index 1a7cc5cc..b9a7191b 100644
+--- a/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean
++++ b/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean
+@@ -47,7 +47,7 @@ mutual
+     | .con _ _ vs | .list vs | .setV vs | .dict _ _ vs => Vals.Reads p vs
+     | .mapV ks vs => Vals.Reads p ks ∧ Vals.Reads p vs
+     | .super v _ => Val.Reads p v
+-    | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. => True
++    | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
+   def Vals.Reads (p : Nat → Prop) : List Val → Prop
+     | [] => True
+     | v :: vs => Val.Reads p v ∧ Vals.Reads p vs
+@@ -111,6 +111,7 @@ mutual
+       simp only [Val.Reads] <;> exact hp _ _ hi
+   | .V_Const | .V_Fun .. | .V_Prim .. | .V_Op .. | .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes => simp only [Val.Reads]
+   | .V_Checked _ _ => simp only [Val.Reads]
++  | .V_CheckedRequest _ _ _ _ => simp only [Val.Reads]
+   | .V_Lam _ _ hb => simpa only [Val.Reads, binds_length] using HasTypeCQ.reads hb (hp.hide.append _)
+   | .V_Con _ _ hs | .V_Dict _ _ hs =>
+       simp only [Val.Reads] <;> exact HasTypeVsQ.reads hs hp
+diff --git a/formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean b/formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean
+index 00b6901e..50d86186 100644
+--- a/formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean
++++ b/formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean
+@@ -82,7 +82,7 @@ mutual
+     | .con _ _ vs | .list vs | .setV vs | .dict _ _ vs => Vals.Captures p vs
+     | .mapV ks vs => Vals.Captures p ks ∧ Vals.Captures p vs
+     | .super v _ => Val.Captures p v
+-    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. => True
++    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
+   def Vals.Captures (p : Nat → Prop) : List Val → Prop
+     | [] => True
+     | v :: vs => Val.Captures p v ∧ Vals.Captures p vs
+diff --git a/formal/Benitoite/Surface/Lemmas/PatternSupport.lean b/formal/Benitoite/Surface/Lemmas/PatternSupport.lean
+index 65882786..4f3de34b 100644
+--- a/formal/Benitoite/Surface/Lemmas/PatternSupport.lean
++++ b/formal/Benitoite/Surface/Lemmas/PatternSupport.lean
+@@ -43,6 +43,7 @@ mutual
+     | .dict => exact .dict
+     | .tapp => exact .tapp
+     | .checked => exact .checked
++    | .checkedRequest => exact .checkedRequest
+     | .ctor => exact .ctor
+ 
+   theorem InhabitsAll.consCongr {P Q : Release.Program} (hc : P.cons = Q.cons)

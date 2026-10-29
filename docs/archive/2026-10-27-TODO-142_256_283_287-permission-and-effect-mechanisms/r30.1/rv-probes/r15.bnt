@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f() -> Unit
+ bind x <- S.checkPathIn(pattern: "/data/**", path: "/data")
+ bind y <- S.checkPathIn(pattern: "/data/**", path: "/other")
+ bind z <- S.checkPathIn(pattern: "/data//**", path: "/data/a")
+ ()
+end function

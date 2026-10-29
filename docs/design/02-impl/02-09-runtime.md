@@ -24,6 +24,12 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 
 【決定】ヒープのモジュールは、回収しない区間を Rust の寿命で表す型（`Value<'epoch>`・`NoGcCtx<'epoch>`）を外に出し、区間の中の処理には回収の機能を渡さない。安全点へ戻る前に、この先使う値を VM の根の保存領域に置く。区間の寿命を外した値を扱うのは、根の保存領域と根の列挙を管理する小さな内部の実装だけである。別の実行のヒープの値を渡す誤りは、区間の中では型の印で防ぎ、根の保存領域では、保存した値が持つヒープの番号をすべてのビルドで比べて見つける。根の列挙の漏れは型で防げないので、ヒープのモジュールの API が安全と言えるのは、VM が根を漏れなく列挙し、列挙しなかった根を回収の後に読まないかぎりにおいてである。
 
+【決定】`Scope.checkPathIn` は、一つの回収しない区間の中で、入力の文字列の値を保持する `PathIn` と、それを保持する `Result.Ok` を既存の `alloc_fields` で作る。成功値を結果のレジスタへ保存した後は、構成子の既存の子の走査で入力の文字列まで辿る。`pathInValue` は保存した欄の値を返し、文字列を作り直さない。専用の根とホスト側の保存領域は設けず、既存の安全点と書き込みの障壁の規則に従う。
+
+【決定】六つの `File.*In` の実行本体は、同じ回収しない区間の中で `PathIn` の一欄から保持したパスを借りる。既存の File の処理がホスト側の `PathBuf` と書き込みの内容を所有する仕事を作ってから待つため、作業用のスレッドへ言語の値や借用を渡さない。`PathIn` の表現、根の列挙、書き込みの障壁、安全点を増やさない。
+
+【決定】`Http.checkRequestIn` は、渡された同じ要求のレコードの値と、その URL から得た実効の端点を既存の構成子の欄に保持する。`RequestIn` と `Result.Ok` の構築は一つの回収しない区間の中で行い、結果をレジスタへ保存した後は、構成子の既存の子の走査で要求の五欄まで辿る。`requestInValue` は保持したレコードの値を返し、新しいレコードを確保しない。`widenRequestIn` も同じ三欄の値を返す。`Http.sendIn` は保持した同じレコードの五欄をホスト側の要求と時間上限へ読み取り、保持した host・port と送信用 URI の端点を照合する。旧 `Http.send` は任意のレコードの五欄を読むが、`RequestIn` の host・port の欄は受け取らない。作業用のスレッドには Rust が所有する要求・本体・時間上限・端点だけを渡し、完了処理では応答だけを言語の値へ変換する。言語の要求は待つ間も VM の引数の根に残す。ホスト側の領域に言語の値を保存せず、確保器・根・書き込みの障壁・安全点の不変条件は変えない。
+
 【決定】根の列挙の漏れにより解放された対象への参照は、機能 `heap-verify` の構成では確保の世代の照合で見つけるが、既定の構成（`gc-mark-sweep` だけ）では見つけない。理由: 既定の構成で読み出しのたびに領域の外の表を引く費用を避けるためである。
 
 【決定】対象の識別（`ObjId`）は、確保ごとにヒープの中で一意な 64 ビットの通し番号とし、一周させず、解放した番地に作った対象にも別の番号を振る。理由: 番地を識別に使うと、解放後に同じ番地を再利用した対象と区別できないためである。
@@ -88,7 +94,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 | 次に進めるタスクを選ぶ部品 | 待ち行列の先頭から選ぶ | テストが与えた順序で選ぶ（[処理系のテスト戦略](../07-quality/07-03-compiler-testing.md)の「順序を与えるスケジューラと仮想の時間（初回リリース版）」） |
 | 時計 | OS の時計を読む | テストが進める仮想の時計を読む |
 | 作業用のスレッドの仕事の実行 | 作業用のスレッドで行う | テストが完了の順序を決める |
-| ネットワークの失敗の表 | 空 | 名前（`Http.send`・`Http.get` の URL の host と、`Http.listen` の `host`）ごとに、ループバックの通信では起こしにくい失敗（名前の解決の失敗、接続の拒否、接続のリセット、時間切れ）を当てる。URL の IPv6 の名前は、角括弧を除いた形（`::1`）で引く。表にない名前への操作は実際に行う（同「HTTP のテスト（初回リリース版）」） |
+| ネットワークの失敗の表 | 空 | 名前（`Http.send`・`Http.sendIn`・`Http.get` の URL の host と、`Http.listen` の `host`）ごとに、ループバックの通信では起こしにくい失敗（名前の解決の失敗、接続の拒否、接続のリセット、時間切れ）を当てる。URL の IPv6 の名前は、角括弧を除いた形（`::1`）で引く。表にない名前への操作は実際に行う（同「HTTP のテスト（初回リリース版）」） |
 
 ファイル、プロセスの起動、乱数は、部品を差し替えた実行でも本番と同じ実装で行う。隠れた乱数の生成器にも OS の種を入れる。ゴールデンテストは部品を差し替えず、本番の部品で実行する。処理系のテストは、部品とは別に、実行の入力（コマンドライン引数の並びと基準のディレクトリ）、標準入力に与えるバイト列、出力先（メモリに捕らえる出力先）を実行ごとに与える（[スクリプト実行と埋め込み](02-11-embedding.md)の「実行の入力と結果」）。テストが読むファイルは、テストごとの一時ディレクトリに実際に置く。
 
@@ -100,7 +106,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 |---|---|
 | VM のスレッドで、すぐに完了する | `Console.write`・`Console.writeLine`・`Console.writeError`・`Console.writeErrorLine`（出力のバッファに書く。転送していない量の上限で受け付けられなければ待つ。後述の「出力のバッファ」）、`Process.arguments`・`Process.scriptDirectory`・`Process.workingDirectory`・`Process.environmentVariable`、`Process.exit`（応答の「終了」を返し、[仮想機械](02-08-vm.md)の「止める手順」を始める）、`Http.listenerPort`、`Clock.now`・`Clock.localOffsetMinutes`・`Clock.monotonicMilliseconds`、`Random` の操作 |
 | イベントループで待つ | `Clock.sleep`、`Http.listenerPort` を除く `Http.Listen` の操作（`Http.listen`・`Http.accept`・`Http.respond`） |
-| 作業用のスレッドで行う | `Console.readLine`・`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`File.Read`・`File.Write` のすべての操作（`File.Reader`・`File.Writer` の読み書きを含む）、`Process.run`・`Process.runAttached`・`Process.shell`、`Http.Connect` の操作（`Http.get`・`Http.send`）、`Http.listen` の名前の解決 |
+| 作業用のスレッドで行う | `Console.readLine`・`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`File.Read`・`File.Write` のすべての操作（`File.Reader`・`File.Writer` の読み書きを含む）、`Process.run`・`Process.runAttached`・`Process.shell`、`Http.Connect` の操作（`Http.send`・`Http.sendIn`。`Http.get` は `send` を呼ぶ）、`Http.listen` の名前の解決 |
 
 - `Process.workingDirectory` は基準のディレクトリの絶対パスを返し、相対パスは基準のディレクトリから解決する。外部コマンドは、`Process.Command` の `workingDirectory` が `Option.None` なら基準のディレクトリを作業ディレクトリとして起動し、相対パスで指定されていれば基準のディレクトリから解決する。
 - `Process.scriptDirectory` は、実行を始めたときに解決した値を実行の入力から返す。
@@ -267,7 +273,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し�
 【方針】上限を確かめる対象は、結果として `String`・`Bytes`・`List` の値を新しく作る組み込みの関数（組み込みの操作を含む）と、`CONCAT` の命令のすべてである。上限を超えたときは、資源の不足の種類「作る値が大きすぎる」を返す（[仮想機械](02-08-vm.md)の「組み込みの関数の呼び出し」）。報告には、値を作ろうとした関数、計算した結果の大きさ、上限を含める。
 
 - 結果の大きさは、値を作り始める前に、引数から計算する。計算は Rust の `i64` の溢れを検査する演算（`checked_mul` など）で行う（`String.repeat(s: s, n: n)` では、`n` が「上限 ÷ `s` のバイト数」を超えるかで判定する、など）。`String.replace` のように、引数から大きさを求めるのに走査が要る関数は、先に出現を数えてから大きさを計算する。
-- 読む大きさが決まっていない入力を読む操作（`File.readText`・`File.readBytes`・`File.readLines`、`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`Process.run`・`Process.shell` と、出力を集めるテストの実行器の `Process.runAttached` の標準出力と標準エラー出力、`Http.get`・`Http.send` の応答の本体）は、上限より 1 バイト多い分まで読み、上限を超えたら資源の不足とする。行やディレクトリの項目を並べる操作（`File.readLines`・`Console.readAllLines`・`File.listDirectory`・`File.walk`）は、リストの長さも確かめる。
+- 読む大きさが決まっていない入力を読む操作（`File.readText`・`File.readBytes`・`File.readLines`、`Console.readAll`・`Console.readAllLines`・`Console.readAllBytes`、`Process.run`・`Process.shell` と、出力を集めるテストの実行器の `Process.runAttached` の標準出力と標準エラー出力、`Http.get`・`Http.send`・`Http.sendIn` の応答の本体）は、上限より 1 バイト多い分まで読み、上限を超えたら資源の不足とする。行やディレクトリの項目を並べる操作（`File.readLines`・`Console.readAllLines`・`File.listDirectory`・`File.walk`）は、リストの長さも確かめる。
 - 一行ずつ読む関数（`File.readLine`・`Console.readLine`）は、上限に行末の 2 バイトを加えた分まで読み、行末（末尾の LF と、その直前にあれば CR 一つ。LF がなければ末尾の CR 一つ）を除いた内容の長さで上限を確かめる。理由: 作る値に行末は含まれないためである。
 - 行やディレクトリの項目を並べる操作のリストの長さの超過も、入力を読む操作の資源の不足（[診断](02-10-diagnostics.md)の `R0903`）とする。理由: 大きさが決まっていない外部の入力を読む操作の失敗を、一つの規則で分類するためである。
 - `File.readChunk(reader: reader, maximumBytes: maximumBytes)` は、`maximumBytes` が上限を超えるときは、上限までを読む。

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_GOLDEN_FILTER=secf1-early-return",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "golden",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-28T23:06:58.435468+00:00",
+  "finished_utc": "2026-10-28T23:07:04.592339+00:00",
+  "command_exit": 0,
+  "outer_seconds": 6.156321707999999,
+  "maxrss_raw": 2038366208,
+  "maxrss_unit": "bytes",
+  "maxrss_bytes": 2038366208,
+  "maxrss_mib": 1943.9375,
+  "maxrss_gib": 1.89837646484375,
+  "maxrss_method": "getrusage(RUSAGE_CHILDREN); fresh wrapper; maximum child RSS, not sum"
+}

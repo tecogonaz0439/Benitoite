@@ -1,0 +1,62 @@
+{
+  "scope_check": {
+    "before": "the range arguments of check `{effect}` do not cover the required scope ({reason})",
+    "after": "the scope arguments of the annotated contract for check `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})"
+  },
+  "scope_projection": {
+    "before": "the range arguments of projection `{effect}` do not cover the required scope ({reason})",
+    "after": "the scope arguments of the annotated contract for projection `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})"
+  },
+  "scope_widen": {
+    "before": "the range arguments of widening `{effect}` do not cover the required scope ({reason})",
+    "after": "the scope arguments of the annotated contract for widening `{effect}` (requiredUpperBound) do not satisfy scope coverage for the locally selected source (knownUpperBound) and the destination ({reason})"
+  },
+  "scope_rule": {
+    "before": "the range arguments of this direct call must cover the ranges selected by the local Scope rule",
+    "after": "the scope arguments of the annotated contract (requiredUpperBound) must cover the scope selected by the local Scope rule for this call (knownUpperBound); for widening, the destination must also cover the source contract"
+  },
+  "scope_budget": {
+    "before": "the final local Scope analysis Run still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable",
+    "after": "the final pass of local Scope analysis still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable"
+  },
+  "atomic": {
+    "before": "two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked",
+    "after": "two or more closed surrounding atoms (requiredUpperBound) have the same name, but no one atom covers the incoming scope (knownUpperBound); coverage by their union is not checked"
+  },
+  "uncovered": {
+    "before": "no one surrounding atom of the same name covers the required scope",
+    "after": "no one surrounding atom of the same name (requiredUpperBound) covers the incoming scope (knownUpperBound)"
+  },
+  "unknown": {
+    "before": "the required scope is Top (all targets); only a surrounding Top atom of the same name covers it",
+    "after": "the incoming scope (knownUpperBound) is Top (all targets); only a surrounding Top atom of the same name in requiredUpperBound covers it"
+  },
+  "scopes": {
+    "before": "to keep the surrounding contract, use an entry whose declared scope it covers; to permit a broader scope, explicitly enlarge the surrounding uses annotation to cover the required scope in one atom",
+    "after": "to keep the surrounding contract, use a callee or entry whose declared scope is covered by one surrounding atom; to permit a broader scope, explicitly enlarge the surrounding `uses` annotation to cover the incoming scope in one atom"
+  },
+  "top": {
+    "before": "to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation",
+    "after": "to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation"
+  },
+  "top_write": {
+    "before": "to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation",
+    "after": "to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation"
+  },
+  "top_endpoint": {
+    "before": "to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation",
+    "after": "to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation"
+  },
+  "scope_unknown": {
+    "before": "for a nested projection or widening, move the call to the right-hand side of `bind`, then use that name. If the input has only a narrow parameter annotation, one option is to remove its scope arguments; widening a Top input also requires a result without scope arguments. To preserve the narrow contract, forward the value with the same narrow type instead. For a handler clause parameter, `bind` alone does not establish provenance; using Top also requires the protected body to select Top and may require a broader uses annotation",
+    "after": "If the call is nested in an expression, move it to the right-hand side of `bind` and use that name. If the value is a parameter or handler clause parameter with only a narrow type annotation, `bind` alone does not establish provenance. To keep the narrow contract, do not project or widen it here: pass it unchanged to a scoped entry that accepts the same narrow type, such as `File.readTextIn`, or widen it in the caller where the checked value is bound and declare the parameter with the wider type. To accept all targets instead, remove the parameter's scope arguments; callers must then widen to the unscoped type with `Scope.widenPathIn` or `Http.widenRequestIn`. Widening a Top input also requires a result without scope arguments. For a handler clause parameter, using Top also requires the protected body to select Top and may require a broader `uses` annotation."
+  },
+  "scope_coverage": {
+    "before": "to keep the contract, use check conditions and a result annotation covered by it; for widening, ensure the destination covers the source; to allow a broader scope, enlarge the annotation explicitly",
+    "after": "to keep the contract, change the check conditions so that the annotated result scope covers them; for widening, choose a destination that covers the source; to permit a broader scope, explicitly enlarge the annotation"
+  },
+  "scope_budget_help": {
+    "before": "split this definition into smaller definitions to retain local provenance; alternatively, remove scope arguments from the annotation to allow Top",
+    "after": "split this definition into smaller definitions to retain local provenance (this helps only if the check conditions or checked values are statically known after splitting); alternatively, remove scope arguments from the annotation to allow Top"
+  }
+}

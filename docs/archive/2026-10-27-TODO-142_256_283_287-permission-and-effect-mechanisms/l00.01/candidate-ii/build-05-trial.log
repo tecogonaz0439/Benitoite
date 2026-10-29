@@ -1,0 +1,45 @@
+== wait-for-lock start 18:00:22
+== lock acquired 18:00:22 after 0s
+⚠ [20/410] Replayed Benitoite.Release.Order.Atoms
+warning: Benitoite/Release/Order/Atoms.lean:55:8: declaration uses `sorry`
+✔ [137/410] Built Benitoite.Release.Lemmas.Regularity (1.7s)
+✖ [139/410] Building Benitoite.Release.Lemmas.OuterC (1.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/OuterC.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.setup.json --json
+error: Benitoite/Release/Lemmas/OuterC.lean:52:69: Application type mismatch: The argument
+  hs
+has type
+  B.sig b✝ = some s✝
+but is expected to have type
+  B.sig ?m.1829 = some (s✝.inst R✝)
+in the application
+  PrimitiveAdmissible.outer hb hs
+✖ [369/410] Building Benitoite.Release.Lemmas.FailureCont (5.8s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/FailureCont.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.setup.json --json
+error: Benitoite/Release/Lemmas/FailureCont.lean:250:0: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.OuterC
+- Benitoite.Release.Lemmas.FailureCont
+error: build failed
+        7.61 real        12.09 user         0.68 sys
+           911654912  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              167627  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  12  voluntary context switches
+               16214  involuntary context switches
+          1341191029  instructions retired
+           506777882  cycles elapsed
+            27100384  peak memory footprint
+== exit 1

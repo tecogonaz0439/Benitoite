@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.80s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'builtins::table::tests::table_names_parts_capabilities_and_schemes_are_consistent' (6243195) panicked at crates/benitoite/src/builtins/table.rs:1098:9:
+assertion `left == right` failed
+  left: [43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2, 16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11, 11, 39, 6, 4, 6, 14, 3, 6]
+ right: [43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2, 16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11, 11, 39, 6, 4, 6, 14, 3]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test builtins::table::tests::table_names_parts_capabilities_and_schemes_are_consistent ... FAILED
+
+failures:
+
+failures:
+    builtins::table::tests::table_names_parts_capabilities_and_schemes_are_consistent
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1412 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p benitoite --lib`

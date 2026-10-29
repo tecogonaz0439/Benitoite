@@ -1,0 +1,3314 @@
+{
+  "base": "65b165272b42c3f3621ad59bc2a2c6c9cec9c46e",
+  "method": "git grep -n -w + comment/string-erased declaration blocks; own declaration name excluded; direct lexical references only",
+  "raw_grep": {
+    "eq_of_sub_of_sub": {
+      "lines": 6,
+      "files": 3
+    },
+    "Canonical": {
+      "lines": 86,
+      "files": 34
+    },
+    "norm": {
+      "lines": 239,
+      "files": 40
+    }
+  },
+  "summary": {
+    "eq_of_sub_of_sub": {
+      "declarations": 5,
+      "theorems": 5,
+      "files_with_theorems": 2,
+      "files": 2,
+      "theorems_without_examples": 5,
+      "files_without_examples": 2
+    },
+    "Canonical": {
+      "declarations": 49,
+      "theorems": 44,
+      "files_with_theorems": 21,
+      "files": 25,
+      "theorems_without_examples": 41,
+      "files_without_examples": 20
+    },
+    "norm": {
+      "declarations": 128,
+      "theorems": 113,
+      "files_with_theorems": 36,
+      "files": 39,
+      "theorems_without_examples": 112,
+      "files_without_examples": 35
+    },
+    "norm_family": {
+      "declarations": 240,
+      "theorems": 220,
+      "files_with_theorems": 47,
+      "files": 52,
+      "theorems_without_examples": 216,
+      "files_without_examples": 46
+    },
+    "three_symbols_union": {
+      "declarations": 169,
+      "theorems": 149,
+      "files_with_theorems": 39,
+      "files": 45,
+      "theorems_without_examples": 145,
+      "files_without_examples": 38
+    }
+  },
+  "theorems_by_area": {
+    "Release": {
+      "eq_of_sub_of_sub": 3,
+      "Canonical": 29,
+      "norm": 105,
+      "norm_family": 181
+    },
+    "Surface": {
+      "eq_of_sub_of_sub": 2,
+      "Canonical": 15,
+      "norm": 8,
+      "norm_family": 39
+    },
+    "Exchange": {
+      "eq_of_sub_of_sub": 0,
+      "Canonical": 0,
+      "norm": 0,
+      "norm_family": 0
+    }
+  },
+  "entries": [
+    {
+      "path": "formal/Benitoite/Release/BuilderExamples.lean",
+      "line": 129,
+      "kind": "theorem",
+      "name": "Benitoite.Release.BuilderExamples.dedicated_inside_lambda",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageTypes.lean",
+      "line": 39,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Coverage.erase_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageTypes.lean",
+      "line": 41,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Coverage.eraseTys_norm",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/CoverageTypes.lean",
+      "line": 72,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Coverage.erase_subst_raw",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 24,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.singleFail",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 31,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.union",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 41,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.mem_union",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 50,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.memFail_singleFail",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 53,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.memFail_union",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 59,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.mem_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 63,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.sub_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 67,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.union_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 70,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.canonical_ofAtoms",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 73,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.eq_of_sub_of_sub",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 98,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_mono",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 115,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.sub_norm_self",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Effect.lean",
+      "line": 119,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_sub_self",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/FailureEffects.lean",
+      "line": 7,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_singleFail",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/FailureExamples.lean",
+      "line": 99,
+      "kind": "theorem",
+      "name": "Benitoite.Release.FailureExamples.toResult_typed",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 128,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normWith_eq_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 143,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTysWith_eq_norm",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 151,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.normWith_eq_norm_of_fails",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 164,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.normWith_eq_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 200,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normWith_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 205,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.normWith_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 210,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normWith_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 214,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.normWith_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 219,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normWith_idem",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 224,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.normWith_idem",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 236,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normWith_support_independent",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Finite.lean",
+      "line": 240,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.normWith_support_independent",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "line": 151,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.support_of_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "line": 163,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.supportList_of_norm",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "line": 168,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.support_of_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "line": 179,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_fails_support",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/FiniteSupport.lean",
+      "line": 188,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.support_of_sub",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "line": 39,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_empty",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "line": 44,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_empty",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "line": 51,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_name",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Closed.lean",
+      "line": 19,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.applyTo_varsIn",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Closed.lean",
+      "line": 31,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.VarsIn.substAt",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Closed.lean",
+      "line": 90,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.VarsIn.substAt",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "line": 20,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_of_noRho",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "line": 29,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_subst_append",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "line": 51,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.methTy_subst",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Dict.lean",
+      "line": 120,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.methTy_subst",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/FailureBase.lean",
+      "line": 63,
+      "kind": "def",
+      "name": "Benitoite.Release.captureEff",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/FailureBase.lean",
+      "line": 65,
+      "kind": "theorem",
+      "name": "Benitoite.Release.captureEff_left",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/FailureBase.lean",
+      "line": 69,
+      "kind": "theorem",
+      "name": "Benitoite.Release.captureEff_right",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/FailureBase.lean",
+      "line": 73,
+      "kind": "theorem",
+      "name": "Benitoite.Release.captureEff_state",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresFailure.lean",
+      "line": 15,
+      "kind": "theorem",
+      "name": "Benitoite.Release.HasFailureClause.instantiate",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresFailure.lean",
+      "line": 60,
+      "kind": "theorem",
+      "name": "Benitoite.Release.pres_failure",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+      "line": 18,
+      "kind": "theorem",
+      "name": "Benitoite.Release.preservationE",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+      "line": 48,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.subst_tvar0",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+      "line": 111,
+      "kind": "theorem",
+      "name": "Benitoite.Release.pres_op_common",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Regularity.lean",
+      "line": 34,
+      "kind": "theorem",
+      "name": "Benitoite.Release.fnTy_wf",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/Regularity.lean",
+      "line": 138,
+      "kind": "theorem",
+      "name": "Benitoite.Release.HasTypeVQ.wf",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "line": 19,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.applyTo_notHead",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "line": 25,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.applyTo_of_notHead",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "line": 56,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.applyTo_wf",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "line": 62,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_zero",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TyLemmas.lean",
+      "line": 65,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shiftList_zero",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/TySubst.lean",
+      "line": 25,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.applyTo_notCont",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/VariableBind.lean",
+      "line": 12,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_clean",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Lemmas/VariableBind.lean",
+      "line": 44,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_clean",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 111,
+      "kind": "theorem",
+      "name": "Benitoite.Release.NoFail.norm_iff",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 163,
+      "kind": "theorem",
+      "name": "Benitoite.Release.NoFail.shift_iff",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 205,
+      "kind": "theorem",
+      "name": "Benitoite.Release.RowTransport.at",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 244,
+      "kind": "theorem",
+      "name": "Benitoite.Release.failure_upper_bound",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 253,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_fails_eq_nil",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 267,
+      "kind": "theorem",
+      "name": "Benitoite.Release.QTy.norm_iff",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 270,
+      "kind": "theorem",
+      "name": "Benitoite.Release.QTys.norm_iff",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 275,
+      "kind": "theorem",
+      "name": "Benitoite.Release.QEff.norm_iff",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 303,
+      "kind": "theorem",
+      "name": "Benitoite.Release.QTy.shift_iff",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/NoFail.lean",
+      "line": 307,
+      "kind": "theorem",
+      "name": "Benitoite.Release.QEff.shift_iff",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 16,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 35,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.normTys",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 46,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_eq_map",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 52,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.Canonical",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 55,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.Canonical",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 57,
+      "kind": "theorem",
+      "name": "Benitoite.Release.normTys_sortUnique",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 76,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_idem",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 80,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_idem",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 86,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_idem",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 93,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.memFail",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 96,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_memFail",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 125,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_legacy",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 139,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_legacy",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 146,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_legacy",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 171,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.canonical_of_failsLeOne",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Normalize.lean",
+      "line": 192,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.canonical_of_failsLeOne",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Shift.lean",
+      "line": 15,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_compare_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Shift.lean",
+      "line": 20,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_compare",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Shift.lean",
+      "line": 24,
+      "kind": "theorem",
+      "name": "Benitoite.Release.shift_map",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Shift.lean",
+      "line": 31,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_compareList",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Order/Shift.lean",
+      "line": 38,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.sortUnique_shift",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Semantics.lean",
+      "line": 599,
+      "kind": "def",
+      "name": "Benitoite.Release.LocTy.WF",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/SubstEnv.lean",
+      "line": 41,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_row",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/SubstEnv.lean",
+      "line": 77,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_eq_bind",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "line": 67,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_rawWF",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "line": 82,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_rawWF",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "line": 87,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_rawWF",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "line": 153,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_wf",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "line": 180,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_wf",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeBounds.lean",
+      "line": 225,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_wf",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 34,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.memFail_rawBind_rowImage",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 52,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_ext",
+      "categories": [
+        "eq_of_sub_of_sub",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 60,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_congr_rows",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 87,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bindTys_congr_rows",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 97,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_congr_rows",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 133,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.mem_bind",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 140,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.memFail_bind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 153,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_row",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 197,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_applyTo",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 209,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 213,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_comp_of_types",
+      "categories": [
+        "eq_of_sub_of_sub",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 265,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_comp",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 308,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bindTys_comp",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 319,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_comp",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 334,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.ext_canonical",
+      "categories": [
+        "eq_of_sub_of_sub",
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeComposition.lean",
+      "line": 340,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_union",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 15,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_congr_scoped",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 43,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bindTys_congr_scoped",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 53,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_congr_scoped",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 103,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_identity",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 106,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_identity",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 109,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.rowImage_normEnv",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 115,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_normEnv",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeCongruence.lean",
+      "line": 119,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.bind_congr_scoped_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 16,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.WF.canonical",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 29,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.WFList.norm_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 36,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_WF",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 47,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_WF",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 58,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.LatentWF",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 129,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_of_wf",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRegularity.lean",
+      "line": 132,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_of_wf",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRows.lean",
+      "line": 66,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_rowsIn",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRows.lean",
+      "line": 79,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_rowsIn",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeRows.lean",
+      "line": 85,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_rowsIn",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 14,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_true",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 139,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_at_rowImages",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 175,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_fails",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 203,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_nil_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 208,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substRho_nil",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 217,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_nil_of_wf",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeScopedSubst.lean",
+      "line": 287,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 85,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_rawShift",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 89,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_rawShift",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 95,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_rawShift",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 107,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.rawShift_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 112,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.rawShift_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 118,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.shift",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 149,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_eq_norm_rawShift",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 154,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shiftTys_eq_norm_rawShift",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 163,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 166,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_canonical",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 183,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_zero_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeShift.lean",
+      "line": 186,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_zero_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubst.lean",
+      "line": 29,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.applyTo",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubst.lean",
+      "line": 111,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.bind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubst.lean",
+      "line": 112,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.bind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubst.lean",
+      "line": 128,
+      "kind": "def",
+      "name": "Benitoite.Release.Eff.substAt",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 19,
+      "kind": "theorem",
+      "name": "Benitoite.Release.TyCon.norm_rawApply",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 27,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_rawApplyTo",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 34,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_rawBind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 45,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_rawBind",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 51,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_rawBind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 65,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.rawBind_norm_congr",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 70,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.memFail_rawBind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 120,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.bind_mono",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 147,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.test_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 151,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAtoms_map_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 163,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.rowFails_map_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 187,
+      "kind": "def",
+      "name": "Benitoite.Release.SubstEnv.norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 191,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.rawApplyTo_norm_congr",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 198,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_rawBind_normEnv",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 208,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_rawBind_normEnv",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 214,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_rawBind_normEnv",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 229,
+      "kind": "theorem",
+      "name": "Benitoite.Release.SubstEnv.at_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 249,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_substAt",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 256,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_substAt",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 263,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.applyTo_eq_raw_norm",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 269,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.substAt_eq_rawBind",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 395,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_eq_raw_of_legacy",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 398,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_eq_raw_of_legacy",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 421,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.substAt_eq_raw_of_legacy",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 428,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_eq_raw_of_legacy",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSubstLemmas.lean",
+      "line": 435,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_ofAtoms",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 32,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_support",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 44,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.normTys_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 49,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_support",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 82,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.shift_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 86,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.shift_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 168,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.substAt_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeSupport.lean",
+      "line": 175,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.substAt_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeVariables.lean",
+      "line": 17,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.VarsIn",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeVariables.lean",
+      "line": 130,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Ty.norm_VarsIn",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/TypeVariables.lean",
+      "line": 135,
+      "kind": "theorem",
+      "name": "Benitoite.Release.Eff.norm_VarsIn",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Typing.lean",
+      "line": 136,
+      "kind": "def",
+      "name": "Benitoite.Release.Ty.WF",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckComputeCalls.lean",
+      "line": 119,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Check.computes_partialCon",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "line": 421,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Check.singleFailure_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+      "line": 425,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Check.singleFailure_atoms",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "line": 69,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.canonicalEff_spec",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "line": 78,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.wfEff_spec",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckPredicates.lean",
+      "line": 87,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.cleanEff_spec",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckSoundCalls.lean",
+      "line": 187,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Check.partialCon_case",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTools.lean",
+      "line": 48,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.union_atoms",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/CheckTools.lean",
+      "line": 118,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.applyTo_atoms",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "line": 10,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Examples.canonical_empty",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "line": 11,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Examples.canonical_single",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "line": 60,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Examples.mainExpr_typed",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Examples.lean",
+      "line": 412,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Examples.dieExit_ok",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/FinitePredicates.lean",
+      "line": 17,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.canonicalEff_spec",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/FinitePredicates.lean",
+      "line": 59,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.wfEff_spec",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/FinitePredicates.lean",
+      "line": 100,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.cleanEff_spec",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 49,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.applyToTy_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 54,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.shiftTy_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 59,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.shiftEff_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 63,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.substTyAt_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 70,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.substEffAt_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 95,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.unionEff_eq_of_fails",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 104,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.unionEff_fails_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 114,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.unionEff_eq",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 117,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.unionEff_support",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 127,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.effSub_sound_of_fails",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/FiniteTools.lean",
+      "line": 148,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.CheckTools.Finite.effSub_complete",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+      "line": 31,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.clean_le",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+      "line": 65,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.fnTy_clean",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+      "line": 286,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.HasTypeQ.clean",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Records.lean",
+      "line": 96,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.record_subst_identity",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "line": 332,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.union_empty_right",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "line": 341,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.union_empty_left",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "line": 351,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.union_empty_right_nested",
+      "categories": [
+        "eq_of_sub_of_sub"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Sequence.lean",
+      "line": 358,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.union_empty_left_nested",
+      "categories": [
+        "eq_of_sub_of_sub"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ShiftClean.lean",
+      "line": 56,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.shiftEff_clean",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/ShiftClean.lean",
+      "line": 73,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.rawShiftEff_clean",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/SubstClean.lean",
+      "line": 8,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.substAt_clean",
+      "categories": [
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+      "line": 209,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.HasTypeQ.desugar_partialCon",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/Monad2Examples.lean",
+      "line": 264,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Monad2Examples.signatures_scoped",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Monad2Examples.lean",
+      "line": 315,
+      "kind": "theorem",
+      "name": "Benitoite.Surface.Monad2Examples.program_wellFormed",
+      "categories": [
+        "Canonical",
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": []
+    },
+    {
+      "path": "formal/Benitoite/Surface/Typing.lean",
+      "line": 84,
+      "kind": "inductive",
+      "name": "Benitoite.Surface.HasTypeQ",
+      "categories": [
+        "norm",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "norm",
+        "norm_family"
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Surface/WellFormed.lean",
+      "line": 32,
+      "kind": "def",
+      "name": "Benitoite.Surface.Expr.Scoped",
+      "categories": [
+        "Canonical",
+        "norm_family"
+      ],
+      "statement_categories": [
+        "Canonical",
+        "norm_family"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "formal/Benitoite.lean": "ec7c56ee8d530195eb9f74e898509320f7c184de52d0aaea4ec0437f767a8645",
+    "formal/Benitoite/Checked/Access.lean": "e6a476056d5889fa5e2e38a8169932d58a6e47ea6e1542e62b4b75de6467836f",
+    "formal/Benitoite/Checked/ListIndex.lean": "f0061e5e869b442de262690bfb31f71290f6e9dadfa7b060ae97fe43521503c9",
+    "formal/Benitoite/Checked/ListLength.lean": "66d654c5dfcc42b83144db2f31d1669f4f0d4cfee6d9cb2e8423da07c0064cc9",
+    "formal/Benitoite/Checked/NonEmptyList.lean": "40272b5b730c7522b708ebcc5e5eef5f0e805fe568286e565b44aaaf1b26b371",
+    "formal/Benitoite/Checked/Range.lean": "1b2078a41019eef398a77592faa948a59de379ede6fd5ad9b7c22cd0b5dfab3b",
+    "formal/Benitoite/Checked/Scope.lean": "691a010094a342a0095fe1d7758babc60189869346eb317d0960e47c6e17380f",
+    "formal/Benitoite/Core/Assumptions.lean": "b8ff44048d1441ab6691ae448107e96ea369f8c79cceacd8a3b142ea851aa702",
+    "formal/Benitoite/Core/Examples.lean": "5392e9aa8fbf6aa60e6e7493f05227aa004fb21ca4013f58e1c7bb0f8bdc392d",
+    "formal/Benitoite/Core/Lemmas/Basic.lean": "976302b6e7688b5c2f4219f3dc2172d5e6dfd0b2f609b0c2a3a5a58727d1e222",
+    "formal/Benitoite/Core/Lemmas/Canonical.lean": "7512ff93871d4f7f97af322bd4877c8bf45d4c02580789b4f2fa9fdc1eaddedc",
+    "formal/Benitoite/Core/Lemmas/Compose.lean": "f26894297ae4425f57ac54ad2d37c3f1ee7148fa000c3d6af968f2ae13c7f26e",
+    "formal/Benitoite/Core/Lemmas/Inversion.lean": "04768bcb0f66501abd09f9bafb74b0b3aafe632a392f5a7a8677050aa901e577",
+    "formal/Benitoite/Core/Lemmas/Preservation.lean": "28e11e9d490f339dee4caa9984309f0e3a4c84b323e232a897f4822b38d6f772",
+    "formal/Benitoite/Core/Lemmas/Rename.lean": "b1c99e9c290a4ba74fd57dfd720d5fc3b3ed5a5ee190526932cfaf4402320f0e",
+    "formal/Benitoite/Core/Lemmas/SubstTyping.lean": "0dff2b5cafee5a8c2c44c425f699e1da76288d25613e4303b9560899dc975f32",
+    "formal/Benitoite/Core/Lemmas/TySubst.lean": "3ea6c5b279d4819f4a1f87a2700885cb19390f9cae0d8237d2f10840092ee76c",
+    "formal/Benitoite/Core/Semantics.lean": "56e71e377f6c501e44986b50b89dc36d01717215bb69c6577c0191753f10e545",
+    "formal/Benitoite/Core/Subst.lean": "51039410b6ac969d92b3d99e357c5531f121739a1de8332da3b3a93f0d27b156",
+    "formal/Benitoite/Core/Syntax.lean": "5af519712cf3a502f2faae2dd35941162b0ee1e6977cddbd384fd02abe1255a1",
+    "formal/Benitoite/Core/Theorems.lean": "2041e3a25ef737450cedcb43b544125e5bf0215beab00046f0a5f9f8b2e724ce",
+    "formal/Benitoite/Core/Typing.lean": "1961dedf7c1c9357d8716bb9a7c72d4766f2a855f5ba125d2e7399c90e7dd590",
+    "formal/Benitoite/Core/WellFormed.lean": "b50babbe487eda9d33e36a793973f588f5ee9d89796a5250ddab28323aaaabaf",
+    "formal/Benitoite/Exchange/BuilderExamples.lean": "123604369a7ab504668b453e487f5f38464acabdb9751157796466288a57d62c",
+    "formal/Benitoite/Exchange/Builtins.lean": "96790cc18218102d71b383cb0576f564d0e60cd6296102eaa9f9383c999ccf68",
+    "formal/Benitoite/Exchange/CheckInput.lean": "9dbf5274b4ad94c702c95739b2921673a82e3eee4d87b78cf1eac8c7aa83301d",
+    "formal/Benitoite/Exchange/Convert.lean": "b31548b04874836719f0dc9112b608dbb72ec3aed9e805881e4c1b7eeb0991a8",
+    "formal/Benitoite/Exchange/FormatExamples.lean": "152582193cea5829c7ada1698ceb67320650c3f295d2ce60ff85458d7bc6dab1",
+    "formal/Benitoite/Exchange/IntegerExamples.lean": "e22156eb7cf451f1e40ac16dc2f73b48e6db4a993383b895e90d4143c3c89cec",
+    "formal/Benitoite/Exchange/Syntax.lean": "6d25ce1c11e7f3ca64c3c0b2dcf946b5e127b818acd1e1f9a7e1e96660b12ccb",
+    "formal/Benitoite/Exchange/Version.lean": "a74b2af20dabd334439959ac5054ff1319136e61f72fdbcb2ad953e9feb0af16",
+    "formal/Benitoite/Interval/Analyze.lean": "b53c3d50784dbe4b524f949398e138e85fc8aafb5e279946858232e82da24db1",
+    "formal/Benitoite/Interval/Arithmetic.lean": "2ebc5f3e9206d12835f5c1bbbcce2df6df05dd5afbc3ef653ea331ab16ee21d5",
+    "formal/Benitoite/Interval/Budget.lean": "f3bc4bae3c2d542d24ea5707dd38793cb936070de6ed7650d2edcc7989c103b7",
+    "formal/Benitoite/Interval/BudgetAnalysisExamples.lean": "b0c813de56711a6d80b25d174623f5062758db9240e05f985b66dc8b8f7cf33d",
+    "formal/Benitoite/Interval/BudgetAnalyze.lean": "e05a3fb0c3ad0388a27d3945cff574a14aef4b5ea5f14e7d62802f42c0687087",
+    "formal/Benitoite/Interval/BudgetBody.lean": "520eb9a0b136c54ea12f9a3fa262522bf48ad264df709342d733927a665eafd3",
+    "formal/Benitoite/Interval/BudgetCallReach.lean": "4862d7a46b25b00ad1b7fe6080b1a5b969761b1de34313eeced564d4ae6b230c",
+    "formal/Benitoite/Interval/BudgetCause.lean": "e49f1471bcab22559e2e9af2d63b2b5645d1e0a2e5d1350cc137e10651919535",
+    "formal/Benitoite/Interval/BudgetChildren.lean": "ade96f8681225722ae15afd42df874ef3f2047ccc7b14a3530902af9f9405c16",
+    "formal/Benitoite/Interval/BudgetChildrenExamples.lean": "f9bfab501d7beadfd2bc583fdbec6a7302baa74a91f41956fe7f98de4c17818c",
+    "formal/Benitoite/Interval/BudgetCount.lean": "03ab60ad3155a9d92dd0b06576d5b9b9d7b085e4643f998c033e63fd0bccdb5a",
+    "formal/Benitoite/Interval/BudgetDiscover.lean": "199dcd082b02b4545e03ef23b78b294ba7516b3b79c6febfabd10fb0db60d6fd",
+    "formal/Benitoite/Interval/BudgetDiscoverProof.lean": "b48485c194c436cd2a8a5ae52b85fcea9c0f0dfb0dca1e8e22e6eceb50e1d5df",
+    "formal/Benitoite/Interval/BudgetDiscoveryExamples.lean": "5d61fe1008497826f82500605aedb88e88b71d43d6af2617cec7cd0f5e7820f3",
+    "formal/Benitoite/Interval/BudgetDomainScan.lean": "715e071c385cb1701964f9d6e47fc2ea3e124c0727630da8cda0b36a83cd1e68",
+    "formal/Benitoite/Interval/BudgetEnvironment.lean": "04a4608a47210e6fd1d3b8c34cbe1ab5998bb3c25cb78247161f3b33e17be456",
+    "formal/Benitoite/Interval/BudgetExamples.lean": "90f320a81097546b02c745ba0d279a12a8e52cef07aabf7f711c3347d76151c0",
+    "formal/Benitoite/Interval/BudgetIndependent.lean": "a0d77a5195083e6e58d58fe33cbb45d53dced5e3ce39e1f24e63f18f37c48d45",
+    "formal/Benitoite/Interval/BudgetIndependentExamples.lean": "6e6bb9432a4882f4abac1519c29baf24d5de68ca6e5836406dad12b6dadbff33",
+    "formal/Benitoite/Interval/BudgetIndependentPosition.lean": "80f8eeaca6fbe4c3a584cf087fe2ea4215e8922a5d6144dbc7ea08bd4ff1b09d",
+    "formal/Benitoite/Interval/BudgetIndependentRun.lean": "92748822411cf5e9594e339cd933f2a1c3c0432fe8a594bc5ff6a7ec86e68db1",
+    "formal/Benitoite/Interval/BudgetIndependentSound.lean": "a165b1b4f457649edfbc2a1582ef4c04a74f5d5cb4539eabdecf5ce5c5d75e19",
+    "formal/Benitoite/Interval/BudgetLocated.lean": "eb3a2dcc786a110e5d47d1a2a7e23e31c551c98b7020bd05d7003434001e51fc",
+    "formal/Benitoite/Interval/BudgetNormal.lean": "37c7eaf6e0a71bef46fa45be517e5127f58834b8257a3ac04281a0754da234aa",
+    "formal/Benitoite/Interval/BudgetPatterns.lean": "85cb9ebfb22e5a0be9c5cbc864f434e9ec0f09a7cfa51a6ca1eabadbb8dcd9a3",
+    "formal/Benitoite/Interval/BudgetProof.lean": "ae37eb14c522ec66a3194700b7c9d7b7a3bb1d38095cae31470b1ad598f72f07",
+    "formal/Benitoite/Interval/BudgetRange.lean": "dd46fa879e5619aadd8a84461ac08616f7fc93273c201ab705fb158a2e4d70e3",
+    "formal/Benitoite/Interval/BudgetRangeBorrow.lean": "f89846e24c89bcc099b68e360611f705d0d417b749d550b18d51d67007d6ff14",
+    "formal/Benitoite/Interval/BudgetReach.lean": "729bfacd7e56db8caed40cd97ff06414a46e117aa3fa3250312093fd99cdceb2",
+    "formal/Benitoite/Interval/BudgetScan.lean": "dc5e3f145900e89bb94cf7d5e8fb9e3326270a4198395fdcf18f4c9d30badf44",
+    "formal/Benitoite/Interval/BudgetScanExamples.lean": "7fc14d71aeab307df52a0c3f135b88e7a181ace016600b6be67eb3b98e51e492",
+    "formal/Benitoite/Interval/BudgetSelect.lean": "b8c73c92c78a339eb98efd973ba8867b27371e35bcfdb6a4b2f39e4420220959",
+    "formal/Benitoite/Interval/BudgetSound.lean": "4760c370182cf47d2a33d640925d19e486ae0038c0935b87f4b3b8eb3dff8953",
+    "formal/Benitoite/Interval/BudgetTraversal.lean": "58c4e88aac57fbf0e31e4efd5df2a69b45aa9adc51babdeab1fe4a5ac8cc0b97",
+    "formal/Benitoite/Interval/BudgetWalk.lean": "5cb93af0f1dd8444081d84442bb078f87a2784a4998e53a5aff791da5a185c8a",
+    "formal/Benitoite/Interval/BudgetWhole.lean": "9b1a514b2086800cd5e5001b5d15c901fe158c4fd089c7177c630c5b17341863",
+    "formal/Benitoite/Interval/BudgetWholeExamples.lean": "633cc522c3252598ddb3043d9166f93625f46aa68cbb9ae78d0a6ab809d412fd",
+    "formal/Benitoite/Interval/CallReach.lean": "10729ead489c5ed756abcf8ffdfe1df2969c3d3091e2753d137674a5a9e7c1f4",
+    "formal/Benitoite/Interval/CallReachIndependent.lean": "ebb33a0b70860795db943d4c215046c336460a435f2b41016a147208b28017db",
+    "formal/Benitoite/Interval/CallReachSound.lean": "37e355cc12eb96f8a1a1596c09bab75d97b6bb98b3e1c17d2aeaf3a81ec66006",
+    "formal/Benitoite/Interval/CallReachWhole.lean": "03c36853e1af06bd689297c54844800de6c0ec7aa36e36b0a824195e4774c6dc",
+    "formal/Benitoite/Interval/CallTables.lean": "de7a0e5e4e772f0a3ce6399eb5241e2da2204fd061fb709fecedb134670f4988",
+    "formal/Benitoite/Interval/Domain.lean": "ceae764ac0ea18b3cb60d9cf3c000707f647eb03cb1505a06e164baad27cfb35",
+    "formal/Benitoite/Interval/DomainExamples.lean": "1a3ae0ccac8b2c8e0947a4bcc7d8eaeb043ea79949a7983126533005e5916d27",
+    "formal/Benitoite/Interval/Environment.lean": "22812b854ac39d520884b5f073c422029cd947ffaf32dc08f80806045ab63dd7",
+    "formal/Benitoite/Interval/Eval.lean": "01a9777e30a7ed45782eec65eff7357e32a1bce72bcabcf0b47abe80273df1b6",
+    "formal/Benitoite/Interval/EvalClosed.lean": "6f88fad451c1a270fc8839c69756fac187f1b1d7c99b1835716df18fb17daec6",
+    "formal/Benitoite/Interval/Examples.lean": "fa79b6cc863ec8f46a8692754ba2418893938bc7061b92c1a27f98eb46edff9f",
+    "formal/Benitoite/Interval/Exchange.lean": "ac9c568f7eba40928f4efcd28a9ba2e85264108651fd79a653af4a8b8fa30f63",
+    "formal/Benitoite/Interval/ExchangeExamples.lean": "b18e21747e3f4d17484af7dca500d37923676fd4e0dd5e361bedbf08b11051d4",
+    "formal/Benitoite/Interval/FixedDomain.lean": "c8b784c69a46a4fae5d01135689332302f2952fd735e9618b6dd98488378a75e",
+    "formal/Benitoite/Interval/FixedDomainExamples.lean": "c0c1bd2cb0983a2e4c13e3a44272c8ca74cf8262dfc0c749bc96212fa6151975",
+    "formal/Benitoite/Interval/Flow.lean": "78202fdfd5ce689090e81f3fff92165325a556000eb7ece6a5b735bf1080bd44",
+    "formal/Benitoite/Interval/FlowExamples.lean": "5dc75e75530f65f4b11099335b71f0aa1d742fc47010aa5feb54ee89fd655727",
+    "formal/Benitoite/Interval/Identity.lean": "171060da43aa09a20e41ccd1e5672d7e6810939a721b32b0f33126e947b7b209",
+    "formal/Benitoite/Interval/IdentityExamples.lean": "2a1f04ab05c78d0c012375cbd119471c65423398faa21df83ae1ad9f8d196c52",
+    "formal/Benitoite/Interval/Range.lean": "41b931f0badcdc6728a8150e67d6fddb8b836d6ac91494059e73693d426b8c00",
+    "formal/Benitoite/Interval/RangeBorrowed.lean": "9d8680042f2ee9d381ca2ba0f8284517dab405f230897a5b81fd841c29bb5c55",
+    "formal/Benitoite/Interval/RangeState.lean": "2aee9ea60f9b0ba33396561bf1dc3a361ad4f79876bf17d6c5342dc539dd53d9",
+    "formal/Benitoite/Interval/Sound.lean": "3f6bbb001bbff5a05b60ccd4849419a76d462272f225156704fff3a20ca5743b",
+    "formal/Benitoite/Interval/SyntacticReach.lean": "da3d469f523ebe1a47a38735a78d3da8796404afe30e309e65bba3f3e6c7438e",
+    "formal/Benitoite/Interval/SyntacticReachExamples.lean": "744f414eff2e057160d332605d600585a6c290fe2a9f9aa0844c3ebe11065a47",
+    "formal/Benitoite/Interval/TablePreservation.lean": "e9a38b99606d5e2f882405a36cc319ab24981fc541dff486ae8993c644d53645",
+    "formal/Benitoite/Library/ResultLaws.lean": "a436b844421e9206af6c499af6579b9694de57e0def04e9e47b449d5977d6fa9",
+    "formal/Benitoite/Release/Admissible.lean": "a7c3308ea867adec36822465a39f28a2c39609468bd055220d9ddd80b2af805e",
+    "formal/Benitoite/Release/Assumptions.lean": "784d842d6f692d538d0c903c272b91dcc1891831ece5dcb4405fae3d0ac3762a",
+    "formal/Benitoite/Release/Atom.lean": "cac69370c7b23ba5edaf9c81495207628e8eeb73e50136870f32a66efb4026fa",
+    "formal/Benitoite/Release/BuilderContents.lean": "7b847b4ffaec1f07917d0b1eca8231b172c995f5b42ab2004e0e334954ffe8e4",
+    "formal/Benitoite/Release/BuilderExamples.lean": "e16d4d118139b9e95bb28b4959d395cb1103a4152844f95dc3a45e7b7568deff",
+    "formal/Benitoite/Release/BuilderExec.lean": "c8060c785fe1940b620043be5fe7924e5de8558ada2c833fac09b93dd5a44ef8",
+    "formal/Benitoite/Release/BuiltinTable.lean": "1e082e0fe9ca72c1a453a857214eb2f503f64ed160de2ecca41f6b52c026ab6d",
+    "formal/Benitoite/Release/Coverage.lean": "3031b26d7622fcdaa3eea23aeeeb7a7a9bff45904b9f36166bd6258e8642b3bf",
+    "formal/Benitoite/Release/CoverageExtension.lean": "4ccc7887d0668ad5e87b9b72f6a22673f1609c1ca09919182141faa80f097b39",
+    "formal/Benitoite/Release/CoverageIntegerExamples.lean": "6ddb45e135ecdede2c1e8d31b693a8ad5659a0d03a70a4d5ac1c6e484319a701",
+    "formal/Benitoite/Release/CoverageShow.lean": "e7c69c8a5fa4fa2d4083e2d84f6ca2b213757e8b0e2528e3be2ab409dc861219",
+    "formal/Benitoite/Release/CoverageTypes.lean": "9b3db244cf13757490f8c1d743beb320ab830738240663bbed9d12c096980469",
+    "formal/Benitoite/Release/Effect.lean": "f913fd511cd20a492f30a1f38b036f71e699aa2ea195b3308591e2d52bb96cd6",
+    "formal/Benitoite/Release/Examples.lean": "2dfb8e1e45985e2772f6743915efd0f91f4088ecf602344ff491ec5b723f51f8",
+    "formal/Benitoite/Release/FailureEffects.lean": "dc2deb2ebde5182635585c367cf0f221e36d34541b2a32eb7ade8fcb8267eac0",
+    "formal/Benitoite/Release/FailureExamples.lean": "02d7fbb3b74a65a4ae3a035547457d7813e7cc8ce69324bd074e92e7dfd76c77",
+    "formal/Benitoite/Release/Finite.lean": "82f362948750a6fe625f1cc98df4687be6f09f7d7133f5d16403f4ec983301db",
+    "formal/Benitoite/Release/FiniteSupport.lean": "3955de7bcca6e0f2e18e17c55e1f8b1a9e5b34609d5e32b6a1b7e2c2621d31a1",
+    "formal/Benitoite/Release/LegacyCheck.lean": "ebeaf58e685928fb970eb543dd2a89526669ca74f4b7e09208c979a46779c595",
+    "formal/Benitoite/Release/Lemmas/Basic.lean": "f18a83115df3df0de5fb071f7fe0315c316dd4c227821398650547f0f2292f3e",
+    "formal/Benitoite/Release/Lemmas/BuilderStore.lean": "e5470aadc29751f0ea955453791ec38f0a4dfc6538b9239af5afdcfdf08da9ff",
+    "formal/Benitoite/Release/Lemmas/BuilderTyping.lean": "5b7af30d563802f9df994a63a1cb048f7cba368a8a425d78b1cfc597843f7a28",
+    "formal/Benitoite/Release/Lemmas/Canonical.lean": "9d68615b9cc0914f7bac7fbffbd9537f670b966d78996c0dcfca6f3a49d1f63c",
+    "formal/Benitoite/Release/Lemmas/Closed.lean": "692ddddfccf180f1579a895e26705af706a71a6a542e00bdeff3a3fa5055ec37",
+    "formal/Benitoite/Release/Lemmas/ContLemmas.lean": "9e6fb3c71a9e598e4b73d9083b8624e067c3d0280a3270de8938d77d75087aaa",
+    "formal/Benitoite/Release/Lemmas/CoverageRuntime.lean": "cdce18390466a5bf39ecaf15821572bf7aa94dc0ff7b4d654623d322887c1176",
+    "formal/Benitoite/Release/Lemmas/Dict.lean": "4465b3763cbe88443f21ea638416bb400e7988bf6bf14b16617e15d8364434fe",
+    "formal/Benitoite/Release/Lemmas/EffectSound.lean": "e8ea67492004a56b9c7b56487d2f648d7ac975a8717c40501a6124b92b7c8337",
+    "formal/Benitoite/Release/Lemmas/FailureBase.lean": "9e0785f35fc9e39f7343b78151272704b9553a1ffc8046baa6207bbababb7438",
+    "formal/Benitoite/Release/Lemmas/FailureCont.lean": "4aa25e90f311c1b70cfd1b6b21b54513f8a3d360ea86f241a3ade3179e6b706e",
+    "formal/Benitoite/Release/Lemmas/Inversion.lean": "09553c305d08c17854bcb52f4e7883327c5fef2a6b5a7bf73e738d90b95d1384",
+    "formal/Benitoite/Release/Lemmas/Irrelevant.lean": "b384c14a875a8243249f2ad453d1a92ea7839cdb7648a81cd420698159521a9d",
+    "formal/Benitoite/Release/Lemmas/LocalInvariant.lean": "ed9ae595369f53c7b4d8f05b86db3394d31323830053f3387f53e38695e50680",
+    "formal/Benitoite/Release/Lemmas/Names.lean": "1e4197ee1b88f2d7e70db092d1597010bedc45c36dcd365976f17f702b4a9608",
+    "formal/Benitoite/Release/Lemmas/NoFailContext.lean": "203a1b3839e824276359f3bc5a72d16ee76b87dfc9eb24b1fbca00c6a01a32f8",
+    "formal/Benitoite/Release/Lemmas/OuterC.lean": "733d9ac1304a10435ddcc67559cea4fcd6d8dfb74ae10e960d5c0fe9e65468f8",
+    "formal/Benitoite/Release/Lemmas/PresBase.lean": "ebcebef4df9a1a49c2d2451921f6946c4c6285a9cc535df3f936800336f3a596",
+    "formal/Benitoite/Release/Lemmas/PresFailure.lean": "677711cf4d1b3e89d18c2d9833356a08795764bb081b910ec082157144fa6646",
+    "formal/Benitoite/Release/Lemmas/PresHelpers.lean": "8bafda95665da71c86f962f3e8a06c07a631ad18b39b7d738bb8b09ef7df037e",
+    "formal/Benitoite/Release/Lemmas/PresMain.lean": "128080b2880694bcc735d5c36cc16464eaf1b56c5f594880089147de8353b666",
+    "formal/Benitoite/Release/Lemmas/Preservation.lean": "d05d8e060e1e1c6f27f0a4c03a4a40cc33dfb24c89eb05006d47a9ed5e2f822a",
+    "formal/Benitoite/Release/Lemmas/Progress.lean": "a9caacf39f9f3219d61cd67cc02363396ff89da16de6b54ecd88bf473ba4ebc2",
+    "formal/Benitoite/Release/Lemmas/Regularity.lean": "0559d5ed065205394ed61b234991b528769d5f1bb4642a896fb475c16d9093dd",
+    "formal/Benitoite/Release/Lemmas/Rename.lean": "c2640810315c9dea783852af2ce4fb3382f66e60c91767e9eaffbbce38cf9d22",
+    "formal/Benitoite/Release/Lemmas/StepSound.lean": "9908f51bb1bdd0954df09615e9eabb18adef57693a325eb256683a7df7fd4dc1",
+    "formal/Benitoite/Release/Lemmas/StoreLemmas.lean": "01c81b95f6b66d3dd62c8c641b0b1a5c1da5ea3b0e775db7fb5b2a325f4ebfae",
+    "formal/Benitoite/Release/Lemmas/SubstTyping.lean": "c96df6c978f2c97b00c67373fc238efa66c6d07d8053e58c78769793d1acd1fd",
+    "formal/Benitoite/Release/Lemmas/TyLemmas.lean": "c53d4ed95ef2e351f9b82c68b5daad31c25e1c7966e59a5faabbdd5b8149073e",
+    "formal/Benitoite/Release/Lemmas/TySubst.lean": "0cbfb4a3d30b779f837c43d04ec323c6e7a77890b5e1f542e1ecfed3f7d8dbd1",
+    "formal/Benitoite/Release/Lemmas/TySubstMain.lean": "b27ee4846724162283e9304b0da089431c251bda2754709910ac335cf42453f4",
+    "formal/Benitoite/Release/Lemmas/VariableBind.lean": "73d146576df4c37a22d4d2414929c2261dbd6dceca43dfa8e1a91de4b2b1bf78",
+    "formal/Benitoite/Release/LocalRef.lean": "03bbabff72b519ab548f24dd284bebf4b7265f266dfc1320021e3d779b75d6a3",
+    "formal/Benitoite/Release/LocalScope.lean": "49f0e40779f80d9c085d33293814f834fbe9cea0d97616e7d7b878b4cba41d07",
+    "formal/Benitoite/Release/LocalTyping.lean": "e223ea74281a83698e2575013e3913be4a75b4546db350376e818731a298d697",
+    "formal/Benitoite/Release/Model.lean": "df1eec09dac77c42b50ba6db618f2599ac147dd9ff72b51721f7511d2f3cc1a6",
+    "formal/Benitoite/Release/NoFail.lean": "ff0e3cfc1dd962a6b27b9453756b09d5e57590eccff0d327f2b36ff4620871e2",
+    "formal/Benitoite/Release/Normalize.lean": "2fee770cfd2f70ef38dd6da567ee4f74195f644311c2979e24bd0163e59a58a2",
+    "formal/Benitoite/Release/Order/Atoms.lean": "f4e6ff0af0fcd31302de7350aaa948dfc74b6cef15eefb6bfcd30355f54e18b8",
+    "formal/Benitoite/Release/Order/FiniteAtoms.lean": "6a57378eb743fd672df5010d34996be6d5468c82f9222f274e308211be13855b",
+    "formal/Benitoite/Release/Order/Labels.lean": "f3567a65c8177481934b4d4e4ab824e7ff5346f64802203ef63db5263d54902a",
+    "formal/Benitoite/Release/Order/Shift.lean": "1af11ada7ad453465a7e969ca381024e531d55621c2b2edc5957b42942e6d682",
+    "formal/Benitoite/Release/Order/SortUnique.lean": "86247aaf4b61a90065e0fe94f0a257be5b0791eaf9e76da0b33b66faebafb3e1",
+    "formal/Benitoite/Release/Order/Tree.lean": "44c87e0cb542fb55a7a0d3c754eb851624ab3ca3d3c961fd5318126deaeb0ffd",
+    "formal/Benitoite/Release/Order/Types.lean": "392b14682cca6a3041a6f88ff53e94f414cfe497199bf3b0090f7884b13692f6",
+    "formal/Benitoite/Release/Semantics.lean": "1a680563a9b3745c59f954c5e4b11fbb38589242aa791d761ddc5d7dbd1fb47d",
+    "formal/Benitoite/Release/Subst.lean": "cb640b0ba1c0689114ef02729215978447463dcd6b89c10a206d2a8e34daf561",
+    "formal/Benitoite/Release/SubstEnv.lean": "213cc7df47f6d3f34729353788ce6d54b8f4abc36676cb76ad3afde90fd2c591",
+    "formal/Benitoite/Release/SubstExamples.lean": "73a8d27788c321cb7ef16beb822c9ecc9f81c929708c3d77a8e803a435145c26",
+    "formal/Benitoite/Release/Syntax.lean": "2f70d5983a0f969ac6b5ef3c538efca13983e8c19da0a5b58464b520a961d781",
+    "formal/Benitoite/Release/Theorems.lean": "9d99ca03debaceb3c71dc86808b21a1278fb9a5550e66a411339378936681a12",
+    "formal/Benitoite/Release/TypeBounds.lean": "9f62fd60bf01aa9c86593003a9e424d30bf516c8d547d4323913802d6aa7a578",
+    "formal/Benitoite/Release/TypeComposition.lean": "0b78f8557a0bccb502091f144a8f8e6d2f5ad34df65bfae97755bc641b9180f6",
+    "formal/Benitoite/Release/TypeCongruence.lean": "27dca2493b7e3bada1e91a8beff0733a35ff1da5c4619fbf67685fb32bb64d61",
+    "formal/Benitoite/Release/TypeRegularity.lean": "1280daceb05d2a218ce7e3b43e1f63ebffd2e89432f9c809122e832298e8ff77",
+    "formal/Benitoite/Release/TypeRows.lean": "c3c7960584ce3475cecf27ea7daca6c268e71900f5e642e1f255667a0efe310c",
+    "formal/Benitoite/Release/TypeScopedSubst.lean": "beabe0b046155809625534abb6af89b0d92b4c348692b5328b31aeff145adfc7",
+    "formal/Benitoite/Release/TypeShift.lean": "6a91752bdc72e7ad5d203eb288a89fc646d948bd25abaa9a8981a62a9dc1507f",
+    "formal/Benitoite/Release/TypeSubst.lean": "ee900a11c474d1552d964ea8e15dd0a58fa54526f4acd416feb702f822495c9f",
+    "formal/Benitoite/Release/TypeSubstLemmas.lean": "d63b50d30a83949de1d2a12bc16e1b917ae506508ab7efa7da636021812d32ec",
+    "formal/Benitoite/Release/TypeSupport.lean": "7bb1e72dfeec2e28402bc9317f735a975475663c78085855f6fad9d286d3dc16",
+    "formal/Benitoite/Release/TypeVariables.lean": "e46f939bf4e4c66adcfb891eac143a171a34e5ee57970a682ac74b46378b3d15",
+    "formal/Benitoite/Release/Types.lean": "35c92c40d471fa9e6823abc7455845400c4c7ae1f6369ac150ce3384480267a8",
+    "formal/Benitoite/Release/Typing.lean": "5a4bffafe9886c03582aafc3737512d6e91bb6c83ef62eb2cdcec4c1ac83e894",
+    "formal/Benitoite/Release/WellFormed.lean": "d671a67ff3abf9a41f75ec4d06d81206cf7b319f2dfb3fdc770e5d0f2fdb8596",
+    "formal/Benitoite/Surface/AdmissibleCheck.lean": "0aeec2cbde039bbaa082515c254286d777c038e38bf55038196c040f4a7dfdd7",
+    "formal/Benitoite/Surface/BuilderCheck.lean": "cc930c8d6804772c697d3d75380ce226a61883f98d5a84f2a3008762160d0e8b",
+    "formal/Benitoite/Surface/BuilderExamples.lean": "4ae1b0ed50aefd7a6d2fdaf8b73732f57047ea424860a565a819a3758de412f7",
+    "formal/Benitoite/Surface/BuilderFree.lean": "fbe19b38492486a7f267abe440479635455e6ba78c8c1fe69b355bf0881e53e7",
+    "formal/Benitoite/Surface/BuilderLower.lean": "d90a04e1b28ec08c7dce734cc6b9a5a705f64ada36f32268353e480d43c292f2",
+    "formal/Benitoite/Surface/BuilderSyntax.lean": "4cdab6fa770fa0a16fa514496f0681b7d5e014b90b46f7823f32336798ccc77e",
+    "formal/Benitoite/Surface/Builders.lean": "b591ba471a0b0df5ed93f19b8657a1c28b9a70362f256746a3bd43edee4caeec",
+    "formal/Benitoite/Surface/Check.lean": "7b42cb079aa65de0e8109ed8161c2bdc0f9da50167d39a1a419e093375cc7f6d",
+    "formal/Benitoite/Surface/CheckComputeAtoms.lean": "ad3ad1407e955fa7c52ba21d2b891d6b1ee7252deef8239d49795ac5bb8f20e5",
+    "formal/Benitoite/Surface/CheckComputeCalls.lean": "9bee964f60ae0127ea85067c066583a0a8e893cdd3375c4ebcfbf939df64fa76",
+    "formal/Benitoite/Surface/CheckComputeCases.lean": "6f441ea6bd7064c4ef48c933a0901e539d022128828b20eadf83ed3ec575db9a",
+    "formal/Benitoite/Surface/CheckComputeControl.lean": "f480034930eb40bf1294219f5c4ee1a102bedefd328c054237a6d05ce7b762ef",
+    "formal/Benitoite/Surface/CheckComputePipe.lean": "d1ed64017839c1b2dbc3806dd8f2cc0b2c1c4c6bbc8affc3f4661d5895b3f84b",
+    "formal/Benitoite/Surface/CheckComputeSound.lean": "8640c9706fdedc2060da8a0b29bf89e23805960e06a08da5e97730bca97fc878",
+    "formal/Benitoite/Surface/CheckCounterexamples.lean": "ae278457b299c496b6f55fac4e648b902c5543089c5d29740d5c7f6a46d7c33b",
+    "formal/Benitoite/Surface/CheckDictSupport.lean": "f92068ad0d760a31c515722d7e525c765c61f60532be1f143fd47bd60dc4d8b6",
+    "formal/Benitoite/Surface/CheckExamples.lean": "990ac26fb070643ac90f6e5698a5e44c948070e19f495c3589b99826a24971c6",
+    "formal/Benitoite/Surface/CheckInduction.lean": "877a7ca2b5e12eb82003d6cbdb78998933bca1dd6ec61c2f9151e5e5fd7dc6b4",
+    "formal/Benitoite/Surface/CheckLemmas.lean": "ca3ab55dbec481c895656980c9591d68b916e3aceb9dde37ca792689018c9b3c",
+    "formal/Benitoite/Surface/CheckPatterns.lean": "53eb52ccbfd3986cd2cbe3b51b9669b5665eae5e6cd33f5b121b0eab9e011223",
+    "formal/Benitoite/Surface/CheckPredicates.lean": "83bd14d9782eb2a8312eeecba94c9128a22ca19f9e2febbe93171f1ce44d7386",
+    "formal/Benitoite/Surface/CheckProgramSound.lean": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec",
+    "formal/Benitoite/Surface/CheckSound.lean": "846cbe2e617fa50e476d3542feba7c8f673cf7468ab52b22083fbd8d81e1fa09",
+    "formal/Benitoite/Surface/CheckSoundBasicExpr.lean": "72d06bf7c07cbb9cd55554950de0386a637ea7ba4f07d483fc4bac62fe050263",
+    "formal/Benitoite/Surface/CheckSoundCalls.lean": "833dd521ea3fd89c8a54e2562cc9fd48435f5a67d33bb97a328e5dbf613f88fc",
+    "formal/Benitoite/Surface/CheckSoundCollections.lean": "f06a0a57398d7a4805eb1346ea99abc2a47e5d7c6dd70ad1f77f5368196ec127",
+    "formal/Benitoite/Surface/CheckSoundControl.lean": "4ba546e6da79535dc7d2f254139bd89ec1d9993048b10edf7aaa0f11b6b06f6a",
+    "formal/Benitoite/Surface/CheckSoundDicts.lean": "b1c5766f88338123aac8d7f56cd949ee30d9619cc51f5740d5f0683d2678f8e7",
+    "formal/Benitoite/Surface/CheckSoundDie.lean": "557a0406ed9d6cbe04a9bf7a886cc84eda2170b4a66dcd381e061a398c909a9c",
+    "formal/Benitoite/Surface/CheckSoundSequence.lean": "443b574e8db4d29a37d58b30db5c51f7c168fa45586623d7a218f004593e9d49",
+    "formal/Benitoite/Surface/CheckSupport.lean": "6a476088c13a01e6a37b7776391973e937ad2fa915be5f8de18c48a7b7b06005",
+    "formal/Benitoite/Surface/CheckTables.lean": "a45ae83df6968d30f0ca7f1f44ebd108a925fcce8bebd07b1efa11db967bc9e7",
+    "formal/Benitoite/Surface/CheckTablesSound.lean": "fae2c01974bdc5bb96e64481863442aed701b109f6cbdd475109aa211bb9a60e",
+    "formal/Benitoite/Surface/CheckTools.lean": "2fa96a1a1263e0c4179a62d3efb4162727d3259fe4acd3418e68a350a6a3b6b8",
+    "formal/Benitoite/Surface/CheckToolsExamples.lean": "80019e939760b36a26bfca8898cd7d8db418dd3f8ab906d8cad0dbe511071dc8",
+    "formal/Benitoite/Surface/Desugar.lean": "129be600ff2cbea6d3b04383788097eb3ba2f50ee11b2eb1c7fa59947f177c6e",
+    "formal/Benitoite/Surface/Examples.lean": "5078532c6cfc10dcd29b172090ec675ecca83070a6895f9176f86f5fbcc688b6",
+    "formal/Benitoite/Surface/FailureExamples.lean": "71316df6c1096a9405ef92ad81f0913d4b6a33f2f548107372acde4607488beb",
+    "formal/Benitoite/Surface/FiniteExamples.lean": "f0f6057c7ed70059b1dfdd3631bdceb801126d75cfc91d48c9bd346e25f428bd",
+    "formal/Benitoite/Surface/FinitePredicates.lean": "2d572d183dfba436cb2fe6394da27d3b6f1a7ba09d6d7b02a7bf456d7e22b9a2",
+    "formal/Benitoite/Surface/FiniteTools.lean": "904b2f7d7afc0c76a139d30fc87fc174a06d53171e510b32042776f20871bf31",
+    "formal/Benitoite/Surface/FormatSpec.lean": "62d0ac57e076242e5614751471664c8eec58a5e1fe5bc988e0aca6243df5d025",
+    "formal/Benitoite/Surface/Lemmas/BlockSequence.lean": "b41614a3960170a37f44f7056a6bcf19e334b7efb0eda370ae97836de95f7eaa",
+    "formal/Benitoite/Surface/Lemmas/BuilderCapture.lean": "7afa5b48234cd4feb003fbe4dc3db8f3a9dfe22375985e57396c08e9fe51bad6",
+    "formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean": "558a6c3ddbc6897364ed8a98d129560b407fd8b62ec6cc0db71491b754a55855",
+    "formal/Benitoite/Surface/Lemmas/BuilderCaptureCompose.lean": "16da4ba46dc57c62517bb128732d91651f3e1b63eb9dd6ef308ec1da461663d4",
+    "formal/Benitoite/Surface/Lemmas/BuilderLower.lean": "6e9fb9de93a3173dea2af0a9cb20300093b49a8b7316de7845d69f4b3dfc3c6a",
+    "formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean": "10580dc7959864546441b96d2856b5ee279380208f9b48a3e16b3bad33668cb2",
+    "formal/Benitoite/Surface/Lemmas/Builders.lean": "4954bc7bcd5deb84444ecdc1a2be0ba16baa9ce46e368367466eb348cd97a4bc",
+    "formal/Benitoite/Surface/Lemmas/CallHead.lean": "90fd39d77733f45a2a74766adc10f3cfabf746f0c6eadabcdf06fdcf32fbc626",
+    "formal/Benitoite/Surface/Lemmas/Calls.lean": "33d5a568e113caab1c260f32bd154c27f7fce761cf5bbbf222427d2a3b9f7573",
+    "formal/Benitoite/Surface/Lemmas/Dict.lean": "1ad19697e90b1b414cf8659e0329c697264f0267fe9e0e6aeec38cd63648b2ff",
+    "formal/Benitoite/Surface/Lemmas/DictSupport.lean": "795b19036fc1d20f1b38c5a652b33c1a003ee796046ab690ca2451cbcac55276",
+    "formal/Benitoite/Surface/Lemmas/Extensions.lean": "ee22bfee7f541189df252f0588c9fe0219511b2e77f4bdb9895906d42a28f371",
+    "formal/Benitoite/Surface/Lemmas/ExtensionsScoped.lean": "28b7743eabd327cbb85c87b694807332489be08edea8ecbda7d83b0ba8c9039a",
+    "formal/Benitoite/Surface/Lemmas/Invariants.lean": "1d7b96e2bf5505573c0cc173f4e279739c80c07c7564cc0feb1c27257a401a79",
+    "formal/Benitoite/Surface/Lemmas/NoFailSignature.lean": "44b0f36307d1e4f2ddff4d1b3ebf11cd46b25a5b432dcdf80eba0f8d480c08e0",
+    "formal/Benitoite/Surface/Lemmas/PatternSupport.lean": "ed69ba7a88286b6319cc71dc3c96833f6ea5c68b9300d2b4bfbe804e7d7562d8",
+    "formal/Benitoite/Surface/Lemmas/Patterns.lean": "b244401d1fc64091871046048caa9ac3d1ec54131027594bb07df8c7bd864a77",
+    "formal/Benitoite/Surface/Lemmas/Program.lean": "04458436f77dc413658fce42d02e47dd26fd9ccb5368780ef31a03a2f7708a98",
+    "formal/Benitoite/Surface/Lemmas/Records.lean": "15a1cba136cffbc11ce67d27fe37e891e076749e05e1be4bc2129c344f40bf4a",
+    "formal/Benitoite/Surface/Lemmas/ReturnTry.lean": "d48f6a6eb4f60bff1208430fe55dbb9b6a6d7fd18c24a6ff8b0ea5b425ddc6bd",
+    "formal/Benitoite/Surface/Lemmas/Scoped.lean": "64267e5503aaa543e93811ad133fdb93586f6a2514f32541a8a70ac971f55559",
+    "formal/Benitoite/Surface/Lemmas/ScopedRename.lean": "9b438324aadb174f845ffc6126cacb18712cb6bdb140a6d1407f20267268624c",
+    "formal/Benitoite/Surface/Lemmas/ScopedSupport.lean": "84ec9dbcb083d68f75a08e11f66e5fcd6677f3e764d5a151a53e27a34d3fb0c4",
+    "formal/Benitoite/Surface/Lemmas/Sequence.lean": "a1f2e730da2201bdab6c53e3679e4dc8624568f9a2dbec1e905d346ea251ae72",
+    "formal/Benitoite/Surface/Lemmas/ShiftClean.lean": "f5d3b8f1bf617af7f24777f3866b865038c3a98e10786dd9432b9bcfbf7306ab",
+    "formal/Benitoite/Surface/Lemmas/SubstClean.lean": "e58dfe566d936b0f3be540df20744d56eaf4b77aa03b7cfcbdc5d926e8442e36",
+    "formal/Benitoite/Surface/Lemmas/Typing.lean": "98973bac2f09756b2e532ca519a798d2c00c23cf95527f6cd37829cce83cc3e6",
+    "formal/Benitoite/Surface/LogExamples.lean": "5076c6f7c7fe976ee3ad82f4c456c0831d623be6289678d71ecfb74670c2628c",
+    "formal/Benitoite/Surface/Monad2Examples.lean": "af38cbf858ef256e45563e84120670edb8c57e7a741951169aeae83ebadd5749",
+    "formal/Benitoite/Surface/NoFailCheck.lean": "7e461a23d68297b613a219606a895241588e16963587a608e2b5c9edea2f6505",
+    "formal/Benitoite/Surface/NoFailCheckExamples.lean": "efcfe9c666a769eb8ad01a72def7a07358ba240ca2302763202ae3c9dcc778a5",
+    "formal/Benitoite/Surface/SingleFail.lean": "b57ca666f2d1b337f2908d532d96bab6041cb2107c3d3695186f0204a2de0ae2",
+    "formal/Benitoite/Surface/SingleFailCheck.lean": "42e555a2e25996d47c2117be8ca494a71bc2b181976c54fc9d961bfd670335c6",
+    "formal/Benitoite/Surface/Syntax.lean": "9e706c87212cc0231d9aa4927b02ef02181242b366435f05ec42c6e240380d4d",
+    "formal/Benitoite/Surface/Theorems.lean": "acc6012252e8941e5c614d41d71db6cc33da05116fad8ac6414826d7795cf23a",
+    "formal/Benitoite/Surface/Typing.lean": "c180887e7bcead5ae2d88e8d6f7fdccb8b0c7f808c68aefcfc8c42278d5f975b",
+    "formal/Benitoite/Surface/WellFormed.lean": "56427f65e922dfdec7c5413a0b24bec1c8a2ce4f596cbdd4f0f88b9f2406205f",
+    "formal/BuiltinCheck/Main.lean": "96e510e644a3af7eaa79cb5d342e5928170c691bcd9d201c3b2092863436b97d",
+    "formal/CoverageDiff/Main.lean": "0c218ada126b6d727ad7365d93e9c59785e53be0020f8afbe23e28f222516518",
+    "formal/CoverageProgramDiff/Main.lean": "2deaaa8b447747df3cbc9ec97ee9ae25f8bf064b0c2c77694545567853643b26",
+    "formal/DesugarDiff/Main.lean": "31f49ff0f16465d237269195849a4be200b6c4a693eddde48f2757cb8b111f25",
+    "formal/IntervalDiff/Main.lean": "ff18fc76ace85183e39ca2b845bed2ba9946ab730cbec8f59fc2e1fb8bcbf1a8",
+    "formal/SurfaceCheck/All.lean": "c9040d09339c160bfa1f673cf10735a22f34e8e1c12d2e0eb8a3f87b4b5ad286",
+    "formal/SurfaceCheck/Batch.lean": "23d7f8ff156915a9728e62cc4db01f2916f9680654e3e219375cca13cb398b38",
+    "formal/SurfaceCheck/Main.lean": "b067cc397539b8bd3f7cef51f545497d0c1ac13bfd070d922e8226c51af711ca",
+    "formal/SurfaceCheck/Validation.lean": "5a5c9e1705963df6b52bb54273e44551b488e013bd05955dc822626d65512636",
+    "formal/SurfaceCheck/Walk.lean": "aad17f819a078a9f23677e078c304f40660ec3ce7fa99b753284a04ea3d82b60"
+  }
+}

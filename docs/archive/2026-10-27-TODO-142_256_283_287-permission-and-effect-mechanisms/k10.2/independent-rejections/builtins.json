@@ -1,0 +1,8060 @@
+{
+  "inputs": [
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "required-not-covered",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "required-unknown",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "request-widen-rejected",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "effect-not-covered",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "effect-atomic",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "effect-top",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "required-not-covered-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "required-unknown-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "request-widen-rejected-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "effect-not-covered-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "effect-atomic-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "effect-top-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "atomic-union-rejected",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "atomic-left-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    },
+    {
+      "admitsR": [
+        {
+          "name": "Scope.checkPathIn",
+          "rule": "any"
+        },
+        {
+          "name": "File.writeTextIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.checkRequestIn",
+          "rule": "any"
+        },
+        {
+          "name": "Http.widenRequestIn",
+          "rule": {
+            "covers": {
+              "inner": 0,
+              "outer": 1
+            }
+          }
+        }
+      ],
+      "dataDecls": [
+        {
+          "builtin": "result",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                }
+              ],
+              "constructorName": "Ok",
+              "fields": null,
+              "name": "Ok"
+            },
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Error",
+              "fields": null,
+              "name": "Error"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Result",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Result"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                }
+              ],
+              "constructorName": "InvalidUrl",
+              "fields": null,
+              "name": "Http.RequestCheckError.InvalidUrl"
+            },
+            {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "constructorName": "Scope",
+              "fields": null,
+              "name": "Http.RequestCheckError.Scope"
+            }
+          ],
+          "extensible": false,
+          "isRecord": false,
+          "name": "Http.RequestCheckError",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.RequestCheckError"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "tvar": {
+                    "index": 0
+                  }
+                },
+                {
+                  "tvar": {
+                    "index": 1
+                  }
+                }
+              ],
+              "constructorName": "Pair",
+              "fields": [
+                "first",
+                "second"
+              ],
+              "name": "Pair"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Pair",
+          "ntys": 2,
+          "package": "stdlib",
+          "typeName": "Pair"
+        },
+        {
+          "builtin": "ordinary",
+          "ctors": [
+            {
+              "args": [
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "base": {
+                    "name": "String"
+                  }
+                },
+                {
+                  "list": {
+                    "elem": {
+                      "data": {
+                        "args": [
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          },
+                          {
+                            "base": {
+                              "name": "String"
+                            }
+                          }
+                        ],
+                        "name": "Pair"
+                      }
+                    }
+                  }
+                },
+                "bytes",
+                {
+                  "base": {
+                    "name": "Integer"
+                  }
+                }
+              ],
+              "constructorName": "ClientRequest",
+              "fields": [
+                "method",
+                "url",
+                "headers",
+                "body",
+                "timeoutMilliseconds"
+              ],
+              "name": "Http.ClientRequest"
+            }
+          ],
+          "extensible": false,
+          "isRecord": true,
+          "name": "Http.ClientRequest",
+          "ntys": 0,
+          "package": "stdlib",
+          "typeName": "Http.ClientRequest"
+        }
+      ],
+      "effKinds": [
+        {
+          "kind": "path",
+          "name": "File.Write"
+        },
+        {
+          "kind": "endpoint",
+          "name": "Http.Connect"
+        },
+        {
+          "kind": "path",
+          "name": "File.Read"
+        }
+      ],
+      "effects": [
+        {
+          "name": "State",
+          "ops": []
+        },
+        {
+          "name": "File.Write",
+          "ops": [
+            "File.writeTextIn"
+          ]
+        },
+        {
+          "name": "File.Read",
+          "ops": []
+        },
+        {
+          "name": "Http.Connect",
+          "ops": []
+        }
+      ],
+      "group": "golden",
+      "name": "atomic-right-accepted",
+      "prims": [
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Scope.checkPathIn",
+          "names": [
+            "pattern",
+            "path"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "101:[]"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "102:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [
+            {
+              "name": {
+                "ix": {
+                  "rvar": 0
+                },
+                "value": "File.Write"
+              }
+            }
+          ],
+          "effParams": [],
+          "kind": "io",
+          "name": "File.writeTextIn",
+          "names": [
+            "path",
+            "text"
+          ],
+          "neffs": 0,
+          "opEff": "File.Write",
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "101:[]"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "base": {
+                    "name": "Unit"
+                  }
+                },
+                {
+                  "opaque": {
+                    "ix": {
+                      "fixed": "top"
+                    },
+                    "name": "103:[]"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "path"
+          ],
+          "shape": {
+            "single": {
+              "kind": "path",
+              "position": 0
+            }
+          },
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.checkRequestIn",
+          "names": [
+            "hostPattern",
+            "minimumPort",
+            "maximumPort",
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "data": {
+                "args": [],
+                "name": "Http.ClientRequest"
+              }
+            }
+          ],
+          "ret": {
+            "data": {
+              "args": [
+                {
+                  "opaque": {
+                    "ix": {
+                      "rvar": 0
+                    },
+                    "name": "105:[]"
+                  }
+                },
+                {
+                  "data": {
+                    "args": [],
+                    "name": "Http.RequestCheckError"
+                  }
+                }
+              ],
+              "name": "Result"
+            }
+          },
+          "rkinds": [
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        },
+        {
+          "classConstraints": [],
+          "eff": [],
+          "effParams": [],
+          "kind": "pure",
+          "name": "Http.widenRequestIn",
+          "names": [
+            "request"
+          ],
+          "neffs": 0,
+          "opEff": null,
+          "params": [
+            {
+              "opaque": {
+                "ix": {
+                  "rvar": 0
+                },
+                "name": "105:[]"
+              }
+            }
+          ],
+          "ret": {
+            "opaque": {
+              "ix": {
+                "rvar": 1
+              },
+              "name": "105:[]"
+            }
+          },
+          "rkinds": [
+            "endpoint",
+            "endpoint"
+          ],
+          "shape": "untargeted",
+          "tparams": [],
+          "unconvertibleTypes": []
+        }
+      ],
+      "resources": [],
+      "statePure": [],
+      "summaries": [
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Result"
+        },
+        {
+          "eq": {
+            "always": true,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.RequestCheckError"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "key": {
+            "always": false,
+            "dependsOn": [
+              0,
+              1
+            ]
+          },
+          "name": "Pair"
+        },
+        {
+          "eq": {
+            "always": false,
+            "dependsOn": []
+          },
+          "key": {
+            "always": false,
+            "dependsOn": []
+          },
+          "name": "Http.ClientRequest"
+        }
+      ],
+      "supplementalData": [],
+      "supplementalPrims": [],
+      "valContents": [
+        {
+          "content": {
+            "data": {
+              "args": [],
+              "name": "Http.ClientRequest"
+            }
+          },
+          "name": "105:[]"
+        }
+      ],
+      "valKinds": [
+        {
+          "kind": "path",
+          "name": "101:[]"
+        },
+        {
+          "kind": "endpoint",
+          "name": "105:[]"
+        }
+      ]
+    }
+  ],
+  "version": 7
+}

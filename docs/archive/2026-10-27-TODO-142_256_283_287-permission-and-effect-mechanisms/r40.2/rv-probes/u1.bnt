@@ -1,0 +1,22 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+effect Ask
+ function ask(path: Scope.PathIn["/data/**"]) -> String
+end effect
+function body(p: Scope.PathIn["/data/**"]) -> String uses Ask
+ return ask(p)
+end function
+function main() -> Unit uses File.Read["/data/**"]
+ bind checked: Result[Scope.PathIn["/data/**"], Scope.ScopeError] <- Scope.checkPathIn(pattern: "/data/**", path: "/data/x")
+ match checked with
+ case Result.Ok(p) ->
+  bind _ <- handle body(p) with
+   case ask(q) -> resume(match File.readTextIn(path: q) with
+     case Result.Ok(t) -> t
+     case Result.Error(_) -> ""
+    end match)
+  end handle
+  ()
+ case Result.Error(_) -> ()
+ end match
+end function

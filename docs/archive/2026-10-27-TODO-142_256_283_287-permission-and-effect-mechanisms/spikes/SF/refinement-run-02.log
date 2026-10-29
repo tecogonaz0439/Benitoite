@@ -1,0 +1,36 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+'SF.noninterference' depends on axioms: [propext]
+'SF.TwoPoint.reject_explicit' depends on axioms: [propext]
+'SF.TwoPoint.reject_implicit' depends on axioms: [propext]
+'SF.Readers.destination_noninterference' depends on axioms: [propext]
+'SF.Readers.pattern_inclusion_gives_flow' depends on axioms: [propext, Quot.sound]
+'SF.Readers.intersection_not_single_pattern' depends on axioms: [propext, Quot.sound]
+'SF.Readers.host_pattern_noninterference' depends on axioms: [propext]
+'SF.Handlers.handled_noninterference' depends on axioms: [propext]
+'SF.Handlers.handled_ask_removed' depends on axioms: [propext]
+'SF.Handlers.Examples.no_public_reply_contract' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_argument_leak' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_secret_call' depends on axioms: [propext]
+'SF.Handlers.Examples.effect_erasure_does_not_erase_secret' depends on axioms: [propext]
+'SF.Dynamic.monitor_noninterference' depends on axioms: [propext]
+'SF.Dynamic.Examples.unconditional_trace_equality_fails' depends on axioms: [propext]
+        1.28 real         1.78 user         0.32 sys
+           754335744  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               48945  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               14829  involuntary context switches
+         14750935269  instructions retired
+          6289678833  cycles elapsed
+           204054080  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

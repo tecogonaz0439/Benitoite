@@ -1,0 +1,241 @@
+== wait-for-lock start 18:15:01
+== lock acquired 18:15:01 after 0s
+⚠ [85/410] Built Benitoite.Release.Typing (1.3s)
+warning: Benitoite/Release/Typing.lean:126:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [87/410] Built Benitoite.Release.BuilderContents (420ms)
+✔ [88/410] Built Benitoite.Release.LocalTyping (421ms)
+✔ [91/410] Built Benitoite.Release.TypeRegularity (630ms)
+✖ [92/410] Building Benitoite.Release.BuiltinTable (643ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/BuiltinTable.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/BuiltinTable.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/BuiltinTable.setup.json --json
+error: Benitoite/Release/BuiltinTable.lean:187:24: Application type mismatch: The argument
+  Ty.opaque "IOError"
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+in the application
+  List.cons (Ty.opaque "IOError")
+error: Benitoite/Release/BuiltinTable.lean:217:47: Tactic `decide` failed for proposition
+  summariesConverged sampleDecls sampleS = true ∧
+    sampleS =
+      [{ name := "Option", ntys := 1, eq := { dependsOn := [0] }, key := { dependsOn := [0] } },
+        { name := "Nest", ntys := 1, eq := { dependsOn := [0] }, key := { dependsOn := [0] } },
+        { name := "A", ntys := 2, eq := { dependsOn := [1] }, key := { dependsOn := [1] } },
+        { name := "B", ntys := 2, eq := { dependsOn := [0] }, key := { dependsOn := [0] } },
+        { name := "R", ntys := 1, eq := { always := true }, key := { dependsOn := [0] } },
+        { name := "F", ntys := 0, eq := { }, key := { always := true } },
+        { name := "G", ntys := 0, eq := { }, key := { always := true } }]
+because its `Decidable` instance
+  instDecidableAnd
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match summariesConverged sampleDecls sampleS, true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+error: Benitoite/Release/BuiltinTable.lean:223:68: Tactic `decide` failed for proposition
+  satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.integer]) keyC = true ∧
+    satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.float]) eqC = true ∧
+      satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.float]) keyC = false ∧
+        satB sampleS [] (Ty.data "Option" []) eqC = false ∧
+          satB sampleS [] (Ty.data "missing" []) eqC = false ∧
+            satB sampleS [] (Ty.data "R" [Ty.base BaseTy.integer]) keyC = false
+because its `Decidable` instance
+  instDecidableAnd
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.integer]) keyC, true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+error: Benitoite/Release/BuiltinTable.lean:230:31: Application type mismatch: The argument
+  Ty.opaque "IOError"
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+in the application
+  List.cons (Ty.opaque "IOError")
+error: Benitoite/Release/BuiltinTable.lean:238:32: Application type mismatch: The argument
+  (Ty.base BaseTy.integer).reference
+has type
+  Ty
+but is expected to have type
+  ScopeRange → Ty
+in the application
+  List.cons (Ty.base BaseTy.integer).reference
+error: Benitoite/Release/BuiltinTable.lean:238:61: Application type mismatch: The argument
+  (Ty.base BaseTy.integer).lazy
+has type
+  Ty
+but is expected to have type
+  ScopeRange → Ty
+in the application
+  List.cons (Ty.base BaseTy.integer).lazy
+error: Benitoite/Release/BuiltinTable.lean:239:4: Application type mismatch: The argument
+  (Ty.base BaseTy.integer).cont (Ty.base BaseTy.integer) Eff.empty
+has type
+  Ty
+but is expected to have type
+  ScopeRange → Ty
+in the application
+  List.cons ((Ty.base BaseTy.integer).cont (Ty.base BaseTy.integer) Eff.empty)
+error: Benitoite/Release/BuiltinTable.lean:239:55: Application type mismatch: The argument
+  Ty.dict "Eq" (Ty.base BaseTy.integer)
+has type
+  Ty
+but is expected to have type
+  ScopeRange → Ty
+in the application
+  List.cons (Ty.dict "Eq" (Ty.base BaseTy.integer))
+error: Benitoite/Release/BuiltinTable.lean:240:4: Application type mismatch: The argument
+  Ty.ctor TyCon.list
+has type
+  Ty
+but is expected to have type
+  ScopeRange → Ty
+in the application
+  List.cons (Ty.ctor TyCon.list)
+error: Benitoite/Release/BuiltinTable.lean:240:17: Application type mismatch: The argument
+  Ty.tapp 0 [Ty.base BaseTy.integer]
+has type
+  Ty
+but is expected to have type
+  ScopeRange → Ty
+in the application
+  List.cons (Ty.tapp 0 [Ty.base BaseTy.integer])
+error: Benitoite/Release/BuiltinTable.lean:240:69: Application type mismatch: The argument
+  t
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+in the application
+  satB [] [] t
+error: Benitoite/Release/BuiltinTable.lean:253:84: Tactic `decide` failed for proposition
+  admitsB sampleS [{ equality := true, ordered := true }] [] [Ty.base BaseTy.float32] = true ∧
+    admitsB sampleS [{ key := true }] [] [Ty.base BaseTy.float32] = false ∧
+      satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.float32]) eqC = true ∧
+        satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.float32]) keyC = false ∧
+          satB [] [] ((Ty.base BaseTy.integer8).map (Ty.base BaseTy.float32).list) keyC = false
+because its `Decidable` instance
+  instDecidableAnd
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match satB sampleS [] (Ty.data "Option" [Ty.base BaseTy.float32]) eqC, true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+✔ [95/410] Built Benitoite.Release.BuilderExec (522ms)
+✖ [96/410] Building Benitoite.Release.Lemmas.Basic (351ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Basic.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Basic.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Basic.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Basic.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Basic.setup.json --json
+error: Benitoite/Release/Lemmas/Basic.lean:51:77: Application type mismatch: The argument
+  Atom.name l
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  ε.mem (Atom.name l)
+error: Benitoite/Release/Lemmas/Basic.lean:52:28: Application type mismatch: The argument
+  Atom.name l
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  (substRho es ε).mem (Atom.name l)
+error: Benitoite/Release/Lemmas/Basic.lean:53:66: Application type mismatch: The argument
+  Atom.name l
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  (rawBind (SubstEnv.at 0 [] es) ε).norm.mem (Atom.name l)
+✔ [104/410] Built Benitoite.Release.TypeBounds (640ms)
+✔ [106/410] Built Benitoite.Release.SubstEnv (330ms)
+✔ [108/410] Built Benitoite.Release.TypeCongruence (412ms)
+✔ [110/410] Built Benitoite.Release.TypeVariables (525ms)
+✔ [112/410] Built Benitoite.Release.WellFormed (398ms)
+✔ [113/410] Built Benitoite.Release.TypeScopedSubst (474ms)
+✔ [123/410] Built Benitoite.Release.Admissible (389ms)
+✔ [127/410] Built Benitoite.Release.FailureEffects (362ms)
+✔ [128/410] Built Benitoite.Release.LocalScope (2.3s)
+✖ [129/410] Building Benitoite.Release.Semantics (771ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Semantics.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Semantics.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Semantics.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Semantics.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Semantics.setup.json --json
+error: Benitoite/Release/Semantics.lean:557:29: Application type mismatch: The argument
+  Ty.opaque o
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+in the application
+  HasTypeV P B Ψ [] [] v (Ty.opaque o)
+error: Benitoite/Release/Semantics.lean:557:77: Application type mismatch: The argument
+  Atom.name stateEff
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  ε.mem (Atom.name stateEff)
+error: Benitoite/Release/Semantics.lean:572:51: Application type mismatch: The argument
+  Atom.name stateEff
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  ε'.mem (Atom.name stateEff)
+error: Benitoite/Release/Semantics.lean:572:80: Application type mismatch: The argument
+  Atom.name stateEff
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  ε.mem (Atom.name stateEff)
+error: Benitoite/Release/Semantics.lean:615:32: Type mismatch
+  Atom.name l
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+error: Benitoite/Release/Semantics.lean:613:4: (kernel) declaration has metavariables 'Benitoite.Release.BuiltinOnly'
+✔ [398/410] Built Benitoite.Release.Lemmas.Names (2.9s)
+Some required targets logged failures:
+- Benitoite.Release.BuiltinTable
+- Benitoite.Release.Lemmas.Basic
+- Benitoite.Release.Semantics
+error: build failed
+        6.58 real        13.30 user         3.55 sys
+           844464128  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              846654  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  53  voluntary context switches
+               38779  involuntary context switches
+          1504346990  instructions retired
+           624722093  cycles elapsed
+            34227448  peak memory footprint
+== exit 1

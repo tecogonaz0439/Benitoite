@@ -1,0 +1,27 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+
+function amountOf(order: Json.Value) -> Option[Pair[String, Integer]]
+  bind category <- try Option.andThen(o: Json.get(value: order, k: "category"), f: Json.asString) or return
+  bind amount <- try Option.andThen(o: Json.get(value: order, k: "amount"), f: Json.asInteger) or return
+  return Option.Some(Pair(category, amount))
+end function
+
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("orders.json") or die
+  bind parsed <- try Json.parse(text) or die
+  bind orders <- try Option.okOr(o: Json.asArray(parsed), error: "orders.json is not an array") or die
+  bind totals <- List.fold(xs: orders, initial: Map.empty(), f: lambda(acc, value)
+    return match amountOf(value) with
+      case Option.Some(Pair(category, amount)) ->
+        Map.set(m: acc, k: category, value: Option.unwrapOr(o: Map.get(m: acc, k: category), fallback: 0) + amount)
+      case Option.None -> acc
+    end match
+  end lambda)
+  Map.forEach(m: totals, f: lambda(key, value)
+    Console.writeLine("${key}: ${value}")
+  end lambda)
+  return ()
+end function

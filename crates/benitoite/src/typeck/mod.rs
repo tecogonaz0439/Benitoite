@@ -139,7 +139,14 @@ pub struct BuilderOperation {
 /// 型検査の出力（02-05「出力」）。表に書く型は型変数を含まない。各段へ渡す表は設計書 02-05「出力」で定める。
 #[derive(Debug, Default)]
 pub struct TypeckOutput {
+    /// 測定の観測用。通常の処理系と交換の出力には含めない。
+    #[cfg(test)]
+    pub(crate) handler_reinferences: u64,
     pub(crate) interval: interval::Report,
+    /// 型確定前に収集した Scope の構造入力と先行順番号。
+    pub scope_inputs: ScopeInputs,
+    /// 組み込みの頭ごとに確定した範囲の列。範囲変数0個の頭は空列を持つ。
+    pub call_ranges: NodeMap<Vec<crate::types::scope::Range>>,
     /// 第二級の値である構築器と直接操作。通常の Ty の表へ構築器を載せない。
     pub builders: NodeMap<BuilderDecl>,
     pub builder_ops: NodeMap<BuilderOperation>,
@@ -156,6 +163,8 @@ pub struct TypeckOutput {
     pub lit_values: NodeMap<ConstValue>,
     pub range_bounds: NodeMap<(ConstValue, ConstValue)>,
     pub decl_types: BindingMap<Scheme>,
+    /// 認定した標準宣言の範囲の個数・種類・許容条件。呼び出しごとの列は保持しない。
+    pub range_signatures: BindingMap<crate::types::signature::RangeSignature>,
     /// トップレベル関数の合併済みの効果と元位置。元の AST の編集範囲とは別に保持する。
     pub effective_effects: BindingMap<crate::types::EffectiveEffects>,
     pub consts: BindingMap<ConstValue>,
@@ -236,6 +245,19 @@ pub use interval::{
 mod limits;
 mod pattern_ext;
 mod records;
+mod scope;
+mod scoped_calls;
+#[cfg(test)]
+mod scoped_calls_tests;
+mod source_input;
+pub use scope::{
+    DEFAULT_NUMBERING_OPERATIONS, DEFAULT_SCOPE_LIMITS, ScopeAcceptError, ScopeAnalysis,
+    ScopeArgument, ScopeArgumentSource, ScopeBodyInput, ScopeBound, ScopeBudgetResource,
+    ScopeBudgetScope, ScopeCall, ScopeCallFacts, ScopeCap, ScopeCoverFailure, ScopeDeclaration,
+    ScopeEntry, ScopeFact, ScopeInputStop, ScopeInputs, ScopeKey, ScopeLimits, ScopeLocal,
+    ScopeMetrics, ScopeNumberedInput, ScopeNumberingBudget, ScopeOccurrence, ScopeOrigin,
+    ScopeRecord, ScopeRejection, ScopeRequired, ScopeState, ScopeStatement, ScopeValueOrigin,
+};
 mod solve;
 #[cfg(test)]
 pub(crate) mod test_support;

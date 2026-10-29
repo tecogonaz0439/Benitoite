@@ -1,0 +1,151 @@
+{
+  "accepted_selected_calls": 1,
+  "bodies": [
+    {
+      "calls": 1,
+      "definition": ".sample",
+      "metrics": {
+        "body_operations": 3,
+        "max_body_items": 1,
+        "max_whole_items": 1,
+        "stops": [],
+        "whole_operations": 3
+      },
+      "numbering_and_local_seconds": 0.000424417,
+      "numbering_candidates": [
+        {
+          "events": 41027,
+          "limit": 100000,
+          "numbering_seconds_median": 0.000107792,
+          "samples_seconds": [
+            0.0001075,
+            0.000107625,
+            0.000107792,
+            0.000108125,
+            0.00010975
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 41027,
+          "limit": 200000,
+          "numbering_seconds_median": 0.000107541,
+          "samples_seconds": [
+            0.000107417,
+            0.000107458,
+            0.000107541,
+            0.00010825,
+            0.000116083
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 41027,
+          "limit": 300000,
+          "numbering_seconds_median": 0.00010775,
+          "samples_seconds": [
+            0.000107417,
+            0.0001075,
+            0.00010775,
+            0.000107834,
+            0.000108083
+          ],
+          "stopped": "None"
+        }
+      ],
+      "numbering_operations": 41027,
+      "occurrences": 20009,
+      "stopped": "None"
+    }
+  ],
+  "body_items_max": 1,
+  "body_operations_max": 3,
+  "candidates": [
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "small",
+      "numbering_operations": 41027,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 41027,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 41027,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "ordinary-if-1000",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 0,
+  "limits": {
+    "body": {
+      "items": 100000,
+      "operations": 1000000
+    },
+    "whole": {
+      "items": 10000000,
+      "operations": 100000000
+    }
+  },
+  "narrow_rejections": [],
+  "occurrences": 20009,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.00338475,
+  "sha256": "2afa3816ccd711c616a80f3ca150e5a3cdfabe3923bb3cc92f3a10acec85f317",
+  "source_bytes": 157879,
+  "typecheck_seconds": 0.093412417,
+  "whole_items_max": 1,
+  "whole_operations_total": 3
+}

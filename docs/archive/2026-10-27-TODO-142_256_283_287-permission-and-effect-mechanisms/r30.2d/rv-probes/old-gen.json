@@ -1,0 +1,1716 @@
+{
+  "version": 3,
+  "inventoryVersion": 3,
+  "hashVersion": 3,
+  "generatorVersion": "3.1.0-syntax-batch5",
+  "targets": [
+    {
+      "source": "People.bnt",
+      "region": "person",
+      "type": "People.Person",
+      "declarationSha256": "7934ed31b5a8fb831704725ee9cb131e99359587e36c048776f280bb446d3017",
+      "dependenciesSha256": "c49beafe9923e0b0cdf2d31c93d51ae6f09c4ddeaba6af7f920f641264239759",
+      "customSignaturesSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "configSha256": "9b33e37896f2e44a40bafe51148a1fa75288764a6bddd05ee38d09c29e485c74",
+      "inventoryVersion": 3,
+      "hashVersion": 3,
+      "fieldOrder": [
+        "displayName",
+        "address",
+        "nickname",
+        "scores",
+        "active",
+        "count"
+      ],
+      "templates": {
+        "json": "1",
+        "property": "3",
+        "show": "2"
+      },
+      "propertyLibraryVersion": "2.0.0",
+      "implementationDependencies": [
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.List.List"
+            },
+            "arguments": [
+              {
+                "tag": "parameter",
+                "index": 0
+              }
+            ]
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [
+            {
+              "kind": {
+                "tag": "value"
+              },
+              "builtin": null
+            }
+          ],
+          "constraints": [
+            {
+              "class": "Benitoite.Trait.Show",
+              "param": 0
+            }
+          ],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.List.List"
+                      },
+                      "arguments": [
+                        {
+                          "tag": "parameter",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "kind": {
+                      "tag": "value"
+                    },
+                    "builtin": null
+                  }
+                ],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": [
+                  {
+                    "param": 0,
+                    "class": "Benitoite.Trait.Show"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.Option.Option"
+            },
+            "arguments": [
+              {
+                "tag": "parameter",
+                "index": 0
+              }
+            ]
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [
+            {
+              "kind": {
+                "tag": "value"
+              },
+              "builtin": null
+            }
+          ],
+          "constraints": [
+            {
+              "class": "Benitoite.Trait.Show",
+              "param": 0
+            }
+          ],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Option.Option"
+                      },
+                      "arguments": [
+                        {
+                          "tag": "parameter",
+                          "index": 0
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "kind": {
+                      "tag": "value"
+                    },
+                    "builtin": null
+                  }
+                ],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": [
+                  {
+                    "param": 0,
+                    "class": "Benitoite.Trait.Show"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Address.Address"
+            },
+            "arguments": []
+          },
+          "module": "Address",
+          "sourceRegion": "address",
+          "template": "show",
+          "revision": "2",
+          "constraints": []
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.Float.Float"
+            },
+            "arguments": []
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [],
+          "constraints": [],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Float.Float"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": []
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.Integer.Integer"
+            },
+            "arguments": []
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [],
+          "constraints": [],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Integer.Integer"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": []
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.Map.Map"
+            },
+            "arguments": [
+              {
+                "tag": "parameter",
+                "index": 0
+              },
+              {
+                "tag": "parameter",
+                "index": 1
+              }
+            ]
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [
+            {
+              "kind": {
+                "tag": "value"
+              },
+              "builtin": "key"
+            },
+            {
+              "kind": {
+                "tag": "value"
+              },
+              "builtin": null
+            }
+          ],
+          "constraints": [
+            {
+              "class": "Benitoite.Trait.Show",
+              "param": 0
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "param": 1
+            }
+          ],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Map.Map"
+                      },
+                      "arguments": [
+                        {
+                          "tag": "parameter",
+                          "index": 0
+                        },
+                        {
+                          "tag": "parameter",
+                          "index": 1
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [
+                  {
+                    "name": "K",
+                    "kind": {
+                      "tag": "value"
+                    },
+                    "builtin": "key"
+                  },
+                  {
+                    "name": "V",
+                    "kind": {
+                      "tag": "value"
+                    },
+                    "builtin": null
+                  }
+                ],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": [
+                  {
+                    "param": 0,
+                    "class": "Benitoite.Trait.Show"
+                  },
+                  {
+                    "param": 1,
+                    "class": "Benitoite.Trait.Show"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.Boolean.Boolean"
+            },
+            "arguments": []
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [],
+          "constraints": [],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Boolean.Boolean"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": []
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.String.String"
+            },
+            "arguments": []
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [],
+          "constraints": [],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": []
+              }
+            }
+          ]
+        }
+      ],
+      "declarationGraph": [
+        {
+          "name": "Address.Address",
+          "structure": {
+            "type": "Address.Address",
+            "visibility": "public",
+            "opaque": false,
+            "canConstruct": true,
+            "canInspect": true,
+            "typeParams": [],
+            "fields": [
+              {
+                "name": "city",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          "edges": [],
+          "component": [
+            "Address.Address"
+          ],
+          "minimum": 0,
+          "parameters": [],
+          "shrinkEquality": []
+        },
+        {
+          "name": "People.Person",
+          "structure": {
+            "type": "People.Person",
+            "visibility": "public",
+            "opaque": false,
+            "canConstruct": true,
+            "canInspect": true,
+            "typeParams": [],
+            "fields": [
+              {
+                "name": "displayName",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "name": "address",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Address.Address"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "name": "nickname",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.Option.Option"
+                  },
+                  "arguments": [
+                    {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "scores",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.List.List"
+                  },
+                  "arguments": [
+                    {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Map.Map"
+                      },
+                      "arguments": [
+                        {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        },
+                        {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.Float.Float"
+                          },
+                          "arguments": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "active",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.Boolean.Boolean"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "name": "count",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.Integer.Integer"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          "edges": [
+            {
+              "tag": "application",
+              "head": {
+                "tag": "named",
+                "name": "Address.Address"
+              },
+              "arguments": []
+            }
+          ],
+          "component": [
+            "People.Person"
+          ],
+          "minimum": 0,
+          "parameters": [],
+          "shrinkEquality": []
+        }
+      ],
+      "budgetRule": "minimum+max(size,0);reserve-required;subtract-consumed;independent-scc;v1",
+      "dependencyPlans": [
+        {
+          "name": "Address.Address",
+          "config": {
+            "json": {
+              "keys": {},
+              "decode": "decodeAddress",
+              "encode": "encodeAddress"
+            },
+            "order": true,
+            "property": {
+              "generator": "genAddress",
+              "shrinker": "shrinkAddress"
+            },
+            "region": "address",
+            "show": true,
+            "source": "Address.bnt",
+            "type": "Address.Address",
+            "fields": {}
+          },
+          "customSignatures": {},
+          "implementations": [
+            {
+              "class": "Benitoite.Trait.Order",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.String.String"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "compare",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      },
+                      {
+                        "name": "y",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Trait.Ordering"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.String.String"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "People.Person",
+          "config": {
+            "json": {
+              "keys": {
+                "displayName": "display_name"
+              },
+              "decode": "decodePerson",
+              "encode": "encodePerson"
+            },
+            "property": {
+              "generator": "genPerson",
+              "shrinker": "shrinkPerson"
+            },
+            "region": "person",
+            "show": true,
+            "source": "People.bnt",
+            "type": "People.Person",
+            "fields": {}
+          },
+          "customSignatures": {},
+          "implementations": [
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.List.List"
+                },
+                "arguments": [
+                  {
+                    "tag": "parameter",
+                    "index": 0
+                  }
+                ]
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [
+                {
+                  "kind": {
+                    "tag": "value"
+                  },
+                  "builtin": null
+                }
+              ],
+              "constraints": [
+                {
+                  "class": "Benitoite.Trait.Show",
+                  "param": 0
+                }
+              ],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.List.List"
+                          },
+                          "arguments": [
+                            {
+                              "tag": "parameter",
+                              "index": 0
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [
+                      {
+                        "name": "T",
+                        "kind": {
+                          "tag": "value"
+                        },
+                        "builtin": null
+                      }
+                    ],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": [
+                      {
+                        "param": 0,
+                        "class": "Benitoite.Trait.Show"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.Option.Option"
+                },
+                "arguments": [
+                  {
+                    "tag": "parameter",
+                    "index": 0
+                  }
+                ]
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [
+                {
+                  "kind": {
+                    "tag": "value"
+                  },
+                  "builtin": null
+                }
+              ],
+              "constraints": [
+                {
+                  "class": "Benitoite.Trait.Show",
+                  "param": 0
+                }
+              ],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.Option.Option"
+                          },
+                          "arguments": [
+                            {
+                              "tag": "parameter",
+                              "index": 0
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [
+                      {
+                        "name": "T",
+                        "kind": {
+                          "tag": "value"
+                        },
+                        "builtin": null
+                      }
+                    ],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": [
+                      {
+                        "param": 0,
+                        "class": "Benitoite.Trait.Show"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Address.Address"
+                },
+                "arguments": []
+              },
+              "module": "Address",
+              "sourceRegion": "address",
+              "template": "show",
+              "revision": "2",
+              "constraints": []
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.Float.Float"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.Float.Float"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.Integer.Integer"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.Integer.Integer"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.Map.Map"
+                },
+                "arguments": [
+                  {
+                    "tag": "parameter",
+                    "index": 0
+                  },
+                  {
+                    "tag": "parameter",
+                    "index": 1
+                  }
+                ]
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [
+                {
+                  "kind": {
+                    "tag": "value"
+                  },
+                  "builtin": "key"
+                },
+                {
+                  "kind": {
+                    "tag": "value"
+                  },
+                  "builtin": null
+                }
+              ],
+              "constraints": [
+                {
+                  "class": "Benitoite.Trait.Show",
+                  "param": 0
+                },
+                {
+                  "class": "Benitoite.Trait.Show",
+                  "param": 1
+                }
+              ],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.Map.Map"
+                          },
+                          "arguments": [
+                            {
+                              "tag": "parameter",
+                              "index": 0
+                            },
+                            {
+                              "tag": "parameter",
+                              "index": 1
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [
+                      {
+                        "name": "K",
+                        "kind": {
+                          "tag": "value"
+                        },
+                        "builtin": "key"
+                      },
+                      {
+                        "name": "V",
+                        "kind": {
+                          "tag": "value"
+                        },
+                        "builtin": null
+                      }
+                    ],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": [
+                      {
+                        "param": 0,
+                        "class": "Benitoite.Trait.Show"
+                      },
+                      {
+                        "param": 1,
+                        "class": "Benitoite.Trait.Show"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.Boolean.Boolean"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.Boolean.Boolean"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.String.String"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "generatedSignatures": {
+        "typeParams": [],
+        "valueParameters": [],
+        "shrinkEquality": [],
+        "traits": {
+          "show": []
+        }
+      },
+      "traitTarget": {
+        "type": "People.Person",
+        "opaque": false,
+        "show": true,
+        "order": false
+      },
+      "semanticSha256": "537a8b95d81d31a5399c4e054d4888b51b92ee92857a09f3aa9e07cbda1d01c6",
+      "outputSha256": "32fee87c0a4da559e3625fdacc7eca130e5c1d3d10e247a9433d78fe5b8a73d1"
+    },
+    {
+      "source": "Address.bnt",
+      "region": "address",
+      "type": "Address.Address",
+      "declarationSha256": "8a313e975054aca2219c11b40edd4b0b3cce456f3100a0ede03fdbcc04fc2228",
+      "dependenciesSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "customSignaturesSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "configSha256": "4a822785f3153edf9cee66530a68df489282a0cf75082a978410d443485a1f4b",
+      "inventoryVersion": 3,
+      "hashVersion": 3,
+      "fieldOrder": [
+        "city"
+      ],
+      "templates": {
+        "json": "1",
+        "property": "3",
+        "show": "2",
+        "order": "2"
+      },
+      "propertyLibraryVersion": "2.0.0",
+      "implementationDependencies": [
+        {
+          "class": "Benitoite.Trait.Order",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.String.String"
+            },
+            "arguments": []
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [],
+          "constraints": [],
+          "methods": [
+            {
+              "name": "compare",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "name": "y",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.Trait.Ordering"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": []
+              }
+            }
+          ]
+        },
+        {
+          "class": "Benitoite.Trait.Show",
+          "target": {
+            "tag": "application",
+            "head": {
+              "tag": "named",
+              "name": "Benitoite.String.String"
+            },
+            "arguments": []
+          },
+          "module": "Benitoite.Trait",
+          "typeParams": [],
+          "constraints": [],
+          "methods": [
+            {
+              "name": "show",
+              "signature": {
+                "params": [
+                  {
+                    "name": "x",
+                    "type": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "returnType": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                },
+                "effects": {
+                  "names": [],
+                  "vars": [],
+                  "failures": []
+                },
+                "typeParams": [],
+                "effectParams": [],
+                "noFail": [],
+                "constraints": []
+              }
+            }
+          ]
+        }
+      ],
+      "declarationGraph": [
+        {
+          "name": "Address.Address",
+          "structure": {
+            "type": "Address.Address",
+            "visibility": "public",
+            "opaque": false,
+            "canConstruct": true,
+            "canInspect": true,
+            "typeParams": [],
+            "fields": [
+              {
+                "name": "city",
+                "type": {
+                  "tag": "application",
+                  "head": {
+                    "tag": "named",
+                    "name": "Benitoite.String.String"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          "edges": [],
+          "component": [
+            "Address.Address"
+          ],
+          "minimum": 0,
+          "parameters": [],
+          "shrinkEquality": []
+        }
+      ],
+      "budgetRule": "minimum+max(size,0);reserve-required;subtract-consumed;independent-scc;v1",
+      "dependencyPlans": [
+        {
+          "name": "Address.Address",
+          "config": {
+            "json": {
+              "keys": {},
+              "decode": "decodeAddress",
+              "encode": "encodeAddress"
+            },
+            "order": true,
+            "property": {
+              "generator": "genAddress",
+              "shrinker": "shrinkAddress"
+            },
+            "region": "address",
+            "show": true,
+            "source": "Address.bnt",
+            "type": "Address.Address",
+            "fields": {}
+          },
+          "customSignatures": {},
+          "implementations": [
+            {
+              "class": "Benitoite.Trait.Order",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.String.String"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "compare",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      },
+                      {
+                        "name": "y",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.Trait.Ordering"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            },
+            {
+              "class": "Benitoite.Trait.Show",
+              "target": {
+                "tag": "application",
+                "head": {
+                  "tag": "named",
+                  "name": "Benitoite.String.String"
+                },
+                "arguments": []
+              },
+              "module": "Benitoite.Trait",
+              "typeParams": [],
+              "constraints": [],
+              "methods": [
+                {
+                  "name": "show",
+                  "signature": {
+                    "params": [
+                      {
+                        "name": "x",
+                        "type": {
+                          "tag": "application",
+                          "head": {
+                            "tag": "named",
+                            "name": "Benitoite.String.String"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "tag": "application",
+                      "head": {
+                        "tag": "named",
+                        "name": "Benitoite.String.String"
+                      },
+                      "arguments": []
+                    },
+                    "effects": {
+                      "names": [],
+                      "vars": [],
+                      "failures": []
+                    },
+                    "typeParams": [],
+                    "effectParams": [],
+                    "noFail": [],
+                    "constraints": []
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "generatedSignatures": {
+        "typeParams": [],
+        "valueParameters": [],
+        "shrinkEquality": [],
+        "traits": {
+          "show": [],
+          "order": []
+        }
+      },
+      "traitTarget": {
+        "type": "Address.Address",
+        "opaque": false,
+        "show": true,
+        "order": true
+      },
+      "semanticSha256": "d9197177bb9ac6ab328b3d18ccb1b60998935daa109ad2f76c4db80fe1d1e670",
+      "outputSha256": "7110aec2b719649b9aab577c42da9ed1d721143b55a78df05b5b40ea2bceff3b"
+    }
+  ]
+}

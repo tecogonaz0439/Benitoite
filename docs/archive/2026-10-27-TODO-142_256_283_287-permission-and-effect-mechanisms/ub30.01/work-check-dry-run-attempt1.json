@@ -1,0 +1,27 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "174a8540fbde08464908a772992685f1d8068811",
+    "--dry-run"
+  ],
+  "timingWrapper": [
+    "/usr/bin/time",
+    "-l"
+  ],
+  "startedAt": "2026-10-29T15:53:12.377578+00:00",
+  "elapsedSeconds": 0.22253666700000002,
+  "maximumResidentSetSize": {
+    "raw": null,
+    "unit": "bytes",
+    "MiB": null,
+    "GiB": null,
+    "method": "macOS /usr/bin/time -l の maximum resident set size。全プロセスの同時使用量の合計ではない"
+  },
+  "noChecksSelected": true,
+  "timingWrapperExitCode": 1,
+  "checkExitCode": null,
+  "failure": "time -l が sysctl kern.clockrate の Operation not permitted で終了1。本体の終了は分離取得していない"
+}

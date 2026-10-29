@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope as S
+function project(v: S.PathIn["/data/a"]) -> String
+ return S.pathInValue(path: v)
+end function
+function main() -> Unit
+ ()
+end function

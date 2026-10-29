@@ -257,7 +257,10 @@ fn builtin_calls(c: &Comp) -> Vec<(&str, &TypeArgs, &BuiltinInfo)> {
             if let CompKind::App {
                 func:
                     Val {
-                        kind: ValKind::Builtin { id, targs, info },
+                        kind:
+                            ValKind::Builtin {
+                                id, targs, info, ..
+                            },
                         ..
                     },
                 ..
@@ -399,11 +402,10 @@ end function
         calls.iter().map(|(name, _, _)| *name).collect::<Vec<_>>(),
         ["%ne", "%eq"]
     );
-    assert!(
-        calls
-            .iter()
-            .all(|(_, a, _)| matches!(a.tys.as_slice(), [TypeArg::Ty(Ty::Con(TyCon::Adt(_), _))]))
-    );
+    assert!(calls.iter().all(|(_, a, _)| matches!(
+        a.tys.as_slice(),
+        [TypeArg::Ty(Ty::Con(TyCon::Adt(_), _, _))]
+    )));
     assert!(matches!(
         &def(&p, "minimum").body.kind,
         CompKind::Return(Val {
@@ -841,7 +843,11 @@ end function
     };
     assert_eq!(
         lazy.ty,
-        Ty::Con(TyCon::Builtin(BuiltinTypeId::LAZY), vec![body.ty.clone()])
+        Ty::Con(
+            TyCon::Builtin(BuiltinTypeId::LAZY),
+            vec![body.ty.clone()],
+            crate::types::builtin::RangeIndex::TOP
+        )
     );
     assert!(lazy.eff.is_empty());
     let CompKind::Return(Val {
@@ -855,7 +861,10 @@ end function
     assert!(l.body.eff.is_empty());
     assert_eq!(
         f.effects.names,
-        [EffectName::Builtin(BuiltinEffectId::STATE)]
+        [EffectName::Builtin(
+            BuiltinEffectId::STATE,
+            crate::types::builtin::RangeIndex::TOP
+        )]
     );
 }
 
@@ -905,7 +914,8 @@ end function
         .find(|(_, e)| e.display_name == "Log")
         .unwrap()
         .1
-        .name;
+        .name
+        .clone();
     let CompKind::Handle(total) = &def(&p, "total").body.kind else {
         panic!()
     };

@@ -1,0 +1,27 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+effect Report
+ function save(path: Scope.PathIn["/data/reports/**"]) -> Unit
+end effect
+
+function transfer(path: Scope.PathIn["/data/reports/**"]) -> Unit uses File.Write["/data/reports/**"]
+ handle save(path) with
+ case save(checked) ->
+  bind _ <- File.writeTextIn(path: checked, text: "report")
+  resume(())
+ end handle
+end function
+
+function main() -> Unit uses File.Write["/data/reports/**"]
+ bind result: Result[Scope.PathIn["/data/reports/**"], Scope.ScopeError] <- Scope.checkPathIn(pattern: "/data/reports/**", path: "/data/reports/a")
+ match result with
+ case Result.Ok(path) -> transfer(path)
+ case Result.Error(_) -> ()
+ end match
+end function
+
+@test
+function upper() -> Unit uses File.Write["/data/reports/**"]
+ main()
+end function

@@ -1,5 +1,6 @@
 //! Checks host and absolute-path spelling against an explicit scope. Success preserves the condition and target; it does not grant permission or guarantee DNS resolution, filesystem identity, isolation, or IO success.
 //!
+//! `PathIn` is a built-in opaque type. Its optional path scope is an invariant index; the bare type has the unrestricted scope.
 //! Use the public checks and projections. These checks do not authorize IO.
 //!
 //! ```benitoite test
@@ -43,9 +44,7 @@
 //! E0462
 //! ```
 
-import Benitoite.Trait
-
-/// A lowercase host and the lowercase pattern it satisfies.
+/// A host name or IP address and the host or CIDR pattern it satisfies, stored in normalized form.
 @opaque
 public record CheckedHost
   pattern: String
@@ -79,7 +78,7 @@ public data ScopeError
   PortOutsideScope(Integer, Integer, Integer)
 end data
 
-/// Checks an exact host, *.host (one label), or **.host (one or more labels). Wildcards exclude the stem itself. Known invalid direct arguments are rejected before execution.
+/// Checks an exact host name or IP address, a CIDR network, *.host (one label), or **.host (one or more labels). Wildcards exclude the stem itself. Known invalid direct arguments are rejected before execution.
 public function checkHost(pattern: String, host: String) -> Result[CheckedHost, ScopeError]
   return match inspectHost(pattern: pattern, host: host) with
     case Result.Ok(Pair(p, h)) -> Result.Ok(CheckedHost(pattern: p, host: h))
@@ -94,6 +93,18 @@ public function checkPath(pattern: String, path: String) -> Result[CheckedPath, 
     case Result.Error(Pair(number, reason)) -> Result.Error(stringError(number: number, reason: reason, pattern: pattern, target: path))
   end match
 end function
+
+/// Checks an exact absolute path or a trailing /** tree and retains the same path. A known direct pattern determines the static scope; otherwise the static scope is unrestricted. Known invalid direct arguments are rejected before execution. Dynamic spelling and membership are always checked. This does not access the filesystem or authorize IO.
+@builtin("Scope.checkPathIn")
+public function checkPathIn(pattern: String, path: String) -> Result[PathIn, ScopeError]
+
+/// Returns the same path retained by checkPathIn, preserving its static scope in the argument.
+@builtin("Scope.pathInValue")
+public function pathInValue(path: PathIn) -> String
+
+/// Explicitly widens the static scope to the annotated return scope when it covers the input scope. Returns the same checked value.
+@builtin("Scope.widenPathIn")
+public function widenPathIn(path: PathIn) -> PathIn
 
 /// Checks host forms, inclusive bounds 0..65535, the port, host membership, then port membership. Known invalid parts of a direct call are rejected even if other arguments are dynamic.
 public function checkEndpoint(hostPattern: String, host: String, minimumPort: Integer, maximumPort: Integer, port: Integer) -> Result[CheckedEndpoint, ScopeError]
@@ -166,47 +177,3 @@ function stringError(number: Integer, reason: String, pattern: String, target: S
   else if number = 2 then ScopeError.InvalidTarget(target, reason)
   else ScopeError.OutsideScope(pattern, target) end if
 end function
-
-// 表示用の入力を4096バイトに収め、引用後は一引数2000バイト以内にする。
-// 切り詰めは引用前に行い、完成したエスケープ・引用符・括弧を残す。UTF-8の境目を最大三バイト戻す
-// （設計書 03-06「Scope」）。保存した入力そのものは変えない。
-function limited(text: String) -> String
-  return if String.byteLength(text) <= 4096 then text else prefix(text: text, stop: 4093) + "..." end if
-end function
-
-function prefix(text: String, stop: Integer) -> String
-  return match String.byteSlice(s: text, start: 0, stop: stop) with
-    case Option.Some(value) -> value
-    case Option.None -> prefix(text: text, stop: stop - 1)
-  end match
-end function
-
-function quoted(text: String) -> String
-  return fitQuoted(limited(text))
-end function
-
-function fitQuoted(text: String) -> String
-  bind shown <- Trait.Show.show(text)
-  return if String.byteLength(shown) <= 2000 then shown
-  else fitQuoted(prefix(text: text, stop: String.byteLength(text) div 2) + "...") end if
-end function
-
-function renderStrings(name: String, first: String, second: String) -> String
-  bind a <- quoted(first)
-  bind b <- quoted(second)
-  bind omitted <- String.byteLength(first) > 4096 or String.byteLength(second) > 4096 or a <> Trait.Show.show(limited(first)) or b <> Trait.Show.show(limited(second))
-  return "${name}(${a}, ${b})" + if omitted then "..." else "" end if
-end function
-
-implement Trait.Show[ScopeError]
-  function show(x: ScopeError) -> String
-    return match x with
-      case ScopeError.InvalidPattern(pattern, reason) -> renderStrings(name: "InvalidPattern", first: pattern, second: reason)
-      case ScopeError.InvalidTarget(target, reason) -> renderStrings(name: "InvalidTarget", first: target, second: reason)
-      case ScopeError.InvalidPortRange(minimum, maximum) -> "InvalidPortRange(${minimum}, ${maximum})"
-      case ScopeError.InvalidPort(port) -> "InvalidPort(${port})"
-      case ScopeError.OutsideScope(pattern, target) -> renderStrings(name: "OutsideScope", first: pattern, second: target)
-      case ScopeError.PortOutsideScope(minimum, maximum, port) -> "PortOutsideScope(${minimum}, ${maximum}, ${port})"
-    end match
-  end function
-end implement

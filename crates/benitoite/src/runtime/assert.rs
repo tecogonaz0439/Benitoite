@@ -847,7 +847,7 @@ fn fits<'e>(
                 continue;
             }
         };
-        let Ty::Con(con, args) = ty else { continue };
+        let Ty::Con(con, args, _) = ty else { continue };
         match con {
             TyCon::Builtin(id) => match id {
                 BuiltinTypeId::LIST => {
@@ -954,7 +954,7 @@ enum Work<'e> {
 // 静的な型は値ではないので、再帰で辿ってよい。
 fn has_params(ty: &Ty) -> bool {
     match ty {
-        Ty::Con(_, args) => args.iter().any(has_params),
+        Ty::Con(_, args, _) => args.iter().any(has_params),
         Ty::Fn(f) => f.params.iter().any(has_params) || has_params(&f.ret),
         Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => true,
     }
@@ -963,7 +963,11 @@ fn has_params(ty: &Ty) -> bool {
 // 構成子の引数の型の、型の宣言の型パラメータを、値の型の引数で置き換える。
 fn substitute(ty: &Ty, args: &[Ty]) -> Ty {
     match ty {
-        Ty::Con(con, xs) => Ty::Con(*con, xs.iter().map(|x| substitute(x, args)).collect()),
+        Ty::Con(con, xs, ix) => Ty::Con(
+            *con,
+            xs.iter().map(|x| substitute(x, args)).collect(),
+            ix.clone(),
+        ),
         Ty::Fn(f) => Ty::Fn(Box::new(crate::types::FnTy {
             param_names: f.param_names.clone(),
             params: f.params.iter().map(|x| substitute(x, args)).collect(),
@@ -1005,7 +1009,7 @@ fn render_typed<'e>(
     out: &mut Vec<Work<'e>>,
     budget: usize,
 ) -> Result<bool, Stop> {
-    let Ty::Con(con, args) = ty else {
+    let Ty::Con(con, args, _) = ty else {
         return Ok(false);
     };
     let elem = |i: usize| args.get(i).map(|t| Rc::new(t.clone()));

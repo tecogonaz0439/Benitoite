@@ -11,7 +11,7 @@ namespace Benitoite.Release.Coverage
 mutual
   def erase : Ty → Ty
     | .base b => .base b
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d ts => .data d (eraseTys ts)
     | .list a => .list (erase a)
     | .fn ns ps r _ => .fn ns (eraseTys ps) (erase r) Eff.empty
@@ -120,6 +120,16 @@ mutual
       intro b he
       cases b <;> simp only [erase] at he <;> try contradiction
       all_goals constructor
+    | checked =>
+      intro b he
+      cases b <;> simp only [erase] at he <;> try contradiction
+      obtain ⟨rfl, rfl⟩ := Ty.opaque.inj he
+      exact .checked
+    | checkedRequest =>
+      intro b he
+      cases b <;> simp only [erase] at he <;> try contradiction
+      obtain ⟨rfl, rfl⟩ := Ty.opaque.inj he
+      exact .checkedRequest
   theorem inhabitsAll_erase_transfer {P : Program} {ts : List Ty} {vs : List Val}
       (h : InhabitsAll P ts vs) : ∀ {us}, eraseTys ts = eraseTys us → InhabitsAll P us vs := by
     cases h with

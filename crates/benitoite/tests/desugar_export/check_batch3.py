@@ -52,7 +52,7 @@ def check_builder_sources(data):
         actual = next(d["scope"]["inScope"] for d in inputs["builders"]["definitions"]
                       if d["name"].startswith(actual_name + " ("))
         actual = renamed(copy.deepcopy(actual))
-        expected = copy.deepcopy(next(d["scope"]["inScope"] for d in independent["inputs"][0]["definitions"]
+        expected = SHARED["explicit_top_ranges"](next(d["scope"]["inScope"] for d in independent["inputs"][0]["definitions"]
                                       if d["name"].endswith(f"(fn:{expected_id})")))
         # 所属とviewは実際のロード結果。独立入力の架空の所属とは比較しない。
         for key in ("package", "coverageView"):
@@ -94,7 +94,7 @@ def check(directory, report_path):
     data, expected = BATCH3["rust_inputs"](directory)
     check_builder_sources(data)
     for name, doc in data.items():
-        require(doc["version"] == (14 if name == "corpus" else 6), f"{name}: exchange version")
+        require(doc["version"] == (15 if name == "corpus" else 7), f"{name}: exchange version")
     inputs = data["corpus"]["inputs"]
     require(inputs, "empty Rust corpus")
     names = [item["name"] for item in inputs]
@@ -120,28 +120,36 @@ def check(directory, report_path):
         require(len(keys) == len(set(keys)) and set(keys) == {("golden", name) for name in names},
                 f"{name}: input coverage differs")
     require(data["coverage"]["cases"], "empty standalone coverage cases")
-    require(any(item["matches"] or item["bindings"] for item in data["coverage-program"]["inputs"]),
-            "empty program coverage")
+    require(sum(len(item["matches"]) + len(item["bindings"])
+                for item in data["coverage-program"]["inputs"]) == expected["programCoverageCases"],
+            "program coverage count differs")
     require(count == expected["definitions"] and surface_count == expected["surfaceChecks"],
             "Rust manifest totals")
     results = {}
+    statuses = {}
     with tempfile.TemporaryDirectory(prefix="benitoite-batch3-check-") as temporary:
         for tool, files in TOOLS.items():
             selected_inputs = names if tool == "surfaceCheck" else [None]
             reports = []
+            statuses[tool] = []
             for index, name in enumerate(selected_inputs):
                 args = [paths[file] for file in files]
                 if name is not None:
                     args.extend(["golden", name])
-                result = SHARED["run"](tool, args, Path(temporary) / f"{tool}-{index}.json")
+                empty_coverage = tool == "coverageProgramDiff" and expected["programCoverageCases"] == 0
+                result = SHARED["run"](tool, args, Path(temporary) / f"{tool}-{index}.json",
+                                       status=1 if empty_coverage else 0)
                 if tool == "desugarDiff":
                     require(result["mismatches"] == [], f"{tool}: mismatches")
                     require(result["golden"]["definitions"] == dict(matched=count, mismatched=0, outside=0, excluded=0),
                             f"{tool}: definition counts")
                 elif tool == "builtinCheck":
-                    require(result["errors"] == [] and result["summaryMismatchCount"] == 0, f"{tool}: errors")
+                    require(result["errors"] == [] and result["summaryMismatchCount"] == 0
+                            and result["checkedInputs"] == len(inputs), f"{tool}: errors or input count")
                 elif tool.startswith("coverage"):
-                    require(result["matched"] > 0 and result["mismatched"] == 0 and result["fuelExhausted"] == 0,
+                    require((result["matched"] > 0 or empty_coverage) and result["mismatched"] == 0
+                            and (tool != "coverageProgramDiff" or result["outOfScope"] == 0)
+                            and result["fuelExhausted"] == 0,
                             f"{tool}: coverage mismatch or empty comparison")
                     require(result["matched"] == expected["coverageCases" if tool == "coverageDiff" else "programCoverageCases"],
                             f"{tool}: manifest counts")
@@ -151,14 +159,16 @@ def check(directory, report_path):
                     require(result["counts"] == dict(matched=surface_count, mismatched=0, outOfScope=0, q11=0,
                             lazyRestriction=0, preparationFailure=0), f"{tool}: counts")
                 reports.append(result)
+                statuses[tool].append(1 if empty_coverage else 0)
             results[tool] = reports
     report = dict(elapsed_seconds=time.monotonic() - started, inputs=names, definitions=count,
                   surface_checks=surface_count,
                   files={name: hashlib.sha256(path.read_bytes()).hexdigest() for name, path in paths.items()},
-                  results=results)
+                  results=results, statuses=statuses,
+                  empty_comparisons=[tool for tool, values in statuses.items() if 1 in values])
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"batch3: {len(inputs)} inputs, {count} definitions, six entries agree: {report_path}")
+    print(f"batch3: {len(inputs)} inputs, {count} definitions, six entries checked (empty comparisons: {report['empty_comparisons']}): {report_path}")
 
 
 def main():

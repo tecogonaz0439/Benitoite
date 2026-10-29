@@ -32,7 +32,7 @@ def TyCon.rank : TyCon → Nat
 
 /-- 型の順位。同じ構成子の中では、欄を宣言順に比較する。 -/
 def Ty.rank : Ty → Nat
-  | .base _ => 0 | .opaque _ => 1 | .data _ _ => 2 | .list _ => 3
+  | .base _ => 0 | .opaque _ _ => 1 | .data _ _ => 2 | .list _ => 3
   | .fn _ _ _ _ => 4 | .tvar _ => 5 | .reference _ => 6 | .lazy _ => 7
   | .cont _ _ _ => 8 | .map _ _ => 9 | .set _ => 10 | .bytes => 11
   | .dict _ _ => 12 | .tapp _ _ => 13 | .ctor _ => 14
@@ -50,7 +50,7 @@ mutual
   /-- 欄の境界を子の木で区切り、名前・引数・結果・潜在効果をすべて保持する。 -/
   def Ty.toTree : Ty → Tree Label
     | .base b => .node (.rank 0) [.node (.nat b.rank) []]
-    | .opaque o => .node (.rank 1) [.node (.text o) []]
+    | .opaque o r => .node (.rank 1) [.node (.text o) [], .node (.nat (Order.ixCode r)) []]
     | .data d args => .node (.rank 2) [.node (.text d) [], .node (.rank 0) (Ty.toTrees args)]
     | .list a => .node (.rank 3) [a.toTree]
     | .fn names params ret eff => .node (.rank 4)
@@ -87,7 +87,6 @@ mutual
     all_goals first
       | contradiction
       | exact congrArg Ty.base (BaseTy.rank_injective h)
-      | exact congrArg Ty.opaque h
       | exact congrArg Ty.list (Ty.toTree_injective h)
       | exact congrArg Ty.tvar h
       | exact congrArg Ty.reference (Ty.toTree_injective h)
@@ -96,6 +95,9 @@ mutual
       | exact congrArg Ty.ctor (TyCon.toTree_injective h)
       | rfl
       | skip
+    case opaque.opaque =>
+      obtain ⟨rfl, h⟩ := h
+      rw [Order.ixCode_injective h]
     case data.data =>
       obtain ⟨rfl, h⟩ := h
       exact congrArg (Ty.data _) (Ty.toTrees_injective h)
@@ -159,7 +161,7 @@ mutual
   /-- 型を構造再帰で比較する。非計算的な選択を使うのは atomsCompare だけである。 -/
   noncomputable def tyCompare : Ty → Ty → Ordering
     | .base a, .base b => compare a.rank b.rank
-    | .opaque a, .opaque b => stringCompare a b
+    | .opaque a r, .opaque b q => (stringCompare a b).then (compare (Order.ixCode r) (Order.ixCode q))
     | .data d as, .data e bs => (stringCompare d e).then (tysCompare as bs)
     | .list a, .list b => tyCompare a b
     | .fn ns as a e, .fn ms bs b f =>

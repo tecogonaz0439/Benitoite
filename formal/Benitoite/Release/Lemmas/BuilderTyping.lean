@@ -32,8 +32,8 @@ theorem HasTypeVQ.canonical_bytes {P B Ψ Q C v}
   | fnRef f ts es =>
       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | prim b ts es =>
-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+  | prim b ts es rs =>
+      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
@@ -49,6 +49,8 @@ theorem HasTypeVQ.canonical_bytes {P B Ψ Q C v}
   | mapV ks vs => obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
   | bytesV bs => exact ⟨bs, rfl⟩
+  | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
+  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
   | loc l => rcases h.inv_loc rfl with ⟨_, _, he⟩ | ⟨_, _, he⟩ <;> cases he
@@ -85,7 +87,7 @@ theorem builderJoin_total {P B Ψ Q C vs}
 /-- 長さと Byte の検査が成功した候補は、要素の型が合えば専用セルの型を持つ。 -/
 theorem builderCheckUpdate_typed {P B Ψ c c' v}
     (ht : match c with
-      | .list a vs => Ty.WF 0 a ∧ HasTypeEach P B Ψ [] [] vs a
+      | .list a vs => Ty.WF 0 0 a ∧ HasTypeEach P B Ψ [] [] vs a
       | _ => True)
     (h : builderCheckUpdate c = .value c' v) :
     BuilderCellOk P B Ψ c.kind c' ∧ HasTypeV P B Ψ [] [] v (.base .unit) := by
@@ -110,7 +112,7 @@ def BuilderReply.Typed (P : Program) (B : Builtins) (Ψ : StoreTy) (k : BuilderK
 
 theorem builderCheckUpdate_reply_typed {P B Ψ c}
     (ht : match c with
-      | .list a vs => Ty.WF 0 a ∧ HasTypeEach P B Ψ [] [] vs a
+      | .list a vs => Ty.WF 0 0 a ∧ HasTypeEach P B Ψ [] [] vs a
       | _ => True) :
     (builderCheckUpdate c).Typed P B Ψ c.kind (.base .unit) := by
   cases h : builderCheckUpdate c with

@@ -1,0 +1,27 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0277]: the trait bound `Array<u8, UInt<UInt<UInt<UInt<..., ...>, ...>, ...>, ...>>: LowerHex` is not satisfied
+   --> crates/benitoite/src/typeck/scope/measure.rs:128:34
+    |
+128 |     let digest = format!("{:x}", Sha256::digest(source.as_bytes()));
+    |                           ----   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `LowerHex` is not implemented for `Array<u8, UInt<UInt<UInt<UInt<UInt<..., ...>, ...>, ...>, ...>, ...>>`
+    |                           |
+    |                           required by this formatting parameter
+    |
+    = help: the following other types implement trait `LowerHex`:
+              &T
+              &mut T
+              Access
+              AtFlags
+              CloneFlags
+              CopyfileFlags
+              DupFlags
+              FallocateFlags
+            and 192 others
+    = note: the full name for the type has been written to '<wt>/target/release/deps/benitoite-75ebea65efc3b7c6.long-type-13010807421900531938.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `benitoite` (lib test) due to 1 previous error
+real 10.39
+user 9.26
+sys 0.43

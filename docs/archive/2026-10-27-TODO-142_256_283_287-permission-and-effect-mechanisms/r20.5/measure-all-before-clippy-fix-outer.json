@@ -1,0 +1,22 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--release",
+    "--lib",
+    "typeck::scope::tests::measure_scope_budget",
+    "--",
+    "--exact",
+    "--ignored",
+    "--nocapture"
+  ],
+  "case": "all",
+  "exit": 0,
+  "wall_seconds": 63.782793584,
+  "max_rss_raw": 4768923648,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 4548.0,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); separate process for this invocation, not sum of child RSS"
+}

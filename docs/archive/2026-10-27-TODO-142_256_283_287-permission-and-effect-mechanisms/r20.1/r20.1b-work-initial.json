@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "/bin/sh",
+    "-c",
+    "scripts/check.sh --level work --base 986e44b20d667a77f4153266652a4883108b3482; command_status=$?; printf \"%s\\n\" \"$command_status\" > \"$1\"; exit \"$command_status\"",
+    "check-wrapper",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.1/r20.1b-work-command.status"
+  ],
+  "started": "2026-10-29T04:15:52.674717+09:00",
+  "finished": "2026-10-29T04:16:05.265645+09:00",
+  "command_exit": 1,
+  "wrapper_exit": 1,
+  "wall_seconds": 12.59,
+  "time_p": {
+    "real": "12.58",
+    "user": "16.29",
+    "sys": "1.09"
+  },
+  "maximum_rss": null,
+  "rss_note": "指定の /usr/bin/time -p は RSS を出力しない。"
+}

@@ -1,0 +1,124 @@
+REJECT-SCOPE ::/0 http://[::ffff:127.0.0.1]:18091/ InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[::FFFF:127.0.0.1]:18091/ InvalidTarget("::FFFF:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[::ffff:7f00:1]:18091/ InvalidTarget("::ffff:7f00:1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[::ffff:7f00:0001]:18091/ InvalidTarget("::ffff:7f00:0001", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[0::ffff:127.0.0.1]:18091/ InvalidTarget("0::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[::0:ffff:127.0.0.1]:18091/ InvalidTarget("::0:ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[0000:0000:0000:0000:0000:ffff:127.0.0.1]:18091/ InvalidTarget("0000:0000:0000:0000:0000:ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE ::/0 http://[::ffff:127.000.000.001]:18091/ InvalidTarget("::ffff:127.000.000.001", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-SCOPE ::/0 http://[::ffff:127.0.0.01]:18091/ InvalidTarget("::ffff:127.0.0.01", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-SCOPE ::/0 http://[::ffff:127.1]:18091/ InvalidTarget("::ffff:127.1", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+ACCEPT http://[::ffff:0:127.0.0.1]:18091/ -> NetworkError timeout: global
+ACCEPT http://[::127.0.0.1]:18091/ -> NetworkError timeout: global
+ACCEPT http://[::7f00:1]:18091/ -> NetworkError timeout: global
+ACCEPT http://[64:ff9b::127.0.0.1]:18091/ -> NetworkError timeout: global
+ACCEPT http://[64:ff9b::7f00:1]:18091/ -> NetworkError timeout: global
+REJECT-SCOPE ::/0 http://[::ffff:127.0.0.1%25lo0]:18091/ InvalidTarget("::ffff:127.0.0.1%25lo0", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-OTHER ::/0 http://[::ffff:127.0.0.1]:18091x/
+REJECT-OTHER ::/0 http://::ffff:127.0.0.1/
+REJECT-SCOPE ::/0 http://[v1.::ffff:127.0.0.1]:18091/ InvalidTarget("v1.::ffff:127.0.0.1", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+ACCEPT http://[::1]:18091/ -> v6:18091 GET / HTTP/1.1 ['host: [::1]:18091']
+ACCEPT http://[0:0:0:0:0:0:0:1]:18091/ -> v6:18091 GET / HTTP/1.1 ['host: [0:0:0:0:0:0:0:1]:18091']
+REJECT-SCOPE ::/0 http://127.0.0.1:18091/ OutsideScope("::/0", "127.0.0.1")
+REJECT-OTHER ::/0 http://[::ffff:7F00:1]./
+REJECT-SCOPE 127.0.0.1 http://[::ffff:127.0.0.1]:18091/ InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[::FFFF:127.0.0.1]:18091/ InvalidTarget("::FFFF:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:7f00:1]:18091/ InvalidTarget("::ffff:7f00:1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:7f00:0001]:18091/ InvalidTarget("::ffff:7f00:0001", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[0::ffff:127.0.0.1]:18091/ InvalidTarget("0::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[::0:ffff:127.0.0.1]:18091/ InvalidTarget("::0:ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[0000:0000:0000:0000:0000:ffff:127.0.0.1]:18091/ InvalidTarget("0000:0000:0000:0000:0000:ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:127.000.000.001]:18091/ InvalidTarget("::ffff:127.000.000.001", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:127.0.0.01]:18091/ InvalidTarget("::ffff:127.0.0.01", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:127.1]:18091/ InvalidTarget("::ffff:127.1", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:0:127.0.0.1]:18091/ OutsideScope("127.0.0.1", "::ffff:0:127.0.0.1")
+REJECT-SCOPE 127.0.0.1 http://[::127.0.0.1]:18091/ OutsideScope("127.0.0.1", "::127.0.0.1")
+REJECT-SCOPE 127.0.0.1 http://[::7f00:1]:18091/ OutsideScope("127.0.0.1", "::7f00:1")
+REJECT-SCOPE 127.0.0.1 http://[64:ff9b::127.0.0.1]:18091/ OutsideScope("127.0.0.1", "64:ff9b::127.0.0.1")
+REJECT-SCOPE 127.0.0.1 http://[64:ff9b::7f00:1]:18091/ OutsideScope("127.0.0.1", "64:ff9b::7f00:1")
+REJECT-SCOPE 127.0.0.1 http://[::ffff:127.0.0.1%25lo0]:18091/ InvalidTarget("::ffff:127.0.0.1%25lo0", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-OTHER 127.0.0.1 http://[::ffff:127.0.0.1]:18091x/
+REJECT-OTHER 127.0.0.1 http://::ffff:127.0.0.1/
+REJECT-SCOPE 127.0.0.1 http://[v1.::ffff:127.0.0.1]:18091/ InvalidTarget("v1.::ffff:127.0.0.1", "expected an ASCII host name, canonical IPv4, or numeric IPv6 without a zone identifier")
+REJECT-SCOPE 127.0.0.1 http://[::1]:18091/ OutsideScope("127.0.0.1", "::1")
+REJECT-SCOPE 127.0.0.1 http://[0:0:0:0:0:0:0:1]:18091/ OutsideScope("127.0.0.1", "0:0:0:0:0:0:0:1")
+ACCEPT http://127.0.0.1:18091/ -> v4:18091 GET / HTTP/1.1 ['host: 127.0.0.1:18091']
+REJECT-OTHER 127.0.0.1 http://[::ffff:7F00:1]./
+HOST-ERR ::/0 ::ffff:127.0.0.1 InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR ::/0 ::ffff:127.0.0.1 InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR ::/0 ::ffff:0.0.0.0 InvalidTarget("::ffff:0.0.0.0", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR ::/0 ::ffff:0.0.0.0 InvalidTarget("::ffff:0.0.0.0", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR ::/0 ::ffff:255.255.255.255 InvalidTarget("::ffff:255.255.255.255", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR ::/0 ::ffff:255.255.255.255 InvalidTarget("::ffff:255.255.255.255", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR ::/0 ::ffff:127.0.0.1. InvalidTarget("::ffff:127.0.0.1.", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR ::/0 ::ffff:127.0.0.1. InvalidTarget("::ffff:127.0.0.1.", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR ::/0 ::ffff:7f00:1 InvalidTarget("::ffff:7f00:1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR ::/0 ::ffff:7f00:1 InvalidTarget("::ffff:7f00:1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR ::/0 ::127.0.0.1 InvalidTarget("::127.0.0.1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR ::/0 ::127.0.0.1 InvalidTarget("::127.0.0.1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-OK ::/0 ::7f00:1
+EP-OK ::/0 ::7f00:1
+HOST-OK ::/0 ::fffe:ffff:ffff
+EP-OK ::/0 ::fffe:ffff:ffff
+HOST-OK ::/0 ::1:0:0:0
+EP-OK ::/0 ::1:0:0:0
+HOST-OK ::/0 ::ffff:0:7f00:1
+EP-OK ::/0 ::ffff:0:7f00:1
+HOST-OK ::/0 64:ff9b::7f00:1
+EP-OK ::/0 64:ff9b::7f00:1
+HOST-ERR ::/0 127.0.0.1 OutsideScope("::/0", "127.0.0.1")
+EP-ERR ::/0 127.0.0.1 OutsideScope("::/0", "127.0.0.1")
+HOST-OK ::/0 ::1
+EP-OK ::/0 ::1
+HOST-ERR ::ffff:0.0.0.0/96 ::ffff:127.0.0.1 InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR ::ffff:0.0.0.0/96 ::ffff:127.0.0.1 InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR ::ffff:0.0.0.0/96 ::ffff:0.0.0.0 InvalidTarget("::ffff:0.0.0.0", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR ::ffff:0.0.0.0/96 ::ffff:0.0.0.0 InvalidTarget("::ffff:0.0.0.0", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR ::ffff:0.0.0.0/96 ::ffff:255.255.255.255 InvalidTarget("::ffff:255.255.255.255", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR ::ffff:0.0.0.0/96 ::ffff:255.255.255.255 InvalidTarget("::ffff:255.255.255.255", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR ::ffff:0.0.0.0/96 ::ffff:127.0.0.1. InvalidTarget("::ffff:127.0.0.1.", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR ::ffff:0.0.0.0/96 ::ffff:127.0.0.1. InvalidTarget("::ffff:127.0.0.1.", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR ::ffff:0.0.0.0/96 ::ffff:7f00:1 InvalidTarget("::ffff:7f00:1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR ::ffff:0.0.0.0/96 ::ffff:7f00:1 InvalidTarget("::ffff:7f00:1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR ::ffff:0.0.0.0/96 ::127.0.0.1 InvalidTarget("::127.0.0.1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR ::ffff:0.0.0.0/96 ::127.0.0.1 InvalidTarget("::127.0.0.1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR ::ffff:0.0.0.0/96 ::7f00:1 OutsideScope("::ffff:0.0.0.0/96", "::7f00:1")
+EP-ERR ::ffff:0.0.0.0/96 ::7f00:1 OutsideScope("::ffff:0.0.0.0/96", "::7f00:1")
+HOST-ERR ::ffff:0.0.0.0/96 ::fffe:ffff:ffff OutsideScope("::ffff:0.0.0.0/96", "::fffe:ffff:ffff")
+EP-ERR ::ffff:0.0.0.0/96 ::fffe:ffff:ffff OutsideScope("::ffff:0.0.0.0/96", "::fffe:ffff:ffff")
+HOST-ERR ::ffff:0.0.0.0/96 ::1:0:0:0 OutsideScope("::ffff:0.0.0.0/96", "::1:0:0:0")
+EP-ERR ::ffff:0.0.0.0/96 ::1:0:0:0 OutsideScope("::ffff:0.0.0.0/96", "::1:0:0:0")
+HOST-ERR ::ffff:0.0.0.0/96 ::ffff:0:7f00:1 OutsideScope("::ffff:0.0.0.0/96", "::ffff:0:7f00:1")
+EP-ERR ::ffff:0.0.0.0/96 ::ffff:0:7f00:1 OutsideScope("::ffff:0.0.0.0/96", "::ffff:0:7f00:1")
+HOST-ERR ::ffff:0.0.0.0/96 64:ff9b::7f00:1 OutsideScope("::ffff:0.0.0.0/96", "64:ff9b::7f00:1")
+EP-ERR ::ffff:0.0.0.0/96 64:ff9b::7f00:1 OutsideScope("::ffff:0.0.0.0/96", "64:ff9b::7f00:1")
+HOST-ERR ::ffff:0.0.0.0/96 127.0.0.1 OutsideScope("::ffff:0.0.0.0/96", "127.0.0.1")
+EP-ERR ::ffff:0.0.0.0/96 127.0.0.1 OutsideScope("::ffff:0.0.0.0/96", "127.0.0.1")
+HOST-ERR ::ffff:0.0.0.0/96 ::1 OutsideScope("::ffff:0.0.0.0/96", "::1")
+EP-ERR ::ffff:0.0.0.0/96 ::1 OutsideScope("::ffff:0.0.0.0/96", "::1")
+HOST-ERR 127.0.0.0/8 ::ffff:127.0.0.1 InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR 127.0.0.0/8 ::ffff:127.0.0.1 InvalidTarget("::ffff:127.0.0.1", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR 127.0.0.0/8 ::ffff:0.0.0.0 InvalidTarget("::ffff:0.0.0.0", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR 127.0.0.0/8 ::ffff:0.0.0.0 InvalidTarget("::ffff:0.0.0.0", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR 127.0.0.0/8 ::ffff:255.255.255.255 InvalidTarget("::ffff:255.255.255.255", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+EP-ERR 127.0.0.0/8 ::ffff:255.255.255.255 InvalidTarget("::ffff:255.255.255.255", "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address")
+HOST-ERR 127.0.0.0/8 ::ffff:127.0.0.1. InvalidTarget("::ffff:127.0.0.1.", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR 127.0.0.0/8 ::ffff:127.0.0.1. InvalidTarget("::ffff:127.0.0.1.", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR 127.0.0.0/8 ::ffff:7f00:1 InvalidTarget("::ffff:7f00:1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR 127.0.0.0/8 ::ffff:7f00:1 InvalidTarget("::ffff:7f00:1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR 127.0.0.0/8 ::127.0.0.1 InvalidTarget("::127.0.0.1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+EP-ERR 127.0.0.0/8 ::127.0.0.1 InvalidTarget("::127.0.0.1", "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address")
+HOST-ERR 127.0.0.0/8 ::7f00:1 OutsideScope("127.0.0.0/8", "::7f00:1")
+EP-ERR 127.0.0.0/8 ::7f00:1 OutsideScope("127.0.0.0/8", "::7f00:1")
+HOST-ERR 127.0.0.0/8 ::fffe:ffff:ffff OutsideScope("127.0.0.0/8", "::fffe:ffff:ffff")
+EP-ERR 127.0.0.0/8 ::fffe:ffff:ffff OutsideScope("127.0.0.0/8", "::fffe:ffff:ffff")
+HOST-ERR 127.0.0.0/8 ::1:0:0:0 OutsideScope("127.0.0.0/8", "::1:0:0:0")
+EP-ERR 127.0.0.0/8 ::1:0:0:0 OutsideScope("127.0.0.0/8", "::1:0:0:0")
+HOST-ERR 127.0.0.0/8 ::ffff:0:7f00:1 OutsideScope("127.0.0.0/8", "::ffff:0:7f00:1")
+EP-ERR 127.0.0.0/8 ::ffff:0:7f00:1 OutsideScope("127.0.0.0/8", "::ffff:0:7f00:1")
+HOST-ERR 127.0.0.0/8 64:ff9b::7f00:1 OutsideScope("127.0.0.0/8", "64:ff9b::7f00:1")
+EP-ERR 127.0.0.0/8 64:ff9b::7f00:1 OutsideScope("127.0.0.0/8", "64:ff9b::7f00:1")
+HOST-OK 127.0.0.0/8 127.0.0.1
+EP-OK 127.0.0.0/8 127.0.0.1
+HOST-ERR 127.0.0.0/8 ::1 OutsideScope("127.0.0.0/8", "::1")
+EP-ERR 127.0.0.0/8 ::1 OutsideScope("127.0.0.0/8", "::1")

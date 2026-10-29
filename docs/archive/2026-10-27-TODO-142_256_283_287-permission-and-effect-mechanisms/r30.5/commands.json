@@ -1,0 +1,349 @@
+[
+  {
+    "record": "compare-selftest.json",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/bench/compare",
+      "-p",
+      "test_*.py"
+    ],
+    "exit": 0,
+    "outer_seconds": 128.77576962499998
+  },
+  {
+    "record": "cost-dense-100-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-retained-100-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-1-outer-wildcard-trial.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-1-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-10-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-100-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-dense-1-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-dense-10-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-seven-io-dense-100-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "cost-six-1-outer.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--release",
+      "--lib",
+      "typeck::scope::tests::measure_scope_budget",
+      "--",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": null
+  },
+  {
+    "record": "generate.json",
+    "command": [
+      "cargo",
+      "run",
+      "-p",
+      "benitoite",
+      "--example",
+      "gen_skill"
+    ],
+    "exit": 0,
+    "outer_seconds": 0.796859167
+  },
+  {
+    "record": "narrow-file-heap.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify",
+      "--test",
+      "runtime_builtins",
+      "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": 1.8053525419999998
+  },
+  {
+    "record": "narrow-file-runtime.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "runtime_builtins",
+      "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": 1.776292334
+  },
+  {
+    "record": "narrow-file-stress.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify,gc-stress",
+      "--test",
+      "runtime_builtins",
+      "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": 1.7922418750000002
+  },
+  {
+    "record": "root-tree-file-heap.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify",
+      "--test",
+      "runtime_builtins",
+      "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": 7.101148374999999
+  },
+  {
+    "record": "root-tree-file-runtime.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--test",
+      "runtime_builtins",
+      "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": 13.314814540999999
+  },
+  {
+    "record": "root-tree-file-stress.json",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "benitoite",
+      "--no-default-features",
+      "--features",
+      "gc-mark-sweep,heap-verify,gc-stress",
+      "--test",
+      "runtime_builtins",
+      "file_in_operations_use_the_retained_path_and_preserve_values_and_errors",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "outer_seconds": 6.7572558339999995
+  },
+  {
+    "record": "work-dry-run.json",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "ea42f4f97fe34e1f4768404f5b44aac3ff371155",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "outer_seconds": 0.1084295
+  },
+  {
+    "record": "work.json",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "ea42f4f97fe34e1f4768404f5b44aac3ff371155"
+    ],
+    "exit": 0,
+    "outer_seconds": 481.5293325
+  }
+]

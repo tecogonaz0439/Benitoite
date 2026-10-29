@@ -1,0 +1,168 @@
+$ cargo test -p benitoite --manifest-path <baseline>/Cargo.toml --target-dir <baseline>/target --test desugar_export
+   Compiling memchr v2.8.3
+   Compiling unicode-width v0.2.2
+   Compiling wasm-encoder v0.261.0
+   Compiling serde_json v1.0.151
+   Compiling object v0.40.0
+   Compiling aho-corasick v1.1.5
+   Compiling csv-core v0.1.13
+   Compiling wast v261.0.0
+   Compiling wit-parser v0.258.3
+   Compiling regex-automata v0.4.18
+   Compiling regex v1.13.1
+   Compiling wit-component v0.258.3
+   Compiling wasmtime-environ v49.0.4
+   Compiling wat v1.261.0
+   Compiling wasmtime-internal-wit-bindgen v49.0.4
+   Compiling wasmtime-internal-component-macro v49.0.4
+   Compiling wasmtime-internal-unwinder v49.0.4
+   Compiling wasmtime-internal-cranelift v49.0.4
+   Compiling wasmtime v49.0.4
+   Compiling benitoite v0.0.12 (<baseline>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 44.16s
+     Running tests/desugar_export.rs (<baseline>/target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 35 tests
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch5::export_batch5_formats ... ok
+test batch3::export_batch3_solve ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_independent_program_exchange ... FAILED
+test export_interval_identity ... FAILED
+test export_interval_manifest ... FAILED
+test export_named_declarations_smoke ... FAILED
+test export_named_types_smoke ... FAILED
+test batch3::export_batch4_log_standard ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_width_smoke ... FAILED
+test interval::export_interval_range ... FAILED
+test interval::vm::export_interval_vm ... FAILED
+test named::export_checked_positional_constructor_holes ... FAILED
+test named::export_extensible_package ... FAILED
+test batch3::export_batch4_checked_lists ... ok
+test named::export_general_named_programs ... FAILED
+test named::export_generated_record_property ... FAILED
+test export_accepts_generated_guard_local_handler ... ok
+test named::export_named_annotation_without_named_calls ... FAILED
+test named::export_named_calls_smoke ... FAILED
+test named::export_named_static_calls_smoke ... FAILED
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_batch2_character ... ok
+test named::export_extensible_source ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_hole_argument_plans ... FAILED
+test export_batch2_failure ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test batch3::export_batch3_monad2 ... ok
+test export_batch2_op ... ok
+test batch3::export_batch3_builders ... ok
+
+failures:
+
+---- export_independent_program_exchange stdout ----
+
+thread 'export_independent_program_exchange' (3110879) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- export_interval_identity stdout ----
+
+thread 'export_interval_identity' (3110880) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- export_interval_manifest stdout ----
+
+thread 'export_interval_manifest' (3110881) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- export_named_declarations_smoke stdout ----
+
+thread 'export_named_declarations_smoke' (3110882) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- export_named_types_smoke stdout ----
+
+thread 'export_named_types_smoke' (3110883) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- export_width_smoke stdout ----
+
+thread 'export_width_smoke' (3110898) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- interval::export_interval_range stdout ----
+
+thread 'interval::export_interval_range' (3110899) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- interval::vm::export_interval_vm stdout ----
+
+thread 'interval::vm::export_interval_vm' (3110900) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_checked_positional_constructor_holes stdout ----
+
+thread 'named::export_checked_positional_constructor_holes' (3110901) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_extensible_package stdout ----
+
+thread 'named::export_extensible_package' (3110902) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_general_named_programs stdout ----
+
+thread 'named::export_general_named_programs' (3110921) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_generated_record_property stdout ----
+
+thread 'named::export_generated_record_property' (3110922) panicked at crates/benitoite/tests/desugar_export/named.rs:448:5:
+assertion `left == right` failed: [Diagnostic { kind: Check, severity: Error, code: Some(E0101), message: "cannot read file `<baseline>/tools/derive/examples/People.bnt`", primary: None, secondary: [], notes: ["No such file or directory (os error 2)"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 1
+ right: 0
+
+---- named::export_named_annotation_without_named_calls stdout ----
+
+thread 'named::export_named_annotation_without_named_calls' (3110932) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_named_calls_smoke stdout ----
+
+thread 'named::export_named_calls_smoke' (3110933) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_named_static_calls_smoke stdout ----
+
+thread 'named::export_named_static_calls_smoke' (3110934) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+---- named::export_hole_argument_plans stdout ----
+
+thread 'named::export_hole_argument_plans' (3110926) panicked at crates/benitoite/tests/desugar_export.rs:313:5:
+output must stay inside this repository
+
+
+failures:
+    export_independent_program_exchange
+    export_interval_identity
+    export_interval_manifest
+    export_named_declarations_smoke
+    export_named_types_smoke
+    export_width_smoke
+    interval::export_interval_range
+    interval::vm::export_interval_vm
+    named::export_checked_positional_constructor_holes
+    named::export_extensible_package
+    named::export_general_named_programs
+    named::export_generated_record_property
+    named::export_hole_argument_plans
+    named::export_named_annotation_without_named_calls
+    named::export_named_calls_smoke
+    named::export_named_static_calls_smoke
+
+test result: FAILED. 18 passed; 16 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.08s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`

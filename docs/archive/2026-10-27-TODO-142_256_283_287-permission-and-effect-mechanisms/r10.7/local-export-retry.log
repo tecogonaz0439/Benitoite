@@ -1,0 +1,10 @@
+$ cargo test --test desugar_export --test coverage_export
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0599]: no method named `is_empty` found for struct `BindingMap<T>` in the current scope
+   --> crates/benitoite/tests/desugar_export/scope_tables.rs:442:36
+    |
+442 |     assert!(p.resolved.builtin_ops.is_empty());
+    |                                    ^^^^^^^^ method not found in `BindingMap<BuiltinId>`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `benitoite` (test "desugar_export") due to 1 previous error

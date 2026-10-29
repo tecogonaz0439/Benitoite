@@ -1,0 +1,32 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "6b333d12343f922f976e589f6a1c4ab8f2a1929e",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally,python_syntax,policy_selftest",
+    "--test",
+    "desugar_export",
+    "--test",
+    "coverage_export",
+    "--test",
+    "golden",
+    "--test",
+    "verify",
+    "--test",
+    "random_programs",
+    "--dry-run"
+  ],
+  "start": "2026-10-29T11:33:55.284987+00:00",
+  "end": "2026-10-29T11:33:55.305966+00:00",
+  "exit": 0,
+  "time_exit": 0,
+  "seconds": 0.020715125000000004,
+  "max_rss_raw": 3014656,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 2.875,
+  "max_rss_gib": 0.0028076171875,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN), child process maximum, not concurrent sum"
+}

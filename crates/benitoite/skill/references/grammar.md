@@ -57,7 +57,13 @@ Constraint  = QualUpper | LowerIdent .
 TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 Param       = LowerIdent ":" Type .
 Uses        = "uses" EffectRef { "," EffectRef } .
-EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
+EffectRef   = QualUpper [ EffectArgs ] .
+EffectArgs  = TypeArgs | PathEffectArgs | EndpointEffectArgs .
+TypeArgs    = "[" CommaList(Type) "]" .
+PathEffectArgs = "[" StringLit { "," StringLit } [ "," ] "]" .
+EndpointEffectArgs = "[" EndpointArg { "," EndpointArg } [ "," ] "]" .
+EndpointArg = StringLit "," PortArg .
+PortArg     = IntLit [ ".." IntLit ] .
 
 ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
 

@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit
+  bind x <- Http.checkRequestIn(hostPattern: "a.example", minimumPort: 80, maximumPort: 80, request: Http.ClientRequest(method: "GET", url: "notaurl", headers: [], body: Bytes.empty(), timeoutMilliseconds: 1000))
+  ()
+end function

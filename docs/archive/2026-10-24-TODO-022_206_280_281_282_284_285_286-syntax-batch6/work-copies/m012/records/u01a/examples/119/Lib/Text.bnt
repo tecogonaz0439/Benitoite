@@ -1,0 +1,4 @@
+/// Turns "Hello World" into "hello-world".
+public function slug(text: String) -> String
+  return String.toLowercase(String.replace(s: String.trim(text), old: " ", new: "-"))
+end function

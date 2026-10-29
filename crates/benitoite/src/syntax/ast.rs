@@ -367,6 +367,8 @@ pub struct NamedType {
     pub span: Span,
     pub path: Vec<Name>,
     pub args: Vec<TypeExpr>,
+    /// 型引数とは別の閉じた範囲の字句。
+    pub scope: Option<Box<ScopeArgs>>,
 }
 
 /// `function(name: A, other: B) -> R uses E`。
@@ -400,9 +402,56 @@ pub struct UsesList {
 pub struct EffectRef {
     /// エフェクトの型引数。省略と空の角括弧を区別する。
     pub args: Option<Vec<TypeExpr>>,
+    /// 略記の展開元と、この原子に対応する要素。
+    pub scope: Option<Box<ScopeArgs>>,
     pub id: NodeId,
     pub span: Span,
     pub path: Vec<Name>,
+}
+
+/// 範囲引数の字句。元の字句そのものはソースと token に保持する。
+#[derive(Clone, PartialEq, Debug)]
+pub enum ScopeArgKind {
+    /// エスケープを解いた文字列。元の表記は要素の位置から取得する。
+    String(String),
+    /// 整数リテラルの解読済みの十進表記。閉区間の上端がなければ一点。
+    Port(String, Option<String>),
+    /// 式・補間・定数参照など、範囲引数として受理しない入力。
+    Invalid,
+}
+
+/// 範囲引数の一要素。拒否する式も一要素として位置を保持する。
+#[derive(Clone, PartialEq, Debug)]
+pub struct ScopeArg {
+    /// 元の要素の位置。区切りのコンマと外側の角括弧を含まない。
+    pub span: Span,
+    /// 解読済みのリテラルか、不正な要素の印。
+    pub kind: ScopeArgKind,
+}
+
+/// 一つの角括弧の群と、展開された原子が使う要素の区間。
+#[derive(Clone, PartialEq, Debug)]
+pub struct ScopeArgs {
+    /// 角括弧を含む元の群の位置。
+    pub span: Span,
+    /// 群の全要素。展開後も同じ群と要素数を保持する。
+    pub items: std::sync::Arc<[ScopeArg]>,
+    /// この原子が使う要素の半開区間。値型と未展開の群では全要素。
+    pub element: std::ops::Range<usize>,
+}
+
+impl ScopeArgs {
+    /// この原子に対応する元の要素を返す。区間が不正なら空の列を返す。
+    pub fn selected(&self) -> &[ScopeArg] {
+        self.items.get(self.element.clone()).unwrap_or(&[])
+    }
+    /// 対応する最初から最後の要素までの位置。要素がなければ群全体を返す。
+    pub fn element_span(&self) -> Span {
+        match (self.selected().first(), self.selected().last()) {
+            (Some(first), Some(last)) => first.span.to(last.span),
+            _ => self.span,
+        }
+    }
 }
 
 // ---------------- ブロックと文 ----------------

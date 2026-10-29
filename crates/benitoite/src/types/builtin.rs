@@ -48,6 +48,7 @@ impl BuiltinTypeId {
     pub const TASK_GROUP: BuiltinTypeId = BuiltinTypeId(15);
     pub const IO_ERROR: BuiltinTypeId = BuiltinTypeId(16);
     pub const NETWORK_ERROR: BuiltinTypeId = BuiltinTypeId(17);
+    pub const REGEX_PATTERN: BuiltinTypeId = BuiltinTypeId(21);
     pub const INTEGER8: BuiltinTypeId = BuiltinTypeId(25);
     pub const INTEGER16: BuiltinTypeId = BuiltinTypeId(26);
     pub const INTEGER32: BuiltinTypeId = BuiltinTypeId(27);
@@ -55,6 +56,8 @@ impl BuiltinTypeId {
     pub const UNSIGNED_INTEGER32: BuiltinTypeId = BuiltinTypeId(29);
     pub const UNSIGNED_INTEGER64: BuiltinTypeId = BuiltinTypeId(30);
     pub const FLOAT32: BuiltinTypeId = BuiltinTypeId(31);
+    pub const PATH_IN: BuiltinTypeId = BuiltinTypeId(32);
+    pub const REQUEST_IN: BuiltinTypeId = BuiltinTypeId(33);
 
     pub const INTEGER64: BuiltinTypeId = Self::INTEGER;
     pub const FLOAT64: BuiltinTypeId = Self::FLOAT;
@@ -64,6 +67,15 @@ impl BuiltinTypeId {
     /// 表の項目。
     pub fn def(self) -> Option<&'static BuiltinTypeDef> {
         BUILTIN_TYPES.get(usize::from(self.0))
+    }
+
+    /// 範囲付きの値型として認定する名前の対象の種類。一般の不透明型は含めない。
+    pub fn value_kind(self) -> Option<super::scope::Kind> {
+        match self {
+            Self::PATH_IN => Some(super::scope::Kind::Path),
+            Self::REQUEST_IN => Some(super::scope::Kind::Endpoint),
+            _ => None,
+        }
     }
 
     /// 数の正の名前とは別に、既存の診断と型の書き出しの表示を保つ。
@@ -270,6 +282,18 @@ pub const BUILTIN_TYPES: &[BuiltinTypeDef] = &[
         arity: 0,
         class: BuiltinTypeClass::Basic,
     },
+    BuiltinTypeDef {
+        module: &["Scope"],
+        name: "PathIn",
+        arity: 0,
+        class: BuiltinTypeClass::Opaque,
+    },
+    BuiltinTypeDef {
+        module: &["Network", "Http"],
+        name: "RequestIn",
+        arity: 0,
+        class: BuiltinTypeClass::Opaque,
+    },
 ];
 
 /// 数の正の名前・別名・表示名。型の定義のモジュールは既存の型クラスの実装の所属を保つ。
@@ -385,6 +409,18 @@ impl BuiltinEffectId {
     /// `IO.All`。型検査が宣言の型と型注釈を内部の型に移すときに、`in_io_all` の項目の集合に置き換える。
     /// `EffectSet` には現れない
     pub const IO_ALL: BuiltinEffectId = BuiltinEffectId(1);
+    pub const FILE_READ: BuiltinEffectId = BuiltinEffectId(4);
+    pub const FILE_WRITE: BuiltinEffectId = BuiltinEffectId(5);
+    pub const HTTP_CONNECT: BuiltinEffectId = BuiltinEffectId(12);
+
+    /// 対象の範囲を持つ標準エフェクトの種類。名前解決の後の識別番号だけを認定する。
+    pub fn scope_kind(self) -> Option<super::scope::Kind> {
+        match self {
+            Self::FILE_READ | Self::FILE_WRITE => Some(super::scope::Kind::Path),
+            Self::HTTP_CONNECT => Some(super::scope::Kind::Endpoint),
+            _ => None,
+        }
+    }
 
     /// 表の項目。
     pub fn def(self) -> Option<&'static BuiltinEffectDef> {
@@ -560,6 +596,101 @@ impl FailureDeclaration {
             ret: super::Ty::Param(0),
             effects,
             wrote_io_all: false,
+        }
+    }
+}
+
+/// 型の添字。範囲の変数は標準署名の内部だけで使う（02-05「型とエフェクトの表現」）。
+/// Top以外を不変の共有データとして保持し、型を複写しても添字の内容は変わらない。
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+pub struct RangeIndex(Option<std::sync::Arc<Index>>);
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+enum Index {
+    Fixed(super::scope::Range),
+    Var(u32),
+}
+
+impl RangeIndex {
+    /// 範囲を省略した既存の型を構築する際にも明示する Top。割り当てを要しない。
+    pub const TOP: Self = Self(None);
+
+    /// 閉じた範囲を持つ不変の添字を作る。Top は同じ一つの表現にそろえる。
+    pub fn fixed(range: super::scope::Range) -> Self {
+        if range == super::scope::Range::Top {
+            Self::TOP
+        } else {
+            Self(Some(std::sync::Arc::new(Index::Fixed(range))))
+        }
+    }
+
+    /// 標準署名の中の範囲変数を、その宣言の中の番号で指す。
+    pub fn var(index: u32) -> Self {
+        Self(Some(std::sync::Arc::new(Index::Var(index))))
+    }
+
+    /// 閉じた添字の範囲。範囲変数の場合は値を返さない。
+    pub fn range(&self) -> Option<&super::scope::Range> {
+        match self.0.as_deref() {
+            None => Some(&super::scope::Range::Top),
+            Some(Index::Fixed(r)) => Some(r),
+            Some(Index::Var(_)) => None,
+        }
+    }
+
+    /// 署名内の変数の番号が、宣言した範囲の個数より小さいかを調べる。
+    /// 確定したプログラムには個数 0 を用いる。
+    pub fn vars_in(&self, count: u32) -> bool {
+        match self.0.as_deref() {
+            None | Some(Index::Fixed(_)) => true,
+            Some(Index::Var(i)) => *i < count,
+        }
+    }
+
+    /// 署名の範囲変数を同時に具体化する。不足する番号は変数のまま保持する。
+    /// 呼び出し側は具体化後の `vars_in(0)` を検査する。
+    pub fn instantiate(&self, ranges: &[super::scope::Range]) -> Self {
+        match self.0.as_deref() {
+            None | Some(Index::Fixed(_)) => self.clone(),
+            Some(Index::Var(i)) => usize::try_from(*i)
+                .ok()
+                .and_then(|i| ranges.get(i))
+                .map_or_else(|| self.clone(), |r| Self::fixed(r.clone())),
+        }
+    }
+
+    /// 範囲の変数なら宣言内の番号を返す。
+    pub fn variable(&self) -> Option<u32> {
+        match self.0.as_deref() {
+            Some(Index::Var(i)) => Some(*i),
+            None | Some(Index::Fixed(_)) => None,
+        }
+    }
+
+    /// 固定の範囲どうし、または同番号の変数どうしだけを被覆で比べる。
+    pub fn covers(&self, inner: &Self) -> bool {
+        match (self.range(), inner.range()) {
+            (Some(outer), Some(inner)) => outer.covers(inner),
+            (None, None) => self == inner,
+            _ => false,
+        }
+    }
+
+    /// 名前に続ける添字の表示。範囲変数は署名内に限られる。
+    pub(crate) fn suffix(&self) -> String {
+        match self.0.as_deref() {
+            None => String::new(),
+            Some(Index::Fixed(r)) => r.suffix(),
+            Some(Index::Var(i)) => super::text::range_variable(*i),
+        }
+    }
+
+    // 共有データも一出現ぶんずつ数える保守的な上限。文字列の分は利用側で加える。
+    pub(crate) fn allocation_bytes(&self) -> usize {
+        if self.0.is_some() {
+            std::mem::size_of::<Index>().saturating_add(std::mem::size_of::<[usize; 2]>())
+        } else {
+            0
         }
     }
 }

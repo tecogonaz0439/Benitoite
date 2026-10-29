@@ -1,0 +1,52 @@
+diff --git a/docs/design/02-impl/02-09-runtime.md b/docs/design/02-impl/02-09-runtime.md
+index 6de815ca..21edaf50 100644
+--- a/docs/design/02-impl/02-09-runtime.md
++++ b/docs/design/02-impl/02-09-runtime.md
+@@ -28,7 +28,7 @@ VM の実行の手順、ハンドラの継続、タスクごとの呼び出し
+ 
+ 【決定】六つの `File.*In` の実行本体は、同じ回収しない区間の中で `PathIn` の一欄から保持したパスを借りる。既存の File の処理がホスト側の `PathBuf` と書き込みの内容を所有する仕事を作ってから待つため、作業用のスレッドへ言語の値や借用を渡さない。`PathIn` の表現、根の列挙、書き込みの障壁、安全点を増やさない。
+ 
+-【決定】`Http.checkRequestIn` は、渡された同じ要求のレコードの値と、その URL から得た実効の端点を既存の構成子の欄に保持する。`RequestIn` と `Result.Ok` の構築は一つの回収しない区間の中で行い、結果をレジスタへ保存した後は、構成子の既存の子の走査で要求の五欄まで辿る。`requestInValue` は保持したレコードの値を返し、新しいレコードを確保しない。ホスト側の領域に言語の値を保存せず、確保器・根・書き込みの障壁・安全点の不変条件は変えない。
++【決定】`Http.checkRequestIn` は、渡された同じ要求のレコードの値と、その URL から得た実効の端点を既存の構成子の欄に保持する。`RequestIn` と `Result.Ok` の構築は一つの回収しない区間の中で行い、結果をレジスタへ保存した後は、構成子の既存の子の走査で要求の五欄まで辿る。`requestInValue` は保持したレコードの値を返し、新しいレコードを確保しない。`widenRequestIn` も同じ三欄の値を返す。旧 `Http.send` は射影したレコードの五欄をホスト側の要求と時間上限へ読み取るが、`RequestIn` の host・port の欄は受け取らない。作業用のスレッドには Rust が所有する要求・本体・時間上限を渡し、完了処理では応答だけを言語の値へ変換する。ホスト側の領域に言語の値を保存せず、確保器・根・書き込みの障壁・安全点の不変条件は変えない。
+ 
+ 【決定】根の列挙の漏れにより解放された対象への参照は、機能 `heap-verify` の構成では確保の世代の照合で見つけるが、既定の構成（`gc-mark-sweep` だけ）では見つけない。理由: 既定の構成で読み出しのたびに領域の外の表を引く費用を避けるためである。
+ 
+diff --git a/docs/design/03-interop/03-09-network.md b/docs/design/03-interop/03-09-network.md
+index c507cae8..61597b44 100644
+--- a/docs/design/03-interop/03-09-network.md
++++ b/docs/design/03-interop/03-09-network.md
+@@ -214,6 +214,8 @@ end function
+ 
+ 成功値は、渡された同じ `ClientRequest` のレコード（`method`・`url`・`headers`・`body`・`timeoutMilliseconds` の五欄）と、その `url` から得た実効の端点を保持する。クエリは `url` の一部として保つ。射影では欄を作り直さず、保持したレコードをそのまま返す。射影したレコードを更新しても元の成功値は変わらず、URL を変えた要求を検査済みとして扱うには再検査を要する。静的な範囲が Top でも、動的な条件と端点の所属を検査し、成功した場合だけ `Result.Ok` を作る。
+ 
++【決定】要求の純粋な検査は、送信のための要求の妥当性検査とは分ける。検査済みの値を作る段では `url` と端点の所属を調べ、`method`・`headers`・`body`・`timeoutMilliseconds` は元の値のまま保持する。これらの欄が送信に使えるかは `Http.send` の送信準備とプロトコルの検査で判断する。`requestInValue` で取り出したレコードを `Http.send` に渡すことはできるが、この旧入口は保持した端点を受け取らず、リダイレクトも追従するため、検査した端点一つへの送信を保証しない。理由: 要求の保持と、実際の通信が作用する対象の一致は、別々に確認する必要があるためである。
++
+ ホストのパターンとポートの読取り・所属には、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)で定める範囲の共通の代数を使う。ホスト名の完全一致・一段・任意の正の段数のパターン、IP の完全一致と CIDR、ポートの閉区間を扱い、IP をホスト名へ変換しない。旧 `Scope.checkHost`・`checkEndpoint` も、同じ共通の代数で IP と CIDR を検査し、保存するパターンを正規化する。端点の範囲には scheme を含めず、ホストとポートの組だけを入れる。したがって、同じホストとポートの範囲は `http` と `https` の両方を覆い、固定した origin や通信内容の制限を表さない。
+ 
+ `checkRequestIn` の URL は、ASCII の絶対形式で scheme が `http` か `https`、ホストが空でないものに限る。字句には ASCII の英数字と `-._~:/?#[]@!$&'()*+,;=%` だけを許し、正しい二桁の16進数が続かない `%` と userinfo を拒否する。パスやクエリの非 ASCII の文字は、URL に渡す前にパーセント符号化する。ホスト名は範囲の代数と同じ ASCII のラベルに限る。断片（`#` 以後）は受理して元のレコードへ保持するが、端点には含めない。URL のポートを省略した場合と空にした場合は、`http` では80、`https` では443を実効のポートとする。ポートを明示した場合は ASCII の十進数字と0〜65535の範囲を検査し、不正な文字列や範囲外の値を既定のポートへ置き換えない。
+diff --git a/docs/design/07-quality/07-04-formal-semantics.md b/docs/design/07-quality/07-04-formal-semantics.md
+index 9db18217..85fda055 100644
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -37,7 +37,7 @@
+ 
+ 【決定】形式化した Release の値の型付けは、検査済みの対象の値の葉の規則 V-Checked（01-12「型付け規則」の「値」）を持つ。このため、性質 2・3 の前提の状態の型付けと `Program.WellTyped`、`Builtins.Assumptions` のうち型の付いた値を量化する `delta_typed`・`io_typed`・`io_exists`・`release_exists`（応答の型 `OutcomeTy` を含む）と、性質 1 の結論の型付けは、対象の種類を持つ名前（組み込みの表の `valKind` が none でない名前）の不透明型について、検査済みの対象の値を含む内容に変わる。網羅性の値の形も、範囲付きの値型に検査済みの対象の値を加えたので、範囲が Top でない不透明型の値の `match` には変数か `_` の選択肢が要る。主定理の言明の字面は変えていない。対象の種類を持たない表（既存の不透明型と資源の型はすべて `valKind = none`）では V-Checked は使えず、不透明型の閉じた値は不透明型の定数だけである。このため、対象の種類を持たない表では、資源の解放の仮定 `release_exists` は以前と同値である（`Release/Lemmas/Membership.lean` の `HasTypeVQ.not_checked_of_noValKind`・`canonical_opaque_of_noValKind`・`release_exists_iff_old`）。網羅性は、照合する値の型が最上位で範囲 Top の不透明型のとき以前と同値である（`Exhaustive.opaqueTop_iff`）。入れ子の型の中の不透明型の網羅性と、`delta_typed`・`io_typed`・`io_exists` の内容が以前と同値であることは、補題として示していない。`Release.Model.assumptions` の表は対象の種類を持たない（`Model.builtins_noValKind`）。この前提の変更は、設計者が承認した値の所属の規則の変更（値の型付けの規則と、それに伴う網羅性の値の形）として扱う。理由: 範囲付きの値型の値を型付けるには所属を前提に持つ規則が要り、その値が照合と組み込みの関数の応答に現れるためである。
+ 
+-【決定】形式化した Release の値の型付けは、検査済みの要求の値の規則 V-CheckedRequest（01-12「型付け規則」の「値」）も持つ。このため、性質 2・3 の前提の状態の型付けと `Program.WellTyped`、型の付いた値を量化する `delta_typed`・`io_typed`・`io_exists`・`release_exists` と、性質 1 の結論の型付けは、対象の種類と要求の型を持つ名前（組み込みの表の `valKind` と `valContent` がともに none でない名前。今の表では `Http.RequestIn`）の不透明型について、検査済みの要求の値を含む内容に変わる。L40.3c で、保持する要求を範囲が Top の不透明型の定数から `Http.ClientRequest` のレコードの閉じた値に改め、`valContent` を型の名前から型にした。規則の前提は、保持する要求が同じストアの型付けのもとで閉じた文脈（空の型の文脈・値の文脈・NoFail の文脈）で `valContent` の型を持つことである。主定理の言明の字面と `Builtins.Assumptions` の欄は、この変更でも変えていない。網羅性の値の形にも検査済みの要求の値を加えたが、網羅性の判断は最上位の不透明型について変わらない（`Exhaustive.opaque_iff_noRequest`）。`valKind` が全て none の表と、`valContent` が全て none の表（`Release.Model.builtins` と `Release.ModelTargets.builtins`）では V-CheckedRequest は使えない（`HasTypeVQ.not_checkedRequest_of_noValKind`・`not_checkedRequest_of_noValContent`、`ModelHttp.model_noValContent`・`modelTargets_noValContent`）。そのため、それらの表の値の型付けと四つの欄の内容は、この規則を加える前と同じである。この前提の変更は、設計者が承認した値の所属の規則の変更と、Http.ClientRequest の表現の決定（案 A）に含める。理由: `Http.RequestIn` の値が検査した同じ要求を保持すること（決定の判断 7）を値の形で表すと、その値を型付ける規則が要るためである。
++【決定】形式化した Release の値の型付けは、検査済みの要求の値の規則 V-CheckedRequest（01-12「型付け規則」の「値」）も持つ。このため、性質 2・3 の前提の状態の型付けと `Program.WellTyped`、型の付いた値を量化する `delta_typed`・`io_typed`・`io_exists`・`release_exists` と、性質 1 の結論の型付けは、対象の種類と要求の型を持つ名前（組み込みの表の `valKind` と `valContent` がともに none でない名前。今の表では `Http.RequestIn`）の不透明型について、検査済みの要求の値を含む内容に変わる。保持する要求は `Http.ClientRequest` のレコードの閉じた値であり、`valContent` はその型を与える。規則の前提は、保持する要求が同じストアの型付けのもとで閉じた文脈（空の型の文脈・値の文脈・NoFail の文脈）で `valContent` の型を持つことである。主定理の言明の字面と `Builtins.Assumptions` の欄は、この変更でも変えていない。網羅性の値の形にも検査済みの要求の値を加えたが、網羅性の判断は最上位の不透明型について変わらない（`Exhaustive.opaque_iff_noRequest`）。`valKind` が全て none の表と、`valContent` が全て none の表（`Release.Model.builtins` と `Release.ModelTargets.builtins`）では V-CheckedRequest は使えない（`HasTypeVQ.not_checkedRequest_of_noValKind`・`not_checkedRequest_of_noValContent`、`ModelHttp.model_noValContent`・`modelTargets_noValContent`）。そのため、それらの表の値の型付けと四つの欄の内容は、この規則を加える前と同じである。この前提の変更は、設計者が承認した値の所属の規則の変更と、Http.ClientRequest の表現の決定（案 A）に含める。理由: `Http.RequestIn` の値が検査した同じ要求を保持すること（決定の判断 7）を値の形で表すと、その値を型付ける規則が要るためである。
+ 
+ 【決定】形式化した Release の組み込みの呼び出しの項は具体化した範囲の列を持ち、V-Prim は署名を呼び出しの範囲の列で具体化して型付け、δ は範囲の列を受け取る（01-12「型付け規則」「実行の規則」）。このため、性質 2・3 の前提の状態の型付けと `Program.WellTyped`、性質 1 の結論の型付けは、範囲の変数を持つ組み込みの項目の呼び出しを、許容される範囲の列で具体化した型で型付ける内容に変わる。`Builtins.Assumptions` の欄のうち、`delta_typed`・`io_typed`・`io_exists` は許容される範囲の列について量化し、`sig_scoped` は組み込みの関数の型を範囲の変数の個数の文脈で読み、引数の範囲の変数を最上位の対象の位置だけに置く条件と、組み込みの操作の結果の型が範囲の変数を持たない条件を含む。`store_shape` は可変のセルと明示遅延の項目が範囲の変数を持たないことを含む。節の操作の型は、署名を節の添字の列で具体化した型である（節の添字の規則は後述）。性質 1 の前提のうち、組み込みの関数の型の条件 `hsig`（`PrimSig.Scoped`）は `sig_scoped` と同じ内容に変わり、表層の型付け（`p.WellTyped`）は、組み込みの関数の名前を、名前が持つ範囲の列（型検査器が選ぶ）で具体化した署名と範囲の具体化の許容で型付け、演算子・文字列補間の連結・die の終了の項目には範囲の変数の個数 0 を求める（01-12「型の情報を付けた表層の構文と型付け」。組み込みの関数の名前の範囲の列は L40.4 で加えた）。主定理の言明の字面は変えていない。`step_sound` の oracle の前提も、応答の関係が範囲の列を受け取らないので、この変更では字面を変えていない（観測による変更は次の段落）。範囲の変数のない表では、前提の内容は以前と同値である（`Release/Lemmas/PrimRanges.lean` の `Builtins.delta_typed_iff_old`・`io_typed_iff_old`・`io_exists_iff_old`・`PrimSig.vPrim_premises_iff_old`・`PrimSig.storeShape_iff_old`・`opSig_eq_old`、`Release/RangeWF.lean` の `sig_scoped_iff_old_of_rangeFree`、`Surface/RangeFree.lean` の `stringAddOk_iff_old`・`dieExitOk_iff_old`、`Surface/PrimRange.lean` の `ePrim_premises_iff_old`）。旧の δ は範囲の列を受け取らないので、旧の欄の δ は空の範囲の列で読む。この前提の変更は、設計者が受け入れた停止条件の例外（`V_Prim` の範囲、欄の範囲の量化、`sig_scoped` の範囲の変数の上限と位置の条件、`store_shape`、表層の前提）として扱う。理由: 範囲付きの値型の値を組み込みの関数へ渡し、その範囲を効果と結果の型へ伝えるには、呼び出しが範囲を持ち、型付けと仮定がその範囲で具体化した署名を読む必要があるためである。
+ 
+@@ -278,7 +278,11 @@ Releaseの七判断と表層の七判断はQをパラメータに持ち、従来
+ 
+ 【決定】Rust の `Scope.checkPathIn` が作る `PathIn` は、入力のパスを保持する構成子の値であり、形式化の `Val.checked t` に対応させる。静的な範囲が Top でも対象を保持し、`pathInValue` は同じパスを返す。この成功値を、対象を持たない Top の不透明型の定数へ対応させない。`PrimSig.shapeAt` がその定数を旧 Top の形として読む条件は形式化に残るが、この条件は実装の所属検査と対象の保持を省く根拠にはしない。二つの純粋な入口の標準署名には種類 path の範囲変数を一つ持ち、Rust の型検査とコアの検査は Top で具体化する。署名の範囲変数と種類は通常の交換で書き出すが、プログラムの型には範囲変数を残さない。動的な検査・対象の保持と、[仮想機械](../02-impl/02-08-vm.md#値の表現)・[ランタイム](../02-impl/02-09-runtime.md#メモリの管理)の安全条件は Rust の実装とテストで照合する。
+ 
+-【決定】Rust の `Http.checkRequestIn` が作る `RequestIn` は、同じ要求のレコードの値と、その `url` から得た実効の端点を保持し、形式化の `Val.checkedRequest t c` に対応させる。`Http.requestInValue` は保持したレコードをそのまま返す。形式化が許す要求を持たない `Val.checked t` を、Rust の `RequestIn` の成功値として作らない。ここで「端点」は host の形式と数値の正規形を含む endpoint の形式を指し、その形式が不正なら `Scope.InvalidTarget`（`reqTarget` が種類 endpoint でない対象を返し `checkRun` が `scopeFailure` を返す場合に対応）、URL の不良・非対応の scheme により host と port を取り出せなければ `InvalidUrl`（`reqTarget` が `none` を返す場合に対応）とし、ホストのパターン・ポート・所属の失敗も `Scope` に分類する。二つの純粋な署名は種類 endpoint の範囲変数を一つ持ち、パスの二入口と同じ経路で Top へ具体化する。静的な Top でも動的な条件と実効の端点を検査する。レコードの欄からの端点の抽出と URL の解析は形式化の `reqTarget` の引数の正しさとして信頼する範囲であり、Rust の実装と独立入力で照合する。
++【決定】Rust の `Http.checkRequestIn` が作る `RequestIn` は、同じ要求のレコードの値と、その `url` から得た実効の端点を保持し、形式化の `Val.checkedRequest t c` に対応させる。`Http.requestInValue` は保持したレコードをそのまま返す。形式化が許す要求を持たない `Val.checked t` を、Rust の `RequestIn` の成功値として作らない。ここで「端点」は host の形式と数値の正規形を含む endpoint の形式を指し、その形式が不正なら `Scope.InvalidTarget`（`reqTarget` が種類 endpoint でない対象を返し `checkRun` が `scopeFailure` を返す場合に対応）、URL の不良・非対応の scheme により host と port を取り出せなければ `InvalidUrl`（`reqTarget` が `none` を返す場合に対応）とし、ホストのパターン・ポート・所属の失敗も `Scope` に分類する。検査と射影の標準署名は種類 endpoint の範囲変数を一つ持ち、パスの二入口と同じ経路で呼び出しごとの確定した範囲へ具体化する。明示拡大の列は元と行き先の二要素であり、行き先が元を覆うことを検査して同じ値を返す。静的な Top でも動的な条件と実効の端点を検査する。レコードの欄からの端点の抽出と URL の解析は形式化の `reqTarget` の引数の正しさとして信頼する範囲であり、Rust の実装と独立入力で照合する。
++
++【決定】要求を持たない V-Checked の値を Rust の `RequestIn` として作らない保証は、形式化の一般の値の型付けではなく、処理系の構築経路に置く。純粋な検査の成功は既存の構成子の三欄 `[同じ ClientRequest の値, 正規化した host の文字列, 実効 port の整数]` を全て埋める。射影は三欄の形と欄0の五欄のレコードを調べて同じレコードを返し、明示拡大は同じ不透明値を返す。利用者には構成子を公開しない。これは型検査を通った通常のプログラムの経路の保証であり、ホストが内部の raw 呼び出しへ不正な値を渡した場合まで正当化しない。交換の `valContents` は、保持するレコードの型を `dataDecls` と検査の第4引数・射影の戻り値と同じデータ型の名前で記録する。型の対応だけでは実通信先との一致は得られない。
++
++【決定】旧 `Http.send` の読取りは、要求の五欄からホスト側の `http::Request<Vec<u8>>` と `Duration` を作り、worker へ所有値として渡す。完了処理は応答だけを言語の値に戻す。この経路は `RequestIn` の保持した host・port を読まず、旧入口のリダイレクトも許す。したがって、純粋な検査・射影・拡大の保持の照合と、実通信が保持した端点一つだけに作用することの照合を区別する。範囲付きの送信入口は未実装であり、この経路の読解を実通信の一致や Rust/Lean の全比較の成功として扱わない。
+ 
+ パスと要求の二つの接続だけで、非 Top の局所解析、範囲付き IO、Rust と Lean の全比較の完了とはしない。
+ 

@@ -58,7 +58,8 @@ fn standard_library_sources_and_dictionary_contracts() {
             }
         })
         .collect();
-    assert_eq!(impls.len(), 63);
+    // ScopeError の Show も Trait に置き、Scope の型を読み込む。
+    assert_eq!(impls.len(), 64);
     // 型自身のモジュールに置いた標準実装も、同じ辞書の契約で検査する。
     for ast in l.asts.iter().filter(|ast| ast.file != module.id.file()) {
         impls.extend(ast.decls.iter().filter_map(|top| {
@@ -69,7 +70,7 @@ fn standard_library_sources_and_dictionary_contracts() {
             }
         }));
     }
-    assert_eq!(impls.len(), 77);
+    assert_eq!(impls.len(), 78);
     assert_eq!(t.impls.iter().count(), impls.len());
     for source in impls {
         let imp = t.impls.get(source.id).unwrap();
@@ -302,7 +303,11 @@ fn show_example_records_nested_dictionaries_and_method_values() {
         dict(&l, &t, s, "describeAll", 2),
         &[DictExpr::Impl {
             impl_decl: option,
-            type_args: vec![TypeArg::Ty(Ty::Con(TyCon::Adt(person), vec![]))],
+            type_args: vec![TypeArg::Ty(Ty::Con(
+                TyCon::Adt(person),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP
+            ))],
             args: vec![concrete(p)],
         }]
     );
@@ -361,8 +366,16 @@ fn higher_kinded_methods_select_heads_and_keep_method_arguments() {
                 .tys,
             [
                 TypeArg::Head(TyHead::Con(con)),
-                TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![])),
-                TypeArg::Ty(Ty::Con(TyCon::Builtin(B::STRING), vec![])),
+                TypeArg::Ty(Ty::Con(
+                    TyCon::Builtin(B::INTEGER),
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP
+                )),
+                TypeArg::Ty(Ty::Con(
+                    TyCon::Builtin(B::STRING),
+                    vec![],
+                    crate::types::builtin::RangeIndex::TOP
+                )),
             ]
         );
     }
@@ -740,8 +753,16 @@ fn permuted_implementation_arguments_and_method_dictionaries_keep_their_order() 
             DictExpr::Impl {
                 impl_decl: render,
                 type_args: vec![
-                    TypeArg::Ty(Ty::Con(TyCon::Builtin(B::STRING), vec![])),
-                    TypeArg::Ty(Ty::Con(TyCon::Builtin(B::INTEGER), vec![])),
+                    TypeArg::Ty(Ty::Con(
+                        TyCon::Builtin(B::STRING),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP
+                    )),
+                    TypeArg::Ty(Ty::Con(
+                        TyCon::Builtin(B::INTEGER),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP
+                    )),
                 ],
                 args: vec![string, integer.clone()],
             },

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/ab-probes.py", line 83, in <module>
+    assert row['stdout'] == 'ok\nok\n', row
+AssertionError: {'version': '0.0.13', 'input': 'docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ip.bnt', 'inputSha256': '6f5f7ec2aff7456c2a0549f48f257ea3f83ab7c0449f0a85136e6b8d6ad66e58', 'command': ['<wt>/target/debug/benitoite', 'run', '--allow-effects=Console.Write', 'docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.3a/rv-probes/ip.bnt'], 'exit': 0, 'wallSeconds': 0.12897412500000005, 'stdout': 'ok\nInvalidPattern("**", "expected a host, *.host, **.host, canonical IP address, or CIDR")\n', 'stderr': ''}

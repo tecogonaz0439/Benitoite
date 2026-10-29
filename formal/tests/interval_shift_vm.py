@@ -110,7 +110,7 @@ def exercise(runner, directory, cli):
         assert any(e['expression'] == tail and e['type'] == unit for e in entries[name])
         definition['type'] = unit
         definition['types'][0]['type'] = unit
-    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=14, traversalVersion=1,
+    corpus = dict(kind='interval-corpus', version=1, surfaceVersion=15, traversalVersion=1,
                   profile='domain', inputs=[original])
     report = runner.invoke('shifts-closed', 'eval', corpus, 0)
     assert report['comparedCount'] == '46' and report['excludedCount'] == '62'

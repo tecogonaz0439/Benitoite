@@ -1,0 +1,4107 @@
+{
+  "ref": "65b165272b42c3f3621ad59bc2a2c6c9cec9c46e",
+  "commit": "65b165272b42c3f3621ad59bc2a2c6c9cec9c46e",
+  "method": "git grep -n -E の行を直前のトップレベル宣言へ対応付ける。theorem/lemma のみ数え、ファイル・宣言位置で重複排除。該当行数はコメント込み、定理数はコメントを除く。namespace/end 等で宣言との対応を切る。構文上の直接参照であり、推移的な依存解析ではない。",
+  "patterns": {
+    "le_literal": "Ty\\.Le([^A-Za-z0-9_]|$)",
+    "equality_helpers": "eq_of_not_fn|\\.fn_left|\\.fn_right|\\.fn_fn|Ty\\.fn\\.injEq"
+  },
+  "summary": {
+    "le_literal": {
+      "all": {
+        "matching_lines": 161,
+        "files": 29,
+        "theorems": 86,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 59,
+            "name": "refl"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 61,
+            "name": "trans"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 70,
+            "name": "fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 77,
+            "name": "fn_right"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 84,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 90,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 95,
+            "name": "subst"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 21,
+            "name": "HasTypeV.inv_var"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 35,
+            "name": "HasTypeV.inv_const"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 47,
+            "name": "HasTypeV.inv_fnRef"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 62,
+            "name": "HasTypeV.inv_prim"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 77,
+            "name": "HasTypeV.inv_lam"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 122,
+            "name": "HasTypeC.inv_ret"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 134,
+            "name": "HasTypeC.inv_let"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 147,
+            "name": "HasTypeC.inv_app"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 160,
+            "name": "HasTypeC.inv_ite"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 173,
+            "name": "HasTypeC.inv_match"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+            "line": 56,
+            "name": "Ty.Le.fn_fn"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 63,
+            "name": "refl"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 65,
+            "name": "trans"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 74,
+            "name": "fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 81,
+            "name": "fn_right"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 88,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 94,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 99,
+            "name": "substAt"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 106,
+            "name": "subst"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 109,
+            "name": "shift"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 80,
+            "name": "ContTy.inv_nil"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 88,
+            "name": "ContTy.inv_let"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 99,
+            "name": "ContTy.inv_mark"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 109,
+            "name": "ContTy.inv_update"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 131,
+            "name": "ContTy.inv_handle"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 148,
+            "name": "ContTy.inv_handle_tail"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 173,
+            "name": "ContTy.inv_guard"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 206,
+            "name": "ContTy.resume_append"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+            "line": 82,
+            "name": "no_unhandledOp"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 240,
+            "name": "HasTypeVQ.inv_raise"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 251,
+            "name": "HasTypeCQ.inv_handle_failure"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 270,
+            "name": "HasTypeCQ.inv_raise_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 25,
+            "name": "HasTypeVQ.inv_var"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 42,
+            "name": "HasTypeVQ.inv_const"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 57,
+            "name": "HasTypeVQ.inv_fnRef"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 91,
+            "name": "HasTypeVQ.inv_prim"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 109,
+            "name": "HasTypeVQ.inv_op"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 127,
+            "name": "HasTypeVQ.inv_lam_wf"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 147,
+            "name": "HasTypeVQ.inv_lam"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 211,
+            "name": "HasTypeCQ.inv_ret"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 231,
+            "name": "HasTypeCQ.inv_let"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 254,
+            "name": "HasTypeCQ.inv_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 277,
+            "name": "HasTypeCQ.inv_ite"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 300,
+            "name": "HasTypeCQ.inv_match"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 354,
+            "name": "HasTypeCQ.inv_use"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 377,
+            "name": "HasTypeCQ.inv_handle"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 405,
+            "name": "HasTypeCQ.inv_resumeL"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 428,
+            "name": "HasTypeCQ.inv_resumeVar"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 502,
+            "name": "HasTypeCQ.inv_meth"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 532,
+            "name": "HasTypeCQ.inv_builderLet"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 548,
+            "name": "HasTypeCQ.inv_builderOp"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+            "line": 152,
+            "name": "stE_ret"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+            "line": 175,
+            "name": "store_prim_inv"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+            "line": 111,
+            "name": "ContTy.markPush"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+            "line": 18,
+            "name": "preservationE"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 17,
+            "name": "Ty.Le.fn_fn'"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 24,
+            "name": "inv_prim_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 36,
+            "name": "inv_op_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 111,
+            "name": "pres_op_common"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 417,
+            "name": "progress_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+            "line": 102,
+            "name": "step_soundE"
+          },
+          {
+            "path": "formal/Benitoite/Release/Model.lean",
+            "line": 267,
+            "name": "super_call_typed"
+          },
+          {
+            "path": "formal/Benitoite/Release/TypeRegularity.lean",
+            "line": 63,
+            "name": "Ty.Le.wf"
+          },
+          {
+            "path": "formal/Benitoite/Release/TypeRegularity.lean",
+            "line": 69,
+            "name": "Ty.Le.wf_rev"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+            "line": 131,
+            "name": "accept_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+            "line": 155,
+            "name": "join_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckSupport.lean",
+            "line": 11,
+            "name": "tyJoin_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckTools.lean",
+            "line": 59,
+            "name": "tyLe_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Examples.lean",
+            "line": 238,
+            "name": "program_effect_soundness"
+          },
+          {
+            "path": "formal/Benitoite/Surface/FiniteTools.lean",
+            "line": 190,
+            "name": "tyLe_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/FiniteTools.lean",
+            "line": 209,
+            "name": "tyJoin_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 76,
+            "name": "HasTypeQ.inv_funDicts"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 110,
+            "name": "HasTypeQ.inv_opDicts"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 145,
+            "name": "HasTypeQ.inv_methName"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 188,
+            "name": "directCallee_typed"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+            "line": 31,
+            "name": "clean_le"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+            "line": 39,
+            "name": "clean_data_le"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+            "line": 167,
+            "name": "HasTypeQ.desugar_partialCall"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+            "line": 209,
+            "name": "HasTypeQ.desugar_partialCon"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Core/Lemmas/Basic.lean": 10,
+          "formal/Benitoite/Core/Lemmas/Inversion.lean": 20,
+          "formal/Benitoite/Core/Lemmas/Preservation.lean": 1,
+          "formal/Benitoite/Core/Typing.lean": 3,
+          "formal/Benitoite/Release/Lemmas/Basic.lean": 13,
+          "formal/Benitoite/Release/Lemmas/ContLemmas.lean": 15,
+          "formal/Benitoite/Release/Lemmas/EffectSound.lean": 1,
+          "formal/Benitoite/Release/Lemmas/FailureCont.lean": 5,
+          "formal/Benitoite/Release/Lemmas/Inversion.lean": 35,
+          "formal/Benitoite/Release/Lemmas/PresBase.lean": 2,
+          "formal/Benitoite/Release/Lemmas/PresHelpers.lean": 1,
+          "formal/Benitoite/Release/Lemmas/PresMain.lean": 6,
+          "formal/Benitoite/Release/Lemmas/Preservation.lean": 7,
+          "formal/Benitoite/Release/Lemmas/Progress.lean": 3,
+          "formal/Benitoite/Release/Lemmas/StepSound.lean": 1,
+          "formal/Benitoite/Release/Model.lean": 4,
+          "formal/Benitoite/Release/Semantics.lean": 1,
+          "formal/Benitoite/Release/TypeRegularity.lean": 2,
+          "formal/Benitoite/Release/Typing.lean": 3,
+          "formal/Benitoite/Surface/CheckLemmas.lean": 2,
+          "formal/Benitoite/Surface/CheckSupport.lean": 1,
+          "formal/Benitoite/Surface/CheckTools.lean": 1,
+          "formal/Benitoite/Surface/Examples.lean": 1,
+          "formal/Benitoite/Surface/FiniteTools.lean": 2,
+          "formal/Benitoite/Surface/Lemmas/CallHead.lean": 9,
+          "formal/Benitoite/Surface/Lemmas/Calls.lean": 2,
+          "formal/Benitoite/Surface/Lemmas/Invariants.lean": 2,
+          "formal/Benitoite/Surface/Lemmas/Typing.lean": 2,
+          "formal/Benitoite/Surface/Typing.lean": 6
+        }
+      },
+      "Core": {
+        "matching_lines": 34,
+        "files": 4,
+        "theorems": 18,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 59,
+            "name": "refl"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 61,
+            "name": "trans"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 70,
+            "name": "fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 77,
+            "name": "fn_right"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 84,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 90,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 95,
+            "name": "subst"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 21,
+            "name": "HasTypeV.inv_var"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 35,
+            "name": "HasTypeV.inv_const"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 47,
+            "name": "HasTypeV.inv_fnRef"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 62,
+            "name": "HasTypeV.inv_prim"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 77,
+            "name": "HasTypeV.inv_lam"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 122,
+            "name": "HasTypeC.inv_ret"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 134,
+            "name": "HasTypeC.inv_let"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 147,
+            "name": "HasTypeC.inv_app"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 160,
+            "name": "HasTypeC.inv_ite"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 173,
+            "name": "HasTypeC.inv_match"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+            "line": 56,
+            "name": "Ty.Le.fn_fn"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Core/Lemmas/Basic.lean": 10,
+          "formal/Benitoite/Core/Lemmas/Inversion.lean": 20,
+          "formal/Benitoite/Core/Lemmas/Preservation.lean": 1,
+          "formal/Benitoite/Core/Typing.lean": 3
+        }
+      },
+      "Release": {
+        "matching_lines": 99,
+        "files": 15,
+        "theorems": 53,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 63,
+            "name": "refl"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 65,
+            "name": "trans"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 74,
+            "name": "fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 81,
+            "name": "fn_right"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 88,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 94,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 99,
+            "name": "substAt"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 106,
+            "name": "subst"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 109,
+            "name": "shift"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 80,
+            "name": "ContTy.inv_nil"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 88,
+            "name": "ContTy.inv_let"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 99,
+            "name": "ContTy.inv_mark"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 109,
+            "name": "ContTy.inv_update"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 131,
+            "name": "ContTy.inv_handle"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 148,
+            "name": "ContTy.inv_handle_tail"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 173,
+            "name": "ContTy.inv_guard"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+            "line": 206,
+            "name": "ContTy.resume_append"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+            "line": 82,
+            "name": "no_unhandledOp"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 240,
+            "name": "HasTypeVQ.inv_raise"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 251,
+            "name": "HasTypeCQ.inv_handle_failure"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 270,
+            "name": "HasTypeCQ.inv_raise_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 25,
+            "name": "HasTypeVQ.inv_var"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 42,
+            "name": "HasTypeVQ.inv_const"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 57,
+            "name": "HasTypeVQ.inv_fnRef"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 91,
+            "name": "HasTypeVQ.inv_prim"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 109,
+            "name": "HasTypeVQ.inv_op"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 127,
+            "name": "HasTypeVQ.inv_lam_wf"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 147,
+            "name": "HasTypeVQ.inv_lam"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 211,
+            "name": "HasTypeCQ.inv_ret"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 231,
+            "name": "HasTypeCQ.inv_let"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 254,
+            "name": "HasTypeCQ.inv_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 277,
+            "name": "HasTypeCQ.inv_ite"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 300,
+            "name": "HasTypeCQ.inv_match"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 354,
+            "name": "HasTypeCQ.inv_use"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 377,
+            "name": "HasTypeCQ.inv_handle"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 405,
+            "name": "HasTypeCQ.inv_resumeL"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 428,
+            "name": "HasTypeCQ.inv_resumeVar"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 502,
+            "name": "HasTypeCQ.inv_meth"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 532,
+            "name": "HasTypeCQ.inv_builderLet"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 548,
+            "name": "HasTypeCQ.inv_builderOp"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+            "line": 152,
+            "name": "stE_ret"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+            "line": 175,
+            "name": "store_prim_inv"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+            "line": 111,
+            "name": "ContTy.markPush"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+            "line": 18,
+            "name": "preservationE"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 17,
+            "name": "Ty.Le.fn_fn'"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 24,
+            "name": "inv_prim_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 36,
+            "name": "inv_op_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 111,
+            "name": "pres_op_common"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 417,
+            "name": "progress_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+            "line": 102,
+            "name": "step_soundE"
+          },
+          {
+            "path": "formal/Benitoite/Release/Model.lean",
+            "line": 267,
+            "name": "super_call_typed"
+          },
+          {
+            "path": "formal/Benitoite/Release/TypeRegularity.lean",
+            "line": 63,
+            "name": "Ty.Le.wf"
+          },
+          {
+            "path": "formal/Benitoite/Release/TypeRegularity.lean",
+            "line": 69,
+            "name": "Ty.Le.wf_rev"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Release/Lemmas/Basic.lean": 13,
+          "formal/Benitoite/Release/Lemmas/ContLemmas.lean": 15,
+          "formal/Benitoite/Release/Lemmas/EffectSound.lean": 1,
+          "formal/Benitoite/Release/Lemmas/FailureCont.lean": 5,
+          "formal/Benitoite/Release/Lemmas/Inversion.lean": 35,
+          "formal/Benitoite/Release/Lemmas/PresBase.lean": 2,
+          "formal/Benitoite/Release/Lemmas/PresHelpers.lean": 1,
+          "formal/Benitoite/Release/Lemmas/PresMain.lean": 6,
+          "formal/Benitoite/Release/Lemmas/Preservation.lean": 7,
+          "formal/Benitoite/Release/Lemmas/Progress.lean": 3,
+          "formal/Benitoite/Release/Lemmas/StepSound.lean": 1,
+          "formal/Benitoite/Release/Model.lean": 4,
+          "formal/Benitoite/Release/Semantics.lean": 1,
+          "formal/Benitoite/Release/TypeRegularity.lean": 2,
+          "formal/Benitoite/Release/Typing.lean": 3
+        }
+      },
+      "Surface": {
+        "matching_lines": 28,
+        "files": 10,
+        "theorems": 15,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+            "line": 131,
+            "name": "accept_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+            "line": 155,
+            "name": "join_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckSupport.lean",
+            "line": 11,
+            "name": "tyJoin_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/CheckTools.lean",
+            "line": 59,
+            "name": "tyLe_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Examples.lean",
+            "line": 238,
+            "name": "program_effect_soundness"
+          },
+          {
+            "path": "formal/Benitoite/Surface/FiniteTools.lean",
+            "line": 190,
+            "name": "tyLe_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/FiniteTools.lean",
+            "line": 209,
+            "name": "tyJoin_sound"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 76,
+            "name": "HasTypeQ.inv_funDicts"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 110,
+            "name": "HasTypeQ.inv_opDicts"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 145,
+            "name": "HasTypeQ.inv_methName"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 188,
+            "name": "directCallee_typed"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+            "line": 31,
+            "name": "clean_le"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+            "line": 39,
+            "name": "clean_data_le"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+            "line": 167,
+            "name": "HasTypeQ.desugar_partialCall"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+            "line": 209,
+            "name": "HasTypeQ.desugar_partialCon"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Surface/CheckLemmas.lean": 2,
+          "formal/Benitoite/Surface/CheckSupport.lean": 1,
+          "formal/Benitoite/Surface/CheckTools.lean": 1,
+          "formal/Benitoite/Surface/Examples.lean": 1,
+          "formal/Benitoite/Surface/FiniteTools.lean": 2,
+          "formal/Benitoite/Surface/Lemmas/CallHead.lean": 9,
+          "formal/Benitoite/Surface/Lemmas/Calls.lean": 2,
+          "formal/Benitoite/Surface/Lemmas/Invariants.lean": 2,
+          "formal/Benitoite/Surface/Lemmas/Typing.lean": 2,
+          "formal/Benitoite/Surface/Typing.lean": 6
+        }
+      },
+      "Interval": {
+        "matching_lines": 0,
+        "files": 0,
+        "theorems": 0,
+        "theorem_list": [],
+        "per_file": {}
+      },
+      "Other": {
+        "matching_lines": 0,
+        "files": 0,
+        "theorems": 0,
+        "theorem_list": [],
+        "per_file": {}
+      }
+    },
+    "equality_helpers": {
+      "all": {
+        "matching_lines": 83,
+        "files": 18,
+        "theorems": 37,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 84,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 90,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+            "line": 48,
+            "name": "HasTypeV.canonical_boolean"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 91,
+            "name": "HasTypeV.inv_con"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 106,
+            "name": "HasTypeV.inv_list"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+            "line": 56,
+            "name": "Ty.Le.fn_fn"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+            "line": 64,
+            "name": "preservationQ"
+          },
+          {
+            "path": "formal/Benitoite/Core/Theorems.lean",
+            "line": 143,
+            "name": "progress"
+          },
+          {
+            "path": "formal/Benitoite/Core/Theorems.lean",
+            "line": 224,
+            "name": "effect_soundness"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 88,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 94,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+            "line": 26,
+            "name": "HasTypeVQ.canonical_bytes"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 61,
+            "name": "HasTypeVQ.canonical_boolean"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 95,
+            "name": "HasTypeVQ.canonical_ref"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 129,
+            "name": "HasTypeVQ.canonical_lazy"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 219,
+            "name": "HasTypeVQ.inv_list_wf"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+            "line": 82,
+            "name": "no_unhandledOp"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 270,
+            "name": "HasTypeCQ.inv_raise_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 154,
+            "name": "HasTypeVQ.inv_con"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 172,
+            "name": "HasTypeVQ.inv_list"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 189,
+            "name": "HasTypeVQ.inv_loc"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 316,
+            "name": "HasTypeCQ.inv_lazy"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 454,
+            "name": "HasTypeVQ.inv_mapV"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 463,
+            "name": "HasTypeVQ.inv_setV"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 472,
+            "name": "HasTypeVQ.inv_bytesV"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 482,
+            "name": "HasTypeVQ.inv_dict"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 492,
+            "name": "HasTypeVQ.inv_super"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+            "line": 18,
+            "name": "preservationE"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 17,
+            "name": "Ty.Le.fn_fn'"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 24,
+            "name": "inv_prim_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 36,
+            "name": "inv_op_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 17,
+            "name": "HasTypeVQ.canonical_fn_or_raise"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 53,
+            "name": "HasTypeVQ.canonical_dict"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 417,
+            "name": "progress_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+            "line": 102,
+            "name": "step_soundE"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Examples.lean",
+            "line": 238,
+            "name": "program_effect_soundness"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 188,
+            "name": "directCallee_typed"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Core/Lemmas/Basic.lean": 2,
+          "formal/Benitoite/Core/Lemmas/Canonical.lean": 4,
+          "formal/Benitoite/Core/Lemmas/Inversion.lean": 2,
+          "formal/Benitoite/Core/Lemmas/Preservation.lean": 7,
+          "formal/Benitoite/Core/Theorems.lean": 5,
+          "formal/Benitoite/Release/Lemmas/Basic.lean": 2,
+          "formal/Benitoite/Release/Lemmas/BuilderTyping.lean": 6,
+          "formal/Benitoite/Release/Lemmas/Canonical.lean": 19,
+          "formal/Benitoite/Release/Lemmas/EffectSound.lean": 1,
+          "formal/Benitoite/Release/Lemmas/FailureCont.lean": 1,
+          "formal/Benitoite/Release/Lemmas/Inversion.lean": 10,
+          "formal/Benitoite/Release/Lemmas/PresMain.lean": 2,
+          "formal/Benitoite/Release/Lemmas/Preservation.lean": 5,
+          "formal/Benitoite/Release/Lemmas/Progress.lean": 10,
+          "formal/Benitoite/Release/Lemmas/StepSound.lean": 1,
+          "formal/Benitoite/Release/Model.lean": 2,
+          "formal/Benitoite/Surface/Examples.lean": 1,
+          "formal/Benitoite/Surface/Lemmas/CallHead.lean": 3
+        }
+      },
+      "Core": {
+        "matching_lines": 20,
+        "files": 5,
+        "theorems": 9,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 84,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+            "line": 90,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+            "line": 48,
+            "name": "HasTypeV.canonical_boolean"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 91,
+            "name": "HasTypeV.inv_con"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+            "line": 106,
+            "name": "HasTypeV.inv_list"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+            "line": 56,
+            "name": "Ty.Le.fn_fn"
+          },
+          {
+            "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+            "line": 64,
+            "name": "preservationQ"
+          },
+          {
+            "path": "formal/Benitoite/Core/Theorems.lean",
+            "line": 143,
+            "name": "progress"
+          },
+          {
+            "path": "formal/Benitoite/Core/Theorems.lean",
+            "line": 224,
+            "name": "effect_soundness"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Core/Lemmas/Basic.lean": 2,
+          "formal/Benitoite/Core/Lemmas/Canonical.lean": 4,
+          "formal/Benitoite/Core/Lemmas/Inversion.lean": 2,
+          "formal/Benitoite/Core/Lemmas/Preservation.lean": 7,
+          "formal/Benitoite/Core/Theorems.lean": 5
+        }
+      },
+      "Release": {
+        "matching_lines": 59,
+        "files": 11,
+        "theorems": 26,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 88,
+            "name": "eq_of_not_fn"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+            "line": 94,
+            "name": "eq_of_not_fn_left"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+            "line": 26,
+            "name": "HasTypeVQ.canonical_bytes"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 61,
+            "name": "HasTypeVQ.canonical_boolean"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 95,
+            "name": "HasTypeVQ.canonical_ref"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 129,
+            "name": "HasTypeVQ.canonical_lazy"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+            "line": 219,
+            "name": "HasTypeVQ.inv_list_wf"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+            "line": 82,
+            "name": "no_unhandledOp"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+            "line": 270,
+            "name": "HasTypeCQ.inv_raise_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 154,
+            "name": "HasTypeVQ.inv_con"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 172,
+            "name": "HasTypeVQ.inv_list"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 189,
+            "name": "HasTypeVQ.inv_loc"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 316,
+            "name": "HasTypeCQ.inv_lazy"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 454,
+            "name": "HasTypeVQ.inv_mapV"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 463,
+            "name": "HasTypeVQ.inv_setV"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 472,
+            "name": "HasTypeVQ.inv_bytesV"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 482,
+            "name": "HasTypeVQ.inv_dict"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+            "line": 492,
+            "name": "HasTypeVQ.inv_super"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+            "line": 18,
+            "name": "preservationE"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 17,
+            "name": "Ty.Le.fn_fn'"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 24,
+            "name": "inv_prim_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+            "line": 36,
+            "name": "inv_op_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 17,
+            "name": "HasTypeVQ.canonical_fn_or_raise"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 53,
+            "name": "HasTypeVQ.canonical_dict"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+            "line": 417,
+            "name": "progress_app"
+          },
+          {
+            "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+            "line": 102,
+            "name": "step_soundE"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Release/Lemmas/Basic.lean": 2,
+          "formal/Benitoite/Release/Lemmas/BuilderTyping.lean": 6,
+          "formal/Benitoite/Release/Lemmas/Canonical.lean": 19,
+          "formal/Benitoite/Release/Lemmas/EffectSound.lean": 1,
+          "formal/Benitoite/Release/Lemmas/FailureCont.lean": 1,
+          "formal/Benitoite/Release/Lemmas/Inversion.lean": 10,
+          "formal/Benitoite/Release/Lemmas/PresMain.lean": 2,
+          "formal/Benitoite/Release/Lemmas/Preservation.lean": 5,
+          "formal/Benitoite/Release/Lemmas/Progress.lean": 10,
+          "formal/Benitoite/Release/Lemmas/StepSound.lean": 1,
+          "formal/Benitoite/Release/Model.lean": 2
+        }
+      },
+      "Surface": {
+        "matching_lines": 4,
+        "files": 2,
+        "theorems": 2,
+        "theorem_list": [
+          {
+            "path": "formal/Benitoite/Surface/Examples.lean",
+            "line": 238,
+            "name": "program_effect_soundness"
+          },
+          {
+            "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+            "line": 188,
+            "name": "directCallee_typed"
+          }
+        ],
+        "per_file": {
+          "formal/Benitoite/Surface/Examples.lean": 1,
+          "formal/Benitoite/Surface/Lemmas/CallHead.lean": 3
+        }
+      },
+      "Interval": {
+        "matching_lines": 0,
+        "files": 0,
+        "theorems": 0,
+        "theorem_list": [],
+        "per_file": {}
+      },
+      "Other": {
+        "matching_lines": 0,
+        "files": 0,
+        "theorems": 0,
+        "theorem_list": [],
+        "per_file": {}
+      }
+    }
+  },
+  "union_theorems": {
+    "Core": 24,
+    "Release": 69,
+    "Surface": 15,
+    "all": 108
+  },
+  "matches": {
+    "le_literal": [
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 57,
+        "text": "namespace Ty.Le",
+        "decl": null,
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 59,
+        "text": "theorem refl (a : Ty) : Ty.Le a a := Or.inl rfl",
+        "decl": {
+          "line": 59,
+          "kind": "theorem",
+          "name": "refl"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 61,
+        "text": "theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c := by",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "trans"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 70,
+        "text": "theorem fn_left {ps r ε t} (h : Ty.Le (.fn ps r ε) t) :",
+        "decl": {
+          "line": 70,
+          "kind": "theorem",
+          "name": "fn_left"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 77,
+        "text": "theorem fn_right {a ps r ε} (h : Ty.Le a (.fn ps r ε)) :",
+        "decl": {
+          "line": 77,
+          "kind": "theorem",
+          "name": "fn_right"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 84,
+        "text": "theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ ps r ε, t ≠ .fn ps r ε) : a = t := by",
+        "decl": {
+          "line": 84,
+          "kind": "theorem",
+          "name": "eq_of_not_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 90,
+        "text": "theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ ps r ε, a ≠ .fn ps r ε) : a = t := by",
+        "decl": {
+          "line": 90,
+          "kind": "theorem",
+          "name": "eq_of_not_fn_left"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 95,
+        "text": "theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "subst"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 96,
+        "text": "    Ty.Le (a.subst ts es) (b.subst ts es) := by",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "subst"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 102,
+        "text": "end Ty.Le",
+        "decl": null,
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 22,
+        "text": "    ∃ a, Γ[i]? = some a ∧ Ty.Le a T := by",
+        "decl": {
+          "line": 21,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_var"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 24,
+        "text": "  | .V_Var hi => cases hv; exact ⟨_, hi, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 21,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_var"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 36,
+        "text": "    Ty.Le c.type T := by",
+        "decl": {
+          "line": 35,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_const"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 38,
+        "text": "  | .V_Const => cases hv; exact Ty.Le.refl _",
+        "decl": {
+          "line": 35,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_const"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 49,
+        "text": "      Ty.Le (fnTy d.params d.ret d.eff ts es) T := by",
+        "decl": {
+          "line": 47,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_fnRef"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 51,
+        "text": "  | .V_Fun hd hts hes => cases hv; exact ⟨_, hd, hts, hes, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 47,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_fnRef"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 64,
+        "text": "      Ty.Le (fnTy s.params s.ret s.eff ts es) T := by",
+        "decl": {
+          "line": 62,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_prim"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 66,
+        "text": "  | .V_Prim hs hts hes had => cases hv; exact ⟨_, hs, hts, hes, had, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 62,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_prim"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 78,
+        "text": "    ∃ r ε, HasTypeC P B (ps.reverse ++ Γ) body r ε ∧ Ty.Le (.fn ps r ε) T := by",
+        "decl": {
+          "line": 77,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_lam"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 80,
+        "text": "  | .V_Lam h => cases hv; exact ⟨_, _, h, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 77,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_lam"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 123,
+        "text": "    ∃ a, HasTypeV P B Γ v a ∧ Ty.Le a T := by",
+        "decl": {
+          "line": 122,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_ret"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 125,
+        "text": "  | .C_Return hv => cases hm; exact ⟨_, hv, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 122,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_ret"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 135,
+        "text": "    ∃ a b ε', HasTypeC P B Γ m a ε' ∧ HasTypeC P B (a :: Γ) n b ε' ∧ Ty.Le b T ∧",
+        "decl": {
+          "line": 134,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_let"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 138,
+        "text": "  | .C_Let hm' hn => cases hm; exact ⟨_, _, _, hm', hn, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 134,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_let"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 148,
+        "text": "    ∃ as b ε', HasTypeV P B Γ f (.fn as b ε') ∧ HasTypeVs P B Γ args as ∧ Ty.Le b T ∧",
+        "decl": {
+          "line": 147,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 151,
+        "text": "  | .C_App hf hargs => cases hm; exact ⟨_, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 147,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 162,
+        "text": "      Ty.Le a T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 160,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_ite"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 164,
+        "text": "  | .C_If hv h1 h2 => cases hm; exact ⟨_, _, hv, h1, h2, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 160,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_ite"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 175,
+        "text": "      Exhaustive P a (arms.map Prod.fst) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 173,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_match"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 177,
+        "text": "  | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 173,
+          "kind": "theorem",
+          "name": "HasTypeC.inv_match"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 56,
+        "text": "theorem Ty.Le.fn_fn {ps r ε as b ε'} (h : Ty.Le (.fn ps r ε) (.fn as b ε')) :",
+        "decl": {
+          "line": 56,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Typing.lean",
+        "line": 66,
+        "text": "def Ty.Le (a a' : Ty) : Prop :=",
+        "decl": {
+          "line": 66,
+          "kind": "def",
+          "name": "Ty.Le"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Typing.lean",
+        "line": 142,
+        "text": "        HasTypeV P B Γ v a → Ty.Le a a' → HasTypeV P B Γ v a'",
+        "decl": {
+          "line": 123,
+          "kind": "inductive",
+          "name": "HasTypeV"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Typing.lean",
+        "line": 160,
+        "text": "        HasTypeC P B Γ m a ε → Ty.Le a a' → Eff.Sub ε ε' → HasTypeC P B Γ m a' ε'",
+        "decl": {
+          "line": 157,
+          "kind": "inductive",
+          "name": "HasTypeC"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 61,
+        "text": "namespace Ty.Le",
+        "decl": null,
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 63,
+        "text": "theorem refl (a : Ty) : Ty.Le a a := Or.inl rfl",
+        "decl": {
+          "line": 63,
+          "kind": "theorem",
+          "name": "refl"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 65,
+        "text": "theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c := by",
+        "decl": {
+          "line": 65,
+          "kind": "theorem",
+          "name": "trans"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 74,
+        "text": "theorem fn_left {names ps r ε t} (h : Ty.Le (.fn names ps r ε) t) :",
+        "decl": {
+          "line": 74,
+          "kind": "theorem",
+          "name": "fn_left"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 81,
+        "text": "theorem fn_right {a names ps r ε} (h : Ty.Le a (.fn names ps r ε)) :",
+        "decl": {
+          "line": 81,
+          "kind": "theorem",
+          "name": "fn_right"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 88,
+        "text": "theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ names ps r ε, t ≠ .fn names ps r ε) : a = t := by",
+        "decl": {
+          "line": 88,
+          "kind": "theorem",
+          "name": "eq_of_not_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 94,
+        "text": "theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ names ps r ε, a ≠ .fn names ps r ε) : a = t := by",
+        "decl": {
+          "line": 94,
+          "kind": "theorem",
+          "name": "eq_of_not_fn_left"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 99,
+        "text": "theorem substAt {a b : Ty} (c : Nat) (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :",
+        "decl": {
+          "line": 99,
+          "kind": "theorem",
+          "name": "substAt"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 100,
+        "text": "    Ty.Le (a.substAt c ts es) (b.substAt c ts es) := by",
+        "decl": {
+          "line": 99,
+          "kind": "theorem",
+          "name": "substAt"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 106,
+        "text": "theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :",
+        "decl": {
+          "line": 106,
+          "kind": "theorem",
+          "name": "subst"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 107,
+        "text": "    Ty.Le (a.subst ts es) (b.subst ts es) := substAt 0 ts es h",
+        "decl": {
+          "line": 106,
+          "kind": "theorem",
+          "name": "subst"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 109,
+        "text": "theorem shift {a b : Ty} (k c : Nat) (h : Ty.Le a b) : Ty.Le (a.shift k c) (b.shift k c) := by",
+        "decl": {
+          "line": 109,
+          "kind": "theorem",
+          "name": "shift"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 115,
+        "text": "end Ty.Le",
+        "decl": null,
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 81,
+        "text": "    Ty.Le a b ∧ Eff.Sub ε ε0 ∧ R = Re ∧ Ty.WF 0 b := by",
+        "decl": {
+          "line": 80,
+          "kind": "theorem",
+          "name": "ContTy.inv_nil"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 84,
+        "text": "  | K_Empty hs hw => exact ⟨Ty.Le.refl _, hs, rfl, hw⟩",
+        "decl": {
+          "line": 80,
+          "kind": "theorem",
+          "name": "ContTy.inv_nil"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 89,
+        "text": "    ∃ a' c ε1, Ty.Le a a' ∧ HasTypeC P B Ψ [] [some a'] R n c ε1 ∧ Eff.Sub ε1 ε ∧",
+        "decl": {
+          "line": 88,
+          "kind": "theorem",
+          "name": "ContTy.inv_let"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 93,
+        "text": "  | K_Let hn hw hs hrest _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, hn, hs, hrest, hw⟩",
+        "decl": {
+          "line": 88,
+          "kind": "theorem",
+          "name": "ContTy.inv_let"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 100,
+        "text": "    ∃ a' R', Ty.Le a a' ∧ R = some a' ∧ ContTy P B Ψ R' ε k a' b ε0 Re ∧ Ty.WF 0 a' := by",
+        "decl": {
+          "line": 99,
+          "kind": "theorem",
+          "name": "ContTy.inv_mark"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 103,
+        "text": "  | K_Mark hrest hw _ => cases hk; exact ⟨_, _, Ty.Le.refl _, rfl, hrest, hw⟩",
+        "decl": {
+          "line": 99,
+          "kind": "theorem",
+          "name": "ContTy.inv_mark"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 110,
+        "text": "    ∃ a' R', Ty.Le a a' ∧ R = none ∧ Ψ l = some (.lazy a') ∧ ContTy P B Ψ R' ε k a' b ε0 Re := by",
+        "decl": {
+          "line": 109,
+          "kind": "theorem",
+          "name": "ContTy.inv_update"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 113,
+        "text": "  | K_Update hl hrest _ => cases hk; exact ⟨_, _, Ty.Le.refl _, rfl, hl, hrest⟩",
+        "decl": {
+          "line": 109,
+          "kind": "theorem",
+          "name": "ContTy.inv_update"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 133,
+        "text": "    ∃ t εb εc, Ty.Le a t ∧ ε = Eff.union εc (handled P B hs) ∧ ContTy P B Ψ R εb k t b ε0 Re ∧",
+        "decl": {
+          "line": 131,
+          "kind": "theorem",
+          "name": "ContTy.inv_handle"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 137,
+        "text": "  | K_Handle hrest hsub hc hw _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, rfl, hrest, hsub, hc.store (hideBuilders_sub _), hw⟩",
+        "decl": {
+          "line": 131,
+          "kind": "theorem",
+          "name": "ContTy.inv_handle"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 150,
+        "text": "    ∃ t εb, Ty.Le a t ∧ ContTy P B Ψ R εb k t b ε0 Re ∧ Ty.WF 0 t := by",
+        "decl": {
+          "line": 148,
+          "kind": "theorem",
+          "name": "ContTy.inv_handle_tail"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 155,
+        "text": "      exact ⟨_, _, Ty.Le.refl _, ht, hw⟩",
+        "decl": {
+          "line": 148,
+          "kind": "theorem",
+          "name": "ContTy.inv_handle_tail"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 175,
+        "text": "    ∃ R' ε' ε1 c, R = none ∧ ε = Eff.empty ∧ Ty.Le a (.base .boolean) ∧",
+        "decl": {
+          "line": 173,
+          "kind": "theorem",
+          "name": "ContTy.inv_guard"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 183,
+        "text": "      exact ⟨_, _, _, _, rfl, rfl, Ty.Le.refl _, hm, hs, hp, hb, ht⟩",
+        "decl": {
+          "line": 173,
+          "kind": "theorem",
+          "name": "ContTy.inv_guard"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/ContLemmas.lean",
+        "line": 207,
+        "text": "    (hend : EndsWithHandle k') {k t' c E Re ε2} (hle : Ty.Le t t')",
+        "decl": {
+          "line": 206,
+          "kind": "theorem",
+          "name": "ContTy.resume_append"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+        "line": 101,
+        "text": "              obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl",
+        "decl": {
+          "line": 82,
+          "kind": "theorem",
+          "name": "no_unhandledOp"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "line": 242,
+        "text": "    Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le (.fn [\"error\"] [E] T (Eff.singleFail E)) a := by",
+        "decl": {
+          "line": 240,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_raise"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "line": 245,
+        "text": "  | .V_Raise ht he => cases heq; exact ⟨ht, he, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 240,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_raise"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "line": 256,
+        "text": "      HasFailureClause P B Ψ Q C Γ E R h t ec Δl ∧ Ty.Le t a ∧ Eff.Sub (Eff.union Rest ec) ε := by",
+        "decl": {
+          "line": 251,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_handle_failure"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "line": 260,
+        "text": "      cases hm; exact ⟨_, _, _, _, _, ht, hs, hn, hc, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 251,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_handle_failure"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "line": 272,
+        "text": "    Ty.WF C.length T ∧ Ty.WF C.length E ∧ Ty.Le T a ∧",
+        "decl": {
+          "line": 270,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_raise_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 26,
+        "text": "    ∃ a, Γ[i]? = some (some a) ∧ (∀ b t ε, a ≠ .cont b t ε) ∧ Ty.Le a T := by",
+        "decl": {
+          "line": 25,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_var"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 28,
+        "text": "  | .V_Var hi hc => cases hv; exact ⟨_, hi, hc, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 25,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_var"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 43,
+        "text": "    Ty.Le c.type T := by",
+        "decl": {
+          "line": 42,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_const"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 45,
+        "text": "  | .V_Const => cases hv; exact Ty.Le.refl _",
+        "decl": {
+          "line": 42,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_const"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 59,
+        "text": "      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by",
+        "decl": {
+          "line": 57,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_fnRef"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 61,
+        "text": "  | .V_Fun hd hnames had => cases hv; exact ⟨_, hd, had.types, had.rowCount, hnames, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 57,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_fnRef"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 93,
+        "text": "      Ty.Le (fnTy s.names s.params s.ret s.eff ts es) T := by",
+        "decl": {
+          "line": 91,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_prim"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 95,
+        "text": "  | .V_Prim hs hnames had => cases hv; exact ⟨_, hs, had.typeCount, had.rowCount, had.admits, hnames, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 91,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_prim"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 111,
+        "text": "      Ty.Le (fnTy od.names od.params od.ret (Eff.single od.eff) ts []) T := by",
+        "decl": {
+          "line": 109,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_op"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 113,
+        "text": "  | .V_Op hod hnames hts => cases hv; exact ⟨_, hod, hts, hnames, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 109,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_op"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 130,
+        "text": "      HasTypeCQ P B Ψ.hideBuilders Q C (binds ps ++ hideConts Γ) (some r) body r ε ∧ Ty.Le (.fn names ps r ε) T := by",
+        "decl": {
+          "line": 127,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_lam_wf"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 132,
+        "text": "  | .V_Lam hnames hw h => cases hv; exact ⟨_, _, hw, hnames, h, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 127,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_lam_wf"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 150,
+        "text": "      Ty.Le (.fn names ps r ε) T := by",
+        "decl": {
+          "line": 147,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_lam"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 212,
+        "text": "    ∃ a, HasTypeVQ P B Ψ Q C Γ v a ∧ Ty.Le a T := by",
+        "decl": {
+          "line": 211,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_ret"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 214,
+        "text": "  | .C_Return hv => cases hm; exact ⟨_, hv, Ty.Le.refl _⟩",
+        "decl": {
+          "line": 211,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_ret"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 233,
+        "text": "      Ty.Le b T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 231,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_let"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 235,
+        "text": "  | .C_Let hm' hn => cases hm; exact ⟨_, _, _, hm', hn, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 231,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_let"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 255,
+        "text": "    ∃ names as b ε', HasTypeVQ P B Ψ Q C Γ f (.fn names as b ε') ∧ HasTypeVsQ P B Ψ Q C Γ args as ∧ Ty.Le b T ∧",
+        "decl": {
+          "line": 254,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 258,
+        "text": "  | .C_App hf hargs => cases hm; exact ⟨_, _, _, _, hf, hargs, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 254,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 279,
+        "text": "      HasTypeCQ P B Ψ Q C Γ R n a ε' Δl ∧ Ty.Le a T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 277,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_ite"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 281,
+        "text": "  | .C_If hv h1 h2 => cases hm; exact ⟨_, _, hv, h1, h2, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 277,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_ite"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 303,
+        "text": "      Exhaustive P a (unguardedPats arms) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 300,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_match"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 305,
+        "text": "  | .C_Match hv harms hex => cases hm; exact ⟨_, _, _, hv, harms, hex, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 300,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_match"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 356,
+        "text": "      HasTypeCQ P B Ψ Q C Γ R m b ε' Δl ∧ Eff.mem ε' (.name stateEff) ∧ Ty.Le b T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 354,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_use"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 358,
+        "text": "  | .C_Use hv hr hm' hs => cases hm; exact ⟨_, _, _, hv, hr, hm', hs, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 354,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_use"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 380,
+        "text": "      HasTypeClausesQ P B Ψ Q C Γ R h t ε' Δl ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 377,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_handle"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 382,
+        "text": "  | .C_Handle h1 hs hc => cases hm; exact ⟨_, _, _, h1, hs, hc, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 377,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_handle"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 407,
+        "text": "    ∃ b t ε', Ψ l = some (.cont b t ε' R) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by",
+        "decl": {
+          "line": 405,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_resumeL"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 409,
+        "text": "  | .C_ResumeL hl hv => cases hm; exact ⟨_, _, _, hl, hv, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 405,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_resumeL"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 430,
+        "text": "    ∃ b t ε', Γ[i]? = some (some (.cont b t ε')) ∧ HasTypeVQ P B Ψ Q C Γ v b ∧ Ty.Le t T ∧",
+        "decl": {
+          "line": 428,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_resumeVar"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 433,
+        "text": "  | .C_Resume hi hv => cases hm; exact ⟨_, _, _, hi, hv, Ty.Le.refl _, Eff.Sub.refl _⟩",
+        "decl": {
+          "line": 428,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_resumeVar"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 507,
+        "text": "      Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε ∧ MethodRowsAdmissible C Q ms es ∧",
+        "decl": {
+          "line": 502,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_meth"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 511,
+        "text": "      cases hm; exact ⟨_, _, _, _, hv, hc, hms, hsat, hes.1, hnames, hws, Ty.Le.refl _, Eff.Sub.refl _, hes, hscope⟩",
+        "decl": {
+          "line": 502,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_meth"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 536,
+        "text": "      Ty.Le a T ∧ Eff.Sub e ε := by",
+        "decl": {
+          "line": 532,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_builderLet"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 551,
+        "text": "      HasTypeVsQ P B Ψ Q C Γ args (op.params kind) ∧ Ty.Le (op.result kind) T := by",
+        "decl": {
+          "line": 548,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_builderOp"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+        "line": 153,
+        "text": "    (hle : Ty.Le a' a) (hk : ContTy P B Ψ R ε k a b Eb none) (hvc : Val.VarsIn 0 (fun _ => True) v)",
+        "decl": {
+          "line": 152,
+          "kind": "theorem",
+          "name": "stE_ret"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresBase.lean",
+        "line": 179,
+        "text": "      Ty.Le (Ty.subst [t] [] s.ret) a ∧ Eff.Sub s.eff ε1 := by",
+        "decl": {
+          "line": 175,
+          "kind": "theorem",
+          "name": "store_prim_inv"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresHelpers.lean",
+        "line": 111,
+        "text": "theorem ContTy.markPush {Ψ R ε k a b E r} (hk : ContTy P B Ψ R ε k a b E none) (hle : Ty.Le r a)",
+        "decl": {
+          "line": 111,
+          "kind": "theorem",
+          "name": "ContTy.markPush"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 85,
+        "text": "      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 106,
+        "text": "      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 368,
+        "text": "      exact stE_ret resultWF (hσ.set (x := .lazy a') hw (Or.inl hΨl) ⟨a', hΨ'l, hm1.store (hideBuilders_mono hsub)⟩) (.V_LocLazy hΨ'l) (Ty.Le.refl _)",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 410,
+        "text": "      exact stE_ret (LocTy.WF.lazy hσ.wf hΨl 0) (hσ.set_same hΨl ⟨a', hΨl, hv'⟩) hv' (Ty.Le.refl _) hk' hmc",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 438,
+        "text": "      exact stE_ret hrw hσ hv (Ty.Le.refl _) hk' hmc (Cont.Closed.cons.mp hkc).2 hσc",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 568,
+        "text": "      exact stE_ret (hσ.wf _ _ hΨκ).1 (hσ.set_same hΨκ ⟨_, _, _, _, hΨκ⟩) hv (Ty.Le.refl _) hk' hmc.2",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 17,
+        "text": "theorem Ty.Le.fn_fn' {names ps r ε names' as b ε'} (h : Ty.Le (.fn names ps r ε) (.fn names' as b ε')) :",
+        "decl": {
+          "line": 17,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn'"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 27,
+        "text": "      HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) ∧ Ty.Le (Ty.subst ts es s.ret) a ∧",
+        "decl": {
+          "line": 24,
+          "kind": "theorem",
+          "name": "inv_prim_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 32,
+        "text": "  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 24,
+          "kind": "theorem",
+          "name": "inv_prim_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 39,
+        "text": "      HasTypeVs P B Ψ [] [] ws (od.params.map (Ty.subst ts [])) ∧ Ty.Le (Ty.subst ts [] od.ret) a ∧",
+        "decl": {
+          "line": 36,
+          "kind": "theorem",
+          "name": "inv_op_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 44,
+        "text": "  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 36,
+          "kind": "theorem",
+          "name": "inv_op_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 118,
+        "text": "    (hle : Ty.Le (Ty.subst ts [] sg.ret) a)",
+        "decl": {
+          "line": 111,
+          "kind": "theorem",
+          "name": "pres_op_common"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 175,
+        "text": "    have hcell := (ContTy.K_Sub hk1 hle).resume_append ⟨k1, h, rfl⟩ (Ty.Le.refl t)",
+        "decl": {
+          "line": 111,
+          "kind": "theorem",
+          "name": "pres_op_common"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 424,
+        "text": "    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 417,
+          "kind": "theorem",
+          "name": "progress_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 428,
+        "text": "    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 417,
+          "kind": "theorem",
+          "name": "progress_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 443,
+        "text": "    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hfn",
+        "decl": {
+          "line": 417,
+          "kind": "theorem",
+          "name": "progress_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+        "line": 300,
+        "text": "            obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl",
+        "decl": {
+          "line": 102,
+          "kind": "theorem",
+          "name": "step_soundE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Model.lean",
+        "line": 315,
+        "text": "example : ¬ Ty.Le (.fn [\"value\"] [.base .integer] (.base .integer) Eff.empty)",
+        "decl": {
+          "line": 267,
+          "kind": "theorem",
+          "name": "super_call_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Model.lean",
+        "line": 317,
+        "text": "    ¬ Ty.Le (.fn [\"left\", \"right\"] [.base .integer, .base .integer] (.base .integer) Eff.empty)",
+        "decl": {
+          "line": 267,
+          "kind": "theorem",
+          "name": "super_call_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Model.lean",
+        "line": 417,
+        "text": "  have hps := (Ty.Le.fn_fn' hle).2.1",
+        "decl": {
+          "line": 400,
+          "kind": "def",
+          "name": "higherOrderCallee"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Model.lean",
+        "line": 423,
+        "text": "      have hn := (Ty.Le.fn_fn' hle).1",
+        "decl": {
+          "line": 400,
+          "kind": "def",
+          "name": "higherOrderCallee"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Semantics.lean",
+        "line": 583,
+        "text": "      ContTy P B Ψ R ε k a' b ε0 Re → Ty.Le a a' → ContTy P B Ψ R ε k a b ε0 Re",
+        "decl": {
+          "line": 545,
+          "kind": "inductive",
+          "name": "ContTy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/TypeRegularity.lean",
+        "line": 63,
+        "text": "theorem Ty.Le.wf {n a b} (h : Ty.Le a b) (w : Ty.WF n a) (wb : Ty.LatentWF n b) : Ty.WF n b := by",
+        "decl": {
+          "line": 63,
+          "kind": "theorem",
+          "name": "Ty.Le.wf"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/TypeRegularity.lean",
+        "line": 69,
+        "text": "theorem Ty.Le.wf_rev {n a b} (h : Ty.Le a b) (w : Ty.WF n b) (wa : Ty.LatentWF n a) : Ty.WF n a := by",
+        "decl": {
+          "line": 69,
+          "kind": "theorem",
+          "name": "Ty.Le.wf_rev"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Typing.lean",
+        "line": 195,
+        "text": "def Ty.Le (a a' : Ty) : Prop :=",
+        "decl": {
+          "line": 195,
+          "kind": "def",
+          "name": "Ty.Le"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Typing.lean",
+        "line": 432,
+        "text": "        HasTypeVQ P B Ψ Q C Γ v a → Ty.Le a a' → Ty.WF C.length a' → HasTypeVQ P B Ψ Q C Γ v a'",
+        "decl": {
+          "line": 380,
+          "kind": "inductive",
+          "name": "HasTypeVQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Typing.lean",
+        "line": 459,
+        "text": "        HasTypeCQ P B Ψ Q C Γ R m a ε Δ → Ty.Le a a' → Eff.Sub ε ε' → Ty.WF C.length a' → HasTypeCQ P B Ψ Q C Γ R m a' ε' Δ",
+        "decl": {
+          "line": 447,
+          "kind": "inductive",
+          "name": "HasTypeCQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+        "line": 133,
+        "text": "    (h : accept q n path expected actual = .ok ε) : Ty.Le actual.1 expected ∧ ε = actual.2 :=",
+        "decl": {
+          "line": 131,
+          "kind": "theorem",
+          "name": "accept_sound"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/CheckLemmas.lean",
+        "line": 156,
+        "text": "    (h : join q n path a b = .ok j) : Ty.Le a j ∧ Ty.Le b j :=",
+        "decl": {
+          "line": 155,
+          "kind": "theorem",
+          "name": "join_sound"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/CheckSupport.lean",
+        "line": 12,
+        "text": "    (h : tyJoin atoms a b = some j) : Ty.Le a j ∧ Ty.Le b j := Finite.tyJoin_sound ha hb h",
+        "decl": {
+          "line": 11,
+          "kind": "theorem",
+          "name": "tyJoin_sound"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/CheckTools.lean",
+        "line": 60,
+        "text": "    (h : tyLe atoms a b = true) : Ty.Le a b := Finite.tyLe_sound ha hb h",
+        "decl": {
+          "line": 59,
+          "kind": "theorem",
+          "name": "tyLe_sound"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Examples.lean",
+        "line": 275,
+        "text": "  have hn := (Ty.Le.fn_fn' (hle.trans hl)).1",
+        "decl": {
+          "line": 238,
+          "kind": "theorem",
+          "name": "program_effect_soundness"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/FiniteTools.lean",
+        "line": 191,
+        "text": "    (h : tyLe s a b = true) : Ty.Le a b := by",
+        "decl": {
+          "line": 190,
+          "kind": "theorem",
+          "name": "tyLe_sound"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/FiniteTools.lean",
+        "line": 210,
+        "text": "    (h : tyJoin s a b = some j) : Ty.Le a j ∧ Ty.Le b j := by",
+        "decl": {
+          "line": 209,
+          "kind": "theorem",
+          "name": "tyJoin_sound"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 83,
+        "text": "      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) T := by",
+        "decl": {
+          "line": 76,
+          "kind": "theorem",
+          "name": "HasTypeQ.inv_funDicts"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 95,
+        "text": "      Ty.Le (fnTy d.names d.params d.ret d.eff ts es) a)",
+        "decl": {
+          "line": 76,
+          "kind": "theorem",
+          "name": "HasTypeQ.inv_funDicts"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 117,
+        "text": "      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) T := by",
+        "decl": {
+          "line": 110,
+          "kind": "theorem",
+          "name": "HasTypeQ.inv_opDicts"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 129,
+        "text": "      Ty.Le (fnTy d.valueNames d.valueParams d.ret (Eff.single d.eff) ts []) a)",
+        "decl": {
+          "line": 110,
+          "kind": "theorem",
+          "name": "HasTypeQ.inv_opDicts"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 156,
+        "text": "      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) T := by",
+        "decl": {
+          "line": 145,
+          "kind": "theorem",
+          "name": "HasTypeQ.inv_methName"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 172,
+        "text": "      Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) a)",
+        "decl": {
+          "line": 145,
+          "kind": "theorem",
+          "name": "HasTypeQ.inv_methName"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 199,
+        "text": "    obtain ⟨hn, hp, hr, hε⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 188,
+          "kind": "theorem",
+          "name": "directCallee_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 212,
+        "text": "    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 188,
+          "kind": "theorem",
+          "name": "directCallee_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 221,
+        "text": "    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 188,
+          "kind": "theorem",
+          "name": "directCallee_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/Calls.lean",
+        "line": 11,
+        "text": "`meth` の引数の型の等式は、`Ty.Le` が最も外側の関数型のエフェクトだけを広げることに依る。",
+        "decl": null,
+        "code_match": false
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/Calls.lean",
+        "line": 12,
+        "text": "`Ty.Le` を深い部分型に広げるときは、C-Meth の型を `Ty.Le` で広げた形に直す。 -/",
+        "decl": null,
+        "code_match": false
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+        "line": 31,
+        "text": "theorem clean_le {n a b} (h : Ty.Le a b) (ha : TyOK n a)",
+        "decl": {
+          "line": 31,
+          "kind": "theorem",
+          "name": "clean_le"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/Invariants.lean",
+        "line": 39,
+        "text": "theorem clean_data_le {n d ts b} (h : Ty.Le (.data d ts) b)",
+        "decl": {
+          "line": 39,
+          "kind": "theorem",
+          "name": "clean_data_le"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+        "line": 177,
+        "text": "    (hl : Ty.Le r0 r) (he : Eff.Sub (Eff.union εf (Eff.union εargs εcall)) ε)",
+        "decl": {
+          "line": 167,
+          "kind": "theorem",
+          "name": "HasTypeQ.desugar_partialCall"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/Typing.lean",
+        "line": 215,
+        "text": "    (hl : Ty.Le (.data cd.data ts) r)",
+        "decl": {
+          "line": 209,
+          "kind": "theorem",
+          "name": "HasTypeQ.desugar_partialCon"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Typing.lean",
+        "line": 16,
+        "text": "型の包含は Release の `Ty.Le`、多相な使用は `SatAll` と `admits` を使う。",
+        "decl": null,
+        "code_match": false
+      },
+      {
+        "path": "formal/Benitoite/Surface/Typing.lean",
+        "line": 274,
+        "text": "        Ty.Le r0 r → Eff.Sub (Eff.union εf (Eff.union εargs εcall)) ε →",
+        "decl": {
+          "line": 84,
+          "kind": "inductive",
+          "name": "HasTypeQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Typing.lean",
+        "line": 284,
+        "text": "        Ty.Le (.data cd.data ts) r → Eff.VarsIn C.length (fun _ => True) εargs →",
+        "decl": {
+          "line": 84,
+          "kind": "inductive",
+          "name": "HasTypeQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Typing.lean",
+        "line": 442,
+        "text": "        HasTypeQ D B opPrim Q Δ C Γ R p e a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn C.length (fun _ => True) a' →",
+        "decl": {
+          "line": 84,
+          "kind": "inductive",
+          "name": "HasTypeQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Typing.lean",
+        "line": 470,
+        "text": "        Ty.Le t a → Ty.VarsIn C.length (fun _ => True) a → HasHoleArgsQ D B opPrim Q Δ C Γ R args as ε →",
+        "decl": {
+          "line": 463,
+          "kind": "inductive",
+          "name": "HasHoleArgsQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Typing.lean",
+        "line": 551,
+        "text": "        HasBlockQ D B opPrim Q Δ C Γ R p body a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn C.length (fun _ => True) a' →",
+        "decl": {
+          "line": 502,
+          "kind": "inductive",
+          "name": "HasBlockQ"
+        },
+        "code_match": true
+      }
+    ],
+    "equality_helpers": [
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 84,
+        "text": "theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ ps r ε, t ≠ .fn ps r ε) : a = t := by",
+        "decl": {
+          "line": 84,
+          "kind": "theorem",
+          "name": "eq_of_not_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Basic.lean",
+        "line": 90,
+        "text": "theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ ps r ε, a ≠ .fn ps r ε) : a = t := by",
+        "decl": {
+          "line": 90,
+          "kind": "theorem",
+          "name": "eq_of_not_fn_left"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+        "line": 54,
+        "text": "      have := (h.inv_const rfl).eq_of_not_fn hnf",
+        "decl": {
+          "line": 48,
+          "kind": "theorem",
+          "name": "HasTypeV.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+        "line": 59,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 48,
+          "kind": "theorem",
+          "name": "HasTypeV.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+        "line": 62,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 48,
+          "kind": "theorem",
+          "name": "HasTypeV.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Canonical.lean",
+        "line": 65,
+        "text": "      have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 48,
+          "kind": "theorem",
+          "name": "HasTypeV.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 98,
+        "text": "      exact ⟨cd, hc, hts, hargs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 91,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_con"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Inversion.lean",
+        "line": 112,
+        "text": "      exact ⟨a, he, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 106,
+          "kind": "theorem",
+          "name": "HasTypeV.inv_list"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 56,
+        "text": "theorem Ty.Le.fn_fn {ps r ε as b ε'} (h : Ty.Le (.fn ps r ε) (.fn as b ε')) :",
+        "decl": {
+          "line": 56,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 58,
+        "text": "  obtain ⟨ε'', he, hs⟩ := h.fn_left",
+        "decl": {
+          "line": 56,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 59,
+        "text": "  simp only [Ty.fn.injEq] at he",
+        "decl": {
+          "line": 56,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 83,
+        "text": "      obtain ⟨rfl, rfl, hsub₂⟩ := hle₂.fn_fn",
+        "decl": {
+          "line": 64,
+          "kind": "theorem",
+          "name": "preservationQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 93,
+        "text": "      obtain ⟨hps, hr, hsub₂⟩ := hle₂.fn_fn",
+        "decl": {
+          "line": 64,
+          "kind": "theorem",
+          "name": "preservationQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 119,
+        "text": "      obtain ⟨hps, hr, _⟩ := hle₂.fn_fn",
+        "decl": {
+          "line": 64,
+          "kind": "theorem",
+          "name": "preservationQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Lemmas/Preservation.lean",
+        "line": 131,
+        "text": "      obtain ⟨hps, hr, _⟩ := hle₂.fn_fn",
+        "decl": {
+          "line": 64,
+          "kind": "theorem",
+          "name": "preservationQ"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Theorems.lean",
+        "line": 161,
+        "text": "          obtain ⟨_, he, _⟩ := (hf.inv_const rfl).fn_right",
+        "decl": {
+          "line": 143,
+          "kind": "theorem",
+          "name": "progress"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Theorems.lean",
+        "line": 166,
+        "text": "          obtain ⟨hps, _, _⟩ := hle.fn_fn",
+        "decl": {
+          "line": 143,
+          "kind": "theorem",
+          "name": "progress"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Theorems.lean",
+        "line": 171,
+        "text": "          obtain ⟨hps, _, _⟩ := hle.fn_fn",
+        "decl": {
+          "line": 143,
+          "kind": "theorem",
+          "name": "progress"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Theorems.lean",
+        "line": 187,
+        "text": "          obtain ⟨hps, _, _⟩ := hle.fn_fn",
+        "decl": {
+          "line": 143,
+          "kind": "theorem",
+          "name": "progress"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Core/Theorems.lean",
+        "line": 265,
+        "text": "            obtain ⟨_, _, hsub₂⟩ := hle.fn_fn",
+        "decl": {
+          "line": 224,
+          "kind": "theorem",
+          "name": "effect_soundness"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 88,
+        "text": "theorem eq_of_not_fn {a t : Ty} (h : Ty.Le a t) (ht : ∀ names ps r ε, t ≠ .fn names ps r ε) : a = t := by",
+        "decl": {
+          "line": 88,
+          "kind": "theorem",
+          "name": "eq_of_not_fn"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Basic.lean",
+        "line": 94,
+        "text": "theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ names ps r ε, a ≠ .fn names ps r ε) : a = t := by",
+        "decl": {
+          "line": 94,
+          "kind": "theorem",
+          "name": "eq_of_not_fn_left"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "line": 31,
+        "text": "  | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this",
+        "decl": {
+          "line": 26,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_bytes"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "line": 34,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 26,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_bytes"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "line": 37,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 26,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_bytes"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "line": 40,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 26,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_bytes"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "line": 43,
+        "text": "      have := hl.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 26,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_bytes"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/BuilderTyping.lean",
+        "line": 46,
+        "text": "      have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 26,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_bytes"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 67,
+        "text": "      have := (h.inv_const rfl).eq_of_not_fn hnf",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 72,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 75,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 78,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 81,
+        "text": "      have := hl.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 84,
+        "text": "      have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 61,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_boolean"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 100,
+        "text": "  | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_ref"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 103,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_ref"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 106,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_ref"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 109,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_ref"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 112,
+        "text": "      have := hl.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_ref"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 115,
+        "text": "      have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 95,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_ref"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 134,
+        "text": "  | const c => have := (h.inv_const rfl).eq_of_not_fn hnf; cases c <;> simp [Const.type] at this",
+        "decl": {
+          "line": 129,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 137,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 129,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 140,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 129,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 143,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 129,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 146,
+        "text": "      have := hl.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 129,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 149,
+        "text": "      have := hle.eq_of_not_fn hnf; simp at this",
+        "decl": {
+          "line": 129,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Canonical.lean",
+        "line": 225,
+        "text": "      exact ⟨a, he, hw, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 219,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_list_wf"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/EffectSound.lean",
+        "line": 101,
+        "text": "              obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl",
+        "decl": {
+          "line": 82,
+          "kind": "theorem",
+          "name": "no_unhandledOp"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/FailureCont.lean",
+        "line": 276,
+        "text": "  obtain ⟨e', hfn', hsub⟩ := hfn.fn_left",
+        "decl": {
+          "line": 270,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_raise_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 161,
+        "text": "      exact ⟨cd, hc, hts, hargs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 154,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_con"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 178,
+        "text": "      exact ⟨a, he, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 172,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_list"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 196,
+        "text": "      · exact Or.inl ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 189,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_loc"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 197,
+        "text": "      · exact Or.inr ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 189,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_loc"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 322,
+        "text": "      exact ⟨a, h1, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 316,
+          "kind": "theorem",
+          "name": "HasTypeCQ.inv_lazy"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 461,
+        "text": "      exact ⟨a, b, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 454,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_mapV"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 470,
+        "text": "      exact ⟨a, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 463,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_setV"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 480,
+        "text": "      exact (hle.eq_of_not_fn_left (by intros; simp)).symm",
+        "decl": {
+          "line": 472,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_bytesV"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 490,
+        "text": "      exact ⟨id, hi, hts, hvs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 482,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Inversion.lean",
+        "line": 500,
+        "text": "      exact ⟨cl, τ, cd, hw, hc, hs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩",
+        "decl": {
+          "line": 492,
+          "kind": "theorem",
+          "name": "HasTypeVQ.inv_super"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 85,
+        "text": "      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/PresMain.lean",
+        "line": 106,
+        "text": "      obtain ⟨hnames', hps, hr, hs2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 18,
+          "kind": "theorem",
+          "name": "preservationE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 17,
+        "text": "theorem Ty.Le.fn_fn' {names ps r ε names' as b ε'} (h : Ty.Le (.fn names ps r ε) (.fn names' as b ε')) :",
+        "decl": {
+          "line": 17,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn'"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 19,
+        "text": "  obtain ⟨ε'', he, hs⟩ := h.fn_left",
+        "decl": {
+          "line": 17,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn'"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 20,
+        "text": "  simp only [Ty.fn.injEq] at he",
+        "decl": {
+          "line": 17,
+          "kind": "theorem",
+          "name": "Ty.Le.fn_fn'"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 32,
+        "text": "  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 24,
+          "kind": "theorem",
+          "name": "inv_prim_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Preservation.lean",
+        "line": 44,
+        "text": "  obtain ⟨hnames', hps, hr, hsub2⟩ := Ty.Le.fn_fn' hle2",
+        "decl": {
+          "line": 36,
+          "kind": "theorem",
+          "name": "inv_op_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 23,
+        "text": "      obtain ⟨_, e, _⟩ := (h.inv_const rfl).fn_right",
+        "decl": {
+          "line": 17,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_fn_or_raise"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 73,
+        "text": "      have := (h.inv_const rfl).eq_of_not_fn (by intros; simp)",
+        "decl": {
+          "line": 53,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 77,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this",
+        "decl": {
+          "line": 53,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 80,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this",
+        "decl": {
+          "line": 53,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 83,
+        "text": "      rw [fnTy_eq] at hle; have := hle.eq_of_not_fn (by intros; simp); simp at this",
+        "decl": {
+          "line": 53,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 86,
+        "text": "      have := hl.eq_of_not_fn (by intros; simp); simp at this",
+        "decl": {
+          "line": 53,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 89,
+        "text": "      have := hle.eq_of_not_fn (by intros; simp); simp at this",
+        "decl": {
+          "line": 53,
+          "kind": "theorem",
+          "name": "HasTypeVQ.canonical_dict"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 424,
+        "text": "    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 417,
+          "kind": "theorem",
+          "name": "progress_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 428,
+        "text": "    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 417,
+          "kind": "theorem",
+          "name": "progress_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/Progress.lean",
+        "line": 443,
+        "text": "    obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hfn",
+        "decl": {
+          "line": 417,
+          "kind": "theorem",
+          "name": "progress_app"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Lemmas/StepSound.lean",
+        "line": 300,
+        "text": "            obtain ⟨_, hps, _, _⟩ := Ty.Le.fn_fn' hl",
+        "decl": {
+          "line": 102,
+          "kind": "theorem",
+          "name": "step_soundE"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Model.lean",
+        "line": 417,
+        "text": "  have hps := (Ty.Le.fn_fn' hle).2.1",
+        "decl": {
+          "line": 400,
+          "kind": "def",
+          "name": "higherOrderCallee"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Release/Model.lean",
+        "line": 423,
+        "text": "      have hn := (Ty.Le.fn_fn' hle).1",
+        "decl": {
+          "line": 400,
+          "kind": "def",
+          "name": "higherOrderCallee"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Examples.lean",
+        "line": 275,
+        "text": "  have hn := (Ty.Le.fn_fn' (hle.trans hl)).1",
+        "decl": {
+          "line": 238,
+          "kind": "theorem",
+          "name": "program_effect_soundness"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 199,
+        "text": "    obtain ⟨hn, hp, hr, hε⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 188,
+          "kind": "theorem",
+          "name": "directCallee_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 212,
+        "text": "    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 188,
+          "kind": "theorem",
+          "name": "directCallee_typed"
+        },
+        "code_match": true
+      },
+      {
+        "path": "formal/Benitoite/Surface/Lemmas/CallHead.lean",
+        "line": 221,
+        "text": "    obtain ⟨hns', hps, hr, hε⟩ := Ty.Le.fn_fn' hle",
+        "decl": {
+          "line": 188,
+          "kind": "theorem",
+          "name": "directCallee_typed"
+        },
+        "code_match": true
+      }
+    ]
+  }
+}

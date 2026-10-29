@@ -1,0 +1,22 @@
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.41s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'export_known_scope_failures_as_excluded' (6041221) panicked at crates/benitoite/tests/desugar_export.rs:349:9:
+assertion `left == right` failed: old-pattern
+  left: Array [String("Some(E0459)")]
+ right: Array [String("E0459")]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test export_known_scope_failures_as_excluded ... FAILED
+
+failures:
+
+failures:
+    export_known_scope_failures_as_excluded
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 44 filtered out; finished in 0.22s
+
+error: test failed, to rerun pass `--test desugar_export`

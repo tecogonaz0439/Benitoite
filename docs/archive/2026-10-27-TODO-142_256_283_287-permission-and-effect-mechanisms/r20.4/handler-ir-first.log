@@ -1,0 +1,18 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0599]: no method named `get_mut` found for struct `base::BindingMap<T>` in the current scope
+    --> crates/benitoite/src/ir/check.rs:2768:24
+     |
+2768 |         broken.schemes.get_mut(OP).unwrap().ret = path(RangeIndex::var(0));
+     |                        ^^^^^^^ method not found in `base::BindingMap<types::Scheme>`
+     |
+    ::: crates/benitoite/src/base/mod.rs:154:1
+     |
+ 154 | pub struct BindingMap<T> {
+     | ------------------------ method `get_mut` not found for this struct
+     |
+     = help: items from traits can only be used if the trait is implemented and in scope
+     = note: the following trait defines an item `get_mut`, perhaps you need to implement it:
+             candidate #1: `SliceIndex`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `benitoite` (lib test) due to 1 previous error

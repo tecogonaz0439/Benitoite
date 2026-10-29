@@ -1,0 +1,29 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.35s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 21 tests
+test typeck::scope::accept_tests::pipe_right_requires_top_even_when_the_left_is_a_pattern_literal ... ok
+test typeck::scope::accept_tests::selected_range_and_acceptance_distinguish_known_unknown_missing_and_unselected ... ok
+test typeck::scope::accept_tests::budget_before_the_rule_requires_top_without_using_a_partial_preorder ... ok
+test typeck::scope::accept_tests::pending_interpolation_changes_only_labels_and_not_the_numbering_budget ... ok
+test typeck::scope::local_tests::budget_forgetting_keeps_positions_and_literal_conditions ... ok
+test typeck::scope::local_tests::joins_forget_only_the_value_and_keep_outer_facts_and_positions ... ok
+test typeck::scope::local_tests::builtin_operation_calls_count_direct_steps_but_user_operations_do_not ... ok
+test typeck::scope::local_tests::bodies_clear_facts_preserve_positions_and_restore_the_outer_state ... ok
+test typeck::scope::local_tests::direct_projections_distinguish_instances_aliases_rewrap_and_unknown_calls ... ok
+test typeck::scope::tests::dedicated_bindings_and_handler_clauses_follow_surface_preorder ... ok
+test typeck::scope::tests::missing_definition_inputs_remain_as_stopped_bodies ... ok
+test typeck::scope::tests::pipe_calls_keep_rules_on_left_inside_arguments_and_on_right ... ok
+test typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments ... ok
+test typeck::scope::local_tests::request_ok_keeps_its_own_origin_and_projection_has_no_result_fact ... ok
+test typeck::scope::local_tests::saved_result_ok_and_error_match_independent_scope_lower_records ... ok
+test typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments ... ok
+test typeck::scope::local_tests::try_direct_match_wrapping_and_unvisited_expressions_do_not_gain_facts ... ok
+test typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers ... ok
+test typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations ... ok
+test typeck::scope::tests::shared_constants_stop_numbering_at_the_operation_budget ... ok
+test typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 1382 filtered out; finished in 1.37s
+

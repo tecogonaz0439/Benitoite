@@ -18,7 +18,7 @@ private def valueTy : Ty := .data "Log.Value" []
 private def attributeTy : Ty := .data "Log.Attribute" []
 private def locationTy : Ty := .data "SourceLocation.Location" []
 private def recordTy : Ty := .data "Log.Record" []
-private def atoms : List Atom := [.name "Log", .name "Console.Write"]
+private def atoms : List Atom := [.nameTop "Log", .nameTop "Console.Write"]
 
 private def enumData (name : String) (cs : List String) : DataMaterial :=
   ⟨name, 0, cs.map fun c => (c, ⟨name, 0, []⟩)⟩
@@ -74,7 +74,7 @@ def record : Expr := .record "Log.Record" [] [0, 1, 2, 3]
   (.cons info (.cons (text "done") (.cons (.list attributeTy (one logAttribute)) (one location))))
 
 private def call1 (name arg : String) (value : Expr) : Expr :=
-  .call (.primName name [] []) [some arg] [0] (one value)
+  .call (.primName name [] [] []) [some arg] [0] (one value)
 def emit : Expr := call1 "Log.emit" "record" record
 def enabled : Expr := call1 "Log.enabled" "level" info
 private def send (value : Expr) : Expr := call1 "Log.emit" "record" value

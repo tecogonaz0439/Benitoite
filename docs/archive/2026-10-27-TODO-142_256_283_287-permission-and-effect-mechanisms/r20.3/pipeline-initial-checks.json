@@ -1,0 +1,98 @@
+{
+  "note": "分担中の中間状態でのコンパイル。外側の時間とRSSは未計測。最初の呼び出しは終了状態を取得していない。フィルタ済み出力の要点であり完全な生ログではない。",
+  "checks": [
+    {
+      "command": [
+        "rtk",
+        "cargo",
+        "check",
+        "-p",
+        "benitoite",
+        "--all-targets"
+      ],
+      "outcome": "並行実装の途中の状態で失敗",
+      "first_errors": [
+        "call_builtin_scoped が未追加だった",
+        "Vec<Range> を加えた BuiltinRef が Copy を導出できなかった"
+      ],
+      "fix": [
+        "widen担当がscoped呼び出し口を追加",
+        "BuiltinRefのCopyを除去"
+      ]
+    },
+    {
+      "command": [
+        "rtk",
+        "cargo",
+        "check",
+        "-p",
+        "benitoite",
+        "--all-targets"
+      ],
+      "exit": 101,
+      "errors": [
+        "TypeckOutput.call_ranges が未追加だった",
+        "BuiltinRef / ValKind::Builtin の構築箇所で ranges が不足した",
+        "脱糖の試験の照合パターンに ranges がなかった"
+      ],
+      "fix": [
+        "rootがcall_rangesを追加",
+        "構築箇所に明示の空列を追加し、アセンブラの宣言は個数に応じたTop列にした",
+        "試験の照合パターンは不要欄を..で省略"
+      ]
+    },
+    {
+      "command": [
+        "rtk",
+        "cargo",
+        "check",
+        "-p",
+        "benitoite",
+        "--all-targets"
+      ],
+      "exit": 101,
+      "errors": [
+        "TypeckOutput.call_ranges が未追加だった",
+        "scope::accept の公開する判定の本体が未実装だった"
+      ],
+      "fix": [
+        "担当間のAPI追加後に局所テストを実行"
+      ]
+    },
+    {
+      "command": [
+        "rtk",
+        "cargo",
+        "check",
+        "-p",
+        "benitoite",
+        "--all-targets"
+      ],
+      "exit": 101,
+      "errors": [
+        "scoped_calls の文言の定数と scope_key が未追加だった",
+        "scoped_calls の internal_diagnostic の panic-report 引数で型が不一致だった"
+      ],
+      "fix": [
+        "rootが並行実装中の診断の接続を完了"
+      ]
+    },
+    {
+      "command": [
+        "rtk",
+        "cargo",
+        "check",
+        "-p",
+        "benitoite",
+        "--all-targets"
+      ],
+      "exit": 101,
+      "errors": [
+        "旧 call_builtin がテスト以外の構成で dead_code になった"
+      ],
+      "fix": [
+        "scoped呼び出しへ移した旧入口をcfg(test)に限定"
+      ]
+    }
+  ]
+}

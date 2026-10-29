@@ -1,0 +1,220 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Atom.lean:18:inductive Atom where
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:33:theorem mem_empty (a : Atom) : mem empty a ↔ False := by simp [mem, test, atoms, empty]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:35:theorem mem_single (l : EffName) (a : Atom) : mem (single l) a ↔ a = .name l := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:38:theorem mem_row (i : Nat) (a : Atom) : mem (row i) a ↔ a = .rho i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:41:theorem mem_union (e f : Eff) (a : Atom) : mem (union e f) a ↔ mem e a ∨ mem f a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:59:@[simp] theorem mem_norm (e : Eff) (a : Atom) : mem (norm e) a ↔ mem e a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:70:theorem canonical_ofAtoms (a : Atom → Bool) : Canonical (ofAtoms a) := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:9:theorem Eff.support_iff {p : Atom → Prop} (e : Eff) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:16:  def tyCompareWith (s : List Atom) : Ty → Ty → Ordering
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:38:  def effCompareWith (s : List Atom) : Eff → Eff → Ordering
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:42:  def tysCompareWith (s : List Atom) : List Ty → List Ty → Ordering
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:50:  theorem compareWith_eq_compare (s : List Atom) (a b : Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:57:  theorem comparesWith_eq_compare (s : List Atom) (as bs : List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:65:  theorem effCompareWith_eq_compare (s : List Atom) (e f : Eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:76:  def Ty.normWith (s : List Atom) : Ty → Ty
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:95:  def Ty.normTysWith (s : List Atom) : List Ty → List Ty
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:101:  def Eff.normWith (s : List Atom) : Eff → Eff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:128:  theorem Ty.normWith_eq_norm (s : List Atom) (t : Ty) (h : t.Support (· ∈ s)) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:143:  theorem Ty.normTysWith_eq_norm (s : List Atom) (ts : List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:151:  theorem Eff.normWith_eq_norm_of_fails (s : List Atom) (e : Eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:164:theorem Eff.normWith_eq_norm (s : List Atom) (e : Eff) (h : Eff.Support (· ∈ s) e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:168:@[simp] theorem Ty.normTysWith_eq_map (s : List Atom) (ts : List Ty) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:176:  theorem Ty.normWith_legacy (s : List Atom) (t : Ty) (h : t.Legacy) : t.normWith s = t := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:188:  theorem Ty.normTysWith_legacy (s : List Atom) (ts : List Ty) (h : Ty.LegacyTys ts) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:194:  theorem Eff.normWith_legacy (s : List Atom) (e : Eff) (h : Eff.Legacy e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:7:  def Ty.collectAtoms (s : List Atom) : Ty → List Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:14:  def Ty.collectAtomsList (s : List Atom) : List Ty → List Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:17:  def Eff.collectAtoms (s : List Atom) : Eff → List Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:22:  theorem Ty.support_mono {p q : Atom → Prop} (t : Ty) (h : t.Support p)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:35:  theorem Ty.supportList_mono {p q : Atom → Prop} (ts : List Ty) (h : Ty.SupportList p ts)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:40:  theorem Eff.support_mono {p q : Atom → Prop} (e : Eff) (h : Eff.Support p e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:48:  theorem Ty.collectAtoms_complete (s : List Atom) (t : Ty) (h : t.Support (· ∈ s)) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:75:  theorem Ty.collectAtomsList_complete (s : List Atom) (ts : List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:84:  theorem Eff.collectAtoms_complete (s : List Atom) (e : Eff) (h : Eff.Support (· ∈ s) e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:95:  theorem Ty.collectAtoms_sound {p} (s : List Atom) (t : Ty) (h : t.Support p) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:122:  theorem Ty.collectAtomsList_sound {p} (s : List Atom) (ts : List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:131:  theorem Eff.collectAtoms_sound {p} (s : List Atom) (e : Eff) (h : Eff.Support p e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:142:theorem Ty.collectAtoms_support_iff {s t} (hs : Ty.Support (· ∈ s) t) (p : Atom → Prop) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:146:theorem Eff.collectAtoms_support_iff {s e} (hs : Eff.Support (· ∈ s) e) (p : Atom → Prop) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:179:theorem Eff.norm_fails_support {p : Atom → Prop} (e : Eff) (h : Ty.SupportList p e.fails) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:188:theorem Eff.support_of_sub {p : Atom → Prop} {a b : Eff} (hb : Eff.Support p b)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:2:import Benitoite.Release.Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:14:namespace Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:50:def code : Atom → Nat
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:55:theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:61:      exact congrArg Atom.name (String.toList_inj.mp (charsCode_injective hc))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:67:               exact congrArg Atom.rho this
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:69:end Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:71:private theorem exists_least_atom (p : Atom → Prop) (h : ∃ a, p a) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:72:    ∃ a, p a ∧ ∀ b, p b → Atom.code a ≤ Atom.code b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:74:  have aux : ∀ n, ∀ a, Atom.code a = n → p a →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:75:      ∃ a, p a ∧ ∀ b, p b → Atom.code a ≤ Atom.code b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:80:      by_cases hs : ∃ b, p b ∧ Atom.code b < n
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:82:        exact ih (Atom.code b) hn b rfl hb
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:84:          have : ¬ Atom.code b < n := fun hn => hs ⟨b, hb, hn⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:87:  exact aux (Atom.code a) a rfl ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:89:private theorem exists_atoms_difference {f g : Atom → Bool} (h : f ≠ g) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:100:noncomputable def atomsCompare (f g : Atom → Bool) : Ordering := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:107:def AtomsBefore (f g : Atom → Bool) (a : Atom) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:108:  f a = false ∧ g a = true ∧ ∀ b, Atom.code b < Atom.code a → f b = g b
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:110:private theorem atomsCompare_spec (f g : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:112:    ∃ a, f a ≠ g a ∧ (∀ b, Atom.code b < Atom.code a → f b = g b) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:128:theorem atomsCompare_eq_iff {f g : Atom → Bool} : atomsCompare f g = .eq ↔ f = g := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:140:theorem atomsBefore_unique {f g : Atom → Bool} {a b : Atom}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:142:  apply Atom.code_injective
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:143:  have h1 : ¬ Atom.code a < Atom.code b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:147:  have h2 : ¬ Atom.code b < Atom.code a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:154:theorem atomsCompare_lt_iff {f g : Atom → Bool} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:165:        apply Atom.code_injective
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:166:        have h1 : ¬ Atom.code a < Atom.code b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:168:        have h2 : ¬ Atom.code b < Atom.code a := fun h => hn (ha.2.2 b h)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:174:theorem atomsCompare_gt_iff {f g : Atom → Bool} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:192:      have h1 : ¬ Atom.code a < Atom.code b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:194:      have h2 : ¬ Atom.code b < Atom.code a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:196:      have he := Atom.code_injective (show Atom.code a = Atom.code b by omega)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:202:theorem atomsCompare_swap (f g : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:210:theorem atomsCompare_lt_trans {f g h : Atom → Bool}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:215:  by_cases hab : Atom.code a < Atom.code b
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:218:  · by_cases hba : Atom.code b < Atom.code a
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:221:    · have he := Atom.code_injective (show Atom.code a = Atom.code b by omega)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:238:theorem atomsCompare_total (f g : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:246:theorem atomsCompare_antisymm {f g : Atom → Bool}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Atoms.lean:251:theorem atomsCompare_ext {f g : Atom → Bool} (h : ∀ a, f a = g a) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:6:def firstDifference (s : List Atom) (f g : Atom → Bool) : Option Atom :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:13:      | some b => some (if Atom.code a ≤ Atom.code b then a else b)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:15:theorem firstDifference_spec (s : List Atom) (f g : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:19:        ∀ b ∈ s, f b ≠ g b → Atom.code a ≤ Atom.code b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:46:        by_cases hab : Atom.code a ≤ Atom.code b
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:58:def atomsCompareWith (s : List Atom) (f g : Atom → Bool) : Ordering :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:63:theorem atomsCompareWith_eq_compare {s : List Atom} {f g : Atom → Bool}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/FiniteAtoms.lean:81:    have hmin : ∀ b, Atom.code b < Atom.code a → f b = g b := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Labels.lean:30:  | atoms (f : Atom → Bool)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/SubstEnv.lean:29:theorem Eff.mem_substRho_rowImage (es : List Eff) (e : Eff) (a : Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/SubstExamples.lean:18:example (atoms : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:13:theorem Eff.mem_rawBind_rowImage (θ : SubstEnv) (e : Eff) (a : Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:133:theorem Eff.mem_bind (θ : SubstEnv) (e : Eff) (a : Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:158:    simp only [Eff.mem_row, Atom.rho.injEq, reduceCtorEq, and_false, exists_false, false_or]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:162:    simp only [Eff.mem_row, Atom.rho.injEq]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:352:theorem Eff.bind_ofAtoms_noRhos (θ : SubstEnv) (a : Atom → Bool) (h : ∀ i, a (.rho i) = false) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:14:theorem Eff.substRho_true {es : List Eff} {ε : Eff} {a : Atom} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:24:    {a : Atom} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:45:def Eff.substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:55:def Eff.rowFails (es : List Eff) (a : Atom → Bool) : List Ty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:73:@[simp] theorem Eff.substAtoms_nil (a : Atom → Bool) : Eff.substAtoms [] a = a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:77:@[simp] theorem Eff.rowFails_nil (a : Atom → Bool) : Eff.rowFails [] a = [] := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:198:theorem Eff.mem_rowFails {es : List Eff} {a : Atom → Bool} {t : Ty} :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:87:theorem Eff.mem_substAtoms (es : List Eff) (e : Eff) (a : Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:115:theorem Eff.mem_rawBind (θ : SubstEnv) (e : Eff) (a : Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:147:@[simp] theorem Eff.test_norm (e : Eff) (a : Atom) : Eff.test (Eff.norm e) a = Eff.test e a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:151:theorem Eff.substAtoms_map_norm (es : List Eff) (a : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:163:theorem Eff.rowFails_map_norm (es : List Eff) (a : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:352:theorem Eff.rowFails_legacy (es : List Eff) (h : ∀ e ∈ es, Eff.Legacy e) (a : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:435:@[simp] theorem Eff.substAt_ofAtoms (c : Nat) (ts : List Ty) (a : Atom → Bool) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:12:  def Ty.Support (p : Atom → Prop) : Ty → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:19:  def Ty.SupportList (p : Atom → Prop) : List Ty → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:22:  def Eff.Support (p : Atom → Prop) : Eff → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Types.lean:1:import Benitoite.Release.Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Types.lean:65:  | mk (atoms : Atom → Bool) (fails : List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Types.lean:73:def atoms : Eff → Atom → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Types.lean:80:abbrev test (e : Eff) (a : Atom) : Bool := e.atoms a
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Types.lean:81:abbrev mem (e : Eff) (a : Atom) : Prop := test e a = true
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Types.lean:82:abbrev ofAtoms (a : Atom → Bool) : Eff := .mk a []
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:15:  def rowsTyCheck (atoms : List Atom) (ne : Nat) : Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:22:  def rowsTysCheck (atoms : List Atom) (ne : Nat) : List Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:25:  def rowsEffCheck (atoms : List Atom) (ne : Nat) : Eff → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:31:private theorem rowsAtoms_spec {atoms : List Atom} {a : Atom → Bool} {ne : Nat}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:79:def instantiationCheck (atoms : List Atom) (caller : List Bool) (nt ne : Nat)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Builders.lean:60:def AtomsIn (atoms : List Atom) (Δ : BuilderCtx) : Prop := All (Ty.Support (· ∈ atoms)) Δ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Builders.lean:111:theorem atomsIn_empty (atoms : List Atom) : AtomsIn atoms [] := all_empty _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:30:  atoms : List Atom
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:81:def singleFailure (atoms : List Atom) (e : Ty) : Eff := .mk (fun _ => false) [e.normWith atoms]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Check.lean:85:def substParams (atoms : List Atom) (ts : List Ty) (es : List Eff) (ps : List Ty) : List Ty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckComputeAtoms.lean:9:def Requests.AtomsIn (atoms : List Atom) (requests : Requests) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckComputeAtoms.lean:12:def CheckState.AtomsIn (atoms : List Atom) (s : CheckState) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckComputeAtoms.lean:19:abbrev Inferred.AtomsIn (atoms : List Atom) (a : Inferred) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckComputeAtoms.lean:110:theorem requests_atoms_nil (atoms : List Atom) : Requests.AtomsIn atoms [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:14:private def atoms : List Atom :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:141:private def dieAtoms : List Atom := [.name "Process.Exit", .name "A"]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckExamples.lean:965:    with atoms := [Atom.rho 0] }
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:70:abbrev ReturnAtoms (atoms : List Atom) (R : Option Ty) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckLemmas.lean:163:theorem Ty.length_normTysWith (atoms : List Atom) (ts : List Ty) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:18:def ConAtomsIn (atoms : List Atom) (P : Release.Program) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:22:  def patTy (atoms : List Atom) (P : Release.Program) : Release.Pat → Ty → Option (List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:43:  def patTys (atoms : List Atom) (P : Release.Program) : List Release.Pat → List Ty → Option (List Ty)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:52:private theorem pat_sound (atoms : List Atom) (P : Release.Program) (hp : ConAtomsIn atoms P) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:117:def surfacePatTy (atoms : List Atom) (D : Declarations) (p : Pattern) (a : Ty) : Option (List Ty) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:156:def checkAlt (atoms : List Atom) (P : Release.Program) (a : Ty) (δ : List Ty) (alt : Release.Alt) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:164:def checkAlts (atoms : List Atom) (P : Release.Program) (alts : List Release.Alt)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPatterns.lean:203:def altsTy (atoms : List Atom) (P : Release.Program) (alts : List Release.Alt) (a : Ty) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckPredicates.lean:400:def stringAddOk (atoms : List Atom) (B : Builtins) (op : OpPrim)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckProgramSound.lean:145:def ImplBodiesAtoms (atoms : List Atom) (id : ImplDecl) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:17:def diffEff (_atoms : List Atom) (e h : Eff) := Finite.diffEff e h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:22:theorem diffEff_atoms {atoms : List Atom} {ε h : Eff} (he : Eff.AtomsIn atoms ε) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:28:theorem singleEff_eq_contains {atoms : List Atom} {l : EffName}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:37:def Env.AtomsIn (atoms : List Atom) (Γ : List (Option Ty)) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:40:theorem Env.atoms_nil (atoms : List Atom) : Env.AtomsIn atoms [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:83:def Builtins.AtomsIn (atoms : List Atom) (B : Builtins) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:90:def Declarations.AtomsIn (atoms : List Atom) (D : Declarations) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:99:theorem OpDecl.dictTys_atoms (d : OpDecl) (atoms : List Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:106:theorem OpDecl.valueParams_atoms {d : OpDecl} {atoms : List Atom}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:113:  def DictEv.AtomsIn (atoms : List Atom) : DictEv → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:117:  def DictEvs.AtomsIn (atoms : List Atom) : List DictEv → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:122:def InterpParts.AtomsIn (atoms : List Atom) (parts : List InterpPart) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:126:  def Expr.AtomsIn (atoms : List Atom) : Expr → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:172:  def Exprs.AtomsIn (atoms : List Atom) : Exprs → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:175:  def HoleArgs.AtomsIn (atoms : List Atom) : HoleArgs → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:179:  def Block.AtomsIn (atoms : List Atom) : Block → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:186:  def Arms.AtomsIn (atoms : List Atom) : Arms → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:189:  def Clauses.AtomsIn (atoms : List Atom) : Clauses → Prop
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:194:def Def.AtomsIn (atoms : List Atom) (d : Def) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:197:def ImplDecl.AtomsIn (atoms : List Atom) (id : ImplDecl) : Prop :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSupport.lean:203:theorem FunDecl.dictTys_atoms (d : FunDecl) (atoms : List Atom) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:176:def recordOk (atoms : List Atom) (ds : List DataMaterial)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTables.lean:205:    (op : OpPrim) (atoms : List Atom) : Check.Input :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:7:abbrev Eff.AtomsIn (atoms : List Atom) (e : Eff) := Eff.Support (· ∈ atoms) e
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:9:abbrev Ty.AtomsIn (atoms : List Atom) (t : Ty) := Ty.Support (· ∈ atoms) t
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:10:abbrev Tys.AtomsIn (atoms : List Atom) (ts : List Ty) := Ty.SupportList (· ∈ atoms) ts
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:21:def singleEff (_atoms : List Atom) (a : Atom) : Eff := Eff.ofAtoms (· == a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:36:theorem emptyEff_atoms (atoms : List Atom) : Eff.AtomsIn atoms emptyEff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:41:theorem singleEff_atoms (atoms : List Atom) (a : Atom) (ha : a ∈ atoms) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:45:theorem singleEff_eq {atoms : List Atom} {l : EffName} (_h : Atom.name l ∈ atoms) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:64:def shiftTys (atoms : List Atom) (k c : Nat) (ts : List Ty) := ts.map (shiftTy atoms k c)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:68:def substTysAt (atoms : List Atom) (c : Nat) (ts : List Ty) (es : List Eff) (as : List Ty) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:70:def substTy (atoms : List Atom) (ts : List Ty) (es : List Eff) (a : Ty) := substTyAt atoms 0 ts es a
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckTools.lean:71:def fnTyCheck (atoms : List Atom) (names : List String) (params : List Ty) (ret : Ty) (eff : Eff)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckToolsExamples.lean:10:private def atoms : List Atom := [.name "IO", .name "State", .rho 0, .rho 2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteExamples.lean:12:private def atoms : List Atom := [.name "b", .name "a"]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteExamples.lean:32:private def substAtoms : List Atom := [.name "state", .rho 0, .name "a"]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteExamples.lean:55:example (f : Atom → Bool) : Eff.normWith [] (.mk f []) = .mk f [] := rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:14:def canonicalEff (atoms : List Atom) (e : Eff) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:23:  def wfTy (atoms : List Atom) (n : Nat) : Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:32:  def wfTys (atoms : List Atom) (n : Nat) : List Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:35:  def wfEff (atoms : List Atom) (n : Nat) : Eff → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:67:  def cleanTy (atoms : List Atom) (n : Nat) : Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:76:  def cleanTys (atoms : List Atom) (n : Nat) : List Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FinitePredicates.lean:79:  def cleanEff (atoms : List Atom) (n : Nat) : Eff → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:11:def tyEq (s : List Atom) (a b : Ty) : Bool := tyCompareWith s a b == .eq
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:12:def tysEq (s : List Atom) (as bs : List Ty) : Bool := tysCompareWith s as bs == .eq
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:13:def effEq (s : List Atom) (a b : Eff) : Bool := effCompareWith s a b == .eq
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:39:def applyToTy (s : List Atom) (a : Ty) (args : List Ty) : Ty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:41:def shiftTy (s : List Atom) (k c : Nat) (a : Ty) : Ty := (a.rawShift k c).normWith s
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:42:def shiftEff (s : List Atom) (k c : Nat) (e : Eff) : Eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:44:def substTyAt (s : List Atom) (c : Nat) (ts : List Ty) (es : List Eff) (a : Ty) : Ty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:46:def substEffAt (s : List Atom) (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff) : Eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:77:def unionEff (s : List Atom) (a b : Eff) : Eff :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:80:theorem union_support {s : List Atom} {a b : Eff} (ha : Eff.Support (· ∈ s) a) (hb : Eff.Support (· ∈ s) b) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:123:def effSub (s : List Atom) (a b : Eff) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:185:def tyLe (s : List Atom) (a b : Ty) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:202:def tyJoin (s : List Atom) (a b : Ty) : Option Ty :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/FiniteTools.lean:241:theorem diffEff_support {s : List Atom} {e h : Eff} (he : Eff.Support (· ∈ s) e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Builders.lean:31:theorem boundary (Γ : List (Option Ty)) (n : Nat) (atoms : List Atom) (Q : NoFailCtx) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/LogExamples.lean:21:private def atoms : List Atom := [.name "Log", .name "Console.Write"]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:42:def noFailCheck (atoms : List Atom) (q : List Bool) (e : Eff) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:48:def rowTransportCheck (atoms : List Atom) (qs qt : List Bool) (es : List Eff) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:92:theorem noFailCheck_spec {atoms : List Atom} {q : List Bool} {e : Eff}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:113:theorem noFailCheck_atoms_spec {atoms : List Atom} {q : List Bool} {e : Eff}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/SingleFailCheck.lean:8:def singleFailCheck (atoms : List Atom) (q : List Bool) (e : Eff) : Bool :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/SingleFailCheck.lean:13:  def singleTyCheck (atoms : List Atom) (q : List Bool) : Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/SingleFailCheck.lean:20:  def singleTysCheck (atoms : List Atom) (q : List Bool) : List Ty → Bool
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/SingleFailCheck.lean:23:  def singleEffCheck (atoms : List Atom) (q : List Bool) : Eff → Bool

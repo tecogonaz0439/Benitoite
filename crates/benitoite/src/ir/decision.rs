@@ -83,6 +83,7 @@ pub fn lower_program(program: &CoreProgram) -> Result<LowerProgram, LowerError> 
         adts: program.adts.clone(),
         traits: program.traits.clone(),
         schemes: program.schemes.clone(),
+        range_signatures: program.range_signatures.clone(),
         main: program.main,
         main_returns_result: program.main_returns_result,
         body_count,
@@ -113,7 +114,11 @@ fn fresh(counter: &mut u32) -> Result<u32, LowerError> {
 }
 
 fn builtin_ty(id: BuiltinTypeId) -> Ty {
-    Ty::Con(TyCon::Builtin(id), Vec::new())
+    Ty::Con(
+        TyCon::Builtin(id),
+        Vec::new(),
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 
 fn lower_def(def: &CoreDef, adts: &AdtTable, body_count: &mut u32) -> Result<LowerDef, LowerError> {
@@ -204,10 +209,16 @@ impl<'a> Lowerer<'a> {
                 def: *def,
                 targs: targs.clone(),
             },
-            ValKind::Builtin { id, targs, info } => ValKind::Builtin {
+            ValKind::Builtin {
+                id,
+                targs,
+                info,
+                ranges,
+            } => ValKind::Builtin {
                 id: *id,
                 targs: targs.clone(),
                 info: *info,
+                ranges: ranges.clone(),
             },
             ValKind::External { def, spec } => ValKind::External {
                 def: *def,
@@ -930,8 +941,10 @@ impl Lowerer<'_> {
             }
         }
         match &column.ty {
-            Ty::Con(TyCon::Adt(adt), args) => self.ctor_tree(&matrix, c, &column, *adt, args, arms),
-            Ty::Con(TyCon::Builtin(b), _)
+            Ty::Con(TyCon::Adt(adt), args, _) => {
+                self.ctor_tree(&matrix, c, &column, *adt, args, arms)
+            }
+            Ty::Con(TyCon::Builtin(b), _, _)
                 if [
                     BuiltinTypeId::STRING,
                     BuiltinTypeId::BOOLEAN,
@@ -941,18 +954,18 @@ impl Lowerer<'_> {
             {
                 self.const_tree(&matrix, c, &column, *b, arms)
             }
-            Ty::Con(TyCon::Builtin(b), _)
+            Ty::Con(TyCon::Builtin(b), _, _)
                 if [BuiltinTypeId::INTEGER, BuiltinTypeId::CHARACTER].contains(b) =>
             {
                 self.range_tree(&matrix, c, &column, *b, arms)
             }
-            Ty::Con(TyCon::Builtin(b), args) if *b == BuiltinTypeId::LIST => {
+            Ty::Con(TyCon::Builtin(b), args, _) if *b == BuiltinTypeId::LIST => {
                 let elem = args
                     .first()
                     .ok_or_else(|| error("list has no element type"))?;
                 self.list_tree(&matrix, c, &column, elem, arms)
             }
-            Ty::Con(_, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
+            Ty::Con(_, _, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
                 Err(error("pattern tests an unsupported type"))
             }
         }
@@ -1912,10 +1925,14 @@ mod tests {
         builtin_ty(BuiltinTypeId::INTEGER)
     }
     fn list_ty(t: Ty) -> Ty {
-        Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![t])
+        Ty::Con(
+            TyCon::Builtin(BuiltinTypeId::LIST),
+            vec![t],
+            crate::types::builtin::RangeIndex::TOP,
+        )
     }
     fn adt_ty(b: BindingId, args: Vec<Ty>) -> Ty {
-        Ty::Con(TyCon::Adt(b), args)
+        Ty::Con(TyCon::Adt(b), args, crate::types::builtin::RangeIndex::TOP)
     }
     fn var(id: u32, ty: Ty) -> Var {
         Var {
@@ -2090,6 +2107,7 @@ mod tests {
             adts: adts(),
             traits: BindingMap::new(),
             schemes: BindingMap::new(),
+            range_signatures: BindingMap::new(),
             main: Some(BindingId(0)),
             main_returns_result: false,
             body_count: 10,
@@ -2858,6 +2876,7 @@ mod tests {
                 exit_report: None,
                 func: val(
                     ValKind::Builtin {
+                        ranges: vec![],
                         id: BuiltinId(0),
                         targs: TypeArgs::default(),
                         info: BuiltinInfo {
@@ -3279,7 +3298,10 @@ mod tests {
                 }],
                 handled: EffectSet {
                     failures: vec![],
-                    names: vec![EffectName::User(BindingId(61))],
+                    names: vec![EffectName::User(
+                        BindingId(61),
+                        crate::types::builtin::RangeIndex::TOP,
+                    )],
                     vars: vec![],
                 },
             })),
@@ -3455,7 +3477,11 @@ mod tests {
                 id: BodyId(1),
                 body: Box::new(boolean(true)),
             },
-            ty: Ty::Con(TyCon::Builtin(BuiltinTypeId::LAZY), vec![bool_ty()]),
+            ty: Ty::Con(
+                TyCon::Builtin(BuiltinTypeId::LAZY),
+                vec![bool_ty()],
+                crate::types::builtin::RangeIndex::TOP,
+            ),
             eff: EffectSet::empty(),
             origin: other_span(),
         };
@@ -3516,7 +3542,10 @@ mod tests {
     fn generated_nodes_have_minimal_effects_types_and_match_origins() {
         let io = EffectSet {
             failures: vec![],
-            names: vec![EffectName::Builtin(BuiltinEffectId(2))],
+            names: vec![EffectName::Builtin(
+                BuiltinEffectId(2),
+                crate::types::builtin::RangeIndex::TOP,
+            )],
             vars: vec![EffVar(0)],
         };
         let call = Comp {
@@ -3524,6 +3553,7 @@ mod tests {
                 exit_report: None,
                 func: val(
                     ValKind::Builtin {
+                        ranges: vec![],
                         id: BuiltinId(0),
                         targs: TypeArgs::default(),
                         info: BuiltinInfo {
@@ -3633,6 +3663,7 @@ mod tests {
             ty: Ty::Con(
                 TyCon::Builtin(BuiltinTypeId::LAZY),
                 vec![adt_ty(OBS, vec![])],
+                crate::types::builtin::RangeIndex::TOP,
             ),
             eff: EffectSet::empty(),
             origin: other_span(),
@@ -3669,7 +3700,7 @@ mod tests {
             failure: false,
             param_names: Vec::new(),
             binding: BindingId(60),
-            effect: EffectName::User(BindingId(61)),
+            effect: EffectName::User(BindingId(61), crate::types::builtin::RangeIndex::TOP),
             name: "E.op".into(),
             arity: 0,
             builtin: None,
@@ -3745,6 +3776,7 @@ mod tests {
             ),
             val(
                 ValKind::Builtin {
+                    ranges: vec![],
                     id: BuiltinId(1),
                     targs: targs.clone(),
                     info,
@@ -3818,6 +3850,7 @@ mod tests {
         assert_eq!(
             args[1].kind,
             ValKind::Builtin {
+                ranges: vec![],
                 id: BuiltinId(1),
                 targs: targs.clone(),
                 info

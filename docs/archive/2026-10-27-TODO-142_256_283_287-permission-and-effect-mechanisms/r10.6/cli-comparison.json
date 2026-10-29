@@ -1,0 +1,564 @@
+[
+  {
+    "group": "cli",
+    "baseline": "b0",
+    "total": 249,
+    "accepted": 81,
+    "rejected": 168,
+    "equal": 246,
+    "differences": [
+      {
+        "input": "crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+        "options": [
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/intervalAnalysis/coverage",
+              "before": "some",
+              "after": "none"
+            },
+            {
+              "path": "/intervalAnalysis/inputDefinitions",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/maxBodyItems",
+              "before": 5,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/maxBodyOperations",
+              "before": 9,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/operations",
+              "before": 11,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/peakItems",
+              "before": 6,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/savedItems",
+              "before": 3,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/coverage",
+              "before": "some",
+              "after": "none"
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/inputDefinitions",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/maxBodyItems",
+              "before": 5,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/maxBodyOperations",
+              "before": 9,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/operations",
+              "before": 11,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/peakItems",
+              "before": 6,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/savedItems",
+              "before": 3,
+              "after": 0
+            }
+          ]
+        }
+      },
+      {
+        "input": "crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+        "options": [
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/intervalAnalysis/coverage",
+              "before": "some",
+              "after": "none"
+            },
+            {
+              "path": "/intervalAnalysis/inputDefinitions",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/maxBodyItems",
+              "before": 5,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/maxBodyOperations",
+              "before": 9,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/operations",
+              "before": 11,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/peakItems",
+              "before": 6,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/savedItems",
+              "before": 3,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/coverage",
+              "before": "some",
+              "after": "none"
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/inputDefinitions",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/maxBodyItems",
+              "before": 5,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/maxBodyOperations",
+              "before": 9,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/operations",
+              "before": 11,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/peakItems",
+              "before": 6,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/savedItems",
+              "before": 3,
+              "after": 0
+            }
+          ]
+        }
+      },
+      {
+        "input": "crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+        "options": [
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/intervalAnalysis/coverage",
+              "before": "some",
+              "after": "none"
+            },
+            {
+              "path": "/intervalAnalysis/inputDefinitions",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/maxBodyItems",
+              "before": 5,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/maxBodyOperations",
+              "before": 9,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/operations",
+              "before": 11,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/peakItems",
+              "before": 6,
+              "after": 0
+            },
+            {
+              "path": "/intervalAnalysis/usage/savedItems",
+              "before": 3,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/coverage",
+              "before": "some",
+              "after": "none"
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/inputDefinitions",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/maxBodyItems",
+              "before": 5,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/maxBodyOperations",
+              "before": 9,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/operations",
+              "before": 11,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/peakItems",
+              "before": 6,
+              "after": 0
+            },
+            {
+              "path": "/targets/0/intervalAnalysis/usage/savedItems",
+              "before": 3,
+              "after": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "group": "cli",
+    "baseline": "bwork",
+    "total": 249,
+    "accepted": 81,
+    "rejected": 168,
+    "equal": 249,
+    "differences": []
+  },
+  {
+    "group": "extra",
+    "baseline": "b0",
+    "total": 45,
+    "accepted": 20,
+    "rejected": 25,
+    "equal": 29,
+    "differences": [
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/http-full-handler.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "3aa5ef83ec058a09dea8416ace835bc86697b873c3c25ab306092a39c19cd977",
+              "after": "72f9961ed194b1dbcf2c7392beab86d1ebaf2ead9fc597ebe0f3e15b9fb27b61"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt",
+        "options": [
+          "check",
+          "--diagnostics=text"
+        ],
+        "changed": {
+          "stderr": {
+            "before": "error[E0303]: `Scope` has no member `PathInn`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt:2:27\n   |\n 2 | function old(value: Scope.PathInn) -> Unit\n   |                           ^^^^^^^ not found in `Scope`\n   |\n   = note: `Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `ScopeError`\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt due to 1 previous error\n",
+            "after": "error[E0303]: `Scope` has no member `PathInn`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt:2:27\n   |\n 2 | function old(value: Scope.PathInn) -> Unit\n   |                           ^^^^^^^ not found in `Scope`\n   |\n   = help: a similar name exists: `PathIn`\n   |\n 2 | function old(value: Scope.PathIn) -> Unit\n   |                           ~~~~~~\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt due to 1 previous error\n"
+          }
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt",
+        "options": [
+          "check",
+          "--diagnostics=json"
+        ],
+        "changed": {
+          "stderr": [
+            {
+              "path": "/helps/length",
+              "before": 0,
+              "after": 1
+            },
+            {
+              "path": "/notes/length",
+              "before": 1,
+              "after": 0
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path-in.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/diagnostics/0/helps/length",
+              "before": 0,
+              "after": 1
+            },
+            {
+              "path": "/diagnostics/0/notes/length",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e",
+              "after": "1161c8a7f9b531d50db044037681c0c755a7c7d8ad0bf6fb5fd0c5265a408c01"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt",
+        "options": [
+          "check",
+          "--diagnostics=text"
+        ],
+        "changed": {
+          "stderr": {
+            "before": "error[E0303]: `Scope` has no member `Path`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt:2:27\n   |\n 2 | function old(value: Scope.Path) -> Unit\n   |                           ^^^^ not found in `Scope`\n   |\n   = note: `Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `ScopeError`\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt due to 1 previous error\n",
+            "after": "error[E0303]: `Scope` has no member `Path`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt:2:27\n   |\n 2 | function old(value: Scope.Path) -> Unit\n   |                           ^^^^ not found in `Scope`\n   |\n   = help: a similar name exists: `PathIn`\n   |\n 2 | function old(value: Scope.PathIn) -> Unit\n   |                           ~~~~~~\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt due to 1 previous error\n"
+          }
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt",
+        "options": [
+          "check",
+          "--diagnostics=json"
+        ],
+        "changed": {
+          "stderr": [
+            {
+              "path": "/helps/length",
+              "before": 0,
+              "after": 1
+            },
+            {
+              "path": "/notes/length",
+              "before": 1,
+              "after": 0
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/near-path.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/diagnostics/0/helps/length",
+              "before": 0,
+              "after": 1
+            },
+            {
+              "path": "/diagnostics/0/notes/length",
+              "before": 1,
+              "after": 0
+            },
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e",
+              "after": "1161c8a7f9b531d50db044037681c0c755a7c7d8ad0bf6fb5fd0c5265a408c01"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/scope-cidr.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e",
+              "after": "1161c8a7f9b531d50db044037681c0c755a7c7d8ad0bf6fb5fd0c5265a408c01"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/scope-ipv4.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e",
+              "after": "1161c8a7f9b531d50db044037681c0c755a7c7d8ad0bf6fb5fd0c5265a408c01"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/scope-old.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e",
+              "after": "1161c8a7f9b531d50db044037681c0c755a7c7d8ad0bf6fb5fd0c5265a408c01"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt",
+        "options": [
+          "check",
+          "--diagnostics=text"
+        ],
+        "changed": {
+          "stderr": {
+            "before": "error[E0303]: `Http` has no member `Zzzzzz`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt:2:26\n   |\n 2 | function old(value: Http.Zzzzzz) -> Unit\n   |                          ^^^^^^ not found in `Http`\n   |\n   = note: `Http` has: `ClientRequest`, `Exchange`, `Listener`, `Request`, `Response`\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt due to 1 previous error\n",
+            "after": "error[E0303]: `Http` has no member `Zzzzzz`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt:2:26\n   |\n 2 | function old(value: Http.Zzzzzz) -> Unit\n   |                          ^^^^^^ not found in `Http`\n   |\n   = note: `Http` has: `ClientRequest`, `Exchange`, `Listener`, `Request`, `RequestIn`, `Response`\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt due to 1 previous error\n"
+          }
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt",
+        "options": [
+          "check",
+          "--diagnostics=json"
+        ],
+        "changed": {
+          "stderr": [
+            {
+              "path": "/notes/0",
+              "before": "`Http` has: `ClientRequest`, `Exchange`, `Listener`, `Request`, `Response`",
+              "after": "`Http` has: `ClientRequest`, `Exchange`, `Listener`, `Request`, `RequestIn`, `Response`"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-http.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/diagnostics/0/notes/0",
+              "before": "`Http` has: `ClientRequest`, `Exchange`, `Listener`, `Request`, `Response`",
+              "after": "`Http` has: `ClientRequest`, `Exchange`, `Listener`, `Request`, `RequestIn`, `Response`"
+            },
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "3aa5ef83ec058a09dea8416ace835bc86697b873c3c25ab306092a39c19cd977",
+              "after": "72f9961ed194b1dbcf2c7392beab86d1ebaf2ead9fc597ebe0f3e15b9fb27b61"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt",
+        "options": [
+          "check",
+          "--diagnostics=text"
+        ],
+        "changed": {
+          "stderr": {
+            "before": "error[E0303]: `Scope` has no member `Zzzzzz`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt:2:27\n   |\n 2 | function old(value: Scope.Zzzzzz) -> Unit\n   |                           ^^^^^^ not found in `Scope`\n   |\n   = note: `Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `ScopeError`\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt due to 1 previous error\n",
+            "after": "error[E0303]: `Scope` has no member `Zzzzzz`\n  --> docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt:2:27\n   |\n 2 | function old(value: Scope.Zzzzzz) -> Unit\n   |                           ^^^^^^ not found in `Scope`\n   |\n   = note: `Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `PathIn`, `ScopeError`\n\nerror: could not check docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt due to 1 previous error\n"
+          }
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt",
+        "options": [
+          "check",
+          "--diagnostics=json"
+        ],
+        "changed": {
+          "stderr": [
+            {
+              "path": "/notes/0",
+              "before": "`Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `ScopeError`",
+              "after": "`Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `PathIn`, `ScopeError`"
+            }
+          ]
+        }
+      },
+      {
+        "input": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.6/inputs/unknown-scope.bnt",
+        "options": [
+          "check",
+          "--report=json"
+        ],
+        "changed": {
+          "stdout": [
+            {
+              "path": "/diagnostics/0/notes/0",
+              "before": "`Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `ScopeError`",
+              "after": "`Scope` has: `CheckedEndpoint`, `CheckedHost`, `CheckedPath`, `PathIn`, `ScopeError`"
+            },
+            {
+              "path": "/sources/41/contentHash/value",
+              "before": "8cde8907b2e49ef6d89efcecfd1c4d4bbc385fa5458fcfe99f63826f407e2e3e",
+              "after": "1161c8a7f9b531d50db044037681c0c755a7c7d8ad0bf6fb5fd0c5265a408c01"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "group": "extra",
+    "baseline": "bwork",
+    "total": 45,
+    "accepted": 20,
+    "rejected": 25,
+    "equal": 45,
+    "differences": []
+  }
+]

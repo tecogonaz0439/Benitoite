@@ -1,0 +1,958 @@
+{
+  "pairs": [
+    {
+      "english": "docs/reference/benitoite.md",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "codeFences": 109,
+      "headings": 79,
+      "pinnedUrls": 0,
+      "englishSha256": "37695c1b92c3223aa6bca726e53d1ea0e4f42e6b1d862af7277063b439ca8f89",
+      "japaneseSha256": "e014c795df2389b3baf189aa18cfb8e3989e9fc129f7b639e8b1baf0a9f22a7d",
+      "codeAndHeadingLevelsMatch": true
+    },
+    {
+      "english": "docs/reference/install.md",
+      "japanese": "docs/ja/reference/install.md",
+      "codeFences": 11,
+      "headings": 17,
+      "pinnedUrls": 0,
+      "englishSha256": "17fdf2a1bab2e7eecfcbca26b0ed2f63289f8361d38c2386c377e6aeb0bd8d06",
+      "japaneseSha256": "491a49a4a97a98e97f68cd3c94663ca3a751c00f62de48b9a495e6d3823b3317",
+      "codeAndHeadingLevelsMatch": true
+    },
+    {
+      "english": "crates/benitoite/skill/SKILL.md",
+      "japanese": "docs/ja/skill/SKILL.md",
+      "codeFences": 4,
+      "headings": 10,
+      "pinnedUrls": 4,
+      "englishSha256": "045f42133025f06e864e41e94cb5f8b7f98ac8754745f97913f1e156d84ea926",
+      "japaneseSha256": "e748ee6919e73fc37328052c42c0f1c6f63830c3effad791b5baef2626e18d9f",
+      "codeAndHeadingLevelsMatch": true
+    },
+    {
+      "english": "crates/benitoite/skill/references/inspection.md",
+      "japanese": "docs/ja/skill/references/inspection.md",
+      "codeFences": 2,
+      "headings": 2,
+      "pinnedUrls": 5,
+      "englishSha256": "36069b03bab189ab754d32442bba8f7481320d6ac5f3680be8dcc36115277b75",
+      "japaneseSha256": "f9ce6ae8fa8e66f4431f3fa9035a0e66606c8a1e6e30898e19b197b8e3ea2dc0",
+      "codeAndHeadingLevelsMatch": true
+    },
+    {
+      "english": "crates/benitoite/skill/references/idioms.md",
+      "japanese": "docs/ja/skill/references/idioms.md",
+      "codeFences": 65,
+      "headings": 23,
+      "pinnedUrls": 2,
+      "englishSha256": "8846d23fb5cbb8f054c935f1272e19623a44697a351c113d9ade9a4bda78a26f",
+      "japaneseSha256": "b041344113d6baf1aff2d09e757b8a59583fd8c1568809ee2a8f7b525bf933b9",
+      "codeAndHeadingLevelsMatch": true
+    },
+    {
+      "english": "crates/benitoite/skill/references/common-mistakes.md",
+      "japanese": "docs/ja/skill/references/common-mistakes.md",
+      "codeFences": 56,
+      "headings": 22,
+      "pinnedUrls": 2,
+      "englishSha256": "e52c194db52005e50c3adb8b835b6a9212b65decbc2a33e7d365e9a0c00f5fae",
+      "japaneseSha256": "6263bfc17d8a33663314c40e508913556407d5d62ebb0926c3fbbdfecadb2ad0",
+      "codeAndHeadingLevelsMatch": true
+    },
+    {
+      "english": "crates/benitoite/skill/references/language-comparison.md",
+      "japanese": "docs/ja/skill/references/language-comparison.md",
+      "codeFences": 5,
+      "headings": 3,
+      "pinnedUrls": 1,
+      "englishSha256": "67d78a5aa6ebe62ac15ffdc0b753518adc24193a46f9613bbf81a7b2772e24f8",
+      "japaneseSha256": "a78679f708c8bf58daf418db88a22399d37515aab91461652ab8198cb9f1bb77",
+      "codeAndHeadingLevelsMatch": true
+    }
+  ],
+  "mappedSections": [
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "# Benitoite Language Reference",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "# Benitoite 言語リファレンス",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Inspection reports",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### 検査報告",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Declared target bounds",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### 宣言した対象の上限",
+      "newHeading": true
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Effect limits before execution",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### 実行前のエフェクトの上限",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "## 8. Constants and type aliases",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "## 8. 定数と型の別名",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "## 10. Effects",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "## 10. エフェクト",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Scoped effects",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### 範囲付きのエフェクト",
+      "newHeading": true
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Complete and partial handlers",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### 完全ハンドラと部分ハンドラ",
+      "newHeading": true
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Record generators and shrinkers",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### レコードの生成器と縮小器",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Scope",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### Scope",
+      "newHeading": false
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "### Scoped values and IO",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "### 範囲付きの値と IO",
+      "newHeading": true
+    },
+    {
+      "english": "docs/reference/benitoite.md",
+      "heading": "#### Checked HTTP requests",
+      "japanese": "docs/ja/reference/benitoite.md",
+      "japaneseHeading": "#### 検査済みの HTTP 要求",
+      "newHeading": true
+    },
+    {
+      "english": "docs/reference/install.md",
+      "heading": "### 3. Install the Agent Skill",
+      "japanese": "docs/ja/reference/install.md",
+      "japaneseHeading": "### 3. Agent Skill をインストールする",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/SKILL.md",
+      "heading": "## Checked values and local builders",
+      "japanese": "docs/ja/skill/SKILL.md",
+      "japaneseHeading": "## 検査済みの値と局所の構築器",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/SKILL.md",
+      "heading": "## Reference documents",
+      "japanese": "docs/ja/skill/SKILL.md",
+      "japaneseHeading": "## 参照の文書",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/references/inspection.md",
+      "heading": "# Inspecting before execution",
+      "japanese": "docs/ja/skill/references/inspection.md",
+      "japaneseHeading": "# 実行前の検査",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/references/idioms.md",
+      "heading": "## HTTP",
+      "japanese": "docs/ja/skill/references/idioms.md",
+      "japaneseHeading": "## HTTP",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/references/idioms.md",
+      "heading": "## Writing tests",
+      "japanese": "docs/ja/skill/references/idioms.md",
+      "japaneseHeading": "## テストの書き方",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/references/common-mistakes.md",
+      "heading": "## Treating a checked scope as permission",
+      "japanese": "docs/ja/skill/references/common-mistakes.md",
+      "japaneseHeading": "## 検査済みの Scope を権限と見なす",
+      "newHeading": false
+    },
+    {
+      "english": "crates/benitoite/skill/references/language-comparison.md",
+      "heading": "## Functions",
+      "japanese": "docs/ja/skill/references/language-comparison.md",
+      "japaneseHeading": "## 関数",
+      "newHeading": false
+    }
+  ],
+  "newHeadings": 5,
+  "codeFences": 252,
+  "pinnedUrls": 14,
+  "links": [
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#21-実験的な機能-パッケージと外部の関数"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "install.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#1-最初のスクリプト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#2-コマンドライン"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#3-プログラムの構造"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#4-基本型とリテラル"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#5-演算子"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#6-関数とラムダ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#7-データ型レコードパターンマッチ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#8-定数と型の別名"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#9-エラー-optionresulttry"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#10-エフェクト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#11-エフェクトハンドラ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#12-モジュール"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#13-型クラス"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#14-明示遅延"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#15-可変のセルリソースタスク"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#16-テスト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#17-整形"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#18-診断"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#19-標準ライブラリ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#20-互換性"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#21-実験的な機能-パッケージと外部の関数"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#16-テスト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#17-整形"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "install.md#3-agent-skill-をインストールする"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#パッケージのコマンド"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#12-モジュール"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#21-実験的な機能-パッケージと外部の関数"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#検査報告"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#実行前のエフェクトの上限"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#文書の例"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#実行の上限と統計"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "install.md#ビルド情報"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#io-とネットワークの振る舞い"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "install.md#インストールせずに-skill-を読む"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#ファイル単位のエフェクトの宣言"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#18-診断"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#区間解析の範囲"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#宣言した対象の上限"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#検査報告"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#範囲付きのエフェクト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#局所の区間解析の警告"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#ファイル単位のエフェクトの宣言"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#10-エフェクト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#16-テスト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#ファイル単位のエフェクトの宣言"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#6-関数とラムダ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#7-データ型レコードパターンマッチ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#19-標準ライブラリ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#7-データ型レコードパターンマッチ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#関数の契約とコールバック"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#wasm-を通じた外部の関数と型"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#scope"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#範囲付きの値と-io"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#穴とパイプ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#範囲付きのエフェクト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#scope"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#宣言した対象の上限"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#実行前のエフェクトの上限"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#16-テスト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#16-テスト"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#範囲付きの値と-io"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#19-標準ライブラリ"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#21-実験的な機能-パッケージと外部の関数"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#検査報告"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#検査報告"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#レコードの生成器と縮小器"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#検査報告"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#区間解析の範囲"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#数値型の名前と接尾辞"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../crates/benitoite/skill/references/stdlib/index.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#関数の契約とコールバック"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../CHANGELOG.md#0012-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../CHANGELOG.md#0011-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#文字列"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../CHANGELOG.md#0010-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../tools/derive/README.md#markers-records-and-review-artifacts"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../archive/2026-10-19-TODO-022_032_087_168_191_192_200_206_222_226_227_229_246_248_253-syntax-batch4/historical-tools/named-arguments-migrate/README.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../CHANGELOG.md#009-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../CHANGELOG.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#20-互換性"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#版の方針"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../CHANGELOG.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../tools/derive/README.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../tools/derive/README.md#verification-and-recovery"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../tools/derive/examples/People.bnt"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../tools/derive/README.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "../../../tools/derive/README.md"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#検査済みの-http-要求"
+    },
+    {
+      "source": "docs/ja/reference/benitoite.md",
+      "target": "#完全ハンドラと部分ハンドラ"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "#ソースからのビルド"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#版と対応する形式"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "#ビルド情報"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#検査報告"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#実行前のエフェクトの上限"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#宣言した対象の上限"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "../../../CHANGELOG.md"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#6-関数とラムダ"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "../../../CHANGELOG.md#0012-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#0012-への移行"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "../../../CHANGELOG.md#0011-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#文字列"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "../../../CHANGELOG.md#0010-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "../../../CHANGELOG.md#009-san-benito"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "../../../tools/derive/README.md#markers-records-and-review-artifacts"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "#3-agent-skill-をインストールする"
+    },
+    {
+      "source": "docs/ja/reference/install.md",
+      "target": "benitoite.md#io-とネットワークの振る舞い"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#局所の区間解析の警告を説明する"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "#実行の前に"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "#実行の前に"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "#テスト"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "#実行の前に"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md#局所の区間解析"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#局所の区間解析の警告を説明する"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#外部のコマンドの実行"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/common-mistakes.md#キーワードを名前に使う"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#レコードとデータ型"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#プログラムの形と誤りの扱い"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#ファイル単位のエフェクトと純粋な補助"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#ファイルと-json-へのログの出力"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md#具体的なコンテナと汎用のコンテナ"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/idioms.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/common-mistakes.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "references/language-comparison.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "../../../crates/benitoite/skill/references/grammar.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "../../../crates/benitoite/skill/references/diagnostics.md"
+    },
+    {
+      "source": "docs/ja/skill/SKILL.md",
+      "target": "../../../crates/benitoite/skill/references/stdlib/index.md"
+    },
+    {
+      "source": "docs/ja/skill/references/inspection.md",
+      "target": "idioms.md#局所の区間解析の警告を説明する"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#プログラムの形と誤りの扱い"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#呼び出しコールバックの契約穴パイプ"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#ファイルの読み書き"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#json"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#csv"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#外部のコマンドの実行"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#コマンド行の引数と環境変数"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#http"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#コレクション"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#具体的なコンテナと汎用のコンテナ"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#レコードとデータ型"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#テストの書き方"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#補間の静的な書式"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#数値のビット幅と変換"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#局所の区間解析の警告を説明する"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#ファイルと-json-へのログの出力"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#wasm-の外部の関数と-wit-の型"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "#http-の値は追跡しない"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "inspection.md#局所の区間解析"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "../../../../crates/benitoite/skill/references/stdlib/Range.md"
+    },
+    {
+      "source": "docs/ja/skill/references/idioms.md",
+      "target": "../../../../crates/benitoite/skill/references/stdlib/Network.Http.md"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "../../../../crates/benitoite/skill/references/diagnostics.md"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "inspection.md"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "idioms.md#外部のコマンドの実行"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#bind-の代わりの-let"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#同じ名前を二度束縛する"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#ブロックの波括弧"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#c-の流儀の演算子"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#-の後の戻り値の型"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#型の名前のない構成子"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#io-のモジュールの取り込みを忘れる"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#非公式のモジュールを-benitoitex-として取り込む"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#uses-を忘れる"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#result-を無視する"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#return-のない最後の式"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#for-と-while-の繰り返し"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#キーワードを名前に使う"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#契約と異なるコールバックのパラメータ名"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "#ラムダの引数としての-_"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "../../../../crates/benitoite/skill/references/stdlib/index.md"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "idioms.md#プログラムの形と誤りの扱い"
+    },
+    {
+      "source": "docs/ja/skill/references/common-mistakes.md",
+      "target": "idioms.md#レコードとデータ型"
+    },
+    {
+      "source": "docs/ja/skill/references/language-comparison.md",
+      "target": "../../../../crates/benitoite/skill/references/stdlib/index.md"
+    },
+    {
+      "source": "docs/ja/skill/references/language-comparison.md",
+      "target": "idioms.md#プログラムの形と誤りの扱い"
+    },
+    {
+      "source": "docs/ja/skill/references/language-comparison.md",
+      "target": "idioms.md"
+    },
+    {
+      "source": "docs/ja/skill/references/language-comparison.md",
+      "target": "idioms.md#外部のコマンドの実行"
+    },
+    {
+      "source": "docs/ja/skill/references/language-comparison.md",
+      "target": "inspection.md"
+    }
+  ],
+  "oldMigrationSectionsUnchanged": true
+}

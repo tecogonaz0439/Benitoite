@@ -26,7 +26,7 @@ pub enum IHead {
 pub enum ITy {
     /// 値の型の変数
     Var(TyVar),
-    Con(TyCon, Vec<ITy>),
+    Con(TyCon, Vec<ITy>, crate::types::builtin::RangeIndex),
     Fn(Box<IFnTy>),
     /// 検査している定義の型パラメータ。ほかの何とも等しくない
     Param(u32),
@@ -53,6 +53,7 @@ pub struct IFnTy {
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct IEffect {
     pub failures: Vec<ITy>,
+    /// 名前と閉じた範囲の組を、確定型と同じ構造で保持する。
     pub fixed: EffectSet,
     pub var: Option<EffInfer>,
 }
@@ -91,6 +92,8 @@ pub enum ReasonKind {
     CallArg {
         index: u32,
     },
+    /// Scope の検査の成功型、または拡大の戻り型の具体化。
+    ScopeResult,
     /// 呼び出される式が関数の型であること
     Call,
     IfCondition,
@@ -201,6 +204,15 @@ pub struct Reason {
     pub int_literal: Option<String>,
 }
 
+/// 効果の包含に使う関係。型の等号と推論の集合は常に構造を使う。
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum EffectRelation {
+    /// 名前・範囲・行の構造上の包含。
+    Structural,
+    /// 各原子を同じ名前の一原子で覆う包含。
+    Cover,
+}
+
 /// 制約（02-05「制約の種類」）。
 #[derive(Clone, PartialEq, Debug)]
 pub enum Constraint {
@@ -236,8 +248,9 @@ pub enum Constraint {
     },
     /// リソース(A)
     Resource { ty: ITy, reason: Reason },
-    /// 含まれる(X, Y)
+    /// 指定した関係で含まれる(X, Y)
     EffSub {
+        relation: EffectRelation,
         sub: IEffect,
         sup: IEffect,
         reason: Reason,

@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.IO.Console
+
+function first(xs: List[Integer]) -> Option[Integer]
+  return match xs with
+    case [] -> Option.None
+    case [x, ..] -> Option.Some(x)
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  return match first([7, 8]) with
+    case Option.Some(x) -> Console.writeLine(Integer.toString(x))
+    case Option.None -> Console.writeLine("empty")
+  end match
+end function

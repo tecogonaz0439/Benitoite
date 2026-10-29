@@ -1,0 +1,11 @@
+--- crates/benitoite/src/builtins/table.rs (W-R initial)
++++ crates/benitoite/src/builtins/table.rs (corrected)
+@@ -1107,7 +1107,7 @@
+         let lengths = [
+             43, 15, 9, 5, 18, 1, 9, 8, 18, 3, 3, 2, 4, 1, 5, 2, 2, 6, 6, 2, 2, 4, 7, 2, 7, 7, 2,
+             16, 2, 2, 3, 2, 13, 6, 3, 9, 10, 3, 12, 5, 11, 4, 1, 7, 1, 1, 18, 15, 5, 35, 45, 11,
+-            11, 39, 6, 4, 6, 14, 3, 6,
++            11, 39, 6, 4, 6, 14, 3, 6, 1,
+         ];
+         assert_eq!(
+             super::super::funcs::PARTS

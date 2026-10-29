@@ -1,0 +1,13 @@
+error[E0332]: the module `Scope` is not imported
+  --> v5.bnt:4:9
+   |
+ 4 |   match Scope.checkPathIn(pattern: "/a/**", path: "/b") with
+   |         ^^^^^
+   |
+   = help: add `import Benitoite.Unofficial.Scope` at the start of the file
+   |
+ 1 | import Benitoite.Unofficial.Scope
+   | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 2 | import Benitoite.Unofficial.IO.File
+
+error: could not run v5.bnt due to 1 previous error

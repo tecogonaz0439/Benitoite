@@ -1,0 +1,125 @@
+diff --git a/formal/Benitoite/Release/Atom.lean b/formal/Benitoite/Release/Atom.lean
+index 52da9050..9630ba85 100644
+--- a/formal/Benitoite/Release/Atom.lean
++++ b/formal/Benitoite/Release/Atom.lean
+@@ -14,9 +14,16 @@ abbrev EffName := String
+ /-- 状態を扱う組み込みの関数と解放のエフェクト `State`（01-07「可変のセル（初回リリース版）」）。 -/
+ def stateEff : EffName := "State"
+ 
+-/-- エフェクトの原子。01-12 の `e ::= L | ρ`。 -/
++/-- 比較の試行（L00.01 の案 (i)）: 原子と標準値型が持つ閉じた範囲。`top` は旧の名前だけの原子と
++同じ種類の全対象を表し、`pathExact` は解析済みのパスの要素列の完全一致を表す。 -/
++inductive ScopeRange where
++  | top
++  | pathExact (stem : List String)
++  deriving DecidableEq, Repr
++
++/-- エフェクトの原子。01-12 の `e ::= L | ρ`。比較の試行で名前の原子に範囲の引数を加えた。 -/
+ inductive Atom where
+-  | name (l : EffName)
++  | name (l : EffName) (r : ScopeRange)
+   | rho (i : Nat)
+   deriving DecidableEq, Repr
+ 
+diff --git a/formal/Benitoite/Release/Order/Atoms.lean b/formal/Benitoite/Release/Order/Atoms.lean
+index 2240d56a..93510851 100644
+--- a/formal/Benitoite/Release/Order/Atoms.lean
++++ b/formal/Benitoite/Release/Order/Atoms.lean
+@@ -46,23 +46,77 @@ private theorem charsCode_injective {cs ds : List Char} (h : charsCode cs = char
+         omega
+       exact congrArg (c :: ·) (ih ht)
+ 
+-/-- 名前は偶数、行変数は奇数へ写す。 -/
++/-- 三角数。対の符号の単射性を線形の算術で示すために再帰で定める。 -/
++def tri : Nat → Nat
++  | 0 => 0
++  | n + 1 => tri n + n + 1
++
++private theorem tri_lt {n m : Nat} (h : n < m) : tri n + n < tri m := by
++  induction m with
++  | zero => omega
++  | succ m ih =>
++    simp only [tri]
++    by_cases hm : n = m
++    · subst hm; omega
++    · have := ih (by omega); omega
++
++/-- Cantor の対の符号。 -/
++def pairCode (a b : Nat) : Nat := tri (a + b) + a
++
++theorem pairCode_injective {a b c d : Nat} (h : pairCode a b = pairCode c d) : a = c ∧ b = d := by
++  simp only [pairCode] at h
++  have hs : a + b = c + d := by
++    by_cases h1 : a + b < c + d
++    · have := tri_lt h1; omega
++    · by_cases h2 : c + d < a + b
++      · have := tri_lt h2; omega
++      · omega
++  rw [hs] at h
++  omega
++
++/-- 文字列の列の符号。 -/
++def wordsCode : List String → Nat
++  | [] => 0
++  | x :: xs => pairCode (charsCode x.toList) (wordsCode xs) + 1
++
++private theorem wordsCode_injective {xs ys : List String} (h : wordsCode xs = wordsCode ys) : xs = ys := by
++  induction xs generalizing ys with
++  | nil => cases ys <;> simp_all [wordsCode]
++  | cons x xs ih =>
++    cases ys with
++    | nil => simp [wordsCode] at h
++    | cons y ys =>
++      have hp := pairCode_injective (show pairCode (charsCode x.toList) (wordsCode xs) =
++        pairCode (charsCode y.toList) (wordsCode ys) by simp only [wordsCode] at h; omega)
++      rw [String.toList_inj.mp (charsCode_injective hp.1), ih hp.2]
++
++/-- 範囲の符号。 -/
++def rangeCode : ScopeRange → Nat
++  | .top => 0
++  | .pathExact stem => wordsCode stem + 1
++
++private theorem rangeCode_injective {r s : ScopeRange} (h : rangeCode r = rangeCode s) : r = s := by
++  cases r <;> cases s <;> simp_all [rangeCode]
++  exact wordsCode_injective h
++
++/-- 名前は偶数、行変数は奇数へ写す。名前と範囲は対の符号で一つの数にする。 -/
+ def code : Atom → Nat
+-  | .name s => 2 * charsCode s.toList
++  | .name s r => 2 * pairCode (charsCode s.toList) (rangeCode r)
+   | .rho i => 2 * i + 1
+ 
+ /-- 符号の一致から原子の一致を導く。 -/
+ theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
+   cases a with
+-  | name s =>
++  | name s r =>
+     cases b with
+-    | name t =>
+-      have hc : charsCode s.toList = charsCode t.toList := by simp only [code] at h; omega
+-      exact congrArg Atom.name (String.toList_inj.mp (charsCode_injective hc))
++    | name t q =>
++      have hp := pairCode_injective (show pairCode (charsCode s.toList) (rangeCode r) =
++        pairCode (charsCode t.toList) (rangeCode q) by simp only [code] at h; omega)
++      rw [String.toList_inj.mp (charsCode_injective hp.1), rangeCode_injective hp.2]
+     | rho i => simp only [code] at h; omega
+   | rho i =>
+     cases b with
+-    | name s => simp only [code] at h; omega
++    | name s r => simp only [code] at h; omega
+     | rho j => have : i = j := by simp only [code] at h; omega
+                exact congrArg Atom.rho this
+ 
+diff --git a/formal/Benitoite/Release/Types.lean b/formal/Benitoite/Release/Types.lean
+index 76f0625b..e972e0f4 100644
+--- a/formal/Benitoite/Release/Types.lean
++++ b/formal/Benitoite/Release/Types.lean
+@@ -44,7 +44,7 @@ mutual
+ `Dict[Cl, τ]`、`tapp i Ā` は型構成子を表す型パラメータの適用 `α[Ā]`、`ctor φ` は型構成子 φ である。 -/
+ inductive Ty where
+   | base (ι : BaseTy)
+-  | opaque (o : OpaqueName)
++  | opaque (o : OpaqueName) (r : ScopeRange)
+   | data (d : DataName) (args : List Ty)
+   | list (a : Ty)
+   | fn (names : List String) (params : List Ty) (ret : Ty) (eff : EffR)

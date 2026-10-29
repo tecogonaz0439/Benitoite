@@ -14,7 +14,7 @@ mutual
     | .funName _ _ _ => True
     | .funDicts _ _ _ _ _ _ => True
     | .methName _ _ _ _ _ _ _ => True
-    | .primName _ _ _ => True
+    | .primName _ _ _ _ => True
     | .opName _ _ => True
     | .opDicts _ _ _ _ _ => True
     | .raise _ _ => True

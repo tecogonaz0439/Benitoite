@@ -12,11 +12,11 @@ namespace Benitoite.Release
 variable {P : Program} {B : Builtins}
 
 /-- 閉じた Fail 節へ、結果型とエラー値を代入する。0番の値には型を要求しない。 -/
-theorem HasFailureClause.instantiate {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
+theorem HasFailureClause.instantiate {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.CoreAssumptions P)
     {Ψ E R body t ec T v κ}
     (hc : HasFailureClause P B Ψ Qempty [] [] E R [.fail E body] t ec Δl)
     (hΨ : StoreTy.WF Ψ) (hts : ClosedArgs [T])
-    (hR : ∀ x, R = some x → Ty.WF 0 x)
+    (hR : ∀ x, R = some x → Ty.WF 0 0 x)
     (hv : HasTypeV P B Ψ [] [] v E) (hvc : Val.VarsIn 0 (fun _ => True) v) :
     HasTypeC P B Ψ [] [] R ((body.substTy [T] []).instantiate [v, .loc κ]) t (Eff.norm ec) := by
   cases hc with
@@ -57,7 +57,7 @@ theorem HasFailureClause.instantiate {Δl : LocalCtx} (hwf : P.WellFormed) (hb :
           | succ i => simp at hi
 
 /-- E-OpFail の保存。保存継続の効果には Rest と節の効果の双方を残す。 -/
-theorem pres_failure (hwf : P.WellFormed) (hb : B.Assumptions P)
+theorem pres_failure (hwf : P.WellFormed) (hb : B.CoreAssumptions P)
     {Ψ σ R a b ε em Eb T E' v k k1 E body k2 κ}
     (hσ : StoreOk P B Ψ σ)
     (hm : HasTypeC P B Ψ [] [] R (.app (.raise T E') [v]) a em)
@@ -72,19 +72,19 @@ theorem pres_failure (hwf : P.WellFormed) (hb : B.Assumptions P)
   obtain ⟨ht, he, hle, _, _⟩ := hm.inv_raise_app
   rw [hsplit.1] at hk hck
   obtain ⟨t, Rh, eout, Rest, ec, hc, hn, hr, hec, htw, hk2, hsave⟩ := hk.split_failure
-  have hRh : ∀ x, Rh = some x → Ty.WF 0 x := hk2.R_wf (by intro x hx; cases hx)
+  have hRh : ∀ x, Rh = some x → Ty.WF 0 0 x := hk2.R_wf (by intro x hx; cases hx)
   have hck' := Cont.Closed.append.mp hck
   have hck2 := Cont.Closed.cons.mp hck'.2
   have hbc : Comp.VarsIn 1 (fun _ => True) body 2 := hck2.1.2.1
   have hts : ClosedArgs [T] := closedArgs_of ⟨hmc.1.1, trivial⟩
   have hvc : Val.VarsIn 0 (fun _ => True) v := hmc.2.1
-  have hew : Eff.WF 0 ec := by cases hc with | one _ _ hew _ => exact hew
+  have hew : Eff.WF 0 0 ec := by cases hc with | one _ _ hew _ => exact hew
   let x : LocTy := .cont T t (captureEff Rest ec) Rh
-  have hcapw : Eff.WF 0 (captureEff Rest ec) := by
+  have hcapw : Eff.WF 0 0 (captureEff Rest ec) := by
     apply Eff.norm_WF
     unfold Eff.union
     apply Eff.norm_WF
-    change Ty.WFList 0 (Rest.fails ++ ec.fails)
+    change Ty.WFList 0 0 (Rest.fails ++ ec.fails)
     rw [hn.1, List.nil_append]
     cases ec; exact hew
   have hxwf : x.WF := ⟨ht, htw, hRh, hcapw, Eff.norm_idem _⟩
@@ -94,9 +94,11 @@ theorem pres_failure (hwf : P.WellFormed) (hb : B.Assumptions P)
   have hσnew : StoreOk P B (Ψ.set κ x) (σ.set κ (.cont (k1 ++ [.handleF [.fail E body]]))) := hσ.set hxwf (Or.inl hΨκ)
       ⟨T, t, captureEff Rest ec, Rh, hl, ⟨k1, [.fail E body], rfl⟩, R, ε,
         (ContTy.K_Sub hsave hle).store hsub⟩
-  refine ⟨Ψ.set κ x, Rh, t, b, eout, Eff.norm ec, hσnew, ?_,
-    (Eff.norm_sub_self ec).trans hec, ?_, ?_, ?_, ?_⟩
-  · exact (hc.store hsub).instantiate hwf hb hσnew.wf hts hRh (hv.store hsub) hvc
+  -- 節の本体は節の効果 ec で型付き、枠の下の継続の効果 eout は ec を覆う（K-Handle-Fail）。本体の効果を C-Eff で
+  -- eout へ広げる（L40.6c）。
+  refine ⟨Ψ.set κ x, Rh, t, b, eout, eout, hσnew, ?_, Eff.Sub.refl _, ?_, ?_, ?_, ?_⟩
+  · exact .C_Eff ((hc.store hsub).instantiate hwf hb hσnew.wf hts hRh (hv.store hsub) hvc)
+      (Eff.covers_norm_right.mpr hec)
   · exact failure_drop hl hr hec (hk2.store hsub)
   · exact Comp.VarsIn.instantiate (depth := 2) (hd := by simp) ⟨hvc, trivial, trivial⟩
       (Comp.VarsIn.substTyAt (c := 0) [] (fun u hu => varsInList_mem (as := [T]) ⟨hmc.1.1, trivial⟩ hu)

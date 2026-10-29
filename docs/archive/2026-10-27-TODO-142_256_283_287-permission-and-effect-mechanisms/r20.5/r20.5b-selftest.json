@@ -1,0 +1,10 @@
+{
+  "command": "env PYTHONPYCACHEPREFIX=target/bench/pycache python3 -m unittest discover -s tools/bench/compare -p test_*.py",
+  "exit": 0,
+  "elapsed_seconds": 337.942660916,
+  "maxrss_raw": 2901966848,
+  "maxrss_unit": "bytes",
+  "maxrss_bytes": 2901966848,
+  "maxrss_mib": 2767.53125,
+  "method": "fresh Python getrusage(RUSAGE_CHILDREN), maximum child RSS; /usr/bin/time -p direct exit"
+}

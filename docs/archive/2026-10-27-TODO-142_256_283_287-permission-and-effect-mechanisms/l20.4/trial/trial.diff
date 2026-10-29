@@ -1,0 +1,15 @@
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 9ff7ad93..884ad305 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -464,6 +464,10 @@ mutual
+         HasTypeVQ P B Ψ Q C Γ (.super v s) (.dict s τ)
+     | V_Sub {Γ v a a'} :
+         HasTypeVQ P B Ψ Q C Γ v a → Ty.Le a a' → Ty.WF 0 C.length a' → HasTypeVQ P B Ψ Q C Γ v a'
++    /-- V-Checked（値の所属の葉の規則。問 6 の A、問 18 の行 7）。 -/
++    | V_Checked {Γ o R t} :
++        B.valKind o = some t.kind → R.Mem t →
++        HasTypeVQ P B Ψ Q C Γ (.checked t) (.opaque o (.fixed R))
+ 
+   inductive HasTypeVsQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → List Val → List Ty → Prop

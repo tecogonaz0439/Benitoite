@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.Network.Http
+function intercepted(request: Http.ClientRequest) -> Unit
+ handle
+  bind _ <- Http.send(request)
+  ()
+ with
+  case Http.send(sent) -> ()
+ end handle
+end function
+function main() -> Unit
+ ()
+end function

@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.IO.Console
+
+function choose(useFirst: Boolean, first: Lazy[Integer], second: Lazy[Integer]) -> Integer
+  return match useFirst with
+    case true -> Lazy.force(first)
+    case false -> Lazy.force(second)
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind result <- choose(useFirst: true, first: lazy 42 end lazy, second: lazy 100 div String.characterCount("") end lazy)
+  Console.writeLine("${result}")
+end function

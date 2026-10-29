@@ -1,0 +1,1414 @@
+{
+  "task": "V10.3db",
+  "scope": "改造ディレクトリ内の全Markdownの相対リンク（パスの実在）。外部URLと同一文書の見出しは対象外",
+  "checked_relative_links": 5788,
+  "excluded": [
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/information-flow-generality.md",
+      "line": 17,
+      "target": "../../common.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/information-flow-generality.md",
+      "line": 17,
+      "target": "../README.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/information-flow-generality.md",
+      "line": 17,
+      "target": "usage-and-flow.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/information-flow-generality.md",
+      "line": 17,
+      "target": "information-flow.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/information-flow-generality.md",
+      "line": 17,
+      "target": "../reviews/RV-S5.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/information-flow-generality.md",
+      "line": 17,
+      "target": "../../spikes/SF/Model.lean",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/synthesis.md",
+      "line": 3,
+      "target": "../reviews/S7-notes.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/synthesis.md",
+      "line": 3,
+      "target": "../README.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/targets-and-capabilities.md",
+      "line": 3,
+      "target": "../../common.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/TODO-283_287-permission-and-effect-mechanisms/study/targets-and-capabilities.md",
+      "line": 3,
+      "target": "../README.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/P1b/results.md",
+      "line": 11,
+      "target": "dry-run-summary.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/P1b/results.md",
+      "line": 17,
+      "target": "../README.md#作り直すコマンド",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 188,
+      "target": "../03-interop/03-06-stdlib.md#scope",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 192,
+      "target": "../03-interop/03-06-stdlib.md#range",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 203,
+      "target": "01-02-syntax.md",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 203,
+      "target": "01-07-effects.md",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 205,
+      "target": "01-07-effects.md",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 210,
+      "target": "01-02-syntax.md",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S8b/source-locations.md",
+      "line": 210,
+      "target": "01-02-syntax.md",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/scratch/S9/q9-notes.md",
+      "line": 12,
+      "target": "...",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 13,
+      "target": "../../TODO-283_287-permission-and-effect-mechanisms/study/usage-and-flow.md#5-情報フロー制御（information-flow",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 13,
+      "target": "../../TODO-283_287-permission-and-effect-mechanisms/study/information-flow.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 21,
+      "target": "Model.lean",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 22,
+      "target": "final.log",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 22,
+      "target": "final-run.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 23,
+      "target": "run.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 24,
+      "target": "inventory.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 24,
+      "target": "inventory.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 25,
+      "target": "artifact-check.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 25,
+      "target": "verify.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 35,
+      "target": "run.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SF/findings.md",
+      "line": 113,
+      "target": "inventory.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 11,
+      "target": "../SF/Model.lean",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 11,
+      "target": "../../TODO-283_287-permission-and-effect-mechanisms/reviews/RV-S5.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 11,
+      "target": "../../TODO-283_287-permission-and-effect-mechanisms/study/information-flow.md",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 19,
+      "target": "Model.lean",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 20,
+      "target": "final.log",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 20,
+      "target": "final-run.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 21,
+      "target": "run.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 22,
+      "target": "inventory.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 22,
+      "target": "inventory.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 23,
+      "target": "verify.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 23,
+      "target": "artifact-check.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 128,
+      "target": "inventory.py",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "evidence/work-copies/m013/spikes/SG/findings.md",
+      "line": 171,
+      "target": "artifact-check.json",
+      "reason": "写しの原文に残る当時の相対リンク（写しのREADMEの規約）"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 78,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 78,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 78,
+      "target": "lake-build-out.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 79,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 80,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 80,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 81,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.1/results.md",
+      "line": 81,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 100,
+      "target": "trial/build-1.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 101,
+      "target": "build-2-body.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 102,
+      "target": "build-3-body.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 103,
+      "target": "build-4-body.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 105,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 106,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 107,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 107,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 108,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.2/results.md",
+      "line": 108,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 69,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 69,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 69,
+      "target": "lake-build-out.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 70,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 71,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 71,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 72,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 72,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.3/results.md",
+      "line": 72,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 114,
+      "target": "lake-build-1-failed.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 115,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 116,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 117,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 117,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 118,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 118,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.4/results.md",
+      "line": 118,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 116,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 117,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 118,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 118,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 119,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 119,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l10.5/results.md",
+      "line": 119,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 96,
+      "target": "builds/",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 98,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 98,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 99,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 100,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 100,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 101,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 101,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.3/results.md",
+      "line": 101,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 117,
+      "target": "trial/",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 118,
+      "target": "builds/build-09.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 121,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 121,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 122,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 123,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 123,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 124,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 124,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.4/results.md",
+      "line": 124,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 65,
+      "target": "p",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 65,
+      "target": "y,",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 293,
+      "target": "checked(/data/a.txt)",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 294,
+      "target": "checked(/data/a.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 316,
+      "target": "builds/",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 318,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 318,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 319,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 320,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 320,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 321,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 321,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.5/results.md",
+      "line": 321,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 115,
+      "target": "trial/",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 116,
+      "target": "builds/",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 119,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 119,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 120,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 121,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 121,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 122,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 122,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 122,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.6/results.md",
+      "line": 146,
+      "target": "builds/build-09-before-last-edit.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l20.7/results.md",
+      "line": 116,
+      "target": "checked(/data/a.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l30.3/results.md",
+      "line": 58,
+      "target": "checked(/data/a.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l30.3/results.md",
+      "line": 58,
+      "target": "checked(/logs/l.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l30.3/results.md",
+      "line": 64,
+      "target": "path,",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l30.4/results.md",
+      "line": 58,
+      "target": "checked(/data/a.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l30.5/results.md",
+      "line": 48,
+      "target": "checked(/data/a.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l30.5/results.md",
+      "line": 54,
+      "target": "p,",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 106,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 106,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 106,
+      "target": "lake-build-out.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 107,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 108,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 108,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 109,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 109,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.1/results.md",
+      "line": 109,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 68,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 70,
+      "target": "lake-build-module.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 72,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 73,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 73,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 73,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 74,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 75,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.2/results.md",
+      "line": 75,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 89,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 92,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 93,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 93,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 93,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 94,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 95,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3/results.md",
+      "line": 95,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.3b/results.md",
+      "line": 128,
+      "target": "checkedReq",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 128,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 133,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 134,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 134,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 134,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 135,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 136,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.4/results.md",
+      "line": 136,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 106,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 110,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 111,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 111,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 111,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 112,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 113,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.5/results.md",
+      "line": 113,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 71,
+      "target": "\"/data/**\",",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 71,
+      "target": "p",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 110,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 110,
+      "target": "lake-build-first-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 114,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 114,
+      "target": "lake-build-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 115,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 115,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 115,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 116,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 117,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6/results.md",
+      "line": 117,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 35,
+      "target": "p,",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 46,
+      "target": "Scope.widenPathIn[/data/a.txt,",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 46,
+      "target": "p",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 121,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 122,
+      "target": "trial/trial-1.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 123,
+      "target": "trial/obstruction.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 124,
+      "target": "lake-build-after-trial.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 127,
+      "target": "lake-build-mid.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 128,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 129,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 129,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 129,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 130,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 131,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6b/results.md",
+      "line": 131,
+      "target": "work-check-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 83,
+      "target": "checked(/data/a.txt),",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 127,
+      "target": "lake-build-first.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 128,
+      "target": "trial/",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 128,
+      "target": "trial/counts.tsv",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 130,
+      "target": "lake-build.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 131,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 131,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 131,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 132,
+      "target": "work-check-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l40.6c/results.md",
+      "line": 133,
+      "target": "work-check.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 20,
+      "target": "\"/data/**\",",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 94,
+      "target": "lake-build1.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 94,
+      "target": "lake-build1-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 95,
+      "target": "lake-build2.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 95,
+      "target": "lake-build2-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 96,
+      "target": "lake-build3.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 96,
+      "target": "lake-build3-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 97,
+      "target": "lake-build-final.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 97,
+      "target": "lake-build-final-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 99,
+      "target": "axioms.lean",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 99,
+      "target": "axioms.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 99,
+      "target": "axioms-time.txt",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 100,
+      "target": "python-tests.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 101,
+      "target": "check-work-dry-run.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "l50.4/results.md",
+      "line": 102,
+      "target": "check-work.log",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "r30.3c/results.md",
+      "line": 156,
+      "target": "...",
+      "reason": "コード片の字面"
+    },
+    {
+      "file": "study/user-effect-scopes.md",
+      "line": 116,
+      "target": "...",
+      "reason": "コード片の字面"
+    }
+  ],
+  "broken": [],
+  "broken_count": 0,
+  "method": "Markdownの宛先の括弧を対応付け、コード片と写しの原文のリンクを区別する。ビルド・テスト・比較は起動しない"
+}

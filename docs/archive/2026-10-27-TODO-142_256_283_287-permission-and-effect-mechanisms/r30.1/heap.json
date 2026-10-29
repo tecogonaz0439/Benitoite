@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "ddadf40d6d85b752717252c315cabe3f662c1cf8",
+    "--only",
+    "doc_default,heap_local,stress_local",
+    "--test",
+    "runtime_builtins",
+    "--test",
+    "vm_handlers",
+    "--test",
+    "io_modes",
+    "--test",
+    "l32_http_client"
+  ],
+  "started": "2026-10-29T04:11:14.511776+00:00",
+  "finished": "2026-10-29T04:13:34.274068+00:00",
+  "exit_status": 0,
+  "elapsed_seconds": 139.761202333,
+  "supplemental_children_ru_maxrss": 3805659136,
+  "ru_maxrss_unit": "bytes (macOS)",
+  "ru_maxrss_mib": 3629.359375
+}

@@ -1,0 +1,13 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.43s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-78d6cfe14de19c6d)
+
+running 1 test
+shared level=8 budget=0 occurrences=0 stop=Some(BudgetExceeded { scope: Body, resource: Operations })
+shared level=8 budget=128 occurrences=69 stop=Some(BudgetExceeded { scope: Body, resource: Operations })
+shared level=12 budget=0 occurrences=0 stop=Some(BudgetExceeded { scope: Body, resource: Operations })
+shared level=12 budget=128 occurrences=68 stop=Some(BudgetExceeded { scope: Body, resource: Operations })
+test typeck::scope::tests::shared_constants_stop_numbering_at_the_operation_budget ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1388 filtered out; finished in 0.25s
+

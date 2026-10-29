@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(path: Scope.PathIn["/data/a"]) -> Result[String, IOError] uses File.Read["/data/a"]
+ return handle File.readTextIn(path: path) with
+ case File.readTextIn(captured) ->
+  bind extracted: String <- Scope.pathInValue(path: captured)
+  resume(Result.Ok("handled"))
+ end handle
+end function
+function main() -> Unit
+end function

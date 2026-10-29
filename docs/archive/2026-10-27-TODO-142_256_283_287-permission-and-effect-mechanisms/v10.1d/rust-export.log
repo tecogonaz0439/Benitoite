@@ -1,0 +1,91 @@
+   Compiling benitoite v0.0.13 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.54s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-d06f7de8bc4d0b0d)
+
+running 45 tests
+
+thread 'exchange::scope_export::rejects_range_index_equal_to_signature_bound' (8673607) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test exchange::scope_export::rejects_range_index_equal_to_signature_bound - should panic ... ok
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch5::export_batch5_formats ... ok
+test batch3::export_batch3_solve ... ok
+test batch3::export_batch4_log_standard ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_batch2_character ... ok
+test export_independent_program_exchange ... ok
+test export_batch2_failure ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_scope_tables_smoke ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_named_types_smoke ... ok
+test export_preserves_float64_bits_and_numeric_strings ... ok
+test export_named_declarations_smoke ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test batch3::export_batch3_monad2 ... ok
+width export: 3 inputs; 0.722s; <wt>/target/desugar-diff/v10.1d/width-smoke
+test export_width_smoke ... ok
+test named::export_extensible_package ... ok
+test named::export_extensible_source ... ok
+test export_known_scope_failures_as_excluded ... ok
+test named::export_hole_argument_plans ... ok
+test export_batch2_op ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_named_calls_smoke ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test scope_tables::exports_closed_candidate_atoms_from_signatures_and_calls ... ok
+test named::export_named_static_calls_smoke ... ok
+test scope_tables::exports_closed_type_and_atom_indices_without_losing_ip_precision ... ok
+test scope_tables::atom_order_tests::exports_effect_atoms_in_lean_code_order ... ok
+test scope_tables::exports_the_same_non_top_call_ranges_before_and_after_desugaring ... ok
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (8674008) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (8674008) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (8674008) panicked at crates/benitoite/tests/desugar_export/builtins.rs:500:5:
+invalid table signature: out-of-bounds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (8674008) panicked at crates/benitoite/tests/desugar_export/builtins.rs:500:5:
+invalid table signature: wrong-kind
+test scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices ... ok
+test named::export_generated_record_property ... ok
+test scope_tables::exports_all_unused_operations_from_complete_stdlib ... ok
+test range_budget::export_range_budget_sources ... ok
+test named::export_general_named_programs ... ok
+test scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures ... ok
+test scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures ... ok
+test batch3::export_batch3_builders ... ok
+test range_sources::export_range_sources ... ok
+test export_desugar_corpus has been running for over 60 seconds
+desugar annotations [positions, different from R]: {"resultMatch": [487, 487], "resultReturn": [2025, 2025], "tailMatch": [7137, 1]}
+desugar export: 1373 exported, 0 out of scope, 419 excluded (check error); 1792 inputs; 1311.870s; <wt>/target/desugar-diff/v10.1d
+test export_desugar_corpus ... ok
+
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1312.69s
+
+     1316.20 real      1348.88 user         5.84 sys
+           706002944  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              241705  page reclaims
+                 107  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   2  signals received
+                 457  voluntary context switches
+              166748  involuntary context switches
+          1250427368  instructions retired
+           372282019  cycles elapsed
+            53625552  peak memory footprint

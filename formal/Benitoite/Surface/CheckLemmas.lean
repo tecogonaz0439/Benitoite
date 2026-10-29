@@ -14,6 +14,8 @@ structure Input.Sound (q : Input) : Prop where
   admits : AdmitsDecSound q.B q.admitsDec
   operators : OpPrimTypeArgs q.opPrim
   constructors : CtorsComplete q.D.patternProgram q.ctors
+  /-- 範囲の具体化の制約の判定は表と合う（L40.4）。既定の判定（何も許さない）は自明に満たす。 -/
+  admitsR : CheckRanges.AdmitsRDecSound q.B q.admitsRDec
 
 /-- 検査の再帰に渡す分類表の内部条件。公開入口の空表ではすべてを内部で閉じる。
 型付きの専用操作が返す内容の型にも、環境と同じ範囲・支持・単一 Fail を要求する
@@ -56,7 +58,7 @@ end BuilderInvariant
 本体の指定を替えた入力にも同じ健全性の契約を渡す。 -/
 theorem Input.Sound.withView {q : Input} (h : q.Sound) (view : CoverageView) :
     ({ q with D := q.D.withView view } : Input).Sound := by
-  refine ⟨?_, h.builtins, h.sat, h.admits, h.operators, ?_⟩
+  refine ⟨?_, h.builtins, h.sat, h.admits, h.operators, ?_, h.admitsR⟩
   · simpa only [Declarations.AtomsIn, Declarations.withView_funs, Declarations.withView_cons,
       Declarations.withView_ops, Declarations.withView_classes, Declarations.withView_impls]
       using h.declarations
@@ -65,7 +67,7 @@ theorem Input.Sound.withView {q : Input} (h : q.Sound) (view : CoverageView) :
 /-- Q の指定を変えても、宣言・組み込み等の既存の仮定は増やさない。 -/
 theorem Input.Sound.withNoFailRows {q : Input} (h : q.Sound) (rows : List Bool) :
     ({ q with noFailRows := rows } : Input).Sound :=
-  ⟨h.declarations, h.builtins, h.sat, h.admits, h.operators, h.constructors⟩
+  ⟨h.declarations, h.builtins, h.sat, h.admits, h.operators, h.constructors, h.admitsR⟩
 
 abbrev ReturnAtoms (atoms : List Atom) (R : Option Ty) : Prop :=
   ∀ t, R = some t → t.AtomsIn atoms
@@ -124,7 +126,7 @@ theorem accept_ok {q n path expected actual ε} (h : accept q n path expected ac
 theorem accept_clean {q n path expected actual ε}
     (he : expected.AtomsIn q.atoms)
     (h : accept q n path expected actual = .ok ε) :
-    Ty.VarsIn n (fun _ => True) expected := by
+    Ty.VarsIn 0 n (fun _ => True) expected := by
   obtain ⟨u, hu, _⟩ := bind_ok h
   exact (cleanTy_spec n expected he).mp (Bool.and_eq_true_iff.mp (Bool.and_eq_true_iff.mp (require_ok hu).1).1).1
 
@@ -142,11 +144,30 @@ theorem acceptEff_sound {q path expected actual u} (ha : actual.AtomsIn q.atoms)
     (h : acceptEff q path expected actual = .ok u) : Eff.Sub actual expected :=
   effSub_sound ha he (acceptEff_ok h)
 
+theorem acceptEffCover_ok {q path expected actual u}
+    (h : acceptEffCover q path expected actual = .ok u) : Finite.effCovers q.atoms actual expected = true :=
+  (Bool.and_eq_true_iff.mp (require_ok h).1).1
+
+/-- 被覆による受理の健全性（L50.2）。受理した効果は、上限に一原子ずつ覆われる。 -/
+theorem acceptEffCover_sound {q path expected actual u} (ha : actual.AtomsIn q.atoms)
+    (he : expected.AtomsIn q.atoms)
+    (h : acceptEffCover q path expected actual = .ok u) : Eff.Covers expected actual :=
+  Finite.effCovers_sound ha he (acceptEffCover_ok h)
+
+/-- 構造上の包含で受理する効果は、被覆でも受理する（受理は広がるだけである）。 -/
+theorem acceptEffCover_of_acceptEff {q path expected actual u}
+    (h : acceptEff q path expected actual = .ok u) : acceptEffCover q path expected actual = .ok () := by
+  have hr := require_ok h
+  obtain ⟨hs, hn⟩ := Bool.and_eq_true_iff.mp hr.1
+  unfold acceptEffCover require
+  simp [Finite.effCovers_of_effSub hs, hn]
+  rfl
+
 theorem join_ok {q n path a b j} (h : join q n path a b = .ok j) :
     tyJoin q.atoms a b = some j := lookup_ok h
 
 theorem join_clean {q n path a b j} (hj : j.AtomsIn q.atoms) (h : join q n path a b = .ok j) :
-    Ty.VarsIn n (fun _ => True) j :=
+    Ty.VarsIn 0 n (fun _ => True) j :=
   (cleanTy_spec n j hj).mp (Bool.and_eq_true_iff.mp (lookup_valid (valid := fun t : Ty => cleanTy q.atoms n t && singleTyCheck q.atoms q.noFailRows t) h)).1
 
 theorem join_atoms {q n path a b j} (ha : a.AtomsIn q.atoms) (hb : b.AtomsIn q.atoms)
@@ -237,29 +258,41 @@ theorem guardInferred_ok {q path x inputOK s s' result}
     (h : guardInferred q path x inputOK s = .ok (result, s')) : x s = .ok (result, s') :=
   (guardInferred_result h).1
 
-theorem opSig_atoms {q : Input} {o sg} (hd : q.D.AtomsIn q.atoms) (hb : q.B.AtomsIn q.atoms)
-    (h : opSig q.D.patternProgram q.B o = some sg) :
+/-- 節の操作の型の原子は入力の候補に含まれる。節の添字 S によらない（具体化は最上位の対象の位置だけを替え、原子を
+増やさない。L40.5）。 -/
+theorem opSigAt_atoms {q : Input} {S : Scope.Domain.Range} {o sg} (hd : q.D.AtomsIn q.atoms) (hb : q.B.AtomsIn q.atoms)
+    (h : opSigAt q.D.patternProgram q.B S o = some sg) :
     Tys.AtomsIn q.atoms sg.params ∧ sg.ret.AtomsIn q.atoms := by
   cases o with
   | user o =>
       cases ho : q.D.ops o with
-      | none => simp [opSig, Declarations.patternProgram, ho] at h
+      | none => simp [opSigAt, Declarations.patternProgram, ho] at h
       | some od =>
           have he : sg = ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩ := by
-            simpa [opSig, Declarations.patternProgram, ho] using h.symm
+            simpa [opSigAt, Declarations.patternProgram, ho] using h.symm
           subst sg; exact hd.2.2.1 o od ho
   | fail => cases h
   | prim b =>
       cases hs : q.B.sig b with
-      | none => simp [opSig, hs] at h
+      | none => simp [opSigAt, hs] at h
       | some bs =>
           cases he : bs.opEff with
-          | none => simp [opSig, hs, he] at h
+          | none => simp [opSigAt, hs, he] at h
           | some l =>
-              have eqs : sg = ⟨bs.tparams, bs.names, bs.params, bs.ret, l⟩ := by
-                simpa [opSig, hs, he] using h.symm
+              have eqs : sg = ⟨bs.tparams, bs.names, bs.params.map (Ty.instTarget (List.replicate bs.nranges S)),
+                  bs.ret, l⟩ := by
+                simpa [opSigAt, hs, he] using h.symm
               subst sg
-              exact ⟨(hb b bs hs).1, (hb b bs hs).2.1⟩
+              refine ⟨Ty.SupportList.iff.mpr ?_, (hb b bs hs).2.1⟩
+              intro t ht
+              obtain ⟨p, hp, rfl⟩ := List.mem_map.mp ht
+              have hp' := Ty.SupportList.iff.mp (hb b bs hs).1 p hp
+              cases p <;> first | exact hp' | trivial
+
+theorem opSig_atoms {q : Input} {o sg} (hd : q.D.AtomsIn q.atoms) (hb : q.B.AtomsIn q.atoms)
+    (h : opSig q.D.patternProgram q.B o = some sg) :
+    Tys.AtomsIn q.atoms sg.params ∧ sg.ret.AtomsIn q.atoms :=
+  opSigAt_atoms (S := .top) hd hb (by rwa [opSigAt_top])
 
 theorem altsTy_atoms {atoms P alts a δ} (hp : ConAtomsIn atoms P) (ha : a.AtomsIn atoms)
     (h : altsTy atoms P alts a = some δ) : Tys.AtomsIn atoms δ := by
@@ -274,14 +307,13 @@ theorem surfacePatTy_atoms {atoms D p a δ} (hd : D.AtomsIn atoms) (ha : a.Atoms
     (h : surfacePatTy atoms D p a = some δ) : Tys.AtomsIn atoms δ :=
   patTy_atoms (Declarations.atoms_con hd) ha h
 
-/-- 最上位の行には制限を加えず、Failの型の範囲だけを検査する。 -/
+/-- 最上位の行には制限を加えず、Failの型の範囲と名前の原子の範囲の位置だけを検査する。 -/
 theorem cleanFails_sound {atoms n e} (he : e.AtomsIn atoms)
-    (h : cleanTys atoms n e.fails = true) : Eff.VarsIn n (fun _ => True) e := by
-  cases e with
-  | mk a fs => exact ⟨fun _ _ => trivial, (cleanTys_spec n fs he.2).mp h⟩
+    (h : cleanTopEff atoms n e = true) : Eff.VarsIn 0 n (fun _ => True) e :=
+  (Finite.cleanTopEff_spec n e he).mp h
 
 theorem wfFails_sound {atoms n e} (he : e.AtomsIn atoms)
-    (h : wfTys atoms n e.fails = true) : Eff.WF n e := by
+    (h : wfTys atoms n e.fails = true) : Eff.WF 0 n e := by
   cases e with
   | mk a fs => exact (wfTys_spec n fs he.2).mp h
 
@@ -341,7 +373,7 @@ theorem accept_expr {q Δ C Γ R p path e a ε expected out}
     HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e expected out := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
   subst out
-  exact .E_Sub ht hle (Eff.Sub.refl _) (accept_clean he h)
+  exact .E_Sub ht hle (Eff.Covers.refl _) (accept_clean he h)
 
 theorem accept_block {q Δ C Γ R p path body a ε expected out}
     (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body a ε)
@@ -350,7 +382,7 @@ theorem accept_block {q Δ C Γ R p path body a ε expected out}
     HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected out := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
   subst out
-  exact .B_Sub ht hle (Eff.Sub.refl _) (accept_clean he h)
+  exact .B_Sub ht hle (Eff.Covers.refl _) (accept_clean he h)
 
 theorem accept_expr_eff {q Δ C Γ R p path e a ε expected out allowed u}
     (ht : HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e a ε)
@@ -359,7 +391,7 @@ theorem accept_expr_eff {q Δ C Γ R p path e a ε expected out allowed u}
     (hf : acceptEff q path allowed out = .ok u) :
     HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e expected allowed := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
-  subst out; exact .E_Sub ht hle (acceptEff_sound hε (by assumption) hf) (accept_clean he h)
+  subst out; exact .E_Sub ht hle (acceptEff_sound hε (by assumption) hf).covers (accept_clean he h)
 
 theorem accept_block_eff {q Δ C Γ R p path body a ε expected out allowed u}
     (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body a ε)
@@ -368,7 +400,16 @@ theorem accept_block_eff {q Δ C Γ R p path body a ε expected out allowed u}
     (hf : acceptEff q path allowed out = .ok u) :
     HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected allowed := by
   have ⟨hle, eqε⟩ := accept_sound ha he h
-  subst out; exact .B_Sub ht hle (acceptEff_sound hε (by assumption) hf) (accept_clean he h)
+  subst out; exact .B_Sub ht hle (acceptEff_sound hε (by assumption) hf).covers (accept_clean he h)
+
+theorem accept_block_effCover {q Δ C Γ R p path body a ε expected out allowed u}
+    (ht : HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body a ε)
+    (ha : a.AtomsIn q.atoms) (he : expected.AtomsIn q.atoms) (hε : ε.AtomsIn q.atoms) (hallowed : allowed.AtomsIn q.atoms)
+    (h : accept q C.length path expected (a, ε) = .ok out)
+    (hf : acceptEffCover q path allowed out = .ok u) :
+    HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected allowed := by
+  have ⟨hle, eqε⟩ := accept_sound ha he h
+  subst out; exact .B_Sub ht hle (acceptEffCover_sound hε (by assumption) hf) (accept_clean he h)
 
 /-- 型操作の写しを、任意の規則の前提・結論で使える形にする。 -/
 theorem shiftTy_rule {P : Ty → Prop} {atoms k c a} (ha : a.AtomsIn atoms)
@@ -410,7 +451,7 @@ theorem effect_top_support {atoms e} (he : Eff.AtomsIn atoms e) :
   cases e; exact he.1
 
 theorem effect_wf_check {atoms e n} (he : Eff.AtomsIn atoms e)
-    (hw : Finite.wfTys atoms n e.fails = true) : Eff.WF n e := by
+    (hw : Finite.wfTys atoms n e.fails = true) : Eff.WF 0 n e := by
   cases e with
   | mk a fs => exact (Finite.wfTys_spec n fs he.2).mp hw
 
@@ -546,7 +587,7 @@ theorem checking_accept_expr_ok {q Δ C Γ R p path e expected s s' out}
              f ε) s = .ok (out, s')) :
     ∃ ε mid, HasTypeQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p e expected ε ∧
       ε.AtomsIn q.atoms ∧ f ε mid = .ok (out, s') ∧
-      Ty.VarsIn C.length (fun _ => True) expected := by
+      Ty.VarsIn 0 C.length (fun _ => True) expected := by
   obtain ⟨⟨a, ε⟩, mid, hc, h⟩ := checking_bind_ok h
   obtain ⟨ε', mid', ha, hf⟩ := checking_bind_ok h
   obtain ⟨ha', heq⟩ := checking_lift_ok ha
@@ -565,7 +606,7 @@ theorem checking_accept_block_ok {q Δ C Γ R p path body expected s s' out}
              f ε) s = .ok (out, s')) :
     ∃ ε mid, HasBlockQ q.D q.B q.opPrim (NoFailCtxOf q.noFailRows) Δ C Γ R p body expected ε ∧
       ε.AtomsIn q.atoms ∧ f ε mid = .ok (out, s') ∧
-      Ty.VarsIn C.length (fun _ => True) expected := by
+      Ty.VarsIn 0 C.length (fun _ => True) expected := by
   obtain ⟨⟨a, ε⟩, mid, hc, h⟩ := checking_bind_ok h
   obtain ⟨ε', mid', ha, hf⟩ := checking_bind_ok h
   obtain ⟨ha', heq⟩ := checking_lift_ok ha

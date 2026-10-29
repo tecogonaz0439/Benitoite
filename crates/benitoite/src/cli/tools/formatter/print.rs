@@ -34,6 +34,8 @@ pub fn print(input: &PrintInput<'_>) -> Vec<u8> {
         groups,
         tables,
         out: Vec::with_capacity(text.len()),
+        verbatim_index: 0,
+        verbatim_end: 0,
     };
     if text.starts_with(BOM) {
         // 先頭の U+FEFF は残す（06-03「行末と文字」）。
@@ -42,11 +44,18 @@ pub fn print(input: &PrintInput<'_>) -> Vec<u8> {
     let mut previous: Option<usize> = None;
     let mut pending_blanks = 0usize;
     for (index, line) in lines.iter().enumerate() {
+        if printer.line_end(line) < printer.verbatim_end {
+            continue;
+        }
         if line.kind == LineKind::Blank {
             pending_blanks = pending_blanks.saturating_add(1);
             continue;
         }
-        let blanks = match printer.blank_rule(previous, index) {
+        let blanks = match if line.start < printer.verbatim_end {
+            BlankRule::Zero
+        } else {
+            printer.blank_rule(previous, index)
+        } {
             BlankRule::Zero => 0,
             BlankRule::KeepOne => pending_blanks.min(1),
             BlankRule::ExactlyOne => 1,
@@ -117,6 +126,9 @@ struct Printer<'p, 'a> {
     groups: Groups,
     tables: Tables,
     out: Vec<u8>,
+    /// 元のまま写す次の要素と、既に写した範囲の終端。複数行を二重に出力しない。
+    verbatim_index: usize,
+    verbatim_end: usize,
 }
 
 /// 行と宣言を引く表。行ごと・字句ごとに前もって作り、行の数×宣言の数の線形探索を避ける。
@@ -389,6 +401,14 @@ impl Printer<'_, '_> {
             }
             LineKind::Code => {
                 for token_index in line.first..line.end {
+                    if self
+                        .input
+                        .tokens
+                        .get(token_index)
+                        .is_some_and(|t| span_start(t) < self.verbatim_end)
+                    {
+                        continue;
+                    }
                     let role = self.role(token_index);
                     if token_index == line.first {
                         self.indent(role.level);
@@ -398,6 +418,9 @@ impl Printer<'_, '_> {
                     }
                     self.write_token(token_index);
                 }
+                if self.line_end(&line) < self.verbatim_end {
+                    return;
+                }
                 if line.comment.is_some() {
                     // 行末のコメントの前は空白一つ（06-03「コメント」）。
                     self.out.push(b' ');
@@ -406,6 +429,13 @@ impl Printer<'_, '_> {
             }
         }
         self.out.push(b'\n');
+    }
+
+    fn line_end(&self, line: &Line) -> usize {
+        self.input
+            .tokens
+            .get(line.end)
+            .map_or(self.input.text.len(), span_start)
     }
 
     fn indent(&mut self, level: u32) {
@@ -432,6 +462,18 @@ impl Printer<'_, '_> {
         };
         let text = self.input.text;
         let start = span_start(token);
+        if let Some(span) = self.input.roles.verbatim.get(self.verbatim_index)
+            && usize::try_from(span.start.0).ok() == Some(start)
+            && let Ok(end) = usize::try_from(span.end.0)
+            && let Some(raw) = text.get(start..end)
+        {
+            // 拒否する要素の内部には構文上の役割を付けない。コメントや改行も含めて
+            // 元の範囲を一度だけ写す（設計書 06-03「字句の間の空白」）。
+            self.out.extend_from_slice(raw);
+            self.verbatim_end = end;
+            self.verbatim_index = self.verbatim_index.saturating_add(1);
+            return;
+        }
         let raw = text.get(start..span_end(token)).unwrap_or(&[]);
         let group = self.groups.of_token.get(index).copied().flatten();
         if let Some(id) = group {

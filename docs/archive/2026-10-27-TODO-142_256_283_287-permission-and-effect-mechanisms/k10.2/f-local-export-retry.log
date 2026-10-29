@@ -1,0 +1,18 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0603]: function `range` is private
+  --> crates/benitoite/tests/desugar_export/range_sources.rs:36:175
+   |
+36 | ....map(|row|row.iter().map(|r| exchange::scope_export::range(&r.index())).collect::<Vec<_>>()).collect::<Vec<_>>()}));
+   |                                                         ^^^^^ private function
+   |
+note: the function `range` is defined here
+  --> crates/benitoite/tests/desugar_export/scope.rs:55:1
+   |
+55 | pub(super) fn range(r: &Range) -> Value {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `benitoite` (test "desugar_export") due to 1 previous error
+real 1.29
+user 0.93
+sys 0.23

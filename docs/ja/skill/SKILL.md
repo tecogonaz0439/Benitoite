@@ -1,6 +1,6 @@
 # Benitoite
 
-> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
+> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.13 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。
 
 原文の前付けを次に示す。この訳では説明用の `text` ブロックであり、実際の YAML frontmatter ではない。`{{benitoite-version}}` は英語の Skill を取得・インストールするときに置換するための印であり、この説明の写しには残す。
 
@@ -69,11 +69,11 @@ Benitoite は、静的に型付けされる関数型のスクリプト言語で�
 
 スクリプトを初めて実行する前と、`main` のエフェクトが前回利用者に示したものより増えたときには、次のことを行う。
 
-1. 単一の JSON オブジェクト全体、既知の schemaVersion と kind、status: "ok"、complete: true、終了状態 0 を確認した場合だけ検査報告を受理する。宣言上限（スクリプトでは `targets[0].main.effects.expanded`、テストでは選択された各テストの effects と aggregateEffects）を読み、後掲の表の言葉で操作の種類を利用者へ伝える。コードの説明では関数の個別の uses とファイル単位の uses の両方と照合する。使わない宣言とファイル由来の追加も数える。失敗や不明を空集合とせず、上限自体を許可としない。報告の欄と受理条件の正は処理系の[版を固定した英語リファレンス（v0.0.12、checkReport 1・testCheckReport 1/2）](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)である。追加の区間の集計は、[実行前の検査](references/inspection.md#局所の区間解析)を参照する。
+1. 単一の JSON オブジェクト全体、既知の schemaVersion と kind、status: "ok"、complete: true、終了状態 0 を確認した場合だけ検査報告を受理する。宣言上限（スクリプトでは `targets[0].main.effects.expanded`、テストでは選択された各テストの effects と aggregateEffects）を読み、後掲の表の言葉で操作の種類を利用者へ伝える。コードの説明では関数の個別の uses とファイル単位の uses の両方と照合する。使わない宣言とファイル由来の追加も数える。失敗や不明を空集合とせず、上限自体を許可としない。報告の欄と受理条件の正は処理系の[版を固定した英語リファレンス（v0.0.12、checkReport 1・testCheckReport 1/2）](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)である。任意の範囲の上限と区間の集計は、[実行前の検査](references/inspection.md)を参照する。
 2. 並びに `File.Write`、`Process.Run`、`Http.Connect`、`Http.Listen` のどれかがあるときは、実行する前に利用者に確認を求める。`Process.Run` については、スクリプトが起動するコマンドの名前も挙げる。それらのコマンドが何をするかは、`benitoite` の検査の範囲の外にある。
 3. `IO.All` は `File.Write` と `Process.Run` を含むものとして扱う。`uses` には、`IO.All` の代わりに個別のエフェクトを書く。
 
-`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。`--allow-effects` は、改めて検査した宣言上限が了承済みの集合に含まれることを確かめ、その同じ検査済みのプログラムを実行する。原子的な正規名を受け付け、取り込みの別名、`IO.All`、`*` は受け付けない。エフェクトが表すのは許される操作の種類だけであり、どのファイル・コマンド・ホストかは表さない。書き込み先や内容、`Process.Run` 内のコマンドの変更が、同じ集合に収まることもある。検査報告のハッシュは後の実行の入力を固定しない。静的検査は、意図した結果、停止性、外部操作の成功を保証しない。この版の `benitoite` は、実行中の操作を制限しない。スクリプトはエージェントのサンドボックスの中で実行する。
+`check` を通ったスクリプトは、`main` の `uses` の外の組み込みの操作を行わない。`--allow-effects` は、改めて検査した宣言上限が了承済みの集合に含まれることを確かめ、その同じ検査済みのプログラムを実行する。範囲の引数を付けない原子的な正規名を受け付け、取り込みの別名、`IO.All`、`*` は受け付けない。了承した名前は、その種類のすべての対象を許す。報告は、静的な対象の上限を `effects.bounds` に示すこともある。この上限は宣言した契約として示し、実行時の権限と見なさない。解釈する前に[実行前の検査](references/inspection.md)を読む。書き込み先や内容、`Process.Run` 内のコマンドの変更が、同じ集合に収まることもある。検査報告のハッシュは後の実行の入力を固定しない。静的検査は、意図した結果、停止性、外部操作の成功を保証しない。この版の `benitoite` は、実行中の操作を制限しない。スクリプトはエージェントのサンドボックスの中で実行する。
 
 `processShellReference` は、使わない関数や依存も含め、検査したプログラム全体にある標準の shell 関数の式の参照を表す。到達性の解析ではない。`present` はシェルが実行される証明にはならず、`absent` も外部コマンドの安全性を示さない。`Process.Run` を了承するときは実際のコマンドを見直す。
 
@@ -170,7 +170,17 @@ first: one
 
 ## 検査済みの値と局所の構築器
 
-不透明型には公開の作成・検査関数を使う。構成子、更新、パターン、自動アクセサは所有モジュール内だけで使える（外では E0340）。Regex/Scope の直接呼び出しは、テスト内でも既知の不正な入力を拒否する。実行時 Error のテストには通常の関数の引数を経由させる。Range は定数にも実行時の Result.Error を保つ。Scope が保証するのは表記の所属であり、権限、DNS/ファイルの実体、IO の成功ではない。references/common-mistakes.md と、生成参照の Scope.md / Range.md を参照する。
+不透明型には公開の作成・検査関数を使う。構成子、更新、パターン、自動アクセサは所有モジュール内だけで使える（外では E0340）。Regex/Scope の直接呼び出しは、テスト内でも既知の不正な入力を拒否する。`Scope.checkPathIn` と、`Http.checkRequestIn` の既知のホスト・ポートの条件も含む。後者の URL の解析は実行時に行う。実行時 Error のテストには通常の関数の引数を経由させる。Range は定数にも実行時の Result.Error を保つ。Scope が保証するのは表記の所属であり、権限、DNS/ファイルの実体、IO の成功ではない。references/common-mistakes.md と、生成参照の Scope.md / Range.md を参照する。
+
+閉じた範囲の構文、不変の添字、必須の受け入れの理由、六つの純粋な宣言は、処理系の[範囲付きのエフェクト](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#scoped-effects)と[範囲付きの値と IO](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#scoped-values-and-io)の契約を参照する。埋め込みの文法・診断・標準ライブラリの参照は、インストールした版の構文・診断・シグネチャを記す。
+
+`File.readTextIn`、`readBytesIn`、`writeTextIn`、`appendTextIn`、`writeBytesIn`、`appendBytesIn` は、検査済みの `Scope.PathIn` を取る。その `File.Read` または `File.Write` のエフェクトは、入力型と同じ範囲を使う。検査で保持したパスを操作する。範囲が表すのはパスの文字列であり、シンボリックリンクの先や特殊ファイルを隔離しない。
+
+`Http.sendIn` は検査済みの `Http.RequestIn` を取り、その入力の endpoint の範囲を持つ `Http.Connect` を使う。保持した要求を送信し、リダイレクトを追わず、プロキシを自動では使わない。3xx の応答はそのまま返す。明示した Host ヘッダは、URI と保持した endpoint の有効なホスト・ポートに一致しなければならず、不一致なら `NetworkErrorKind.InvalidInput` を返す。`Http.send` は自動リダイレクトと Top のエフェクトを保つ。完全な `Http.Connect` のハンドラには `send` と `sendIn` の両方が必要であり、`send` だけのハンドラには `Http.Connect` が残る。endpoint の範囲が表すのは DNS と OS の変換前のホスト/IP の文字列とポートであり、scheme、固定の origin、メッセージの内容、実行時の権限を制約しない。TLS 証明書の検証中に、OS が別の宛先から中間証明書や失効の情報を取得することがある。endpoint の範囲は、その副次的な通信の宛先を保証しない。検査済みの例は `references/idioms.md` を参照する。
+
+射影や拡大の呼び出しを `bind` の右辺へ直接書いてから、ほかの式で結果を使う。狭い関数引数やハンドラ引数、狭い戻り値型の宣言を経た値は検査した値の局所の由来を持たないため、この形でも射影や拡大はできない。狭い契約を保つには、同じ値をそのまま `File.readTextIn` や `Http.sendIn` などの範囲付きの入口へ転送する。関数引数では、検査した値の由来が分かる呼び出し元で束縛した検査済みの値を拡大し、その広い型を仮引数に使う。ハンドラ節の引数では、操作の宣言の引数型を変える。Top の節引数には保護する本体も Top が必要であり、囲む `uses` の契約の拡大も必要な場合がある。引数のない `Scope.PathIn` や `Http.RequestIn` の仮引数はすべての対象を受け付け、それを通した IO の範囲は Top となる。これらは、現在の射影と拡大の精度の制限である。
+
+完全ハンドラには、File.Read の全13操作、File.Write の全16操作、または Http.Connect の両操作が必要である。部分ハンドラにはエフェクトが残り、節の IO は処理する本体の外に残る。操作の集合と不足する節の例は、処理系の[完全ハンドラと部分ハンドラ](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.13/docs/reference/benitoite.md#complete-and-partial-handlers)を参照する。
 
 Benitoite.StringBuilder、Benitoite.ListBuilder、Benitoite.BytesBuilder を明示的に取り込む。構築器は第二級の値である。対応する種類を注釈した局所 bind と直接の new() で宣言し、専用の操作だけを直接呼ぶ。宣言と専用操作は State を加えず、通常の引数のエフェクトだけを残す。通常の関数への引数渡し、返却、格納、比較、文字列への埋め込み、ラムダ・lazy・部分適用・ハンドラ節への捕捉はできない。コールバックを作る前に copy や length を束縛し、appendAll の前に断片列を作る。コピーは不変の構造を保つが、参照を持つ要素のセルは共有する。copy は不変の snapshot を物理的に作り、途中の copy を繰り返すと内容に比例する時間と容量を要する。参照・タスク・通常のリソースのエフェクトは残る。clear/reserve/finish はない。シグネチャは生成参照の各 Builder モジュールを参照する。
 
@@ -189,6 +199,8 @@ andThen/flatMap は成功値から同じエラー型の計算を続ける。異�
 ## テスト
 
 テストは、`@test("description")` を付け、引数を持たず、戻り値の型が `Unit` か `Result[Unit, String]` の関数である（テストが `try e or return` を使うときは後者にする）。`Assert.equal(actual: actual, expected: expected)` で確かめる。テストが外の世界に触れないように、`File.readText` や `Process.run` などの操作をハンドラで置き換える。ほかの例は `references/idioms.md` にある。型パラメータを持つ補助の関数の中の確かめは、呼び出し元の型を決められるときは、構成子の名前を復元する。決められないときは、型が不明のまま残ることがある。報告が `<constructor #n of an unknown type>`（n は 0 から数えた構成子の位置）を示すときは、確かめの中で具体的な型の値を比べると、構成子の名前が表示される。
+
+完全な `File.Read` のハンドラには、新しい二つの読み込み操作も含む全13操作が必要である。完全な `File.Write` のハンドラには、新しい四つの書き込み操作も含む全16操作が必要である。
 
 ```benitoite test
 import Benitoite.Unofficial.IO.File
@@ -239,4 +251,4 @@ Integer の生成は両端を含み、Float の生成は有限値に限る。入
 
 JSON/Property の生成は、ファイル単位の `uses` を持つ対象モジュールを拒否する。Show/Order だけの対象は引き続き受理する。ファイルの宣言を、エフェクトが必要な関数それぞれの `uses` に置き換えるか、型の定義と derive の対象を純粋なモデルのモジュールへ移し、エフェクトを使うコードから取り込む。設定の `source` を変えるだけでは、生成先を型の宣言元から移せない。既存の領域には、新しい preview の前に `tools/derive/README.md` の対象の削除・移動の手順を適用する。
 
-derive の宣言の inventory は版 3、manifest・receipt・生成記録・意味ハッシュは版 3、生成規則は `3.1.0-syntax-batch5`、設定は版 1 である。道具を更新する前に、保存した旧道具で未完の apply と復旧を終える。旧本文のハッシュを検証してから新しい preview を確認し、その確認済み manifest の正確なハッシュで適用する。生成器の版が同じでも、道具の入力ハッシュによって以前の manifest が無効になりうる。同じ seed だけでは、古い生成分布を再現できない。不透明型には手書きの検査済み構築を使い、不透明なフィールドには独自の codec/generator を使う。配布した実行ファイルと Skill だけの環境では、Codec と Property の API でこれらの関数を直接書く。
+derive の宣言の inventory と意味ハッシュは版4であり、型とエフェクトの添字、標準シグネチャの範囲を含む。manifest・receipt・生成記録の外枠は版3のままである。manifest と生成記録は `inventoryVersion: 4` と `hashVersion: 4` を持ち、receipt は正確な manifest と記録のハッシュに結び付いたままである。生成規則は `3.1.0-syntax-batch5`、設定は版1を保つ。古い manifest と receipt は新しい apply を承認しない。承認は確認済みの正確な manifest のハッシュと、入力・道具の同一性に結び付く。生成器の版が同じでも、古い意味ハッシュを比較できるようにはならず、承認も保たれない。同じ seed だけでは、古い生成分布を再現できない。不透明型には手書きの検査済み構築を使い、不透明なフィールドには独自の codec/generator を使う。配布した実行ファイルと Skill だけの環境では、Codec と Property の API でこれらの関数を直接書く。

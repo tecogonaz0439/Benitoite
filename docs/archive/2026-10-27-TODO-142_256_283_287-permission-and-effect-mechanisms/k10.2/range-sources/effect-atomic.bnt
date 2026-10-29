@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.File
+function callee() -> Unit uses File.Read["/**"]
+end function
+function sample() -> Unit uses File.Read["/data/**", "/backup/**"]
+ callee()
+end function

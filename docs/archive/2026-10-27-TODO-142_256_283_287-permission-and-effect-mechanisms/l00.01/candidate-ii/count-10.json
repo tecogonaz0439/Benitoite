@@ -1,0 +1,77 @@
+{
+ "log": "build-10-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Release.Lemmas.PresMain",
+  "Benitoite.Surface.Lemmas.Typing"
+ ],
+ "unchecked_modules_count": 27,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Lemmas.Progress",
+  "Benitoite.Release.Lemmas.StepSound",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageProgramDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "error_diagnostics": 11,
+ "error_files": [
+  "Benitoite/Exchange/Builtins.lean",
+  "Benitoite/Release/Lemmas/PresMain.lean",
+  "Benitoite/Surface/Lemmas/Typing.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Exchange/Builtins.lean",
+   "decl": "def BuiltinInput.isResource",
+   "line": 201,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Builtins.lean",
+   "decl": "def mkBuiltins",
+   "line": 236,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/PresMain.lean",
+   "decl": "theorem preservationE",
+   "line": 18,
+   "errors": 3
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/Typing.lean",
+   "decl": "theorem HasTypeQ.desugar",
+   "line": 390,
+   "errors": 5
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

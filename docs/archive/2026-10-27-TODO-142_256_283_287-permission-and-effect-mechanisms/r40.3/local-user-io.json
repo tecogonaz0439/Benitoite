@@ -1,0 +1,22 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "cli_process",
+    "scoped_reports::handled_user_value_preserves_only_the_scoped_io_contract",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "startUtc": "2026-10-29T10:33:45.237356+00:00",
+  "endUtc": "2026-10-29T10:33:54.417539+00:00",
+  "exitCode": 0,
+  "checkExitCode": null,
+  "elapsedSeconds": 9.179700875,
+  "maxRssRaw": 1471119360,
+  "maxRssUnit": "bytes",
+  "measurement": "getrusage(RUSAGE_CHILDREN), 子孫の最大値。合計常駐量ではない"
+}

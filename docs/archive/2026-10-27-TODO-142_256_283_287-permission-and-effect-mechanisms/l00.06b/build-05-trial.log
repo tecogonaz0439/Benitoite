@@ -1,0 +1,91 @@
+== wait-for-lock start 20:03:14
+== lock acquired 20:03:26 after 12s
+⚠ [87/414] Built Benitoite.Release.Typing (1.4s)
+warning: Benitoite/Release/Typing.lean:215:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [89/414] Built Benitoite.Release.BuilderContents (391ms)
+✔ [90/414] Built Benitoite.Release.LocalTyping (397ms)
+✔ [93/414] Built Benitoite.Release.TypeRegularity (570ms)
+✔ [94/414] Built Benitoite.Release.BuiltinTable (668ms)
+✔ [97/414] Built Benitoite.Release.BuilderExec (497ms)
+✔ [98/414] Built Benitoite.Release.Lemmas.Basic (358ms)
+✔ [101/414] Built Benitoite.Release.TypeBounds (771ms)
+✔ [103/414] Built Benitoite.Release.SubstEnv (782ms)
+✔ [105/414] Built Benitoite.Release.TypeCongruence (1.1s)
+✔ [107/414] Built Benitoite.Release.TypeVariables (1.3s)
+✔ [109/414] Built Benitoite.Release.WellFormed (434ms)
+✔ [111/414] Built Benitoite.Release.TypeScopedSubst (496ms)
+✔ [113/414] Built Benitoite.Release.Admissible (707ms)
+✔ [114/414] Built Benitoite.Release.FailureEffects (668ms)
+✔ [116/414] Built Benitoite.Release.Lemmas.TyLemmas (749ms)
+✔ [118/414] Built Benitoite.Release.LocalScope (4.2s)
+✔ [119/414] Built Benitoite.Release.Semantics (1.9s)
+✔ [121/414] Built Benitoite.Release.Assumptions (396ms)
+✔ [123/414] Built Benitoite.Release.Examples (1.5s)
+✔ [124/414] Built Benitoite.Release.Lemmas.Rename (8.9s)
+✔ [126/414] Built Benitoite.Release.Lemmas.Closed (6.1s)
+✔ [127/414] Built Benitoite.Release.Lemmas.Names (6.9s)
+✔ [129/414] Built Benitoite.Surface.Lemmas.ScopedRename (398ms)
+✔ [130/414] Built Benitoite.Release.Lemmas.VariableBind (535ms)
+✔ [131/414] Built Benitoite.Surface.Lemmas.ShiftClean (1.0s)
+✔ [132/414] Built Benitoite.Release.Lemmas.NoFailContext (1.9s)
+✔ [134/414] Built Benitoite.Release.Lemmas.Irrelevant (2.7s)
+✔ [135/414] Built Benitoite.Release.Lemmas.FailureBase (340ms)
+✔ [136/414] Built Benitoite.Release.Lemmas.Inversion (11s)
+✔ [138/414] Built Benitoite.Release.Lemmas.ContLemmas (444ms)
+✖ [139/414] Building Benitoite.Release.Lemmas.Regularity (1.6s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Regularity.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.setup.json --json
+error: Benitoite/Release/Lemmas/Regularity.lean:159:40: don't know how to synthesize placeholder for argument `R`
+context:
+Q : NoFailCtx
+P : Program
+B : Builtins
+depth : Nat
+hwf : P.WellFormed
+hb : Builtins.Assumptions P B
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+v : Val
+a : Ty
+h : HasTypeVQ P B Ψ Q C Γ v a
+hΓ : EnvWF C.length Γ
+hΨ : Ψ.WF
+b✝ : PrimName
+s✝ : PrimSig
+R✝ : ScopeRange
+ts✝ : List Ty
+es✝ : List Eff
+hs : B.sig b✝ = some s✝
+hnames : NamesWF (s✝.inst R✝).names (s✝.inst R✝).params
+had : PrimitiveAdmissible C (s✝.inst R✝) Q ts✝ es✝
+hv : Ty.VarsInList C.length (fun x => True) ts✝ ∧ Eff.VarsInList C.length (fun x => True) es✝
+hts : ts✝.length = (s✝.inst R✝).ntys
+⊢ ScopeRange
+error: Benitoite/Release/Lemmas/Regularity.lean:159:13: failed to infer `have` declaration type
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.Regularity
+error: build failed
+       15.93 real        94.63 user         7.16 sys
+          1700757504  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1595589  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 107  voluntary context switches
+              133676  involuntary context switches
+          1954962013  instructions retired
+           919467824  cycles elapsed
+            69813544  peak memory footprint
+== exit 1

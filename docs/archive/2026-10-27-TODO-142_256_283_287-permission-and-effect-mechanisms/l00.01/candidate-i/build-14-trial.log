@@ -1,0 +1,78 @@
+== wait-for-lock start 18:02:09
+== lock acquired 18:02:09 after 0s
+⚠ [35/410] Replayed Benitoite.Release.Typing
+warning: Benitoite/Release/Typing.lean:126:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [111/410] Built Benitoite.Release.TypeVariables (439ms)
+✔ [112/410] Built Benitoite.Release.TypeVariables:c.o (203ms)
+✔ [113/410] Built Benitoite.Release.WellFormed (339ms)
+✖ [115/410] Building Benitoite.Release.TypeScopedSubst (370ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeScopedSubst.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeScopedSubst.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeScopedSubst.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeScopedSubst.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeScopedSubst.setup.json --json
+error: Benitoite/Release/TypeScopedSubst.lean:16:8: Missing cases:
+(Atom.name _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeScopedSubst.lean:21:2: Type mismatch
+  mem_substAtoms es ε a
+has type
+  substAtoms es ε.atoms a = true ↔
+    (match a with
+      | Atom.name l r => ε.mem (Atom.name l r)
+      | Atom.rho i => es.length ≤ i ∧ ε.mem (Atom.rho i)) ∨
+      ∃ i f, es[i]? = some f ∧ ε.mem (Atom.rho i) ∧ f.mem a
+but is expected to have type
+  substAtoms (SubstEnv.rowsOnly es).rows ε.atoms a = true ↔
+    (match a with
+      | Atom.name l => ε.mem (Atom.name l)
+      | Atom.rho k => es.length ≤ k ∧ ε.mem (Atom.rho k)) ∨
+      ∃ i e, es[i]? = some e ∧ ε.mem (Atom.rho i) ∧ e.mem a
+error: Benitoite/Release/TypeScopedSubst.lean:31:11: unsolved goals
+case name
+es : List Eff
+ε : Eff
+h : RhosIn (fun x => x < es.length) ε
+l : EffName
+r✝ : ScopeRange
+⊢ (match Atom.name l r✝ with
+    | Atom.name l => ε.mem (Atom.name l)
+    | Atom.rho k => es.length ≤ k ∧ ε.mem (Atom.rho k)) ↔
+    ∃ l_1, (l = l_1 ∧ r✝ = ScopeRange.top) ∧ ε.mem (Atom.name l_1)
+error: Benitoite/Release/TypeScopedSubst.lean:268:67: Application type mismatch: The argument
+  rfl
+has type
+  ?m.15 = ?m.15
+of sort `Prop` but is expected to have type
+  ScopeRange
+of sort `Type` in the application
+  Exists.intro rfl
+✔ [125/410] Built Benitoite.Release.Admissible (319ms)
+✔ [127/410] Built Benitoite.Release.Semantics (757ms)
+✔ [129/410] Built Benitoite.Release.Assumptions (461ms)
+✔ [130/410] Built Benitoite.Release.Lemmas.FailureBase (489ms)
+✔ [138/410] Built Benitoite.Release.Examples (945ms)
+✔ [139/410] Built Benitoite.Release.Lemmas.NoFailContext (1.8s)
+✔ [398/410] Built Benitoite.Release.Lemmas.Names (3.1s)
+Some required targets logged failures:
+- Benitoite.Release.TypeScopedSubst
+error: build failed
+        3.97 real         9.44 user         1.92 sys
+           832864256  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              482768  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  30  voluntary context switches
+               25297  involuntary context switches
+          1411989199  instructions retired
+           549567941  cycles elapsed
+            33916200  peak memory footprint
+== exit 1

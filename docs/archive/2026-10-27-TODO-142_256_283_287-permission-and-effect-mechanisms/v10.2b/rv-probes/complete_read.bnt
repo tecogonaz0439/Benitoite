@@ -1,0 +1,23 @@
+import Benitoite.Unofficial.IO.File
+
+function f(e: IOError) -> Result[String, IOError]
+  return handle File.readText(path: "/x") with
+    case File.readText(path) -> resume(Result.Ok("a"))
+    case File.readTextIn(path) -> resume(Result.Error(e))
+    case File.openReader(path) -> resume(Result.Error(e))
+    case File.readLine(reader) -> resume(Result.Error(e))
+    case File.readBytes(path) -> resume(Result.Error(e))
+    case File.readBytesIn(path) -> resume(Result.Error(e))
+    case File.readLines(path) -> resume(Result.Error(e))
+    case File.exists(path) -> resume(Result.Error(e))
+    case File.info(path) -> resume(Result.Error(e))
+    case File.listDirectory(path) -> resume(Result.Error(e))
+    case File.walk(path) -> resume(Result.Error(e))
+    case File.canonicalize(path) -> resume(Result.Error(e))
+    case File.readChunk(reader, maximumBytes) -> resume(Result.Error(e))
+  end handle
+end function
+
+function main() -> Unit
+  ()
+end function

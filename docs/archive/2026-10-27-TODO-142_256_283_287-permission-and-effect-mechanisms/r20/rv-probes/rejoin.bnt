@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(c: Boolean, p: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+ bind r <- if c then S.checkPathIn(pattern: "/data/a", path: p) else S.checkPathIn(pattern: "/etc/**", path: p) end if
+ match r with
+ case Result.Ok(v) -> return Result.Ok(v)
+ case Result.Error(e) -> return Result.Error(e)
+ end match
+end function

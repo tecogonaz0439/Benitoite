@@ -1,0 +1,33 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=target/r10.7b-ftable",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_scope_tables_smoke",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "invoked": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=target/r10.7b-ftable",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "export_scope_tables_smoke",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_at": "2026-10-28T14:15:21.742119+00:00",
+  "ended_at": "2026-10-28T14:15:21.888004+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.1458245,
+  "auxiliary_max_rss_bytes": 78004224,
+  "auxiliary_max_rss_mib": 74.390625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum"
+}

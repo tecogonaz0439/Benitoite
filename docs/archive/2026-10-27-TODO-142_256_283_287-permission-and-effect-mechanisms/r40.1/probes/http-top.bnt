@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Network.Http
+function sample(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect["api.example", 443]
+ return Http.send(request: request)
+end function
+function main() -> Unit
+end function

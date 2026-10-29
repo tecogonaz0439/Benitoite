@@ -1,0 +1,42 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.71s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 34 tests
+test types::scope::tests::host_name_and_ip_never_convert_into_each_other ... ok
+test types::scope::tests::atomic_cover_does_not_combine_a_union ... ok
+test types::scope::tests::ip_atomic_cover_is_same_family_interval_inclusion ... ok
+test types::scope::tests::ip_membership_keeps_family_and_closed_endpoints ... ok
+test types::scope::tests::cidr_normalization_bounds_and_rejection ... ok
+test types::scope::tests::ip_parser_and_formatter_have_independent_numeric_examples ... ok
+test types::scope::tests::ip_parser_rejects_noncanonical_or_out_of_domain_text ... ok
+test types::scope::tests::name_membership_and_atomic_cover ... ok
+test types::scope::tests::name_and_direct_ip_classification ... ok
+test types::scope::tests::path_lexical_boundary_rejects_repairs ... ok
+test types::scope::tests::path_membership_and_atomic_cover ... ok
+test types::scope::tests::top_and_kinds_follow_domain_instead_of_set_equivalence ... ok
+test types::scope::tests::ports_and_endpoint_product_use_closed_bounds ... ok
+test types::scope::tests::scope_suffix_uses_language_literals ... ok
+test syntax::parser::types::named_type_tests::ordinary_input_accepts_named_function_types ... ok
+test types::scope::tests::equality_hash_and_order_preserve_narrow_atoms ... ok
+test types::signature::tests::io_signature_validates_target_position_and_all_effect_indices ... ok
+test types::signature::tests::range_signature_admission_and_closed_instantiation ... ok
+test syntax::parser::types::named_type_tests::function_types_keep_names_and_nested_types ... ok
+test syntax::parser::types::tests::declaration_constraints_are_reported_and_left_out_of_the_ast ... ok
+test types::signature::tests::atom_ranges_remain_structural_and_substitution_is_independent ... ok
+test types::tests::function_contracts_affect_structure_hash_and_display ... ok
+test types::tests::scoped_effects_survive_rows_and_types_inside_failures ... ok
+test types::tests::constructor_fields_are_instantiated_and_missing_entries_return_none ... ok
+test syntax::parser::types::final_type_tests::unnamed_function_types_report_the_parameter_without_inventing_names ... ok
+test syntax::parser::types::tests::uses_bracket_repairs_require_a_type_list_and_a_local_closing_bracket ... ok
+test types::tests::indexed_type_identity_display_and_signature_instantiation ... ok
+test types::tests::width_type_display_preserves_legacy_names ... ok
+test types::tests::substitution_is_simultaneous_and_preserves_unbound_parameters ... ok
+test types::tests::function_type_display_keeps_nine_io_effects_separate ... ok
+test types::tests::function_type_display_groups_all_io_effects_and_keeps_other_effects ... ok
+test types::tests::scoped_effect_display_keeps_ranges_beside_io_all ... ok
+test types::tests::scoped_effect_sets_preserve_structural_identity ... ok
+test syntax::parser::types::named_type_tests::prepared_named_function_type_formats_from_each_label ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 1345 filtered out; finished in 0.02s
+

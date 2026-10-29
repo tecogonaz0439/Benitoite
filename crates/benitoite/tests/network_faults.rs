@@ -138,12 +138,12 @@ fn execute_injected(source: &str, mode: ExecMode, through_cli: bool) -> String {
     String::from_utf8(stdout.lock().unwrap().clone()).unwrap()
 }
 
-// 関門: ソースの get/send とエラーのアクセサを含む、二つの parts の引き渡しの契約。
+// 関門: ソースの get/send/sendIn とエラーのアクセサを含む、二つの parts の引き渡しの契約。
 // クライアントの関数単体のテストでは CLI と RunEnv の引き渡し忘れ・名前の大小文字を捕まえない。
 // IPv6 の角括弧を除き忘れると、表の ::1 に当たらず筋書きにない仕事の待ちで失敗する。
 // 注入は既存の外部依存の表だけを使い、本番の差し込み口を増やさない。
 #[test]
-fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
+fn get_send_and_send_in_expose_all_four_fault_kinds_through_run_and_cli() {
     let mut body =
         String::from("function main() -> Result[Unit, String] uses Http.Connect, Console.Write\n");
     let mut expected = String::new();
@@ -157,9 +157,17 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
         let mut hosts = vec![host.to_owned(), host.to_ascii_uppercase()];
         hosts.dedup();
         for host in hosts {
+            let (pattern, port) = if host.starts_with('[') {
+                ("::1".to_owned(), 1)
+            } else {
+                (host.to_ascii_lowercase(), 80)
+            };
             for call in [
                 format!("Http.get(\"http://{host}/\")"),
                 format!("Http.send(Http.clientRequest(method: \"POST\", url: \"http://{host}/\"))"),
+                format!(
+                    r#"Http.sendIn(request: try Http.checkRequestIn(hostPattern: {pattern:?}, minimumPort: {port}, maximumPort: {port}, request: Http.clientRequest(method: "POST", url: "http://{host}/")) |> Result.mapError(r: _, f: lambda(error) return "request check failed" end lambda))"#
+                ),
             ] {
                 body.push_str(&format!(r#"
   Console.writeLine(match {call} with
@@ -170,6 +178,24 @@ fn get_and_send_expose_all_four_fault_kinds_through_run_and_cli() {
                 expected.push_str(&format!("{kind}\n"));
             }
         }
+    }
+    // 同じ対象の照合は、port の字面でなく scheme の既定値と数値を使う。
+    // 固定の失敗表を使い、省略・空・0・先頭0と Host の照合を通信前の本番経路で確かめる。
+    for (url, port, host_header) in [
+        ("http://missing.invalid/", 80, "missing.invalid"),
+        ("http://missing.invalid:/", 80, "missing.invalid:"),
+        ("http://missing.invalid:0/", 0, "missing.invalid:0"),
+        ("http://missing.invalid:00080/", 80, "MISSING.INVALID:80"),
+        ("https://missing.invalid/", 443, "missing.invalid"),
+        ("https://missing.invalid:/", 443, "missing.invalid:443"),
+    ] {
+        body.push_str(&format!(r#"
+  Console.writeLine(match Http.sendIn(request: try Http.checkRequestIn(hostPattern: "missing.invalid", minimumPort: {port}, maximumPort: {port}, request: Http.ClientRequest(..Http.clientRequest(method: "POST", url: "{url}"), headers: [Pair("Host", "{host_header}")])) |> Result.mapError(r: _, f: lambda(error) return "request check failed" end lambda)) with
+    case Result.Error(error) -> if NetworkError.kind(error) = NetworkErrorKind.HostNotFound then "HostNotFound" else "wrong kind" end if
+    case Result.Ok(_response) -> "unexpected success"
+  end match)
+"#));
+        expected.push_str("HostNotFound\n");
     }
     body.push_str("return Result.Ok(())\nend function\n");
     for mode in [ExecMode::Direct, ExecMode::Request] {

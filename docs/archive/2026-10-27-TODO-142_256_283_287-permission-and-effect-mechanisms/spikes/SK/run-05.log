@@ -1,0 +1,72 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+"4.34.1"
+SK.lean:798:2: error: Type mismatch
+  congrArg some h.left.left
+has type
+  some s✝¹.scope.kind = some s✝.scope.kind
+but is expected to have type
+  s✝¹.scope.kind = s✝.scope.kind
+SK.lean:930:81: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  LE.le
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `LE.le` to use this tactic
+
+⊢ { kind := Kind.write, pattern := Pattern.exact ["out", "a.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi ≤
+    { kind := Kind.write, pattern := Pattern.exact ["out", "a.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi
+SK.lean:932:85: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  LE.le
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `LE.le` to use this tactic
+
+⊢ { kind := Kind.write, pattern := Pattern.exact ["outside", "b.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi ≤
+    { kind := Kind.write, pattern := Pattern.exact ["outside", "b.txt"], ports := { lo := 0, hi := 65535 } }.ports.hi
+SK.lean:998:23: warning: declaration uses `sorry`
+SK.lean:1000:23: warning: declaration uses `sorry`
+SK.lean:1012:17: warning: declaration uses `sorry`
+SK.lean:1025:17: warning: declaration uses `sorry`
+SK.lean:1061:2: error: Type mismatch
+  Steps.step (Step.hit rfl) (Steps.step (Step.seqStep (Step.io ⟨rfl, rfl⟩)) Steps.refl)
+has type
+  Steps good (Process.handled (good.sig ?m.10).kind (Code.call ?m.28 ?m.29 ?m.30) (Code.call ?m.10 ?m.11 ?m.12))
+    (none.toList ++ ((some (observe ?m.28 ?m.29)).toList ++ []))
+    ((after (Outcome.val 0) ?m.30).seq (Process.handled (good.sig ?m.10).kind (Code.call ?m.28 ?m.29 ?m.30) ?m.12))
+but is expected to have type
+  Steps good redirect [eventB] ((Process.plain Code.done).seq (Process.handled Kind.write clauseB Code.done))
+SK.lean:1102:54: error: Tactic `rfl` failed: No `[refl]` lemma registered for relation
+  LE.le
+
+Hint: Add the `[refl]` attribute to reflexivity lemmas for `LE.le` to use this tactic
+
+⊢ { kind := Kind.tcp, pattern := Pattern.tree ["com", "example"] 1, ports := { lo := 443, hi := 443 } }.ports.lo ≤
+    { kind := Kind.tcp, pattern := Pattern.tree ["com", "example"] 1, ports := { lo := 443, hi := 443 } }.ports.lo
+'SK.checked_invariant' does not depend on any axioms
+'SK.argument_bound' depends on axioms: [propext, Quot.sound]
+'SK.io_bound' depends on axioms: [propext, Quot.sound]
+'SK.preservation' depends on axioms: [propext, Quot.sound]
+'SK.progress' depends on axioms: [propext, Quot.sound]
+'SK.trace_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.reachable_target_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SK.effect_soundness' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SK.Examples.checked_alone_insufficient' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SK.Examples.good_assumptions' depends on axioms: [propext, sorryAx, Quot.sound]
+'SK.Examples.wrong_rule_unsound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SK.Examples.original_target_budget_rejected' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+        0.97 real         1.47 user         0.32 sys
+           743636992  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47846  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   3  voluntary context switches
+               14596  involuntary context switches
+         11345671023  instructions retired
+          5265529095  cycles elapsed
+           192437752  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

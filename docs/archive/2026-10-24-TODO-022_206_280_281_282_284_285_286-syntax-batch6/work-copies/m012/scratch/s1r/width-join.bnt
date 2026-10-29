@@ -1,0 +1,9 @@
+function f(flag: Boolean) -> Integer8
+  bind n <- if flag then 100s8 else 110s8 end if
+  return n + 100s8
+end function
+
+function main() -> Unit
+  bind _ <- f(true)
+  return ()
+end function

@@ -1,0 +1,16 @@
+warning[W0402]: this calculation overflows `Integer8`
+  --> work/m012/scratch/interval-analysis/width-warning.bnt:2:13
+   |
+ 2 |   bind _ <- Integer8.absolute(-128s8)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^ always overflows
+
+warning: 1 warning emitted
+runtime error[R0102]: integer overflow
+  --> work/m012/scratch/interval-analysis/width-warning.bnt:2:13
+   |
+ 2 |   bind _ <- Integer8.absolute(-128s8)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: call trace (innermost first):
+             main
+   = note: functions left by tail calls are not shown

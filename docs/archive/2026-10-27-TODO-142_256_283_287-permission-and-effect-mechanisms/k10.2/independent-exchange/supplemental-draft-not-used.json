@@ -1,0 +1,12 @@
+{
+  "basis": "手書きの14定義と独立コア。比較実行前に固定",
+  "definitions": 14,
+  "nonTopRanges": 36,
+  "desugarDiff": {"exit": 0, "matched": 14, "mismatched": 0, "outside": 0, "excluded": 0},
+  "builtinCheck": {"exit": 0, "checkedInputs": 2},
+  "coverageDiff": {"exit": 0, "matched": 1, "mismatched": 0},
+  "coverageProgramDiff": {"exit": 0, "matched": 1, "mismatched": 0},
+  "surfaceCheckAll": {"exit": 1, "requiredRejections": {"fn:1": "notCovered", "fn:3": "unknownSource", "fn:9": "unknownSource", "fn:21": "budgetExceeded"}},
+  "surfaceCheck": {"keyPreorder": 0, "cover": {"fn:1": "notCovered", "fn:3": "unknownSource", "fn:9": "unknownSource", "fn:21": "budgetExceeded"}},
+  "atomicCoverOnly": {"typingExit": 1, "typingReason": "effect exceeds the allowed effect", "sameRequiredReason": false}
+}

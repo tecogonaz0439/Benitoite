@@ -1,0 +1,23 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "174a8540fbde08464908a772992685f1d8068811",
+    "--dry-run"
+  ],
+  "startedAt": "2026-10-29T15:53:36.110958+00:00",
+  "checkExitCode": 0,
+  "elapsedSeconds": 0.2166315,
+  "noChecksSelected": true,
+  "osTimeMaximumRSS": null,
+  "osTimeUnavailableReason": "先行の time -l が sandbox の sysctl 制限で終了1",
+  "auxiliaryRSS": {
+    "raw": 13484032,
+    "unit": "bytes",
+    "MiB": 12.859375,
+    "GiB": 0.0125579833984375,
+    "method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss。この dry-run だけを待った Python の子孫最大値。time の原値や同時常駐量の合計ではない"
+  }
+}

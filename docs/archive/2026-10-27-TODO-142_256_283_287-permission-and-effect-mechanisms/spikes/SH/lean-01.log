@@ -1,0 +1,144 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Hefty.lean:84:35: error: Application type mismatch: The argument
+  n
+has type
+  Nat
+but is expected to have type
+  Denote ?m.10
+in the application
+  HTree.pure n
+Hefty.lean:85:62: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HAdd (Denote ?m.10) Nat ?m.18
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:87:0: error: Aborting evaluation since the expression depends on the 'sorry' axiom, which can lead to runtime instability and crashes.
+
+To attempt to evaluate anyway despite the risks, use the '#eval!' command.
+Hefty.lean:88:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (Denote Code.nat × List Nat)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:88:42: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Denote Code.nat) 10
+numerals are polymorphic in Lean, but the numeral `10` cannot be used in a context where the expected type is
+  Denote Code.nat
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:88:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Hefty.lean:97:35: error: Application type mismatch: The argument
+  n
+has type
+  Nat
+but is expected to have type
+  Denote ?m.10
+in the application
+  HTree.pure n
+Hefty.lean:98:62: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HAdd (Denote ?m.10) Nat ?m.18
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:100:0: error: Aborting evaluation since the expression depends on the 'sorry' axiom, which can lead to runtime instability and crashes.
+
+To attempt to evaluate anyway despite the risks, use the '#eval!' command.
+Hefty.lean:101:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (Denote Code.nat × List Nat)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:101:35: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Denote Code.nat) 14
+numerals are polymorphic in Lean, but the numeral `14` cannot be used in a context where the expected type is
+  Denote Code.nat
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:101:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Hefty.lean:102:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (Denote Code.nat × List Nat)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:102:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Hefty.lean:107:26: error: Application type mismatch: The argument
+  n == 7
+has type
+  Bool
+but is expected to have type
+  Denote ?m.8
+in the application
+  HTree.pure (n == 7)
+Hefty.lean:108:40: error: Application type mismatch: The argument
+  ok
+has type
+  Denote ?m.8
+but is expected to have type
+  Prop
+in the application
+  @ite ?m.18 ok
+Hefty.lean:108:59: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Denote Code.nat) 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Denote Code.nat
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:110:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (Denote Code.nat × List Nat)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:110:42: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Denote Code.nat) 4
+numerals are polymorphic in Lean, but the numeral `4` cannot be used in a context where the expected type is
+  Denote Code.nat
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:110:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Hefty.lean:116:37: error: Application type mismatch: The argument
+  ()
+has type
+  Unit
+but is expected to have type
+  Denote ?m.14
+in the application
+  HTree.pure ()
+Hefty.lean:117:46: error: Application type mismatch: The argument
+  n
+has type
+  Nat
+but is expected to have type
+  Denote ?m.22
+in the application
+  HTree.pure n
+Hefty.lean:120:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  BEq (Denote Code.nat × List Nat)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:120:43: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Denote Code.nat) 3
+numerals are polymorphic in Lean, but the numeral `3` cannot be used in a context where the expected type is
+  Denote Code.nat
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Hefty.lean:120:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+'SH.emit_survives_local' does not depend on any axioms
+'SH.emit_survives_local_trace' does not depend on any axioms
+        0.43 real         0.27 user         0.20 sys
+           676626432  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               43683  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                 867  involuntary context switches
+          4229995359  instructions retired
+          1491873205  cycles elapsed
+           132472000  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

@@ -1,0 +1,11 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+warning: unused import: `NodeId`
+ --> crates/benitoite/src/typeck/effects/handle.rs:7:30
+  |
+7 | use crate::base::{BindingId, NodeId};
+  |                              ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error: `benitoite` (lib test) generated 1 warning (run `cargo fix --lib -p benitoite --tests` to apply 1 suggestion)
+error: warnings are denied by `build.warnings` configuration

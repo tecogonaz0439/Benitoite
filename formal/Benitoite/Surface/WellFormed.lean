@@ -16,7 +16,7 @@ open Benitoite.Release
 mutual
   def DictEv.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : DictEv → Prop
     -- 01-12「型クラス」V-Dict: 実装の型引数と制約の辞書 V̄。
-    | .impl _ ts ds => Ty.VarsInList nt pe ts ∧ DictEv.ScopedList nt pe nv ds
+    | .impl _ ts ds => Ty.VarsInList 0 nt pe ts ∧ DictEv.ScopedList nt pe nv ds
     -- 同節の辞書の決め方: 受け取った辞書は Γ の普通の変数。
     | .local j => j < nv
     | .clause s i depth => i < s.dictCount ∧ nv = depth + 1 + s.arity + s.dictCount + s.outer
@@ -32,66 +32,66 @@ mutual
   def Expr.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Expr → Prop
     | .local i => i < nv
     | .builderOp _ i args k => i < nv ∧
-        Ty.VarsIn nt pe k.contents ∧ args.Scoped nt pe nv
+        Ty.VarsIn 0 nt pe k.contents ∧ args.Scoped nt pe nv
     -- P5: 型の範囲は使用位置のまま、値の変数は 0 個で本体を検査する。
-    | .constE a body => Ty.VarsIn nt pe a ∧ body.Scoped nt pe 0
-    | .funName _ ts es | .primName _ ts es =>
-        Ty.VarsInList nt pe ts ∧ Eff.VarsInList nt pe es
+    | .constE a body => Ty.VarsIn 0 nt pe a ∧ body.Scoped nt pe 0
+    | .funName _ ts es | .primName _ ts es _ =>
+        Ty.VarsInList 0 nt pe ts ∧ Eff.VarsInList 0 nt pe es
     -- 01-12「型クラス」第 4 行: 型引数・エフェクト引数・Ū・ラムダの値引数型。
     | .funDicts _ ts es ds names ps =>
-        Ty.VarsInList nt pe ts ∧ Eff.VarsInList nt pe es ∧
-          DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
+        Ty.VarsInList 0 nt pe ts ∧ Eff.VarsInList 0 nt pe es ∧
+          DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList 0 nt pe ps
     -- 同表第 2 行: V と Ū は、ラムダに入る前の Γ で指す。
     | .methName d _ ss es us names ps =>
-        d.Scoped nt pe nv ∧ Ty.VarsInList nt pe ss ∧ Eff.VarsInList nt pe es ∧
-          DictEv.ScopedList nt pe nv us ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
-    | .nullCon _ ts => Ty.VarsInList nt pe ts
-    | .opName _ ts => Ty.VarsInList nt pe ts
-    | .opDicts _ ts ds names ps => Ty.VarsInList nt pe ts ∧
-        DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
-    | .raise t e => Ty.VarsIn nt pe t ∧ Ty.VarsIn nt pe e
+        d.Scoped nt pe nv ∧ Ty.VarsInList 0 nt pe ss ∧ Eff.VarsInList 0 nt pe es ∧
+          DictEv.ScopedList nt pe nv us ∧ NamesWF names ps ∧ Ty.VarsInList 0 nt pe ps
+    | .nullCon _ ts => Ty.VarsInList 0 nt pe ts
+    | .opName _ ts => Ty.VarsInList 0 nt pe ts
+    | .opDicts _ ts ds names ps => Ty.VarsInList 0 nt pe ts ∧
+        DictEv.ScopedList nt pe nv ds ∧ NamesWF names ps ∧ Ty.VarsInList 0 nt pe ps
+    | .raise t e => Ty.VarsIn 0 nt pe t ∧ Ty.VarsIn 0 nt pe e
     | .handleFail e t body clause =>
-        Ty.VarsIn nt pe e ∧ Ty.VarsIn nt pe t ∧ body.Scoped nt pe nv ∧
+        Ty.VarsIn 0 nt pe e ∧ Ty.VarsIn 0 nt pe t ∧ body.Scoped nt pe nv ∧
           clause.Scoped (nt + 1) pe (nv + 2)
-    | .conValue _ ts names ps => Ty.VarsInList nt pe ts ∧ NamesWF names ps ∧ Ty.VarsInList nt pe ps
+    | .conValue _ ts names ps => Ty.VarsInList 0 nt pe ts ∧ NamesWF names ps ∧ Ty.VarsInList 0 nt pe ps
     | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _ |
       .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit => True
     | .paren e => e.Scoped nt pe nv
     | .block body => body.Scoped nt pe nv
-    | .record _ ts _ es => Ty.VarsInList nt pe ts ∧ es.Scoped nt pe nv
+    | .record _ ts _ es => Ty.VarsInList 0 nt pe ts ∧ es.Scoped nt pe nv
     | .recordUpdate _ ts _ _ base es =>
-        Ty.VarsInList nt pe ts ∧ base.Scoped nt pe nv ∧ es.Scoped nt pe nv
-    | .conCall _ ts es => Ty.VarsInList nt pe ts ∧ es.Scoped nt pe nv
+        Ty.VarsInList 0 nt pe ts ∧ base.Scoped nt pe nv ∧ es.Scoped nt pe nv
+    | .conCall _ ts es => Ty.VarsInList 0 nt pe ts ∧ es.Scoped nt pe nv
     | .call f _ _ es => f.Scoped nt pe nv ∧ es.Scoped nt pe nv
     | .pipe lhs rhs => lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
     | .partialCall f _ args r ε =>
-        f.Scoped nt pe nv ∧ args.Scoped nt pe nv ∧ Ty.VarsIn nt pe r ∧ Eff.VarsIn nt pe ε ∧ Eff.Canonical ε
-    | .partialCon _ ts args => Ty.VarsInList nt pe ts ∧ args.Scoped nt pe nv
-    | .binary _ t lhs rhs => Ty.VarsIn nt pe t ∧ lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
-    | .neg t e => Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv
+        f.Scoped nt pe nv ∧ args.Scoped nt pe nv ∧ Ty.VarsIn 0 nt pe r ∧ Eff.VarsIn 0 nt pe ε ∧ Eff.Canonical ε
+    | .partialCon _ ts args => Ty.VarsInList 0 nt pe ts ∧ args.Scoped nt pe nv
+    | .binary _ t lhs rhs => Ty.VarsIn 0 nt pe t ∧ lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
+    | .neg t e => Ty.VarsIn 0 nt pe t ∧ e.Scoped nt pe nv
     | .not e => e.Scoped nt pe nv
     | .and lhs rhs | .or lhs rhs => lhs.Scoped nt pe nv ∧ rhs.Scoped nt pe nv
-    | .list a es => Ty.VarsIn nt pe a ∧ es.Scoped nt pe nv
+    | .list a es => Ty.VarsIn 0 nt pe a ∧ es.Scoped nt pe nv
     | .listSpread a f before s after =>
-        Ty.VarsIn nt pe a ∧ f.Scoped nt pe nv ∧ before.Scoped nt pe nv ∧
+        Ty.VarsIn 0 nt pe a ∧ f.Scoped nt pe nv ∧ before.Scoped nt pe nv ∧
           s.Scoped nt pe nv ∧ after.Scoped nt pe nv
     | .interpolation parts es fs =>
-        Ty.VarsInList nt pe (InterpPart.exprTypes parts) ∧ es.Scoped nt pe nv ∧ fs.Scoped nt pe nv
+        Ty.VarsInList 0 nt pe (InterpPart.exprTypes parts) ∧ es.Scoped nt pe nv ∧ fs.Scoped nt pe nv
     | .lam names ps r ε body =>
-        NamesWF names ps ∧ Ty.VarsInList nt pe ps ∧ Ty.VarsIn nt pe r ∧ Eff.VarsIn nt pe ε ∧ Eff.Canonical ε ∧
+        NamesWF names ps ∧ Ty.VarsInList 0 nt pe ps ∧ Ty.VarsIn 0 nt pe r ∧ Eff.VarsIn 0 nt pe ε ∧ Eff.Canonical ε ∧
           body.Scoped nt pe (ps.length + nv)
     | .ite c yes no => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv ∧ no.Scoped nt pe nv
     | .elseIf c yes no => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv ∧ no.Scoped nt pe nv
     | .ifOnly c yes => c.Scoped nt pe nv ∧ yes.Scoped nt pe nv
-    | .matchE b e arms => Ty.VarsIn nt pe b ∧ e.Scoped nt pe nv ∧ arms.Scoped nt pe nv
-    | .returnE a e => Ty.VarsIn nt pe a ∧ e.Scoped nt pe nv
+    | .matchE b e arms => Ty.VarsIn 0 nt pe b ∧ e.Scoped nt pe nv ∧ arms.Scoped nt pe nv
+    | .returnE a e => Ty.VarsIn 0 nt pe a ∧ e.Scoped nt pe nv
     | .tryResult ts _ _ e | .tryOption ts _ _ e =>
-        Ty.VarsInList nt pe ts ∧ e.Scoped nt pe nv
+        Ty.VarsInList 0 nt pe ts ∧ e.Scoped nt pe nv
     | .tryResultDie t _ _ d _ _ e message =>
-        Ty.VarsIn nt pe t ∧ d.Scoped nt pe nv ∧ e.Scoped nt pe nv ∧
+        Ty.VarsIn 0 nt pe t ∧ d.Scoped nt pe nv ∧ e.Scoped nt pe nv ∧
           (match message with | none => True | some m => m.Scoped nt pe nv)
     | .tryOptionDie t _ _ _ e message =>
-        Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv ∧
+        Ty.VarsIn 0 nt pe t ∧ e.Scoped nt pe nv ∧
           (match message with | none => True | some m => m.Scoped nt pe nv)
     | .withE _ e body => e.Scoped nt pe nv ∧ body.Scoped nt pe (nv + 1)
     | .lazyE body => body.Scoped nt pe nv
@@ -105,7 +105,7 @@ mutual
   def HoleArgs.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : HoleArgs → Prop
     | .nil => True
     | .expr _ _ e rest => e.Scoped nt pe nv ∧ rest.Scoped nt pe nv
-    | .hole _ _ t rest => Ty.VarsIn nt pe t ∧ rest.Scoped nt pe nv
+    | .hole _ _ t rest => Ty.VarsIn 0 nt pe t ∧ rest.Scoped nt pe nv
 
   /-- 選択肢には型注釈や自由変数がない。slots の範囲は AltsTy が検査する。 -/
   def Arms.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Arms → Prop
@@ -122,15 +122,15 @@ mutual
         body.Scoped (nt + ntys) pe (nv + 1 + ndicts + n) ∧ rest.Scoped nt pe nv
 
   def Block.Scoped (nt : Nat) (pe : Nat → Prop) (nv : Nat) : Block → Prop
-    | .builderBind k rest => Ty.VarsIn nt pe k.contents ∧ rest.Scoped nt pe (nv + 1)
+    | .builderBind k rest => Ty.VarsIn 0 nt pe k.contents ∧ rest.Scoped nt pe (nv + 1)
     | .empty => True
     | .last e | .lastDiscard e => e.Scoped nt pe nv
-    | .lastBind _ t e => Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv
-    | .bind _ t e rest => Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv ∧ rest.Scoped nt pe (nv + 1)
+    | .lastBind _ t e => Ty.VarsIn 0 nt pe t ∧ e.Scoped nt pe nv
+    | .bind _ t e rest => Ty.VarsIn 0 nt pe t ∧ e.Scoped nt pe nv ∧ rest.Scoped nt pe (nv + 1)
     | .discard e rest | .seq e rest => e.Scoped nt pe nv ∧ rest.Scoped nt pe nv
-    | .lastPat _ _ t e => Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv
+    | .lastPat _ _ t e => Ty.VarsIn 0 nt pe t ∧ e.Scoped nt pe nv
     | .bindPat _ pat t e rest =>
-        Ty.VarsIn nt pe t ∧ e.Scoped nt pe nv ∧ rest.Scoped nt pe (pat.binders + nv)
+        Ty.VarsIn 0 nt pe t ∧ e.Scoped nt pe nv ∧ rest.Scoped nt pe (pat.binders + nv)
 end
 
 /-- 操作の共有宣言はコア引数を保持する。表層では辞書の前置と所属型を照合する。 -/
@@ -143,15 +143,15 @@ def _root_.Benitoite.Release.OpDecl.DictionaryScoped (d : OpDecl) : Prop :=
 -- 本体は辞書の引数と値の引数の両方を束縛した環境に置く。
 def Def.Scoped (d : Def) : Prop :=
   NamesWF d.names d.params ∧ NamesWF d.coreNames (d.dictTys ++ d.params) ∧
-  Ty.VarsInList d.tparams.length (· < d.neffs) d.params ∧
-    Ty.VarsIn d.tparams.length (· < d.neffs) d.ret ∧ Eff.VarsIn d.tparams.length (· < d.neffs) d.eff ∧
+  Ty.VarsInList 0 d.tparams.length (· < d.neffs) d.params ∧
+    Ty.VarsIn 0 d.tparams.length (· < d.neffs) d.ret ∧ Eff.VarsIn 0 d.tparams.length (· < d.neffs) d.eff ∧
     (∀ p ∈ d.dictParams, p.2 < d.tparams.length) ∧
     d.body.Scoped d.tparams.length (· < d.neffs) (d.dictParams.length + d.params.length)
 
 -- 01-12「型クラス」D-Impl: β̄ と γ̄、ρ̄、d̄ と x̄ の束縛の範囲。
 def ImplDecl.Scoped (D : Declarations) (id : ImplDecl) : Prop :=
   (∀ p ∈ id.dictParams, p.2 < id.tparams.length) ∧
-    Ty.VarsIn id.tparams.length (fun _ => False) id.target ∧
+    Ty.VarsIn 0 id.tparams.length (fun _ => False) id.target ∧
     (∀ s u, id.supers s = some u → u.Scoped id.tparams.length (fun _ => False) id.dictParams.length) ∧
     (∀ cd m ms body, D.classes id.cls = some cd → cd.methods m = some ms → id.methods m = some body →
       body.Scoped (ms.tparams.length + id.tparams.length) (· < ms.neffs)

@@ -1,0 +1,40 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0603]: function `acceptance` is private
+   --> crates/benitoite/tests/desugar_export/named.rs:24:56
+    |
+ 24 |     input["scopeAcceptance"] = exchange::scope_export::acceptance(&input);
+    |                                                        ^^^^^^^^^^ private function
+    |
+note: the function `acceptance` is defined here
+   --> crates/benitoite/tests/desugar_export/scope.rs:144:1
+    |
+144 | pub(super) fn acceptance(input: &Value) -> Value {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0603]: function `acceptance` is private
+   --> crates/benitoite/tests/desugar_export.rs:273:65
+    |
+273 | ...   return json!({"scopeAcceptance":exchange::scope_export::acceptance(&Value::Null),"group":group,"name":name,"excluded":errors,...
+    |                                                               ^^^^^^^^^^ private function
+    |
+note: the function `acceptance` is defined here
+   --> crates/benitoite/tests/desugar_export/scope.rs:144:1
+    |
+144 | pub(super) fn acceptance(input: &Value) -> Value {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0603]: function `acceptance` is private
+   --> crates/benitoite/tests/desugar_export.rs:276:65
+    |
+276 | ...   return json!({"scopeAcceptance":exchange::scope_export::acceptance(&Value::Null),"group":group,"name":name,"excluded":["exter...
+    |                                                               ^^^^^^^^^^ private function
+    |
+note: the function `acceptance` is defined here
+   --> crates/benitoite/tests/desugar_export/scope.rs:144:1
+    |
+144 | pub(super) fn acceptance(input: &Value) -> Value {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `benitoite` (test "desugar_export") due to 3 previous errors

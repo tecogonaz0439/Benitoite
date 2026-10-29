@@ -1,0 +1,33 @@
+== wait-for-lock start 01:25:01
+== lock acquired 01:25:01 after 0s
+✖ [100/433] Building Benitoite.Release.Typing (1.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Typing.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.setup.json --json
+error: Benitoite/Release/Typing.lean:604:4: Missing cases:
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.path _) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.name _)) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v4 (Fin.mk _ _)))) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v6 (Fin.mk _ _)))) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.endpoint (Scope.Domain.Endpoint.mk (Scope.Domain.HostTarget.name _) (Fin.mk _ _))) _ True.intro)
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+Some required targets logged failures:
+- Benitoite.Release.Typing
+error: build failed
+        1.20 real         1.21 user         0.22 sys
+           783499264  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               55730  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   4  voluntary context switches
+                7044  involuntary context switches
+          1289707301  instructions retired
+           474904742  cycles elapsed
+            21464192  peak memory footprint
+== exit 1

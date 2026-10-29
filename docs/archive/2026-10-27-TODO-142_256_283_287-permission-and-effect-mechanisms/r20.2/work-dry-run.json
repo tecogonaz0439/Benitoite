@@ -1,0 +1,16 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "09b0c228208acf4dbfadbec14f3c0fbf223f7d63",
+    "--dry-run"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 0.108646208,
+  "maximum_resident_bytes": 11272192,
+  "maximum_resident_mib": 10.75,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; 子の最大値",
+  "stdout_log": "work-dry-run.log"
+}

@@ -1,0 +1,28 @@
+import Benitoite.Unofficial.IO.Console
+
+record Item
+  name: String
+  price: Integer
+  quantity: Integer
+end record
+
+data Shape
+  Circle(Float)
+  Rectangle(Float, Float)
+end data
+
+function area(shape: Shape) -> Float
+  return match shape with
+    case Shape.Circle(r) -> 3.0 * r * r
+    case Shape.Rectangle(w, h) -> w * h
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  bind item <- Item(name: "pen", price: 120, quantity: 3)
+  bind more <- Item(..item, quantity: 10)
+  Console.writeLine("${Item.name(more)}: ${Item.price(more) * Item.quantity(more)}")
+  bind shapes <- [Shape.Circle(1.0), Shape.Rectangle(2.0, 3.5)]
+  List.forEach(xs: shapes, f: lambda(value) Console.writeLine(Float.toString(area(value))))
+  return ()
+end function

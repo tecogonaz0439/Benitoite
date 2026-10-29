@@ -1,0 +1,75 @@
+== wait-for-lock start 18:01:08
+== lock acquired 18:01:08 after 0s
+⚠ [85/410] Built Benitoite.Release.Typing (1.4s)
+warning: Benitoite/Release/Typing.lean:126:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [86/410] Built Benitoite.Release.Typing:c.o (162ms)
+✔ [87/410] Built Benitoite.Release.BuilderContents (416ms)
+✔ [88/410] Built Benitoite.Release.LocalTyping (417ms)
+✔ [91/410] Built Benitoite.Release.TypeRegularity (635ms)
+✖ [92/410] Building Benitoite.Release.BuiltinTable (695ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/BuiltinTable.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/BuiltinTable.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/BuiltinTable.setup.json --json
+error: Benitoite/Release/BuiltinTable.lean:46:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/BuiltinTable.lean:99:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+✔ [94/410] Built Benitoite.Release.BuilderExec (540ms)
+✔ [95/410] Built Benitoite.Release.TypeRegularity:c.o (266ms)
+✔ [97/410] Built Benitoite.Release.Lemmas.Basic (385ms)
+✖ [99/410] Building Benitoite.Release.TypeBounds (577ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeBounds.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeBounds.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeBounds.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeBounds.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeBounds.setup.json --json
+error: Benitoite/Release/TypeBounds.lean:19:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeBounds.lean:43:43: `simp` made no progress
+error: Benitoite/Release/TypeBounds.lean:42:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.WF.raw'
+error: Benitoite/Release/TypeBounds.lean:68:16: `simp` made no progress
+error: Benitoite/Release/TypeBounds.lean:67:79: unsolved goals
+case ctor
+n : Nat
+φ✝ : TyCon
+h : True
+⊢ Ty.WF n (Ty.ctor φ✝).norm
+error: Benitoite/Release/TypeBounds.lean:67:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.norm_rawWF'
+error: Benitoite/Release/TypeBounds.lean:117:16: `simp` made no progress
+error: Benitoite/Release/TypeBounds.lean:116:94: unsolved goals
+case ctor
+m n : Nat
+θ : SubstEnv
+hts : ∀ (i : Nat), i < m → Ty.RawWF n (θ.types i)
+hes : ∀ (e : Eff), e ∈ θ.rows → Eff.RawWF n e
+φ✝ : TyCon
+h : True
+⊢ Ty.RawWF n (Ty.rawBind θ (Ty.ctor φ✝))
+error: Benitoite/Release/TypeBounds.lean:115:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.rawBind_rawWF'
+✔ [127/410] Built Benitoite.Release.LocalScope (3.4s)
+✔ [128/410] Built Benitoite.Release.Lemmas.Rename (6.9s)
+✔ [131/410] Built Benitoite.Release.Lemmas.Rename:c.o (434ms)
+✔ [132/410] Built Benitoite.Release.Lemmas.Irrelevant (2.5s)
+✔ [135/410] Built Benitoite.Release.Lemmas.Inversion (9.4s)
+Some required targets logged failures:
+- Benitoite.Release.BuiltinTable
+- Benitoite.Release.TypeBounds
+error: build failed
+       11.96 real        68.26 user         3.11 sys
+          1606582272  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              664628  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  41  voluntary context switches
+               96308  involuntary context switches
+          1536728515  instructions retired
+           662700285  cycles elapsed
+            64799968  peak memory footprint
+== exit 1

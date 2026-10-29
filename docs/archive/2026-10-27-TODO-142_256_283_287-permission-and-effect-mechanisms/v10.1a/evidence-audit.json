@@ -1,0 +1,159 @@
+{
+  "checkedAtUtc": "2026-10-29T16:47:36.479848+00:00",
+  "recordFiles": {
+    "k10.1": {
+      "count": 108,
+      "results": {
+        "bytes": 39197,
+        "sha256": "0578e46e4caf80ce18c45570ac5c5b7f1fda8a3319e831532e4c70c756e890d7"
+      },
+      "logFiles": 32,
+      "exitFiles": 21
+    },
+    "k10.2": {
+      "count": 1296,
+      "results": {
+        "bytes": 46380,
+        "sha256": "0601c6db69ffa5361a58196644dd08edcc4fc2a36f8c67af7858a0fa51a17f33"
+      },
+      "logFiles": 477,
+      "exitFiles": 35
+    },
+    "k10.3": {
+      "count": 93,
+      "results": {
+        "bytes": 35126,
+        "sha256": "50d1d7f7f82308ea53ddb51b3ed7d4c20acd8816f1b9a3817a68f6a2fb29475e"
+      },
+      "logFiles": 24,
+      "exitFiles": 22
+    }
+  },
+  "resultsLinks": {
+    "k10.1": {
+      "count": 31,
+      "missing": []
+    },
+    "k10.2": {
+      "count": 77,
+      "missing": []
+    },
+    "k10.3": {
+      "count": 51,
+      "missing": []
+    }
+  },
+  "snapshotHashes": {
+    "source-state.json.gz": {
+      "bytes": 301209,
+      "sha256": "6bcf00c922975ab666eeb872a64b5b591f56e17837426ae817867dd3d16b84e5",
+      "uncompressedSha256": "9b312e1122e60219a1643b3cc2b3e779a99ab79b90be65810c809caca5fb5fb4"
+    },
+    "initial-state.json.gz": {
+      "bytes": 475206,
+      "sha256": "d5ee54bee107a2aba16856f48c297aab2bff6c7498622f88f5b7d7260ee73bdb",
+      "uncompressedSha256": "5947668eb7bf7bb8551dea956ccdc452547ec1dd76e0f00bd5a5e609834598a5"
+    },
+    "k10.3b-final-state.json.gz": {
+      "bytes": 150999,
+      "sha256": "b8f9ab79d27cbe2e36bb31dfd357a9bc66757279370e17f4bca9d375d04a7d15",
+      "uncompressedSha256": "2a997a55e1aceff2415c799538d9c8b8148bac05f312e4fb418548917135cf91"
+    },
+    "source-diff.patch": {
+      "bytes": 186919,
+      "sha256": "dc7a7bfd8f347108e0d078d6ef303b1a94ac831f600d9ed046e4b0f60d3b8f76"
+    },
+    "k10.3b-source-diff.patch": {
+      "bytes": 194125,
+      "sha256": "f2beae4f0a2abdc21960746bebb4aabde9e3e2cda56a4ee80d359ca0f5498749"
+    }
+  },
+  "movedK102": {
+    "record": "../k10.2/k10.2b-moved-records.json",
+    "units": 137,
+    "files": 2723,
+    "bytes": 54992547,
+    "originalPathsPresent": 0,
+    "recordedDestination": "target/k10.2-raw",
+    "recordedDestinationPresent": false,
+    "inventoryListsPresent": 0,
+    "individualInventoryListsStoredInChangeDirectory": false,
+    "largeFilesRecord": {
+      "bytes": 20834,
+      "sha256": "f62e051403fc0c3670b322606a179810f65cd7e87e8ad6a6d84905c013c4fcc5"
+    },
+    "movementRecord": {
+      "bytes": 44575,
+      "sha256": "86974e24311f004188a7a4fa8b36ebf3296e346e60171e9d8f036e8d4dc7a4fd"
+    }
+  },
+  "externalReviewRecords": {
+    "k10.1": {
+      "record": "k10.1/rv-probes/LARGE-FILES.txt",
+      "bytes": 370,
+      "sha256": "2a992ec78fb52703b3995a747523df0c05f2ab9d938a098a36642436db0f7a8d",
+      "text": "レビューの全入力・出力（scratchpad の rv-k101、74MB、4,720 ファイル）は写さない。全件の SHA-256 の一覧は 595799 バイト、SHA-256 54e631e9347ec54b1f324e0d1ef543cef8d3dbfb55ab951e3f2bf8b4de2ff044 で、リポジトリの外に置いた。ここには再現の台本・ログ・候補を除いた入力（nocand/）だけを写した。\n"
+    },
+    "k10.2": {
+      "record": "k10.2/rv-probes/LARGE-FILES.txt",
+      "bytes": 468,
+      "sha256": "b7f82fd22f11fc9f2d95e1f6dba2a57db1edac38993a9f2610b316ca120df63f",
+      "text": "レビューの退行の実験の全体（scratchpad の rv-k102、3.6MB、183 ファイル。k10.2 の書き出しの写しを、host-one の範囲を全 Top にしたものと、非 Top を candidates へ移したものの二通りに変えた）は写さない。全件の SHA-256 の一覧の SHA-256 は a2ba0212041b50a324ecde5a3a5706cf4c630b2c97e1a5d4307b85bc8ef99e24 で、リポジトリの外に置いた。変え方の台本 regress.py だけを写した。\n"
+    }
+  },
+  "finalManifests": [
+    {
+      "path": "target/interval-diff/k10.3/input-manifest.json",
+      "recorded": {
+        "bytes": 273000,
+        "sha256": "658a1359e3f2e1e68cd7c91f229d813ea8aa81695b7ebe974a9ff754d230bab9"
+      },
+      "exists": true,
+      "current": {
+        "bytes": 273000,
+        "sha256": "658a1359e3f2e1e68cd7c91f229d813ea8aa81695b7ebe974a9ff754d230bab9"
+      },
+      "matches": true
+    },
+    {
+      "path": "target/interval-diff/k10.3/manifest.json",
+      "recorded": {
+        "bytes": 2225969,
+        "sha256": "a1be9801f17139e040c17d44168e72270384fbd7e56c53b2c76b43a6038bc267"
+      },
+      "exists": true,
+      "current": {
+        "bytes": 2225969,
+        "sha256": "a1be9801f17139e040c17d44168e72270384fbd7e56c53b2c76b43a6038bc267"
+      },
+      "matches": true
+    },
+    {
+      "path": "target/interval-diff/k10.3/manifest-comparison.json",
+      "recorded": {
+        "bytes": 11349,
+        "sha256": "ca86cb8d314fa68b8cfbd713ba65de443ce69a9ef47887266ec77d5a4ef6bb72"
+      },
+      "exists": true,
+      "current": {
+        "bytes": 11349,
+        "sha256": "ca86cb8d314fa68b8cfbd713ba65de443ce69a9ef47887266ec77d5a4ef6bb72"
+      },
+      "matches": true
+    }
+  ],
+  "finalManifestArtifactCounts": {
+    "listed": 12872,
+    "present": 12872,
+    "missing": [],
+    "contentHashesRecomputed": false,
+    "note": "manifest自体の保存ハッシュと存在を照合。巨大な全生出力の内容ハッシュは再計算していない。"
+  },
+  "snapshotHashReferences": {
+    "initialStateSha256Meaning": "展開後の初回JSON",
+    "initialMatches": true,
+    "sourceStateSha256Meaning": "元からgzipで保存したsource-stateの圧縮ファイル",
+    "sourceMatches": true,
+    "k103bPreviousSourceStateMatches": true
+  }
+}

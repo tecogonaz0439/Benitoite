@@ -1045,7 +1045,10 @@ fn invoke_pure<'e>(
     if decl.arity != reference.arity || decl.capability != Capability::Pure {
         return Err(missing("builtin reference does not match declaration"));
     }
-    let reply = (decl.raw)(&mut CallCtx::new(ctx, None, None, Some(at)), args)?;
+    let reply = (decl.raw)(
+        &mut CallCtx::new(ctx, None, None, Some(at)).with_ranges(&reference.ranges),
+        args,
+    )?;
     match reply {
         Reply::Done(value) => Ok(value),
         Reply::Wait(_) | Reply::SpawnTasks(_) | Reply::Exit(_) => {

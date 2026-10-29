@@ -1,0 +1,18 @@
+numbering.bnt: exit 2
+
+error: unexpected argument `--report=json`
+run `benitoite --help` for usage
+
+return-annotation.bnt: exit 2
+
+error: unexpected argument `--report=json`
+run `benitoite --help` for usage
+
+初回は --report=json を誤用してCLIの引数エラーとなった。診断用の --diagnostics=json へ修正して再実行した。
+numbering.bnt: exit 2
+
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of check `Scope.checkPathIn` do not cover the required scope (budgetExceeded)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/numbering.bnt","start":{"line":25,"column":9,"offset":754},"end":{"line":25,"column":26,"offset":771},"label":"`Scope.checkPathIn` is not covered by `the required scope contract`"},"secondary":[{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/numbering.bnt","start":{"line":23,"column":34,"offset":680},"end":{"line":23,"column":84,"offset":730},"label":"the scope contract is required by this annotation"}],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","Scope numbering for this definition exceeded the limit of 200000 events; all Scope rules in this definition require Top","reason: budgetExceeded","requiredUpperBound: [\"/data/**\"]","knownUpperBound: Top (all targets)","source: numbering stopped; every Scope rule in this definition requires Top","scope call: .sample; budget exceeded; surface preorder unavailable"],"helps":[{"message":"split this definition into smaller definitions, or reduce its size and shared constant expansion","edits":[]}]}
+
+return-annotation.bnt: exit 2
+
+{"kind":"check","severity":"error","code":"E0519","message":"the range arguments of check `Scope.checkPathIn` do not cover the required scope (unknownSource)","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/return-annotation.bnt","start":{"line":3,"column":9,"offset":143},"end":{"line":3,"column":26,"offset":160},"label":"`Scope.checkPathIn` is not covered by `the required scope contract`"},"secondary":[{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/return-annotation.bnt","start":{"line":2,"column":51,"offset":84},"end":{"line":2,"column":101,"offset":134},"label":"the scope contract is required by this annotation"}],"notes":["the range arguments of this direct call must cover the ranges selected by the local Scope rule","reason: unknownSource","requiredUpperBound: [\"/data/**\"]","knownUpperBound: Top (all targets)","source: the check conditions are not statically known at this call","scope call: .sample at surface preorder 1"],"helps":[{"message":"to keep a bounded contract, pass literal or statically known constant check conditions and annotate the checked result with a covered scope; to allow an unknown condition, use a result type without scope arguments (Top)","edits":[]}]}

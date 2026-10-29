@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "variant": "original",
+      "rejected": false
+    },
+    {
+      "variant": "removed",
+      "rejected": true,
+      "reason": "0 != 1 : main must call check_remaining_batch3 once"
+    },
+    {
+      "variant": "reordered",
+      "rejected": true,
+      "reason": "2 not less than 1 : check_remaining_batch3 must precede check_routing"
+    }
+  ],
+  "temporaryCopyRemoved": true
+}
+real 0.05
+user 0.03
+sys 0.00

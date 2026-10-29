@@ -1,0 +1,49 @@
+$ cargo test -p benitoite --test scope_annotations
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.90s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 9 tests
+test unclosed_scopes_stop_at_the_next_unexpected_token ... FAILED
+test malformed_type_arguments_keep_the_original_syntax_diagnostic ... FAILED
+test shorthand_reports_name_resolution_errors_and_repairs_once ... FAILED
+test scope_shorthand_preserves_atoms_and_source_elements ... ok
+test value_type_scope_misuse_and_unrecoverable_syntax_are_rejected ... ok
+test scoped_function_types_and_failure_arguments_survive_instantiation ... ok
+test duplicate_atoms_report_both_original_elements ... ok
+test invalid_scopes_are_rejected_by_the_argument_contract ... ok
+test port_arguments_use_integer_literal_values_and_widths ... ok
+
+failures:
+
+---- unclosed_scopes_stop_at_the_next_unexpected_token stdout ----
+
+thread 'unclosed_scopes_stop_at_the_next_unexpected_token' (2732486) panicked at crates/benitoite/tests/scope_annotations.rs:473:9:
+assertion `left == right` failed
+  left: "expected `,` or `]`, found the end of the file"
+ right: "expected `,` or `]`, found `function`"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- malformed_type_arguments_keep_the_original_syntax_diagnostic stdout ----
+
+thread 'malformed_type_arguments_keep_the_original_syntax_diagnostic' (2732481) panicked at crates/benitoite/tests/scope_annotations.rs:439:9:
+assertion `left == right` failed: List[string]: Diagnostic { kind: Check, severity: Error, code: Some(E0520), message: "invalid scope arguments for `List` (expected no scope arguments)", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(15), end: BytePos(23) }, text: "invalid scope argument" }), secondary: [], notes: ["found: scope arguments"], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }
+  left: "E0520"
+ right: "E0201"
+
+---- shorthand_reports_name_resolution_errors_and_repairs_once stdout ----
+
+thread 'shorthand_reports_name_resolution_errors_and_repairs_once' (2732485) panicked at crates/benitoite/tests/scope_annotations.rs:494:9:
+assertion `left == right` failed: File.Wrte["/a", "/b"]: [Diagnostic { kind: Check, severity: Error, code: Some(E0303), message: "`File` has no member `Wrte`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(153) }, text: "not found in `File`" }), secondary: [], notes: [], helps: [Help { message: "a similar name exists: `Write`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(153) }, replacement: "Write" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0303), message: "`File` has no member `Wrte`", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(153) }, text: "not found in `File`" }), secondary: [], notes: [], helps: [Help { message: "a similar name exists: `Write`", edits: [Edit { span: Span { file: FileId(0), start: BytePos(149), end: BytePos(153) }, replacement: "Write" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 2
+ right: 1
+
+
+failures:
+    malformed_type_arguments_keep_the_original_syntax_diagnostic
+    shorthand_reports_name_resolution_errors_and_repairs_once
+    unclosed_scopes_stop_at_the_next_unexpected_token
+
+test result: FAILED. 6 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.29s
+
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

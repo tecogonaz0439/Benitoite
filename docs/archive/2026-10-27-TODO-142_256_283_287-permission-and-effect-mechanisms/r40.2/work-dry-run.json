@@ -1,0 +1,33 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "a2fd2b6abaaa6c11d0b8dcb480fc701710953edb",
+    "--test",
+    "cli_process",
+    "--test",
+    "test_command",
+    "--test",
+    "golden",
+    "--test",
+    "spec_examples",
+    "--test",
+    "reference_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "package_command",
+    "--test",
+    "desugar_export",
+    "--dry-run"
+  ],
+  "startUtc": "2026-10-29T10:00:11.430362+00:00",
+  "endUtc": "2026-10-29T10:00:11.563441+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 0.13257191699999998,
+  "maxRssRaw": 12091392,
+  "maxRssUnit": "bytes",
+  "measurement": "getrusage(RUSAGE_CHILDREN), 子孫の最大値。合計常駐量ではない"
+}

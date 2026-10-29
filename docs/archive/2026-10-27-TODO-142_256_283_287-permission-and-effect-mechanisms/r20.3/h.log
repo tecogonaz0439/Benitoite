@@ -1,0 +1,222 @@
+== plan: level work against d8a640adad54aa13ff0baaebebab91b6cad59f85 (changed files not classified) (partial selection: --only doc_default,heap_local,stress_local)
+   [doc_default] because of --only (estimate: seconds to a few min)
+      command: cargo test --workspace --doc
+   [heap_local] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --no-default-features --features gc-mark-sweep\,heap-verify --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client
+   [stress_local] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --no-default-features --features gc-mark-sweep\,heap-verify\,gc-stress --test runtime_builtins --test vm_handlers --test io_modes --test l32_http_client
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== doc_default
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.47s
+   Doc-tests benitoite
+
+running 18 tests
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 796) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 820) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 845) - compile ... ok
+test crates/benitoite/src/diag/mod.rs - diag::DiagBuilder (line 162) ... ignored
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 870) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 900) - compile ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 936) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 110) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 137) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 165) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 195) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 219) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 239) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 255) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 278) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 307) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 68) - compile ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 85) - compile ... ok
+
+test result: ok. 17 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 17 tests
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 858) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 128) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 784) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 884) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 208) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 184) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 148) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 834) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 919) - compile fail ... ok
+test crates/benitoite/src/builtins/iface.rs - builtins::iface::builtin (line 809) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 248) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 232) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 76) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 294) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 62) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 98) - compile fail ... ok
+test crates/benitoite/src/runtime/heap/ctx.rs - runtime::heap::ctx::Heap::epoch (line 265) - compile fail ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+
+all doctests ran in 2.70s; merged doctests compilation took 0.69s
+== heap_local
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.20s
+     Running tests/io_modes.rs (target/debug/deps/io_modes-ea1a2da7c5b19857)
+
+running 11 tests
+test log_default_output_is_ordered_escaped_and_filtered_in_both_modes ... ok
+test log_sink_failure_stops_before_the_next_sink ... ok
+test log_standard_handlers_preserve_order_attributes_and_outer_effects ... ok
+test runtime_error_during_reader_io_has_the_same_stop_report ... ok
+test reader_waits_alongside_computation ... ok
+test stdin_prompts_are_transferred_before_each_read ... ok
+test typed_failure_converted_in_children_keeps_io_and_action_order ... ok
+test concurrent_file_operations_collect_results_in_action_order ... ok
+test file_uses_failure_contract_connects_to_io_handlers ... ok
+test virtual_sleep_and_file_write_complete_in_either_order ... ok
+test inherited_handlers_intercept_or_pass_through_builtin_operations ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.14s
+
+     Running tests/l32_http_client.rs (target/debug/deps/l32_http_client-6061126939c7cfe0)
+
+running 9 tests
+test closed_listener_port_returns_connection_refused ... ok
+test maximum_integer_timeout_receives_response ... ok
+test invalid_request_body_and_methods_return_invalid_input ... ok
+test real_timeout_returns_timed_out_without_server_response ... ok
+test redirects_follow_ten_and_return_other_on_eleventh ... ok
+test redirect_connection_reuse_host_change_and_missing_location ... ok
+test status_headers_post_and_source_defaults_roundtrip ... ok
+test redirect_methods_relative_locations_and_headers_are_preserved ... ok
+test malformed_and_oversized_redirect_bodies_return_errors ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.77s
+
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-ae198a2991fb8dea)
+
+running 28 tests
+test format_invalid_internal_arguments_are_internal_errors ... ok
+test format_integer_radices_signs_and_zero_padding ... ok
+test format_fractional_rounding_uses_each_values_exact_representation ... ok
+test format_special_values_and_display_width_alignment ... ok
+test format_all_fourteen_heads_have_fixed_contracts_and_execute ... ok
+test http_request_in_projection_and_widen_return_the_original_objects ... ok
+test injected_parts_wait_for_output_before_reading_stdin ... ok
+test explicit_and_implicit_try_return_have_the_same_success_and_failure ... ok
+test checked_lists_share_elements_and_map_effects_in_order ... ok
+test formatted_interpolation_connects_constants_and_both_evaluators ... ok
+test log_scalar_conversions_use_explicit_instances_and_evaluate_inputs_once ... ok
+test checked_lists_preserve_inputs_and_error_boundaries ... ok
+test map_and_set_standard_traits_show_combine_and_empty ... ok
+test display_width_functions_preserve_content_and_pad_in_both_modes ... ok
+test process_exit_finishes_output_and_returns_the_requested_status ... ok
+test opaque_failures_show_their_messages_in_both_io_modes ... ok
+test narrow_integer_conversions_preserve_values_and_reject_invalid_input ... ok
+test scope_path_in_checks_static_membership_and_widen_preserves_the_object ... ok
+test http_request_in_checks_endpoints_and_retains_the_same_request ... ok
+test log_large_records_share_console_buffer_and_final_flush ... ok
+test narrow_integer_standard_functions_keep_floor_and_truncation_distinct ... ok
+test scope_path_in_checks_dynamic_inputs_and_preserves_the_same_ok ... ok
+test scoped_widen_calls_round_trip_through_both_evaluators ... ok
+test display_width_padding_rejects_oversized_dynamic_targets ... ok
+test scope_checked_values_preserve_inputs_and_runtime_errors ... ok
+test fixed_width_integer_standard_functions_report_overflow_and_zero_divisors ... ok
+test log_output_failure_uses_the_console_stop_and_exit_status ... ok
+test map_and_set_source_functions_call_in_key_order_once_and_use_the_results ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.63s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-2f3c0d2f5b73ba6c)
+
+running 5 tests
+test file_uses_failure_contract_connects_to_vm_handlers ... ok
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 46.20s
+
+== stress_local
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.20s
+     Running tests/io_modes.rs (target/debug/deps/io_modes-eb2c2588db8fe9d3)
+
+running 11 tests
+test log_sink_failure_stops_before_the_next_sink ... ok
+test log_default_output_is_ordered_escaped_and_filtered_in_both_modes ... ok
+test log_standard_handlers_preserve_order_attributes_and_outer_effects ... ok
+test stdin_prompts_are_transferred_before_each_read ... ok
+test runtime_error_during_reader_io_has_the_same_stop_report ... ok
+test reader_waits_alongside_computation ... ok
+test concurrent_file_operations_collect_results_in_action_order ... ok
+test typed_failure_converted_in_children_keeps_io_and_action_order ... ok
+test file_uses_failure_contract_connects_to_io_handlers ... ok
+test virtual_sleep_and_file_write_complete_in_either_order ... ok
+test inherited_handlers_intercept_or_pass_through_builtin_operations ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.15s
+
+     Running tests/l32_http_client.rs (target/debug/deps/l32_http_client-b575e156d42164a4)
+
+running 9 tests
+test maximum_integer_timeout_receives_response ... ok
+test closed_listener_port_returns_connection_refused ... ok
+test invalid_request_body_and_methods_return_invalid_input ... ok
+test real_timeout_returns_timed_out_without_server_response ... ok
+test redirects_follow_ten_and_return_other_on_eleventh ... ok
+test redirect_connection_reuse_host_change_and_missing_location ... ok
+test status_headers_post_and_source_defaults_roundtrip ... ok
+test redirect_methods_relative_locations_and_headers_are_preserved ... ok
+test malformed_and_oversized_redirect_bodies_return_errors ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.75s
+
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-a7670cadfa5c7cfc)
+
+running 28 tests
+test format_invalid_internal_arguments_are_internal_errors ... ok
+test format_integer_radices_signs_and_zero_padding ... ok
+test format_fractional_rounding_uses_each_values_exact_representation ... ok
+test format_special_values_and_display_width_alignment ... ok
+test http_request_in_projection_and_widen_return_the_original_objects ... ok
+test format_all_fourteen_heads_have_fixed_contracts_and_execute ... ok
+test injected_parts_wait_for_output_before_reading_stdin ... ok
+test explicit_and_implicit_try_return_have_the_same_success_and_failure ... ok
+test checked_lists_share_elements_and_map_effects_in_order ... ok
+test formatted_interpolation_connects_constants_and_both_evaluators ... ok
+test checked_lists_preserve_inputs_and_error_boundaries ... ok
+test log_scalar_conversions_use_explicit_instances_and_evaluate_inputs_once ... ok
+test map_and_set_standard_traits_show_combine_and_empty ... ok
+test display_width_functions_preserve_content_and_pad_in_both_modes ... ok
+test opaque_failures_show_their_messages_in_both_io_modes ... ok
+test process_exit_finishes_output_and_returns_the_requested_status ... ok
+test narrow_integer_conversions_preserve_values_and_reject_invalid_input ... ok
+test scope_path_in_checks_static_membership_and_widen_preserves_the_object ... ok
+test narrow_integer_standard_functions_keep_floor_and_truncation_distinct ... ok
+test log_large_records_share_console_buffer_and_final_flush ... ok
+test http_request_in_checks_endpoints_and_retains_the_same_request ... ok
+test scope_path_in_checks_dynamic_inputs_and_preserves_the_same_ok ... ok
+test scoped_widen_calls_round_trip_through_both_evaluators ... ok
+test display_width_padding_rejects_oversized_dynamic_targets ... ok
+test scope_checked_values_preserve_inputs_and_runtime_errors ... ok
+test fixed_width_integer_standard_functions_report_overflow_and_zero_divisors ... ok
+test log_output_failure_uses_the_console_stop_and_exit_status ... ok
+test map_and_set_source_functions_call_in_key_order_once_and_use_the_results ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.63s
+
+     Running tests/vm_handlers.rs (target/debug/deps/vm_handlers-9940e6da8127d5e0)
+
+running 5 tests
+test file_uses_failure_contract_connects_to_vm_handlers ... ok
+test typed_failure_retains_error_across_nested_writer_release ... ok
+test local_builders::local_builders_connect_source_to_vm_and_reference ... ok
+test blocks::block_values_returns_guards_and_die_reach_vm_and_reference ... ok
+test scripts_connect_real_codegen_to_handlers_and_runtime ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.78s
+
+selected checks passed
+real 148.67
+user 270.00
+sys 16.03

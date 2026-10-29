@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write, State
+  bind counter <- Reference.new(0)
+  List.forEach(xs: [3, 4, 5], f: lambda(value) Reference.set(reference: counter, value: Reference.get(counter) + value))
+  return Console.writeLine("total ${Reference.get(counter)}")
+end function

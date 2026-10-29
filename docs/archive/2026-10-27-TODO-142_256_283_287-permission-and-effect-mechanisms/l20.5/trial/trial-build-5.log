@@ -1,0 +1,45 @@
+== wait-for-lock start 02:11:33
+== lock acquired 02:11:33 after 0s
+⚠ [63/438] Replayed Benitoite.Release.RangeWF
+warning: Benitoite/Release/RangeWF.lean:400:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeWF.lean:404:8: declaration uses `sorry`
+⚠ [158/438] Built Benitoite.Release.RangeInst (682ms)
+warning: Benitoite/Release/RangeInst.lean:639:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeInst.lean:697:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeInst.lean:881:0: declaration uses `sorry`
+✔ [159/438] Built Benitoite.Release.RangeInst:c.o (394ms)
+✔ [160/438] Built Benitoite.Release.Lemmas.Regularity (1.7s)
+✔ [161/438] Built Benitoite.Release.Lemmas.Regularity:c.o (530ms)
+✖ [162/438] Building Benitoite.Release.Lemmas.OuterC (1.9s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/OuterC.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.setup.json --json
+error: Benitoite/Release/Lemmas/OuterC.lean:52:77: Application type mismatch: The argument
+  hs
+has type
+  B.sig b✝ = some s✝
+but is expected to have type
+  B.sig ?m.1923 = some (PrimSig.inst rs✝ s✝)
+in the application
+  PrimitiveAdmissible.outer hb hs
+✔ [396/438] Built Benitoite.Release.Lemmas.FailureCont (5.9s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.OuterC
+error: build failed
+        8.48 real        13.82 user         0.86 sys
+           970784768  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              230116  page reclaims
+                3479  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 857  voluntary context switches
+               21949  involuntary context switches
+          1505832372  instructions retired
+           540187712  cycles elapsed
+            34129000  peak memory footprint
+== exit 1

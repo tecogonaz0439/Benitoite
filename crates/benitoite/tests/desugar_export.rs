@@ -21,6 +21,12 @@ pub mod generator;
 mod interval;
 #[path = "desugar_export/named.rs"]
 mod named;
+#[path = "desugar_export/range_budget.rs"]
+mod range_budget;
+#[path = "desugar_export/range_sources.rs"]
+mod range_sources;
+#[path = "desugar_export/scope_tables.rs"]
+mod scope_tables;
 
 #[path = "operation_dictionaries/mod.rs"]
 mod operation_dictionaries;
@@ -168,7 +174,7 @@ fn export_width_smoke() {
     write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
     fs::write(
         output.join("coverage.json"),
-        exchange::to_vec(&json!({"version":6,"inputs":coverage_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":7,"inputs":coverage_inputs})).unwrap(),
     )
     .unwrap();
     // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
@@ -268,10 +274,10 @@ fn export(
             .filter(|d| d.is_error())
             .map(|d| format!("{:?}", d.code))
             .collect();
-        return json!({"group":group,"name":name,"excluded":errors,"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
+        return json!({"scopeAcceptance":exchange::scope_export::acceptance(&Value::Null),"group":group,"name":name,"excluded":errors,"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
     };
     if program.resolved.externals.iter().next().is_some() {
-        return json!({"group":group,"name":name,"excluded":["external function"],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
+        return json!({"scopeAcceptance":exchange::scope_export::acceptance(&Value::Null),"group":group,"name":name,"excluded":["external function"],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]});
     }
     let core = pipeline::desugar_checked(&program).unwrap_or_else(|e| panic!("{name}: {e:?}"));
     let tables = exchange::named_operation_tables(&program, &core);
@@ -327,6 +333,116 @@ fn export_directory(purpose: &str) -> PathBuf {
     output
 }
 
+// 関門: 本体後の既知不良を型付け比較へ渡さず、診断コードを交換に残す。
+// checked_args の診断テストだけでは、追加拒否を受理の不一致として送る退行を捕まえられない。
+// 既存の通常解析・交換の入口を使い、Lean の規則や本番 API を追加しない。
+#[test]
+fn export_known_scope_failures_as_excluded() {
+    let cases = [
+        (
+            "old-pattern",
+            "S.CheckedPath",
+            "S.ScopeError",
+            "S.checkPath(pattern: \"relative/**\", path: p)",
+            "E0459",
+        ),
+        (
+            "old-target",
+            "S.CheckedPath",
+            "S.ScopeError",
+            "S.checkPath(pattern: \"/data/**\", path: \"relative\")",
+            "E0460",
+        ),
+        (
+            "old-mapped-host",
+            "S.CheckedHost",
+            "S.ScopeError",
+            "S.checkHost(pattern: \"::/0\", host: \"::ffff:127.0.0.1\")",
+            "E0460",
+        ),
+        (
+            "old-mapped-endpoint",
+            "S.CheckedEndpoint",
+            "S.ScopeError",
+            "S.checkEndpoint(hostPattern: \"::ffff:0.0.0.0/96\", host: \"::ffff:127.0.0.1\", minimumPort: 0, maximumPort: 65535, port: 80)",
+            "E0460",
+        ),
+        (
+            "old-ports",
+            "S.CheckedEndpoint",
+            "S.ScopeError",
+            "S.checkEndpoint(hostPattern: \"api.example.com\", host: p, minimumPort: 443, maximumPort: 80, port: 80)",
+            "E0461",
+        ),
+        (
+            "old-outside",
+            "S.CheckedPath",
+            "S.ScopeError",
+            "S.checkPath(pattern: \"/data/**\", path: \"/outside\")",
+            "E0462",
+        ),
+        (
+            "new-pattern",
+            "S.PathIn",
+            "S.ScopeError",
+            "S.checkPathIn(pattern: \"relative/**\", path: p)",
+            "E0459",
+        ),
+        (
+            "new-target",
+            "S.PathIn",
+            "S.ScopeError",
+            "S.checkPathIn(pattern: \"/data/**\", path: \"relative\")",
+            "E0460",
+        ),
+        (
+            "new-ports",
+            "Http.RequestIn",
+            "Http.RequestCheckError",
+            "Http.checkRequestIn(hostPattern: \"api.example.com\", minimumPort: 443, maximumPort: 80, request: r)",
+            "E0461",
+        ),
+        (
+            "new-outside",
+            "S.PathIn",
+            "S.ScopeError",
+            "S.checkPathIn(pattern: \"/data/**\", path: \"/outside\")",
+            "E0462",
+        ),
+    ];
+    let mut inputs = vec![];
+    for (name, ty, error, call, code) in cases {
+        let source = format!(
+            "import Benitoite.Unofficial.Scope as S\nimport Benitoite.Unofficial.Network.Http\nfunction f(p: String, r: Http.ClientRequest) -> Result[{ty}, {error}]\n return {call}\nend function\n"
+        );
+        let checked = pipeline::check_text(
+            name,
+            source.as_bytes(),
+            CheckOptions {
+                require_main: false,
+                deny_warnings: false,
+            },
+        );
+        let mut coverage = vec![];
+        let input = export("known-scope-failure", name, checked, None, &mut coverage);
+        assert_eq!(
+            input["excluded"],
+            json!([format!("Some({code})")]),
+            "{name}"
+        );
+        assert_eq!(input["definitions"], json!([]), "{name}");
+        assert!(coverage.is_empty(), "{name}");
+        inputs.push(input);
+    }
+    let output = export_directory("known-scope-failures");
+    fs::create_dir_all(&output).unwrap();
+    fs::write(
+        output.join("known-scope-failures.json"),
+        exchange::to_vec(&json!({"version":15,"inputs":inputs})).unwrap(),
+    )
+    .unwrap();
+}
+
 // 表層の注釈の位置を同じ走査で集計し、短い corpus にも検査に必要な項目を残す。
 fn export_annotations(inputs: &[Value]) -> std::collections::BTreeMap<String, [usize; 2]> {
     // 表層の実行器は、照合を含まない入力でも末尾の照合の件数を読む。
@@ -351,7 +467,7 @@ fn write_exchange(
     stdlib_inputs: Vec<Value>,
     annotations: std::collections::BTreeMap<String, [usize; 2]>,
 ) -> Value {
-    let corpus = json!({"version":14,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    let corpus = json!({"version":15,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
         exchange::to_vec(&corpus).unwrap(),
@@ -360,12 +476,12 @@ fn write_exchange(
     // 新しい契約名を型表にも保持する。
     fs::write(
         output.join("builtins.json"),
-        exchange::to_vec(&json!({"version":6,"inputs":builtin_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":7,"inputs":builtin_inputs})).unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("stdlib-decls.json"),
-        exchange::to_vec(&json!({"version":6,"inputs":stdlib_inputs})).unwrap(),
+        exchange::to_vec(&json!({"version":7,"inputs":stdlib_inputs})).unwrap(),
     )
     .unwrap();
     corpus
@@ -402,8 +518,31 @@ impl CorpusStream {
         declarations: Vec<Value>,
         coverage: Vec<Value>,
     ) {
+        // 除外入力も読者が先に読むため、通常の変換を通らない入口の失敗も検査する。
+        assert_eq!(
+            input["scopeAcceptance"]
+                .as_object()
+                .expect("scopeAcceptance object")
+                .keys()
+                .map(String::as_str)
+                .collect::<std::collections::BTreeSet<_>>(),
+            ["patterns", "hosts", "limits"].into_iter().collect(),
+            "{}: scopeAcceptance fields",
+            input["name"]
+        );
+        let empty_acceptance = exchange::scope_export::acceptance(&Value::Null);
+        assert_eq!(
+            input["scopeAcceptance"]["limits"], empty_acceptance["limits"],
+            "{}: scopeAcceptance limits",
+            input["name"]
+        );
         let class =
             if !input["excluded"].as_array().unwrap().is_empty() {
+                assert_eq!(
+                    input["scopeAcceptance"], empty_acceptance,
+                    "{}: excluded scopeAcceptance",
+                    input["name"]
+                );
                 2
             } else if input["definitions"].as_array().unwrap().iter().any(|d| {
                 d["scope"].get("inScope").is_some() || d["scope"].get("accessor").is_some()
@@ -455,19 +594,19 @@ impl CorpusStream {
         self.intervals.finish();
         self.inputs.finish(
             &output.join(format!("{stem}-corpus.json")),
-            json!({"version":14,"operators":exchange::operators(),"annotations":self.annotations}),
+            json!({"version":15,"operators":exchange::operators(),"annotations":self.annotations}),
         );
         self.builtins.finish(
             &output.join(format!("{stem}-builtins.json")),
-            json!({"version":6}),
+            json!({"version":7}),
         );
         self.declarations.finish(
             &output.join(format!("{stem}-stdlib.json")),
-            json!({"version":6}),
+            json!({"version":7}),
         );
         self.coverage.finish(
             &output.join(format!("{stem}-coverage.json")),
-            json!({"version":6}),
+            json!({"version":7}),
         );
     }
 }
@@ -514,7 +653,8 @@ fn export_desugar_corpus() {
                     json!([format!("entry: {error:?}")]),
                 );
                 named_stream.push(
-                    json!({"group":"golden","name":relative.display().to_string(),
+                    json!({"scopeAcceptance":exchange::scope_export::acceptance(&Value::Null),
+                    "group":"golden","name":relative.display().to_string(),
                     "excluded":[format!("entry: {error:?}")],"dataTypes":[],"definitions":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],"constants":[]}), vec![], vec![], vec![],
                 );
             }
@@ -689,6 +829,40 @@ fn export_preserves_decimal_mantissas_as_exact_json_integers() {
     assert!(!written.contains(r#""mantissa":""#));
 }
 
+// 関門: 最終バイト列で UInt64 の文字列を保つ。IP 用の整数変換が Float64 に
+// 及ぶ退行は、材料の Value と Float32 だけの既存テストでは検出できない。
+#[test]
+fn export_preserves_float64_bits_and_numeric_strings() {
+    let checked = pipeline::check_text(
+        "float64-bits.bnt",
+        b"function sample() -> List[Float]\n  return [1.0, -1.0, -0.0]\nend function\nfunction text() -> String\n  return \"18446744073709551615\"\nend function\nfunction main() -> Unit\nend function\n",
+        CheckOptions {
+            require_main: true,
+            deny_warnings: false,
+        },
+    );
+    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
+    let input = export(
+        "float64",
+        "float64-bits.bnt",
+        checked,
+        None,
+        &mut Vec::new(),
+    );
+    let bytes = exchange::to_vec(&input).unwrap();
+    let written: Value = serde_json::from_slice(&bytes).unwrap();
+    for expected in [
+        json!({"float":{"bits":"4607182418800017408"}}),
+        json!({"float":{"bits":"13830554455654793216"}}),
+        json!({"float":{"bits":"9223372036854775808"}}),
+        json!({"negFloat":{"bits":"13830554455654793216"}}),
+        json!({"negFloat":{"bits":"9223372036854775808"}}),
+        json!({"string":{"value":"18446744073709551615"}}),
+    ] {
+        assert!(contains_json(&written, &expected), "missing {expected}");
+    }
+}
+
 // 関門: ガード内の handle が自分の継続を再開する生成例は、検査と書き出しの対象に残す。
 // 生成器が拒否される入力を作る退行と、書き出しがこの形を対象外にする退行を捕まえる。
 // CLI の実行テストでは書き出しの対象範囲を確かめられず、専用の差し込み口は不要。
@@ -803,30 +977,37 @@ fn export_named_types_smoke() {
     );
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":14,"operators":exchange::operators(),
+    let corpus = json!({"version":15,"operators":exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-types-corpus.json"),
-        serde_json::to_vec_pretty(&corpus).unwrap(),
+        exchange::to_vec(&corpus).unwrap(),
     )
     .unwrap();
     named::write_tables(&output, "named-types", &p, &corpus["inputs"][0]);
 }
 
-// 型だけを独立入力へ差し込む検査と異なり、宣言・ラムダの表層とコアを両方 Rust から得る。
+// 関門: 旧 identity/make と、非 Top の通常ソースの純粋 API・File 操作を同じ交換へ渡す。
+// 必須入力・採用四上限・解析したパターン・候補原子の欠落は、Top だけの旧例では捕まらない。
+// 標準 Result の成功腕の交換名も守り、本番の差し込み口は増やさない。
 #[test]
 fn export_named_declarations_smoke() {
     let output = export_directory("named-declarations");
+    let source = include_bytes!("desugar_export/named-declarations.bnt");
+    fs::write(output.join("named-declarations.bnt"), source).unwrap();
     let checked = pipeline::check_text(
         "named-declarations.bnt",
-        b"function identity(actual: Integer) -> Integer\n return actual\nend function\nfunction make(captured: Integer) -> function(value: Integer) -> Integer\n return lambda(value) return captured\nend function",
-        CheckOptions { require_main: false, deny_warnings: false },
+        source,
+        CheckOptions {
+            require_main: false,
+            deny_warnings: false,
+        },
     );
     assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
     let p = checked.program.unwrap();
     let core = pipeline::desugar_checked(&p).unwrap();
     let definitions = exchange::named_definitions(&p, &core);
-    assert_eq!(definitions.len(), 2);
+    assert_eq!(definitions.len(), 5);
     let identity = &definitions
         .iter()
         .find(|d| d["name"].as_str().unwrap().starts_with("identity ("))
@@ -849,18 +1030,48 @@ fn export_named_declarations_smoke() {
     );
     let mut input = named::input("named-declarations", definitions);
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
+    let result = table["dataDecls"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|d| d["typeName"] == "Result")
+        .unwrap();
+    assert_eq!(result["ctors"][0]["name"], "Ok");
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":14,"operators":exchange::operators(),
-        "inputs":[input],"annotations":{"tailMatch":[0,0]}});
+    assert_eq!(
+        input["scopeAcceptance"]["limits"],
+        json!({"body":{"operations":16384,"items":512},"whole":{"operations":65536,"items":2048}})
+    );
+    assert!(contains_json(
+        &input["scopeAcceptance"]["patterns"],
+        &json!({"text":"/data/**","range":{"path":{"tree":["data"]}}})
+    ));
+    assert!(contains_json(
+        &input["definitions"],
+        &json!({"fixed":{"path":{"tree":["data"]}}})
+    ));
+    assert!(contains_json(
+        &input["scopeAcceptance"]["hosts"],
+        &json!({"text":"*.Example.com","pattern":{"name":{"one":["example","com"]}}})
+    ));
+    assert!(!contains_json(&input["candidates"], &json!({"rvar":0})));
+    assert!(contains_json(
+        &input["candidates"],
+        &json!({"name":{"value":"IO.File.Read","ix":{"fixed":{"path":{"tree":["data"]}}}}})
+    ));
+
+    let annotations = export_annotations(std::slice::from_ref(&input));
+    let corpus = json!({"version":15,"operators":exchange::operators(),
+        "inputs":[input],"annotations":annotations});
     fs::write(
         output.join("named-declarations-corpus.json"),
-        serde_json::to_vec_pretty(&corpus).unwrap(),
+        exchange::to_vec(&corpus).unwrap(),
     )
     .unwrap();
     named::write_tables(&output, "named-declarations", &p, &corpus["inputs"][0]);
 }
 
-// 関門: 実ソースの辞書の全呼び出しを12/4の五形式へ渡す。
+// 関門: 実ソースの辞書の全呼び出しを15/7の五形式へ渡す。
 // 対象外と空の比較は失敗にし、独立したLeanの六入口が結果を照合する。
 #[test]
 fn export_batch2_op() {
@@ -949,6 +1160,7 @@ fn export_batch2_character() {
     let ty = benitoite::types::Ty::Con(
         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
         vec![],
+        benitoite::types::builtin::RangeIndex::TOP,
     );
     write_batch2_coverage(&output, &ty, json!({"kind":"character","args":[]}));
     fs::write(output.join("character-domain.bnt"), source).unwrap();
@@ -964,7 +1176,7 @@ fn write_batch2(output: &Path, export: named::Export) {
         annotations,
     );
     fs::rename(output.join("stdlib-decls.json"), output.join("stdlib.json")).unwrap();
-    let coverage = json!({"version":6,"inputs":export.coverage});
+    let coverage = json!({"version":7,"inputs":export.coverage});
     fs::write(
         output.join("coverage-program.json"),
         exchange::to_vec(&coverage).unwrap(),
@@ -973,6 +1185,7 @@ fn write_batch2(output: &Path, export: named::Export) {
     let ty = benitoite::types::Ty::Con(
         benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::INTEGER),
         vec![],
+        benitoite::types::builtin::RangeIndex::TOP,
     );
     write_batch2_coverage(output, &ty, json!({"kind":"integer","args":[]}));
 }
@@ -989,6 +1202,7 @@ fn write_batch2_coverage(output: &Path, ty: &benitoite::types::Ty, ty_json: Valu
         == &benitoite::types::Ty::Con(
             benitoite::types::TyCon::Builtin(benitoite::types::builtin::BuiltinTypeId::CHARACTER),
             vec![],
+            benitoite::types::builtin::RangeIndex::TOP,
         ) {
         Pat::CharacterRange('\0', '\u{10ffff}')
     } else {
@@ -1030,7 +1244,7 @@ fn write_batch2_coverage(output: &Path, ty: &benitoite::types::Ty, ty_json: Valu
     ];
     fs::write(
         output.join("coverage.json"),
-        exchange::to_vec(&json!({"version":6,"seedXor":0,"randomCases":0,
+        exchange::to_vec(&json!({"version":7,"seedXor":0,"randomCases":0,
         "boundaryCases":cases.len(),"kinds":{},"cases":cases}))
         .unwrap(),
     )
@@ -1184,4 +1398,10 @@ end function
     write_batch2(&output, export);
     let (ty, ty_json) = coverage_type.unwrap();
     write_batch2_coverage(&output, &ty, ty_json);
+}
+
+// 関門: 独立した署名・表の期待値と、小入力の二つの Lean 入口との交換を守る。
+#[test]
+fn export_scope_tables_smoke() {
+    scope_tables::scope_tables_smoke(&export_directory("scope-tables"));
 }

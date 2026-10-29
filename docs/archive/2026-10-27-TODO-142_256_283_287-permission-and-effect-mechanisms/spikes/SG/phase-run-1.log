@@ -1,0 +1,75 @@
+Model.lean:296:11: error(lean.unknownIdentifier): Unknown constant `Bool.or_eq_true.mp`
+Model.lean:296:37: error: Tactic `rcases` failed: `x✝ : ?m.186` is not an inductive datatype
+Model.lean:299:43: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`
+Model.lean:300:44: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`
+Model.lean:345:6: error: Type mismatch: After simplification, term
+  ih
+ has type
+  @Typed (Label n) D (system accept) (push (t✝, union pc✝ (label (system accept) Γ✝ e✝)) Γ✝) pc✝ body✝
+but is expected to have type
+  @Typed (Label n) D (system accept) (push (t✝, (system accept).join pc✝ (label (system accept) Γ✝ e✝)) Γ✝) pc✝ body✝
+Model.lean:349:8: error: Type mismatch: After simplification, term
+  iy
+ has type
+  @Typed (Label n) D (system accept) Γ✝ (union pc✝ (label (system accept) Γ✝ e✝)) yes✝
+but is expected to have type
+  @Typed (Label n) D (system accept) Γ✝ ((system accept).join pc✝ (label (system accept) Γ✝ e✝)) yes✝
+Model.lean:350:8: error: Type mismatch: After simplification, term
+  ino
+ has type
+  @Typed (Label n) D (system accept) Γ✝ (union pc✝ (label (system accept) Γ✝ e✝)) no✝
+but is expected to have type
+  @Typed (Label n) D (system accept) Γ✝ ((system accept).join pc✝ (label (system accept) Γ✝ e✝)) no✝
+Model.lean:353:6: error: Type mismatch: After simplification, term
+  hf
+ has type
+  Subset (union pc✝ (label (system accept) Γ✝ e✝)) (accept d✝)
+but is expected to have type
+  (system accept).flows ((system accept).join pc✝ (label (system accept) Γ✝ e✝)) ((system accept).sink d✝)
+Model.lean:361:6: error: Type mismatch: After simplification, term
+  ih
+ has type
+  @PhaseTyped D n accept (push (t✝, (system accept).join pc✝ (label (system accept) Γ✝ e✝)) Γ✝) pc✝ body✝
+but is expected to have type
+  @PhaseTyped D n accept (push (t✝, union pc✝ (label (system accept) Γ✝ e✝)) Γ✝) pc✝ body✝
+Model.lean:365:8: error: Type mismatch: After simplification, term
+  iy
+ has type
+  @PhaseTyped D n accept Γ✝ ((system accept).join pc✝ (label (system accept) Γ✝ e✝)) yes✝
+but is expected to have type
+  @PhaseTyped D n accept Γ✝ (union pc✝ (label (system accept) Γ✝ e✝)) yes✝
+Model.lean:366:8: error: Type mismatch: After simplification, term
+  ino
+ has type
+  @PhaseTyped D n accept Γ✝ ((system accept).join pc✝ (label (system accept) Γ✝ e✝)) no✝
+but is expected to have type
+  @PhaseTyped D n accept Γ✝ (union pc✝ (label (system accept) Γ✝ e✝)) no✝
+Model.lean:369:6: error: Type mismatch: After simplification, term
+  hf
+ has type
+  (system accept).flows ((system accept).join pc✝ (label (system accept) Γ✝ e✝)) ((system accept).sink d✝)
+but is expected to have type
+  Subset (union pc✝ (label (system accept) Γ✝ e✝)) (accept d✝)
+"4.34.1"
+'SG.lattice_noninterference' depends on axioms: [propext]
+'SG.FiniteSecrets.phase_iff_generic' depends on axioms: [propext, sorryAx, Quot.sound]
+'SG.FiniteSecrets.phase_noninterference' depends on axioms: [propext, sorryAx, Quot.sound]
+        0.71 real         0.75 user         0.24 sys
+           705118208  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45473  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                5112  involuntary context switches
+          7581971465  instructions retired
+          3031541240  cycles elapsed
+           155704704  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

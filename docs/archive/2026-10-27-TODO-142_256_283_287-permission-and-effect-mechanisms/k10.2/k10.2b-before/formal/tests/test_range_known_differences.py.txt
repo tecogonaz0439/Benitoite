@@ -1,0 +1,52 @@
+"""既知の制約差を名指しし、CLIの診断と受理を固定した独立期待値へ照合する。
+
+除外した入力をRust/Leanの同じ受理・理由の比較の成功へ数えない。Leanの規則や精度を変えない。
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import time
+
+ROOT = Path(__file__).resolve().parents[2]
+INPUTS = Path(__file__).with_name("range-known-differences")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cli", type=Path, default=ROOT / "target/debug/benitoite")
+    parser.add_argument("--output-dir", type=Path, required=True)
+    args = parser.parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    expected = json.loads((INPUTS / "expected.json").read_text())
+    for row in json.loads((INPUTS / "manifest.json").read_text())["files"]:
+        assert hashlib.sha256((INPUTS / row["file"]).read_bytes()).hexdigest() == row["sha256"]
+    results = []
+    exclusions = {}
+    for case in expected["cases"]:
+        began = time.monotonic()
+        process = subprocess.run([str(args.cli.resolve()), "check", "--report=json", str(INPUTS / case["file"])],
+                                 capture_output=True, text=True, timeout=60)
+        output = process.stdout + process.stderr
+        (args.output_dir / (case["name"] + ".log")).write_text(
+            output.replace(str(ROOT), "<wt>").replace(str(Path.home()), "<home>"))
+        assert process.returncode == case["status"], (case["name"], process.returncode, output)
+        report = json.loads(process.stdout)
+        codes = [d["code"] for d in report["diagnostics"] if d["severity"] == "error"]
+        assert codes == case["codes"], (case["name"], codes)
+        exclusion = case["exclusion"]
+        if exclusion:
+            exclusions[exclusion] = exclusions.get(exclusion, 0) + 1
+        results.append({"name": case["name"], "returncode": process.returncode, "codes": codes,
+                        "outerSeconds": time.monotonic() - began, "exclusion": exclusion,
+                        "target": expected["excludedTargets"].get(exclusion), "reason": case["reason"]})
+    assert exclusions == {"E0711": 1, "leanStringPrecision": 1}
+    summary = {"success": True, "scope": "名指ししたRustの結果と除外理由。Rust/Leanの同じ受理や理由の一致へ算入しない",
+               "cases": results, "exclusions": exclusions, "outsideExclusions": expected["outsideExclusions"]}
+    (args.output_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
+    print(json.dumps(summary, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

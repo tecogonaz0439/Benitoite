@@ -1,0 +1,11 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0609]: no field `impl_defs` on type `typeck::TypeckOutput`
+   --> crates/benitoite/src/typeck/scope/tests.rs:594:14
+    |
+594 |         &out.impl_defs,
+    |              ^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `interval`, `scope_inputs`, `builders`, `builder_ops`, `call_plans` ... and 19 others
+
+For more information about this error, try `rustc --explain E0609`.
+error: could not compile `benitoite` (lib test) due to 1 previous error

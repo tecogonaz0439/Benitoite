@@ -1,19 +1,49 @@
 //! Scopeの字面・所属・失敗順を静的検査と実行時で共有する（設計書 03-06「Scope」）。
 
+use crate::types::scope::{
+    EndpointPattern, HostPattern, HostTarget, IpAddress, Path, PathPattern, Port, PortRange,
+    ip_text,
+};
+use std::borrow::Cow;
+
 mod text {
-    pub const HOST: &str =
-        "expected nonempty ASCII host labels without edge hyphens, empty labels, or IPv4 form";
-    pub const HOST_PATTERN: &str = "expected a host, *.host, or **.host";
+    pub const HOST: &str = "expected nonempty ASCII host labels without edge hyphens or empty labels, or a canonical IP address";
+    pub const HOST_PATTERN: &str =
+        "expected a host, *.host, **.host, canonical IP address, or CIDR";
     pub const PATH: &str =
         "expected an absolute path without empty, dot, or dot-dot components, NUL, or backslash";
     pub const PATH_PATTERN: &str = "expected an exact path or a trailing /** wildcard";
+    pub const ENDPOINT_PATTERN: &str = "expected a host pattern or a canonical IP address or CIDR";
+    pub const MAPPED_TARGET: &str =
+        "IPv4-mapped IPv6 addresses are not supported as targets; use an IPv4 address";
 }
 
-/// 成功時に保存する条件と対象の借用。ホストの小文字化は実行時の包みで行う。
+/// 対象の入口だけで射影の形を拒否する。範囲の数値の代数とパターンは変えない。
+pub(crate) fn host_target(target: HostTarget) -> Result<HostTarget, Failure> {
+    if matches!(target, HostTarget::Ip(IpAddress::V6(bits)) if bits >> 32 == 0xffff) {
+        return Err(Failure::InvalidTarget(text::MAPPED_TARGET));
+    }
+    Ok(target)
+}
+
+/// HTTP の動的条件と後続の静的判定が使う、同じ host/port の代数の入口。
+pub(crate) fn endpoint_pattern(
+    pattern: &str,
+    minimum: i64,
+    maximum: i64,
+) -> Result<EndpointPattern, Failure> {
+    let host =
+        HostPattern::parse(pattern).map_err(|_| Failure::InvalidPattern(text::ENDPOINT_PATTERN))?;
+    let lo = Port::from_int(minimum).ok_or(Failure::InvalidMinimum)?;
+    let hi = Port::from_int(maximum).ok_or(Failure::InvalidMaximum)?;
+    let ports = PortRange::new(lo, hi).map_err(|_| Failure::InvalidBounds)?;
+    Ok(EndpointPattern { host, ports })
+}
+
+/// 成功時に保存する正規化済みの条件と対象。正規形のパスは入力を借用する。
 pub(crate) struct CheckedPair<'a> {
-    pub pattern: &'a str,
-    pub target: &'a str,
-    pub lowercase: bool,
+    pub pattern: Cow<'a, str>,
+    pub target: Cow<'a, str>,
 }
 
 /// 共通の失敗。端点の位置の区別は追加診断で使い、実行時の失敗番号は共有する。
@@ -43,112 +73,24 @@ impl Failure {
     }
 }
 
-#[derive(Clone, Copy)]
-enum HostKind {
-    Exact,
-    One,
-    Many,
-}
-
-fn host_word(word: &str) -> bool {
-    let mut count = 0usize;
-    let mut numeric = true;
-    for label in word.split('.') {
-        if label.is_empty()
-            || label.starts_with('-')
-            || label.ends_with('-')
-            || !label
-                .bytes()
-                .all(|b| b.is_ascii_alphanumeric() || b == b'-')
-        {
-            return false;
-        }
-        count = count.saturating_add(1);
-        numeric &= label.bytes().all(|b| b.is_ascii_digit());
-    }
-    !(count == 4 && numeric)
-}
-
-fn host_pattern(pattern: &str) -> Result<(HostKind, &str), Failure> {
-    let (kind, stem) = if let Some(stem) = pattern.strip_prefix("**.") {
-        (HostKind::Many, stem)
-    } else if let Some(stem) = pattern.strip_prefix("*.") {
-        (HostKind::One, stem)
-    } else {
-        (HostKind::Exact, pattern)
-    };
-    if !host_word(stem) {
-        return Err(Failure::InvalidPattern(text::HOST_PATTERN));
-    }
-    Ok((kind, stem))
-}
-
-fn host_matches(kind: HostKind, stem: &str, host: &str) -> bool {
-    let mut host_labels = host.rsplit('.');
-    for label in stem.rsplit('.') {
-        if !host_labels
-            .next()
-            .is_some_and(|h| h.eq_ignore_ascii_case(label))
-        {
-            return false;
-        }
-    }
-    match kind {
-        HostKind::Exact => host_labels.next().is_none(),
-        HostKind::One => host_labels.next().is_some() && host_labels.next().is_none(),
-        HostKind::Many => host_labels.next().is_some(),
-    }
-}
-
-fn path_word(word: &str) -> bool {
-    if word == "/" {
-        return true;
-    }
-    let Some(rest) = word.strip_prefix('/') else {
-        return false;
-    };
-    !word.contains(['\0', '\\']) && rest.split('/').all(|part| !matches!(part, "" | "." | ".."))
-}
-
-fn path_pattern(pattern: &str) -> Result<(bool, &str), Failure> {
-    let (tree, stem) = if pattern == "/**" {
-        (true, "/")
-    } else if let Some(stem) = pattern.strip_suffix("/**") {
-        if stem == "/" {
-            return Err(Failure::InvalidPattern(text::PATH_PATTERN));
-        }
-        (true, stem)
-    } else {
-        (false, pattern)
-    };
-    if stem.contains('*') || !path_word(stem) {
-        return Err(Failure::InvalidPattern(text::PATH_PATTERN));
-    }
-    Ok((tree, stem))
-}
-
-fn path_matches(tree: bool, stem: &str, path: &str) -> bool {
-    path == stem
-        || (tree && (stem == "/" || path.strip_prefix(stem).is_some_and(|s| s.starts_with('/'))))
-}
-
-fn port_valid(port: i64) -> bool {
-    (0..=65535).contains(&port)
-}
-
 // 未知の入力は推測しない。既知の不良をこの順で返せば、未知をどの値で埋めても
 // 実行時の結果はErrorになる（設計書 02-05「本体の後の検査」）。
-fn host_format<'a>(
-    pattern: Option<&'a str>,
-    host: Option<&'a str>,
-) -> Result<Option<(HostKind, &'a str, &'a str)>, Failure> {
-    let pattern = pattern.map(host_pattern).transpose()?;
-    if host.is_some_and(|h| !host_word(h)) {
-        return Err(Failure::InvalidTarget(text::HOST));
-    }
-    Ok(pattern
-        .zip(host)
-        .map(|((kind, stem), host)| (kind, stem, host)))
+fn host_format(
+    pattern: Option<&str>,
+    host: Option<&str>,
+) -> Result<Option<(HostPattern, HostTarget)>, Failure> {
+    let pattern = pattern
+        .map(HostPattern::parse)
+        .transpose()
+        .map_err(|_| Failure::InvalidPattern(text::HOST_PATTERN))?;
+    let host = host
+        .map(|raw| {
+            HostTarget::parse(raw)
+                .map_err(|_| Failure::InvalidTarget(text::HOST))
+                .and_then(host_target)
+        })
+        .transpose()?;
+    Ok(pattern.zip(host))
 }
 
 /// 既知のホスト入力の形式・所属を検査する。実行時は二入力ともSomeで呼ぶ。
@@ -164,19 +106,22 @@ pub(crate) fn check_path<'a>(
     pattern: Option<&'a str>,
     path: Option<&'a str>,
 ) -> Result<Option<CheckedPair<'a>>, Failure> {
-    let parsed = pattern.map(path_pattern).transpose()?;
-    if path.is_some_and(|p| !path_word(p)) {
-        return Err(Failure::InvalidTarget(text::PATH));
-    }
-    if let Some(((tree, stem), path)) = parsed.zip(path)
-        && !path_matches(tree, stem, path)
+    let parsed = pattern
+        .map(PathPattern::parse)
+        .transpose()
+        .map_err(|_| Failure::InvalidPattern(text::PATH_PATTERN))?;
+    let target = path
+        .map(Path::parse)
+        .transpose()
+        .map_err(|_| Failure::InvalidTarget(text::PATH))?;
+    if let Some((pattern, target)) = parsed.zip(target)
+        && !pattern.matches(&target)
     {
         return Err(Failure::OutsideScope);
     }
     Ok(pattern.zip(path).map(|(pattern, target)| CheckedPair {
-        pattern,
-        target,
-        lowercase: false,
+        pattern: Cow::Borrowed(pattern),
+        target: Cow::Borrowed(target),
     }))
 }
 
@@ -189,20 +134,20 @@ pub(crate) fn check_endpoint<'a>(
     port: Option<i64>,
 ) -> Result<Option<CheckedPair<'a>>, Failure> {
     let parsed = host_format(pattern, host)?;
-    if minimum.is_some_and(|p| !port_valid(p)) {
+    if minimum.is_some_and(|p| Port::from_int(p).is_none()) {
         return Err(Failure::InvalidMinimum);
     }
-    if maximum.is_some_and(|p| !port_valid(p)) {
+    if maximum.is_some_and(|p| Port::from_int(p).is_none()) {
         return Err(Failure::InvalidMaximum);
     }
     if minimum.zip(maximum).is_some_and(|(lo, hi)| lo > hi) {
         return Err(Failure::InvalidBounds);
     }
-    if port.is_some_and(|p| !port_valid(p)) {
+    if port.is_some_and(|p| Port::from_int(p).is_none()) {
         return Err(Failure::InvalidPort);
     }
-    if let Some((kind, stem, host)) = parsed
-        && !host_matches(kind, stem, host)
+    if let Some((pattern, host)) = &parsed
+        && !pattern.matches(host)
     {
         return Err(Failure::OutsideScope);
     }
@@ -211,9 +156,18 @@ pub(crate) fn check_endpoint<'a>(
     {
         return Err(Failure::PortOutsideScope);
     }
-    Ok(pattern.zip(host).map(|(pattern, target)| CheckedPair {
-        pattern,
-        target,
-        lowercase: true,
-    }))
+    Ok(parsed
+        .zip(pattern.zip(host))
+        .map(
+            |((parsed_pattern, parsed_target), (pattern, target))| CheckedPair {
+                pattern: Cow::Owned(match parsed_pattern {
+                    HostPattern::Name(_) => pattern.to_ascii_lowercase(),
+                    HostPattern::Ip(ip) => ip_text::format_pattern(ip),
+                }),
+                target: Cow::Owned(match parsed_target {
+                    HostTarget::Name(_) => target.to_ascii_lowercase(),
+                    HostTarget::Ip(ip) => ip_text::format_address(ip),
+                }),
+            },
+        ))
 }

@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function f(p: String) -> Lazy[Result[S.PathIn["/data/a"], S.ScopeError]]
+ return lazy
+  S.checkPathIn(pattern: "/etc/**", path: p)
+ end lazy
+end function

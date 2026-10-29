@@ -149,6 +149,11 @@ printf '%s\n' '== formal: batch4 independent exchange'
 python3 -B formal/tests/test_batch4_exchange.py
 printf 'batch4 independent exchange: %ss\n' "$((SECONDS - batch4_start))"
 
+range_exchange_start=$SECONDS
+printf '%s\n' '== formal: range independent exchange'
+python3 -I formal/tests/test_range_exchange.py --output "$output_dir/range-exchange-comparison"
+printf 'range independent exchange: %ss\n' "$((SECONDS - range_exchange_start))"
+
 export_start=$SECONDS
 printf '%s\n' '== formal: Rust export'
 # 区間専用の四書き出しは次の段でそれぞれ別の出力先へ渡す。
@@ -163,6 +168,22 @@ for entry in identity manifest range vm; do
 done
 # VM 比較で起動する実 CLI を、この関係状態から用意する。
 cargo build -p benitoite --bin benitoite
+range_source_start=$SECONDS
+printf '%s\n' '== formal: independent range sources and rejection comparison'
+python3 -B formal/tests/test_range_sources.py \
+    --exports "$output_dir/range-sources" --cli "$repo_root/target/debug/benitoite" \
+    --output "$output_dir/range-source-comparison"
+printf 'range source comparison: %ss\n' "$((SECONDS - range_source_start))"
+range_budget_start=$SECONDS
+printf '%s\n' '== formal: range numbering and analysis budgets'
+python3 -B formal/tests/test_range_budget_sources.py \
+    --rust-dir "$output_dir/range-budget" --output-dir "$output_dir/range-budget-comparison"
+printf 'range budget comparison: %ss\n' "$((SECONDS - range_budget_start))"
+known_difference_start=$SECONDS
+printf '%s\n' '== formal: named range exclusions and accepted controls'
+python3 -B formal/tests/test_range_known_differences.py \
+    --cli "$repo_root/target/debug/benitoite" --output-dir "$output_dir/range-known-differences"
+printf 'range known differences: %ss\n' "$((SECONDS - known_difference_start))"
 python3 -B scripts/check/formal_interval.py collect \
     --interval-dir "$interval_dir" --desugar-dir "$output_dir" --coverage-dir "$coverage_dir"
 printf '%s\n' '== formal: interval independent/Rust/eval/VM comparison'

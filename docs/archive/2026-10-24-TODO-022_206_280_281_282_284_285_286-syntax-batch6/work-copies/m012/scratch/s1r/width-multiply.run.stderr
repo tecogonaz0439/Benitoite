@@ -1,0 +1,10 @@
+runtime error[R0102]: integer overflow
+  --> work/m012/scratch/s1r/width-multiply.bnt:2:27
+   |
+ 2 |   if n > 64s8 then return n * 2s8 else return 0s8 end if
+   |                           ^^^^^^^
+   |
+   = note: call trace (innermost first):
+             f    at work/m012/scratch/s1r/width-multiply.bnt:6:13
+             main
+   = note: functions left by tail calls are not shown

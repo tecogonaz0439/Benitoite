@@ -1,0 +1,329 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function dyn(p: String, h: String, lo: Integer, hi: Integer, po: Integer) -> Result[Scope.CheckedEndpoint, Scope.ScopeError]
+ return Scope.checkEndpoint(hostPattern: p, host: h, minimumPort: lo, maximumPort: hi, port: po)
+end function
+function main() -> Unit uses Console.Write
+ match dyn(p: "192.168.1.0/24", h: "192.168.1.20", lo: 1, hi: 65535, po: 80) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 65535, po: 80) with
+    case Result.Ok(w) -> Console.writeLine("0 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("0 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("0 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "192.168.1.0/24", h: "192.168.2.20", lo: 1, hi: 65535, po: 80) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 65535, po: 80) with
+    case Result.Ok(w) -> Console.writeLine("1 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("1 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("1 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "192.168.1.5/24", h: "192.168.1.5", lo: 1, hi: 65535, po: 80) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 65535, po: 80) with
+    case Result.Ok(w) -> Console.writeLine("2 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("2 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("2 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "0.0.0.0/0", h: "::1", lo: 0, hi: 65535, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 65535, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("3 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("3 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("3 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::/0", h: "1.2.3.4", lo: 0, hi: 65535, po: 65535) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 65535, po: 65535) with
+    case Result.Ok(w) -> Console.writeLine("4 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("4 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("4 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::ffff:192.168.1.0/120", h: "::ffff:192.168.1.7", lo: 1, hi: 2, po: 2) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 2) with
+    case Result.Ok(w) -> Console.writeLine("5 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("5 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("5 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "192.168.1.0/24", h: "::ffff:192.168.1.7", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("6 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("6 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("6 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::ffff:1.2.3.4/128", h: "::ffff:1.2.3.4", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("7 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("7 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("7 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4/32", h: "1.2.3.4", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("8 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("8 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("8 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::FFFF:1.2.3.4", h: "::ffff:1.2.3.4", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("9 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("9 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("9 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "2001:DB8::/32", h: "2001:db8::1", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("10 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("10 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("10 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "2001:db8:0::/32", h: "2001:db8::1", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("11 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("11 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("11 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "2001:db8::/32", h: "2001:0db8::1", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("12 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("12 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("12 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "127.1", h: "127.1", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("13 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("13 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("13 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "*.1.2.3", h: "4.1.2.3", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("14 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("14 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("14 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "*.1.2.3", h: "x.1.2.3", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("15 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("15 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("15 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "**.1.2.3.4", h: "x.1.2.3.4", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("16 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("16 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("16 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "API.Example.COM", h: "api.example.com", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("17 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("17 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("17 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4", h: "example.com", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("18 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("18 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("18 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "example.com", h: "1.2.3.4", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("19 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("19 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("19 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "10.0.0.0/8", h: "10.255.255.255", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("20 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("20 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("20 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "10.0.0.0/08", h: "10.0.0.1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("21 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("21 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("21 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "10.0.0.0/33", h: "10.0.0.1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("22 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("22 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("22 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::/129", h: "::1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("23 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("23 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("23 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::1/128", h: "::1", lo: 65535, hi: 65535, po: 65535) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 65535, hi: 65535, po: 65535) with
+    case Result.Ok(w) -> Console.writeLine("24 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("24 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("24 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4", h: "1.2.3.4", lo: 65535, hi: 65536, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 65535, hi: 65536, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("25 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("25 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("25 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4", h: "1.2.3.4", lo: -1, hi: 5, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: -1, hi: 5, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("26 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("26 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("26 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4", h: "1.2.3.4", lo: 5, hi: 4, po: 4) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 5, hi: 4, po: 4) with
+    case Result.Ok(w) -> Console.writeLine("27 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("27 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("27 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4", h: "1.2.3.4", lo: 4, hi: 5, po: 6) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 4, hi: 5, po: 6) with
+    case Result.Ok(w) -> Console.writeLine("28 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("28 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("28 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1.2.3.4", h: "1.2.3.5", lo: 4, hi: 5, po: 6) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 4, hi: 5, po: 6) with
+    case Result.Ok(w) -> Console.writeLine("29 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("29 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("29 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "example.com:80", h: "example.com", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("30 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("30 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("30 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "[::1]", h: "::1", lo: 1, hi: 2, po: 1) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 1, hi: 2, po: 1) with
+    case Result.Ok(w) -> Console.writeLine("31 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("31 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("31 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "0.0.0.0", h: "0.0.0.0", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("32 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("32 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("32 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "255.255.255.255/32", h: "255.255.255.255", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("33 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("33 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("33 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::", h: "::", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("34 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("34 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("34 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "::0", h: "::", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("35 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("35 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("35 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "0:0:0:0:0:0:0:1", h: "::1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("36 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("36 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("36 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1:0:0:1:0:0:0:1", h: "1::1:0:0:0:1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("37 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("37 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("37 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1::1:0:0:0:1", h: "1::1:0:0:0:1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("38 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("38 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("38 ERR " + Trait.Show.show(e))
+ end match
+ match dyn(p: "1:0:0:1::1", h: "1::1:0:0:0:1", lo: 0, hi: 0, po: 0) with
+  case Result.Ok(v) ->
+   match dyn(p: Scope.endpointHostPattern(v), h: Scope.endpointHost(v), lo: 0, hi: 0, po: 0) with
+    case Result.Ok(w) -> Console.writeLine("39 OK " + Scope.endpointHostPattern(v) + " " + Scope.endpointHost(v) + " reuse=" + Scope.endpointHostPattern(w))
+    case Result.Error(e) -> Console.writeLine("39 OK-REUSE-FAIL " + Trait.Show.show(e))
+   end match
+  case Result.Error(e) -> Console.writeLine("39 ERR " + Trait.Show.show(e))
+ end match
+end function

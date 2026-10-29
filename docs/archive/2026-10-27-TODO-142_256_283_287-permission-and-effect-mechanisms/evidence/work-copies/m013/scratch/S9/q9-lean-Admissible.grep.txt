@@ -1,0 +1,23 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:21:    (ha : Admissible B C tps ne Qs Qt ts es e) (h : NoFail Qs e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:28:theorem Admissible.mono {B C tps ne Qs Qt Qt' ts es e}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:29:    (h : Admissible B C tps ne Qs Qt ts es e) (hq : QLe Qt Qt') :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:30:    Admissible B C tps ne Qs Qt' ts es e :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:49:theorem Admissible.closed_row {B C tps ne Qs ts es e}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:50:    (h : Admissible B C tps ne Qs Qempty ts es e) {i} (hi : Qs i) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:77:      Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/NoFailContext.lean:2:import Benitoite.Release.Admissible
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:25:theorem Admissible.outer (hb : B.Assumptions P) {C1 C0 tps ne Qs Qt ts es e}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:26:    (h : Admissible B C1 tps ne Qs Qt ts es e) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:27:    Admissible B (C1 ++ C0) tps ne Qs Qt ts es e :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:457:theorem Admissible.substTy (hb : B.Assumptions P) {C c tps ne Qs Qt Qt' ts es e ts' es'}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:458:    (h : Admissible B C tps ne Qs Qt ts es e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:461:    Admissible B (C.take c) tps ne Qs Qt'
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:163:structure Admissible (B : Builtins) (C : List TParam)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:388:        Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:3:import Benitoite.Release.Admissible
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:91:    Admissible B C tps ne (Qsig ps ret e) (NoFailCtxOf caller) ts es e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Builders.lean:3:import Benitoite.Release.Admissible
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:82:      Admissible B C d.tparams d.neffs (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:94:      Admissible B C d.tparams d.neffs (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:106:        NamesWF d.coreNames (d.dictTys ++ d.params) → SatAll B C ts d.tparams → es.length = d.neffs → d.dictParams = [] → Admissible B C d.tparams d.neffs
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:116:        Admissible B C d.tparams d.neffs

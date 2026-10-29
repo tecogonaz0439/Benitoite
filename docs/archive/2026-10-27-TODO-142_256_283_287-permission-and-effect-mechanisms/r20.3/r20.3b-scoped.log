@@ -1,0 +1,15 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.38s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 7 tests
+test acceptance_checks_definitions_before_implementation_methods ... ok
+test reversed_request_literals_are_unknown_and_do_not_gain_membership_from_an_annotation ... ok
+test function_values_holes_and_unannotated_widen_do_not_invent_ranges ... ok
+test accepted_calls_keep_non_top_ranges_and_widen_uses_the_return_annotation ... ok
+test numbering_budget_applies_to_a_rule_after_the_expanding_constant ... ok
+test scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening ... ok
+test unannotated_checks_use_top_when_projection_or_join_requires_it ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.64s
+

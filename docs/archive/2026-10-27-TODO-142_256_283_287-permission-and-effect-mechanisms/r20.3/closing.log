@@ -1,0 +1,55 @@
+== plan: level work against d8a640adad54aa13ff0baaebebab91b6cad59f85 (changed files not classified) (partial selection: --only fmt,lint_default,tests_related)
+   [fmt] because of --only (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of --only (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [tests_related] because of --only (estimate: target dependent)
+      command: cargo test -p benitoite --test scoped_calls --test scope_annotations
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+== lint_default
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.65s
+== tests_related
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.05s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 18 tests
+test effect_coverage_reports_one_failure_per_argument ... ok
+test effect_coverage_flows_through_lambdas_callbacks_and_resume ... ok
+test malformed_type_arguments_keep_the_original_syntax_diagnostic ... ok
+test effect_coverage_preserves_missing_effect_diagnostics ... ok
+test only_certified_opaque_types_accept_one_scope ... ok
+test scope_shorthand_preserves_atoms_and_source_elements ... ok
+test opaque_standard_values_have_no_public_representation ... ok
+test effect_coverage_keeps_nested_types_and_failures_invariant ... ok
+test multiline_scopes_keep_valid_groups_and_expression_diagnostics ... ok
+test value_type_scope_misuse_and_unrecoverable_syntax_are_rejected ... ok
+test shorthand_reports_name_resolution_errors_and_repairs_once ... ok
+test unclosed_scopes_stop_at_the_next_unexpected_token ... ok
+test duplicate_atoms_report_both_original_elements ... ok
+test scoped_function_types_and_failure_arguments_survive_instantiation ... ok
+test opaque_standard_value_types_keep_their_invariant_scope ... ok
+test invalid_scopes_are_rejected_by_the_argument_contract ... ok
+test port_arguments_use_integer_literal_values_and_widths ... ok
+test effect_coverage_uses_one_same_named_atom ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.51s
+
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 6 tests
+test acceptance_checks_definitions_before_implementation_methods ... ok
+test reversed_request_literals_are_unknown_and_do_not_gain_membership_from_an_annotation ... ok
+test function_values_holes_and_unannotated_widen_do_not_invent_ranges ... ok
+test accepted_calls_keep_non_top_ranges_and_widen_uses_the_return_annotation ... ok
+test numbering_budget_applies_to_a_rule_after_the_expanding_constant ... ok
+test scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+selected checks passed
+real 17.18
+user 35.24
+sys 14.41

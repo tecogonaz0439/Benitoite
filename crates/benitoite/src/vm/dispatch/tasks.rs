@@ -431,7 +431,8 @@ pub(super) fn dispatch(
             resources: &mut state.resources,
             scheduler: &mut state.scheduler,
         };
-        let mut call = CallCtx::new(ctx, None, Some(&mut services), Some(at));
+        let mut call =
+            CallCtx::new(ctx, None, Some(&mut services), Some(at)).with_ranges(&reference.ranges);
         (decl.raw)(&mut call, &args)?
     };
     match reply {

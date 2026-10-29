@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "d8a640adad54aa13ff0baaebebab91b6cad59f85"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-28T21:09:10.291356+00:00",
+  "finished_utc": "2026-10-28T21:09:28.510233+00:00",
+  "command_exit": 1,
+  "outer_seconds": 18.218562417,
+  "maxrss_raw": 2521661440,
+  "maxrss_unit": "bytes",
+  "maxrss_bytes": 2521661440,
+  "maxrss_mib": 2404.84375,
+  "maxrss_method": "getrusage(RUSAGE_CHILDREN), a fresh wrapper process per command; maximum child RSS, not sum"
+}

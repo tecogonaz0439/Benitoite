@@ -1,0 +1,142 @@
+{
+  "operations": {
+    "File.Read": [
+      "readText",
+      "readTextIn",
+      "openReader",
+      "readLine",
+      "readBytes",
+      "readBytesIn",
+      "readLines",
+      "exists",
+      "info",
+      "listDirectory",
+      "walk",
+      "canonicalize",
+      "readChunk"
+    ],
+    "File.Write": [
+      "writeText",
+      "writeTextIn",
+      "appendText",
+      "appendTextIn",
+      "writeBytes",
+      "writeBytesIn",
+      "appendBytes",
+      "appendBytesIn",
+      "createDirectory",
+      "remove",
+      "removeTree",
+      "rename",
+      "openWriter",
+      "write",
+      "writeLine",
+      "writeChunk"
+    ],
+    "Http.Connect": [
+      "send",
+      "sendIn"
+    ]
+  },
+  "documentHandlers": [
+    {
+      "path": "docs/reference/benitoite.md",
+      "line": 1561,
+      "operation": "File.readText",
+      "classification": "partial",
+      "missing": 12
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "line": 211,
+      "operation": "File.readText",
+      "classification": "partial",
+      "missing": 12
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "line": 777,
+      "operation": "File.readText",
+      "classification": "partial",
+      "missing": 12
+    },
+    {
+      "path": "docs/ja/reference/benitoite.md",
+      "line": 1496,
+      "operation": "File.readText",
+      "classification": "partial",
+      "missing": 12
+    },
+    {
+      "path": "docs/ja/skill/SKILL.md",
+      "line": 206,
+      "operation": "File.readText",
+      "classification": "partial",
+      "missing": 12
+    },
+    {
+      "path": "docs/ja/skill/references/idioms.md",
+      "line": 721,
+      "operation": "File.readText",
+      "classification": "partial",
+      "missing": 12
+    }
+  ],
+  "externalPopulation": null,
+  "externalCount": null,
+  "historicalInventoryReference": "../r30.5/handlers-boundaries.md",
+  "historicalInventoryCount": 35,
+  "historicalCountIsNotCurrentRepositoryWideRecount": true,
+  "generatedReferenceHandlerCount": 0,
+  "generatedOperations": {
+    "File.Read": {
+      "path": "crates/benitoite/skill/references/stdlib/IO.File.md",
+      "operations": [
+        "readText",
+        "readTextIn",
+        "openReader",
+        "readLine",
+        "readBytes",
+        "readBytesIn",
+        "readLines",
+        "exists",
+        "info",
+        "listDirectory",
+        "walk",
+        "canonicalize",
+        "readChunk"
+      ],
+      "count": 13
+    },
+    "File.Write": {
+      "path": "crates/benitoite/skill/references/stdlib/IO.File.md",
+      "operations": [
+        "writeText",
+        "writeTextIn",
+        "appendText",
+        "appendTextIn",
+        "writeBytes",
+        "writeBytesIn",
+        "appendBytes",
+        "appendBytesIn",
+        "createDirectory",
+        "remove",
+        "removeTree",
+        "rename",
+        "openWriter",
+        "write",
+        "writeLine",
+        "writeChunk"
+      ],
+      "count": 16
+    },
+    "Http.Connect": {
+      "path": "crates/benitoite/skill/references/stdlib/Network.Http.md",
+      "operations": [
+        "send",
+        "sendIn"
+      ],
+      "count": 2
+    }
+  }
+}

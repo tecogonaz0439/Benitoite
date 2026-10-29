@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "desugar_export",
+    "exports_the_same_non_top_call_ranges_before_and_after_desugaring",
+    "--",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 14.438747708,
+  "maxrss_raw": 1715929088,
+  "maxrss_unit": "bytes on macOS"
+}

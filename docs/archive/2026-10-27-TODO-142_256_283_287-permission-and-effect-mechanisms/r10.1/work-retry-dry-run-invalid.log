@@ -1,0 +1,5 @@
+error: tests_related (when explicit), heap_local and stress_local require --test
+usage: scripts/check.sh [--level work|stage|change|release] [--only <check,...>] [--test <target> ...] [--base <rev>] [--dry-run]
+       scripts/check.sh [--full | --only <legacy-check,...> | --none] [--base <rev>] [--dry-run]
+
+exit=2

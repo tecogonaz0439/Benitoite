@@ -1,0 +1,75 @@
+== wait-for-lock start 02:08:18
+== lock acquired 02:10:25 after 127s
+✔ [145/438] Built Benitoite.Release.Admissible (402ms)
+✔ [147/438] Built Benitoite.Release.Examples (955ms)
+⚠ [148/438] Built Benitoite.Release.RangeWF (1.1s)
+warning: Benitoite/Release/RangeWF.lean:400:8: declaration uses `sorry`
+warning: Benitoite/Release/RangeWF.lean:404:8: declaration uses `sorry`
+✔ [149/438] Built Benitoite.Release.RangeWF:c.o (496ms)
+✖ [150/438] Building Benitoite.Release.RangeInst (772ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/RangeInst.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/RangeInst.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/RangeInst.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/RangeInst.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/RangeInst.setup.json --json
+error: Benitoite/Release/RangeInst.lean:639:105: unsolved goals
+s : PrimSig
+h : s.nranges = 0
+⊢ (NamesWF s.names s.params ∧
+      Ty.VarsInList 0 s.ntys (fun x => x < s.neffs) s.params ∧
+        Ty.VarsIn 0 s.ntys (fun x => x < s.neffs) s.ret ∧
+          Eff.VarsIn 0 s.ntys (fun x => x < s.neffs) s.eff ∧
+            ∀ (p : Ty), p ∈ s.params → (∃ o ix, p = Ty.opaque o ix) ∨ Ty.VarsIn 0 s.ntys (fun x => x < s.neffs) p) ↔
+    NamesWF s.names s.params ∧
+      Ty.VarsInList 0 s.ntys (fun x => x < s.neffs) s.params ∧
+        Ty.VarsIn 0 s.ntys (fun x => x < s.neffs) s.ret ∧ Eff.VarsIn 0 s.ntys (fun x => x < s.neffs) s.eff
+error: Benitoite/Release/RangeInst.lean:699:42: Invalid field `mp`: The environment does not contain `Function.mp`, so it is not possible to project the field `mp` from an expression
+  scoped_iff_old s
+of type
+  s.nranges = 0 → (s.Scoped ↔ s.ScopedOld ∧ RangesIn 0 s)
+error: Benitoite/Release/RangeInst.lean:698:111: unsolved goals
+s : PrimSig
+hs : s.Scoped
+rs : List Scope.Domain.Range
+⊢ inst rs s = s
+error: Benitoite/Release/RangeInst.lean:895:40: Invalid field `mp`: The environment does not contain `Function.mp`, so it is not possible to project the field `mp` from an expression
+  PrimSig.scoped_iff_old ?m.61
+of type
+  PrimSig.nranges ?m.61 = 0 → (PrimSig.Scoped ?m.61 ↔ PrimSig.ScopedOld ?m.61 ∧ PrimSig.RangesIn 0 ?m.61)
+error: Benitoite/Release/RangeInst.lean:900:50: Type mismatch
+  none
+has type
+  Option ?m.7
+but is expected to have type
+  List Val → Option Outcome
+error: Benitoite/Release/RangeInst.lean:900:87: Type mismatch
+  False
+has type
+  Prop
+but is expected to have type
+  Outcome → Prop
+✔ [156/438] Built Benitoite.Release.Lemmas.NoFailContext (1.7s)
+✔ [287/438] Built Benitoite.Release.Lemmas.Closed (2.0s)
+✔ [374/438] Built Benitoite.Surface.Lemmas.ScopedRename (378ms)
+✔ [375/438] Built Benitoite.Release.Lemmas.VariableBind (503ms)
+✔ [376/438] Built Benitoite.Release.Lemmas.ContLemmas (598ms)
+✔ [398/438] Built Benitoite.Release.Lemmas.Closed:c.o (757ms)
+✔ [406/438] Built Benitoite.Surface.Lemmas.ShiftClean (931ms)
+Some required targets logged failures:
+- Benitoite.Release.RangeInst
+error: build failed
+        4.08 real        12.29 user         2.17 sys
+           818446336  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              494081  page reclaims
+                1620  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 894  voluntary context switches
+               39459  involuntary context switches
+          1595932828  instructions retired
+           591829535  cycles elapsed
+            33457496  peak memory footprint
+== exit 1

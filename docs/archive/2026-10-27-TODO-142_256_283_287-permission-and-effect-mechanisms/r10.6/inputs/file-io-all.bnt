@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.File
+uses IO.All
+function old(path: String) -> Result[String, IOError] uses File.Read
+ return File.readText(path)
+end function
+function main() -> Unit
+ ()
+end function

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "scripts/check/advisories.py",
+    "--db-path",
+    "target/v10.3a/advisory-dbs"
+  ],
+  "environment": {
+    "BENITOITE_DESUGAR_DIFF_DIR": "<wt>/target/v10.3a/export"
+  },
+  "started": "2026-10-29T19:20:04.015708+00:00",
+  "finished": "2026-10-29T19:20:06.721663+00:00",
+  "exit": 0,
+  "wallSeconds": 2.705521458
+}

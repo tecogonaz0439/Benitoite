@@ -1,0 +1,73 @@
+== grep -nE 'sorry' pm20.02/lean-run-02.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm20.02/lean-run-02.log
+status=1
+== lines with 'depends on axioms'
+status=1
+== declarations (theorem/def/structure/inductive and Policy fields)
+27:def KindSet (Kind : Type) : Type := Kind → Prop
+34:def Subset (A B : KindSet Kind) : Prop := ∀ k : Kind, A k → B k
+37:theorem Subset.trans {A B C : KindSet Kind}
+46:def traceKinds {Kind Ev : Type} (kindOf : Ev → Kind) (tr : List Ev) : KindSet Kind :=
+50:theorem mem_traceKinds {Kind Ev : Type} (kindOf : Ev → Kind) {tr : List Ev} {e : Ev}
+55:def KindCheck {Kind : Type} (declared allowed : KindSet Kind) : Prop := Subset declared allowed
+61:structure Policy (Kind Target : Type) where
+63:  kinds : KindSet Kind
+65:  allow : Kind → Target → Prop
+67:  deny : Kind → Target → Prop
+74:def WF (p : Policy Kind Target) : Prop := ∀ k t, p.allow k t → p.kinds k
+77:def permits (p : Policy Kind Target) (k : Kind) (t : Target) : Prop :=
+80:theorem permits_iff (p : Policy Kind Target) (k : Kind) (t : Target) :
+85:theorem permits_allow {p : Policy Kind Target} {k : Kind} {t : Target}
+90:theorem permits_not_deny {p : Policy Kind Target} {k : Kind} {t : Target}
+95:theorem permits_of_allow_of_not_deny {p : Policy Kind Target} {k : Kind} {t : Target}
+100:theorem permits_kind {p : Policy Kind Target} (hwf : p.WF) {k : Kind} {t : Target}
+111:def TraceAllowed (p : Policy Kind Target) (tr : List Ev) : Prop :=
+115:theorem traceAllowed_nil (p : Policy Kind Target) : TraceAllowed kindOf targetOf p [] :=
+119:theorem traceAllowed_cons_iff (p : Policy Kind Target) (e : Ev) (tr : List Ev) :
+132:theorem traceAllowed_kinds {p : Policy Kind Target} (hwf : p.WF) {tr : List Ev}
+141:theorem kindCheck_event_kind {p : Policy Kind Target} {declared : KindSet Kind} {tr : List Ev}
+155:theorem deny_overrides {p : Policy Kind Target} {k : Kind} {t : Target}
+161:theorem deny_overrides_of_allow_all {p : Policy Kind Target} {k : Kind} {t : Target}
+166:theorem permits_iff_not_deny_of_allow {p : Policy Kind Target} {k : Kind} {t : Target}
+175:theorem not_traceAllowed_of_denied {p : Policy Kind Target} {tr : List Ev} {e : Ev}
+184:def permitsAllowWins (p : Policy Kind Target) (k : Kind) (t : Target) : Prop :=
+188:theorem allowWins_admits_denied {p : Policy Kind Target} {k : Kind} {t : Target}
+203:inductive Kind where
+208:inductive Target where
+214:inductive Event where
+217:def kindOf : Event → Kind
+220:def targetOf : Event → Target
+225:def policy : Policy Kind Target where
+226:  kinds := fun
+229:  allow := fun k _ => match k with
+234:  deny := fun k t => match k with
+241:theorem policy_wf : policy.WF := by
+248:theorem policy_allow_all : ∀ t, policy.allow .fileRead t :=
+252:theorem permits_publicFile : policy.permits .fileRead .publicFile :=
+256:theorem not_permits_secretFile : ¬ policy.permits .fileRead .secretFile :=
+260:theorem publicTrace_allowed :
+268:theorem mixedTrace_rejected :
+274:theorem allowWins_admits_secretFile :
+count=44
+== #print axioms count
+41
+== 'does not depend on any axioms' count
+41
+== declared names (short) without a #print axioms line
+== sorry/axiom/decide in source
+188:theorem allowWins_admits_denied {p : Policy Kind Target} {k : Kind} {t : Target}
+274:theorem allowWins_admits_secretFile :
+276:  Policy.allowWins_admits_denied (policy_allow_all .secretFile) trivial
+310:#print axioms Benitoite.Models.Policy.Policy.allowWins_admits_denied
+323:#print axioms Benitoite.Models.Policy.Examples.allowWins_admits_secretFile
+status=0
+== run-01 (before the fix) lines with 'depends on axioms'
+34:'Benitoite.Models.Policy.Examples.policy' depends on axioms: [propext]
+35:'Benitoite.Models.Policy.Examples.policy_wf' depends on axioms: [propext]
+36:'Benitoite.Models.Policy.Examples.policy_allow_all' depends on axioms: [propext]
+37:'Benitoite.Models.Policy.Examples.permits_publicFile' depends on axioms: [propext]
+38:'Benitoite.Models.Policy.Examples.not_permits_secretFile' depends on axioms: [propext]
+39:'Benitoite.Models.Policy.Examples.publicTrace_allowed' depends on axioms: [propext]
+40:'Benitoite.Models.Policy.Examples.mixedTrace_rejected' depends on axioms: [propext]
+41:'Benitoite.Models.Policy.Examples.allowWins_admits_secretFile' depends on axioms: [propext]

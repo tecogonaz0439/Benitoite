@@ -1,0 +1,7 @@
+@test
+function stringExample() -> Unit uses Assert.Check
+  Assert.equal(actual: String.characterCount("猫🐈"), expected: 2)
+  Assert.equal(actual: String.byteLength("猫🐈"), expected: 7)
+  Assert.equal(actual: String.displayWidth("猫🐈"), expected: 4)
+  Assert.equal(actual: String.displayWidthPadStartCJK(s: "·", width: 4), expected: "  ·")
+end function

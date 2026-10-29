@@ -631,6 +631,7 @@ diag_codes! {
          clause: "the clause of `{operation}`",
          expanded: "the expanded expected type is `{expanded}`",
          because_call_arg: "argument {index} must match the parameter type of the called function",
+         because_scope_result: "the result of this scope check or widening must match its annotated or inferred type",
          because_if_branches: "the branches of `if` must have compatible types",
          because_if_no_else: "`if` without `else` must have type `Unit`",
          because_condition: "a condition must have type `Boolean`",
@@ -683,8 +684,10 @@ diag_codes! {
         fix [constraint]
         "Equality types contain no function types, no built-in opaque types without equality such as `IOError`, and no external types. An `@opaque` data type or record follows the equality rules for its contents.";
     E0407 Check "the type of this expression cannot be determined" ""
-        [annotate: "add a type annotation"]
-        "An operator, an interpolation, a comparison, a key, a trait method, a `try`, or a `with` needs its type to be known by the end of the function body.";
+        [annotate: "add a type annotation",
+         scope_widen_path: "annotate the widening result with `Scope.PathIn` and the intended destination scope; an existing annotation must also use that checked type; use `Scope.PathIn` without scope arguments to cover all targets",
+         scope_widen_request: "annotate the widening result with `Http.RequestIn` and the intended destination scope; an existing annotation must also use that checked type; use `Http.RequestIn` without scope arguments to cover all targets"]
+        "An operator, an interpolation, a comparison, a key, a trait method, a `try`, a `with`, or a scope widening needs its type to be known by the end of the function body.";
     E0408 Check "integer literal is out of range for `Integer`" ""
         [range: "`Integer` values range from -9223372036854775808 to 9223372036854775807"]
         "Integer literals must fit in a 64-bit signed integer.";
@@ -724,7 +727,9 @@ diag_codes! {
     E0418 Check "the effect variable `{name}` does not appear in any parameter type" "" []
         "An effect variable must be determined by a parameter type.";
     E0419 Check "`{name}` appears more than once in `uses`" ""
-        [remove: "remove the second `{name}`"]
+        [first_scope: "the same scope atom was first written here",
+         scope: "remove the repeated scope element",
+         remove: "remove the second `{name}`"]
         fix [remove]
         "Each effect is listed once.";
     E0420 Check "Decimal literal has more than 28 digits after the decimal point" ""
@@ -948,9 +953,9 @@ diag_codes! {
          review: "review the required effects before changing --allow-effects"]
         "The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.";
 
-    E0513 Check "invalid type arguments for effect `{name}` (expected {count})" ""
+    E0513 Check "invalid type or scope arguments for effect `{name}` (expected type argument count: {count}; scope arguments are not allowed)" ""
         []
-        "Only the standard Failure.Fail takes exactly one value type argument.";
+        "Only the standard Failure.Fail takes exactly one value type argument. Standard File.Read, File.Write and Http.Connect take closed scope arguments; other effects take no arguments.";
     E0514 Check "incompatible failure types `{expected}` and `{found}` in one effect set" ""
         [convert: "convert errors explicitly in a failure clause before joining effects",
          individual: "the function's uses is declared here"]
@@ -967,6 +972,36 @@ diag_codes! {
     E0518 Check "cannot mix failure and ordinary operation clauses in one handle" ""
         [nest: "nest two handles instead"]
         "A failure handle contains exactly one Failure.raise clause.";
+
+    E0519 Check "effect `{effect}` is not covered by one surrounding atom ({reason})" "`{effect}` is not covered by `{expected}`"
+        [scope_check: "the scope arguments of the annotated contract for check `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})",
+         scope_projection: "the scope arguments of the annotated contract for projection `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})",
+         scope_widen: "the scope arguments of the annotated contract for widening `{effect}` (requiredUpperBound) do not satisfy scope coverage for the locally selected source (knownUpperBound) and the destination ({reason})",
+         scope_rule: "the scope arguments of the annotated contract (requiredUpperBound) must cover the scope selected by the local Scope rule for this call (knownUpperBound); for widening, the destination must also cover the source contract",
+         scope_numbering: "Scope numbering for this definition exceeded the limit of {numberingLimit} events; all Scope rules in this definition require Top",
+         scope_budget: "the final pass of local Scope analysis still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable",
+         atomic: "two or more closed surrounding atoms (requiredUpperBound) have the same name, but no one atom covers the incoming scope (knownUpperBound); coverage by their union is not checked",
+         uncovered: "no one surrounding atom of the same name (requiredUpperBound) covers the incoming scope (knownUpperBound)",
+         unknown: "the incoming scope (knownUpperBound) is Top (all targets); only a surrounding Top atom of the same name in requiredUpperBound covers it",
+         declared: "declared here",
+         scope_numbering_help: "split this definition into smaller definitions, or reduce its size and shared constant expansion",
+         scopes: "to keep the surrounding contract, use a callee or entry whose declared scope is covered by one surrounding atom; to permit a broader scope, explicitly enlarge the surrounding `uses` annotation to cover the incoming scope in one atom",
+         top: "to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
+         top_write: "to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
+         top_endpoint: "to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
+         scope_unknown: "If the call is nested in an expression, move it to the right-hand side of `bind` and use that name. If the value is a parameter or handler clause parameter with only a narrow type annotation, `bind` alone does not establish provenance. To keep the narrow contract, do not project or widen it here: pass it unchanged to a scoped entry that accepts the same narrow type, such as `File.readTextIn`, or widen it in the caller where the checked value is bound and declare the parameter with the wider type. To accept all targets instead, remove the parameter's scope arguments; callers must then widen to the unscoped type with `Scope.widenPathIn` or `Http.widenRequestIn`. Widening a Top input also requires a result without scope arguments. For a handler clause parameter, using Top also requires the protected body to select Top and may require a broader `uses` annotation.",
+         scope_check_unknown: "to keep a bounded contract, pass literal or statically known constant check conditions and annotate the checked result with a covered scope; to allow an unknown condition, use a result type without scope arguments (Top)",
+         scope_coverage: "to keep the contract, change the check conditions so that the annotated result scope covers them; for widening, choose a destination that covers the source; to permit a broader scope, explicitly enlarge the annotation",
+         scope_budget_help: "split this definition into smaller definitions to retain local provenance (this helps only if the check conditions or checked values are statically known after splitting); alternatively, remove scope arguments from the annotation to allow Top"]
+        "An atom of the same name exists in the surrounding effects, but none covers the required scope. Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.";
+
+    E0520 Check "invalid scope arguments for `{name}` (expected {expectedScopeKind})" "invalid scope argument"
+        [found: "found: {found}"]
+        "Scope arguments must be nonempty closed literal patterns of the kind required by the resolved standard name. File effects take path strings; Http.Connect takes complete host/port pairs. Scope.PathIn takes exactly one path string literal; Http.RequestIn takes exactly one host/port literal pair. Expressions, interpolation and constant references are not scope arguments.";
+
+    E0521 Check "cannot determine consistent scopes for this handler" "the selected scopes still disagree with the effects of the protected body"
+        [annotation: "make the function types and effects of callbacks used by the protected body explicit, or simplify the handler dependencies"]
+        "The scopes selected for a handler must agree with the final inferred effects of the protected body. The function is checked again at most as many times as there are handles in it; a result that still disagrees is rejected. Handler clause parameters do not accept type annotations.";
 
     // ---- E06: パターン ----
     E0601 Check "`match` does not cover every value" "`{witness}` is not matched"
@@ -1154,7 +1189,7 @@ diag_codes! {
         "The declared language version is newer than the interpreter. Use an interpreter at least as new as the declaration.";
     E0908 Check "this file was written for Benitoite {version}, and the language changed incompatibly in {changed}" ""
         []
-        "The main message identifies the first incompatible language change after the declared version and no later than the interpreter's version. Notes list every applicable version and its summary in version order, and helps list the corresponding migration guidance in the same order, without source edits.";
+        "The main message identifies the first incompatible language change after the declared version and no later than the interpreter's version. Notes list every applicable version and its summary in version order, and helps list the corresponding guidance in the same order, without source edits.";
     E0909 Check "`{item}` can be written only at the start of the starting file or in `package.bnt`" "" []
         "Imported modules cannot have `language` or `dependency` headers. A `package` block can be written only in `package.bnt`.";
     E0910 Check "a `package` block can be written only in `package.bnt`" "" []

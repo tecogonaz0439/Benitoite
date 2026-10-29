@@ -1,0 +1,49 @@
+== plan: level work against 92f9ac80f81d2299978d2051ddcdfdeea1843e6d (173 changed file(s))
+   [fmt] because of Cargo.lock (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of Cargo.lock (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of Cargo.lock (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of Cargo.lock (estimate: target dependent)
+      command: cargo test -p benitoite --test spec_examples --test reference_examples --test skill_docs --test skill_examples --test stdlib_doc_examples --test build_info --test cli_process --test package_command --test test_command --test declarations --test golden --test desugar_export
+   [source_rules] because of Cargo.lock (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of Cargo.lock (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of Cargo.lock (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [licenses] because of Cargo.lock (estimate: seconds to a few min)
+      command: check_licenses (Python compares deny.toml and scripts/release/about.toml; cargo deny --version; cargo deny check licenses)
+   [advisories] because of Cargo.lock (estimate: ~1-3 min; initial DB fetch unknown)
+      command: python3 -B scripts/check/advisories.py (save raw output/status and target results under target/check-advisories/)
+        cargo deny --version
+        cargo deny --format json --log-level debug --manifest-path Cargo.toml --config deny.toml --locked check advisories
+        cargo deny --format json --log-level debug --manifest-path fuzz/Cargo.toml --config deny.toml --locked check advisories
+   omitted: spec_examples reference_examples skill_docs (included by tests_related, default configuration)
+   later: stage checks named connections; change covers full regression; release checks the candidate
+== fmt
+Diff in <wt>/crates/benitoite/examples/../src/modules/text.rs:54:
+     "each WASM Store limits live component handles to 100,000; excess allocation stops with R0906";
+ pub(super) const SYNTAX_BATCH6_MIGRATION: &str = "review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md";
+ 
+[31m-pub(super) const SCOPED_EFFECT_OPERATIONS_CHANGE: &str =
+(B[m[31m-    "scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled";
+(B[m[32m+pub(super) const SCOPED_EFFECT_OPERATIONS_CHANGE: &str = "scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled";
+(B[m pub(super) const SCOPED_EFFECT_OPERATIONS_HELP: &str = "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract";
+ 
+Diff in <wt>/crates/benitoite/src/modules/text.rs:54:
+     "each WASM Store limits live component handles to 100,000; excess allocation stops with R0906";
+ pub(super) const SYNTAX_BATCH6_MIGRATION: &str = "review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md";
+ 
+[31m-pub(super) const SCOPED_EFFECT_OPERATIONS_CHANGE: &str =
+(B[m[31m-    "scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled";
+(B[m[32m+pub(super) const SCOPED_EFFECT_OPERATIONS_CHANGE: &str = "scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled";
+(B[m pub(super) const SCOPED_EFFECT_OPERATIONS_HELP: &str = "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract";
+ 
+FAILED: fmt
+real 2.72
+user 2.55
+sys 0.27

@@ -1,0 +1,2962 @@
+== wait-for-lock start 17:53:23
+== lock acquired 17:53:23 after 0s
+✔ [34/410] Built Benitoite.Release.Order.Atoms (416ms)
+✔ [35/410] Built Benitoite.Release.Order.Atoms:c.o (86ms)
+✔ [36/410] Built Benitoite.Release.Order.FiniteAtoms (321ms)
+✔ [38/410] Built Benitoite.Release.Order.Labels (623ms)
+✖ [40/410] Building Benitoite.Release.Order.Types (2.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Order/Types.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Order/Types.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Order/Types.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Order/Types.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Order/Types.setup.json --json
+error: Benitoite/Release/Order/Types.lean:35:19: Type mismatch
+  «opaque» ?m.5
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+error: Benitoite/Release/Order/Types.lean:53:6: Type mismatch
+  Ty.opaque o
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+error: Benitoite/Release/Order/Types.lean:101:55: Unknown identifier `h`
+error: Benitoite/Release/Order/Types.lean:104:38: Unknown identifier `he`
+error: Benitoite/Release/Order/Types.lean:111:38: Unknown identifier `he`
+error: Benitoite/Release/Order/Types.lean:118:37: Unknown identifier `hk`
+error: Benitoite/Release/Order/Types.lean:123:54: Unknown identifier `h`
+error: Benitoite/Release/Order/Types.lean:126:55: Unknown identifier `h`
+error: Benitoite/Release/Order/Types.lean:82:78: unsolved goals
+case base.base
+ι✝¹ ι✝ : BaseTy
+h : True
+⊢ Ty.base ι✝¹ = Ty.base ι✝
+
+case base.opaque
+ι✝ : BaseTy
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.base ι✝ = Ty.opaque o✝ r✝
+
+case base.data
+ι✝ : BaseTy
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.base ι✝ = Ty.data d✝ args✝
+
+case base.list
+ι✝ : BaseTy
+a✝ : Ty
+h : True
+⊢ Ty.base ι✝ = a✝.list
+
+case base.fn
+ι✝ : BaseTy
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.base ι✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case base.tvar
+ι✝ : BaseTy
+i✝ : Nat
+h : True
+⊢ Ty.base ι✝ = Ty.tvar i✝
+
+case base.reference
+ι✝ : BaseTy
+a✝ : Ty
+h : True
+⊢ Ty.base ι✝ = a✝.reference
+
+case base.lazy
+ι✝ : BaseTy
+a✝ : Ty
+h : True
+⊢ Ty.base ι✝ = a✝.lazy
+
+case base.cont
+ι✝ : BaseTy
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.base ι✝ = b✝.cont t✝ eff✝
+
+case base.map
+ι✝ : BaseTy
+k✝ v✝ : Ty
+h : True
+⊢ Ty.base ι✝ = k✝.map v✝
+
+case base.set
+ι✝ : BaseTy
+a✝ : Ty
+h : True
+⊢ Ty.base ι✝ = a✝.set
+
+case base.bytes
+ι✝ : BaseTy
+h : True
+⊢ Ty.base ι✝ = Ty.bytes
+
+case base.dict
+ι✝ : BaseTy
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.base ι✝ = Ty.dict cl✝ τ✝
+
+case base.tapp
+ι✝ : BaseTy
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.base ι✝ = Ty.tapp i✝ args✝
+
+case base.ctor
+ι✝ : BaseTy
+φ✝ : TyCon
+h : True
+⊢ Ty.base ι✝ = Ty.ctor φ✝
+
+case opaque.base
+o✝ : OpaqueName
+r✝ : ScopeRange
+ι✝ : BaseTy
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.base ι✝
+
+case opaque.opaque
+o✝¹ : OpaqueName
+r✝¹ : ScopeRange
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.opaque o✝¹ r✝¹ = Ty.opaque o✝ r✝
+
+case opaque.data
+o✝ : OpaqueName
+r✝ : ScopeRange
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.data d✝ args✝
+
+case opaque.list
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = a✝.list
+
+case opaque.fn
+o✝ : OpaqueName
+r✝ : ScopeRange
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case opaque.tvar
+o✝ : OpaqueName
+r✝ : ScopeRange
+i✝ : Nat
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.tvar i✝
+
+case opaque.reference
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = a✝.reference
+
+case opaque.lazy
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = a✝.lazy
+
+case opaque.cont
+o✝ : OpaqueName
+r✝ : ScopeRange
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.opaque o✝ r✝ = b✝.cont t✝ eff✝
+
+case opaque.map
+o✝ : OpaqueName
+r✝ : ScopeRange
+k✝ v✝ : Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = k✝.map v✝
+
+case opaque.set
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = a✝.set
+
+case opaque.bytes
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.bytes
+
+case opaque.dict
+o✝ : OpaqueName
+r✝ : ScopeRange
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.dict cl✝ τ✝
+
+case opaque.tapp
+o✝ : OpaqueName
+r✝ : ScopeRange
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.tapp i✝ args✝
+
+case opaque.ctor
+o✝ : OpaqueName
+r✝ : ScopeRange
+φ✝ : TyCon
+h : True
+⊢ Ty.opaque o✝ r✝ = Ty.ctor φ✝
+
+case data.base
+d✝ : DataName
+args✝ : List Ty
+ι✝ : BaseTy
+h : True
+⊢ Ty.data d✝ args✝ = Ty.base ι✝
+
+case data.opaque
+d✝ : DataName
+args✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.data d✝ args✝ = Ty.opaque o✝ r✝
+
+case data.list
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.data d✝ args✝ = a✝.list
+
+case data.fn
+d✝ : DataName
+args✝ : List Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.data d✝ args✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case data.tvar
+d✝ : DataName
+args✝ : List Ty
+i✝ : Nat
+h : True
+⊢ Ty.data d✝ args✝ = Ty.tvar i✝
+
+case data.reference
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.data d✝ args✝ = a✝.reference
+
+case data.lazy
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.data d✝ args✝ = a✝.lazy
+
+case data.cont
+d✝ : DataName
+args✝ : List Ty
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.data d✝ args✝ = b✝.cont t✝ eff✝
+
+case data.map
+d✝ : DataName
+args✝ : List Ty
+k✝ v✝ : Ty
+h : True
+⊢ Ty.data d✝ args✝ = k✝.map v✝
+
+case data.set
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.data d✝ args✝ = a✝.set
+
+case data.bytes
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.data d✝ args✝ = Ty.bytes
+
+case data.dict
+d✝ : DataName
+args✝ : List Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.data d✝ args✝ = Ty.dict cl✝ τ✝
+
+case data.tapp
+d✝ : DataName
+args✝¹ : List Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.data d✝ args✝¹ = Ty.tapp i✝ args✝
+
+case data.ctor
+d✝ : DataName
+args✝ : List Ty
+φ✝ : TyCon
+h : True
+⊢ Ty.data d✝ args✝ = Ty.ctor φ✝
+
+case list.base
+a✝ : Ty
+ι✝ : BaseTy
+h : True
+⊢ a✝.list = Ty.base ι✝
+
+case list.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ a✝.list = Ty.opaque o✝ r✝
+
+case list.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ a✝.list = Ty.data d✝ args✝
+
+case list.list
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.list = a✝.list
+
+case list.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.list = Ty.fn names✝ params✝ ret✝ eff✝
+
+case list.tvar
+a✝ : Ty
+i✝ : Nat
+h : True
+⊢ a✝.list = Ty.tvar i✝
+
+case list.reference
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.list = a✝.reference
+
+case list.lazy
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.list = a✝.lazy
+
+case list.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.list = b✝.cont t✝ eff✝
+
+case list.map
+a✝ k✝ v✝ : Ty
+h : True
+⊢ a✝.list = k✝.map v✝
+
+case list.set
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.list = a✝.set
+
+case list.bytes
+a✝ : Ty
+h : True
+⊢ a✝.list = Ty.bytes
+
+case list.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ a✝.list = Ty.dict cl✝ τ✝
+
+case list.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ a✝.list = Ty.tapp i✝ args✝
+
+case list.ctor
+a✝ : Ty
+φ✝ : TyCon
+h : True
+⊢ a✝.list = Ty.ctor φ✝
+
+case fn.base
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ι✝ : BaseTy
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.base ι✝
+
+case fn.opaque
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.opaque o✝ r✝
+
+case fn.data
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.data d✝ args✝
+
+case fn.list
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = a✝.list
+
+case fn.tvar
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.tvar i✝
+
+case fn.reference
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = a✝.reference
+
+case fn.lazy
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = a✝.lazy
+
+case fn.cont
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝¹ : EffR
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝¹ = b✝.cont t✝ eff✝
+
+case fn.map
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+k✝ v✝ : Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = k✝.map v✝
+
+case fn.set
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = a✝.set
+
+case fn.bytes
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.bytes
+
+case fn.dict
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.dict cl✝ τ✝
+
+case fn.tapp
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.tapp i✝ args✝
+
+case fn.ctor
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+φ✝ : TyCon
+h : True
+⊢ Ty.fn names✝ params✝ ret✝ eff✝ = Ty.ctor φ✝
+
+case tvar.base
+i✝ : Nat
+ι✝ : BaseTy
+h : True
+⊢ Ty.tvar i✝ = Ty.base ι✝
+
+case tvar.opaque
+i✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.tvar i✝ = Ty.opaque o✝ r✝
+
+case tvar.data
+i✝ : Nat
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.tvar i✝ = Ty.data d✝ args✝
+
+case tvar.list
+i✝ : Nat
+a✝ : Ty
+h : True
+⊢ Ty.tvar i✝ = a✝.list
+
+case tvar.fn
+i✝ : Nat
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.tvar i✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case tvar.tvar
+i✝¹ i✝ : Nat
+h : True
+⊢ Ty.tvar i✝¹ = Ty.tvar i✝
+
+case tvar.reference
+i✝ : Nat
+a✝ : Ty
+h : True
+⊢ Ty.tvar i✝ = a✝.reference
+
+case tvar.lazy
+i✝ : Nat
+a✝ : Ty
+h : True
+⊢ Ty.tvar i✝ = a✝.lazy
+
+case tvar.cont
+i✝ : Nat
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.tvar i✝ = b✝.cont t✝ eff✝
+
+case tvar.map
+i✝ : Nat
+k✝ v✝ : Ty
+h : True
+⊢ Ty.tvar i✝ = k✝.map v✝
+
+case tvar.set
+i✝ : Nat
+a✝ : Ty
+h : True
+⊢ Ty.tvar i✝ = a✝.set
+
+case tvar.bytes
+i✝ : Nat
+h : True
+⊢ Ty.tvar i✝ = Ty.bytes
+
+case tvar.dict
+i✝ : Nat
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.tvar i✝ = Ty.dict cl✝ τ✝
+
+case tvar.tapp
+i✝¹ i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.tvar i✝¹ = Ty.tapp i✝ args✝
+
+case tvar.ctor
+i✝ : Nat
+φ✝ : TyCon
+h : True
+⊢ Ty.tvar i✝ = Ty.ctor φ✝
+
+case reference.base
+a✝ : Ty
+ι✝ : BaseTy
+h : True
+⊢ a✝.reference = Ty.base ι✝
+
+case reference.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ a✝.reference = Ty.opaque o✝ r✝
+
+case reference.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ a✝.reference = Ty.data d✝ args✝
+
+case reference.list
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.reference = a✝.list
+
+case reference.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.reference = Ty.fn names✝ params✝ ret✝ eff✝
+
+case reference.tvar
+a✝ : Ty
+i✝ : Nat
+h : True
+⊢ a✝.reference = Ty.tvar i✝
+
+case reference.reference
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.reference = a✝.reference
+
+case reference.lazy
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.reference = a✝.lazy
+
+case reference.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.reference = b✝.cont t✝ eff✝
+
+case reference.map
+a✝ k✝ v✝ : Ty
+h : True
+⊢ a✝.reference = k✝.map v✝
+
+case reference.set
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.reference = a✝.set
+
+case reference.bytes
+a✝ : Ty
+h : True
+⊢ a✝.reference = Ty.bytes
+
+case reference.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ a✝.reference = Ty.dict cl✝ τ✝
+
+case reference.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ a✝.reference = Ty.tapp i✝ args✝
+
+case reference.ctor
+a✝ : Ty
+φ✝ : TyCon
+h : True
+⊢ a✝.reference = Ty.ctor φ✝
+
+case lazy.base
+a✝ : Ty
+ι✝ : BaseTy
+h : True
+⊢ a✝.lazy = Ty.base ι✝
+
+case lazy.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ a✝.lazy = Ty.opaque o✝ r✝
+
+case lazy.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ a✝.lazy = Ty.data d✝ args✝
+
+case lazy.list
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.lazy = a✝.list
+
+case lazy.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.lazy = Ty.fn names✝ params✝ ret✝ eff✝
+
+case lazy.tvar
+a✝ : Ty
+i✝ : Nat
+h : True
+⊢ a✝.lazy = Ty.tvar i✝
+
+case lazy.reference
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.lazy = a✝.reference
+
+case lazy.lazy
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.lazy = a✝.lazy
+
+case lazy.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.lazy = b✝.cont t✝ eff✝
+
+case lazy.map
+a✝ k✝ v✝ : Ty
+h : True
+⊢ a✝.lazy = k✝.map v✝
+
+case lazy.set
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.lazy = a✝.set
+
+case lazy.bytes
+a✝ : Ty
+h : True
+⊢ a✝.lazy = Ty.bytes
+
+case lazy.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ a✝.lazy = Ty.dict cl✝ τ✝
+
+case lazy.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ a✝.lazy = Ty.tapp i✝ args✝
+
+case lazy.ctor
+a✝ : Ty
+φ✝ : TyCon
+h : True
+⊢ a✝.lazy = Ty.ctor φ✝
+
+case cont.base
+b✝ t✝ : Ty
+eff✝ : EffR
+ι✝ : BaseTy
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.base ι✝
+
+case cont.opaque
+b✝ t✝ : Ty
+eff✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.opaque o✝ r✝
+
+case cont.data
+b✝ t✝ : Ty
+eff✝ : EffR
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.data d✝ args✝
+
+case cont.list
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = a✝.list
+
+case cont.fn
+b✝ t✝ : Ty
+eff✝¹ : EffR
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ b✝.cont t✝ eff✝¹ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case cont.tvar
+b✝ t✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.tvar i✝
+
+case cont.reference
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = a✝.reference
+
+case cont.lazy
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = a✝.lazy
+
+case cont.map
+b✝ t✝ : Ty
+eff✝ : EffR
+k✝ v✝ : Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = k✝.map v✝
+
+case cont.set
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = a✝.set
+
+case cont.bytes
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.bytes
+
+case cont.dict
+b✝ t✝ : Ty
+eff✝ : EffR
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.dict cl✝ τ✝
+
+case cont.tapp
+b✝ t✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.tapp i✝ args✝
+
+case cont.ctor
+b✝ t✝ : Ty
+eff✝ : EffR
+φ✝ : TyCon
+h : True
+⊢ b✝.cont t✝ eff✝ = Ty.ctor φ✝
+
+case map.base
+k✝ v✝ : Ty
+ι✝ : BaseTy
+h : True
+⊢ k✝.map v✝ = Ty.base ι✝
+
+case map.opaque
+k✝ v✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ k✝.map v✝ = Ty.opaque o✝ r✝
+
+case map.data
+k✝ v✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ k✝.map v✝ = Ty.data d✝ args✝
+
+case map.list
+k✝ v✝ a✝ : Ty
+h : True
+⊢ k✝.map v✝ = a✝.list
+
+case map.fn
+k✝ v✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ k✝.map v✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case map.tvar
+k✝ v✝ : Ty
+i✝ : Nat
+h : True
+⊢ k✝.map v✝ = Ty.tvar i✝
+
+case map.reference
+k✝ v✝ a✝ : Ty
+h : True
+⊢ k✝.map v✝ = a✝.reference
+
+case map.lazy
+k✝ v✝ a✝ : Ty
+h : True
+⊢ k✝.map v✝ = a✝.lazy
+
+case map.cont
+k✝ v✝ b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ k✝.map v✝ = b✝.cont t✝ eff✝
+
+case map.set
+k✝ v✝ a✝ : Ty
+h : True
+⊢ k✝.map v✝ = a✝.set
+
+case map.bytes
+k✝ v✝ : Ty
+h : True
+⊢ k✝.map v✝ = Ty.bytes
+
+case map.dict
+k✝ v✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ k✝.map v✝ = Ty.dict cl✝ τ✝
+
+case map.tapp
+k✝ v✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ k✝.map v✝ = Ty.tapp i✝ args✝
+
+case map.ctor
+k✝ v✝ : Ty
+φ✝ : TyCon
+h : True
+⊢ k✝.map v✝ = Ty.ctor φ✝
+
+case set.base
+a✝ : Ty
+ι✝ : BaseTy
+h : True
+⊢ a✝.set = Ty.base ι✝
+
+case set.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ a✝.set = Ty.opaque o✝ r✝
+
+case set.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ a✝.set = Ty.data d✝ args✝
+
+case set.list
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.set = a✝.list
+
+case set.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.set = Ty.fn names✝ params✝ ret✝ eff✝
+
+case set.tvar
+a✝ : Ty
+i✝ : Nat
+h : True
+⊢ a✝.set = Ty.tvar i✝
+
+case set.reference
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.set = a✝.reference
+
+case set.lazy
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.set = a✝.lazy
+
+case set.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ a✝.set = b✝.cont t✝ eff✝
+
+case set.map
+a✝ k✝ v✝ : Ty
+h : True
+⊢ a✝.set = k✝.map v✝
+
+case set.set
+a✝¹ a✝ : Ty
+h : True
+⊢ a✝¹.set = a✝.set
+
+case set.bytes
+a✝ : Ty
+h : True
+⊢ a✝.set = Ty.bytes
+
+case set.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ a✝.set = Ty.dict cl✝ τ✝
+
+case set.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ a✝.set = Ty.tapp i✝ args✝
+
+case set.ctor
+a✝ : Ty
+φ✝ : TyCon
+h : True
+⊢ a✝.set = Ty.ctor φ✝
+
+case bytes.base
+ι✝ : BaseTy
+h : True
+⊢ Ty.bytes = Ty.base ι✝
+
+case bytes.opaque
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.bytes = Ty.opaque o✝ r✝
+
+case bytes.data
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.bytes = Ty.data d✝ args✝
+
+case bytes.list
+a✝ : Ty
+h : True
+⊢ Ty.bytes = a✝.list
+
+case bytes.fn
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.bytes = Ty.fn names✝ params✝ ret✝ eff✝
+
+case bytes.tvar
+i✝ : Nat
+h : True
+⊢ Ty.bytes = Ty.tvar i✝
+
+case bytes.reference
+a✝ : Ty
+h : True
+⊢ Ty.bytes = a✝.reference
+
+case bytes.lazy
+a✝ : Ty
+h : True
+⊢ Ty.bytes = a✝.lazy
+
+case bytes.cont
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.bytes = b✝.cont t✝ eff✝
+
+case bytes.map
+k✝ v✝ : Ty
+h : True
+⊢ Ty.bytes = k✝.map v✝
+
+case bytes.set
+a✝ : Ty
+h : True
+⊢ Ty.bytes = a✝.set
+
+case bytes.dict
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.bytes = Ty.dict cl✝ τ✝
+
+case bytes.tapp
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.bytes = Ty.tapp i✝ args✝
+
+case bytes.ctor
+φ✝ : TyCon
+h : True
+⊢ Ty.bytes = Ty.ctor φ✝
+
+case dict.base
+cl✝ : ClassName
+τ✝ : Ty
+ι✝ : BaseTy
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.base ι✝
+
+case dict.opaque
+cl✝ : ClassName
+τ✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.opaque o✝ r✝
+
+case dict.data
+cl✝ : ClassName
+τ✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.data d✝ args✝
+
+case dict.list
+cl✝ : ClassName
+τ✝ a✝ : Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = a✝.list
+
+case dict.fn
+cl✝ : ClassName
+τ✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case dict.tvar
+cl✝ : ClassName
+τ✝ : Ty
+i✝ : Nat
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.tvar i✝
+
+case dict.reference
+cl✝ : ClassName
+τ✝ a✝ : Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = a✝.reference
+
+case dict.lazy
+cl✝ : ClassName
+τ✝ a✝ : Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = a✝.lazy
+
+case dict.cont
+cl✝ : ClassName
+τ✝ b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.dict cl✝ τ✝ = b✝.cont t✝ eff✝
+
+case dict.map
+cl✝ : ClassName
+τ✝ k✝ v✝ : Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = k✝.map v✝
+
+case dict.set
+cl✝ : ClassName
+τ✝ a✝ : Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = a✝.set
+
+case dict.bytes
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.bytes
+
+case dict.tapp
+cl✝ : ClassName
+τ✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.tapp i✝ args✝
+
+case dict.ctor
+cl✝ : ClassName
+τ✝ : Ty
+φ✝ : TyCon
+h : True
+⊢ Ty.dict cl✝ τ✝ = Ty.ctor φ✝
+
+case tapp.base
+i✝ : Nat
+args✝ : List Ty
+ι✝ : BaseTy
+h : True
+⊢ Ty.tapp i✝ args✝ = Ty.base ι✝
+
+case tapp.opaque
+i✝ : Nat
+args✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.tapp i✝ args✝ = Ty.opaque o✝ r✝
+
+case tapp.data
+i✝ : Nat
+args✝¹ : List Ty
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.tapp i✝ args✝¹ = Ty.data d✝ args✝
+
+case tapp.list
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = a✝.list
+
+case tapp.fn
+i✝ : Nat
+args✝ : List Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.tapp i✝ args✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case tapp.tvar
+i✝¹ : Nat
+args✝ : List Ty
+i✝ : Nat
+h : True
+⊢ Ty.tapp i✝¹ args✝ = Ty.tvar i✝
+
+case tapp.reference
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = a✝.reference
+
+case tapp.lazy
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = a✝.lazy
+
+case tapp.cont
+i✝ : Nat
+args✝ : List Ty
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.tapp i✝ args✝ = b✝.cont t✝ eff✝
+
+case tapp.map
+i✝ : Nat
+args✝ : List Ty
+k✝ v✝ : Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = k✝.map v✝
+
+case tapp.set
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = a✝.set
+
+case tapp.bytes
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = Ty.bytes
+
+case tapp.dict
+i✝ : Nat
+args✝ : List Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.tapp i✝ args✝ = Ty.dict cl✝ τ✝
+
+case tapp.ctor
+i✝ : Nat
+args✝ : List Ty
+φ✝ : TyCon
+h : True
+⊢ Ty.tapp i✝ args✝ = Ty.ctor φ✝
+
+case ctor.base
+φ✝ : TyCon
+ι✝ : BaseTy
+h : True
+⊢ Ty.ctor φ✝ = Ty.base ι✝
+
+case ctor.opaque
+φ✝ : TyCon
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.ctor φ✝ = Ty.opaque o✝ r✝
+
+case ctor.data
+φ✝ : TyCon
+d✝ : DataName
+args✝ : List Ty
+h : True
+⊢ Ty.ctor φ✝ = Ty.data d✝ args✝
+
+case ctor.list
+φ✝ : TyCon
+a✝ : Ty
+h : True
+⊢ Ty.ctor φ✝ = a✝.list
+
+case ctor.fn
+φ✝ : TyCon
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.ctor φ✝ = Ty.fn names✝ params✝ ret✝ eff✝
+
+case ctor.tvar
+φ✝ : TyCon
+i✝ : Nat
+h : True
+⊢ Ty.ctor φ✝ = Ty.tvar i✝
+
+case ctor.reference
+φ✝ : TyCon
+a✝ : Ty
+h : True
+⊢ Ty.ctor φ✝ = a✝.reference
+
+case ctor.lazy
+φ✝ : TyCon
+a✝ : Ty
+h : True
+⊢ Ty.ctor φ✝ = a✝.lazy
+
+case ctor.cont
+φ✝ : TyCon
+b✝ t✝ : Ty
+eff✝ : EffR
+h : True
+⊢ Ty.ctor φ✝ = b✝.cont t✝ eff✝
+
+case ctor.map
+φ✝ : TyCon
+k✝ v✝ : Ty
+h : True
+⊢ Ty.ctor φ✝ = k✝.map v✝
+
+case ctor.set
+φ✝ : TyCon
+a✝ : Ty
+h : True
+⊢ Ty.ctor φ✝ = a✝.set
+
+case ctor.bytes
+φ✝ : TyCon
+h : True
+⊢ Ty.ctor φ✝ = Ty.bytes
+
+case ctor.dict
+φ✝ : TyCon
+cl✝ : ClassName
+τ✝ : Ty
+h : True
+⊢ Ty.ctor φ✝ = Ty.dict cl✝ τ✝
+
+case ctor.tapp
+φ✝ : TyCon
+i✝ : Nat
+args✝ : List Ty
+h : True
+⊢ Ty.ctor φ✝ = Ty.tapp i✝ args✝
+
+case ctor.ctor
+φ✝¹ φ✝ : TyCon
+h : True
+⊢ Ty.ctor φ✝¹ = Ty.ctor φ✝
+warning: Benitoite/Release/Order/Types.lean:84:17: declaration uses `sorry`
+warning: Benitoite/Release/Order/Types.lean:84:28: This simp argument is unused:
+  Tree.node.injEq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq, Label.texts.injEq,
+    Nat.reduceEqDiff, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:84:45: This simp argument is unused:
+  List.cons.injEq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq, Label.texts.injEq,
+    Nat.reduceEqDiff, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:85:8: This simp argument is unused:
+  Label.rank.injEq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.nat.injEq, Label.text.injEq, Label.texts.injEq,
+    Nat.reduceEqDiff, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:85:26: This simp argument is unused:
+  Label.nat.injEq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.text.injEq, Label.texts.injEq,
+    Nat.reduceEqDiff, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:85:43: This simp argument is unused:
+  Label.text.injEq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.texts.injEq,
+    Nat.reduceEqDiff, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:85:61: This simp argument is unused:
+  Label.texts.injEq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq,
+    Nat.reduceEqDiff, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:86:8: This simp argument is unused:
+  Nat.reduceEqDiff
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq,
+    Label.texts.injEq, and_true, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:86:26: This simp argument is unused:
+  and_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq,
+    Label.texts.injEq, Nat.reduceEqDiff, true_and, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:86:36: This simp argument is unused:
+  true_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq,
+    Label.texts.injEq, Nat.reduceEqDiff, and_true, false_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:86:46: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.toTree, Tree.node.injEq, List.cons.injEq, Label.rank.injEq, Label.nat.injEq, Label.text.injEq,
+    Label.texts.injEq, Nat.reduceEqDiff, and_true, true_and] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Release/Order/Types.lean:162:6: Type mismatch
+  Ty.opaque a
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+error: Benitoite/Release/Order/Types.lean:203:68: unsolved goals
+case base.base
+ι✝¹ ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.opaque
+ι✝ : BaseTy
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.data
+ι✝ : BaseTy
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.list
+ι✝ : BaseTy
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.fn
+ι✝ : BaseTy
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.tvar
+ι✝ : BaseTy
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.reference
+ι✝ : BaseTy
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.lazy
+ι✝ : BaseTy
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.cont
+ι✝ : BaseTy
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.map
+ι✝ : BaseTy
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.set
+ι✝ : BaseTy
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.bytes
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.dict
+ι✝ : BaseTy
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.tapp
+ι✝ : BaseTy
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case base.ctor
+ι✝ : BaseTy
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.base
+o✝ : OpaqueName
+r✝ : ScopeRange
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.opaque
+o✝¹ : OpaqueName
+r✝¹ : ScopeRange
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.data
+o✝ : OpaqueName
+r✝ : ScopeRange
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.list
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.fn
+o✝ : OpaqueName
+r✝ : ScopeRange
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.tvar
+o✝ : OpaqueName
+r✝ : ScopeRange
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.reference
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.lazy
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.cont
+o✝ : OpaqueName
+r✝ : ScopeRange
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.map
+o✝ : OpaqueName
+r✝ : ScopeRange
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.set
+o✝ : OpaqueName
+r✝ : ScopeRange
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.bytes
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.dict
+o✝ : OpaqueName
+r✝ : ScopeRange
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.tapp
+o✝ : OpaqueName
+r✝ : ScopeRange
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case opaque.ctor
+o✝ : OpaqueName
+r✝ : ScopeRange
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.base
+d✝ : DataName
+args✝ : List Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.opaque
+d✝ : DataName
+args✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.data
+d✝¹ : DataName
+args✝¹ : List Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.list
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.fn
+d✝ : DataName
+args✝ : List Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.tvar
+d✝ : DataName
+args✝ : List Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.reference
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.lazy
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.cont
+d✝ : DataName
+args✝ : List Ty
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.map
+d✝ : DataName
+args✝ : List Ty
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.set
+d✝ : DataName
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.bytes
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.dict
+d✝ : DataName
+args✝ : List Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.tapp
+d✝ : DataName
+args✝¹ : List Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case data.ctor
+d✝ : DataName
+args✝ : List Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.base
+a✝ : Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.list
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.tvar
+a✝ : Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.reference
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.lazy
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.map
+a✝ k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.set
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.bytes
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case list.ctor
+a✝ : Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.base
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.opaque
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.data
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.list
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.fn
+names✝¹ : List String
+params✝¹ : List Ty
+ret✝¹ : Ty
+eff✝¹ : EffR
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.tvar
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.reference
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.lazy
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.cont
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝¹ : EffR
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.map
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.set
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.bytes
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.dict
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.tapp
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case fn.ctor
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.base
+i✝ : Nat
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.opaque
+i✝ : Nat
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.data
+i✝ : Nat
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.list
+i✝ : Nat
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.fn
+i✝ : Nat
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.tvar
+i✝¹ i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.reference
+i✝ : Nat
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.lazy
+i✝ : Nat
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.cont
+i✝ : Nat
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.map
+i✝ : Nat
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.set
+i✝ : Nat
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.bytes
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.dict
+i✝ : Nat
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.tapp
+i✝¹ i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tvar.ctor
+i✝ : Nat
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.base
+a✝ : Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.list
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.tvar
+a✝ : Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.reference
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.lazy
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.map
+a✝ k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.set
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.bytes
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case reference.ctor
+a✝ : Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.base
+a✝ : Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.list
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.tvar
+a✝ : Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.reference
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.lazy
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.map
+a✝ k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.set
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.bytes
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case lazy.ctor
+a✝ : Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.base
+b✝ t✝ : Ty
+eff✝ : EffR
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.opaque
+b✝ t✝ : Ty
+eff✝ : EffR
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.data
+b✝ t✝ : Ty
+eff✝ : EffR
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.list
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.fn
+b✝ t✝ : Ty
+eff✝¹ : EffR
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.tvar
+b✝ t✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.reference
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.lazy
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.cont
+b✝¹ t✝¹ : Ty
+eff✝¹ : EffR
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.map
+b✝ t✝ : Ty
+eff✝ : EffR
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.set
+b✝ t✝ : Ty
+eff✝ : EffR
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.bytes
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.dict
+b✝ t✝ : Ty
+eff✝ : EffR
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.tapp
+b✝ t✝ : Ty
+eff✝ : EffR
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case cont.ctor
+b✝ t✝ : Ty
+eff✝ : EffR
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.base
+k✝ v✝ : Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.opaque
+k✝ v✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.data
+k✝ v✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.list
+k✝ v✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.fn
+k✝ v✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.tvar
+k✝ v✝ : Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.reference
+k✝ v✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.lazy
+k✝ v✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.cont
+k✝ v✝ b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.map
+k✝¹ v✝¹ k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.set
+k✝ v✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.bytes
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.dict
+k✝ v✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.tapp
+k✝ v✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case map.ctor
+k✝ v✝ : Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.base
+a✝ : Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.opaque
+a✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.data
+a✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.list
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.fn
+a✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.tvar
+a✝ : Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.reference
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.lazy
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.cont
+a✝ b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.map
+a✝ k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.set
+a✝¹ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.bytes
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.dict
+a✝ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.tapp
+a✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case set.ctor
+a✝ : Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.base
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.opaque
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.data
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.list
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.fn
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.tvar
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.reference
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.lazy
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.cont
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.map
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.set
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.bytes
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.dict
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.tapp
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case bytes.ctor
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.base
+cl✝ : ClassName
+τ✝ : Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.opaque
+cl✝ : ClassName
+τ✝ : Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.data
+cl✝ : ClassName
+τ✝ : Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.list
+cl✝ : ClassName
+τ✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.fn
+cl✝ : ClassName
+τ✝ : Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.tvar
+cl✝ : ClassName
+τ✝ : Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.reference
+cl✝ : ClassName
+τ✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.lazy
+cl✝ : ClassName
+τ✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.cont
+cl✝ : ClassName
+τ✝ b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.map
+cl✝ : ClassName
+τ✝ k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.set
+cl✝ : ClassName
+τ✝ a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.bytes
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.dict
+cl✝¹ : ClassName
+τ✝¹ : Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.tapp
+cl✝ : ClassName
+τ✝ : Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case dict.ctor
+cl✝ : ClassName
+τ✝ : Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.base
+i✝ : Nat
+args✝ : List Ty
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.opaque
+i✝ : Nat
+args✝ : List Ty
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.data
+i✝ : Nat
+args✝¹ : List Ty
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.list
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.fn
+i✝ : Nat
+args✝ : List Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.tvar
+i✝¹ : Nat
+args✝ : List Ty
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.reference
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.lazy
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.cont
+i✝ : Nat
+args✝ : List Ty
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.map
+i✝ : Nat
+args✝ : List Ty
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.set
+i✝ : Nat
+args✝ : List Ty
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.bytes
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.dict
+i✝ : Nat
+args✝ : List Ty
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.tapp
+i✝¹ : Nat
+args✝¹ : List Ty
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case tapp.ctor
+i✝ : Nat
+args✝ : List Ty
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.base
+φ✝ : TyCon
+ι✝ : BaseTy
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.opaque
+φ✝ : TyCon
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.data
+φ✝ : TyCon
+d✝ : DataName
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.list
+φ✝ : TyCon
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.fn
+φ✝ : TyCon
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.tvar
+φ✝ : TyCon
+i✝ : Nat
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.reference
+φ✝ : TyCon
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.lazy
+φ✝ : TyCon
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.cont
+φ✝ : TyCon
+b✝ t✝ : Ty
+eff✝ : EffR
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.map
+φ✝ : TyCon
+k✝ v✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.set
+φ✝ : TyCon
+a✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.bytes
+φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.dict
+φ✝ : TyCon
+cl✝ : ClassName
+τ✝ : Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.tapp
+φ✝ : TyCon
+i✝ : Nat
+args✝ : List Ty
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+
+case ctor.ctor
+φ✝¹ φ✝ : TyCon
+⊢ sorry () = treeCompare labelCompare (sorry ()) (sorry ())
+warning: Benitoite/Release/Order/Types.lean:205:12: declaration uses `sorry`
+warning: Benitoite/Release/Order/Types.lean:205:34: This simp argument is unused:
+  treeCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treesCompare, labelCompare, Nat.compare_eq_ite_lt, tyCompare_eq_treeCompare,
+    tysCompare_eq_treesCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:205:47: This simp argument is unused:
+  treesCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, labelCompare, Nat.compare_eq_ite_lt, tyCompare_eq_treeCompare,
+    tysCompare_eq_treesCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:206:8: This simp argument is unused:
+  labelCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, treesCompare, Nat.compare_eq_ite_lt, tyCompare_eq_treeCompare,
+    tysCompare_eq_treesCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:206:22: This simp argument is unused:
+  Nat.compare_eq_ite_lt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, treesCompare, labelCompare, tyCompare_eq_treeCompare,
+    tysCompare_eq_treesCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:207:8: This simp argument is unused:
+  tyCompare_eq_treeCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, treesCompare, labelCompare, Nat.compare_eq_ite_lt,
+    tysCompare_eq_treesCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:207:34: This simp argument is unused:
+  tysCompare_eq_treesCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, treesCompare, labelCompare, Nat.compare_eq_ite_lt,
+    tyCompare_eq_treeCompare, effCompare_eq_treeCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:207:62: This simp argument is unused:
+  effCompare_eq_treeCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, treesCompare, labelCompare, Nat.compare_eq_ite_lt,
+    tyCompare_eq_treeCompare, tysCompare_eq_treesCompare, tyConCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Order/Types.lean:207:89: This simp argument is unused:
+  tyConCompare_eq_treeCompare
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tyCompare, Ty.toTree, treeCompare, treesCompare, labelCompare, Nat.compare_eq_ite_lt,
+    tyCompare_eq_treeCompare, tysCompare_eq_treesCompare, effCompare_eq_treeCompare]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Some required targets logged failures:
+- Benitoite.Release.Order.Types
+error: build failed
+        3.27 real         3.66 user         0.66 sys
+           769916928  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              194276  page reclaims
+                 250  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  22  voluntary context switches
+               14683  involuntary context switches
+          1209033239  instructions retired
+           453640061  cycles elapsed
+            22693016  peak memory footprint
+== exit 1

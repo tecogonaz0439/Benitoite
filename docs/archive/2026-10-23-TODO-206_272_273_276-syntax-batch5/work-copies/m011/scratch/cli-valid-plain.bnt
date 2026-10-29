@@ -1,0 +1,10 @@
+function main() -> Unit
+  bind when <- "x"
+  bind n <- 1
+  bind k <- 1
+  bind s <- match k with
+  case 1 -> when + "${n}"
+  case _ -> ""
+  end match
+  ()
+end function

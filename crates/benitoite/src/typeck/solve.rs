@@ -7,7 +7,7 @@ use crate::base::{NodeId, Span};
 use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Edit};
 use crate::resolve::ResolveOutput;
 use crate::syntax::ast::BinOp;
-use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId as B};
+use crate::types::builtin::{BuiltinEffectId, BuiltinTypeClass, BuiltinTypeId as B};
 use crate::types::*;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashSet};
@@ -19,7 +19,7 @@ use effect_key::EffectConstraintKey;
 // 子を左から順に展開し、親の型は子をすべて作ってから組み立てる。
 // 作業の枠はヒープに置き、型の深さに比例する Rust の再帰を使わない（02-03）。
 enum ZonkHead<'a> {
-    Con(TyCon),
+    Con(TyCon, &'a crate::types::builtin::RangeIndex),
     App(IHead),
     Fn(&'a IFnTy),
 }
@@ -49,7 +49,7 @@ struct ContractState {
     parent: u32,
     binding: Option<IContract>,
 }
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Elem {
     Name(EffectName),
     Var(EffVar),
@@ -64,7 +64,7 @@ type SuperPaths =
     BTreeMap<(crate::base::BindingId, crate::base::BindingId), Option<Vec<crate::base::BindingId>>>;
 type Escape = (NodeId, u32);
 type LateFailure = (DiagCode, ITy, ITy, Reason, Option<Escape>);
-type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
+type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>, EffectRelation);
 
 /// 一つの本体でだけ有効な型変数とエフェクト変数の状態。
 #[derive(Default)]
@@ -192,6 +192,12 @@ impl Solver {
         });
         ITy::Var(TyVar(n))
     }
+    pub fn clause_context(&self) -> &[NodeId] {
+        &self.clauses
+    }
+    pub fn set_clause_context(&mut self, clauses: Vec<NodeId>) {
+        self.clauses = clauses;
+    }
     pub fn enter_clause(&mut self, clause: NodeId) {
         self.clauses.push(clause);
     }
@@ -311,7 +317,7 @@ impl Solver {
                     }
                     budget.enter(depth)?;
                     let children = match t {
-                        ITy::Con(c, args) => Some((ZonkHead::Con(*c), args)),
+                        ITy::Con(c, args, ix) => Some((ZonkHead::Con(*c, ix), args)),
                         ITy::App(h, args) => Some((ZonkHead::App(*h), args)),
                         ITy::Fn(f) => {
                             for t in &f.effect.failures {
@@ -371,7 +377,7 @@ impl Solver {
                     budget.enter(depth)?;
                     let next = depth.saturating_add(1);
                     match t {
-                        ITy::Con(_, ts) | ITy::App(_, ts) => {
+                        ITy::Con(_, ts, _) | ITy::App(_, ts) => {
                             pending.extend(ts.iter().map(|t| ZonkStep::Count(t, next)))
                         }
                         ITy::Fn(f) => {
@@ -413,10 +419,12 @@ impl Solver {
                         pending.push(ZonkStep::Visit(child, depth));
                     } else {
                         match head {
-                            ZonkHead::Con(c) => result = ITy::Con(c, built),
+                            ZonkHead::Con(c, ix) => result = ITy::Con(c, built, ix.clone()),
                             ZonkHead::App(h) => {
                                 result = match self.head(h) {
-                                    Some(TyHead::Con(c)) => ITy::Con(c, built),
+                                    Some(TyHead::Con(c)) => {
+                                        ITy::Con(c, built, crate::types::builtin::RangeIndex::TOP)
+                                    }
                                     Some(TyHead::Param(i)) => ITy::App(IHead::Param(i), built),
                                     None => ITy::App(h, built),
                                 };
@@ -469,7 +477,7 @@ impl Solver {
                     pending.extend(f.params);
                     pending.push(f.ret);
                 }
-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
                 ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
             }
         }
@@ -488,7 +496,7 @@ impl Solver {
     fn finalize_zonked(&self, t: ITy, r: &ResolveOutput) -> Ty {
         match t {
             ITy::Var(_) | ITy::Error => super::decls::unit(),
-            ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.finalize(t, r)).collect()),
+            ITy::Con(c, a, ix) => Ty::Con(c, a.iter().map(|t| self.finalize(t, r)).collect(), ix),
             ITy::Fn(f)
                 if self.contract_names(&f.contract).is_none_or(|names| {
                     names.len() != f.params.len()
@@ -508,11 +516,31 @@ impl Solver {
             ITy::App(h, a) => {
                 let args = a.iter().map(|t| self.finalize(t, r)).collect();
                 match self.finalize_head(h, r) {
-                    TyHead::Con(c) => Ty::Con(c, args),
+                    TyHead::Con(c) => Ty::Con(c, args, crate::types::builtin::RangeIndex::TOP),
                     TyHead::Param(i) => Ty::App(i, args),
                 }
             }
         }
+    }
+    /// 保護本体の最小効果へ流れ込む推論用の行だけをたどる。
+    /// 呼ばない lambda の潜在効果など、構文上だけ内側にある行は含めない。
+    pub fn effect_inputs(&self, effect: &IEffect) -> BTreeSet<u32> {
+        let mut predecessors: BTreeMap<u32, Vec<u32>> = BTreeMap::new();
+        for (sub, sup, _, _, _) in &self.effects {
+            if let (Some(source), Some(target)) = (sub.var, sup.var) {
+                predecessors.entry(target.0).or_default().push(source.0);
+            }
+        }
+        let mut found = BTreeSet::new();
+        let mut pending: Vec<_> = effect.var.into_iter().map(|row| row.0).collect();
+        while let Some(row) = pending.pop() {
+            if found.insert(row)
+                && let Some(sources) = predecessors.get(&row)
+            {
+                pending.extend(sources);
+            }
+        }
+        found
     }
     pub fn finalize_effect(&self, e: &IEffect) -> EffectSet {
         let mut out = e
@@ -535,11 +563,12 @@ impl Solver {
     fn finalize_failure_type_normalized(&self, t: &ITy) -> Ty {
         match t {
             ITy::Var(_) | ITy::Error => super::decls::unit(),
-            ITy::Con(c, ts) => Ty::Con(
+            ITy::Con(c, ts, ix) => Ty::Con(
                 *c,
                 ts.iter()
                     .map(|t| self.finalize_failure_type_normalized(t))
                     .collect(),
+                ix.clone(),
             ),
             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
                 param_names: self.contract_names(&f.contract).unwrap_or_default(),
@@ -562,7 +591,7 @@ impl Solver {
                     .map(|t| self.finalize_failure_type_normalized(t))
                     .collect();
                 match self.head(*h) {
-                    Some(TyHead::Con(c)) => Ty::Con(c, ts),
+                    Some(TyHead::Con(c)) => Ty::Con(c, ts, crate::types::builtin::RangeIndex::TOP),
                     Some(TyHead::Param(i)) => Ty::App(i, ts),
                     None => super::decls::unit(),
                 }
@@ -585,7 +614,7 @@ impl Solver {
                     pending.extend(f.params);
                     pending.push(f.ret);
                 }
-                ITy::Con(_, ts) | ITy::App(_, ts) => pending.extend(ts),
+                ITy::Con(_, ts, _) | ITy::App(_, ts) => pending.extend(ts),
                 ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
             }
         }
@@ -603,7 +632,7 @@ impl Solver {
                         return true;
                     }
                 }
-                ITy::Con(_, a) | ITy::App(_, a) => todo.extend(a),
+                ITy::Con(_, a, _) | ITy::App(_, a) => todo.extend(a),
                 ITy::Fn(f) => {
                     todo.extend(self.failure_types(&f.effect));
                     todo.extend(f.params);
@@ -647,7 +676,7 @@ impl Solver {
                 ITy::Var(v) => {
                     vars.insert(v.0);
                 }
-                ITy::Con(_, args) | ITy::App(_, args) => pending.extend(args),
+                ITy::Con(_, args, _) | ITy::App(_, args) => pending.extend(args),
                 ITy::Fn(f) => {
                     pending.extend(self.failure_types(&f.effect));
                     pending.extend(f.params);
@@ -716,7 +745,9 @@ impl Solver {
         }
         match (&a, &b) {
             (ITy::Var(v), t) | (t, ITy::Var(v)) => self.bind(*v, t),
-            (ITy::Con(c, x), ITy::Con(d, y)) if c == d && x.len() == y.len() => {
+            (ITy::Con(c, x, ix), ITy::Con(d, y, iy))
+                if c == d && ix == iy && x.len() == y.len() =>
+            {
                 for (a, b) in x.iter().zip(y) {
                     self.equal_with_outer(a, b, reason, expected, found)?;
                 }
@@ -745,8 +776,8 @@ impl Solver {
                 self.equal_function_effects(&x.effect, &y.effect, reason, expected, found);
                 Ok(())
             }
-            (ITy::App(h, x), ITy::Con(c, y)) | (ITy::Con(c, y), ITy::App(h, x))
-                if x.len() == y.len() =>
+            (ITy::App(h, x), ITy::Con(c, y, ix)) | (ITy::Con(c, y, ix), ITy::App(h, x))
+                if ix == &crate::types::builtin::RangeIndex::TOP && x.len() == y.len() =>
             {
                 self.bind_head(*h, TyHead::Con(*c))?;
                 for (a, b) in x.iter().zip(y) {
@@ -798,6 +829,7 @@ impl Solver {
                 sup.clone(),
                 reason.clone(),
                 Some((found.clone(), expected.clone())),
+                EffectRelation::Structural,
             );
             self.register_effect(constraint, true);
         }
@@ -851,7 +883,10 @@ impl Solver {
                 } else {
                     (e, x.effect.clone())
                 };
-                self.register_effect((sub, sup, r.clone(), Some((a, b))), false);
+                self.register_effect(
+                    (sub, sup, r.clone(), Some((a, b)), EffectRelation::Cover),
+                    false,
+                );
                 Ok(true)
             }
             (ITy::Fn(x), ITy::Fn(y)) => {
@@ -864,7 +899,13 @@ impl Solver {
                 }
                 self.equal(&x.ret, &y.ret, r)?;
                 self.register_effect(
-                    (x.effect.clone(), y.effect.clone(), r.clone(), Some((a, b))),
+                    (
+                        x.effect.clone(),
+                        y.effect.clone(),
+                        r.clone(),
+                        Some((a, b)),
+                        EffectRelation::Cover,
+                    ),
                     false,
                 );
                 Ok(true)
@@ -944,7 +985,7 @@ impl Solver {
                         n.binding = Some(ITy::Error);
                     }
                 }
-                ITy::Con(_, a) | ITy::App(_, a) => todo.extend(a),
+                ITy::Con(_, a, _) | ITy::App(_, a) => todo.extend(a),
                 ITy::Fn(f) => {
                     todo.extend(f.effect.failures);
                     todo.extend(f.params);
@@ -962,7 +1003,9 @@ impl Solver {
     pub(super) fn diagnostic_type(&self, t: &ITy) -> Ty {
         match self.zonk(t) {
             ITy::Var(_) | ITy::Error => Ty::Param(u32::MAX),
-            ITy::Con(c, a) => Ty::Con(c, a.iter().map(|t| self.diagnostic_type(t)).collect()),
+            ITy::Con(c, a, ix) => {
+                Ty::Con(c, a.iter().map(|t| self.diagnostic_type(t)).collect(), ix)
+            }
             ITy::Fn(f) => Ty::Fn(Box::new(FnTy {
                 param_names: self.contract_names(&f.contract).unwrap_or_default(),
                 params: f.params.iter().map(|t| self.diagnostic_type(t)).collect(),
@@ -974,7 +1017,9 @@ impl Solver {
             ITy::App(h, a) => {
                 let args = a.iter().map(|t| self.diagnostic_type(t)).collect();
                 match self.head(h) {
-                    Some(TyHead::Con(c)) => Ty::Con(c, args),
+                    Some(TyHead::Con(c)) => {
+                        Ty::Con(c, args, crate::types::builtin::RangeIndex::TOP)
+                    }
                     Some(TyHead::Param(i)) => Ty::App(i, args),
                     None => Ty::App(u32::MAX, args),
                 }
@@ -1012,7 +1057,7 @@ impl Solver {
                     pending.push((&e.ret, &f.ret));
                     pending.extend(e.params.iter().zip(&f.params).rev());
                 }
-                (ITy::Con(_, es), ITy::Con(_, fs)) | (ITy::App(_, es), ITy::App(_, fs)) => {
+                (ITy::Con(_, es, _), ITy::Con(_, fs, _)) | (ITy::App(_, es), ITy::App(_, fs)) => {
                     pending.extend(es.iter().zip(fs).rev())
                 }
                 _ => {}
@@ -1044,7 +1089,13 @@ impl Solver {
         escaped: Option<Escape>,
         effect_mismatch: bool,
     ) {
-        let (expected, found) = types;
+        // ScopeResult の補助制約は (生成した成功型, 注釈で決まった型) の順である。
+        // 型の解決順は保ち、E0401 の表示だけを通常の (注釈, 値) にそろえる。
+        let (expected, found) = if code == DiagCode::E0401 && r.kind == ReasonKind::ScopeResult {
+            (types.1, types.0)
+        } else {
+            types
+        };
         if r.kind == ReasonKind::LambdaReturn
             && ctx
                 .lambda_body_ends
@@ -1164,6 +1215,7 @@ impl Solver {
                     d = d.arg("index", index.to_string());
                     Some("because_call_arg")
                 }
+                ReasonKind::ScopeResult => Some("because_scope_result"),
                 ReasonKind::IfCondition | ReasonKind::MatchGuard => Some("because_condition"),
                 ReasonKind::IfBranches => Some("because_if_branches"),
                 ReasonKind::IfNoElse => Some("because_if_no_else"),
@@ -1216,7 +1268,7 @@ impl Solver {
             if let Some(note) = note {
                 d = d.note(note);
             }
-            if let (ITy::Con(TyCon::Builtin(a), _), ITy::Con(TyCon::Builtin(b), _)) =
+            if let (ITy::Con(TyCon::Builtin(a), _, _), ITy::Con(TyCon::Builtin(b), _, _)) =
                 (self.zonk(expected), self.zonk(found))
                 && [a, b].iter().any(|ty| {
                     super::text::numeric_suffix(*ty).is_some()
@@ -1228,7 +1280,12 @@ impl Solver {
                 d = d.arg("suffix", suffix).help("numeric_width");
             }
             if let Some(literal) = &r.int_literal
-                && self.zonk(expected) == ITy::Con(TyCon::Builtin(B::FLOAT), vec![])
+                && self.zonk(expected)
+                    == ITy::Con(
+                        TyCon::Builtin(B::FLOAT),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP,
+                    )
             {
                 d = d.arg("literal", literal).help_edits(
                     "float_literal",
@@ -1338,7 +1395,7 @@ impl Solver {
         let mut normal = vec![];
         let mut bounds = vec![];
         let mut call_statements = vec![];
-        let call_results: BTreeSet<_> = ctx
+        let mut call_results: BTreeSet<_> = ctx
             .named_calls
             .iter()
             .filter_map(super::calls::PendingCall::result_var)
@@ -1346,9 +1403,12 @@ impl Solver {
             .collect();
         for c in constraints {
             match c {
-                Constraint::EffSub { sub, sup, reason } => {
-                    self.register_effect((sub, sup, reason, None), false)
-                }
+                Constraint::EffSub {
+                    sub,
+                    sup,
+                    reason,
+                    relation,
+                } => self.register_effect((sub, sup, reason, None, relation), false),
                 Constraint::Equal {
                     ref found,
                     ref reason,
@@ -1398,8 +1458,37 @@ impl Solver {
         // 呼び出しの Flow と試行がほかの呼び出しの契約を定める場合も再訪する。
         // 未確定の位置の等しさへの切り替えは、既知の情報を使い切ってから行う
         // （設計書 02-05「制約の解決」）。
+        let mut clauses_generated = false;
         loop {
-            let before = (calls.len(), deferred.len());
+            let added_calls = std::mem::take(&mut ctx.named_calls);
+            for call in &added_calls {
+                if let Some(variable) = call.result_var() {
+                    call_results.insert(variable.0);
+                }
+            }
+            if clauses_generated {
+                self.generated_constraints(
+                    ctx,
+                    &call_results,
+                    &mut deferred,
+                    &mut bounds,
+                    &mut call_statements,
+                );
+                clauses_generated = false;
+            }
+            for call in &added_calls {
+                if let Some(constraints) = super::calls::prepare(self, call) {
+                    for constraint in constraints {
+                        self.solve_pair(ctx, constraint, &mut deferred);
+                    }
+                }
+            }
+            calls.extend(added_calls);
+            let before = (
+                calls.len(),
+                deferred.len(),
+                ctx.scoped_calls.pending_count(),
+            );
             let mut waiting = vec![];
             for call in calls {
                 if super::calls::ready(self, &call) {
@@ -1428,8 +1517,22 @@ impl Solver {
             let mut special_after = 0usize;
             for c in std::mem::take(&mut ctx.constraints) {
                 match c {
-                    Constraint::EffSub { sub, sup, reason } => {
-                        self.register_effect((sub, sup, reason, None), false);
+                    Constraint::EffSub {
+                        sub,
+                        sup,
+                        reason,
+                        relation,
+                    } => {
+                        self.register_effect((sub, sup, reason, None, relation), false);
+                    }
+                    Constraint::Equal {
+                        ref found,
+                        ref reason,
+                        ..
+                    } if matches!(reason.kind, ReasonKind::ExprStmt | ReasonKind::FnBody)
+                        && matches!(found, ITy::Var(v) if call_results.contains(&v.0)) =>
+                    {
+                        call_statements.push(c);
                     }
                     Constraint::Equal { .. } | Constraint::Flow { .. } => {
                         self.solve_pair(ctx, c, &mut deferred);
@@ -1455,11 +1558,56 @@ impl Solver {
                 .is_some()
             {
                 self.propagate_effects(ctx);
-                if calls.iter().any(|call| super::calls::ready(self, call)) {
+            }
+            // 後から生成した節の束縛も、この巡で呼び出し契約を確定する。
+            // Fail を使わない本体でも、確定した呼び出しを次の巡で解く。
+            if calls.iter().any(|call| super::calls::ready(self, call)) {
+                continue;
+            }
+            for c in super::scoped_calls::resolve(ctx, self, false) {
+                self.solve_pair(ctx, c, &mut deferred);
+            }
+            if before
+                == (
+                    calls.len(),
+                    deferred.len(),
+                    ctx.scoped_calls.pending_count(),
+                )
+                && special_before == special_after
+            {
+                // 節の結果との接続を加える前に、囲む本体に既にある Flow を使い切る。
+                // 関数値の入力と潜在効果の対応も、この等しさで初めて決まる場合がある。
+                if !ctx.pending_handlers.is_empty() && !deferred.is_empty() {
+                    for constraint in std::mem::take(&mut deferred) {
+                        if let Constraint::Flow { from, to, reason } = constraint {
+                            if let Err(code) = self.equal(&to, &from, &reason) {
+                                self.pair_failure(ctx, code, &to, &from, &reason);
+                            } else {
+                                self.record_use(&to, &from, &reason);
+                            }
+                        }
+                    }
                     continue;
                 }
-            }
-            if before == (calls.len(), deferred.len()) && special_before == special_after {
+                let scoped = if ctx.pending_handlers.is_empty() {
+                    super::scoped_calls::resolve(ctx, self, true)
+                } else {
+                    super::scoped_calls::resolve_handler_body(ctx, self)
+                };
+                if !scoped.is_empty() {
+                    for c in scoped {
+                        self.solve_pair(ctx, c, &mut deferred);
+                    }
+                    continue;
+                }
+                if !ctx.pending_handlers.is_empty() {
+                    self.propagate_effects(ctx);
+                    ctx.solver = std::mem::take(self);
+                    super::effects::finish_next_handler(ctx);
+                    *self = std::mem::take(&mut ctx.solver);
+                    clauses_generated = true;
+                    continue;
+                }
                 if deferred.is_empty() {
                     break;
                 }
@@ -1563,6 +1711,78 @@ impl Solver {
         ctx.solver = std::mem::take(self);
         super::traits::solve_classes(ctx);
         *self = std::mem::take(&mut ctx.solver);
+    }
+    /// 節を後から生成しても、宣言・通常の制約を呼び出しの対応より先に解く。
+    /// 特に節内の構築子を外側の型へ結ぶ前に、その引数の剛体型を確定する。
+    fn generated_constraints(
+        &mut self,
+        ctx: &mut Body<'_, '_>,
+        call_results: &BTreeSet<u32>,
+        deferred: &mut Vec<Constraint>,
+        bounds: &mut Vec<Constraint>,
+        call_statements: &mut Vec<Constraint>,
+    ) {
+        let mut declared = Vec::new();
+        let mut normal = Vec::new();
+        let mut inferred_returns = Vec::new();
+        for constraint in std::mem::take(&mut ctx.constraints) {
+            match constraint {
+                Constraint::EffSub {
+                    sub,
+                    sup,
+                    reason,
+                    relation,
+                } => {
+                    self.register_effect((sub, sup, reason, None, relation), false);
+                }
+                Constraint::Equal {
+                    ref found,
+                    ref reason,
+                    ..
+                } if matches!(reason.kind, ReasonKind::ExprStmt | ReasonKind::FnBody)
+                    && matches!(found, ITy::Var(variable) if call_results.contains(&variable.0)) =>
+                {
+                    call_statements.push(constraint);
+                }
+                Constraint::Flow {
+                    ref to, ref reason, ..
+                } if reason.kind == ReasonKind::Return
+                    && reason.related.is_none()
+                    && !matches!(self.zonk(to), ITy::Var(_)) =>
+                {
+                    // 未注釈の戻り値が先の巡で既に推論されていても、節内の値を
+                    // その外の型へ結ぶ前に構築する。明示した契約の優先は変えない。
+                    inferred_returns.push(constraint);
+                }
+                Constraint::Equal { ref reason, .. } | Constraint::Flow { ref reason, .. }
+                    if reason.priority == Priority::Declared =>
+                {
+                    declared.push(constraint)
+                }
+                Constraint::Class { .. } | Constraint::Try { .. } | Constraint::Resource { .. } => {
+                    ctx.add(constraint)
+                }
+                Constraint::Equal { .. }
+                | Constraint::Flow { .. }
+                | Constraint::OneOf { .. }
+                | Constraint::Equality { .. }
+                | Constraint::Key { .. } => normal.push(constraint),
+            }
+        }
+        for constraint in declared.into_iter().chain(normal).chain(inferred_returns) {
+            match constraint {
+                Constraint::OneOf { .. } | Constraint::Equality { .. } | Constraint::Key { .. } => {
+                    bounds.push(constraint)
+                }
+                Constraint::Equal { .. }
+                | Constraint::Flow { .. }
+                | Constraint::Class { .. }
+                | Constraint::Try { .. }
+                | Constraint::Resource { .. }
+                | Constraint::EffSub { .. } => self.solve_pair(ctx, constraint, deferred),
+            }
+            *bounds = self.bounds(ctx, std::mem::take(bounds), false);
+        }
     }
     fn solve_pair(
         &mut self,
@@ -1755,7 +1975,7 @@ impl Solver {
                 if (independent_format
                     || !has_error(&actual)
                     || r.kind == ReasonKind::InterpFormat && !matches!(&actual, ITy::Error))
-                    && !matches!(&actual, ITy::Con(TyCon::Builtin(b), args) if args.is_empty() && set.contains(*b))
+                    && !matches!(&actual, ITy::Con(TyCon::Builtin(b), args, _) if args.is_empty() && set.contains(*b))
                 {
                     self.bound_failure(ctx, &actual, outer.as_ref(), &r, mode, Some(set));
                     self.poison(&[ty]);
@@ -1766,7 +1986,7 @@ impl Solver {
             // 既知の不適合な型への診断は保つ（設計書 02-05「制約の解決」）。
             if set == Some(TySet::INT_DIV)
                 && (!matches!(&t, ITy::Var(_)) || final_pass)
-                && !matches!(&t, ITy::Con(TyCon::Builtin(b), args)
+                && !matches!(&t, ITy::Con(TyCon::Builtin(b), args, _)
                     if args.is_empty() && TySet::INT_DIV.contains(*b))
             {
                 let integer = super::generate::basic(B::INTEGER);
@@ -1790,7 +2010,7 @@ impl Solver {
                     super::traits::check_rigid_bound(ctx, clause, index, mode, set, &r);
                     *self = std::mem::take(&mut ctx.solver);
                 }
-                ITy::Con(con, args) => {
+                ITy::Con(con, args, _) => {
                     let mut valid = true;
                     let mut indices = vec![];
                     if mode == Bound::Set {
@@ -1886,8 +2106,8 @@ impl Solver {
         let mut pending = vec![self.zonk(ty)];
         while let Some(ty) = pending.pop() {
             match ty {
-                ITy::Con(TyCon::Builtin(B::FLOAT | B::FLOAT32), _) => return true,
-                ITy::Con(TyCon::Adt(id), args) => {
+                ITy::Con(TyCon::Builtin(B::FLOAT | B::FLOAT32), _, _) => return true,
+                ITy::Con(TyCon::Adt(id), args, _) => {
                     if let Some(adt) = ctx.decls.out.adts.get(id) {
                         if adt.key_summary.always {
                             return true;
@@ -1899,7 +2119,7 @@ impl Solver {
                         }
                     }
                 }
-                ITy::Con(_, args) => pending.extend(args),
+                ITy::Con(_, args, _) => pending.extend(args),
                 ITy::Fn(_)
                 | ITy::App(..)
                 | ITy::Var(_)
@@ -1962,7 +2182,7 @@ impl Solver {
                     op: OpName::Bin(BinOp::Div)
                 }
             )
-            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _) if TySet::INT_DIV.contains(b))
+            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _, _) if TySet::INT_DIV.contains(b))
         {
             d = d.help_edits(
                 "div",
@@ -1994,7 +2214,7 @@ impl Solver {
             }
         });
         let help = if set == Some(TySet::FORMAT_FIXED)
-            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _) if TySet::FORMAT_INT.contains(b))
+            && matches!(self.zonk(ty), ITy::Con(TyCon::Builtin(b), _, _) if TySet::FORMAT_INT.contains(b))
         {
             "integer_fixed"
         } else {
@@ -2056,7 +2276,7 @@ impl Solver {
                     pending.extend(f.params);
                     pending.push(f.ret);
                 }
-                ITy::Con(_, ts) | ITy::App(_, ts) => pending.extend(ts),
+                ITy::Con(_, ts, _) | ITy::App(_, ts) => pending.extend(ts),
                 ITy::Var(_) | ITy::Param(_) | ITy::Rigid { .. } | ITy::Error => {}
             }
         }
@@ -2066,14 +2286,14 @@ impl Solver {
         let has_failures = self
             .effects
             .iter()
-            .any(|(sub, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
+            .any(|(sub, _, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
         let mut pending: Vec<_> = (0..self.effects.len()).collect();
         loop {
             let mut changed = false;
             // 型を先に結び、Fail 以外の残りだけを行へ伝える。節の出力の Fail を
             // 本体の上限に混ぜない（設計書 02-05「制約の解決」）。
             for index in pending.iter().copied().filter(|_| has_failures) {
-                let Some((sub, sup, r, pair)) = self.effects.get(index).cloned() else {
+                let Some((sub, sup, r, pair, _)) = self.effects.get(index).cloned() else {
                     continue;
                 };
                 if pair.as_ref().is_some_and(|(a, b)| {
@@ -2160,7 +2380,7 @@ impl Solver {
                     }
                 }
             }
-            for (sub, sup, r, pair) in &self.effects {
+            for (sub, sup, r, pair, relation) in &self.effects {
                 if pair.as_ref().is_some_and(|(a, b)| {
                     matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
                 }) {
@@ -2177,12 +2397,20 @@ impl Solver {
                     .unwrap_or_default();
                 if let Some(state) = usize::try_from(v.0).ok().and_then(|i| self.effs.get_mut(i)) {
                     for elem in elements(&current) {
-                        if !includes(&sup.fixed, elem) && !includes(&state.set, elem) {
-                            insert(&mut state.set, elem);
-                            state
-                                .origins
-                                .insert(elem, origins.get(&elem).copied().unwrap_or(r.span));
-                            changed = true;
+                        if !effect_accepts(*relation, &sup.fixed, &elem) {
+                            if !includes(&state.set, &elem) {
+                                insert(&mut state.set, elem.clone());
+                                changed = true;
+                            }
+                            // 節の遅延による登録順にかかわらず、同じソースで最初の
+                            // 操作を指す。由来だけの更新も上の行へ伝播する。
+                            let origin = origins.get(&elem).copied().unwrap_or(r.span);
+                            if state.origins.get(&elem).is_none_or(|previous| {
+                                previous.file == origin.file && origin.start < previous.start
+                            }) {
+                                state.origins.insert(elem, origin);
+                                changed = true;
+                            }
                         }
                     }
                 }
@@ -2215,7 +2443,7 @@ impl Solver {
         let mut reported = BTreeSet::new();
         self.effect_index.clear();
         let items = std::mem::take(&mut self.effects);
-        for (sub, sup, r, pair) in items {
+        for (sub, sup, r, pair, relation) in items {
             if pair.as_ref().is_some_and(|(a, b)| {
                 matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
             }) {
@@ -2225,7 +2453,115 @@ impl Solver {
                 continue;
             }
             for elem in elements(&self.finalize_effect(&sub)) {
-                if includes(&sup.fixed, elem) {
+                if effect_accepts(relation, &sup.fixed, &elem) {
+                    continue;
+                }
+                let origin = sub
+                    .var
+                    .and_then(|v| usize::try_from(v.0).ok().and_then(|i| self.effs.get(i)))
+                    .and_then(|s| s.origins.get(&elem))
+                    .copied()
+                    .unwrap_or(r.span);
+                let same_named = match &elem {
+                    Elem::Name(atom) if relation == EffectRelation::Cover => sup
+                        .fixed
+                        .names
+                        .iter()
+                        .filter(|candidate| match (atom, *candidate) {
+                            (EffectName::Builtin(a, _), EffectName::Builtin(b, _)) => a == b,
+                            (EffectName::User(a, _), EffectName::User(b, _)) => a == b,
+                            _ => false,
+                        })
+                        .collect::<Vec<_>>(),
+                    Elem::Name(_) | Elem::Var(_) => Vec::new(),
+                };
+                if let Elem::Name(atom) = &elem
+                    && !same_named.is_empty()
+                {
+                    if pair.is_none()
+                        || reported.insert((r.span.file.0, r.span.start.0, r.span.end.0))
+                    {
+                        // Top は由来を認定しない。閉じた原子では和の被覆を判定せず、
+                        // 同名の閉じた上限が複数あることを理由に示す（設計書 01-07「閉じた範囲引数」）。
+                        let (reason, note, help) = if atom.index()
+                            == &crate::types::builtin::RangeIndex::TOP
+                        {
+                            let help = match atom {
+                                EffectName::Builtin(BuiltinEffectId::HTTP_CONNECT, _) => {
+                                    "top_endpoint"
+                                }
+                                EffectName::Builtin(BuiltinEffectId::FILE_WRITE, _) => "top_write",
+                                EffectName::Builtin(..) | EffectName::User(..) => "top",
+                            };
+                            (super::text::UNKNOWN_SOURCE, "unknown", help)
+                        } else if atom.index().range().is_some()
+                            && same_named
+                                .iter()
+                                .filter(|candidate| {
+                                    candidate.index().range().is_some_and(|range| {
+                                        range != &crate::types::scope::Range::Top
+                                    })
+                                })
+                                .count()
+                                >= 2
+                        {
+                            (super::text::ATOMIC_COVER_ONLY, "atomic", "scopes")
+                        } else {
+                            (super::text::NOT_COVERED, "uncovered", "scopes")
+                        };
+                        let name = super::effects::effect_name(ctx, atom, Some(ctx.module));
+                        let mut declared_spans = Vec::new();
+                        if r.kind == ReasonKind::FnUses
+                            && let Some(effective) = ctx
+                                .owner
+                                .and_then(|owner| ctx.decls.binding(owner))
+                                .and_then(|binding| ctx.decls.out.effective_effects.get(binding))
+                        {
+                            for origin in &effective.origins {
+                                if origin
+                                    .effects
+                                    .names
+                                    .iter()
+                                    .any(|name| same_named.contains(&name))
+                                    && !declared_spans.contains(&origin.span)
+                                {
+                                    declared_spans.push(origin.span);
+                                }
+                            }
+                        }
+                        if declared_spans.is_empty() {
+                            declared_spans.push(r.related.unwrap_or(r.span));
+                        }
+                        let expected = same_named
+                            .into_iter()
+                            .map(|n| super::effects::effect_name(ctx, n, Some(ctx.module)))
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        let mut builder = DiagBuilder::new(DiagCode::E0519)
+                            .arg("effect", &name)
+                            .arg("expected", &expected)
+                            .arg("reason", reason)
+                            .primary(origin)
+                            .note(note)
+                            .help(help);
+                        for span in declared_spans {
+                            builder = builder.secondary(span, "declared");
+                        }
+                        let mut diagnostic = builder.build();
+                        for (key, value) in [
+                            (super::text::SCOPE_REASON, reason),
+                            (super::text::SCOPE_REQUIRED_UPPER_BOUND, expected.as_str()),
+                            (super::text::SCOPE_KNOWN_UPPER_BOUND, name.as_str()),
+                            (super::text::SCOPE_UNCOVERED_ATOM, name.as_str()),
+                            (super::text::SCOPE_SOURCE, super::text::SCOPE_EFFECT_SOURCE),
+                        ] {
+                            diagnostic.notes.push(super::text::scope_field(key, value));
+                        }
+                        ctx.diagnostic(diagnostic);
+                    }
+                    if pair.is_some() {
+                        break;
+                    }
                     continue;
                 }
                 if let Some((a, b)) = &pair {
@@ -2245,14 +2581,8 @@ impl Solver {
                     }
                     break;
                 }
-                let origin = sub
-                    .var
-                    .and_then(|v| usize::try_from(v.0).ok().and_then(|i| self.effs.get(i)))
-                    .and_then(|s| s.origins.get(&elem))
-                    .copied()
-                    .unwrap_or(r.span);
                 let mut set = EffectSet::empty();
-                insert(&mut set, elem);
+                insert(&mut set, elem.clone());
                 let shown = self.show(
                     ctx,
                     &ITy::Fn(Box::new(IFnTy {
@@ -2262,7 +2592,7 @@ impl Solver {
                         effect: fixed(set),
                     })),
                 );
-                let name = if let Elem::Name(name @ EffectName::Builtin(b)) = elem
+                let name = if let Elem::Name(name @ EffectName::Builtin(b, _)) = &elem
                     && b.def()
                         .is_some_and(|d| d.module.last().copied() == Some(d.name))
                 {
@@ -2295,6 +2625,7 @@ fn missing_effect(ctx: &mut Body<'_, '_>, r: &Reason, name: &str, origin: Span) 
         }
         ReasonKind::MatchGuard => super::pattern_ext::effect_failure(ctx, r, name, origin),
         ReasonKind::CallArg { .. }
+        | ReasonKind::ScopeResult
         | ReasonKind::Call
         | ReasonKind::IfCondition
         | ReasonKind::IfBranches
@@ -2383,7 +2714,7 @@ fn add_die_effect_help(ctx: &Body<'_, '_>, file: crate::base::FileId, diagnostic
 pub(super) fn has_error(t: &ITy) -> bool {
     match t {
         ITy::Error => true,
-        ITy::Con(_, a) | ITy::App(_, a) => a.iter().any(has_error),
+        ITy::Con(_, a, _) | ITy::App(_, a) => a.iter().any(has_error),
         ITy::Fn(f) => {
             f.params.iter().any(has_error)
                 || has_error(&f.ret)
@@ -2395,14 +2726,20 @@ pub(super) fn has_error(t: &ITy) -> bool {
 fn elements(set: &EffectSet) -> Vec<Elem> {
     set.names
         .iter()
-        .map(|e| Elem::Name(*e))
+        .map(|e| Elem::Name(e.clone()))
         .chain(set.vars.iter().map(|v| Elem::Var(*v)))
         .collect()
 }
-fn includes(set: &EffectSet, e: Elem) -> bool {
+fn effect_accepts(relation: EffectRelation, set: &EffectSet, elem: &Elem) -> bool {
+    match (relation, elem) {
+        (EffectRelation::Cover, Elem::Name(atom)) => set.names.iter().any(|n| n.covers(atom)),
+        _ => includes(set, elem),
+    }
+}
+fn includes(set: &EffectSet, e: &Elem) -> bool {
     match e {
-        Elem::Name(e) => set.names.contains(&e),
-        Elem::Var(v) => set.vars.contains(&v),
+        Elem::Name(e) => set.names.contains(e),
+        Elem::Var(v) => set.vars.contains(v),
     }
 }
 fn insert(set: &mut EffectSet, e: Elem) {
@@ -2424,6 +2761,7 @@ fn op_text(r: &ReasonKind) -> String {
         }
         ReasonKind::BuiltinParam { name } | ReasonKind::ParamBound { name } => name.clone(),
         ReasonKind::CallArg { .. }
+        | ReasonKind::ScopeResult
         | ReasonKind::Call
         | ReasonKind::IfCondition
         | ReasonKind::IfBranches

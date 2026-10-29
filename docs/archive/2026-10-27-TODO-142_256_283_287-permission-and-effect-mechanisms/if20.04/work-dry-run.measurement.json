@@ -1,0 +1,24 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "3a5daaf388b04e579698c9ff5810cfe6dd753be2",
+    "--dry-run"
+  ],
+  "environment_overrides": {
+    "GIT_OPTIONAL_LOCKS": "0"
+  },
+  "started_utc": "2026-10-27T09:52:57.278503+00:00",
+  "ended_utc": "2026-10-27T09:52:57.357324+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.078559666,
+  "platform": "Darwin",
+  "rss_method": "resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss",
+  "rss_raw": 10059776,
+  "rss_unit": "bytes (macOS)",
+  "rss_mib": 9.59375,
+  "rss_gib": 0.009368896484375,
+  "note": "この測定プロセスの子についての最大値。全プロセスのRSSの合計や作業全体の最大量ではない。"
+}

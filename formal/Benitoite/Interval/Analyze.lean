@@ -42,7 +42,7 @@ mutual
   /-- 全53構成子を列挙する。未対応の部分木にも入り、解析の伝播とは区別する。 -/
   def discoverBodies (env : AbstractEnv) : Expr → List BodySeed
     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
     | .negFloat32 _ | .unit => []
@@ -73,7 +73,7 @@ mutual
         discoverBlock (forget env) body ++ discoverClauses env clauses
     | .withE owner expr body =>
         discoverBodies (forget env) expr ++
-          discoverBlock (extend (forget env) (topSlot (some (.opaque owner)))) body
+          discoverBlock (extend (forget env) (topSlot (some (.opaqueTop owner)))) body
     | .tryResult _ _ _ expr | .tryOption _ _ _ expr | .resume _ expr =>
         discoverBodies (forget env) expr
     | .tryResultDie _ _ _ _ _ _ expr message | .tryOptionDie _ _ _ _ expr message =>

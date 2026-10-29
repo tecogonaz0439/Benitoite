@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-28T13:55:13.247678+00:00",
+  "head": "765ae6d1606f8874761f881aebef585dd89d294d",
+  "branch": "m013/r10.7",
+  "b_work": "765ae6d1606f8874761f881aebef585dd89d294d",
+  "uncommitted": true,
+  "implementation_files": [
+    {
+      "path": "crates/benitoite/tests/desugar_export.rs",
+      "bytes": 48942,
+      "sha256": "6383fc346605c5c0fe7af0b3c09d868e6d1117d6b1758fd1e0d5a62727f3f18e"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/builtins.rs",
+      "bytes": 16866,
+      "sha256": "98324243e5a7df615439fb97412cd9fc932d821e266d3e5fc4288d6f13829fa7"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/exchange.rs",
+      "bytes": 132002,
+      "sha256": "ccf39398cdd5e5caf20b5681d68d6ccb8077a1f7725790772a5ac9a6640239b7"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/lib.rs",
+      "bytes": 12100,
+      "sha256": "f76d67a65defe054b902f68f0640b03bc6dc1f9c250e236f24cf5d865944b072"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "bytes": 32904,
+      "sha256": "de6fe44bc3ceaff88c8feae7c3b347f46a6a7294fbc1e362cfc98e7a07f09165"
+    },
+    {
+      "path": "docs/design/00-overview/00-04-glossary.md",
+      "bytes": 91056,
+      "sha256": "36a14f0048dc994a66616ad17def9b63c10473dba1412e4c09649b5aebc5b1e2"
+    },
+    {
+      "path": "docs/design/01-spec/01-07-effects.md",
+      "bytes": 46894,
+      "sha256": "e5b4ce623c3f7aca7983b064ae1db893eb70d1d7f36c31185b827fc7a496845e"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "bytes": 395216,
+      "sha256": "0a6712d39a366e04c28d7a35be55b95527121b9db97c6cfb964eb984c9fd0a6a"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/scope.rs",
+      "bytes": 4766,
+      "sha256": "a476777a0d0f79c30cbf1299049cb3907d79d5518a488292a31573e0e6be6e0e"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/scope_tables.rs",
+      "bytes": 19871,
+      "sha256": "11a4f470a810bcbd8d4760c1053b091e9c897c1dea2eb9c1b491d262b16e1df3"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/scope-tables-expected.json",
+      "bytes": 17195,
+      "sha256": "2e29bf6b6d047152ec19998273d718c3994393ebe4bfd6b45bb2af9e3b1db1d2"
+    }
+  ],
+  "patch": {
+    "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/work-implementation.patch",
+    "bytes": 45007,
+    "sha256": "f025e83e738bc77b5e3a2d5fc12f30fb60bd280cdc41961a4985ec3096c922a5"
+  },
+  "final_rust_ftable_output_same_bytes": [
+    {
+      "path": "target/scope-tables/export-47422/scope-tables-corpus.json",
+      "bytes": 3713,
+      "sha256": "58fcb59458e83ff61b2fda18e4d9919ea14e2aa31790cc69adb90cadf4aea6a8"
+    },
+    {
+      "path": "target/scope-tables/export-47422/scope-tables-builtins.json",
+      "bytes": 7804,
+      "sha256": "59e6ee2742427bed495a051ffb9f388f8d53f9394327a04f1e9e156944307e3e"
+    },
+    {
+      "path": "target/scope-tables/export-47422/scope-tables-expected.json",
+      "bytes": 7654,
+      "sha256": "5bc94e77b6039289a675d402dab90bdad75322a26e48afdaacc6bef7ad3521b1"
+    }
+  ],
+  "work_counts": {
+    "lib": {
+      "target": "unittests src/lib.rs",
+      "passed": 1358,
+      "failed": 0,
+      "ignored": 21,
+      "measured": 0,
+      "filtered": 0
+    },
+    "integration_targets": 41,
+    "integration_passed": 420,
+    "integration_ignored": 10
+  },
+  "stage_s10_20": {
+    "source": "work.log",
+    "additional_execution": false,
+    "targets": [
+      {
+        "target": "tests/golden.rs",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "target": "tests/verify.rs",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "target": "tests/random_programs.rs",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "target": "tests/desugar_export.rs",
+        "passed": 38,
+        "failed": 0,
+        "ignored": 1,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "target": "tests/checked_args.rs",
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "target": "tests/fmt_command.rs",
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      }
+    ],
+    "state": "same HEAD and unchanged implementation; only result records added",
+    "judge": "R10.7 担当",
+    "date": "2026-10-28"
+  }
+}

@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+const root: String = "/data/**"
+
+function f(p: String) -> Result[String, IOError] uses File.Read["/data/**"]
+  bind checked: Result[Scope.PathIn["/data/**"], Scope.ScopeError] <- Scope.checkPathIn(pattern: root, path: p)
+  return match checked with
+    case Result.Ok(v) -> File.readTextIn(path: v)
+    case Result.Error(_) -> Result.Ok("")
+  end match
+end function
+
+function main() -> Unit
+  ()
+end function

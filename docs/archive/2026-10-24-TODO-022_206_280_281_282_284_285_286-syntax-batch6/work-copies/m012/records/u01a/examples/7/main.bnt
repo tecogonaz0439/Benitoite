@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  match 1 < 2 with
+    case true -> Console.writeLine("hi")
+    case false -> Console.writeLine("bye")
+  end match
+  return ()
+end function

@@ -1,14 +1,13 @@
 //! テスト入口の検査と部分結果を単一 JSON へまとめる（設計書 06-04「テストの非実行の検査」、
 //! 06-01「テストの非実行の検査報告」）。
 
-use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 use serde_json::{Value, json};
 
 use super::*;
 use crate::cli::check_report::{diagnostic_value, interval_value, source_id, sources};
-use crate::cli::inspection::{ShellReference, effect_name};
+use crate::cli::inspection::{EffectSummary, ShellReference};
 use crate::typeck::IntervalAnalysis;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -48,7 +47,7 @@ struct Target {
     tests: Value,
     shell: ShellReference,
     status: Option<Status>,
-    effects: BTreeSet<String>,
+    effects: EffectSummary,
     docs: Option<docs::Batch>,
     interval: IntervalAnalysis,
 }
@@ -114,13 +113,13 @@ fn internal(message: &str) -> InternalError {
 pub(super) fn inspect_value(
     inspected: TestInspection,
     checked: &CheckResult,
-) -> Result<(Value, ShellReference, BTreeSet<String>), InternalError> {
+) -> Result<(Value, ShellReference, EffectSummary), InternalError> {
     let TestInspection {
         program: inspection,
         tests: selected,
     } = inspected;
     let mut tests = Vec::new();
-    let mut aggregate = BTreeSet::new();
+    let mut aggregate = EffectSummary::default();
     if inspection.tests.len() != selected.len() {
         return Err(internal("test contract count differs from selected tests"));
     }
@@ -138,14 +137,9 @@ pub(super) fn inspect_value(
             &checked.sources,
         ))
         .map_err(|error| internal(&format!("invalid test location JSON: {error}")))?;
-        let effects = contract
-            .effects
-            .into_iter()
-            .map(effect_name)
-            .collect::<Result<Vec<_>, _>>()?;
-        aggregate.extend(effects.iter().cloned());
+        aggregate.extend(&contract.bounds);
         tests.push(json!({ "function": contract.name, "description": test.description, "location": location,
-            "effects": { "basis": "declaredUpperBound", "expanded": effects } }));
+            "effects": contract.bounds.value()? }));
     }
     Ok((
         Value::Array(tests),
@@ -191,7 +185,7 @@ fn prepare_all(
             tests: Value::Null,
             shell: ShellReference::Unknown,
             status: None,
-            effects: BTreeSet::new(),
+            effects: EffectSummary::default(),
             docs: None,
             interval: IntervalAnalysis::default(),
         })
@@ -315,7 +309,9 @@ fn prepare_all(
         target.status = Some(Status::Ok);
         if let Some(batch) = &target.docs {
             for example in &batch.examples {
-                target.effects.extend(example.execution_effects().cloned());
+                if let Some(effects) = example.execution_effects() {
+                    target.effects.extend(effects);
+                }
                 if !example.complete() {
                     let status = if example
                         .checked
@@ -349,7 +345,7 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
     let mut source_sets = Vec::new();
     let mut diagnostics = Vec::new();
     let mut diagnostic_targets = Vec::new();
-    let mut aggregate = BTreeSet::new();
+    let mut aggregate = EffectSummary::default();
     let mut intervals = Vec::new();
     for (index, target) in context.targets.iter().enumerate() {
         let id = format!("t{index}");
@@ -424,7 +420,7 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
             diagnostic_targets.push(json!({"diagnosticIndex": diagnostics.len(), "targetId": id}));
             diagnostics.push(diagnostic.clone());
         }
-        aggregate.extend(target.effects.iter().cloned());
+        aggregate.extend(&target.effects);
     }
     for diagnostic in &context.diagnostics {
         diagnostic_targets.push(json!({"diagnosticIndex": diagnostics.len(), "targetId": null}));
@@ -437,7 +433,7 @@ fn value(context: &Context<'_>) -> Result<Value, InternalError> {
         "intervalAnalysis": interval_value(&if context.targets_complete {
             IntervalAnalysis::aggregate(&intervals)
         } else { IntervalAnalysis::default() }),
-        "aggregateEffects": if context.status == Status::Ok { json!({"basis": "declaredUpperBound", "expanded": aggregate}) } else { Value::Null },
+        "aggregateEffects": if context.status == Status::Ok { aggregate.value()? } else { Value::Null },
         "diagnostics": diagnostics, "diagnosticTargets": diagnostic_targets
     }))
 }

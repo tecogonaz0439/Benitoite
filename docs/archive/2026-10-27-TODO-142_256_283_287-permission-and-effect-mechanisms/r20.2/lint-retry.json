@@ -1,0 +1,20 @@
+{
+  "command": [
+    "cargo",
+    "clippy",
+    "-p",
+    "benitoite",
+    "--lib",
+    "--tests",
+    "--examples",
+    "--no-default-features",
+    "--features",
+    "gc-mark-sweep"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 8.647101166999999,
+  "maximum_resident_bytes": 2483191808,
+  "maximum_resident_mib": 2368.15625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; 子の最大値",
+  "stdout_log": "lint-retry.log"
+}

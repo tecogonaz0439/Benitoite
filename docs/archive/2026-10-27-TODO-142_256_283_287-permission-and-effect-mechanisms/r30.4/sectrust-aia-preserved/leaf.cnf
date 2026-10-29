@@ -1,0 +1,7 @@
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth
+subjectAltName=DNS:localhost,IP:127.0.0.1
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
+authorityInfoAccess=caIssuers;URI:http://127.0.0.1:54795/intermediate-e8f56af05e1542eaa2d68f54fc083535.der

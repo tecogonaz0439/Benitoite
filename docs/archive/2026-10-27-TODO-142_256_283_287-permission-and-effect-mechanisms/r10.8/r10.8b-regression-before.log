@@ -1,0 +1,16 @@
+build default/before: aaaaaaaaaaaa (built)
+build default/renamed: aaaaaaaaaaaa (cached)
+build default/x: aaaaaaaaaaaa (cached)
+F
+======================================================================
+FAIL: test_reuse_invalidates_and_failed_public_probe_is_explicit (test_compare.PersistentCacheTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/tools/bench/compare/test_compare.py", line 185, in test_reuse_invalidates_and_failed_public_probe_is_explicit
+    self.assertEqual(calls.call_count, count + 1)
+AssertionError: 2 != 3
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+FAILED (failures=1)

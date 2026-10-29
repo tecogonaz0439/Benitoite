@@ -11,9 +11,9 @@ import Benitoite.Release.WellFormed
 namespace Benitoite.Release
 
 /-- 署名を宣言の範囲で検査した証拠から、Q の範囲も得られる。 -/
-theorem Qsig.varsIn_scoped {nt ne : Nat} {ps : List Ty} {ret : Ty} {e : Eff}
-    (hp : Ty.VarsInList nt (· < ne) ps) (hr : Ty.VarsIn nt (· < ne) ret)
-    (he : Eff.VarsIn nt (· < ne) e) : ∀ i, Qsig ps ret e i → i < ne :=
+theorem Qsig.varsIn_scoped {nr nt ne : Nat} {ps : List Ty} {ret : Ty} {e : Eff}
+    (hp : Ty.VarsInList nr nt (· < ne) ps) (hr : Ty.VarsIn nr nt (· < ne) ret)
+    (he : Eff.VarsIn nr nt (· < ne) e) : ∀ i, Qsig ps ret e i → i < ne :=
   Qsig.scoped (Ty.VarsInList.rows ps hp) (Ty.VarsIn.rows ret hr) (Eff.VarsIn.rows e he)
 
 /-- 全具体化の NoFail 保存。補助の一般形は noFail_substAt。 -/
@@ -55,10 +55,10 @@ theorem Admissible.closed_row {B C tps ne Qs ts es e}
 theorem PrimitiveAdmissible.of_noRows {C s Q ts}
     (hs : s.Scoped) (hne : s.neffs = 0) (ht : ts.length = s.ntys)
     (had : s.admits C ts)
-    (hw : ∀ t ∈ ts, Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) :
+    (hw : ∀ t ∈ ts, Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) :
     PrimitiveAdmissible C s Q ts [] := by
-  have hrows := Eff.VarsIn.rows s.eff hs.2.2.2
-  have hqs := Qsig.varsIn_scoped hs.2.1 hs.2.2.1 hs.2.2.2
+  have hrows := Eff.VarsIn.rows s.eff hs.2.2.2.1
+  have hqs := Qsig.varsIn_scoped hs.2.1 hs.2.2.1 hs.2.2.2.1
   rw [hne] at hrows hqs
   exact ⟨ht, had, hw, hne.symm, by simp, hrows, hqs,
     fun i hi => (Nat.not_lt_zero i (hqs i hi)).elim⟩

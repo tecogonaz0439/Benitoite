@@ -48,7 +48,7 @@ def BuilderCellOk (P : Program) (B : Builtins) (Ψ : StoreTy)
     (k : BuilderKind) (c : BuilderContents) : Prop :=
   c.kind = k ∧ c.size ≤ k.limit ∧ c.ValidBytes ∧
     match c with
-    | .list a vs => Ty.WF 0 a ∧ HasTypeEach P B Ψ [] [] vs a
+    | .list a vs => Ty.WF 0 0 a ∧ HasTypeEach P B Ψ [] [] vs a
     | _ => True
 
 theorem BuilderKind.limit_le_max64 (k : BuilderKind) : (k.limit : Int) ≤ max64 := by
@@ -69,7 +69,7 @@ def BuilderContents.lengthValue (c : BuilderContents) (h : c.size ≤ c.kind.lim
 @[simp] theorem BuilderContents.lengthValue_toInt (c : BuilderContents) (h) :
     (c.lengthValue h).toInt = (c.size : Int) := rfl
 
-theorem BuilderCellOk.empty {P B Ψ k} (hw : match k with | .list a => Ty.WF 0 a | _ => True) :
+theorem BuilderCellOk.empty {P B Ψ k} (hw : match k with | .list a => Ty.WF 0 0 a | _ => True) :
     BuilderCellOk P B Ψ k k.empty := by
   cases k <;> simp [BuilderCellOk, BuilderKind.empty, BuilderContents.kind,
     BuilderContents.size, BuilderContents.ValidBytes, BuilderKind.limit,

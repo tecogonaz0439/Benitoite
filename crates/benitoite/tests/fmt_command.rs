@@ -620,3 +620,128 @@ fn file_effect_declarations_keep_source_contracts() {
         assert_eq!(dir.read("effects.bnt"), expected);
     }
 }
+
+// 関門: 範囲の略記・字句・順序を保ったまま空白と字下げを整え、再整形で変えない。
+// 型引数だけの既存例では、展開済みの原子から元の群へ戻る役割分けの欠落を捕まえない。
+// CLI の実出力を固定した期待値と照合し、差し込み口や型検査の代用品を加えない。
+#[test]
+fn scope_arguments_keep_lexemes_and_grouping() {
+    let dir = TestDirectory::new("scope_arguments_keep_lexemes_and_grouping");
+    for (input, expected) in [
+        (
+            r#"uses File . Write [ r"/data/a/**" , "/data/b/\u{61}", ] , Http . Connect [ "EXAMPLE.COM", 0x1_bb .. 4_45, "192.0.2.1/32" , 0x50 ], Failure.Fail[List[String]]
+function main()->Unit
+()
+end function
+"#,
+            r#"uses File.Write[r"/data/a/**", "/data/b/\u{61}",], Http.Connect["EXAMPLE.COM", 0x1_bb..4_45, "192.0.2.1/32", 0x50], Failure.Fail[List[String]]
+
+function main() -> Unit
+  ()
+end function
+"#,
+        ),
+        (
+            r#" uses File.Write [
+ r"/data/a/**", // first
+ "/data/b/**", // second
+ ], Http.Connect [
+ "EXAMPLE.COM",
+ 0x1_bb .. 4_45, // ports
+ "192.0.2.1/32", 0x50,
+ ]
+function main()->Unit
+()
+end function
+"#,
+            r#"uses File.Write[
+  r"/data/a/**", // first
+  "/data/b/**", // second
+], Http.Connect[
+  "EXAMPLE.COM",
+  0x1_bb..4_45, // ports
+  "192.0.2.1/32", 0x50,
+]
+
+function main() -> Unit
+  ()
+end function
+"#,
+        ),
+        (
+            r#"function scoped(path:Scope.PathIn [r"/data/**"])->Http.RequestIn ["EXAMPLE.COM",0x1bb] uses File.Write ["/data/a", "/data/b"]
+()
+end function
+"#,
+            r#"function scoped(path: Scope.PathIn[r"/data/**"]) -> Http.RequestIn["EXAMPLE.COM", 0x1bb] uses File.Write["/data/a", "/data/b"]
+  ()
+end function
+"#,
+        ),
+        (
+            r#"function scoped(path:Scope.PathIn [
+ r"/data/**",
+])->Http.RequestIn [
+ "EXAMPLE.COM",
+ 443 .. 445,
+] uses Http.Connect [
+ "EXAMPLE.COM", 443 .. 445,
+ "::ffff:192.0.2.1/128", 80,
+]
+()
+end function
+"#,
+            r#"function scoped(path: Scope.PathIn[
+  r"/data/**",
+]) -> Http.RequestIn[
+  "EXAMPLE.COM",
+  443..445,
+] uses Http.Connect[
+  "EXAMPLE.COM", 443..445,
+  "::ffff:192.0.2.1/128", 80,
+]
+  ()
+end function
+"#,
+        ),
+    ] {
+        dir.write("scope.bnt", input);
+        let output = fmt(&dir, &["scope.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty(), "{}", stderr(&output));
+        assert_eq!(dir.read("scope.bnt"), expected);
+        let output = fmt(&dir, &["--check", "scope.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert_eq!(dir.read("scope.bnt"), expected);
+    }
+}
+
+// 関門: 不正な要素に式の役割を推測せず、内部の空白・コメント・改行を保つ。
+// 既存の範囲の整形テストは正しいリテラルだけで、f(1,2)の空白変更を捕まえない。
+#[test]
+fn invalid_scope_elements_keep_original_whitespace() {
+    let dir = TestDirectory::new("invalid_scope_elements_keep_original_whitespace");
+    for (input, expected) in [
+        (
+            "uses File.Write [\"/a\",f(1,2) ]\nfunction main()->Unit\n()\nend function\n",
+            "uses File.Write[\"/a\", f(1,2)]\n\nfunction main() -> Unit\n  ()\nend function\n",
+        ),
+        (
+            "uses File.Write [\"/a\",f( 1,\n\n // inner\n\t2 ) , \"/b\"]\nfunction main()->Unit\n()\nend function\n",
+            "uses File.Write[\"/a\", f( 1,\n\n // inner\n\t2 ), \"/b\"]\n\nfunction main() -> Unit\n  ()\nend function\n",
+        ),
+        (
+            "uses Http.Connect [ \"example.com\", 443 +  2, \"other.com\", \"${f( 1,2)}\" ]\nfunction main()->Unit\n()\nend function\n",
+            "uses Http.Connect[\"example.com\", 443 +  2, \"other.com\", \"${f( 1,2)}\"]\n\nfunction main() -> Unit\n  ()\nend function\n",
+        ),
+    ] {
+        dir.write("scope.bnt", input);
+        let output = fmt(&dir, &["scope.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert_eq!(dir.read("scope.bnt"), expected);
+        let output = fmt(&dir, &["--check", "scope.bnt"]);
+        assert_eq!(code(&output), 0, "{}", stderr(&output));
+        assert_eq!(dir.read("scope.bnt"), expected);
+    }
+}

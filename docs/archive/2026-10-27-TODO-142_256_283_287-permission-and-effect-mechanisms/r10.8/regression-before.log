@@ -1,0 +1,20 @@
+$ cargo test -p benitoite --test scope_annotations effect_coverage_uses_one_same_named_atom -- --nocapture
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.99s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 1 test
+
+thread 'effect_coverage_uses_one_same_named_atom' (3602114) panicked at crates/benitoite/tests/scope_annotations.rs:762:13:
+[Diagnostic { kind: Check, severity: Error, code: Some(E0519), message: "effect `Http.Connect[\"a.example\", 0..9]` is not covered by one surrounding atom (notCovered)", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(276), end: BytePos(284) }, text: "`Http.Connect[\"a.example\", 0..9]` is not covered by `Http.Connect[\"a.example\", 0..4], Http.Connect[\"a.example\", 5..9]`" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(202), end: BytePos(208) }, text: "declared here" }], notes: ["each effect atom must be covered by one atom of the same name; a union of scopes cannot cover one atom, and only Top covers Top"], helps: [Help { message: "widen the surrounding atom scopes, or narrow the callee scopes", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test effect_coverage_uses_one_same_named_atom ... FAILED
+
+failures:
+
+failures:
+    effect_coverage_uses_one_same_named_atom
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 17 filtered out; finished in 1.16s
+
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

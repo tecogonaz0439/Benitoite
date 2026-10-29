@@ -10,12 +10,16 @@ Reading and writing files. The resource types `Reader` and `Writer` are built in
 public effect Read
   /// Reads the whole file as text. Fails with `IOErrorKind.InvalidUTF8` when the content is not UTF-8.
   function readText(path: String) -> Result[String, IOError]
+  /// Reads the whole file as text using the path retained in `PathIn`. The input range also determines `Read`'s range.
+  function readTextIn(path: Scope.PathIn) -> Result[String, IOError]
   /// Opens the file for reading line by line.
   function openReader(path: String) -> Result[Reader, IOError]
   /// Reads one line. Returns `Option.None` at the end of the file.
   function readLine(reader: Reader) -> Result[Option[String], IOError]
   /// Reads the whole file as bytes.
   function readBytes(path: String) -> Result[Bytes, IOError]
+  /// Reads the whole file as bytes using the path retained in `PathIn`.
+  function readBytesIn(path: Scope.PathIn) -> Result[Bytes, IOError]
   /// Reads the whole file as text and splits it into lines.
   function readLines(path: String) -> Result[List[String], IOError]
   /// Returns whether something exists at the path. Fails when it cannot be checked.
@@ -39,12 +43,20 @@ Reading files.
 public effect Write
   /// Creates or replaces the file with `text`.
   function writeText(path: String, text: String) -> Result[Unit, IOError]
+  /// Creates or replaces the retained path with `text`. The input range also determines `Write`'s range.
+  function writeTextIn(path: Scope.PathIn, text: String) -> Result[Unit, IOError]
   /// Adds `text` to the end of the file, creating it when missing.
   function appendText(path: String, text: String) -> Result[Unit, IOError]
+  /// Appends `text` to the retained path, creating the file when missing.
+  function appendTextIn(path: Scope.PathIn, text: String) -> Result[Unit, IOError]
   /// Creates or replaces the file with `content`.
   function writeBytes(path: String, content: Bytes) -> Result[Unit, IOError]
+  /// Creates or replaces the retained path with `content`.
+  function writeBytesIn(path: Scope.PathIn, content: Bytes) -> Result[Unit, IOError]
   /// Adds `content` to the end of the file, creating it when missing.
   function appendBytes(path: String, content: Bytes) -> Result[Unit, IOError]
+  /// Appends `content` to the retained path, creating the file when missing.
+  function appendBytesIn(path: Scope.PathIn, content: Bytes) -> Result[Unit, IOError]
   /// Creates the directory and any missing parents. Does nothing when the directory exists.
   function createDirectory(path: String) -> Result[Unit, IOError]
   /// Removes a file, a symbolic link, or an empty directory.

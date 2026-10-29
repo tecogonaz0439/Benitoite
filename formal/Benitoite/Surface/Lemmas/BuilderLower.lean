@@ -11,7 +11,7 @@ variable {p : Program} {B : Builtins} {opPrim : OpPrim} {C : List TParam} {Q : N
 
 /-- 専用操作自身の効果は空であり、引数の効果は sequence で保つ。 -/
 theorem builderFinish_typed {k : BuilderKind} {Γ Δ R i args}
-    (hw : Ty.WF C.length k.contents)
+    (hw : Ty.WF 0 C.length k.contents)
     (hi : Δ.kindAt i = some k) (o : BuilderOp)
     (ha : HasTypeVsQ (desugarProgram opPrim p) B StoreTy.empty Q C Γ args (o.params k)) :
     HasTypeCQ (desugarProgram opPrim p) B StoreTy.empty Q C Γ R
@@ -25,7 +25,7 @@ theorem BuilderOp.result_clean {k : BuilderKind} {n} (o : BuilderOp)
 
 /-- 通常引数の型も、内容の型から範囲を保つ。 -/
 theorem BuilderOp.params_clean {k : BuilderKind} {n} (o : BuilderOp)
-    (h : TyOK n k.contents) : Ty.VarsInList n (fun _ => True) (o.params k) := by
+    (h : TyOK n k.contents) : Ty.VarsInList 0 n (fun _ => True) (o.params k) := by
   cases o <;> cases k <;> simp_all [BuilderOp.params, BuilderKind.item, BuilderKind.contents, TyOK, Ty.VarsInList, Ty.VarsIn]
 
 /-- 通常引数を一度ソース順に束縛し、専用番号も同じ個数だけ移す。 -/
@@ -33,7 +33,7 @@ theorem builderOp_desugar_typed {Γ Δ R i k o ε ms}
     (hr : BuilderCtx.kindAt Δ i = some k)
     (hw : TyOK C.length k.contents)
     (hm : CompTypesQ (desugarProgram opPrim p) B Q C Γ R ε ms (o.params k) Δ.toLocal)
-    (hc : Ty.VarsInList C.length (fun _ => True) (o.params k)) :
+    (hc : Ty.VarsInList 0 C.length (fun _ => True) (o.params k)) :
     HasTypeCQ (desugarProgram opPrim p) B StoreTy.empty Q C Γ R
       (sequence ms (builderFinish o (i + ms.length) k))
       (o.result k) ε Δ.toLocal := by
@@ -54,7 +54,7 @@ theorem builderBlock_desugar_typed {k : BuilderKind} {Γ R body a ε} {Δ : Buil
 
 /-- 専用番号の範囲は表層から受け取り、通常引数には専用参照を含めない。 -/
 theorem builderFinish_scoped {nt pe k args i depth}
-    (hk : match k with | .list t => Ty.VarsIn nt pe t | _ => True)
+    (hk : match k with | .list t => Ty.VarsIn 0 nt pe t | _ => True)
     (hi : i < depth) (ha : Val.VarsInList nt pe args) (o : BuilderOp) :
     Comp.VarsIn nt pe (builderFinish o i k args) depth :=
   ⟨hk, hi, Benitoite.Release.Val.VarsInList.widen (Nat.le_refl _) (Nat.zero_le _) _ ha⟩

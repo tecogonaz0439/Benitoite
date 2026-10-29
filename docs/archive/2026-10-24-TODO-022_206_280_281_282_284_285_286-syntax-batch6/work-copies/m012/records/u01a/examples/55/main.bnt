@@ -1,0 +1,66 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+import Benitoite.Unofficial.Json
+
+function jsonScalar(value: Log.Value) -> Json.Value
+  return match value with
+    case Log.Value.Text(text) -> Json.Value.String(text)
+    case Log.Value.Boolean(flag) -> Json.Value.Boolean(flag)
+    case Log.Value.Integer(number) -> Json.Value.Integer(number)
+    case Log.Value.UnsignedInteger(number) ->
+      Json.Value.Object(Map.fromList([Pair("unsignedInteger", Json.Value.String(UnsignedInteger64.toString(number)))]))
+    case Log.Value.Float(number) ->
+      if Float.isNaN(number - number) then
+        Json.Value.Object(Map.fromList([Pair("nonFiniteFloat", Json.Value.String(Float.toString(number)))]))
+      else
+        Json.Value.Float(number)
+      end if
+  end match
+end function
+
+function jsonAttribute(value: Log.Attribute) -> Json.Value
+  return Json.Value.Object(Map.fromList([
+    Pair("key", Json.Value.String(Log.Attribute.key(value))),
+    Pair("value", jsonScalar(Log.Attribute.value(value)))
+  ]))
+end function
+
+function jsonRecord(record: Log.Record) -> Json.Value
+  bind level <- match Log.Record.level(record) with
+    case Log.Level.Debug -> "debug"
+    case Log.Level.Info -> "info"
+    case Log.Level.Warn -> "warn"
+    case Log.Level.Error -> "error"
+  end match
+  bind location <- Log.Record.location(record)
+  return Json.Value.Object(Map.fromList([
+    Pair("level", Json.Value.String(level)),
+    Pair("message", Json.Value.String(Log.Record.message(record))),
+    Pair("attributes", Json.Value.Array(List.map(xs: Log.Record.attributes(record), f: jsonAttribute))),
+    Pair("location", Json.Value.Object(Map.fromList([
+      Pair("file", Json.Value.String(SourceLocation.Location.file(location))),
+      Pair("line", Json.Value.Integer(SourceLocation.Location.line(location))),
+      Pair("column", Json.Value.Integer(SourceLocation.Location.column(location)))
+    ])))
+  ]))
+end function
+
+function main() -> Unit uses File.Write, File.Read, Console.Write, State, Process.Exit
+  bind location <- SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3)
+  with writer = try File.openWriter(path: "events.jsonl", mode: File.WriteMode.Replace) or die do
+    bind sink <- lambda(record: Log.Record) -> Unit uses File.Write, Process.Exit
+      bind _ <- try File.writeLine(writer: writer, text: Json.stringify(jsonRecord(record))) or die
+      return ()
+    end lambda
+    Log.withSinks(sinks: [Pair(Log.Level.Info, sink)], body: lambda()
+      Log.withAttributes(attributes: [Log.attribute(key: "tag", value: "common")], body: lambda()
+        Log.debug(message: "filtered", attributes: [], location: location)
+        Log.info(message: "first\n\"quoted\"", attributes: [Log.attribute(key: "tag", value: "event"), Log.attribute(key: "n", value: 42)], location: location)
+        Log.warn(message: "second", attributes: [Log.attribute(key: "flag", value: true), Log.attribute(key: "unsigned", value: 18446744073709551615u64), Log.attribute(key: "finite", value: 1.5), Log.attribute(key: "nan", value: Float.squareRoot(-1.0))], location: location)
+      end lambda)
+    end lambda)
+    ()
+  end with
+  Console.write(try File.readText("events.jsonl") or die)
+end function

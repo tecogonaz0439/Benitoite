@@ -97,7 +97,7 @@ theorem HasTypeQ.inv_funDicts {Δb : BuilderCtx} {D B op C Γ R pos f ts es ds n
     (motive_3 := fun _ _ _ _ _ _ _ _ => True)
     (motive_4 := fun _ _ _ _ _ _ _ _ => True)
     (motive_5 := fun _ _ _ _ _ _ _ _ _ _ => True)
-    (motive_6 := fun _ _ _ _ _ _ _ _ => True)
+    (motive_6 := fun _ _ _ _ _ _ _ _ _ => True)
     (motive_7 := fun _ _ _ _ _ _ _ _ _ => True) (t := h)
   all_goals intros
   all_goals first | exact True.intro | (rename_i he; cases he)
@@ -131,7 +131,7 @@ theorem HasTypeQ.inv_opDicts {Δb : BuilderCtx} {D B op C Γ R pos o ts ds names
     (motive_3 := fun _ _ _ _ _ _ _ _ => True)
     (motive_4 := fun _ _ _ _ _ _ _ _ => True)
     (motive_5 := fun _ _ _ _ _ _ _ _ _ _ => True)
-    (motive_6 := fun _ _ _ _ _ _ _ _ => True)
+    (motive_6 := fun _ _ _ _ _ _ _ _ _ => True)
     (motive_7 := fun _ _ _ _ _ _ _ _ _ => True) (t := h)
   all_goals intros
   all_goals first | exact True.intro | (rename_i he; cases he)
@@ -151,7 +151,7 @@ theorem HasTypeQ.inv_methName {Δb : BuilderCtx} {D B op C Γ R pos d m ss es us
       DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) ∧
       ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length ∧
       (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) ∧
-      (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
+      (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
       MethodRowsAdmissible C Q ms es ∧
       Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) T := by
   generalize he : Expr.methName d m ss es us names ps = e at h
@@ -167,14 +167,14 @@ theorem HasTypeQ.inv_methName {Δb : BuilderCtx} {D B op C Γ R pos d m ss es us
       DictEv.HasTypes D B C Γ us ((ms.params.map (Ty.subst (ss ++ [τ]) es)).take us.length) ∧
       ps = (ms.params.map (Ty.subst (ss ++ [τ]) es)).drop us.length ∧
       (∀ a ∈ ps.head?, ∀ cl t, a ≠ .dict cl t) ∧
-      (∀ t ∈ ss ++ [τ], Ty.WF C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
+      (∀ t ∈ ss ++ [τ], Ty.WF 0 C.length t ∧ ∀ b r e, t ≠ .cont b r e) ∧
       MethodRowsAdmissible C Q ms es ∧
       Ty.Le (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) a)
     (motive_2 := fun _ _ _ _ _ _ _ _ => True)
     (motive_3 := fun _ _ _ _ _ _ _ _ => True)
     (motive_4 := fun _ _ _ _ _ _ _ _ => True)
     (motive_5 := fun _ _ _ _ _ _ _ _ _ _ => True)
-    (motive_6 := fun _ _ _ _ _ _ _ _ => True)
+    (motive_6 := fun _ _ _ _ _ _ _ _ _ => True)
     (motive_7 := fun _ _ _ _ _ _ _ _ _ => True) (t := h)
   all_goals intros
   all_goals first | exact True.intro | (rename_i he; cases he)
@@ -225,6 +225,6 @@ theorem directCallee_typed {Δl : LocalCtx} {Δb : BuilderCtx} {C Γ Γc R pos e
       (by simpa only [Val.renameList_id] using (DictEv.HasTypes.toVal (Q := Q) op hu).rename hΓ) (by rw [hp, List.take_append_drop]) hε
     simpa only [DictEv.toValList_length] using hh
   all_goals
-    exact CallHead.HasTypeQ.app (dnames := []) (dtys := []) (hc.ret_value rfl) .nil (Eff.Sub.refl _)
+    exact CallHead.HasTypeQ.app (dnames := []) (dtys := []) (hc.ret_value rfl) .nil (Eff.Covers.refl _)
 
 end Benitoite.Surface

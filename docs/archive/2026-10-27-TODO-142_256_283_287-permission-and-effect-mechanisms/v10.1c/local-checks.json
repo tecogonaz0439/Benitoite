@@ -1,0 +1,42 @@
+[
+  {
+    "name": "example-no-run",
+    "command": "cargo test -p benitoite --example wit_transfer_cost --no-run",
+    "exit_code": 0,
+    "start_utc": "2026-10-29T20:55:28.158744+00:00",
+    "elapsed_seconds": 0.179,
+    "log": "example-no-run-exit-confirmed.log",
+    "maximum_rss_bytes": null,
+    "rss_note": "time -l が環境制限で終了1となるため未取得"
+  },
+  {
+    "name": "lib-interpolation-formats",
+    "command": "cargo test -p benitoite --lib typeck::tests::interpolation_formats",
+    "exit_code": 0,
+    "start_utc": "2026-10-29T20:55:28.337837+00:00",
+    "elapsed_seconds": 0.63,
+    "log": "lib-interpolation-formats-exit-confirmed.log",
+    "maximum_rss_bytes": null,
+    "rss_note": "time -l が環境制限で終了1となるため未取得"
+  },
+  {
+    "name": "clippy-all-targets",
+    "command": "cargo clippy -p benitoite --all-targets",
+    "exit_code": 0,
+    "start_utc": "2026-10-29T20:55:28.968505+00:00",
+    "elapsed_seconds": 0.212,
+    "log": "clippy-all-targets-exit-confirmed.log",
+    "maximum_rss_bytes": null,
+    "rss_note": "time -l が環境制限で終了1となるため未取得"
+  },
+  {
+    "name": "fmt-check",
+    "command": "cargo fmt --check",
+    "exit_code": 0,
+    "start_utc": "2026-10-29T20:55:29.181155+00:00",
+    "elapsed_seconds": 2.663,
+    "log": "fmt-check-exit-confirmed.log",
+    "maximum_rss_bytes": null,
+    "rss_note": "time -l が環境制限で終了1となるため未取得"
+  }
+]

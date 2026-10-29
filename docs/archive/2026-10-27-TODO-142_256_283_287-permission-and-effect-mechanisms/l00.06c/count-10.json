@@ -1,0 +1,137 @@
+{
+ "log": "build-10-trial.log",
+ "modules_in_default_closure": 274,
+ "failed_modules": [
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.Examples"
+ ],
+ "unchecked_modules_count": 27,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "error_diagnostics": 19,
+ "error_files": [
+  "Benitoite/Exchange/Convert.lean",
+  "Benitoite/Surface/CheckSoundControl.lean",
+  "Benitoite/Surface/Examples.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Atom.toRelease",
+   "line": 8,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Expr.toSurface",
+   "line": 333,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Ty.toRelease",
+   "line": 58,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def validateClauses",
+   "line": 724,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckSoundControl.lean",
+   "decl": "theorem with_case",
+   "line": 181,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "def dieExitSig",
+   "line": 404,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "def effectfulTy",
+   "line": 354,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "def errorTy",
+   "line": 417,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "example <example@441>",
+   "line": 441,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "example <example@485>",
+   "line": 485,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "theorem mainExpr_typed",
+   "line": 60,
+   "errors": 7
+  },
+  {
+   "file": "Benitoite/Surface/Examples.lean",
+   "decl": "theorem resultDie_typed",
+   "line": 426,
+   "errors": 2
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ],
+  [
+   "Benitoite/Surface/Examples.lean",
+   "example <example@356>"
+  ],
+  [
+   "Benitoite/Surface/Examples.lean",
+   "theorem dieExit_ok"
+  ],
+  [
+   "Benitoite/Surface/Examples.lean",
+   "theorem dieSigs_scoped"
+  ]
+ ]
+}

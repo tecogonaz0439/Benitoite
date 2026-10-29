@@ -1,0 +1,31 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.46s
+     Running tests/cli_process.rs (target/debug/deps/cli_process-e79e06fbc41075ec)
+
+running 2 tests
+test scoped_diagnostics::scoped_projection_and_widening_guidance_repairs_are_accepted ... FAILED
+test scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli ... FAILED
+
+failures:
+
+---- scoped_diagnostics::scoped_projection_and_widening_guidance_repairs_are_accepted stdout ----
+
+thread 'scoped_diagnostics::scoped_projection_and_widening_guidance_repairs_are_accepted' (7179215) panicked at crates/benitoite/tests/cli_process/scoped_diagnostics.rs:35:9:
+assertion `left == right` failed: path-false-caller-bare: [Object {"code": String("E0451"), "helps": Array [], "kind": String("check"), "message": String("this function has no parameter named `value`"), "notes": Array [String("available parameters, in declaration order: `raw`")], "primary": Object {"end": Object {"column": Number(25), "line": Number(17), "offset": Number(683)}, "file": String("<tmp>/benitoite-cli-process-85894-1793266862407740000-1/path-false-caller-bare.bnt"), "label": String(""), "start": Object {"column": Number(20), "line": Number(17), "offset": Number(678)}}, "secondary": Array [], "severity": String("error")}]
+  left: String("E0451")
+ right: "E0401"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli stdout ----
+
+thread 'scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli' (7179214) panicked at crates/benitoite/tests/cli_process/scoped_diagnostics.rs:262:14:
+called `Option::unwrap()` on a `None` value
+
+
+failures:
+    scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli
+    scoped_diagnostics::scoped_projection_and_widening_guidance_repairs_are_accepted
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 38 filtered out; finished in 1.98s
+
+error: test failed, to rerun pass `-p benitoite --test cli_process`

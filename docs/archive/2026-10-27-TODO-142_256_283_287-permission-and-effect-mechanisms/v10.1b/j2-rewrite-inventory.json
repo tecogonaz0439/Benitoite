@@ -1,0 +1,1593 @@
+{
+  "base": "bae86164de063a9807784513e8960e46536d9f4b",
+  "applied": false,
+  "testdata": [
+    {
+      "path": "crates/benitoite/testdata/external/self-package/package.bnt",
+      "sha256": "7510ea3c13ee0d9a9ca3660a79987206c8150c3c69af4d9673e625f39971f996",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/external/self-package"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/external/self-package-outside/package.bnt",
+      "sha256": "7510ea3c13ee0d9a9ca3660a79987206c8150c3c69af4d9673e625f39971f996",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/external/self-package-outside"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/alias-only/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/alias-only"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-declaration/package.bnt",
+      "sha256": "a376d798efe50191d414c95edba35aa7eff71a380ae94e972c25ee764fba5143",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/config-declaration"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/config-textkit/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/config-textkit"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/copied-textkit/Textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/copied-textkit"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d6c-extensible-external/package.bnt",
+      "sha256": "cc8c6f52d9710a7bc0b26b5a669b9cb9a6e4eb8a8c5f0aaef9aca3f2606bbcf3",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/d6c-extensible-external"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify; named::export_extensible_source"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d6c-extensible-missing/package.bnt",
+      "sha256": "cc8c6f52d9710a7bc0b26b5a669b9cb9a6e4eb8a8c5f0aaef9aca3f2606bbcf3",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/d6c-extensible-missing"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify; named::export_extensible_source"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d8-extensible-run/package.bnt",
+      "sha256": "1869f46ef58b6bc2f69d17c0a3219a68acc8f454ba96d5dd699e9b5364aa3e19",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/d8-extensible-run"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/d8-extensible.files/dep/package.bnt",
+      "sha256": "433e12151c52e25ee14ef136ca4862ea50a792a600f81e11306a55b8ad08f797",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/d8-extensible-run"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-collision/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/dependency-collision"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-config-declaration/deps/textkit/package.bnt",
+      "sha256": "ebf0c1c1d667b682cbcf8eb2bd0a3b64428f7c18cb4f772b948798b15c5bb7bb",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/dependency-config-declaration"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-no-block/deps/textkit/package.bnt",
+      "sha256": "d3ec19472ea941de877fd4ec6a3d952be9257171dc9c3217e9afd2625557b11c",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/dependency-no-block"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-import/Textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/dependency-root-import"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-root-overlap/package.bnt",
+      "sha256": "d37a3225cd82a4447da50f52f9fe32ca6df884c7ed1279c0767a5a66c4452718",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/dependency-root-overlap"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings/deps/transitive/package.bnt",
+      "sha256": "90eda0d05359503193f508a12776616b5d801d0c34caea589810043d6fd6a9f2",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/dependency-settings"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/distinct-modules/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/distinct-modules"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/extensible.files/dep/package.bnt",
+      "sha256": "433e12151c52e25ee14ef136ca4862ea50a792a600f81e11306a55b8ad08f797",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/d6c-extensible-external",
+        "crates/benitoite/testdata/packages/d6c-extensible-missing"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify; named::export_extensible_source"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-match/deps/hashkit/package.bnt",
+      "sha256": "c782d04d726282ff93386ec6a3e67946714510a40f22b890e2ff0dab26f0b63d",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/hash-match",
+        "crates/benitoite/testdata/packages/hash-mismatch"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/deps/textkit/package.bnt",
+      "sha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/header"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header/main.bnt",
+      "sha256": "a02bbf1dcd5b81cdad796cb978ec4faefe61fe3a596d294c5f2de75a8a9e33f3",
+      "lines": [
+        3
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/header"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/deps/textkit/package.bnt",
+      "sha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/header-overlap"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/main.bnt",
+      "sha256": "a02bbf1dcd5b81cdad796cb978ec4faefe61fe3a596d294c5f2de75a8a9e33f3",
+      "lines": [
+        3
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/header-overlap"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/header-overlap/package.bnt",
+      "sha256": "1b3d0a367d54ed555e408eb5dc6495568ad84b75ad05a9053e5cd1568739bce2",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/header-overlap"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/imported-header/Helper.bnt",
+      "sha256": "acda47bec8459462502abf8e852a012623c4c308cb39a2db2a38bc38f105ab28",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/imported-header"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/imported-header/deps/textkit/package.bnt",
+      "sha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/imported-header"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/fuzzy/package.bnt",
+      "sha256": "a763bc87d98aff7155f8cc6319c8d7a2a44831cd4f2794d33779a92514898c01",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/fuzzy-check",
+        "crates/benitoite/testdata/packages/fuzzy-run"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/json-checks/package.bnt",
+      "sha256": "6404c979cdcb6c323130ca5a9de41b80f68fb3d51ead1b35dd42ce19b493f4bf",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/json-pure-depth-array",
+        "crates/benitoite/testdata/packages/json-pure-depth-object",
+        "crates/benitoite/testdata/packages/json-pure-same"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/pure-json/package.bnt",
+      "sha256": "c2c4b8ad718300833b07a59516b938c760bd7dd2125c9e8df3c7e83e9e6c39d2",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/json-pure-depth-array",
+        "crates/benitoite/testdata/packages/json-pure-depth-object",
+        "crates/benitoite/testdata/packages/json-pure-same",
+        "crates/benitoite/testdata/packages/json-wasm-same"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify; export_interval_manifestのjson-wasm-same/wasm-regex-same"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/outside-textkit"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-hash/package.bnt",
+      "sha256": "7bff859a53bab29ee397618a075c83ad274fcd3d86f6d44ff8977baa50596dc1",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/wasm-hash-same"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-json/package.bnt",
+      "sha256": "d7220a9790af6ce8261c4c9a52d9ad566207a85981c1d9fad01fd69c32b52333",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/json-wasm-same"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify; export_interval_manifestのjson-wasm-same/wasm-regex-same"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/libraries.files/wasm-regex/package.bnt",
+      "sha256": "09664d6c5f6aca3f12f45660c14735daaf1266878bff37cd97e8b7294ac17e04",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/wasm-regex-same"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify; export_interval_manifestのjson-wasm-same/wasm-regex-same"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/local-textkit/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/local-textkit"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-as-root/package.bnt",
+      "sha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-as-root"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-dependencies/deps/textkit/package.bnt",
+      "sha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-dependencies"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-dependencies/package.bnt",
+      "sha256": "5d5ae602084be441c15f02dd0827dfde69ffca9d29c960fce00e06615b91985d",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-dependencies"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-error/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-error"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/Slug.bnt",
+      "sha256": "6f1f480b9a3ab6e15ef9a5acf43bc123dc4bd11fe38824045ab131b9e14cd905",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-header"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-header/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-header"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-isolation/deps/other/package.bnt",
+      "sha256": "576ce55243721267b4c7cccb96478d9bf789fbf5c4d14ccab37a1e2341c07f22",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-isolation"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-isolation/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-isolation"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-private-name/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-private-name"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-hidden/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-visibility-hidden"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-visibility-run/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-visibility-run"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/package-warning/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/package-warning"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/deps/textkit/package.bnt",
+      "sha256": "9020f82f08d6beff41ffa41ca9c6267fb43241c845e9e62dce36db7bbac50314",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/root-config"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-config/package.bnt",
+      "sha256": "c74456e472f1f93fd6d9ddf95c83f76ef5ab9db44279168e1ffc02880bc70774",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/root-config"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/root-fallback/deps/textkit/package.bnt",
+      "sha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/root-fallback"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/todo-handler/deps/todo/package.bnt",
+      "sha256": "680907f92cb39c3b3bee44299ebc709d41127c19365f64b2c114145653a29e20",
+      "lines": [
+        1
+      ],
+      "change": "language \"0.0.13\"へ。旧版拒否を狙う入力でなく、既存の検査段へ到達させるheaderである",
+      "reason": "登録後のE0908による早期拒否・比較範囲減少を防ぐ",
+      "consumers": [
+        "crates/benitoite/testdata/packages/todo-handler"
+      ],
+      "readers": "golden（元の受理・拒否目的を保持）; export_desugar_corpus → corpus/builtins/stdlib/coverage・区間三出力 → 変更出力を読むdesugarDiff/builtinCheck/surfaceCheckAll/coverageProgramDiff/check_named、区間collect・実ソース比較、manifest/verify"
+    }
+  ],
+  "testFiles": [
+    {
+      "path": "crates/benitoite/tests/cli_process.rs",
+      "sha256": "72632bcf9d3ac640ddb3b690e7b2676ca638925c881e5ebc745339e8bb11ba2e",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "cli_process。全比較の交換入力を直接作らない",
+      "occurrences": [
+        {
+          "line": 868,
+          "text": "(\"deps/kit/package.bnt\", b\"language \\\"0.0.12\\\"\\npackage Kit\\nend package\\n\"),",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/tests/package_command.rs",
+      "sha256": "4aad6f4a0603c8248117a271d2a2c788182a9ef33fa2df715c779611606a7db3",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "package_command。全比較の交換入力を直接作らない",
+      "occurrences": [
+        {
+          "line": 18,
+          "text": "const CONFIG: &str = \"language \\\"0.0.12\\\"\\n\\npackage Words\\nend package\\n\";",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 192,
+          "text": "\"//! main\\n\\n// version\\nlanguage \\\"0.0.12\\\" // keep\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\\n{MAIN}\"",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 219,
+          "text": "\"// version\\nlanguage \\\"0.0.12\\\" // keep\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\"",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 274,
+          "text": "format!(\"language \\\"0.0.12\\\"\\n{MAIN}\"),",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 275,
+          "text": "Some(\"language \\\"0.0.12\\\"\\n\"),",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 400,
+          "text": "\"language \\\"0.0.12\\\"\\n\\ndependency Text\\n  path \\\"deps/words\\\"\\nend dependency\\n\\n{MAIN}\"",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 405,
+          "text": "dir.write(\"main.bnt\", &format!(\"language \\\"0.0.12\\\"\\n\\n{MAIN}\"));",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 407,
+          "text": "assert!(dir.read(\"package.bnt\").contains(\"language \\\"0.0.12\\\"\"));",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 452,
+          "text": "dir.write(\"main.bnt\", &format!(\"language \\\"0.0.12\\\"\\n\\n{MAIN}\"));",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 463,
+          "text": "\"{}{nl}{nl}language \\\"0.0.12\\\"{nl}\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/tests/spec_examples.rs",
+      "sha256": "8f24f52ccbbb89dcae7c1265291a8289c70dcdb12eef5e196d70d6adc0454ee9",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "spec_examples（01-03等の独立MemFs）。全比較の直接入力ではない",
+      "occurrences": [
+        {
+          "line": 455,
+          "text": "format!(\"language \\\"0.0.12\\\"\\npackage {alias}\\nend package\\n\").into_bytes(),",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/tests/test_command.rs",
+      "sha256": "eeec0e150ac48b7e9b1119b0c84e0d340b39d75ef85819e4077a46ca20f015ae",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "test_command。全比較の交換入力を直接作らない",
+      "occurrences": [
+        {
+          "line": 1441,
+          "text": "dir.write(\"suite/package.bnt\", \"language \\\"0.0.12\\\"\\n\");",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1448,
+          "text": "dir.write(\"suite/deps/package.bnt\", \"language \\\"0.0.12\\\"\\n\");",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1956,
+          "text": "dir.write(\"package.bnt\", \"language \\\"0.0.12\\\"\\n\");",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1967,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Textkit\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 2887,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Words\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 2902,
+          "text": ") + \"language \\\"0.0.12\\\"\\ndependency Words\\n  path \\\"deps/words\\\"\\nend dependency\\n\";",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 2911,
+          "text": "\"language \\\"0.0.12\\\"\\ndependency Words\\n  path \\\"deps/words\\\"\\nend dependency\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "sha256": "1d2b321ff7547a83bb897145670c68811aedba84b2f5e145071c178f2fd3d6b9",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "named::export_extensible_packageの根とDepのheader二つ。六入口/check_named。export_extensible_sourceはtestdata d6c経由",
+      "occurrences": [
+        {
+          "line": 643,
+          "text": "\"language \\\"0.0.12\\\"\\ndependency Dep\\n path \\\"dep\\\"\\nend dependency\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 648,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Dep\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/modules/tests.rs",
+      "sha256": "77176d547a83d5841ab1ebc79486a68ec1819a044bea5ddd6a71b3c521849e3c",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "lib_default。loaderの版登録が全比較全般の受理へ影響する。MemFsの文字列自体は交換に収集されない",
+      "occurrences": [
+        {
+          "line": 63,
+          "text": "(\"0.0.12\", None),",
+          "action": "旧0.0.12の行を残しE0908へ。受理0.0.13・将来0.0.14を別行へ（差分案）"
+        },
+        {
+          "line": 98,
+          "text": "\"0.0.11\" => \"0.0.12\",",
+          "action": "保持。過去の0.0.12の変更説明・最初の互換変更の対応である。0.0.13のnote/helpは別行へ追加する"
+        },
+        {
+          "line": 127,
+          "text": "\"0.0.12: each WASM Store limits live component handles to 100,000; excess allocation stops with R0906\",",
+          "action": "保持。過去の0.0.12の変更説明・最初の互換変更の対応である。0.0.13のnote/helpは別行へ追加する"
+        },
+        {
+          "line": 137,
+          "text": "\"review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md\",",
+          "action": "保持。過去の0.0.12の変更説明・最初の互換変更の対応である。0.0.13のnote/helpは別行へ追加する"
+        },
+        {
+          "line": 148,
+          "text": "\"this file needs Benitoite 0.0.13 or later, but this is Benitoite 0.0.12\"",
+          "action": "将来版0.0.14、現在版0.0.13へ（差分案）"
+        },
+        {
+          "line": 944,
+          "text": "let (output, _) = load_files(&[(\"main.bnt\", MAIN), (config_name, \"language \\\"0.0.12\\\"\\n\")]);",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 964,
+          "text": "let fs = MemFs::new(&[(\"/root/package.bnt\", \"language \\\"0.0.12\\\"\\n\")]);",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 988,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Textkit\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 994,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Textkit\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1000,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Unused\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1073,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Library\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1108,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Textkit\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1144,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Libs\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1148,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Nested\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1183,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Library\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1219,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Library\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/modules/hash.rs",
+      "sha256": "e89325f84f4be6e2fba99950cdbe14fb0ec3e67c3905d0344be68d3e8211ac2a",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "lib_default。loaderの版登録が全比較全般の受理へ影響する。MemFsの文字列自体は交換に収集されない",
+      "occurrences": [
+        {
+          "line": 222,
+          "text": "const CONFIG: &str = \"language \\\"0.0.12\\\"\\npackage Textkit\\nend package\\n\";",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/external/tests.rs",
+      "sha256": "9a15e0b5c25eebdac986c2bbe860f97e585d6ae01d4311848e653cff3c20b85c",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "lib_default。loaderの版登録が全比較全般の受理へ影響する。MemFsの文字列自体は交換に収集されない",
+      "occurrences": [
+        {
+          "line": 1617,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Library\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1759,
+          "text": "(\"package.bnt\", b\"language \\\"0.0.12\\\"\\n\"),",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 1783,
+          "text": "let config = \"language \\\"0.0.12\\\"\\npackage Fuzzy\\nlicense \\\"MIT\\\"\\nend package\\n\";",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/typeck/tests/diagnostics_batch4.rs",
+      "sha256": "092ce3aaabcb619be78a98a3bda659753455fc4a66186407792c52c7098065b4",
+      "reason": "版登録後も検査本来の目的へ到達させる。過去の版の説明を保つ",
+      "readers": "lib_default。loaderの版登録が全比較全般の受理へ影響する。MemFsの文字列自体は交換に収集されない",
+      "occurrences": [
+        {
+          "line": 267,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Textkit\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        },
+        {
+          "line": 271,
+          "text": "\"language \\\"0.0.12\\\"\\npackage Wordkit\\nend package\\n\",",
+          "action": "成功用header・編集結果の0.0.12を0.0.13へ。境界表と過去の説明は上記別扱い"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/typeck/pattern_ext.rs",
+      "sha256": "9b664120d98d7481eab8a5be898b91ad48d2cf5c3d9f53302d5dafabacdf94c8",
+      "reason": "#[cfg(test)] 内の external の場合に使う根の package.bnt の成功用宣言を0.0.13へ更新する。E0908より先のパターンの検査へ到達させる",
+      "readers": "lib_default の typeck::pattern_ext::tests。依存側の設定は既存50候補の d8-extensible.files/dep/package.bnt。MemFsの文字列を全比較へ収集しない",
+      "occurrences": [
+        {
+          "line": 920,
+          "text": "\"language \\\"0.0.12\\\"\\ndependency Dep\\n path \\\"dep\\\"\\nend dependency\\n\",",
+          "action": "V10.3aで成功用の language 宣言を0.0.13へ更新する"
+        }
+      ]
+    }
+  ],
+  "registry": {
+    "path": "crates/benitoite/src/modules/package.rs",
+    "reason": "BREAKING_CHANGESへVersion(0,0,13)を追加し、登録表を読むテストのnotes/helps/change_versions/current/end/firstを追随。旧版の文言は保持",
+    "test": "version_check_reports_all_applicable_changes_in_version_order",
+    "readers": "lib_default。登録自体はcheck_header経由で全比較のloaderに影響",
+    "proposal": "j2-registration-proposal.patch"
+  },
+  "text": {
+    "path": "crates/benitoite/src/modules/text.rs",
+    "reason": "J2再現に対応する事実だけのsummary/helpを追加。節の変更手順・移行例は含めない",
+    "readers": "登録表経由のE0908。corpusの受理へはpackage.rsの登録を通して影響",
+    "proposal": "j2-registration-proposal.patch"
+  },
+  "diagnostics": [
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings.diag.json",
+      "sha256": "abc5f59eee632f06ed253a421cd5f07c77b3d220cd9a038a476ce085e45d1bba",
+      "change": "E0907の現在版表示だけ0.0.12から0.0.13へ。99.0.0の入力・位置・コードは保持。E0914/E0915は保持。transitive/package.bntのheader更新も別途必要",
+      "reason": "新版の診断をgoldenで照合",
+      "readers": "golden。export_desugar_corpusは.diag.jsonを読まない"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-config.diag.json",
+      "sha256": "abf31bd8b8bf2085e38474ee8adb12a9c2104e12366af07a887270f359c5e158",
+      "change": "E0907の現在版表示だけ0.0.12から0.0.13へ。99.0.0の入力・位置・コードは保持",
+      "reason": "新版の診断をgoldenで照合",
+      "readers": "golden。export_desugar_corpusは.diag.jsonを読まない"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-language.diag.json",
+      "sha256": "0fdaba4563802a0a6dcb6214d6e86c74e26f0c2442671379e2e6d0872d73404b",
+      "change": "E0907の現在版表示だけ0.0.12から0.0.13へ。99.0.0の入力・位置・コードは保持",
+      "reason": "新版の診断をgoldenで照合",
+      "readers": "golden。export_desugar_corpusは.diag.jsonを読まない"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/older-language.diag.json",
+      "sha256": "5c4289971288efc0a6e7fdb520189f72dc9e8d03a5570e021b0bbc674677a0dc",
+      "change": "入力の0.0.4と最初の互換変更0.0.5・既存note/helpを保持し、末尾に0.0.13のnote/help（各1件）を追加。現在版表示の置換はない",
+      "reason": "新版の診断をgoldenで照合",
+      "readers": "golden。export_desugar_corpusは.diag.jsonを読まない"
+    }
+  ],
+  "hashProposals": [
+    {
+      "name": "hashkit",
+      "old": "sha256:957fa49ad82a7d47e84a1f4730596d02f9dcd6dbf4b77321a6166decf235154b",
+      "proposed": "sha256:3964a146fd259d0fef4d48af4ffb39ac0c824bd9ce6aaa67d3fef0e8211e6bdd",
+      "targets": [
+        "crates/benitoite/testdata/packages/hash-match/package.bnt",
+        "crates/benitoite/testdata/packages/hash-mismatch.diag.json"
+      ],
+      "inputs": [
+        {
+          "path": "package.bnt",
+          "oldSha256": "c782d04d726282ff93386ec6a3e67946714510a40f22b890e2ff0dab26f0b63d",
+          "proposedSha256": "241c48d038a579b01fbe845a49d3b24b825816eb77d4b6f5a70bf1a5fd0df141"
+        },
+        {
+          "path": "Value.bnt",
+          "oldSha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824",
+          "proposedSha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824"
+        }
+      ],
+      "rule": "06-09「中身のハッシュ」。各fileのSHA-256小文字hex＋空白二つ＋相対path＋LFをUTF-8のpath順に連結し、全体SHA-256へsha256:を付ける。バイト列の改行は変更しない"
+    },
+    {
+      "name": "modules-hash",
+      "old": "sha256:4fb9f0d272db82091050add15b118cfe017d3841af3a6020b7ddd19c618be2a4",
+      "proposed": "sha256:730c7986f912d2cbafaf963824f1f28ed8bd731c4c04e28b7bd3ad288aa67546",
+      "targets": [
+        "crates/benitoite/src/modules/hash.rs::FIXED"
+      ],
+      "inputs": [
+        {
+          "path": "package.bnt",
+          "oldSha256": "1990510545088ff276fa80fafae93753416cce9fb565f577f874f7ba83fff0ce",
+          "proposedSha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1"
+        },
+        {
+          "path": "Z.bnt",
+          "oldSha256": "552bab6864c7a7b69a502ed1854b9245c0e1a30f008aaa0b281da62585fdb025",
+          "proposedSha256": "552bab6864c7a7b69a502ed1854b9245c0e1a30f008aaa0b281da62585fdb025"
+        },
+        {
+          "path": "A/Sub.bnt",
+          "oldSha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb",
+          "proposedSha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+        },
+        {
+          "path": "License.md",
+          "oldSha256": "adc37366f403835c1470ab2df93d3837d4719372fc1ef8593d922e06f033f8b2",
+          "proposedSha256": "adc37366f403835c1470ab2df93d3837d4719372fc1ef8593d922e06f033f8b2"
+        },
+        {
+          "path": "readme.md",
+          "oldSha256": "13550350a8681c84c861aac2e5b440161c2b33a3e4f302ac680ca5b686de48de",
+          "proposedSha256": "13550350a8681c84c861aac2e5b440161c2b33a3e4f302ac680ca5b686de48de"
+        },
+        {
+          "path": "COPYING",
+          "oldSha256": "4d00967e353d87ca937a76b4b1dafe6a72fd872e4f8370534972ec111cb86c0e",
+          "proposedSha256": "4d00967e353d87ca937a76b4b1dafe6a72fd872e4f8370534972ec111cb86c0e"
+        },
+        {
+          "path": "wasm/x.wasm",
+          "oldSha256": "3cc34474f2adb05aa3e99c9dde5a2066c1bf292310ba8c6026f9027ae11d74d7",
+          "proposedSha256": "3cc34474f2adb05aa3e99c9dde5a2066c1bf292310ba8c6026f9027ae11d74d7"
+        }
+      ],
+      "rule": "06-09「中身のハッシュ」。各fileのSHA-256小文字hex＋空白二つ＋相対path＋LFをUTF-8のpath順に連結し、全体SHA-256へsha256:を付ける。バイト列の改行は変更しない"
+    },
+    {
+      "name": "package-command",
+      "old": "sha256:b43b05e8f8d278bca44f4159a12db4fe14192cca587a25593e23706dbf4ef9fb",
+      "proposed": "sha256:4eefbd9e6069548683f4aad0bed473b5b76b734591264b65e49b51854d70ffb8",
+      "targets": [
+        "crates/benitoite/tests/package_command.rs::add_and_update_record_hashes_effect_deltas_and_unchanged_state"
+      ],
+      "inputs": [
+        {
+          "path": "package.bnt",
+          "oldSha256": "7f131938f7c735115d46a2b13e8667ba4f8ab309fbe50526b37747247658e1c2",
+          "proposedSha256": "31224c71fd20f257d4f2f550bf6fbf0108b7431639feb8c67d2b979478e439f2"
+        },
+        {
+          "path": "Value.bnt",
+          "oldSha256": "52573934e713a6f05acffa3bd7aae060036defb25d61a387f1acea6aab456c87",
+          "proposedSha256": "52573934e713a6f05acffa3bd7aae060036defb25d61a387f1acea6aab456c87"
+        }
+      ],
+      "rule": "06-09「中身のハッシュ」。各fileのSHA-256小文字hex＋空白二つ＋相対path＋LFをUTF-8のpath順に連結し、全体SHA-256へsha256:を付ける。バイト列の改行は変更しない"
+    }
+  ],
+  "exclusions": [
+    {
+      "path": "crates/benitoite/testdata/packages/older-language/main.bnt",
+      "reason": "0.0.4を狙うE0908。宣言は保持"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-language/main.bnt",
+      "reason": "99.0.0を狙うE0907。宣言は保持"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/newer-config/package.bnt",
+      "reason": "99.0.0を狙うE0907。宣言は保持"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/dependency-settings/deps/future/package.bnt",
+      "reason": "99.0.0を狙う依存のE0907。宣言は保持"
+    },
+    {
+      "path": "crates/benitoite/testdata/packages/hash-mismatch/main.bnt",
+      "reason": "不一致を狙うゼロのhashは保持。computedだけ更新"
+    },
+    {
+      "path": "crates/benitoite/src/modules/package.rs",
+      "reason": "0.0.5〜0.0.12の登録・過去のnote/helpと旧版境界を保持。差分案で0.0.13だけ追加"
+    },
+    {
+      "path": "crates/benitoite/src/modules/text.rs",
+      "reason": "旧版のCHANGE/MIGRATIONは保持。新helpの事実だけの制約を過去の説明へ遡及しない"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "過去の版の説明は一括置換しない。今回の移行手順・移行例を作らない"
+    }
+  ],
+  "firstDraftCounts": {
+    "testdata": 50,
+    "integrationTestFiles": 5,
+    "sourceTestFiles": 4,
+    "testFiles": 9,
+    "registryAndText": 2,
+    "diagnostics": 4,
+    "hashProposals": 3,
+    "hashTargets": 4,
+    "uniqueRewriteFiles": 67,
+    "exclusionRows": 8
+  },
+  "documentExamples": [
+    {
+      "path": "docs/design/01-spec/01-02-syntax.md",
+      "sha256": "aa8f169411a9c832883e2a864cc094db08516d54d012202c7afedd6240e544a5",
+      "declarationLines": [
+        477
+      ],
+      "readers": "spec_examples::spec_and_appendix_examples_are_readable の text 抽出 → check_example → check_local_bindings → pipeline::check_files。ローダは通るが、loading_errors と 束縛診断の絞り込みに E0907/E0908 はなく、版の受理自体を検査の成功条件にしていない。版上げ後に束縛の検査まで到達することは V10.3a で確かめる",
+      "change": "V10.3aで現在の正常な先頭部分の例を0.0.13へ更新する案。spec_examples.rsの補助の依存headerと同時に確認する",
+      "occurrences": [
+        {
+          "line": 477,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで現在の正常な先頭部分の例を0.0.13へ更新する案。spec_examples.rsの補助の依存headerと同時に確認する"
+        }
+      ]
+    },
+    {
+      "path": "docs/design/06-tooling/06-09-packages.md",
+      "sha256": "213c1a02f54b8dacbd5bdb351668874c8896ca9822fabc49169e49d1bbf18f78",
+      "declarationLines": [
+        20,
+        32
+      ],
+      "readers": "spec_examples の text 抽出対象は01-specと付録08-04であり、本章は含まれない。文書の例を直接実行するテストは、調べた tests 内では見つからなかった",
+      "change": "V10.3aで根とパッケージの正常な宣言の例を0.0.13へ更新する案。54・56行の過去の登録・案内の説明は保持し、新登録の説明は現行の設計文書との整合で別に確認する",
+      "occurrences": [
+        {
+          "line": 20,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで根とパッケージの正常な宣言の例を0.0.13へ更新する案。54・56行の過去の登録・案内の説明は保持し、新登録の説明は現行の設計文書との整合で別に確認する"
+        },
+        {
+          "line": 32,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで根とパッケージの正常な宣言の例を0.0.13へ更新する案。54・56行の過去の登録・案内の説明は保持し、新登録の説明は現行の設計文書との整合で別に確認する"
+        },
+        {
+          "line": 54,
+          "text": "| `0.0.12` | 各 WASM Store の生存するコンポーネントハンドル（component handle）を 100,000 個に制限し、超過を R0906 で停止する変更 | ゲストの不要なハンドルを解放し、--deny-warnings での局所区間警告、報告の intervalAnalysis、ファイル単位の uses を持つ JSON/Property の derive 対象も見直す。ソースの確認後に language 宣言と依存ハッシュを更新し、CHANGELOG の 0.0.12 の節を参照する |",
+          "action": "V10.3aで根とパッケージの正常な宣言の例を0.0.13へ更新する案。54・56行の過去の登録・案内の説明は保持し、新登録の説明は現行の設計文書との整合で別に確認する"
+        },
+        {
+          "line": 56,
+          "text": "各版の案内は CHANGELOG を参照する。0.0.5 と 0.0.8〜0.0.12 の案内は該当する節を名指し、0.0.6・0.0.7 の案内は節を名指さない。0.0.7・0.0.8・0.0.10・0.0.11・0.0.12 の案内は、スクリプトを見直した後に `language` を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。0.0.9 の案内は language 宣言と依存のハッシュの見直しを促す。0.0.5・0.0.6 の案内は、宣言とハッシュの更新を促さない。宣言の更新先を変更の版に固定しない。",
+          "action": "V10.3aで根とパッケージの正常な宣言の例を0.0.13へ更新する案。54・56行の過去の登録・案内の説明は保持し、新登録の説明は現行の設計文書との整合で別に確認する"
+        }
+      ]
+    },
+    {
+      "path": "docs/reference/benitoite.md",
+      "sha256": "71eabd80a9a0b36f196307a2770240dac0b6a7142efd459037b6c48c6135afbe",
+      "declarationLines": [
+        2059,
+        2077,
+        2109
+      ],
+      "readers": "reference_examples::code_examples_in_the_language_reference_behave_as_written → doc_examples。2059の files と2077の本文はCLIのrun、2109の files はCLIのcheckへ渡る。三つとも実ローダが版を照合する",
+      "change": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない",
+      "occurrences": [
+        {
+          "line": 16,
+          "text": "This reference describes Benitoite `0.0.12`, including the experimental features in [section 21](#21-experimental-packages-and-external-functions). It explains how to write and run Benitoite scripts, with examples. Every example marked as a program in this file is checked against `benitoite` by the test suite of the repository.",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 100,
+          "text": "| `--version` | Prints the version of `benitoite` on the first line (`benitoite 0.0.12`) and the Unicode version used by character functions on the second line (`Unicode 17.0.0`). |",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 159,
+          "text": "\"version\": \"0.0.12\",",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2016,
+          "text": "### Migrating to 0.0.12",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2018,
+          "text": "Have the harness review the [0.0.12 migration guide](../../CHANGELOG.md#0012-san-benito) before updating `language` and dependency hashes. Each WASM Store now limits live component handles to 100,000; guests must drop handles they no longer need, including across stateful calls. Review extended W0401/W0402 and new W0404 when using `--deny-warnings`. Runtime checks and failure handling remain necessary; missing warnings or full analysis coverage do not prove success. Update strict inspection-report readers to allow `intervalAnalysis` on the report and each target while preserving the existing acceptance checks.",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2020,
+          "text": "JSON/Property derive targets with file-level `uses` are refused before writing artifacts. Use individual effect declarations or move the type and target to a pure model module; follow the derive tool's relocation and recovery procedure for existing regions. Generator and record versions remain unchanged, but old preview hashes cannot approve new inputs. Rebuild the executable and reinstall its embedded Skill together. After reviewing source and dependencies, set `language \"0.0.12\"` and run `benitoite package update`.",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2047,
+          "text": "> Note: Releases `0.0.1` through `0.0.12` are source-only releases; no executables are provided. Executables will be provided from `0.1.0`, and until then any release may contain incompatible changes.",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2059,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2077,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2109,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        },
+        {
+          "line": 2120,
+          "text": "`language \"MAJOR.MINOR.PATCH\"` records the language version the file was written for, using three decimal integers. For Benitoite `0.0.12`, a declaration of `0.0.12` passes the compatibility check; a later version reports `E0907`, and an earlier version reports `E0908`. The declaration is optional in the starting script and root settings, and required in a package's settings. The interpreter uses the same language rules with or without a declaration. Root and dependency versions are checked independently. The migration help for the loader-environment change asks you to review the script, then update its declaration to the current interpreter version and update dependency hashes; the target version is not fixed to the release that introduced the change. The [version policy](#version-policy) explains compatibility guarantees; release-specific changes are recorded in the [CHANGELOG](../../CHANGELOG.md).",
+          "action": "V10.3aで三つの実行例の宣言と現在版の説明・version表示を0.0.13へ更新する案。2016〜2020の旧版の移行節と旧版の宣言は保持し、一括置換しない。新しい移行手順は書かない"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/reference/benitoite.md",
+      "sha256": "70ebc16f54bb4e6bee3a0810efb016d6dde09ba329b48785a069adcde82a1c52",
+      "declarationLines": [
+        1963,
+        1981,
+        2013
+      ],
+      "readers": "reference_examplesのDOCUMENTSは英語のbenitoite.mdだけであり、この訳は直接実行しない。英語の例との対照をV10.3aで行う",
+      "change": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`docs/reference/benitoite.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 19,
+          "text": "このリファレンスは、[第 21 節](#21-実験的な機能-パッケージと外部の関数)の実験的な機能を含めて、Benitoite `0.0.12` を説明する。Benitoite のスクリプトの書き方と実行の仕方を、例を添えて説明する。このファイルでプログラムとして印を付けた例は、すべてリポジトリのテストが `benitoite` で確かめている。",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 103,
+          "text": "| `--version` | 1 行目に `benitoite` の版（`benitoite 0.0.12`）を、2 行目に文字の関数が使う Unicode の版（`Unicode 17.0.0`）を出力する。 |",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 162,
+          "text": "\"version\": \"0.0.12\",",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 1920,
+          "text": "### 0.0.12 への移行",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 1922,
+          "text": "language と依存ハッシュの更新前に、ハーネスを通じて [0.0.12 の移行案内](../../../CHANGELOG.md#0012-san-benito)を確認する。各 WASM Store の生存するコンポーネントハンドル（component handle）は 100,000 個までとなる。ゲストは状態を持つ呼び出し間も含め、不要なハンドルを解放する。--deny-warnings を使う場合は、拡張された W0401/W0402 と新しい W0404 を確認する。実行時の検査と失敗の処置は引き続き必要であり、警告の不在や解析範囲の all は成功を保証しない。厳密な報告の読み手は、従来の受け入れ検査を保ち、報告全体と各対象の intervalAnalysis を受け入れる。",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 1924,
+          "text": "ファイル単位の uses を持つ JSON/Property の derive 対象は、生成物を書き出す前に拒否する。個別のエフェクト宣言へ変えるか、型と対象を純粋なモデルのモジュールへ移す。既存の管理領域には derive の移動と復旧の手順を使う。生成器と記録の版は変わらないが、古い preview のハッシュで新しい入力を承認できない。実行ファイルをビルドし、その埋め込み Skill を再インストールする。ソースと依存を確認した後に language を 0.0.12 へ更新し、benitoite package update を実行する。",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 1951,
+          "text": "> 注記: `0.0.1` から `0.0.12` までのリリースはソースコードだけを配り、実行ファイルは配らない。実行ファイルは `0.1.0` から配り、それまではどのリリースも互換性のない変更を含むことがある。",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 1963,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 1981,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 2013,
+          "text": "language \"0.0.12\"",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        },
+        {
+          "line": 2024,
+          "text": "`language \"MAJOR.MINOR.PATCH\"` は、三つの十進整数で、そのファイルを書くときに使った言語の版を記録する。Benitoite `0.0.12` では、`0.0.12` の宣言は互換性の検査を通り、それより後の版は `E0907`、前の版は `E0908` になる。起点のスクリプトと根の設定ではこの宣言を省いてよいが、パッケージの設定では必須である。宣言の有無にかかわらず、処理系は同じ言語の規則を使う。根の版と依存の版は、それぞれ独立に検査する。ローダ環境変数の変更の移行案内は、スクリプトを見直した後に宣言を現在の処理系の版へ更新し、依存のハッシュを更新するよう促す。宣言の更新先を、その変更が入った版に固定しない。互換性の保証は[版の方針](#版の方針)、各リリースの変更は [CHANGELOG](../../../CHANGELOG.md) に記す。",
+          "action": "V10.3aで対応する三宣言・現在版の表示・訳元を英語と同時に0.0.13へ更新する案。1920〜1924の旧版の移行節と旧版の宣言は保持する"
+        }
+      ]
+    },
+    {
+      "path": "docs/reference/install.md",
+      "sha256": "5ce97dfb69e6cf0fd5a705244f0d06c54f1e9a6127efed6ba1151c36866a3c12",
+      "declarationLines": [],
+      "readers": "reference_examplesのDOCUMENTSにinstall.mdはなく、直接実行するテストは調べた tests 内では見つからなかった",
+      "change": "V10.3aで3・5行の現在版の説明を0.0.13へ更新する案。150・152行の0.0.11から0.0.12への更新節とinlineのlanguage宣言は過去の手順として保持する。0.0.13の移行手順に書き換えない",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "This page explains how to install `benitoite` `0.0.12`, how to update it, and how to build it from source. For the language itself, see the [Benitoite Language Reference](benitoite.md).",
+          "action": "V10.3aで3・5行の現在版の説明を0.0.13へ更新する案。150・152行の0.0.11から0.0.12への更新節とinlineのlanguage宣言は過去の手順として保持する。0.0.13の移行手順に書き換えない"
+        },
+        {
+          "line": 5,
+          "text": "Version 0.0.12 is source-only. Use [Build from source](#build-from-source), then install the embedded Skill. The executable archive instructions below describe distribution from 0.1.0 onward; no 0.0.12 executable archive or SHA256SUMS is provided.",
+          "action": "V10.3aで3・5行の現在版の説明を0.0.13へ更新する案。150・152行の0.0.11から0.0.12への更新節とinlineのlanguage宣言は過去の手順として保持する。0.0.13の移行手順に書き換えない"
+        },
+        {
+          "line": 150,
+          "text": "### Updating from 0.0.11 to 0.0.12",
+          "action": "V10.3aで3・5行の現在版の説明を0.0.13へ更新する案。150・152行の0.0.11から0.0.12への更新節とinlineのlanguage宣言は過去の手順として保持する。0.0.13の移行手順に書き換えない"
+        },
+        {
+          "line": 152,
+          "text": "Build the release source and reinstall its embedded Skill. Have the harness review the [migration guide](../../CHANGELOG.md#0012-san-benito), the per-Store component handle limit, local interval warnings under `--deny-warnings`, and inspection readers that need to accept `intervalAnalysis`. JSON/Property derive targets must not have file-level `uses`; review existing targets and make a fresh preview after any relocation or effect-declaration change. Review source and dependencies before setting `language \"0.0.12\"` and running `benitoite package update`. See [compatibility](benitoite.md#migrating-to-0012) for the migration details.",
+          "action": "V10.3aで3・5行の現在版の説明を0.0.13へ更新する案。150・152行の0.0.11から0.0.12への更新節とinlineのlanguage宣言は過去の手順として保持する。0.0.13の移行手順に書き換えない"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/reference/install.md",
+      "sha256": "b3bf87ce6b5935dc7c1994544604cc1044f44a39f604629c5187d19e25bb6efa",
+      "declarationLines": [],
+      "readers": "直接実行するテストは調べた tests 内では見つからなかった。英語install.mdとの対照をV10.3aで行う",
+      "change": "V10.3aで3・5・7行の訳元と現在版の説明を英語と同時に更新する案。152・154行の旧版の更新節とinlineのlanguage宣言は保持する",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`docs/reference/install.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで3・5・7行の訳元と現在版の説明を英語と同時に更新する案。152・154行の旧版の更新節とinlineのlanguage宣言は保持する"
+        },
+        {
+          "line": 5,
+          "text": "この文書では、`benitoite` `0.0.12` のインストールと更新の方法、およびソースからのビルドの方法を説明する。言語そのものについては、[Benitoite 言語リファレンス](benitoite.md)を参照する。",
+          "action": "V10.3aで3・5・7行の訳元と現在版の説明を英語と同時に更新する案。152・154行の旧版の更新節とinlineのlanguage宣言は保持する"
+        },
+        {
+          "line": 7,
+          "text": "0.0.12 はソースコードだけを配る。[ソースからのビルド](#ソースからのビルド)の後、埋め込まれた Skill をインストールする。下の実行ファイルのアーカイブの手順は 0.1.0 以降の配布を説明するものであり、0.0.12 の実行ファイルのアーカイブと SHA256SUMS は提供しない。",
+          "action": "V10.3aで3・5・7行の訳元と現在版の説明を英語と同時に更新する案。152・154行の旧版の更新節とinlineのlanguage宣言は保持する"
+        },
+        {
+          "line": 152,
+          "text": "### 0.0.11 から 0.0.12 への更新",
+          "action": "V10.3aで3・5・7行の訳元と現在版の説明を英語と同時に更新する案。152・154行の旧版の更新節とinlineのlanguage宣言は保持する"
+        },
+        {
+          "line": 154,
+          "text": "リリースのソースをビルドし、埋め込み Skill を再インストールする。ハーネスを通じて[移行案内](../../../CHANGELOG.md#0012-san-benito)、Store ごとのコンポーネントハンドル（component handle）の上限、--deny-warnings での局所区間警告、intervalAnalysis を受け入れる報告の読者を確認する。JSON/Property の derive 対象はファイル単位の uses を持てない。既存の対象を確認し、移動や宣言の変更後に新しい preview を作る。ソースと依存の確認後に language を 0.0.12 へ変え、benitoite package update を実行する。詳しくは[互換性](benitoite.md#0012-への移行)を参照する。",
+          "action": "V10.3aで3・5・7行の訳元と現在版の説明を英語と同時に更新する案。152・154行の旧版の更新節とinlineのlanguage宣言は保持する"
+        }
+      ]
+    }
+  ],
+  "relatedVersionFiles": [
+    {
+      "path": "crates/benitoite/Cargo.toml",
+      "sha256": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+      "change": "V10.3aでbenitoiteの版だけ0.0.13へ。ワークスペースの全依存を更新しない",
+      "readers": "Cargoとbuild_info。W-V",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "version = \"0.0.12\"",
+          "action": "V10.3aでbenitoiteの版だけ0.0.13へ。ワークスペースの全依存を更新しない"
+        }
+      ]
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+      "change": "V10.3aでbenitoite項目を対象を絞って同期する",
+      "readers": "Cargo。W-Vと候補照合",
+      "occurrences": [
+        {
+          "line": 60,
+          "text": "version = \"0.0.12\"",
+          "action": "V10.3aでbenitoite項目を対象を絞って同期する"
+        }
+      ]
+    },
+    {
+      "path": "fuzz/Cargo.lock",
+      "sha256": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+      "change": "V10.3aでbenitoiteのパス依存の項目だけ同期する",
+      "readers": "fuzzのCargo。勧告照合と候補照合",
+      "occurrences": [
+        {
+          "line": 60,
+          "text": "version = \"0.0.12\"",
+          "action": "V10.3aでbenitoiteのパス依存の項目だけ同期する"
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "sha256": "9c2c39d3eb7a0804fcda9c2cbd66019aa31d7ee8a3ffa30ca24f772a834df321",
+      "change": "V10.3aで現在版を更新する。0.0.13の移行案内を作らない",
+      "readers": "実行例の自動抽出ではなく候補照合",
+      "occurrences": [
+        {
+          "line": 7,
+          "text": "The current version is `0.0.12` ([changes and migration](CHANGELOG.md#0012-san-benito)). Source-only release. No executables are provided. Executables will be provided from `0.1.0`.",
+          "action": "V10.3aで現在版を更新する。0.0.13の移行案内を作らない"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "sha256": "2e5b4bd541ea5af266e0a14d7cee784136d44642ce12a07aece3f22ffa62d335",
+      "change": "既存必須欄の説明だけを指すv0.0.12固定参照は意味を確認して保持できる。V10.2bの一覧をV10.3aで照合する",
+      "readers": "skill_examplesとskill_docs。リンク先の取得・内容の実行を確認した意味ではない",
+      "occurrences": [
+        {
+          "line": 65,
+          "text": "1. Accept an inspection only after checking the complete single JSON object, a known `schemaVersion` and `kind`, `status: \"ok\"`, `complete: true`, and exit status 0. Read its declared upper bound (`targets[0].main.effects.expanded` for scripts, or each selected test's `effects`, and `aggregateEffects`) and tell the user, in the words of the table below, what kinds of operations the program declares. Compare it with each function's `uses` and the file-level `uses` when explaining the code. Declared but unused effects and additions from the file still count. Unknown or failed results are not an empty set, and the bound does not authorize itself. The existing required fields and acceptance rules are described in the processor's [version-pinned English reference (v0.0.12, checkReport 1 and testCheckReport 1/2)](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports); the optional scope bounds and interval summary are described in [inspection](references/inspection.md).",
+          "action": "既存必須欄の説明だけを指すv0.0.12固定参照は意味を確認して保持できる。V10.2bの一覧をV10.3aで照合する"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/skill/references/inspection.md",
+      "sha256": "3d617356e59811481cebd5d073d6ffb56181f8d145f17ed3eaf76fe771b4b4a5",
+      "change": "既存必須欄のv0.0.12固定参照は意味を確認して保持できる。新しい範囲の説明は候補版へ固定する。V10.2bでの編集結果をV10.3aで照合する",
+      "readers": "skill_examples。版固定参照の意味は文書と候補の照合",
+      "occurrences": [
+        {
+          "line": 52,
+          "text": "File-level `uses` is merged with the individual declaration in the checked Scheme. After accepting the whole report under the rules above, show `targets[0].main.effects.expanded` and, when present, `bounds` as main's declared upper bound; tests use each selected test's effects and their aggregate. Without `bounds`, read each name as an upper bound over all its targets. Even an empty body retains shared Console.Write or Log. Reading only main's source line can miss that bound. Do not turn a report into automatic permission. Ordinary `check` still writes no standard output. The processor owns the existing required fields and acceptance rules: see the [v0.0.12 English reference](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports), with checkReport 1 and testCheckReport 1/2. Use this executable's embedded Skill for the additional scope bounds described above; the pinned reference defines the existing required fields and acceptance rules. The additional `intervalAnalysis` field below preserves those versions and rules.",
+          "action": "既存必須欄のv0.0.12固定参照は意味を確認して保持できる。新しい範囲の説明は候補版へ固定する。V10.2bでの編集結果をV10.3aで照合する"
+        },
+        {
+          "line": 127,
+          "text": "For the processor's definition of these additional fields and their aggregation, use the [v0.0.12 English reference](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#interval-analysis-coverage). Its [local warning rules](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#local-interval-warnings) define the analysis scope; the executable's embedded Skill supplies the documentation for the installed version.",
+          "action": "既存必須欄のv0.0.12固定参照は意味を確認して保持できる。新しい範囲の説明は候補版へ固定する。V10.2bでの編集結果をV10.3aで照合する"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/skill/SKILL.md",
+      "sha256": "6f5a7ce6f84a1ea1452276a65e15990d717140ce4e3f95b51b7189aef613f440",
+      "change": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる",
+      "readers": "日本語訳をskill_examplesのDOCUMENTSには含めない。V10.3aで英語との対照",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`crates/benitoite/skill/SKILL.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        },
+        {
+          "line": 72,
+          "text": "1. 単一の JSON オブジェクト全体、既知の schemaVersion と kind、status: \"ok\"、complete: true、終了状態 0 を確認した場合だけ検査報告を受理する。宣言上限（スクリプトでは `targets[0].main.effects.expanded`、テストでは選択された各テストの effects と aggregateEffects）を読み、後掲の表の言葉で操作の種類を利用者へ伝える。コードの説明では関数の個別の uses とファイル単位の uses の両方と照合する。使わない宣言とファイル由来の追加も数える。失敗や不明を空集合とせず、上限自体を許可としない。報告の欄と受理条件の正は処理系の[版を固定した英語リファレンス（v0.0.12、checkReport 1・testCheckReport 1/2）](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)である。追加の区間の集計は、[実行前の検査](references/inspection.md#局所の区間解析)を参照する。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/skill/references/common-mistakes.md",
+      "sha256": "9fc6cf22665bc738fef396ad39f43416b8c008a160f534d4a109ed14d06f25e4",
+      "change": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる",
+      "readers": "日本語訳をskill_examplesのDOCUMENTSには含めない。V10.3aで英語との対照",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`crates/benitoite/skill/references/common-mistakes.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/skill/references/idioms.md",
+      "sha256": "e903a28ce2985c633ea9298d267ead58f47b96e4bc2ab39ba9a894b6ecc79352",
+      "change": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる",
+      "readers": "日本語訳をskill_examplesのDOCUMENTSには含めない。V10.3aで英語との対照",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`crates/benitoite/skill/references/idioms.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/skill/references/inspection.md",
+      "sha256": "cfeddd4439f46d9202fecd90582ad674621613a21c8a527d1bc353dfca078ab4",
+      "change": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる",
+      "readers": "日本語訳をskill_examplesのDOCUMENTSには含めない。V10.3aで英語との対照",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`crates/benitoite/skill/references/inspection.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        },
+        {
+          "line": 46,
+          "text": "ファイル単位の `uses` は、検査済みの Scheme で個別の宣言と合併する。前述の規則で報告全体を受理した後、main では `targets[0].main.effects.expanded`、テストでは選択した各テストのエフェクトとその集計を、宣言上限として示す。空の本体にも共有の Console.Write や Log は残る。main のソースの行だけを読むと上限を見落としうる。報告を自動の許可に変えない。通常の `check` は標準出力に何も書かない。既存の必須欄と受理条件の正は処理系にあり、[v0.0.12 の英語リファレンス](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#inspection-reports)を参照する。checkReport 1・testCheckReport 1/2 を使う。後述の追加の `intervalAnalysis` 欄は、これらの版と規則を保つ。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        },
+        {
+          "line": 99,
+          "text": "追加の欄と集計について処理系が定める内容は、[v0.0.12 の英語リファレンス](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#interval-analysis-coverage)を参照する。[局所の警告の規則](https://github.com/tecogonaz0439/Benitoite/blob/v0.0.12/docs/reference/benitoite.md#local-interval-warnings)は解析の範囲を定める。インストールした版の文書は、実行ファイルに埋め込んだ Skill から得られる。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        }
+      ]
+    },
+    {
+      "path": "docs/ja/skill/references/language-comparison.md",
+      "sha256": "ce56a4f36cced203223f8eda6488665e73185cc82f5bfc5cf772583a30fe1726",
+      "change": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる",
+      "readers": "日本語訳をskill_examplesのDOCUMENTSには含めない。V10.3aで英語との対照",
+      "occurrences": [
+        {
+          "line": 3,
+          "text": "> この文書は、`crates/benitoite/skill/references/language-comparison.md` の日本語の訳である。翻訳元は Benitoite 0.0.12 の英語版である。英語の版を正とし、食い違うときは英語の版に従う。この訳は設計者が読むためのものであり、エージェントが使うためのものではない（同梱の Agent Skill には含めない）。",
+          "action": "V10.3aで訳元の版を0.0.13へ更新し英語の最終差分に対応させる。版固定参照は英語側の保持・更新の判断に合わせる"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "testdata": 50,
+    "integrationTestFiles": 5,
+    "sourceTestFiles": 5,
+    "testFiles": 10,
+    "registryAndText": 2,
+    "testsRegistryAndText": 12,
+    "diagnostics": 4,
+    "hashProposals": 3,
+    "hashTargets": 4,
+    "uniqueRewriteFilesBeforeDocuments": 68,
+    "documentExampleFiles": 6,
+    "uniqueRewriteFiles": 74,
+    "relatedVersionFiles": 11,
+    "totalReviewFiles": 85,
+    "exclusionRows": 8,
+    "grepFiles": 955,
+    "grepLines": 2611
+  },
+  "supplement": {
+    "task": "V10.1bb",
+    "addedTestFile": "crates/benitoite/src/typeck/pattern_ext.rs",
+    "command": "git grep -n -E '0\\.0\\.12|0, 0, 12'",
+    "raw": "v10.1bb-version-grep.log",
+    "rawSha256": "c42515c7898a2eff5d728bfc2baa57d3f74c0cd63c6b74862ca7f67cfd5c6e9a",
+    "classification": "v10.1bb-version-grep.json",
+    "initialGenerator": "make-inventory.pyは初稿用。本追補はv10.1bb-inventory.pyで加える"
+  }
+}

@@ -1,6 +1,6 @@
 //! 宣言の検査と型の要約（設計書 02-05「検査の単位と手順」「宣言の検査」）。
 
-use super::body_map::BodyBindingMap;
+use super::body_map::{BodyBindingMap, BodyNodeMap};
 use super::limits::{MAX_TYPE_DEPTH, TypeBudget, TypeLimit};
 use super::{MainInfo, TypeckOutput};
 use crate::base::{BindingId, BindingMap, ModuleId, NodeId, SourceTable, Span};
@@ -30,11 +30,14 @@ pub(super) struct Scope {
 pub(super) struct Decls<'a> {
     pub modules: &'a ModuleTable,
     pub asts: &'a [Module],
+    pub handler_syntax: BodyNodeMap<&'a HandleExpr>,
     pub sources: &'a SourceTable,
     pub resolved: &'a ResolveOutput,
     pub out: TypeckOutput,
     pub checked_args: super::checked_args::CheckedArgsState,
     pub interval: super::interval::AnalysisState<'a>,
+    pub scope_inputs: super::scope::Inputs,
+    pub scope_analyses: Vec<super::scoped_calls::ScopedCalls>,
     /// 宣言の検査を終えた後の本体間で共有する、読み取り専用の実装索引。
     pub impl_index: Option<std::rc::Rc<super::traits::ImplTable>>,
     pub const_origins: BindingMap<BTreeSet<BindingId>>,
@@ -56,10 +59,18 @@ pub(super) struct Decls<'a> {
 }
 
 pub(super) fn unit() -> Ty {
-    Ty::Con(TyCon::Builtin(B::UNIT), vec![])
+    Ty::Con(
+        TyCon::Builtin(B::UNIT),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 pub(super) fn basic(id: B) -> Ty {
-    Ty::Con(TyCon::Builtin(id), vec![])
+    Ty::Con(
+        TyCon::Builtin(id),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 pub(super) fn scheme(params: Vec<Ty>, ret: Ty) -> Scheme {
     Scheme {
@@ -91,14 +102,47 @@ impl<'a> Decls<'a> {
                 trait_param_kinds.insert(*binding, super::traits::kind(&t.param));
             }
         }
+        let mut handler_syntax = BodyNodeMap::default();
+        let mut collect = |expression: &'a Expr| {
+            if let Expr::Handle(handle) = expression {
+                handler_syntax.insert(handle.id, handle);
+            }
+        };
+        for top in asts.iter().flat_map(|ast| &ast.decls) {
+            match &top.item {
+                Item::Fn(function) => {
+                    if let Some(body) = &function.body {
+                        super::consts::visit_block(body, &mut collect);
+                    }
+                }
+                Item::Impl(implementation) => {
+                    for function in &implementation.fns {
+                        if let Some(body) = &function.decl.body {
+                            super::consts::visit_block(body, &mut collect);
+                        }
+                    }
+                }
+                Item::Const(constant) => super::consts::visit_expr(&constant.value, &mut collect),
+                Item::Data(_)
+                | Item::Alias(_)
+                | Item::ExternalType(_)
+                | Item::Record(_)
+                | Item::Trait(_)
+                | Item::Effect(_)
+                | Item::Error(_) => {}
+            }
+        }
         Self {
             modules,
             asts,
+            handler_syntax,
             sources,
             resolved,
             out: TypeckOutput::default(),
             checked_args: super::checked_args::CheckedArgsState::default(),
             interval: super::interval::AnalysisState::new(asts, modules, resolved),
+            scope_inputs: super::scope::Inputs::default(),
+            scope_analyses: Vec::new(),
             impl_index: None,
             const_origins: BindingMap::default(),
             diagnostics: vec![],
@@ -182,16 +226,22 @@ impl Decls<'_> {
     pub fn effect_name(&self, id: BindingId) -> Option<EffectName> {
         let binding = self.resolved.bindings.get(id)?;
         if let BindingKind::BuiltinEffect(e) = binding.kind {
-            return Some(EffectName::Builtin(e));
+            return Some(EffectName::Builtin(
+                e,
+                crate::types::builtin::RangeIndex::TOP,
+            ));
         }
         let module = self.modules.get(binding.module)?;
         if matches!(module.kind, ModuleKind::Prelude | ModuleKind::Stdlib) {
             let path: Vec<_> = module.name.0.iter().skip(1).map(String::as_str).collect();
             if let Some(e) = find_builtin_effect(&path, &binding.name) {
-                return Some(EffectName::Builtin(e));
+                return Some(EffectName::Builtin(
+                    e,
+                    crate::types::builtin::RangeIndex::TOP,
+                ));
             }
         }
-        Some(EffectName::User(id))
+        Some(EffectName::User(id, crate::types::builtin::RangeIndex::TOP))
     }
 
     pub(super) fn shadowed_prelude_type(&self, id: BindingId, span: Span) -> Option<&str> {
@@ -224,7 +274,7 @@ impl Decls<'_> {
         for (user, standard) in [(expected, found), (found, expected)] {
             let mut pending = vec![*user];
             while let Some(ty) = pending.pop() {
-                if let Ty::Con(TyCon::Adt(id), _) = ty
+                if let Ty::Con(TyCon::Adt(id), _, _) = ty
                     && let Some(adt) = self.out.adts.get(*id)
                     && self.is_shadowed_prelude_type(adt.module, &adt.name, span)
                     && self.contains_prelude_type(standard, &adt.name)
@@ -239,7 +289,7 @@ impl Decls<'_> {
     fn contains_prelude_type(&self, ty: &Ty, name: &str) -> bool {
         let mut pending = vec![ty];
         while let Some(ty) = pending.pop() {
-            if let Ty::Con(con, _) = ty {
+            if let Ty::Con(con, _, _) = ty {
                 let same = match con {
                     TyCon::External(_) => false,
                     TyCon::Builtin(id) => {
@@ -264,7 +314,7 @@ impl Decls<'_> {
     }
     fn push_type_children<'t>(ty: &'t Ty, pending: &mut Vec<&'t Ty>) {
         match ty {
-            Ty::Con(_, args) | Ty::App(_, args) => pending.extend(args.iter().rev()),
+            Ty::Con(_, args, _) | Ty::App(_, args) => pending.extend(args.iter().rev()),
             Ty::Fn(f) => {
                 pending.extend(&f.effects.failures);
                 pending.push(&f.ret);
@@ -324,14 +374,29 @@ impl Decls<'_> {
                 } else if let Some(index) = scope.effects.get(id) {
                     variables = variables.saturating_add(1);
                     atom.insert_var(EffVar(*index));
-                } else if let Some(name) = self.effect_name(id) {
-                    if name == EffectName::Builtin(BuiltinEffectId::IO_ALL) {
+                } else if let Some(mut name) = self.effect_name(id) {
+                    if let Some(range) = self.resolved.scopes.get(e.id) {
+                        match &mut name {
+                            EffectName::Builtin(_, scope) | EffectName::User(_, scope) => {
+                                *scope = crate::types::builtin::RangeIndex::fixed(range.clone())
+                            }
+                        }
+                    }
+                    if name
+                        == EffectName::Builtin(
+                            BuiltinEffectId::IO_ALL,
+                            crate::types::builtin::RangeIndex::TOP,
+                        )
+                    {
                         all = true;
                         for (i, e) in BUILTIN_EFFECTS.iter().enumerate() {
                             if e.in_io_all
                                 && let Ok(i) = u16::try_from(i)
                             {
-                                atom.insert_name(EffectName::Builtin(BuiltinEffectId(i)));
+                                atom.insert_name(EffectName::Builtin(
+                                    BuiltinEffectId(i),
+                                    crate::types::builtin::RangeIndex::TOP,
+                                ));
                             }
                         }
                     } else {
@@ -594,7 +659,14 @@ impl Decls<'_> {
         if !self.arity(id, &binding.name, arity, args.len(), t.span, true) {
             return unit();
         }
-        Ty::Con(con, args)
+        Ty::Con(
+            con,
+            args,
+            self.resolved.scopes.get(t.id).cloned().map_or(
+                crate::types::builtin::RangeIndex::TOP,
+                crate::types::builtin::RangeIndex::fixed,
+            ),
+        )
     }
     fn arity(
         &mut self,
@@ -811,7 +883,7 @@ fn has_effect(ty: &Ty, index: u32) -> bool {
                 || f.params.iter().any(|t| has_effect(t, index))
                 || has_effect(&f.ret, index)
         }
-        Ty::Con(_, a) | Ty::App(_, a) => a.iter().any(|t| has_effect(t, index)),
+        Ty::Con(_, a, _) | Ty::App(_, a) => a.iter().any(|t| has_effect(t, index)),
         Ty::Param(_) | Ty::Rigid { .. } => false,
     }
 }
@@ -819,7 +891,7 @@ fn has_param(ty: &Ty, index: u32) -> bool {
     match ty {
         Ty::Param(i) => *i == index,
         Ty::App(i, a) => *i == index || a.iter().any(|t| has_param(t, index)),
-        Ty::Con(_, a) => a.iter().any(|t| has_param(t, index)),
+        Ty::Con(_, a, _) => a.iter().any(|t| has_param(t, index)),
         Ty::Fn(f) => {
             f.effects.failures.iter().any(|t| has_param(t, index))
                 || f.params.iter().any(|t| has_param(t, index))
@@ -859,6 +931,9 @@ pub(super) fn check_recorded(
     // 宣言中の補助検査には可変の集合を使い、本体へ入る直前にだけ固定する
     // （設計書 02-05「型クラスの制約の解決」）。
     d.impl_index = Some(super::traits::shared_table(&d));
+    d.scope_inputs =
+        super::scope::Inputs::collect(asts, modules, resolved, &d.out.decl_types, &d.out.impls);
+    d.out.scope_inputs = std::mem::take(&mut d.scope_inputs).finish();
     super::consts::check(&mut d);
     for ast in asts {
         for top in &ast.decls {
@@ -880,6 +955,10 @@ pub(super) fn check_recorded(
             }
         }
     }
+    d.out
+        .scope_inputs
+        .finish_interpolations(d.scope_inputs.interpolation_map());
+    super::scoped_calls::accept_program(&mut d);
     let tables = super::interval::input::InputTables {
         resolved,
         constants: &d.out.consts,
@@ -1050,6 +1129,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                         (0..s.type_params.len())
                             .map(|i| Ty::Param(u32::try_from(i).unwrap_or(u32::MAX)))
                             .collect(),
+                        crate::types::builtin::RangeIndex::TOP,
                     );
                     let mut ctors = vec![];
                     if data.variants.is_empty() {
@@ -1109,6 +1189,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                         (0..s.type_params.len())
                             .map(|i| Ty::Param(u32::try_from(i).unwrap_or(u32::MAX)))
                             .collect(),
+                        crate::types::builtin::RangeIndex::TOP,
                     );
                     let mut budget = TypeBudget::default();
                     if let Err(limit) = budget.enter(1) {
@@ -1180,7 +1261,10 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                     }
                 }
                 Item::Effect(e) => {
-                    let name = d.effect_name(binding).unwrap_or(EffectName::User(binding));
+                    let name = d.effect_name(binding).unwrap_or(EffectName::User(
+                        binding,
+                        crate::types::builtin::RangeIndex::TOP,
+                    ));
                     let mut ops = vec![];
                     for op in &e.ops {
                         if let Some(id) = d.binding(op.id) {
@@ -1195,7 +1279,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
                                 body: None,
                             };
                             let mut s = d.signature(&f, Scope::default(), scheme(vec![], unit()));
-                            s.effects.insert_name(name);
+                            s.effects.insert_name(name.clone());
                             d.out.decl_types.insert(id, s);
                             ops.push(id);
                         }
@@ -1250,6 +1334,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
             }
         }
     }
+    check_range_signatures(d);
     super::external::check(d);
     super::traits::collect(d);
     summaries(&mut d.out.adts);
@@ -1257,9 +1342,73 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
     super::traits::check_impls(d);
 }
 
+// 分類は標準の組み込み表にだけ持たせ、解決済みの束縛へ対応を保存する
+// （設計書 02-05「型とエフェクトの表現」）。
+fn check_range_signatures(d: &mut Decls<'_>) {
+    let resolved = d.resolved;
+    let builtin = |binding| {
+        resolved.bindings.get(binding).and_then(|b| {
+            if let BindingKind::BuiltinFn(id) = b.kind {
+                Some(id)
+            } else {
+                resolved.builtin_ops.get(binding).copied()
+            }
+        })
+    };
+    // 書き換えが必要な標準署名だけを複製し、利用者の宣言は参照のまま検査する。
+    let parameterized = d
+        .out
+        .decl_types
+        .iter()
+        .filter_map(|(binding, scheme)| {
+            let id = builtin(binding)?;
+            let ranges = crate::builtins::table::builtin_range_signature(id)?;
+            if ranges.range_count() == 0 {
+                return None;
+            }
+            Some((
+                binding,
+                crate::builtins::table::parameterize_builtin_signature(id, scheme),
+            ))
+        })
+        .collect::<Vec<_>>();
+    let mut failed = BTreeSet::new();
+    for (binding, scheme) in parameterized {
+        if let Some(scheme) = scheme {
+            d.out.decl_types.insert(binding, scheme);
+        } else {
+            failed.insert(binding);
+        }
+    }
+    for (binding, scheme) in d.out.decl_types.iter() {
+        if d.invalid.contains(&binding) {
+            continue;
+        }
+        let valid = if let Some(id) = builtin(binding) {
+            if let Some(ranges) = crate::builtins::table::builtin_range_signature(id) {
+                d.out.range_signatures.insert(binding, ranges);
+            }
+            !failed.contains(&binding)
+                && crate::builtins::table::builtin_signature_valid(id, scheme)
+        } else {
+            scheme.fn_ty().indices_valid(0)
+        };
+        if !valid {
+            d.invalid.insert(binding);
+            d.diagnostics
+                .push(crate::runtime::report::internal_diagnostic(
+                    "check",
+                    "invalid scope indices or range metadata in a declaration signature",
+                    None,
+                    crate::runtime::report::FaultThread::Stage,
+                ));
+        }
+    }
+}
+
 fn returns_result(d: &Decls<'_>, ty: &Ty) -> bool {
     match ty {
-        Ty::Con(TyCon::Adt(id), args)
+        Ty::Con(TyCon::Adt(id), args, _)
             if Some(*id) == d.resolved.stdlib("Benitoite.Result.Result") =>
         {
             args == &vec![unit(), basic(B::STRING)]
@@ -1365,10 +1514,10 @@ fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
     let mut out = TypeSummary::default();
     match ty {
         Ty::Param(i) => out.depends_on.push(*i),
-        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } | Ty::Con(TyCon::External(_), _) => {
+        Ty::Fn(_) | Ty::App(..) | Ty::Rigid { .. } | Ty::Con(TyCon::External(_), _, _) => {
             out.always = !key
         }
-        Ty::Con(TyCon::Builtin(b), args) => {
+        Ty::Con(TyCon::Builtin(b), args, _) => {
             if key {
                 out.always = matches!(*b, B::FLOAT | B::FLOAT32);
             } else {
@@ -1387,7 +1536,7 @@ fn summary(ty: &Ty, adts: &AdtTable, key: bool) -> TypeSummary {
                 }
             }
         }
-        Ty::Con(TyCon::Adt(id), args) => {
+        Ty::Con(TyCon::Adt(id), args, _) => {
             if let Some(a) = adts.get(*id) {
                 let s = if key { &a.key_summary } else { &a.eq_summary };
                 out.always = s.always;
@@ -1417,7 +1566,7 @@ fn failure_declarations(d: &mut Decls<'_>) {
         effect,
         EffectDef {
             binding: effect,
-            name: EffectName::User(effect),
+            name: EffectName::User(effect, crate::types::builtin::RangeIndex::TOP),
             display_name: "Failure.Fail".into(),
             ops: vec![op],
         },

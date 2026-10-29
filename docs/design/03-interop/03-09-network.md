@@ -40,6 +40,8 @@
 
 ### 要求と応答の型
 
+【決定】`Http.RequestIn` は、端点の範囲を添字に持つ組み込みの不透明型であり、型注釈で利用できる。裸の `Http.RequestIn` は Top、`Http.RequestIn["api.example", 443]` はホストとポートを組にした一つの範囲を表す。型引数と複数の範囲は持たない。利用者による構築・更新・表現のパターン・自動アクセサは認めない。添字の不変性と照合の制限は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+
 【方針】要求と応答を、次のレコードで表す。どれも `Benitoite.Network.Http` の型であり、フィールドは `Http.Request.path(request)` のように取り出す。
 
 ```text
@@ -193,8 +195,41 @@ end function
 | `Http.get(url)` | `function(url: String) -> Result[Http.Response, NetworkError] uses Http.Connect` | `url` に `GET` の要求を送り、応答を返す。`Http.send(Http.clientRequest(method: "GET", url: url))` と同じ |
 | `Http.clientRequest(method: method, url: url)` | `function(method: String, url: String) -> Http.ClientRequest` | 後述の既定の値を入れた `Http.ClientRequest` を作る。純粋な関数である |
 | `Http.send(request)` | `function(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect` | 要求を送り、応答を返す |
+| `Http.sendIn(request)` | `function(request: Http.RequestIn[H,P]) -> Result[Http.Response, NetworkError] uses Http.Connect[H,P]` | 保持した同じ要求を、保持した端点へ送り、3xx を含む応答を返す。リダイレクトを追わない |
 
-- 【決定】`Http.send` の要求の `headers` も、`Http.respond` と同じく、名前が token の文字以外を含むか値が制御文字（水平タブを除く 0x00〜0x1F と 0x7F）を含むときは、送る前に実行時エラーとする。
+【決定】`sendIn` の署名の H/P は説明のためのホストとポートの範囲であり、その組が一つの端点の範囲を表す。標準署名の内部では端点の範囲変数を一つ持ち、対象位置は第 1 引数である。対象入力の型から範囲を決め、同じ列で潜在効果を具体化する。関数値も期待する入力型や後の呼び出しから具体化し、入力型の制約が最後までなければ Top とする。戻り値から範囲を逆算しない。
+
+【決定】要求の検査・射影・明示拡大には、次の純粋な入口を提供する。次の表の H/P と H'/P' は説明のためのホストとポートの範囲であり、それぞれの組が一つの端点の範囲を表す。利用者が宣言する型引数ではない。標準署名の内部では、検査と射影は端点の範囲変数を一つ、拡大は元と行き先の二つを持つ。
+
+| 関数 | 型 | 振る舞い |
+|---|---|---|
+| `Http.checkRequestIn(hostPattern, minimumPort, maximumPort, request)` | `function(hostPattern: String, minimumPort: Integer, maximumPort: Integer, request: Http.ClientRequest) -> Result[Http.RequestIn[H,P], Http.RequestCheckError]` | `request.url` から得た実効の端点が、動的な条件と選んだ静的な範囲に属するか検査する |
+| `Http.requestInValue(request)` | `function(request: Http.RequestIn[H,P]) -> Http.ClientRequest` | 検査で保持した同じ要求のレコードを返す |
+| `Http.widenRequestIn(request)` | `function(request: Http.RequestIn[H,P]) -> Http.RequestIn[H',P']` | 戻りの注釈が元の範囲を覆う場合に、同じ検査済みの値を返す |
+
+直接呼び出しの検査は、型の制約で範囲が決まらなければ、規則が選ぶ範囲へ具体化する。ホストのパターンとポートの両端がリテラルまたは const の直接参照から既知で、正しい範囲を作る場合は、その端点の範囲を選ぶ。未知の条件や逆転した閉区間では、範囲を選ぶ必須の判定は Top を選ぶ。既知の不良による本体の後の追加拒否は、下記のとおり別に行う。たとえば `checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: raw)` の成功型は、型の制約で決まらなければ `Http.RequestIn["api.example", 443]` となる。成功値を裸の `Http.RequestIn`（Top）の引数へ直接渡すなど、型の制約から Top と決まれば、検査も Top へ具体化する。未知の条件を渡した検査の成功型は裸の `Http.RequestIn`（Top）である。
+
+射影と拡大の元の範囲は、同じ Result の保存と同じ `Result.Ok` の照合で得た局所解析の事実から選ぶ。期待する型の注釈だけで所属を得ることはなく、事実を忘れた位置には Top を要求する。明示拡大の行き先は戻りの注釈から一意に選び、元の端点の範囲を覆う場合だけ受理する。拡大は、保持した要求のレコードと実効の端点の両方を変更しない。直接呼び出し以外の扱いと忘却の境界は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+
+`checkRequestIn` の直接呼び出しでは、リテラルまたは const の直接参照から既知のホストのパターンとポートの両端を、本体の後に追加検査する。パターンの形式不良は E0459、ポートの範囲外と両端の逆転は E0461 とする。未知の引数をどの値で埋めても実行時に Error となる不良だけを拒否する。要求内の URL はこの追加検査で解析せず、`requestInValue` には追加検査する条件の引数がない。型の制約の前の必須の判定が選ぶ範囲の列と理由は、この追加拒否によって変更しない。取得の範囲・予算・対象の呼び出し形は[型検査器](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
+
+`Http.RequestCheckError` は、`InvalidUrl(message: String)` と `Scope(error: Scope.ScopeError)` の二つの構成子を持つ公開の data 型である。URL の形式不良・非対応の scheme などで host と port を取り出せない場合は `InvalidUrl`、host の形式と数値の正規形を含む端点の形式の不良は `Scope.InvalidTarget`、ホストのパターン・ポート・所属の失敗は `Scope` を通常の `Result.Error` で返す。通信は行わず、名前の解決もしない。
+
+成功値は、渡された同じ `ClientRequest` のレコード（`method`・`url`・`headers`・`body`・`timeoutMilliseconds` の五欄）と、その `url` から得た実効の端点を保持する。クエリは `url` の一部として保つ。射影では欄を作り直さず、保持したレコードをそのまま返す。射影したレコードを更新しても元の成功値は変わらず、URL を変えた要求を検査済みとして扱うには再検査を要する。静的な範囲が Top でも、動的な条件と端点の所属を検査し、成功した場合だけ `Result.Ok` を作る。
+
+【決定】要求の純粋な検査は、送信のための要求の妥当性検査とは分ける。検査済みの値を作る段では `url` と端点の所属を調べ、`method`・`headers`・`body`・`timeoutMilliseconds` は元の値のまま保持する。これらの欄が送信に使えるかは `Http.send`・`sendIn` の送信準備とプロトコルの検査で判断する。`sendIn` は保持した同じ五欄のレコードを読み、送信用 URI の実効 host/port と保持した端点を共通の代数で照合する。利用者指定の `Host` 欄も同じ実効 host/port を指す場合だけ受理し、不正・不一致なら送信前に `NetworkErrorKind.InvalidInput` を返す。省略時は URI から補完する。名前の大小、IPv6 の等価な表記、scheme に応じた既定ポートは、字面の等号でなく実効の端点で比べる。
+
+【決定】`sendIn` は 3xx を追わず、環境変数の proxy に自動接続しない。対象の観測の単位は、プログラムが接続する endpoint（DNS と OS による変換前の、保持した endpoint）一つである。DNS の問い合わせと TLS の証明書の検証に伴う OS の副次的な通信は、この観測に含めない。OS は中間証明書や失効の情報を別の宛先から取得しうるため、これらの宛先は静的な端点の範囲の保証に含まれない（[セキュリティモデル](../07-quality/07-01-security-model.md#各機構が保証すること)）。名前を解決した複数のアドレスへの接続試行の回数やソケットの相手のアドレスの族も、この一対象の数え方とは別である。通信の失敗と送信準備の失敗は `NetworkError` または既存の実行時エラーであり、純粋な検査の `RequestCheckError` に混ぜない。`requestInValue` で取り出したレコードを旧 `Http.send` に渡すことはできるが、この旧入口は保持した端点を受け取らず、リダイレクトも追従する。理由: 要求の保持と、実際の通信が作用する対象の一致は、別々に確認する必要があるためである。
+
+【決定】射影と拡大は、同じ成功値の由来を記録する `bind` の右辺の直接呼び出しとして書く。`sendIn` の節の引数は、狭い型を持っても入口でその由来を持たないため、狭い型のまま射影・拡大すると拒否する。同じ狭い型への転送、Top の引数の射影と Top への拡大は受理する（[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)）。
+
+ホストのパターンとポートの読取り・所属には、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)で定める範囲の共通の代数を使う。ホスト名の完全一致・一段・任意の正の段数のパターン、IP の完全一致と CIDR、ポートの閉区間を扱い、IP をホスト名へ変換しない。旧 `Scope.checkHost`・`checkEndpoint` も、同じ共通の代数で IP と CIDR を検査し、保存するパターンを正規化する。端点の範囲には scheme を含めず、ホストとポートの組だけを入れる。したがって、同じホストとポートの範囲は `http` と `https` の両方を覆い、固定した origin や通信内容の制限を表さない。
+
+`checkRequestIn` の URL は、ASCII の絶対形式で scheme が `http` か `https`、ホストが空でないものに限る。字句には ASCII の英数字と `-._~:/?#[]@!$&'()*+,;=%` だけを許し、正しい二桁の16進数が続かない `%` と userinfo を拒否する。パスやクエリの非 ASCII の文字は、URL に渡す前にパーセント符号化する。ホスト名は範囲の代数と同じ ASCII のラベルに限る。断片（`#` 以後）は受理して元のレコードへ保持するが、端点には含めない。URL のポートを省略した場合と空にした場合は、`http` では80、`https` では443を実効のポートとする。ポートを明示した場合は ASCII の十進数字と0〜65535の範囲を検査し、不正な文字列や範囲外の値を既定のポートへ置き換えない。
+
+URL の角括弧で囲んだ IPv6 は数値として読み、実効のホストを採択した正規形へそろえる。ただし、IPv4 射影の IPv6（`::ffff:0:0/96`）は数値で判定し、`Http.RequestCheckError.Scope` の中の `Scope.ScopeError.InvalidTarget` として拒否する。大文字、ゼロの省略、末尾の IPv4 の点の形と16進数の形のいずれでも同じ判定とする。URL から host と port を取り出せるこの場合は `InvalidUrl` にしない。IPv4 射影の範囲だけを指すパターンは受理するが、有効な対象には一致しない。IPv4 は正規形の四つの十進要素に限り、先頭0と不正な四要素を拒否する。名前として読めるホストでも、ドットで分けた全ての要素が ASCII の数字で始まり、`[0-9a-fA-FxX]` だけからなる場合は、数値風のホストとして拒否する。この判定は、省略形（`127.1` など）、整数（`2130706433` など）、十六進（`0x7f000001` など）、`0x`・`0X` だけの要素を含む形（`127.0x.0.1` など）を含む。英字で始まるラベルを含む正当なホスト名（`a0x.example` など）は、この判定では拒否しない。zone ID と IPvFuture も受理しない。URL から取り出したホストのこの不良は `Scope` の `InvalidTarget` とする。URL の元の字面は、要求のレコードの `url` にそのまま保持する。
+
+- 【決定】`Http.send`・`sendIn` の要求の `headers` も、`Http.respond` と同じく、名前が token の文字以外を含むか値が制御文字（水平タブを除く 0x00〜0x1F と 0x7F）を含むときは、送る前に実行時エラーとする。
 - `Http.clientRequest(method: method, url: url)` は、`headers` を空のリスト、`body` を空のバイト列、`timeoutMilliseconds` を 30000 にする。ほかの値にするときは、レコードの更新で変える。
 - 状態コードが 4xx や 5xx の応答でも `Result.Ok` を返す。`Result.Error` は、名前を解決できない、接続できない、時間切れになるなど、応答を得られなかったときに返す。
 - `timeoutMilliseconds` は、要求を送り始めてから応答の本体を読み終えるまでの時間の上限である。1 未満なら実行時エラーとする。【方針】2^40 ミリ秒を超える値は 2^40 ミリ秒（約 34.8 年）として扱う。理由: 期限は現在の時刻に上限を足して計算するので、足し算が溢れない大きさに収めるためである。約 34.8 年を超える上限は、実行の時間として区別できない。
@@ -204,7 +239,7 @@ end function
 - `https` の URL では、OS のルート証明書でサーバの証明書を検証する。検証に失敗したら `Result.Error` を返す。
 - 【方針】初回リリース版のクライアントは、環境変数のプロキシ（`HTTPS_PROXY`・`HTTP_PROXY`・`ALL_PROXY`・`NO_PROXY`）に従わず、接続先に直接つなぐ。
 - 【方針】`https` の URL への接続（リダイレクトで `https` に移る場合を含む）では、TLS を組み立てる前に、`graviola` が要する CPU の機能があるかを確かめる。足りなければ、`NetworkErrorKind.Other` と理由の文字列の `Result.Error` を返す。確かめる機能は、`x86_64` では `aes`・`pclmulqdq`・`bmi1`・`adx`・`avx`・`avx2`、`aarch64` では `neon`・`aes`・`pmull`・`sha2` である。`http` の URL は、機能が足りない計算機でも使える。
-- リダイレクトの応答（3xx）は、最大 10 回まで辿る。
+- `Http.get`・`send` はリダイレクトの応答（3xx）を最大 10 回まで辿る。`sendIn` は追従せず、3xx の status・headers・body を返す。
 - 応答の本体は `Bytes` で返すので、1 GiB を超える本体は受け取れない（[ランタイム](../02-impl/02-09-runtime.md)の「一つの操作で作る値の大きさの上限」）。
 - スクリプトが組み立てたヘッダを送れるので、Basic や Bearer の認証のトークンは `headers` に書いて送れる。初回リリース版は、認証のための仕組み（秘密を渡す受け取り口、OAuth の手順、パスキーなど）を持たない。
 
@@ -212,17 +247,17 @@ end function
 
 `NetworkErrorKind` は `@extensible` を持ち、標準ライブラリの外の照合には[拡張可能な型](../01-spec/01-05-data-types.md#拡張可能な型)の規則を適用する。
 
-【決定】失敗しうる関数は `Result[T, NetworkError]` を返す（[エラー処理](../01-spec/01-09-errors.md)の「ネットワークの失敗の種類（初回リリース版）」）。各関数が返しうる `NetworkErrorKind` は、主に次のとおりである。`NetworkErrorKind.Other` は、どの関数も返しうる。
+【決定】通信で失敗しうる関数は `Result[T, NetworkError]` を返す（[エラー処理](../01-spec/01-09-errors.md)の「ネットワークの失敗の種類（初回リリース版）」）。各関数が返しうる `NetworkErrorKind` は、主に次のとおりである。`NetworkErrorKind.Other` は、どの関数も返しうる。
 
 | `NetworkErrorKind` | 返す主な関数 |
 |---|---|
-| `HostNotFound` | `Http.get`・`Http.send`、`Http.listen`・`Http.serve`（待ち受ける名前を解決できない） |
-| `ConnectionRefused` | `Http.get`・`Http.send` |
-| `ConnectionReset` | `Http.get`・`Http.send`・`Http.respond` |
-| `TimedOut` | `Http.get`・`Http.send` |
+| `HostNotFound` | `Http.get`・`Http.send`・`Http.sendIn`、`Http.listen`・`Http.serve`（待ち受ける名前を解決できない） |
+| `ConnectionRefused` | `Http.get`・`Http.send`・`Http.sendIn` |
+| `ConnectionReset` | `Http.get`・`Http.send`・`Http.sendIn`・`Http.respond` |
+| `TimedOut` | `Http.get`・`Http.send`・`Http.sendIn` |
 | `AddressInUse` | `Http.listen`・`Http.serve` |
-| `InvalidHTTPData` | `Http.get`・`Http.send`（応答が HTTP として正しくない） |
-| `InvalidInput` | `Http.get`・`Http.send`（URL の形式、標準でない方法、方法と本体の組み合わせ）、`Http.listen`・`Http.serve`（アドレスの形式） |
+| `InvalidHTTPData` | `Http.get`・`Http.send`・`Http.sendIn`（応答が HTTP として正しくない） |
+| `InvalidInput` | `Http.get`・`Http.send`・`Http.sendIn`（URL の形式、標準でない方法、方法と本体の組み合わせ、`sendIn` の Host の不一致）、`Http.listen`・`Http.serve`（アドレスの形式） |
 | `PermissionDenied` | `Http.listen`・`Http.serve`（OS が待ち受けを拒んだ） |
 
 - `https` の URL で、サーバの証明書の検証に失敗したときは `NetworkErrorKind.Other` を返し、理由を `NetworkError.message` で示す。

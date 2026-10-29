@@ -1,0 +1,21 @@
+== grep -nE 'sorry' pm20.03/lean-run-01.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm20.03/lean-run-01.log
+status=1
+== lines with 'depends on axioms'
+status=1
+== theorem count
+43
+== def/inductive/structure count
+17
+== Policy structure fields (lines 60-70)
+4:  kinds : KindSet Kind
+6:  allow : Kind → Target → Prop
+8:  deny : Kind → Target → Prop
+== #print axioms count
+63
+== 'does not depend on any axioms' count
+63
+== declared names (short) without a #print axioms line
+== tactic sorry/admit/decide in source (word match, excluding #print lines)
+status=1

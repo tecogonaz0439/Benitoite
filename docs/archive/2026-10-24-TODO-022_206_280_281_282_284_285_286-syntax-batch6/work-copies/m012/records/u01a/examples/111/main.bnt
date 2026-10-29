@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.IO.Console
+
+type UserId = Integer
+
+const defaultPort: Integer = 8000 + 80
+const banner: String = "listening on ${defaultPort}"
+const statusNames: Map[Integer, String] = Map.fromList([Pair(200, "OK"), Pair(404, "Not Found")])
+
+function lookup(id: UserId) -> String
+  return Option.unwrapOr(o: Map.get(m: statusNames, k: id), fallback: "unknown")
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(banner)
+  Console.writeLine(lookup(404))
+end function

@@ -1,0 +1,19 @@
+import Benitoite.Unofficial.IO.File
+function protected() -> Integer uses File.Read
+ return 1
+end function
+function main() -> Unit
+ bind _ <- handle protected() with
+ case File.readText(path) -> 0
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+ end handle
+end function

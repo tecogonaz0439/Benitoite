@@ -1,0 +1,315 @@
+
+namespace SA
+open Scope142
+
+-- Closed scopes are type-independent, as required by Release/Atom.lean.
+structure EffName where
+  label : String
+  scope : Option Scope
+  deriving DecidableEq, Repr
+
+inductive Atom where
+  | name (l : EffName)
+  | rho (i : Nat)
+  deriving DecidableEq, Repr
+
+def nameLe (a b : EffName) : Bool :=
+  decide (a.label = b.label) && match a.scope, b.scope with
+    | _, none => true
+    | none, some _ => false
+    | some s, some t => scopeLe s t
+
+def atomLe : Atom → Atom → Bool
+  | .name a, .name b => nameLe a b
+  | .rho i, .rho j => decide (i = j)
+  | _, _ => false
+
+theorem nameLe_refl (a : EffName) : nameLe a a = true := by
+  cases a with
+  | mk l s => cases s <;> simp [nameLe, scopeLe_refl]
+
+theorem nameLe_trans {a b c : EffName} (h : nameLe a b = true)
+    (g : nameLe b c = true) : nameLe a c = true := by
+  rcases a with ⟨a, sa⟩; rcases b with ⟨b, sb⟩; rcases c with ⟨c, sc⟩
+  simp only [nameLe, Bool.and_eq_true, decide_eq_true_eq] at h g ⊢
+  refine ⟨h.1.trans g.1, ?_⟩
+  cases sa <;> cases sb <;> cases sc <;> simp_all
+  exact scopeLe_trans h.2 g.2
+
+theorem atomLe_refl (a : Atom) : atomLe a a = true := by
+  cases a <;> simp [atomLe, nameLe_refl]
+
+theorem atomLe_trans {a b c : Atom} (h : atomLe a b = true)
+    (g : atomLe b c = true) : atomLe a c = true := by
+  cases a <;> cases b <;> cases c <;> simp_all [atomLe]
+  exact nameLe_trans h g
+
+def Atom.WF : Atom → Prop
+  | .rho _ => True
+  | .name ⟨_, none⟩ => True
+  | .name ⟨_, some s⟩ => s.ports.lo ≤ s.ports.hi
+
+theorem atomLe_antisymm {a b : Atom} (ha : a.WF) (hb : b.WF)
+    (h : atomLe a b = true) (g : atomLe b a = true) : a = b := by
+  cases a with
+  | rho i => cases b <;> simp_all [atomLe]
+  | name a =>
+    cases b with
+    | rho j => simp [atomLe] at h
+    | name b =>
+      rcases a with ⟨a, sa⟩; rcases b with ⟨b, sb⟩
+      simp only [atomLe, nameLe, Bool.and_eq_true, decide_eq_true_eq] at h g
+      have hab := h.1
+      subst b
+      cases sa with
+      | none => cases sb <;> simp_all
+      | some s =>
+        cases sb with
+        | none => simp at g
+        | some t =>
+          have hst := scopeLe_antisymm ha hb h.2 g.2
+          subst t
+          rfl
+
+-- Copy of Release/Types.lean EffR.mk/atoms/fails/ext, with the Fail error
+-- type replaced by Nat. This isolates the effect algebra; recursive Ty.norm
+-- and Ty.bind obligations are NOT claimed to be proved in this model.
+inductive Eff where
+  | mk (atoms : Atom → Bool) (fails : List Nat)
+
+namespace Eff
+open Order
+
+def atoms : Eff → Atom → Bool | .mk a _ => a
+def fails : Eff → List Nat | .mk _ fs => fs
+abbrev mem (e : Eff) (a : Atom) : Prop := e.atoms a = true
+abbrev memFail (e : Eff) (t : Nat) : Prop := t ∈ e.fails
+
+theorem ext {e f : Eff} (ha : ∀ a, mem e a ↔ mem f a) (hf : e.fails = f.fails) : e = f := by
+  cases e with
+  | mk a fs =>
+    cases f with
+    | mk b gs =>
+      have hab : a = b := funext (fun x => Bool.eq_iff_iff.mpr (ha x))
+      cases hab; cases hf; rfl
+
+-- Release/Normalize.lean Eff.norm/Canonical, with already canonical Nat errors.
+def norm (e : Eff) : Eff := .mk e.atoms (sortUnique compare e.fails)
+def Canonical (e : Eff) : Prop := norm e = e
+
+theorem norm_idem (e : Eff) : norm (norm e) = norm e := by
+  simp [norm, atoms, fails, sortUnique_idem]
+
+@[simp] theorem mem_norm (e : Eff) (a : Atom) : mem (norm e) a ↔ mem e a := Iff.rfl
+@[simp] theorem memFail_norm (e : Eff) (t : Nat) : memFail (norm e) t ↔ memFail e t := by
+  exact mem_sortUnique
+
+def empty : Eff := .mk (fun _ => false) []
+def ofList (xs : List Atom) : Eff := .mk (fun a => decide (a ∈ xs)) []
+def union (e f : Eff) : Eff := norm (.mk (fun a => e.atoms a || f.atoms a) (e.fails ++ f.fails))
+
+@[simp] theorem mem_ofList (xs : List Atom) (a : Atom) : mem (ofList xs) a ↔ a ∈ xs := by
+  simp [mem, ofList, atoms]
+
+@[simp] theorem mem_union (e f : Eff) (a : Atom) : mem (union e f) a ↔ mem e a ∨ mem f a := by
+  simp [union, mem, norm, atoms]
+@[simp] theorem memFail_union (e f : Eff) (t : Nat) :
+    memFail (union e f) t ↔ memFail e t ∨ memFail f t := by
+  simp [union, memFail, norm, fails, mem_sortUnique]
+
+-- Treatment 1: retain the original pointwise relation for equality proofs.
+def Sub (e f : Eff) : Prop :=
+  (∀ a, mem e a → mem f a) ∧ (∀ t, memFail e t → memFail f t)
+
+-- Separate widening relation: each left atom is covered by ONE right atom.
+-- It is sound but deliberately incomplete for collective coverage by a union.
+def ScopeSub (e f : Eff) : Prop :=
+  (∀ a, mem e a → ∃ b, mem f b ∧ atomLe a b = true) ∧
+  (∀ t, memFail e t → memFail f t)
+
+theorem eq_of_sub_of_sub {e f : Eff} (he : Canonical e) (hf : Canonical f)
+    (hef : Sub e f) (hfe : Sub f e) : e = f := by
+  have hfs : (norm e).fails = (norm f).fails := by
+    apply sortUnique_eq_iff_mem.mpr
+    exact fun t => ⟨hef.2 t, hfe.2 t⟩
+  apply ext (fun a => ⟨hef.1 a, hfe.1 a⟩)
+  exact (congrArg fails he).symm.trans (hfs.trans (congrArg fails hf))
+
+theorem norm_ext {e f : Eff} (ha : ∀ a, mem e a ↔ mem f a)
+    (ht : ∀ t, memFail e t ↔ memFail f t) : norm e = norm f := by
+  apply eq_of_sub_of_sub (norm_idem e) (norm_idem f)
+  · exact ⟨fun a => by simpa using (ha a).mp, fun t => by simpa using (ht t).mp⟩
+  · exact ⟨fun a => by simpa using (ha a).mpr, fun t => by simpa using (ht t).mpr⟩
+
+theorem union_canonical (e f : Eff) : Canonical (union e f) := norm_idem _
+
+-- Rewrite of Surface/Lemmas/Sequence.lean union_empty_right_nested.
+theorem union_empty_right_nested (e f : Eff) : union e (union f empty) = union e f := by
+  apply eq_of_sub_of_sub (union_canonical _ _) (union_canonical _ _)
+  all_goals
+    simp only [Sub, mem_union, memFail_union]
+    simpa [empty, mem, memFail, atoms, fails] using
+      (show (∀ a, (mem e a ∨ mem f a) → (mem e a ∨ mem f a)) ∧
+        (∀ t, (memFail e t ∨ memFail f t) → (memFail e t ∨ memFail f t)) from
+        ⟨fun _ => id, fun _ => id⟩)
+
+-- Closed scopes and rows use the production finite-list substitution scheme.
+structure Env where
+  types : Nat → Nat
+  rows : List Eff
+
+def row (i : Nat) : Eff := ofList [.rho i]
+def rowImage (es : List Eff) (i : Nat) : Eff := (es[i]?).getD (row i)
+def substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
+  let kept := match x with
+    | .name l => a (.name l)
+    | .rho i => if i < es.length then false else a (.rho i)
+  kept || (List.range es.length).any (fun i =>
+    a (.rho i) && match es[i]? with
+      | some e => e.atoms x
+      | none => false)
+
+def rowFails (es : List Eff) (a : Atom → Bool) : List Nat :=
+  ((List.range es.length).filter (fun i => a (.rho i))).flatMap (fun i =>
+    match es[i]? with | some e => e.fails | none => [])
+
+def rawBind (θ : Env) (e : Eff) : Eff :=
+  .mk (substAtoms θ.rows e.atoms) (e.fails.map θ.types ++ rowFails θ.rows e.atoms)
+def bind (θ : Env) (e : Eff) : Eff := norm (rawBind θ e)
+
+@[simp] theorem mem_row (i : Nat) (a : Atom) : mem (row i) a ↔ a = .rho i := by
+  simp [row]
+
+-- Copy of Release/TypeSubstLemmas.lean Eff.mem_substAtoms.
+theorem mem_substAtoms (es : List Eff) (e : Eff) (a : Atom) :
+    substAtoms es e.atoms a = true ↔
+      (match a with
+        | .name l => mem e (.name l)
+        | .rho i => es.length ≤ i ∧ mem e (.rho i)) ∨
+      ∃ i f, es[i]? = some f ∧ mem e (.rho i) ∧ mem f a := by
+  simp only [substAtoms, Bool.or_eq_true, List.any_eq_true, List.mem_range, Bool.and_eq_true]
+  apply or_congr
+  · cases a with
+    | name _ => rfl
+    | rho i =>
+      by_cases hi : i < es.length
+      · simp only [hi, ↓reduceIte, Bool.false_eq_true, false_iff, not_and]
+        intro h; omega
+      · simp only [hi, ↓reduceIte]
+        exact ⟨fun h => ⟨by omega, h⟩, fun h => h.2⟩
+  · constructor
+    · rintro ⟨i, hi, h1, h2⟩
+      refine ⟨i, es[i], by simp [hi], h1, ?_⟩
+      simpa [List.getElem?_eq_getElem hi] using h2
+    · rintro ⟨i, f, hf, h1, h2⟩
+      have hi : i < es.length := (List.getElem?_eq_some_iff.mp hf).1
+      refine ⟨i, hi, h1, ?_⟩
+      simp [List.getElem?_eq_getElem hi] at hf ⊢
+      rw [hf]; exact h2
+
+theorem mem_bind (θ : Env) (e : Eff) (a : Atom) :
+    mem (bind θ e) a ↔
+      (∃ l, a = .name l ∧ mem e (.name l)) ∨
+      ∃ i, mem e (.rho i) ∧ mem (rowImage θ.rows i) a := by
+  change substAtoms θ.rows e.atoms a = true ↔ _
+  rw [mem_substAtoms]
+  constructor
+  · rintro (h | ⟨i, f, hf, hi, ha⟩)
+    · cases a with
+      | name l => exact Or.inl ⟨l, rfl, h⟩
+      | rho i => exact Or.inr ⟨i, h.2, by simp [rowImage, List.getElem?_eq_none h.1]⟩
+    · exact Or.inr ⟨i, hi, by simpa [rowImage, hf] using ha⟩
+  · rintro (⟨l, rfl, hl⟩ | ⟨i, hi, ha⟩)
+    · exact Or.inl hl
+    · cases hf : θ.rows[i]? with
+      | none =>
+        have ha : a = .rho i := by simpa [rowImage, hf] using ha
+        subst a
+        exact Or.inl ⟨List.getElem?_eq_none_iff.mp hf, hi⟩
+      | some f => exact Or.inr ⟨i, f, hf, hi, by simpa [rowImage, hf] using ha⟩
+
+-- Copy of Release/TypeSubst.lean Eff.mem_rowFails.
+theorem mem_rowFails {es : List Eff} {a : Atom → Bool} {t : Nat} :
+    t ∈ rowFails es a ↔ ∃ i e, es[i]? = some e ∧ a (.rho i) = true ∧ t ∈ e.fails := by
+  simp only [rowFails, List.mem_flatMap, List.mem_filter, List.mem_range]
+  constructor
+  · rintro ⟨i, ⟨hi, ha⟩, ht⟩
+    refine ⟨i, es[i], List.getElem?_eq_getElem hi, ha, ?_⟩
+    simpa only [List.getElem?_eq_getElem hi] using ht
+  · rintro ⟨i, e, he, ha, ht⟩
+    exact ⟨i, ⟨(List.getElem?_eq_some_iff.mp he).1, ha⟩, by simpa only [he] using ht⟩
+
+theorem memFail_bind (θ : Env) (e : Eff) (t : Nat) :
+    memFail (bind θ e) t ↔
+      (∃ x, memFail e x ∧ θ.types x = t) ∨
+      ∃ i, mem e (.rho i) ∧ memFail (rowImage θ.rows i) t := by
+  rw [bind, memFail_norm]
+  change t ∈ e.fails.map θ.types ++ rowFails θ.rows e.atoms ↔ _
+  rw [List.mem_append, List.mem_map, mem_rowFails]
+  apply or_congr Iff.rfl
+  constructor
+  · rintro ⟨i, f, hf, hi, ht⟩
+    exact ⟨i, hi, by simpa [rowImage, hf] using ht⟩
+  · rintro ⟨i, hi, ht⟩
+    cases hf : θ.rows[i]? with
+    | none => simp [rowImage, hf, row, ofList, memFail, fails] at ht
+    | some f => exact ⟨i, f, hf, hi, by simpa [rowImage, hf] using ht⟩
+
+-- Rewrite of Release/TypeComposition.lean Eff.bind_union (substitution).
+theorem bind_union (θ : Env) (e f : Eff) :
+    bind θ (union e f) = union (bind θ e) (bind θ f) := by
+  apply eq_of_sub_of_sub (e := bind θ (union e f))
+    (f := union (bind θ e) (bind θ f)) (norm_idem _) (norm_idem _)
+  all_goals constructor
+  all_goals first
+    | (intro a; simp only [mem_bind, mem_union, and_or_left, or_and_right, exists_or]; grind)
+    | (intro t; simp only [memFail_bind, memFail_union, mem_union,
+        and_or_left, or_and_right, exists_or]; grind)
+
+theorem bind_norm (θ : Env) (e : Eff) : bind θ (norm e) = bind θ e := by
+  apply eq_of_sub_of_sub (e := bind θ (norm e)) (f := bind θ e)
+    (norm_idem _) (norm_idem _)
+  all_goals constructor
+  all_goals first
+    | (intro a; simp only [mem_bind, mem_norm]; exact id)
+    | (intro t; simp only [memFail_bind, memFail_norm, mem_norm]; exact id)
+
+theorem bind_row (θ : Env) (i : Nat) : bind θ (row i) = norm (rowImage θ.rows i) := by
+  apply norm_ext
+  · intro a
+    change mem (bind θ (row i)) a ↔ mem (rowImage θ.rows i) a
+    simp [mem_bind]
+  · intro t
+    rw [← memFail_norm (rawBind θ (row i))]
+    change memFail (bind θ (row i)) t ↔ memFail (rowImage θ.rows i) t
+    simp [memFail_bind, row, ofList, memFail, fails]
+
+def Env.compose (θ φ : Env) : Env :=
+  ⟨fun i => φ.types (θ.types i),
+    (List.range (max θ.rows.length φ.rows.length)).map (fun i => bind φ (rowImage θ.rows i))⟩
+
+theorem rowImage_compose (θ φ : Env) (i : Nat) :
+    rowImage (θ.compose φ).rows i = bind φ (rowImage θ.rows i) := by
+  by_cases hi : i < max θ.rows.length φ.rows.length
+  · simp [rowImage, Env.compose, List.getElem?_map, List.getElem?_range hi]
+  · have he : θ.rows.length ≤ i := by omega
+    have hf : φ.rows.length ≤ i := by omega
+    have hc : (θ.compose φ).rows[i]? = none :=
+      List.getElem?_eq_none (by simpa [Env.compose] using Nat.le_of_not_gt hi)
+    rw [rowImage, hc, Option.getD_none, rowImage, List.getElem?_eq_none he,
+      Option.getD_none, bind_row, rowImage, List.getElem?_eq_none hf, Option.getD_none]
+    rfl
+
+-- Rewrite of Release/TypeComposition.lean Eff.bind_comp_of_types (composition).
+-- Here Nat errors make the required type-composition law definitionally true.
+theorem bind_comp (θ φ : Env) (e : Eff) : bind φ (bind θ e) = bind (θ.compose φ) e := by
+  apply eq_of_sub_of_sub (e := bind φ (bind θ e)) (f := bind (θ.compose φ) e)
+    (norm_idem _) (norm_idem _)
+  all_goals constructor
+  all_goals first
+    | (intro a; simp only [mem_bind, rowImage_compose]; grind only)
+    | (intro t; simp only [memFail_bind, mem_bind, rowImage_compose,
+        show (θ.compose φ).types = (fun i => φ.types (θ.types i)) from rfl]; grind only)
+
+end Eff
+end SA

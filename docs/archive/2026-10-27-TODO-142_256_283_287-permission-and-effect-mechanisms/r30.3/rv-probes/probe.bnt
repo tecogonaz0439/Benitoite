@@ -1,0 +1,45 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function one(pattern: String, lo: Integer, hi: Integer, url: String, headers: List[Pair[String, String]]) -> Unit uses Console.Write, Http.Connect
+ bind request <- Http.ClientRequest(method: "GET", url: url, headers: headers, body: String.toUTF8(""), timeoutMilliseconds: 2000)
+ bind checked <- Http.checkRequestIn(hostPattern: pattern, minimumPort: lo, maximumPort: hi, request: request)
+ match checked with
+  case Result.Error(_) -> Console.writeLine("REJECT " + url)
+  case Result.Ok(value) ->
+   bind projected <- Http.requestInValue(request: value)
+   match Http.send(projected) with
+    case Result.Ok(response) -> match String.fromUTF8(Http.Response.body(response)) with
+      case Option.Some(text) -> Console.writeLine("ACCEPT " + url + " -> " + text)
+      case Option.None -> Console.writeLine("ACCEPT " + url + " -> nonutf8")
+     end match
+    case Result.Error(error) -> Console.writeLine("ACCEPT " + url + " -> NetworkError " + NetworkError.message(error))
+   end match
+ end match
+end function
+function main() -> Unit uses Console.Write, Http.Connect
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081/a?q#f", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "HTTP://127.0.0.1:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:018081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:0018081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081?@127.0.0.1:18082/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081#@127.0.0.1:18082/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081/@127.0.0.1:18082/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081/", headers: [Pair("Host", "127.0.0.1:18082")])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081/", headers: [Pair("Host", "evil.example")])
+ one(pattern: "::1", lo: 18082, hi: 18082, url: "http://[::1]:18082/", headers: [])
+ one(pattern: "::1", lo: 18082, hi: 18082, url: "http://[0:0:0:0:0:0:0:1]:18082/", headers: [])
+ one(pattern: "::1", lo: 80, hi: 80, url: "http://[::1:18082]/", headers: [])
+ one(pattern: "::1", lo: 18082, hi: 18082, url: "http://[::1]:18082:18081/", headers: [])
+ one(pattern: "localhost", lo: 18081, hi: 18081, url: "http://LocalHost:18081/", headers: [])
+ one(pattern: "::ffff:127.0.0.1", lo: 18081, hi: 18081, url: "http://[::ffff:127.0.0.1]:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://[::ffff:127.0.0.1]:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081\\@127.0.0.1:18082/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1%3A18082:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1.:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:+18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://:18081@127.0.0.1:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 0, hi: 65535, url: "http://127.0.0.1:18081:/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http:127.0.0.1:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http:/127.0.0.1:18081/", headers: [])
+ one(pattern: "127.0.0.1", lo: 18081, hi: 18081, url: "http://127.0.0.1:18081//127.0.0.1:18082/", headers: [])
+end function

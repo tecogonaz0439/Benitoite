@@ -1,0 +1,21 @@
+{
+  "command": [
+    "env",
+    "BENITOITE_DESUGAR_DIFF_DIR=docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2",
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "range_sources::export_range_sources",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "start": "2026-10-29T12:17:22.893174+00:00",
+  "end": "2026-10-29T12:17:26.877290+00:00",
+  "exit": 101,
+  "seconds": 3.983612041,
+  "maxrssRaw": 704217088,
+  "maxrssUnit": "bytes",
+  "maxrssBytes": 704217088
+}

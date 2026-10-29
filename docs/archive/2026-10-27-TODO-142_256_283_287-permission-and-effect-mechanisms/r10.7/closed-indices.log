@@ -1,0 +1,24 @@
+$ cargo test --test desugar_export scope_tables:: -- --nocapture
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 3 tests
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (3429074) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (3429074) panicked at crates/benitoite/tests/desugar_export/scope.rs:74:9:
+rvar outside signature/rkinds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (3429074) panicked at crates/benitoite/tests/desugar_export/builtins.rs:386:5:
+invalid table signature: out-of-bounds
+
+thread 'scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices' (3429074) panicked at crates/benitoite/tests/desugar_export/builtins.rs:386:5:
+invalid table signature: wrong-kind
+test scope_tables::exports_closed_type_and_atom_indices_without_losing_ip_precision ... ok
+test scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices ... ok
+test scope_tables::exports_all_unused_operations_from_complete_stdlib ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 36 filtered out; finished in 0.28s
+

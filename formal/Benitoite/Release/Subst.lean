@@ -52,7 +52,7 @@ mutual
     | .var i => .var i
     | .const k => .const k
     | .fnRef f tys effs => .fnRef f (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
-    | .prim b tys effs => .prim b (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es))
+    | .prim b tys effs rs => .prim b (tys.map (Ty.substAt c ts es)) (effs.map (Eff.substAt c ts es)) rs
     | .lam names params body => .lam names (params.map (Ty.substAt c ts es)) (Comp.substTyAt c ts es body)
     | .con k tys args => .con k (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
     | .list elems => .list (Val.substTyAtList c ts es elems)
@@ -64,6 +64,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i tys args => .dict i (tys.map (Ty.substAt c ts es)) (Val.substTyAtList c ts es args)
     | .super v cl => .super (Val.substTyAt c ts es v) cl
+    | .checked t => .checked t
+    | .checkedRequest t c => .checkedRequest t c
 
   def Val.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Val → List Val
     | [] => []
@@ -129,7 +131,7 @@ mutual
     | .var i => .var (ξ i)
     | .const c => .const c
     | .fnRef f tys effs => .fnRef f tys effs
-    | .prim b tys effs => .prim b tys effs
+    | .prim b tys effs rs => .prim b tys effs rs
     | .lam names params body => .lam names params (Comp.rename (upRen params.length ξ) body)
     | .con c tys args => .con c tys (Val.renameList ξ args)
     | .list elems => .list (Val.renameList ξ elems)
@@ -141,6 +143,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i tys args => .dict i tys (Val.renameList ξ args)
     | .super v cl => .super (Val.rename ξ v) cl
+    | .checked t => .checked t
+    | .checkedRequest t c => .checkedRequest t c
 
   def Val.renameList (ξ : Nat → Nat) : List Val → List Val
     | [] => []
@@ -184,7 +188,7 @@ mutual
     | .var i => σ i
     | .const c => .const c
     | .fnRef f tys effs => .fnRef f tys effs
-    | .prim b tys effs => .prim b tys effs
+    | .prim b tys effs rs => .prim b tys effs rs
     | .lam names params body => .lam names params (Comp.subst (upSubst params.length σ) body (upLocalSubst params.length ρ))
     | .con c tys args => .con c tys (Val.substList σ args ρ)
     | .list elems => .list (Val.substList σ elems ρ)
@@ -196,6 +200,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i tys args => .dict i tys (Val.substList σ args ρ)
     | .super v cl => .super (Val.subst σ v ρ) cl
+    | .checked t => .checked t
+    | .checkedRequest t c => .checkedRequest t c
 
   def Val.substList (σ : Nat → Val) (vs : List Val) (ρ : Nat → LocalRef := LocalRef.bound) : List Val :=
     match vs with

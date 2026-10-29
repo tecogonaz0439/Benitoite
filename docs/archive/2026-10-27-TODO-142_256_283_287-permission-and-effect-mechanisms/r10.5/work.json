@@ -1,0 +1,24 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "15f79bdc391c877a32f0399c9ee38b394f0b067e"
+  ],
+  "invoked": [
+    "/usr/bin/time",
+    "-p",
+    "sh",
+    "-c",
+    "scripts/check.sh --level work --base 15f79bdc391c877a32f0399c9ee38b394f0b067e; check_code=$?; printf \"%s\\n\" \"$check_code\" > docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.5/work-check-exit.txt; exit \"$check_code\""
+  ],
+  "started_at": "2026-10-28T12:12:13.133147+00:00",
+  "ended_at": "2026-10-28T12:12:26.442405+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 13.309203959,
+  "auxiliary_max_rss_bytes": 2440626176,
+  "auxiliary_max_rss_mib": 2327.5625,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; this command only; maximum child, not concurrent sum",
+  "check_exit_code": 1
+}

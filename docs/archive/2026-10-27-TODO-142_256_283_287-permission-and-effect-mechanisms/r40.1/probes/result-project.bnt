@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Scope
+function sample(raw: Scope.PathIn) -> Unit
+ bind value: Integer <- Scope.pathInValue(path: raw)
+end function
+function main() -> Unit
+end function

@@ -11,8 +11,8 @@ use crate::base::{BytePos, Span};
 use crate::syntax::ast::{
     Arg, Attribute, Block, DataDecl, EffectDecl, ElseBranch, Expr, FnDecl, FnType, HandleExpr,
     HeaderItem, IfExpr, ImplDecl, Item, LambdaEnding, LambdaExpr, ListElem, MatchExpr, MethodSig,
-    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, Stmt, TopDecl, TraitDecl,
-    TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
+    Module, Name, OpSig, Param, Pattern, RecordDecl, RecordExpr, ScopeArgKind, ScopeArgs, Stmt,
+    TopDecl, TraitDecl, TypeExpr, TypeParamDecl, TypeParamKind, UnOp, WithExpr,
 };
 use crate::syntax::token::{Token, TokenKind};
 
@@ -63,6 +63,7 @@ pub(super) struct Walker<'a> {
     top: Vec<TopRange>,
     lambdas: Vec<LambdaSpans>,
     formats: Vec<Span>,
+    verbatim: Vec<Span>,
 }
 
 impl<'a> Walker<'a> {
@@ -115,6 +116,7 @@ impl<'a> Walker<'a> {
             top: Vec::new(),
             lambdas: Vec::new(),
             formats: Vec::new(),
+            verbatim: Vec::new(),
         }
     }
 
@@ -491,7 +493,16 @@ impl<'a> Walker<'a> {
     }
 
     fn uses(&mut self, uses: Option<&crate::syntax::ast::UsesList>) {
+        let mut previous_group = None;
         for effect in uses.into_iter().flat_map(|u| &u.effects) {
+            if let Some(scope) = &effect.scope {
+                // 略記は原子へ展開済みでも、元の群の役割は一度だけ付ける。
+                if previous_group != Some(scope.span) {
+                    self.scope(scope);
+                    previous_group = Some(scope.span);
+                }
+                continue;
+            }
             let Some(args) = &effect.args else {
                 continue;
             };
@@ -506,6 +517,20 @@ impl<'a> Walker<'a> {
             }
         }
     }
+    // 正規化した範囲ではなく、元の群と各要素の位置で整形する（06-03「入力表現」）。
+    fn scope(&mut self, scope: &ScopeArgs) {
+        if let Some(open) = self.first(scope.span)
+            && self.open_bracket(open, true).is_some()
+        {
+            for arg in scope.items.iter() {
+                self.element(arg.span, Place::Deeper(open));
+                if matches!(arg.kind, ScopeArgKind::Invalid) {
+                    self.verbatim.push(arg.span);
+                }
+            }
+        }
+    }
+
     fn fn_decl(&mut self, decl: &FnDecl) {
         self.signature(&decl.name, &decl.type_params, &decl.params);
         self.ty(&decl.ret);
@@ -620,6 +645,10 @@ impl<'a> Walker<'a> {
     fn ty(&mut self, ty: &TypeExpr) {
         match ty {
             TypeExpr::Named(t) => {
+                if let Some(scope) = &t.scope {
+                    self.scope(scope);
+                    return;
+                }
                 if t.args.is_empty() {
                     return;
                 }
@@ -1211,9 +1240,13 @@ impl<'a> Walker<'a> {
                 role.space_before = false;
             }
         }
+        let mut verbatim = self.verbatim;
+        verbatim.sort_by_key(|span| span.start);
+        verbatim.dedup();
         RoleTable {
             roles,
             top: self.top,
+            verbatim,
         }
     }
 

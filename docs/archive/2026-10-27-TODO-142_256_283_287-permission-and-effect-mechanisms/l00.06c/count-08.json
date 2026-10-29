@@ -1,0 +1,307 @@
+{
+ "log": "build-08-trial.log",
+ "modules_in_default_closure": 274,
+ "failed_modules": [
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Release.Model",
+  "Benitoite.Surface.CheckComputeControl",
+  "Benitoite.Surface.CheckCounterexamples",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.Lemmas.Dict",
+  "Benitoite.Surface.Lemmas.ReturnTry"
+ ],
+ "unchecked_modules_count": 47,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.CheckComputePipe",
+  "Benitoite.Surface.CheckComputeSound",
+  "Benitoite.Surface.CheckDictSupport",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckInduction",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundBasicExpr",
+  "Benitoite.Surface.CheckSoundCalls",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckSoundDie",
+  "Benitoite.Surface.CheckSoundSequence",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Lemmas.Typing",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "error_diagnostics": 48,
+ "error_files": [
+  "Benitoite/Exchange/Convert.lean",
+  "Benitoite/Release/Model.lean",
+  "Benitoite/Surface/CheckComputeControl.lean",
+  "Benitoite/Surface/CheckCounterexamples.lean",
+  "Benitoite/Surface/CheckToolsExamples.lean",
+  "Benitoite/Surface/Lemmas/Dict.lean",
+  "Benitoite/Surface/Lemmas/ReturnTry.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Atom.toRelease",
+   "line": 8,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Expr.toSurface",
+   "line": 333,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def Ty.toRelease",
+   "line": 58,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "def refGetSig",
+   "line": 16,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "def refSetSig",
+   "line": 27,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "example <example@327>",
+   "line": 327,
+   "errors": 3
+  },
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "theorem assumptions",
+   "line": 61,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "theorem single_no_rho",
+   "line": 58,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckComputeControl.lean",
+   "decl": "theorem checkDieExit_contains",
+   "line": 19,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckCounterexamples.lean",
+   "decl": "def input",
+   "line": 25,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "def atoms",
+   "line": 10,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "def ioEff",
+   "line": 13,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "def q",
+   "line": 234,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "def richTypes",
+   "line": 34,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@22>",
+   "line": 22,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@23>",
+   "line": 23,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@24>",
+   "line": 24,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@26>",
+   "line": 26,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@28>",
+   "line": 28,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@30>",
+   "line": 30,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@335>",
+   "line": 335,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@39>",
+   "line": 39,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@41>",
+   "line": 41,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@46>",
+   "line": 46,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@47>",
+   "line": 47,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@53>",
+   "line": 53,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@63>",
+   "line": 63,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@78>",
+   "line": 78,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/CheckToolsExamples.lean",
+   "decl": "example <example@83>",
+   "line": 83,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/Dict.lean",
+   "decl": "theorem op_dicts_typed",
+   "line": 8,
+   "errors": 3
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/Dict.lean",
+   "decl": "theorem op_value_typed",
+   "line": 25,
+   "errors": 5
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+   "decl": "theorem DieExitOk.app_typed",
+   "line": 177,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+   "decl": "theorem dieFailure_typed",
+   "line": 193,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+   "decl": "theorem tryOptionDie_typed",
+   "line": 299,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+   "decl": "theorem tryResultDie_typed",
+   "line": 226,
+   "errors": 2
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ],
+  [
+   "Benitoite/Release/Model.lean",
+   "example <example@327>"
+  ],
+  [
+   "Benitoite/Release/Model.lean",
+   "theorem assumptions"
+  ],
+  [
+   "Benitoite/Surface/CheckComputeControl.lean",
+   "theorem computes_tryOptionDie"
+  ],
+  [
+   "Benitoite/Surface/CheckComputeControl.lean",
+   "theorem computes_tryResultDie"
+  ]
+ ]
+}

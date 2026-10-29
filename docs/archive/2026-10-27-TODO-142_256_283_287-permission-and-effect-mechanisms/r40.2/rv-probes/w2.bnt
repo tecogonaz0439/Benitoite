@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Scope
+function sample(raw: Scope.PathIn["/data/**"]) -> Unit
+ bind value <- Scope.widenPathIn(path: raw)
+end function

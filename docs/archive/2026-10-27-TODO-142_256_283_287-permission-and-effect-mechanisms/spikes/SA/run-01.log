@@ -1,0 +1,146 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SA.lean:405:65: error: Application type mismatch: The argument
+  h
+has type
+  patLe (Pattern.exact a) (Pattern.exact b) = true
+but is expected to have type
+  decide (a = b) = true
+in the application
+  of_decide_eq_true h
+SA.lean:413:18: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.antisymm`
+SA.lean:447:65: error: Application type mismatch: The argument
+  h
+has type
+  patLe (Pattern.exact a) (Pattern.exact b) = true
+but is expected to have type
+  decide (a = b) = true
+in the application
+  of_decide_eq_true h
+SA.lean:487:55: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 1
+where
+ c := ↑b.scope.ports.lo
+ d := ↑a.scope.ports.lo
+SA.lean:488:55: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+where
+ c := ↑b.scope.ports.lo
+ d := ↑b.scope.ports.hi
+ e := ↑a.scope.ports.hi
+SA.lean:491:30: error: unsolved goals
+case mk.mk.mk.mk
+kind✝¹ : Kind
+pattern✝¹ : Pattern
+ports✝¹ : Interval
+nonempty✝¹ :
+  { kind := kind✝¹, pattern := pattern✝¹, ports := ports✝¹ }.ports.lo ≤
+    { kind := kind✝¹, pattern := pattern✝¹, ports := ports✝¹ }.ports.hi
+bounded✝¹ : { kind := kind✝¹, pattern := pattern✝¹, ports := ports✝¹ }.ports.hi ≤ 65535
+kind✝ : Kind
+pattern✝ : Pattern
+ports✝ : Interval
+nonempty✝ :
+  { kind := kind✝, pattern := pattern✝, ports := ports✝ }.ports.lo ≤
+    { kind := kind✝, pattern := pattern✝, ports := ports✝ }.ports.hi
+bounded✝ : { kind := kind✝, pattern := pattern✝, ports := ports✝ }.ports.hi ≤ 65535
+hp : pattern✝¹ = pattern✝
+hl : InPort ports✝ ports✝.lo
+gl : InPort ports✝¹ ports✝.lo
+hh : InPort ports✝ ports✝.hi
+gh : InPort ports✝¹ ports✝.hi
+hlo : ports✝¹.lo = ports✝.lo
+hhi : ports✝¹.hi = ports✝.hi
+⊢ ports✝¹ = ports✝
+SA.lean:504:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ i ≤ 65535
+  g ≥ 0
+  0 ≤ f ≤ 65535
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 0
+  c - d - e - f + g - i ≤ -65536
+where
+ c := ↑(patRank a.scope.pattern)
+ d := ↑(patRank b.scope.pattern)
+ e := ↑b.scope.ports.lo
+ f := ↑(65535 - b.scope.ports.hi)
+ g := ↑a.scope.ports.lo
+ i := ↑a.scope.ports.hi
+SA.lean:516:68: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ g ≤ 65535
+  0 ≤ f ≤ 65535
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  c - d - e + f - g ≤ 0
+  c - e + f - g ≥ 1
+where
+ c := ↑b.scope.ports.lo
+ d := ↑(patRank a.scope.pattern)
+ e := ↑a.scope.ports.lo
+ f := ↑a.scope.ports.hi
+ g := ↑b.scope.ports.hi
+SA.lean:518:55: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ f ≤ 65535
+  0 ≤ e ≤ 65535
+  e - f ≤ -1
+  d ≥ 0
+  d - e + f ≥ 0
+  c ≥ 0
+  c ≥ 0
+where
+ c := ↑(patRank a.scope.pattern)
+ d := ↑a.scope.ports.lo
+ e := ↑a.scope.ports.hi
+ f := ↑b.scope.ports.hi
+SA.lean:565:36: error: don't know how to synthesize placeholder for argument `s`
+context:
+s✝¹ s✝ : ClosedScope
+h : scopeLe s✝¹.scope s✝.scope = true
+g : scopeLe s✝.scope s✝¹.scope = false
+hm : scopeRank s✝ ≤ scopeRank s✝¹
+⊢ ClosedScope
+SA.lean:565:22: error: don't know how to synthesize placeholder for argument `s`
+context:
+s✝¹ s✝ : ClosedScope
+h : scopeLe s✝¹.scope s✝.scope = true
+g : scopeLe s✝.scope s✝¹.scope = false
+hm : scopeRank s✝ ≤ scopeRank s✝¹
+⊢ ClosedScope
+SA.lean:562:57: error: unsolved goals
+case bounded.bounded
+s✝¹ s✝ : ClosedScope
+h : scopeLe s✝¹.scope s✝.scope = true
+g : scopeLe s✝.scope s✝¹.scope = false
+hm : scopeRank s✝ ≤ scopeRank s✝¹
+⊢ scopeRank s✝ < scopeRank s✝¹
+        0.75 real         0.98 user         0.26 sys
+           715374592  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46070  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                8069  involuntary context switches
+          8709223945  instructions retired
+          3713830177  cycles elapsed
+           166010384  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

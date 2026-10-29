@@ -1,0 +1,10 @@
+{
+  "basis": "hand-written before CLI comparison",
+  "cases": [
+    {"name": "class-structural", "file": "class-structural.bnt", "status": 1, "codes": ["E0711"], "exclusion": "E0711", "reason": "Rust compares implementation and trait effect declarations structurally; Lean checks method body coverage under the trait declaration"},
+    {"name": "nul-direct", "file": "nul-direct.bnt", "status": 1, "codes": ["E0459"], "exclusion": "leanStringPrecision", "reason": "Only the condition literal beginning U+0000 and followed by integer spelling; Rust retains a String argument and rejects its host spelling, while Lean absArg forgets that literal"},
+    {"name": "nul-dynamic", "file": "nul-dynamic.bnt", "status": 0, "codes": [], "exclusion": null, "reason": "Local string condition is statically unknown and accepted at Top; runtime spelling check remains"}
+  ],
+  "excludedTargets": {"E0711": "trait versus implementation effect declaration of class-structural", "leanStringPrecision": "the direct hostPattern literal of nul-direct only"},
+  "outsideExclusions": ["ordinary integer ports", "ordinary string conditions", "whole Http.ClientRequest records", "all dynamic host patterns"]
+}

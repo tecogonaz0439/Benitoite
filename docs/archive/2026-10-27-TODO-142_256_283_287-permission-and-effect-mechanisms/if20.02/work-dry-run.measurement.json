@@ -1,0 +1,22 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "a522a3bbc1bfd217adc4d30dea2010a2e955f410",
+    "--dry-run"
+  ],
+  "started_utc": "2026-10-27T09:15:02.557214+00:00",
+  "finished_utc": "2026-10-27T09:15:02.645851+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.08829320900000001,
+  "platform": "Darwin",
+  "rss_method": "resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss",
+  "rss_raw": 10108928,
+  "rss_unit": "bytes",
+  "rss_bytes": 10108928,
+  "scope": "測定プロセスの子について OS が報告した最大常駐量。並行する全プロセスの RSS の合計ではない。",
+  "rss_mib": 9.640625,
+  "rss_gib": 0.0094146728515625
+}

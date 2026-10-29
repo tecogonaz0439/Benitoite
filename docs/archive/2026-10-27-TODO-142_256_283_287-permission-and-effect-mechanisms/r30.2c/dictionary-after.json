@@ -1,0 +1,39 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "typeck::traits::tests::standard_library_sources_and_dictionary_contracts",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 5.533305250000001,
+  "maxrss_raw": 2406744064,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 2295.25,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 5.556319708,
+  "recorded_at": "2026-10-29T05:53:13.519628+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2c/run-record.py",
+    "--child",
+    "dictionary-after",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "typeck::traits::tests::standard_library_sources_and_dictionary_contracts",
+    "--",
+    "--exact",
+    "--nocapture"
+  ]
+}

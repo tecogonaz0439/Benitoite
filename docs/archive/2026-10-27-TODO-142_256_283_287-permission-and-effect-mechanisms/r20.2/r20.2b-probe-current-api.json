@@ -1,0 +1,16 @@
+{
+  "command": [
+    "rustc",
+    "--edition=2024",
+    "<wt>/target/r20.2b-probe/current/api.rs",
+    "--extern",
+    "benitoite=<wt>/target/debug/libbenitoite.rlib",
+    "-L",
+    "dependency=<wt>/target/debug/deps",
+    "-o",
+    "<wt>/target/r20.2b-probe/current/api"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 0.508362709,
+  "maximum_resident_bytes": 3825729536
+}

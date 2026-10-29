@@ -1,0 +1,10 @@
+macOS: man 2 getrusage（2026-10-28）
+     #define   RUSAGE_CHILDREN     -1
+     getrusage(int who, struct rusage *r_usage);
+     getrusage() returns information describing the resources utilized by the
+     parameter is either RUSAGE_SELF or RUSAGE_CHILDREN.  The buffer to which
+             long ru_maxrss;          /* max resident set size */
+     ru_maxrss    the maximum resident set size utilized (in bytes).
+     The getrusage() function returns the value 0 if successful; otherwise the
+     The getrusage() system call will fail if:
+     The getrusage() function call appeared in 4.2BSD.

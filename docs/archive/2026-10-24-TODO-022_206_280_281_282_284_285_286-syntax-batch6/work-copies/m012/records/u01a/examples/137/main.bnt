@@ -1,0 +1,9 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+function main() -> Result[Unit, String] uses Console.Write
+  bind checked <- try Scope.checkHost(pattern: "*.EXAMPLE.COM", host: "API.EXAMPLE.COM") |> Result.mapError(r: _, f: lambda(error) return Trait.Show.show(error) end lambda)
+  Console.writeLine(Scope.host(checked))
+  Console.writeLine(Scope.hostPattern(checked))
+  return Result.Ok(())
+end function

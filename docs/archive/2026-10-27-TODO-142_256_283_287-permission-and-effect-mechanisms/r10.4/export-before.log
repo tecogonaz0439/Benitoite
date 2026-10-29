@@ -1,0 +1,44 @@
+$ cargo test -p benitoite --test desugar_export
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.05s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 35 tests
+test batch3::export_batch3_range ... ok
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch4_blocks ... ok
+test batch3::export_batch3_solve ... ok
+test batch5::export_batch5_formats ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test batch3::export_batch4_log_standard ... ok
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_batch2_character ... ok
+test export_independent_program_exchange ... ok
+test export_batch2_failure ... ok
+test export_rejects_constref_in_value_position ... ok
+test export_accepts_generated_placeholder_escapes ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_named_declarations_smoke ... ok
+test export_named_types_smoke ... ok
+test batch3::export_batch3_monad2 ... ok
+test export_width_smoke ... ok
+test named::export_checked_positional_constructor_holes ... ok
+test named::export_extensible_package ... ok
+test named::export_extensible_source ... ok
+test export_batch2_op ... ok
+test named::export_hole_argument_plans ... ok
+test named::export_named_annotation_without_named_calls ... ok
+test named::export_named_calls_smoke ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test named::export_named_static_calls_smoke ... ok
+test named::export_generated_record_property ... ok
+test batch3::export_batch3_builders ... ok
+test named::export_general_named_programs ... ok
+test interval::export_interval_range ... ok
+test interval::vm::export_interval_vm ... ok
+test export_interval_identity ... ok
+test export_interval_manifest ... ok
+
+test result: ok. 34 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 11.02s
+

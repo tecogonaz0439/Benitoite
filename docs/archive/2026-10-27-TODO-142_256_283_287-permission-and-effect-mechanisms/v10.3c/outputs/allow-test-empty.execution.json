@@ -1,0 +1,14 @@
+{
+  "id": "allow-test-empty",
+  "command": [
+    "<repo>/target/release/benitoite",
+    "test",
+    "--diagnostics=json",
+    "--allow-effects=",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/non-top.bnt"
+  ],
+  "exit": 2,
+  "seconds": 0.020654417000000036,
+  "stdoutSha256": "d98643e152de2bd765de5feb5856b2186d69385b2f7c6565a90575799479c90a",
+  "stderrSha256": "4b444c078cf2871299f6f36dd6cbcbab8f9b2dd2e395d6f883414b7a79529be8"
+}

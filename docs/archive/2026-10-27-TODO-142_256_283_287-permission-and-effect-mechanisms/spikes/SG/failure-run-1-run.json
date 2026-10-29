@@ -1,0 +1,33 @@
+{
+  "command": [
+    "zsh",
+    "work/m013/remote-lean.sh",
+    "SG",
+    "Model.lean",
+    "6144",
+    "180"
+  ],
+  "started_utc": "2026-10-26T15:20:59.779914+00:00",
+  "finished_utc": "2026-10-26T15:21:05.392502+00:00",
+  "wall_seconds_including_sync_and_queue": 5.612,
+  "wrapper_process_exit": 0,
+  "remote_summary": "== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB ",
+  "remote_exit": 1,
+  "remote_elapsed_seconds": 5,
+  "sampled_peak_mb": 0,
+  "sampled_peak_note": "0 は5秒ごとの標本で捕捉しなかった意味。使用量0とはしない。",
+  "time_maximum_resident_bytes": 733413376,
+  "lean_version": "4.34.1",
+  "source_sha256_before": "60cfb3075219f266cd92988dff585b48633f0a5a3479c7e53dbaca17058d2013",
+  "source_sha256_after": "60cfb3075219f266cd92988dff585b48633f0a5a3479c7e53dbaca17058d2013",
+  "diagnostics": [
+    "Model.lean:545:90: warning: This simp argument is unused:",
+    "Model.lean:750:18: error: unsolved goals",
+    "Model.lean:752:22: warning: This simp argument is unused:",
+    "Model.lean:752:36: warning: This simp argument is unused:",
+    "Model.lean:752:45: warning: This simp argument is unused:",
+    "Model.lean:752:67: warning: This simp argument is unused:",
+    "Model.lean:842:67: error: Tactic `decide` failed for proposition"
+  ],
+  "passed": false
+}

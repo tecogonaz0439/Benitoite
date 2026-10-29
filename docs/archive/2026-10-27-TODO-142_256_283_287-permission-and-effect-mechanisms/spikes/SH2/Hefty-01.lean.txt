@@ -1,0 +1,387 @@
+import Std
+
+/-!
+SH2: Reader.local の精緻化（elaboration）を調べる独立小モデル。
+SH/Hefty.lean の Code・HTree・Free・bind・handleReader を土台とする。
+本番 formal/ の定義は複製も import もしていない。
+効果型は上限である。最小の効果集合や実 IO、任意の高階署名は扱わない。
+-/
+namespace SH2
+
+-- 1. 値の型。部分計算と全体の結果型は異なってよい。
+inductive Code where
+  | unit | bool | nat
+
+abbrev Denote : Code → Type
+  | .unit => Unit
+  | .bool => Bool
+  | .nat => Nat
+
+-- 2. 有限の効果集合。Other は local では解釈しない一階の操作である。
+inductive Eff where
+  | ask | emit | other | local
+  deriving DecidableEq
+
+abbrev Row := Eff → Prop
+def empty : Row := fun _ => False
+def join (e f : Row) : Row := fun op => e op ∨ f op
+def add (op : Eff) (e : Row) : Row := fun x => x = op ∨ e x
+def drop (op : Eff) (e : Row) : Row := fun x => x ≠ op ∧ e x
+def Sub (e f : Row) : Prop := ∀ x, e x → f x
+
+@[simp] theorem drop_join (op : Eff) (e f : Row) :
+    drop op (join e f) = join (drop op e) (drop op f) := by
+  funext x
+  simp [drop, join, and_or_left]
+
+@[simp] theorem drop_add_same (op : Eff) (e : Row) :
+    drop op (add op e) = drop op e := by
+  funext x
+  simp [drop, add, and_or_left]
+
+theorem drop_add_ne (op x : Eff) (h : x ≠ op) (e : Row) :
+    drop op (add x e) = add x (drop op e) := by
+  funext y
+  apply propext
+  simp only [drop, add]
+  constructor
+  · rintro ⟨hn, he | he⟩
+    · exact Or.inl he
+    · exact Or.inr ⟨hn, he⟩
+  · rintro (rfl | he)
+    · exact ⟨h, Or.inl rfl⟩
+    · exact ⟨he.1, Or.inr he.2⟩
+
+theorem drop_commute (op x : Eff) (e : Row) :
+    drop op (drop x e) = drop x (drop op e) := by
+  funext y
+  simp [drop, and_left_comm]
+
+-- 3. 元の高階の木と、変換先の一階の木。
+-- Other の応答で後続が分岐できるため、単なる記録の印には縮めていない。
+inductive HTree : Code → Type where
+  | pure {a : Code} : Denote a → HTree a
+  | ask {a : Code} : (Nat → HTree a) → HTree a
+  | emit {a : Code} : Nat → HTree a → HTree a
+  | other {a : Code} : Nat → (Nat → HTree a) → HTree a
+  | local {a b : Code} : Nat → HTree b → (Denote b → HTree a) → HTree a
+
+inductive Free : Code → Type where
+  | pure {a : Code} : Denote a → Free a
+  | ask {a : Code} : (Nat → Free a) → Free a
+  | emit {a : Code} : Nat → Free a → Free a
+  | other {a : Code} : Nat → (Nat → Free a) → Free a
+
+-- 4. 順次実行と Reader ハンドラ。Other は応答を選ばず転送する。
+def Free.bind {a b : Code} (t : Free a) (k : Denote a → Free b) : Free b :=
+  match t with
+  | .pure v => k v
+  | .ask next => .ask (fun n => (next n).bind k)
+  | .emit m next => .emit m (next.bind k)
+  | .other req next => .other req (fun v => (next v).bind k)
+
+def handleReader {a : Code} (n : Nat) (t : Free a) : Free a :=
+  match t with
+  | .pure v => .pure v
+  | .ask next => handleReader n (next n)
+  | .emit m next => .emit m (handleReader n next)
+  | .other req next => .other req (fun v => handleReader n (next v))
+
+-- 5. local の節だけを引数として差し替える畳み込み。
+-- 内部は既に精緻化した木、後続は精緻化済みの各枝である。
+abbrev LocalAlg := {a b : Code} → Nat → Free b → (Denote b → Free a) → Free a
+
+def execution : LocalAlg := fun n body next => (handleReader n body).bind next
+
+-- テスト用の契約: 局所値 n を記録してから、同じ範囲で実行する。
+-- この追加 Emit は型にも加える必要がある（recording_typing）。
+def recording : LocalAlg := fun n body next => .emit n (execution n body next)
+
+def elaborateWith (alg : LocalAlg) {a : Code} (t : HTree a) : Free a :=
+  match t with
+  | .pure v => .pure v
+  | .ask next => .ask (fun n => elaborateWith alg (next n))
+  | .emit m next => .emit m (elaborateWith alg next)
+  | .other req next => .other req (fun v => elaborateWith alg (next v))
+  | .local n body next => alg n (elaborateWith alg body) (fun v => elaborateWith alg (next v))
+
+abbrev elaborate := elaborateWith execution
+
+-- 6. 効果付き型付け。結果型は木の添字、効果は明示した上限。
+-- local の内部だけから Ask を除き、後続の Ask は型に残す。
+inductive HTyped : {a : Code} → HTree a → Row → Prop where
+  | pure (v : Denote a) : HTyped (.pure v) empty
+  | ask (next : Nat → HTree a) (h : ∀ n, HTyped (next n) e) :
+      HTyped (.ask next) (add .ask e)
+  | emit (m : Nat) (h : HTyped t e) : HTyped (.emit m t) (add .emit e)
+  | other (req : Nat) (next : Nat → HTree a) (h : ∀ v, HTyped (next v) e) :
+      HTyped (.other req next) (add .other e)
+  | local (n : Nat) (body : HTree b) (next : Denote b → HTree a)
+      (hb : HTyped body eb) (hk : ∀ v, HTyped (next v) ek) :
+      HTyped (.local n body next) (add .local (join (drop .ask eb) ek))
+  | weaken (h : HTyped t e) (hsub : Sub e f) : HTyped t f
+
+inductive FTyped : {a : Code} → Free a → Row → Prop where
+  | pure (v : Denote a) : FTyped (.pure v) empty
+  | ask (next : Nat → Free a) (h : ∀ n, FTyped (next n) e) :
+      FTyped (.ask next) (add .ask e)
+  | emit (m : Nat) (h : FTyped t e) : FTyped (.emit m t) (add .emit e)
+  | other (req : Nat) (next : Nat → Free a) (h : ∀ v, FTyped (next v) e) :
+      FTyped (.other req next) (add .other e)
+  | weaken (h : FTyped t e) (hsub : Sub e f) : FTyped t f
+
+-- 7. 二つの独立した評価。oracle は任意の全域的で純粋な応答関数。
+-- trace は Emit の記録だけ。Other の要求は handleReader で転送し、ここで観察する。
+def run {a : Code} (oracle : Nat → Nat) (outer : Nat) (t : Free a) : Denote a × List Nat :=
+  match t with
+  | .pure v => (v, [])
+  | .ask next => run oracle outer (next outer)
+  | .emit m next =>
+      let (v, trace) := run oracle outer next
+      (v, m :: trace)
+  | .other req next => run oracle outer (next (oracle req))
+
+-- 精緻化も一階のハンドラも呼ばず、元の木を直接評価する。
+def evalH {a : Code} (oracle : Nat → Nat) (outer : Nat) (t : HTree a) : Denote a × List Nat :=
+  match t with
+  | .pure v => (v, [])
+  | .ask next => evalH oracle outer (next outer)
+  | .emit m next =>
+      let (v, trace) := evalH oracle outer next
+      (v, m :: trace)
+  | .other req next => evalH oracle outer (next (oracle req))
+  | .local n body next =>
+      let (inside, first) := evalH oracle n body
+      let (v, rest) := evalH oracle outer (next inside)
+      (v, first ++ rest)
+
+-- 8. 一般的な法則と保存。
+theorem bind_assoc {a b c : Code} (t : Free a)
+    (k : Denote a → Free b) (j : Denote b → Free c) :
+    (t.bind k).bind j = t.bind (fun v => (k v).bind j) := by
+  induction t with
+  | pure v => rfl
+  | ask next ih => simp only [Free.bind]; congr; funext n; exact ih n
+  | emit m next ih => simp only [Free.bind]; rw [ih]
+  | other req next ih => simp only [Free.bind]; congr; funext n; exact ih n
+
+theorem reader_bind {a b : Code} (n : Nat) (t : Free a) (k : Denote a → Free b) :
+    handleReader n (t.bind k) =
+      (handleReader n t).bind (fun v => handleReader n (k v)) := by
+  induction t with
+  | pure v => rfl
+  | ask next ih => simpa only [Free.bind, handleReader] using ih n
+  | emit m next ih => simp only [Free.bind, handleReader]; rw [ih]
+  | other req next ih => simp only [Free.bind, handleReader]; congr; funext v; exact ih v
+
+theorem bind_typing {a b : Code} {t : Free a} {e f : Row}
+    (h : FTyped t e) (k : Denote a → Free b) (hk : ∀ v, FTyped (k v) f) :
+    FTyped (t.bind k) (join e f) := by
+  induction h with
+  | pure v => exact .weaken (hk v) (by intro x hx; exact Or.inr hx)
+  | ask next h ih =>
+      exact .weaken (.ask _ ih) (by intro x hx; rcases hx with hx | hx
+                                                  · exact Or.inl (Or.inl hx)
+                                                  · rcases hx with hx | hx
+                                                    · exact Or.inl (Or.inr hx)
+                                                    · exact Or.inr hx)
+  | emit m h ih =>
+      exact .weaken (.emit m ih) (by intro x hx; rcases hx with hx | hx
+                                                   · exact Or.inl (Or.inl hx)
+                                                   · rcases hx with hx | hx
+                                                     · exact Or.inl (Or.inr hx)
+                                                     · exact Or.inr hx)
+  | other req next h ih =>
+      exact .weaken (.other req _ ih) (by intro x hx; rcases hx with hx | hx
+                                                        · exact Or.inl (Or.inl hx)
+                                                        · rcases hx with hx | hx
+                                                          · exact Or.inl (Or.inr hx)
+                                                          · exact Or.inr hx)
+  | weaken h hs ih =>
+      exact .weaken ih (by intro x hx; rcases hx with hx | hx
+                                     · exact Or.inl (hs x hx)
+                                     · exact Or.inr hx)
+
+theorem reader_typing {a : Code} {t : Free a} {e : Row}
+    (h : FTyped t e) (n : Nat) : FTyped (handleReader n t) (drop .ask e) := by
+  induction h with
+  | pure v => exact .weaken (.pure v) (by intro x hx; exact False.elim hx)
+  | ask next h ih => simpa only [handleReader, drop_add_same] using ih n
+  | emit m h ih =>
+      rw [drop_add_ne .ask .emit (by decide)]
+      exact .emit m ih
+  | other req next h ih =>
+      rw [drop_add_ne .ask .other (by decide)]
+      exact .other req _ ih
+  | weaken h hs ih => exact .weaken ih (by intro x hx; exact ⟨hx.1, hs x hx.2⟩)
+
+-- 変換後の型 (a, drop Local e) をそのまま構成する。結果型 a も維持する。
+theorem elaborate_typing {a : Code} {t : HTree a} {e : Row} (h : HTyped t e) :
+    FTyped (elaborate t) (drop .local e) := by
+  induction h with
+  | pure v => exact .weaken (.pure v) (by intro x hx; exact False.elim hx)
+  | ask next h ih =>
+      rw [drop_add_ne .local .ask (by decide)]
+      exact .ask _ ih
+  | emit m h ih =>
+      rw [drop_add_ne .local .emit (by decide)]
+      exact .emit m ih
+  | other req next h ih =>
+      rw [drop_add_ne .local .other (by decide)]
+      exact .other req _ ih
+  | local n body next hb hk ihb ihk =>
+      simpa only [elaborateWith, execution, drop_add_same, drop_join,
+        drop_commute .local .ask] using bind_typing (reader_typing ihb n) _ ihk
+  | weaken h hs ih => exact .weaken ih (by intro x hx; exact ⟨hx.1, hs x hx.2⟩)
+
+-- 任意の集合 e から Local だけを除くので、ほかの三効果は型に残る。
+theorem remaining_effects (e : Row) (op : Eff) (h : op ≠ .local) :
+    drop .local e op ↔ e op := by
+  simp [drop, h]
+
+theorem run_bind {a b : Code} (oracle : Nat → Nat) (outer : Nat)
+    (t : Free a) (k : Denote a → Free b) :
+    run oracle outer (t.bind k) =
+      let (v, first) := run oracle outer t
+      let (w, rest) := run oracle outer (k v)
+      (w, first ++ rest) := by
+  induction t with
+  | pure v => simp [Free.bind, run]
+  | ask next ih => simpa only [Free.bind, run] using ih outer
+  | emit m next ih => simp [Free.bind, run, ih]
+  | other req next ih => simpa only [Free.bind, run] using ih (oracle req)
+
+theorem run_reader {a : Code} (oracle : Nat → Nat) (outer n : Nat) (t : Free a) :
+    run oracle outer (handleReader n t) = run oracle n t := by
+  induction t with
+  | pure v => rfl
+  | ask next ih => simpa only [handleReader, run] using ih n
+  | emit m next ih => simp [handleReader, run, ih]
+  | other req next ih => simpa only [handleReader, run] using ih (oracle req)
+
+theorem eval_agrees {a : Code} (t : HTree a) (oracle : Nat → Nat) (outer : Nat) :
+    run oracle outer (elaborate t) = evalH oracle outer t := by
+  induction t generalizing outer with
+  | pure v => rfl
+  | ask next ih => exact ih outer outer
+  | emit m next ih => simp [elaborate, elaborateWith, run, evalH, ih]
+  | other req next ih => exact ih (oracle req) outer
+  | local n body next ihb ihk =>
+      simp only [elaborate, elaborateWith, execution, run_bind, run_reader]
+      simp only [← elaborate, ihb, ihk, evalH]
+
+theorem value_agrees {a : Code} (t : HTree a) (oracle : Nat → Nat) (outer : Nat) :
+    (run oracle outer (elaborate t)).1 = (evalH oracle outer t).1 := by
+  rw [eval_agrees]
+
+theorem trace_agrees {a : Code} (t : HTree a) (oracle : Nat → Nat) (outer : Nat) :
+    (run oracle outer (elaborate t)).2 = (evalH oracle outer t).2 := by
+  rw [eval_agrees]
+
+theorem emit_survives_local {a b : Code} (n m : Nat) (body : HTree b)
+    (next : Denote b → HTree a) :
+    elaborate (.local n (.emit m body) next) =
+      .emit m (elaborate (.local n body next)) := by rfl
+
+theorem other_survives_local {a b : Code} (n req : Nat) (body : Nat → HTree b)
+    (next : Denote b → HTree a) :
+    elaborate (.local n (.other req body) next) =
+      .other req (fun v => elaborate (.local n (body v) next)) := by rfl
+
+-- 行き先の型も差し替えの部品の契約に含める。
+def AlgTyped (alg : LocalAlg) : Prop :=
+  ∀ {a b : Code} (n : Nat) (body : Free b) (next : Denote b → Free a) (e f : Row),
+    FTyped body e → (∀ v, FTyped (next v) f) →
+    FTyped (alg n body next) (join (drop .ask e) f)
+
+theorem execution_typing : AlgTyped execution := by
+  intro a b n body next e f hb hk
+  exact bind_typing (reader_typing hb n) next hk
+
+theorem recording_typing {a b : Code} (n : Nat) (body : Free b)
+    (next : Denote b → Free a) (e f : Row)
+    (hb : FTyped body e) (hk : ∀ v, FTyped (next v) f) :
+    FTyped (recording n body next) (add .emit (join (drop .ask e) f)) := by
+  exact .emit n (execution_typing n body next e f hb hk)
+
+-- Emit を持たない型なら、Emit の trace は空。Other はこの trace に数えない。
+theorem no_emit_trace {a : Code} {t : Free a} {e : Row} (h : FTyped t e)
+    (hne : ¬ e .emit) (oracle : Nat → Nat) (outer : Nat) :
+    (run oracle outer t).2 = [] := by
+  induction h with
+  | pure v => rfl
+  | ask next h ih => exact ih outer (fun he => hne (Or.inr he))
+  | emit m h ih => exact False.elim (hne (Or.inl rfl))
+  | other req next h ih => exact ih (oracle req) (fun he => hne (Or.inr he))
+  | weaken h hs ih => exact ih (fun he => hne (hs .emit he))
+
+theorem source_no_emit_trace {a : Code} {t : HTree a} {e : Row} (h : HTyped t e)
+    (hne : ¬ e .emit) (oracle : Nat → Nat) (outer : Nat) :
+    (evalH oracle outer t).2 = [] := by
+  rw [← trace_agrees]
+  exact no_emit_trace (elaborate_typing h) (fun he => hne he.2) oracle outer
+
+-- 9. 独立例と、契約を分ける二つの誤変換。
+def wrongScope : LocalAlg := fun n body next => handleReader n (body.bind next)
+
+def hideEmit {a : Code} (t : Free a) : Free a :=
+  match t with
+  | .pure v => .pure v
+  | .ask next => .ask (fun n => hideEmit (next n))
+  | .emit _ next => hideEmit next
+  | .other req next => .other req (fun v => hideEmit (next v))
+
+def wrongHide : LocalAlg := fun n body next => (handleReader n (hideEmit body)).bind next
+
+def scopeExample : HTree .nat :=
+  .local (b := .nat) 7 (.ask (fun n => .emit n (.pure n)))
+    (fun inside => .ask (fun outside => .emit outside (.pure (inside + outside))))
+
+def mixedExample : HTree .nat :=
+  .local (b := .bool) 7 (.ask (fun n => .pure (n == 7)))
+    (fun ok => .ask (fun n => .pure (if ok then n + 1 else 0)))
+
+def nestedExample : HTree .nat :=
+  .local (b := .nat) 7
+    (.local (b := .unit) 11 (.ask (fun n => .emit n (.pure ())))
+      (fun _ => .ask (fun n => .emit n (.pure n))))
+    (fun _ => .ask (fun n => .emit n (.pure n)))
+
+def otherExample : HTree .nat :=
+  .local (b := .nat) 7
+    (.other 41 (fun answer => .ask (fun n => .emit answer (.pure (answer + n)))))
+    (fun inside => .ask (fun outside => .pure (inside + outside)))
+
+-- 入力を変えず、同じ run と同じ oracle で精緻化だけを差し替える。
+#eval run (fun n => n + 1) 3 (elaborate scopeExample)
+#eval run (fun n => n + 1) 3 (elaborateWith recording scopeExample)
+#eval run (fun n => n + 1) 3 (elaborateWith wrongScope scopeExample)
+#eval run (fun n => n + 1) 3 (elaborateWith wrongHide scopeExample)
+#guard evalH (fun n => n + 1) 3 scopeExample == (10, [7, 3])
+#guard run (fun n => n + 1) 3 (elaborate scopeExample) == (10, [7, 3])
+#guard run (fun n => n + 1) 3 (elaborateWith recording scopeExample) == (10, [7, 7, 3])
+#guard run (fun n => n + 1) 3 (elaborateWith wrongScope scopeExample) == (14, [7, 7])
+#guard run (fun n => n + 1) 3 (elaborateWith wrongHide scopeExample) == (10, [3])
+#guard run (fun n => n + 1) 3 (elaborate mixedExample) == (4, [])
+#guard run (fun n => n + 1) 3 (elaborate nestedExample) == (3, [11, 7, 3])
+#guard run (fun n => n + 1) 3 (elaborate otherExample) == (52, [42])
+#guard run (fun n => n + 100) 3 (elaborate otherExample) == (151, [141])
+
+-- 局所的な型の独立例。Emit と Other を含む入力の効果集合を明示する。
+example : HTyped otherExample
+    (add .local (join (drop .ask (add .other (add .ask (add .emit empty))))
+      (add .ask empty))) := by
+  exact .local 7 _ _ (.other 41 _ (fun _ => .ask _ (fun _ => .emit _ (.pure _))))
+    (fun _ => .ask _ (fun _ => .pure _))
+
+example : HTyped mixedExample
+    (add .local (join (drop .ask (add .ask empty)) (add .ask empty))) := by
+  exact .local 7 _ _ (.ask _ (fun _ => .pure _)) (fun _ => .ask _ (fun _ => .pure _))
+
+#print axioms elaborate_typing
+#print axioms remaining_effects
+#print axioms eval_agrees
+#print axioms recording_typing
+#print axioms source_no_emit_trace
+
+end SH2

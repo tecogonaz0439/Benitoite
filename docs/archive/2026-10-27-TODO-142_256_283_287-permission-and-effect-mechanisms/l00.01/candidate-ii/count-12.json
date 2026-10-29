@@ -1,0 +1,56 @@
+{
+ "log": "build-12-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Release.Lemmas.Progress"
+ ],
+ "unchecked_modules_count": 12,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Lemmas.StepSound",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems"
+ ],
+ "error_diagnostics": 21,
+ "error_files": [
+  "Benitoite/Release/Lemmas/Progress.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Release/Lemmas/Progress.lean",
+   "decl": "theorem HasTypeVQ.canonical_dict",
+   "line": 53,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/Progress.lean",
+   "decl": "theorem progress_io",
+   "line": 327,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/Progress.lean",
+   "decl": "theorem progress_prim",
+   "line": 349,
+   "errors": 18
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ],
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

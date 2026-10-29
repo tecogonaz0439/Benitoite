@@ -6,8 +6,8 @@ open Benitoite.Release
 
 
 theorem substAt_clean {n ts} (c : Nat) (es : List Eff)
-    (hts : Ty.VarsInList n (fun _ => True) ts)
-    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e)
+    (hts : Ty.VarsInList 0 n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e)
     (a : Ty) (ha : TyOK (c + ts.length) a) : TyOK (c + n) (a.substAt c ts es) := by
   rw [Ty.substAt_eq_bind]
   apply Ty.bind_clean (m := c + ts.length) _ _ _ a ha
@@ -28,10 +28,10 @@ theorem substAt_clean {n ts} (c : Nat) (es : List Eff)
     simpa only [Nat.add_comm] using rawShiftEff_clean c f (hes f hf)
 
 theorem substAtList_clean {n ts} (c : Nat) (es : List Eff)
-    (hts : Ty.VarsInList n (fun _ => True) ts)
-    (hes : ∀ e ∈ es, Eff.VarsIn n (fun _ => True) e)
-    (as : List Ty) (h : Ty.VarsInList (c + ts.length) (fun _ => True) as) :
-    Ty.VarsInList (c + n) (fun _ => True) (as.map (Ty.substAt c ts es)) := by
+    (hts : Ty.VarsInList 0 n (fun _ => True) ts)
+    (hes : ∀ e ∈ es, Eff.VarsIn 0 n (fun _ => True) e)
+    (as : List Ty) (h : Ty.VarsInList 0 (c + ts.length) (fun _ => True) as) :
+    Ty.VarsInList 0 (c + n) (fun _ => True) (as.map (Ty.substAt c ts es)) := by
   apply Ty.VarsInList.iff.mpr
   intro t ht
   obtain ⟨a, ha, rfl⟩ := List.mem_map.mp ht

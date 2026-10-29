@@ -104,7 +104,7 @@ private theorem mainExpr_typed (Γ : List (Option Ty)) (R : Option Ty) (pos : Po
   apply HasType.E_Handle (HasBlock.B_Last (by simpa [union_empty_left, union_empty_right] using hb))
   · constructor
     · intro a ha
-      have he : a = .name "Read" := (Eff.mem_single "Read" a).mp ha
+      have he : a = .nameTop "Read" := (Eff.mem_single "Read" a).mp ha
       subst a
       rfl
     · intro t ht; exact (Eff.memFail_single "Read" t).mp ht |>.elim
@@ -240,7 +240,7 @@ theorem program_effect_soundness :
       (.run (.app (.fnRef "main" [] []) []) [] Store.empty) s →
       (∀ ev s', ¬ Step (desugarProgram opPrim program) builtins s (some ev) s') ∧ ¬ UnhandledOp s := by
   apply surface_effect_soundness program_wellFormed program_wellTyped
-    (Release.Model.assumptions (desugarProgram opPrim program))
+    (Release.Model.assumptions (desugarProgram opPrim program)).core
   exact ⟨mainDef, rfl, rfl, rfl, rfl, rfl, Or.inl rfl, Eff.Sub.refl _⟩
 
 /-- if とリストの全構文の型保存を、子の計算の型付けを仮定せずに使う。 -/
@@ -287,7 +287,7 @@ example (op : OpPrim) :
           [.mk [⟨.con "Ok" [.var], [0]⟩] none (.ret (.var 0)),
            .mk [⟨.con "Error" [.var], [0]⟩] none
              (.letIn (.meth (.var 3) "show" [] [] [.var 0])
-               (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)]))]) := by rfl
+               (.app (.prim "Process.exit" [intTy] [] []) [.const (.integer ⟨1, by decide⟩)]))]) := by rfl
 
 -- 説明は元の local 2 を参照する。説明の let の下では Error が 1、辞書が 4 になる。
 -- 上位辞書の経路も落とさず、外側の式の末尾位置によって展開を変えない。
@@ -301,7 +301,7 @@ example (op : OpPrim) :
            .mk [⟨.con "Error" [.var], [0]⟩] none
              (.letIn (.ret (.var 4))
                (.letIn (.meth (.super (.var 4) "Show") "show" [] [] [.var 1])
-                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)])))]) := by rfl
+                 (.app (.prim "Process.exit" [intTy] [] []) [.const (.integer ⟨1, by decide⟩)])))]) := by rfl
 
 -- None はパターン変数を増やさない。説明なしでも固定原因の計算を残す。
 example (op : OpPrim) :
@@ -312,7 +312,7 @@ example (op : OpPrim) :
           [.mk [⟨.con "Some" [.var], [0]⟩] none (.ret (.var 0)),
            .mk [⟨.con "None" [], []⟩] none
              (.letIn (.ret (.const (.string "expected a value, got Option.None")))
-               (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)]))]) := by rfl
+               (.app (.prim "Process.exit" [intTy] [] []) [.const (.integer ⟨1, by decide⟩)]))]) := by rfl
 
 -- 説明内のラムダと bind の local 0 は保護し、外側の String の参照だけ一つ移す。
 example (op : OpPrim) :
@@ -331,7 +331,7 @@ example (op : OpPrim) :
                  (.letIn (.ret (.var 0)) (.ret (.var 4)))))
                  (.letIn (.ret (.const (.integer ⟨7, by decide⟩))) (.app (.var 1) [.var 0])))
                (.letIn (.ret (.const (.string "expected a value, got Option.None")))
-                 (.app (.prim "Process.exit" [intTy] []) [.const (.integer ⟨1, by decide⟩)])))]) := by rfl
+                 (.app (.prim "Process.exit" [intTy] [] []) [.const (.integer ⟨1, by decide⟩)])))]) := by rfl
 
 -- 型と値の範囲は、説明・入力・辞書・成功型のどれか一つが範囲外でも拒否する。
 -- 正の対照は、同じ元の環境で説明と辞書を参照できることも確かめる。
@@ -410,11 +410,11 @@ private def dieBuiltins : Builtins :=
     sig := fun b => if b = "exit" then some dieExitSig else none
     effects := fun l => if l = "Process.Exit" then some ["exit"] else none }
 private theorem dieExit_ok (C : List TParam) (t : Ty) (ht : t.Canonical) : DieExitOk dieBuiltins C "exit" t := by
-  refine ⟨dieExitSig, rfl, rfl, rfl, rfl, rfl, ?_, by rfl, ?_⟩
+  refine ⟨dieExitSig, rfl, rfl, rfl, rfl, ⟨rfl, rfl⟩, ?_, by rfl, ?_⟩
   · simp [dieExitSig, NamesWF]
   · simp [dieExitSig, fnTy, Ty.subst, Ty.substAt, Ty.shift_zero 0 t ht, intTy]
     exact Eff.substAt_ofAtoms 0 [t] _
-private def errorTy : Ty := .opaque "ErrorWithoutShowImpl"
+private def errorTy : Ty := .opaqueTop "ErrorWithoutShowImpl"
 private def resultTy : Ty := .data "Result" [intTy, errorTy]
 private def optionTy : Ty := .data "Option" [intTy]
 private def resultEnv : List (Option Ty) :=

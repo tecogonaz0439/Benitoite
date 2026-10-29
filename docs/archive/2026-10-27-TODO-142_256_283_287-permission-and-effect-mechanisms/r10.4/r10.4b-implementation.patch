@@ -1,0 +1,389 @@
+--- a/crates/benitoite/skill/references/diagnostics.md
++++ b/crates/benitoite/skill/references/diagnostics.md
+@@ -1935,8 +1935,10 @@
+ - Message: effect `{effect}` is not covered by one surrounding atom ({reason})
+ - Label: `{effect}` is not covered by `{expected}`
+ - `atomic`: each effect atom must be covered by one atom of the same name; a union of scopes cannot cover one atom, and only Top covers Top
+-
+-Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.
++- `declared`: declared here
++- `scopes`: widen the surrounding atom scopes, or narrow the callee scopes
++
++An atom of the same name exists in the surrounding effects, but none covers the required scope. Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.
+ 
+ ## E0520
+ 
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -971,8 +971,10 @@
+         "A failure handle contains exactly one Failure.raise clause.";
+ 
+     E0519 Check "effect `{effect}` is not covered by one surrounding atom ({reason})" "`{effect}` is not covered by `{expected}`"
+-        [atomic: "each effect atom must be covered by one atom of the same name; a union of scopes cannot cover one atom, and only Top covers Top"]
+-        "Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.";
++        [atomic: "each effect atom must be covered by one atom of the same name; a union of scopes cannot cover one atom, and only Top covers Top",
++         declared: "declared here",
++         scopes: "widen the surrounding atom scopes, or narrow the callee scopes"]
++        "An atom of the same name exists in the surrounding effects, but none covers the required scope. Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.";
+ 
+     E0520 Check "invalid scope arguments for `{name}` (expected {expectedScopeKind})" "invalid scope argument"
+         [found: "found: {found}"]
+--- a/crates/benitoite/src/ir/check.rs
++++ b/crates/benitoite/src/ir/check.rs
+@@ -263,7 +263,8 @@
+         }
+     }
+ 
+-    // 保護本体と純粋要求は C-Sub の被覆と別の構造包含である。
++    // 保護本体と純粋要求は C-Sub の被覆と別の構造包含である
++    // （設計書 02-06「コア IR の検査器」）。
+     fn structural_effects(&mut self, origin: Span, actual: &EffectSet, expected: &EffectSet) {
+         if !actual.is_subset(expected) {
+             self.error(
+--- a/crates/benitoite/src/typeck/interval/identity/tests.rs
++++ b/crates/benitoite/src/typeck/interval/identity/tests.rs
+@@ -125,7 +125,7 @@
+                     ReasonKind::FnBody,
+                 );
+                 body.add(Constraint::EffSub {
+-                    relation: crate::typeck::infer::EffectRelation::Structural,
++                    relation: crate::typeck::infer::EffectRelation::Cover,
+                     sub: body.body_effect.clone(),
+                     sup: fixed(body.scheme.effects.clone()),
+                     reason: reason(declaration.name.span, ReasonKind::FnUses),
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -2263,37 +2263,57 @@
+                 if effect_accepts(relation, &sup.fixed, &elem) {
+                     continue;
+                 }
+-                if relation == EffectRelation::Cover
+-                    && let Elem::Name(atom) = &elem
+-                    && (!matches!(atom.range(), scope::Range::Top)
+-                        || sup
+-                            .fixed
+-                            .names
+-                            .iter()
+-                            .any(|n| !matches!(n.range(), scope::Range::Top)))
+-                {
+-                    let reason = if matches!(atom.range(), scope::Range::Top) {
+-                        super::text::UNKNOWN_SOURCE
+-                    } else {
+-                        super::text::NOT_COVERED
+-                    };
+-                    let name = super::effects::effect_name(ctx, atom, Some(ctx.module));
+-                    let expected = sup
++                let origin = sub
++                    .var
++                    .and_then(|v| usize::try_from(v.0).ok().and_then(|i| self.effs.get(i)))
++                    .and_then(|s| s.origins.get(&elem))
++                    .copied()
++                    .unwrap_or(r.span);
++                let same_named = match &elem {
++                    Elem::Name(atom) if relation == EffectRelation::Cover => sup
+                         .fixed
+                         .names
+                         .iter()
+-                        .map(|n| super::effects::effect_name(ctx, n, Some(ctx.module)))
+-                        .collect::<Vec<_>>()
+-                        .join(", ");
+-                    ctx.diagnostic(
+-                        DiagBuilder::new(DiagCode::E0519)
+-                            .arg("effect", name)
+-                            .arg("expected", expected)
+-                            .arg("reason", reason)
+-                            .primary(r.span)
+-                            .note("atomic")
+-                            .build(),
+-                    );
++                        .filter(|candidate| match (atom, *candidate) {
++                            (EffectName::Builtin(a, _), EffectName::Builtin(b, _)) => a == b,
++                            (EffectName::User(a, _), EffectName::User(b, _)) => a == b,
++                            _ => false,
++                        })
++                        .collect::<Vec<_>>(),
++                    Elem::Name(_) | Elem::Var(_) => Vec::new(),
++                };
++                if let Elem::Name(atom) = &elem
++                    && !same_named.is_empty()
++                {
++                    if pair.is_none()
++                        || reported.insert((r.span.file.0, r.span.start.0, r.span.end.0))
++                    {
++                        let reason = if matches!(atom.range(), scope::Range::Top) {
++                            super::text::UNKNOWN_SOURCE
++                        } else {
++                            super::text::NOT_COVERED
++                        };
++                        let name = super::effects::effect_name(ctx, atom, Some(ctx.module));
++                        let expected = same_named
++                            .into_iter()
++                            .map(|n| super::effects::effect_name(ctx, n, Some(ctx.module)))
++                            .collect::<Vec<_>>()
++                            .join(", ");
++                        ctx.diagnostic(
++                            DiagBuilder::new(DiagCode::E0519)
++                                .arg("effect", name)
++                                .arg("expected", expected)
++                                .arg("reason", reason)
++                                .primary(origin)
++                                .secondary(r.span, "declared")
++                                .note("atomic")
++                                .help("scopes")
++                                .build(),
++                        );
++                    }
++                    if pair.is_some() {
++                        break;
++                    }
+                     continue;
+                 }
+                 if let Some((a, b)) = &pair {
+@@ -2313,12 +2333,6 @@
+                     }
+                     break;
+                 }
+-                let origin = sub
+-                    .var
+-                    .and_then(|v| usize::try_from(v.0).ok().and_then(|i| self.effs.get(i)))
+-                    .and_then(|s| s.origins.get(&elem))
+-                    .copied()
+-                    .unwrap_or(r.span);
+                 let mut set = EffectSet::empty();
+                 insert(&mut set, elem.clone());
+                 let shown = self.show(
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -646,73 +646,100 @@
+ // 公開check入口で、名前・族・Top・和の境界を固定した期待値と照合する。
+ #[test]
+ fn effect_coverage_uses_one_same_named_atom() {
+-    for (required, allowed, accepted) in [
+-        ("File.Read[\"/data/a\"]", "File.Read[\"/data/**\"]", true),
+-        ("File.Read[\"/data/**\"]", "File.Read", true),
+-        ("File.Read[\"/data\"]", "File.Read[\"/data/**\"]", true),
+-        ("File.Read[\"/data/**\"]", "File.Read[\"/data/a\"]", false),
+-        ("File.Read", "File.Read[\"/**\"]", false),
+-        ("File.Read[\"/data/a\"]", "File.Write[\"/data/**\"]", false),
++    for (required, allowed, rejection) in [
++        ("File.Read[\"/data/a\"]", "File.Read[\"/data/**\"]", None),
++        ("File.Read[\"/data/**\"]", "File.Read", None),
++        ("File.Read[\"/data\"]", "File.Read[\"/data/**\"]", None),
++        (
++            "File.Read[\"/data/**\"]",
++            "File.Read[\"/data/a\"]",
++            Some("E0519"),
++        ),
++        (
++            r#"File.Read["/data/**"]"#,
++            r#"File.Read["/data/a"], File.Write["/other/**"]"#,
++            Some("E0519"),
++        ),
++        ("File.Read", "File.Read[\"/**\"]", Some("E0519")),
++        (
++            "File.Read[\"/data/a\"]",
++            "File.Write[\"/data/**\"]",
++            Some("E0501"),
++        ),
+         (
+             "Http.Connect[\"a.example\", 443]",
+             "Http.Connect[\"*.example\", 400..500]",
+-            true,
++            None,
+         ),
+         (
+             "Http.Connect[\"example\", 443]",
+             "Http.Connect[\"**.example\", 443]",
+-            false,
++            Some("E0519"),
+         ),
+         (
+             "Http.Connect[\"a.b.example\", 443]",
+             "Http.Connect[\"*.example\", 443]",
+-            false,
++            Some("E0519"),
+         ),
+         (
+             "Http.Connect[\"a.b.example\", 443]",
+             "Http.Connect[\"**.example\", 443]",
+-            true,
++            None,
+         ),
+         (
+             "Http.Connect[\"a.example\", 0..9]",
+             "Http.Connect[\"a.example\", 0..4, \"a.example\", 5..9]",
+-            false,
++            Some("E0519"),
+         ),
+         (
+             "Http.Connect[\"192.0.2.1\", 443]",
+             "Http.Connect[\"192.0.2.0/24\", 443]",
+-            true,
++            None,
+         ),
+         (
+             "Http.Connect[\"192.0.2.1\", 443]",
+             "Http.Connect[\"::/0\", 443]",
+-            false,
++            Some("E0519"),
+         ),
+         (
+             "Http.Connect[\"::ffff:192.0.2.1\", 443]",
+             "Http.Connect[\"0.0.0.0/0\", 443]",
+-            false,
++            Some("E0519"),
+         ),
+         (
+             "Http.Connect[\"a.example\", 443]",
+             "Http.Connect[\"0.0.0.0/0\", 0..65535]",
+-            false,
++            Some("E0519"),
+         ),
+     ] {
+         let source = format!(
+             "{IMPORTS}function target() -> Unit uses {required}\n ()\nend function\nfunction caller() -> Unit uses {allowed}\n target()\nend function\n"
+         );
+         let checked = check(&source);
+-        if accepted {
+-            assert!(
+-                errors(&checked).is_empty(),
+-                "{source}\n{:?}",
+-                checked.diagnostics
+-            );
+-        } else {
++        if let Some(code) = rejection {
+             let ds = errors(&checked);
+             assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
+-            assert_eq!(ds[0].code.unwrap().info().id, "E0519", "{source}\n{ds:?}");
++            assert_eq!(ds[0].code.unwrap().info().id, code, "{source}\n{ds:?}");
++            if code == "E0501" {
++                continue;
++            }
++            assert_eq!(
++                slice(&source, ds[0].primary.as_ref().unwrap().span),
++                "target()"
++            );
++            assert_eq!(slice(&source, ds[0].secondary[0].span), "caller");
++            assert_eq!(ds[0].secondary[0].text, "declared here");
++            if allowed == r#"File.Read["/data/a"], File.Write["/other/**"]"# {
++                assert_eq!(
++                    ds[0].primary.as_ref().unwrap().text,
++                    r#"`File.Read["/data/**"]` is not covered by `File.Read["/data/a"]`"#
++                );
++            }
++            assert_eq!(ds[0].helps.len(), 1);
++            assert_eq!(
++                ds[0].helps[0].message,
++                "widen the surrounding atom scopes, or narrow the callee scopes"
++            );
+             let reason = if required == "File.Read" {
+                 "unknownSource"
+             } else {
+@@ -720,8 +747,74 @@
+             };
+             assert!(ds[0].message.contains(reason), "{ds:?}");
+             assert!(ds[0].notes.iter().any(|n| n.contains("one atom")), "{ds:?}");
++        } else {
++            assert!(
++                errors(&checked).is_empty(),
++                "{source}\n{:?}",
++                checked.diagnostics
++            );
+         }
+     }
++}
++
++// 関門: 範囲付き原子の存在だけで、効果名の宣言漏れの位置と修正案を変えない。
++// Topだけの既存の診断例では、無関係な範囲がE0519へ分岐させる退行を捕まえない。
++// 通常のcheck入口で診断を観測し、差し込み口は追加しない。
++#[test]
++fn effect_coverage_preserves_missing_effect_diagnostics() {
++    for (required, surrounding) in [
++        (r#"File.Read["/data/a"]"#, ""),
++        ("Console.Write", r#" uses File.Read["/data/**"]"#),
++    ] {
++        let source = format!(
++            "{IMPORTS}import Benitoite.Unofficial.IO.Console\nfunction target() -> Unit uses {required}\n ()\nend function\nfunction main() -> Unit{surrounding}\n target()\nend function\n"
++        );
++        let checked = check(&source);
++        let ds = errors(&checked);
++        assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
++        let d = ds[0];
++        assert_eq!(d.code.unwrap().info().id, "E0501", "{source}\n{ds:?}");
++        let primary = d.primary.as_ref().unwrap();
++        assert_eq!(slice(&source, primary.span), "target()");
++        assert_eq!(
++            usize::try_from(primary.span.start.0).unwrap(),
++            source.rfind("target()").unwrap()
++        );
++        assert_eq!(primary.text, format!("`{required}` happens here"));
++        assert_eq!(d.secondary.len(), 1);
++        assert_eq!(slice(&source, d.secondary[0].span), "main");
++        assert_eq!(d.secondary[0].text, "declared here");
++        assert_eq!(d.helps.len(), 1);
++        assert_eq!(
++            d.helps[0].message,
++            format!(
++                "add `uses {required}` to the signature, or move this call to a function that uses `{required}`"
++            )
++        );
++    }
++}
++
++// 関門: 一つの引数で複数の原子が上限を超えても、同じ位置の不一致は一件で報告する。
++// 一原子ずつの既存例は、pair制約でのE0519の重複を観測しない。
++#[test]
++fn effect_coverage_reports_one_failure_per_argument() {
++    let source = format!(
++        r#"{IMPORTS}
++function relay(body: function() -> Unit uses File.Read["/allowed/**"], File.Write["/allowed/**"]) -> Unit
++ ()
++end function
++function main() -> Unit
++ bind g <- lambda() -> Unit uses File.Read["/other/a"], File.Write["/other/a"]
++  ()
++ end lambda
++ relay(body: g)
++end function
++"#
++    );
++    let checked = check(&source);
++    let ds = errors(&checked);
++    assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
++    assert_eq!(ds[0].code.unwrap().info().id, "E0519", "{ds:?}");
+ }
+ 
+ // 関門: 被覆を制約の各生成位置へ接続し、型確定後のコアIRにも同じ意味で渡す。
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -34,7 +34,7 @@
+ 
+ 【決定】包含を被覆で判定する位置では、必要な各原子を周囲の同名の一原子が覆うことを求める。パスの木はその幹以下を覆い、ホストの one/many は幹を含めず、それぞれ一段の子と任意の正の段数の子を覆う。IP は同族の完全一致か CIDR、ポートは閉区間の包含を使い、ホストとポートの両方が覆うときにその組を覆う。Top は同名の閉じた範囲を覆うが、非 Top は Top を覆わない。例えば `/data/**` は `/data/a` を覆い、`/**` でも Top を覆わない。ポート `0..4` と `5..9` の二原子は、一原子の `0..9` を覆わない。適用位置と構造上に残す位置は[型システム](01-06-type-system.md#エフェクトの包含)で定める。
+ 
+-【決定】範囲の被覆による包含が成立しない場合は E0519 とし、必要な原子、周囲の原子、拒否の理由を示す。必要な範囲が Top なら `unknownSource`、その他は一原子の被覆の不成立として `notCovered` を示し、和では一原子を覆えないことを注記する。既存の Top の原子だけの制約では従来の診断を保つ。
++【決定】被覆で包含を判定する位置で、上限に同じ名前の原子があるが、そのどの一原子も必要な原子を覆えない場合は E0519 とする。必要な原子、上限の同じ名前の原子、拒否の理由を示す。必要な範囲が Top なら `unknownSource`、その他は一原子の被覆の不成立として `notCovered` を示し、和では一原子を覆えないことを注記する。上限に同じ名前の原子がない場合は、従来の E0501／E0401 の診断を保つ。
+ 
+ ```text
+ import Benitoite.Unofficial.IO.File
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -630,7 +630,7 @@
+ 
+ 1. 各エフェクトの変数の集合を空集合から始める。
+ 2. 含まれる(X, Y) のうち Y がエフェクトの変数を持つものについて、X の現在の要素のうち F(Y) で満たされないものを S(v(Y)) に加える。被覆の制約では同名の一原子の被覆、構造上の制約では構造の所属で F(Y) との照合を行う。S(v(Y)) への挿入・重複除去は常に構造で行い、すでにある広い原子を理由に狭い原子を捨てない。どの変数の集合も増えなくなるまで繰り返す。要素を加えるときは、その要素がどの呼び出しから来たかを記録する。
+-3. 含まれる(X, Y) のうち Y がエフェクトの変数を持たないもの（宣言した `uses`、ラムダの `uses`、`lazy` の本体とガードの空集合）について、制約ごとの関係で X の現在の要素が F(Y) に含まれるかを検査する。被覆が成立せず非 Top の原子が関わる場合は E0519 とし、必要な原子・周囲の原子・理由（必要な範囲が Top なら `unknownSource`、その他は `notCovered`）と一原子の制限を示す。Top だけの制約では従来の診断を保つ。含まれない要素があれば誤りとし、その要素と、それを生じた呼び出しの位置を示す（[型システム](../01-spec/01-06-type-system.md)の「式のエフェクト」）。`lazy` の本体の誤りでは引数のないラムダを使う書き方を、ガードの誤りでは本体の中で条件を調べる書き方を修正案として示す。
++3. 含まれる(X, Y) のうち Y がエフェクトの変数を持たないもの（宣言した `uses`、ラムダの `uses`、`lazy` の本体とガードの空集合）について、制約ごとの関係で X の現在の要素が F(Y) に含まれるかを検査する。被覆の制約で、F(Y) に同じ名前の原子があるが、そのどの一原子も必要な原子を覆えない場合は E0519 とし、必要な原子・F(Y) の同じ名前の原子・理由（必要な範囲が Top なら `unknownSource`、その他は `notCovered`）と一原子の制限を示す。F(Y) に同じ名前の原子がない場合は、従来の E0501／E0401 の経路を保つ。含まれない要素があれば誤りとし、その要素と、それを生じた呼び出しの位置を示す（[型システム](../01-spec/01-06-type-system.md)の「式のエフェクト」）。`lazy` の本体の誤りでは引数のないラムダを使う書き方を、ガードの誤りでは本体の中で条件を調べる書き方を修正案として示す。
+ 
+ 手順 2 は、右辺の確定した要素で満たされない元の原子を構造の集合へ追加する。被覆を使って広い原子へ置き換えた別の解は探索しない。この伝播で得られる構造の集合は各変数について最小である。単一化が加える両方向の構造上の含まれる制約も、同じ手順で解く。手順 2 を終えた時点で、Y が変数を持つ制約はすべて満たされている。
+ 
+--- a/docs/design/02-impl/02-10-diagnostics.md
++++ b/docs/design/02-impl/02-10-diagnostics.md
+@@ -36,7 +36,7 @@
+ 
+ 【決定】複数引数の位置指定を E0449、名前のない関数型を E0257 とする。名前付き呼び出しでは、混在を E0450、未知を E0451、重複を E0452、不足を E0453、既知の契約名の不一致を E0454、未確定の契約を E0455、直接のデータ構成子への名前指定を E0456 とする。解析の誤りと呼べない値を先に扱い、対応付けの誤りから不足や型不一致を連鎖させない。ラベルの誤りはラベル位置、契約名の不一致は期待と実際の名前・順を示す。修正案は式の評価順を保ち、契約と個数から一意に決まるラベル挿入に限って編集を付ける。改名・穴・混在・未確定の対応では安全を確認できなければ文だけを示す。
+ 
+-【決定】E0519 は、非 Top の原子が関わる一原子の被覆の拒否を表す。主文に必要な原子と理由を示し、主位置のラベルに周囲の原子を示す。理由は必要な原子が Top なら `unknownSource`、その他は `notCovered` とし、同名の一原子で覆うこと、和では覆わないこと、Top を覆うのは Top だけであることを注記する。文言は `diag::codes`、理由の文字列は型検査の `text` に置く。型の構造の不一致と既存の Top だけの制約の診断は、それぞれ従来のコードを保つ。
++【決定】E0519 は、被覆で包含を判定する位置で、上限に同じ名前の原子があるが、そのどの一原子も必要な原子を覆えない場合の拒否を表す。主文に必要な原子と理由を示す。主位置はその原子の由来の位置とし、ラベルに上限の同じ名前の原子だけを示す。宣言の位置は副位置の `declared here` とする。理由は必要な原子が Top なら `unknownSource`、その他は `notCovered` とし、同名の一原子で覆うこと、和では覆わないこと、Top を覆うのは Top だけであることを注記する。周囲の原子を広げるか、呼び先の範囲を狭める修正案を示す。文言は `diag::codes`、理由と修正案の文字列は型検査の `text` に置く。上限に同じ名前の原子がない場合は、従来の E0501／E0401 の経路を保ち、型の構造の不一致の診断も従来のコードを保つ。
+ 
+ ### 修正案
+ 

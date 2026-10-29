@@ -1,7 +1,7 @@
 # RS2: S2 の調べと判断の案のレビュー
 
 - 対象: `study/file-effects.md`、`study/file-effects-questions.md`（Codex、S2）
-- 前提: [README](../README.md) の「設計者の決定（2026-10-23）」（覆さない）、`work/m011/S2-prompt.md`、`work/m011/common.md`、docs/todo の TODO-206・TODO-276
+- 前提: [README](../README.md) の「設計者の決定（2026-10-23）」（覆さない）、[S2-prompt.md の保管方針](../work-copies/README.md#f003)、[common.md の保管方針](../work-copies/README.md#f007)、docs/todo の TODO-206・TODO-276 依頼文・実行の運用記録は git の外に置き、保管していない。結果とレビューはこのアーカイブ内の記録を正とする。
 - 開始版: `a0d652c0`（ブランチ `san_benito`）
 - レビュー日: 2026-10-23。外部資料の確認日も 2026-10-23 である。
 - 行った確認: 設計書・ソース・Lean の読み取り、既存のビルド済みの CLI（`target/debug/benitoite`、0.0.10、2026-10-21 20:32 のビルド）での小さな確認（スクリプトはリポジトリの外のスクラッチの領域に置いた）、一次資料の取得。cargo のビルド・テスト、Lean のビルドは行っていない。

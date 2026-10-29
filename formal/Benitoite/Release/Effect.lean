@@ -15,7 +15,13 @@ open Benitoite.Release.Order
 def empty : Eff := .mk (fun _ => false) []
 
 /-- 名前一つの効果。 -/
-def single (l : EffName) : Eff := ofAtoms (fun a => a == .name l)
+def single (l : EffName) : Eff := ofAtoms (fun a => a == .nameTop l)
+
+/-- 範囲の位置 ix を持つ名前一つの効果。単一の対象の形の IO の項目の効果 `{L[rvar 0]}` に使う（`Builtins.ShapeOk`）。
+`single l` は `singleAt l Ix.top` と同じ項である。 -/
+def singleAt (l : EffName) (ix : Scope.Signature.Ix) : Eff := ofAtoms (fun a => a == .name l ix)
+
+theorem single_eq_singleAt (l : EffName) : single l = singleAt l Scope.Signature.Ix.top := rfl
 
 /-- 行一つの効果。 -/
 def row (i : Nat) : Eff := ofAtoms (fun a => a == .rho i)
@@ -32,8 +38,19 @@ noncomputable def union (e f : Eff) : Eff := norm (.mk (fun a => test e a || tes
 
 theorem mem_empty (a : Atom) : mem empty a ↔ False := by simp [mem, test, atoms, empty]
 
-theorem mem_single (l : EffName) (a : Atom) : mem (single l) a ↔ a = .name l := by
+theorem mem_single (l : EffName) (a : Atom) : mem (single l) a ↔ a = .nameTop l := by
   simp [mem, test, single, ofAtoms, atoms]
+
+/-- `Eff.single l` は Top の原子だけを含み、範囲付きの同じ名前の原子を含まない。 -/
+theorem mem_single_name (l m : EffName) (r : Scope.Signature.Ix) :
+    mem (single l) (.name m r) ↔ m = l ∧ r = Scope.Signature.Ix.top := by
+  rw [mem_single]
+  constructor
+  · intro h; cases h; exact ⟨rfl, rfl⟩
+  · rintro ⟨rfl, rfl⟩; rfl
+
+theorem mem_singleAt (l : EffName) (ix : Scope.Signature.Ix) (a : Atom) : mem (singleAt l ix) a ↔ a = .name l ix := by
+  simp [mem, test, singleAt, ofAtoms, atoms]
 
 theorem mem_row (i : Nat) (a : Atom) : mem (row i) a ↔ a = .rho i := by
   simp [mem, test, row, ofAtoms, atoms]

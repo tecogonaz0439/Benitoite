@@ -1,0 +1,25 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "c0a4673a4b6bd532e1ea2331a7f71105efdbd507",
+    "--only",
+    "tests_related,skill_generated,spec_tally",
+    "--test",
+    "reference_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples",
+    "--test",
+    "spec_examples",
+    "--dry-run"
+  ],
+  "check_exit": 0,
+  "elapsed_seconds": 0.011281959000000001,
+  "at": "2026-10-29T19:01:45.233850+00:00"
+}

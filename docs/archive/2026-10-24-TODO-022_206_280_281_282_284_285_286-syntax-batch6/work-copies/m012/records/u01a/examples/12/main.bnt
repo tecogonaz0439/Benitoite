@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.IO.Console
+
+function double(n: Integer) -> Integer
+  return n * 2
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(double(21)))
+end function

@@ -7,9 +7,12 @@ open Lean Benitoite.Exchange Benitoite.Exchange.CheckInput Benitoite.Surface.Che
 def errorJson (e : Benitoite.Surface.Check.Error) : Json :=
   Json.mkObj [("path", toJson e.path), ("reason", toJson e.reason)]
 
-def resultJson : Benitoite.Surface.Check.Result Unit → Json
+/-- 型付けの誤りは従来の形（`error`）、必須の判定の拒否は出現の鍵と DET-05 の理由（`cover`）で書く。 -/
+def resultJson : Except Benitoite.Surface.CheckAccept.EntryError Unit → Json
   | .ok _ => Json.mkObj [("ok", toJson true)]
-  | .error e => Json.mkObj [("ok", toJson false), ("error", errorJson e)]
+  | .error (.typing e) => Json.mkObj [("ok", toJson false), ("error", errorJson e)]
+  | .error (.cover k f) => Json.mkObj [("ok", toJson false),
+      ("cover", Json.mkObj [("key", encodeKey k), ("reason", encodeCoverFailure f)])]
 
 def readJson (file : String) : IO Json := do
   IO.ofExcept (Json.parse (← IO.FS.readFile file))
@@ -23,15 +26,20 @@ def selectInput (j : Json) (group name : String) : Except String Json := do
   return input
 
 /-- IO を挟んで計算し、同じ純粋な検査結果の共有を計測に混ぜない。 -/
-@[noinline] def timedCheck (q : Benitoite.Surface.Check.Input)
+@[noinline] def timedCheck (q : Benitoite.Surface.Check.Input) (A : Benitoite.Surface.CheckAccept.AcceptInput)
     (m : Materials) (names : Names) (selected : Option String) :
-    IO (Benitoite.Surface.Check.Result Unit × Nat) := do
+    IO (Except Benitoite.Surface.CheckAccept.EntryError Unit × Nat) := do
   let start ← IO.monoNanosNow
+  -- 型検査器の入口は型付けの検査に必須の判定の受理を組み込む（`CheckAccept.checkProgramAccepted`）。
   let outcome ← match selected with
-    | none => pure (checkProgram q m names)
+    | none => pure (Benitoite.Surface.CheckAccept.checkProgramAccepted q A m names)
     | some name =>
       let some d := m.program.defs name | throw (IO.userError s!"not an ordinary definition: {name}")
-      pure (Benitoite.Surface.Check.checkDef { q with D := q.D.withView (m.functionViews name) } [] d)
+      pure <| match Benitoite.Surface.Check.checkDef { q with D := q.D.withView (m.functionViews name) } [] d with
+        | .error e => .error (.typing e)
+        | .ok () => match Benitoite.Surface.CheckAccept.acceptDef A name d with
+          | .error (k, f) => .error (.cover k f)
+          | .ok () => .ok ()
   -- 結果のタグを評価してから時計を読む。
   let encoded := (resultJson outcome).compress
   if encoded.isEmpty then throw (IO.userError "empty result")
@@ -75,9 +83,9 @@ def run (args : List String) : IO UInt32 := do
     throw (IO.userError s!"table checks: constructors={prepared.constructors} records={prepared.records} implNames={prepared.implNames}")
   let ready ← IO.monoNanosNow
   let mut times : List Nat := []
-  let mut result : Benitoite.Surface.Check.Result Unit := .ok ()
+  let mut result : Except Benitoite.Surface.CheckAccept.EntryError Unit := .ok ()
   for _ in List.range repetitions do
-    let (outcome, ns) ← timedCheck prepared.input prepared.materials prepared.materials.names selected
+    let (outcome, ns) ← timedCheck prepared.input prepared.accept prepared.materials prepared.materials.names selected
     result := outcome
     times := times ++ [ns]
   let output := Json.mkObj [
@@ -92,7 +100,7 @@ def run (args : List String) : IO UInt32 := do
     ("implNamesOk", toJson prepared.implNames), ("result", resultJson result)]
   IO.FS.writeFile report (output.pretty ++ "\n")
   IO.println output.compress
-  return if result.isOk then 0 else 1
+  return if result matches .ok _ then 0 else 1
 
 def main (args : List String) : IO UInt32 := do
   try run args catch e =>

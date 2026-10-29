@@ -1,0 +1,8 @@
+function f(n: Integer8) -> Integer8
+  if n > 100s8 then return n + 100s8 else return 0s8 end if
+end function
+
+function main() -> Unit
+  bind _ <- f(101s8)
+  return ()
+end function

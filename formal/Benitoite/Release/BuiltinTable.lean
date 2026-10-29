@@ -55,7 +55,7 @@ mutual
             let s := if key then d.key else d.eq
             if s.always then ⟨true, []⟩
             else summarizeArgs S key (some s.dependsOn) 0 ts
-    | .fn _ _ _ _ | .opaque _ | .reference _ | .lazy _ | .tapp _ _
+    | .fn _ _ _ _ | .opaque _ _ | .reference _ | .lazy _ | .tapp _ _
       | .cont _ _ _ | .dict _ _ | .ctor _ => ⟨!key, []⟩
 
   /-- 番号を数えながら依存する型引数を辿る。none は全引数を選ぶ。
@@ -110,7 +110,7 @@ mutual
             s.eq.dependsOn.all (· < ts.length) && satArgs S C false s.eq.dependsOn 0 ts &&
             (!key || (!s.key.always && s.key.dependsOn.all (· < ts.length) &&
               satArgs S C true s.key.dependsOn 0 ts))
-    | .fn _ _ _ _ | .opaque _ | .reference _ | .lazy _ | .cont _ _ _
+    | .fn _ _ _ _ | .opaque _ _ | .reference _ | .lazy _ | .cont _ _ _
       | .dict _ _ | .ctor _ | .tapp _ _ => false
 
   /-- 欠けた依存の位置は呼び出し元で拒否し、ここでは要素に直接再帰する。 -/
@@ -184,7 +184,7 @@ private def sampleDecls : List BuiltinDataDecl := [
   ⟨"Nest", 1, [[.tvar 0], [.data "Nest" [.list (.tvar 0)]]]⟩,
   ⟨"A", 2, [[.data "B" [.tvar 1, .tvar 0]]]⟩,
   ⟨"B", 2, [[.tvar 0], [.data "A" [.tvar 1, .tvar 0]]]⟩,
-  ⟨"R", 1, [[.tvar 0], [.opaque "IOError"]]⟩,
+  ⟨"R", 1, [[.tvar 0], [.opaqueTop "IOError"]]⟩,
   ⟨"F", 0, [[.data "G" []]]⟩,
   ⟨"G", 0, [[.base .float], [.data "F" []]]⟩]
 private def sampleS : SummaryTable := dataSummaries sampleDecls
@@ -227,7 +227,7 @@ example : dataSummaries [⟨"Pair", 2, [[.tvar 1, .tvar 0, .tvar 1]]⟩] =
     [⟨"Pair", 2, ⟨false, [0, 1]⟩, ⟨false, [0, 1]⟩⟩] := by decide
 example : dataSummaries [
     ⟨"H", 0, [[.data "I" []]]⟩,
-    ⟨"I", 0, [[.data "H" []], [.opaque "IOError"]]⟩] =
+    ⟨"I", 0, [[.data "H" []], [.opaqueTop "IOError"]]⟩] =
     [⟨"H", 0, ⟨true, []⟩, ⟨false, []⟩⟩,
      ⟨"I", 0, ⟨true, []⟩, ⟨false, []⟩⟩] := by decide
 -- 関数などの中の Float と型パラメータは、要約の依存や鍵の条件に加えない。
@@ -235,7 +235,7 @@ example : dataSummaries [⟨"Hidden", 1, [[
     .fn ["value"] [.tvar 0] (.base .float) Eff.empty, .reference (.base .float),
     .lazy (.tvar 0), .tapp 0 [.base .float]]]⟩] =
     [⟨"Hidden", 1, ⟨true, []⟩, ⟨false, []⟩⟩] := by decide
-example : [Ty.opaque "IOError", .reference (.base .integer), .lazy (.base .integer),
+example : [Ty.opaqueTop "IOError", .reference (.base .integer), .lazy (.base .integer),
     .cont (.base .integer) (.base .integer) Eff.empty, .dict "Eq" (.base .integer),
     .ctor .list, .tapp 0 [.base .integer]].all (fun t => !satB [] [] t eqC) = true ∧
     satB [] [] .bytes keyC = true ∧ satB [] [] (.set (.base .integer)) keyC = true := by decide

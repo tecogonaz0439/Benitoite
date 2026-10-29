@@ -1,0 +1,1360 @@
+diff --git a/crates/benitoite/examples/derive_inventory/schema.rs b/crates/benitoite/examples/derive_inventory/schema.rs
+index e5f5bc9d..34771eb1 100644
+--- a/crates/benitoite/examples/derive_inventory/schema.rs
++++ b/crates/benitoite/examples/derive_inventory/schema.rs
+@@ -106,11 +106,12 @@ impl Output<'_> {
+     }
+     fn effect_set(&self, e: &EffectSet, s: &Scheme) -> Result<Value, Error> {
+         let mut names = e.names.iter().map(|n|match n {
+-            EffectName::Builtin(id) => {
++            EffectName::Builtin(id, benitoite::types::scope::Range::Top) => {
+                 let d = id.def().ok_or(text::INVALID_SCHEMA)?;
+                 Ok(json!({"tag":"builtin","name":d.module.iter().copied().chain(std::iter::once(d.name)).collect::<Vec<_>>().join(".")}))
+             }
+-            EffectName::User(id) => Ok(json!({"tag":"named","name":self.name(*id)})),
++            EffectName::User(id, benitoite::types::scope::Range::Top) => Ok(json!({"tag":"named","name":self.name(*id)})),
++            EffectName::Builtin(..) | EffectName::User(..) => Err(text::INVALID_SCHEMA.into()),
+         }).collect::<Result<Vec<_>,Error>>()?;
+         names.sort_by_key(|v| {
+             v.get("name")
+diff --git a/crates/benitoite/examples/try_actions_inventory.rs b/crates/benitoite/examples/try_actions_inventory.rs
+index 3f10359c..b597dd13 100644
+--- a/crates/benitoite/examples/try_actions_inventory.rs
++++ b/crates/benitoite/examples/try_actions_inventory.rs
+@@ -33,8 +33,13 @@ fn effect_names(
+     let mut out = Vec::new();
+     for effect in &effects.names {
+         out.push(match effect {
+-            EffectName::Builtin(id) => benitoite::types::builtin::effect_name(*id)?,
+-            EffectName::User(id) => checked.types.effects.get(*id)?.display_name.clone(),
++            EffectName::Builtin(id, benitoite::types::scope::Range::Top) => {
++                benitoite::types::builtin::effect_name(*id)?
++            }
++            EffectName::User(id, benitoite::types::scope::Range::Top) => {
++                checked.types.effects.get(*id)?.display_name.clone()
++            }
++            EffectName::Builtin(..) | EffectName::User(..) => return None,
+         });
+     }
+     for failure in &effects.failures {
+diff --git a/crates/benitoite/src/bytecode/codegen/tables.rs b/crates/benitoite/src/bytecode/codegen/tables.rs
+index a698cdee..6c65a89b 100644
+--- a/crates/benitoite/src/bytecode/codegen/tables.rs
++++ b/crates/benitoite/src/bytecode/codegen/tables.rs
+@@ -270,13 +270,15 @@ impl Gen<'_> {
+             .iter()
+             .find(|op| op.binding == binding)
+             .ok_or_else(|| internal("unknown operation"))?;
+-        let effect = match op.effect {
+-            EffectName::User(_) => op
++        // 実行時の操作は宣言の束縛で識別する。範囲はIRの静的検査まで保持し、
++        // 実行時の操作名の一部にはしない（設計書 02-06「コア IR」）。
++        let effect = match &op.effect {
++            EffectName::User(_, _) => op
+                 .name
+                 .rsplit_once('.')
+                 .map_or("", |(head, _)| head)
+                 .to_string(),
+-            EffectName::Builtin(id) => {
++            EffectName::Builtin(id, _) => {
+                 let def = id.def().ok_or_else(|| internal("unknown builtin effect"))?;
+                 def.module.last().map_or_else(
+                     || def.name.to_string(),
+diff --git a/crates/benitoite/src/cli/inspection.rs b/crates/benitoite/src/cli/inspection.rs
+index fdd3dc0f..7fc83449 100644
+--- a/crates/benitoite/src/cli/inspection.rs
++++ b/crates/benitoite/src/cli/inspection.rs
+@@ -69,8 +69,8 @@ pub(super) fn function_contract(
+         .names
+         .iter()
+         .map(|effect| {
+-            let EffectName::Builtin(id) = effect else {
+-                return Err(internal("user effect in checked entry contract"));
++            let EffectName::Builtin(id, crate::types::scope::Range::Top) = effect else {
++                return Err(internal("user or scoped effect in checked entry contract"));
+             };
+             Ok((effect_name(*id)?, *id))
+         })
+@@ -90,15 +90,16 @@ pub(super) fn function_contract(
+             .flat_map(|effective| &effective.origins)
+             .filter(|origin| origin.file)
+             .flat_map(|origin| {
+-                origin.effects.names.iter().filter_map(|effect| {
+-                    if let EffectName::Builtin(id) = effect {
+-                        Some((*id, origin.span))
+-                    } else {
+-                        None
++                origin.effects.names.iter().map(|effect| match effect {
++                    EffectName::Builtin(id, crate::types::scope::Range::Top) => {
++                        Ok((*id, origin.span))
++                    }
++                    EffectName::Builtin(..) | EffectName::User(..) => {
++                        Err(internal("user or scoped effect in checked file contract"))
+                     }
+                 })
+             })
+-            .collect(),
++            .collect::<Result<Vec<_>, InternalError>>()?,
+     })
+ }
+ 
+diff --git a/crates/benitoite/src/ir/check.rs b/crates/benitoite/src/ir/check.rs
+index 043971c5..3620b6a6 100644
+--- a/crates/benitoite/src/ir/check.rs
++++ b/crates/benitoite/src/ir/check.rs
+@@ -933,7 +933,10 @@ impl<'a> Checker<'a> {
+         }
+         self.computation(body, env);
+         let mut eff = body.eff.clone();
+-        eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));
++        eff.insert_name(EffectName::Builtin(
++            BuiltinEffectId::STATE,
++            crate::types::scope::Range::Top,
++        ));
+         self.equal(comp.origin, &comp.ty, &body.ty);
+         self.effects(comp.origin, &eff, &comp.eff);
+     }
+@@ -1323,7 +1326,8 @@ impl<'a> Checker<'a> {
+         let mut handled = EffectSet::empty();
+         for op in &self.program.ops {
+             if !op.failure
+-                && op.effect != EffectName::Builtin(BuiltinEffectId::STATE)
++                && op.effect
++                    != EffectName::Builtin(BuiltinEffectId::STATE, crate::types::scope::Range::Top)
+                 && self
+                     .program
+                     .ops
+@@ -1331,7 +1335,7 @@ impl<'a> Checker<'a> {
+                     .filter(|o| o.effect == op.effect)
+                     .all(|o| handle.clauses.iter().any(|c| c.op == o.binding))
+             {
+-                handled.insert_name(op.effect);
++                handled.insert_name(op.effect.clone());
+             }
+         }
+         if handled != handle.handled {
+@@ -1664,6 +1668,7 @@ mod tests {
+     fn write() -> EffectSet {
+         effect(EffectName::Builtin(
+             find_builtin_effect(&["IO", "Console"], "Write").unwrap(),
++            crate::types::scope::Range::Top,
+         ))
+     }
+     fn effect(name: EffectName) -> EffectSet {
+@@ -1672,7 +1677,10 @@ mod tests {
+         e
+     }
+     fn state() -> EffectSet {
+-        effect(EffectName::Builtin(BuiltinEffectId::STATE))
++        effect(EffectName::Builtin(
++            BuiltinEffectId::STATE,
++            crate::types::scope::Range::Top,
++        ))
+     }
+     fn var(id: u32, ty: Ty) -> Var {
+         Var {
+@@ -2280,7 +2288,10 @@ mod tests {
+         let mut s = scheme(
+             vec![ty.clone()],
+             ty,
+-            effect(EffectName::User(BindingId(42))),
++            effect(EffectName::User(
++                BindingId(42),
++                crate::types::scope::Range::Top,
++            )),
+         );
+         if polymorphic {
+             s.type_params.push(param(ParamKind::Value, constraint));
+@@ -2290,7 +2301,7 @@ mod tests {
+             failure: false,
+             param_names: (1..=1).map(|i| format!("arg{i}")).collect(),
+             binding: OP,
+-            effect: EffectName::User(BindingId(42)),
++            effect: EffectName::User(BindingId(42), crate::types::scope::Range::Top),
+             name: "Log.echo".into(),
+             arity: 1,
+             builtin: None,
+@@ -2350,7 +2361,10 @@ mod tests {
+             id: BodyId(2),
+             body,
+             clauses: vec![clause],
+-            handled: effect(EffectName::User(BindingId(42))),
++            handled: effect(EffectName::User(
++                BindingId(42),
++                crate::types::scope::Range::Top,
++            )),
+         };
+         add_def(
+             &mut p,
+@@ -2562,7 +2576,10 @@ end function
+         let mut broken = p.clone();
+         handler(&mut broken).handled = EffectSet::empty();
+         // 本体は εM ⊆ ε ∪ handled を満たすよう、ハンドラの許可する ε を広げる。
+-        broken.defs[0].body.eff = effect(EffectName::User(BindingId(42)));
++        broken.defs[0].body.eff = effect(EffectName::User(
++            BindingId(42),
++            crate::types::scope::Range::Top,
++        ));
+         broken.defs[0].eff = broken.defs[0].body.eff.clone();
+         handler(&mut broken).clauses[0].body.eff = broken.defs[0].eff.clone();
+         broken
+@@ -2637,7 +2654,10 @@ end function
+                 body: outer_resume,
+                 span: span(24),
+             }],
+-            handled: effect(EffectName::User(BindingId(42))),
++            handled: effect(EffectName::User(
++                BindingId(42),
++                crate::types::scope::Range::Top,
++            )),
+         };
+         handler(&mut p).clauses[0].body = comp(
+             CompKind::Handle(Box::new(nested)),
+@@ -3664,26 +3684,28 @@ end function
+     #[test]
+     fn handled_effects_require_every_operation_and_never_include_state() {
+         let mut p = handled_program(false);
+-        let effect_name = EffectName::User(BindingId(42));
++        let effect_name = EffectName::User(BindingId(42), crate::types::scope::Range::Top);
+         p.ops.push(OpDef {
+             failure: false,
+             param_names: Vec::new(),
+             binding: BindingId(41),
+-            effect: effect_name,
++            effect: effect_name.clone(),
+             name: "Log.other".into(),
+             arity: 0,
+             builtin: None,
+         });
+-        p.schemes
+-            .insert(BindingId(41), scheme(vec![], int(), effect(effect_name)));
++        p.schemes.insert(
++            BindingId(41),
++            scheme(vec![], int(), effect(effect_name.clone())),
++        );
+         handler(&mut p).handled = EffectSet::empty();
+-        p.defs[0].body.eff = effect(effect_name);
+-        p.defs[0].eff = effect(effect_name);
+-        handler(&mut p).clauses[0].body.eff = effect(effect_name);
++        p.defs[0].body.eff = effect(effect_name.clone());
++        p.defs[0].eff = effect(effect_name.clone());
++        handler(&mut p).clauses[0].body.eff = effect(effect_name.clone());
+         p.schemes
+-            .insert(MAIN, scheme(vec![], int(), effect(effect_name)));
++            .insert(MAIN, scheme(vec![], int(), effect(effect_name.clone())));
+         good(&p);
+-        handler(&mut p).handled = effect(effect_name);
++        handler(&mut p).handled = effect(effect_name.clone());
+         one(&p, 16, "handled effects");
+         handler(&mut p).handled = state();
+         one(&p, 16, "handled effects");
+diff --git a/crates/benitoite/src/ir/decision.rs b/crates/benitoite/src/ir/decision.rs
+index 55199125..a345f4b4 100644
+--- a/crates/benitoite/src/ir/decision.rs
++++ b/crates/benitoite/src/ir/decision.rs
+@@ -3279,7 +3279,10 @@ mod tests {
+                 }],
+                 handled: EffectSet {
+                     failures: vec![],
+-                    names: vec![EffectName::User(BindingId(61))],
++                    names: vec![EffectName::User(
++                        BindingId(61),
++                        crate::types::scope::Range::Top,
++                    )],
+                     vars: vec![],
+                 },
+             })),
+@@ -3516,7 +3519,10 @@ mod tests {
+     fn generated_nodes_have_minimal_effects_types_and_match_origins() {
+         let io = EffectSet {
+             failures: vec![],
+-            names: vec![EffectName::Builtin(BuiltinEffectId(2))],
++            names: vec![EffectName::Builtin(
++                BuiltinEffectId(2),
++                crate::types::scope::Range::Top,
++            )],
+             vars: vec![EffVar(0)],
+         };
+         let call = Comp {
+@@ -3669,7 +3675,7 @@ mod tests {
+             failure: false,
+             param_names: Vec::new(),
+             binding: BindingId(60),
+-            effect: EffectName::User(BindingId(61)),
++            effect: EffectName::User(BindingId(61), crate::types::scope::Range::Top),
+             name: "E.op".into(),
+             arity: 0,
+             builtin: None,
+diff --git a/crates/benitoite/src/ir/decision/arena.rs b/crates/benitoite/src/ir/decision/arena.rs
+index 37c9e074..131dd12d 100644
+--- a/crates/benitoite/src/ir/decision/arena.rs
++++ b/crates/benitoite/src/ir/decision/arena.rs
+@@ -414,6 +414,9 @@ fn ty_bytes(t: &Ty) -> Result<usize, LowerError> {
+                     .checked_mul(size_of::<crate::types::EffectName>())
+                     .ok_or_else(|| error("effect capacity overflow"))?,
+             )?;
++            for atom in &f.effects.names {
++                bytes = add_bytes(bytes, range_bytes(atom.range())?)?;
++            }
+             bytes = add_bytes(
+                 bytes,
+                 f.effects
+@@ -428,6 +431,26 @@ fn ty_bytes(t: &Ty) -> Result<usize, LowerError> {
+     Ok(bytes)
+ }
+ 
++// 原子の本体はty_bytesで数えた。範囲が所有する要素列と文字列も複製前に数える。
++fn range_bytes(range: &crate::types::scope::Range) -> Result<usize, LowerError> {
++    use crate::types::scope::{HostPattern, Range};
++    let parts = match range {
++        Range::Top => None,
++        Range::Path(p) => Some(p.stem().parts()),
++        Range::Host(HostPattern::Name(p)) => Some(p.stem().labels()),
++        Range::Endpoint(p) => match &p.host {
++            HostPattern::Name(p) => Some(p.stem().labels()),
++            HostPattern::Ip(_) => None,
++        },
++        Range::Host(HostPattern::Ip(_)) => None,
++    };
++    let mut bytes = 0;
++    for part in parts.into_iter().flatten() {
++        bytes = add_bytes(bytes, add_bytes(size_of::<String>(), part.len())?)?;
++    }
++    Ok(bytes)
++}
++
+ impl Matrix {
+     pub(super) fn allocation_bytes(&self, extra: usize) -> Result<usize, LowerError> {
+         let mut bytes = size_of::<Self>();
+diff --git a/crates/benitoite/src/ir/desugar/decls.rs b/crates/benitoite/src/ir/desugar/decls.rs
+index e9985daa..bd4c5f54 100644
+--- a/crates/benitoite/src/ir/desugar/decls.rs
++++ b/crates/benitoite/src/ir/desugar/decls.rs
+@@ -108,7 +108,7 @@ pub(super) fn program(
+                 failure: Some(*id) == resolved.stdlib("Benitoite.Failure.raise"),
+                 param_names: s.param_names.clone(),
+                 binding: *id,
+-                effect: effect.name,
++                effect: effect.name.clone(),
+                 name: format!("{prefix}.{}", b.name),
+                 arity: number(s.class_constraints.len().saturating_add(s.params.len()))?,
+                 builtin: resolved.builtin_ops.get(*id).copied(),
+diff --git a/crates/benitoite/src/ir/desugar/die_tests.rs b/crates/benitoite/src/ir/desugar/die_tests.rs
+index 3c954b37..05073a65 100644
+--- a/crates/benitoite/src/ir/desugar/die_tests.rs
++++ b/crates/benitoite/src/ir/desugar/die_tests.rs
+@@ -209,6 +209,7 @@ fn die_failure_core_has_one_message_then_one_cause_and_canonical_exit() {
+                 failures: vec![],
+                 names: vec![EffectName::Builtin(
+                     crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap(),
++                    crate::types::scope::Range::Top,
+                 )],
+                 vars: vec![],
+             };
+diff --git a/crates/benitoite/src/ir/desugar/effects.rs b/crates/benitoite/src/ir/desugar/effects.rs
+index 7deea353..83f03755 100644
+--- a/crates/benitoite/src/ir/desugar/effects.rs
++++ b/crates/benitoite/src/ir/desugar/effects.rs
+@@ -429,7 +429,10 @@ impl State<'_> {
+ 
+ fn state_effect(eff: &EffectSet) -> EffectSet {
+     let mut eff = eff.clone();
+-    eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));
++    eff.insert_name(EffectName::Builtin(
++        BuiltinEffectId::STATE,
++        crate::types::scope::Range::Top,
++    ));
+     eff
+ }
+ fn without(eff: &EffectSet, removed: &EffectSet) -> EffectSet {
+@@ -444,7 +447,7 @@ fn without(eff: &EffectSet, removed: &EffectSet) -> EffectSet {
+             .names
+             .iter()
+             .filter(|n| !removed.names.contains(n))
+-            .copied()
++            .cloned()
+             .collect(),
+         vars: eff
+             .vars
+diff --git a/crates/benitoite/src/ir/desugar/tests.rs b/crates/benitoite/src/ir/desugar/tests.rs
+index e9933a6d..4b1f29d0 100644
+--- a/crates/benitoite/src/ir/desugar/tests.rs
++++ b/crates/benitoite/src/ir/desugar/tests.rs
+@@ -855,7 +855,10 @@ end function
+     assert!(l.body.eff.is_empty());
+     assert_eq!(
+         f.effects.names,
+-        [EffectName::Builtin(BuiltinEffectId::STATE)]
++        [EffectName::Builtin(
++            BuiltinEffectId::STATE,
++            crate::types::scope::Range::Top
++        )]
+     );
+ }
+ 
+@@ -905,7 +908,8 @@ end function
+         .find(|(_, e)| e.display_name == "Log")
+         .unwrap()
+         .1
+-        .name;
++        .name
++        .clone();
+     let CompKind::Handle(total) = &def(&p, "total").body.kind else {
+         panic!()
+     };
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index 7a32d105..8128e759 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -182,16 +182,16 @@ impl Decls<'_> {
+     pub fn effect_name(&self, id: BindingId) -> Option<EffectName> {
+         let binding = self.resolved.bindings.get(id)?;
+         if let BindingKind::BuiltinEffect(e) = binding.kind {
+-            return Some(EffectName::Builtin(e));
++            return Some(EffectName::Builtin(e, crate::types::scope::Range::Top));
+         }
+         let module = self.modules.get(binding.module)?;
+         if matches!(module.kind, ModuleKind::Prelude | ModuleKind::Stdlib) {
+             let path: Vec<_> = module.name.0.iter().skip(1).map(String::as_str).collect();
+             if let Some(e) = find_builtin_effect(&path, &binding.name) {
+-                return Some(EffectName::Builtin(e));
++                return Some(EffectName::Builtin(e, crate::types::scope::Range::Top));
+             }
+         }
+-        Some(EffectName::User(id))
++        Some(EffectName::User(id, crate::types::scope::Range::Top))
+     }
+ 
+     pub(super) fn shadowed_prelude_type(&self, id: BindingId, span: Span) -> Option<&str> {
+@@ -325,13 +325,21 @@ impl Decls<'_> {
+                     variables = variables.saturating_add(1);
+                     atom.insert_var(EffVar(*index));
+                 } else if let Some(name) = self.effect_name(id) {
+-                    if name == EffectName::Builtin(BuiltinEffectId::IO_ALL) {
++                    if name
++                        == EffectName::Builtin(
++                            BuiltinEffectId::IO_ALL,
++                            crate::types::scope::Range::Top,
++                        )
++                    {
+                         all = true;
+                         for (i, e) in BUILTIN_EFFECTS.iter().enumerate() {
+                             if e.in_io_all
+                                 && let Ok(i) = u16::try_from(i)
+                             {
+-                                atom.insert_name(EffectName::Builtin(BuiltinEffectId(i)));
++                                atom.insert_name(EffectName::Builtin(
++                                    BuiltinEffectId(i),
++                                    crate::types::scope::Range::Top,
++                                ));
+                             }
+                         }
+                     } else {
+@@ -1180,7 +1188,9 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+                     }
+                 }
+                 Item::Effect(e) => {
+-                    let name = d.effect_name(binding).unwrap_or(EffectName::User(binding));
++                    let name = d
++                        .effect_name(binding)
++                        .unwrap_or(EffectName::User(binding, crate::types::scope::Range::Top));
+                     let mut ops = vec![];
+                     for op in &e.ops {
+                         if let Some(id) = d.binding(op.id) {
+@@ -1195,7 +1205,7 @@ fn check_declarations(d: &mut Decls<'_>, require_main: bool) {
+                                 body: None,
+                             };
+                             let mut s = d.signature(&f, Scope::default(), scheme(vec![], unit()));
+-                            s.effects.insert_name(name);
++                            s.effects.insert_name(name.clone());
+                             d.out.decl_types.insert(id, s);
+                             ops.push(id);
+                         }
+@@ -1417,7 +1427,7 @@ fn failure_declarations(d: &mut Decls<'_>) {
+         effect,
+         EffectDef {
+             binding: effect,
+-            name: EffectName::User(effect),
++            name: EffectName::User(effect, crate::types::scope::Range::Top),
+             display_name: "Failure.Fail".into(),
+             ops: vec![op],
+         },
+diff --git a/crates/benitoite/src/typeck/effects/declarations.rs b/crates/benitoite/src/typeck/effects/declarations.rs
+index 67928960..1ed4e5e7 100644
+--- a/crates/benitoite/src/typeck/effects/declarations.rs
++++ b/crates/benitoite/src/typeck/effects/declarations.rs
+@@ -104,13 +104,13 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
+                 let failure = (!origin.effects.failures.is_empty())
+                     .then(|| d.resolved.stdlib("Benitoite.Failure.Fail"))
+                     .flatten()
+-                    .map(EffectName::User);
+-                for name in origin.effects.names.iter().copied().chain(failure) {
+-                    if !seen.insert(name) {
++                    .map(|id| EffectName::User(id, crate::types::scope::Range::Top));
++                for name in origin.effects.names.iter().cloned().chain(failure) {
++                    if !seen.insert(name.clone()) {
+                         continue;
+                     }
+                     match name {
+-                        EffectName::User(id)
++                        EffectName::User(id, _)
+                             if d.resolved.bindings.get(id).is_some_and(|b| {
+                                 matches!(b.kind, crate::resolve::BindingKind::Effect)
+                             }) =>
+@@ -129,7 +129,7 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
+                             }
+                             d.diagnostics.push(diagnostic.build());
+                         }
+-                        EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {
++                        EffectName::Builtin(b, _) if main && b != BuiltinEffectId::IO_ALL => {
+                             if b.def().is_some_and(|b| b.module == ["Assert"]) {
+                                 d.diagnostics.push(
+                                     DiagBuilder::new(DiagCode::E0415)
+@@ -150,7 +150,7 @@ pub(super) fn check_entries(d: &mut Decls<'_>) {
+                                 );
+                             }
+                         }
+-                        EffectName::Builtin(_) | EffectName::User(_) => {}
++                        EffectName::Builtin(_, _) | EffectName::User(_, _) => {}
+                     }
+                 }
+             }
+@@ -211,9 +211,9 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
+         .enumerate()
+         .filter_map(|(i, e)| {
+             if e.in_io_all {
+-                u16::try_from(i)
+-                    .ok()
+-                    .map(|i| EffectName::Builtin(BuiltinEffectId(i)))
++                u16::try_from(i).ok().map(|i| {
++                    EffectName::Builtin(BuiltinEffectId(i), crate::types::scope::Range::Top)
++                })
+             } else {
+                 None
+             }
+@@ -256,7 +256,10 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
+         ctx.decls
+             .reference(e.id)
+             .and_then(|id| ctx.decls.effect_name(id))
+-            == Some(EffectName::Builtin(BuiltinEffectId::IO_ALL))
++            == Some(EffectName::Builtin(
++                BuiltinEffectId::IO_ALL,
++                crate::types::scope::Range::Top,
++            ))
+     }) else {
+         return;
+     };
+@@ -280,10 +283,10 @@ pub(super) fn check_body(ctx: &mut Body<'_, '_>) {
+                         .decls
+                         .reference(e.id)
+                         .and_then(|id| ctx.decls.effect_name(id))
+-                        == Some(**name)
++                        == Some((*name).clone())
+             })
+         })
+-        .map(|name| effect_name(ctx, *name, module))
++        .map(|name| effect_name(ctx, name, module))
+         .chain(actual.vars.iter().filter_map(|v| {
+             // すでに uses にある変数は残し、未宣言の変数は修正案にも含める。
+             // 本体にエフェクトの誤りがあっても、生じた集合を示す（設計書 02-05「警告」）。
+@@ -326,7 +329,7 @@ fn shown_effects(ctx: &Body<'_, '_>, effects: &EffectSet, module: Option<ModuleI
+     effects
+         .names
+         .iter()
+-        .map(|n| effect_name(ctx, *n, module))
++        .map(|n| effect_name(ctx, n, module))
+         .chain(effects.vars.iter().filter_map(|v| {
+             usize::try_from(v.0)
+                 .ok()
+@@ -339,13 +342,21 @@ fn shown_effects(ctx: &Body<'_, '_>, effects: &EffectSet, module: Option<ModuleI
+ /// 診断の位置のモジュールで解決できるエフェクトの名前（設計書 02-10「修正案」）。
+ pub(in crate::typeck) fn effect_name(
+     ctx: &Body<'_, '_>,
+-    name: EffectName,
++    name: &EffectName,
+     module: Option<ModuleId>,
+ ) -> String {
++    format!(
++        "{}{}",
++        effect_base_name(ctx, name, module),
++        name.range().suffix()
++    )
++}
++
++fn effect_base_name(ctx: &Body<'_, '_>, name: &EffectName, module: Option<ModuleId>) -> String {
+     // 修正案も取り込み時の別名を使う。関数名の表記からエフェクトを推測しない
+     // （設計書 01-03「修飾された名前の解決」、02-10「修正案」）。
+     let (target, name, fallback) = match name {
+-        EffectName::Builtin(b) => {
++        EffectName::Builtin(b, _) => {
+             let Some(def) = b.def() else {
+                 return String::new();
+             };
+@@ -367,7 +378,10 @@ pub(in crate::typeck) fn effect_name(
+                                             .chain(def.module.iter().copied()))
+                                 })
+                             } else {
+-                                ctx.decls.effect_name(id) != Some(name)
++                                !matches!(
++                                    ctx.decls.effect_name(id),
++                                    Some(EffectName::Builtin(other, _)) if other == *b
++                                )
+                             }
+                     })
+                 });
+@@ -397,8 +411,8 @@ pub(in crate::typeck) fn effect_name(
+                 format!("{}.{}", def.module.last().copied().unwrap_or(""), def.name),
+             )
+         }
+-        EffectName::User(id) => {
+-            let Some(b) = ctx.decls.resolved.bindings.get(id) else {
++        EffectName::User(id, _) => {
++            let Some(b) = ctx.decls.resolved.bindings.get(*id) else {
+                 return String::new();
+             };
+             (Some(b.module), b.name.clone(), b.name.clone())
+diff --git a/crates/benitoite/src/typeck/effects/handle.rs b/crates/benitoite/src/typeck/effects/handle.rs
+index d0de7b77..1c1ef35e 100644
+--- a/crates/benitoite/src/typeck/effects/handle.rs
++++ b/crates/benitoite/src/typeck/effects/handle.rs
+@@ -72,9 +72,10 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
+                 && op
+                     .and_then(|op| ctx.decls.out.decl_types.get(op))
+                     .is_some_and(|s| {
+-                        s.effects
+-                            .names
+-                            .contains(&EffectName::Builtin(BuiltinEffectId::STATE))
++                        s.effects.names.contains(&EffectName::Builtin(
++                            BuiltinEffectId::STATE,
++                            crate::types::scope::Range::Top,
++                        ))
+                     })
+             {
+                 d = d.note("state");
+@@ -203,7 +204,7 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
+     let mut handled = EffectSet::empty();
+     for (_, effect) in ctx.decls.out.effects.iter() {
+         if !failure && !effect.ops.is_empty() && effect.ops.iter().all(|op| seen.contains_key(op)) {
+-            handled.insert_name(effect.name);
++            handled.insert_name(effect.name.clone());
+         }
+     }
+     if failure {
+diff --git a/crates/benitoite/src/typeck/effects/mod.rs b/crates/benitoite/src/typeck/effects/mod.rs
+index 25ebc8e9..ce6eb89b 100644
+--- a/crates/benitoite/src/typeck/effects/mod.rs
++++ b/crates/benitoite/src/typeck/effects/mod.rs
+@@ -120,7 +120,7 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+             ctx.add(Constraint::EffSub {
+                 sub: fixed(EffectSet {
+                     failures: vec![],
+-                    names: vec![EffectName::Builtin(effect)],
++                    names: vec![EffectName::Builtin(effect, crate::types::scope::Range::Top)],
+                     vars: vec![],
+                 }),
+                 sup: ctx.effect.clone(),
+@@ -199,7 +199,10 @@ fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
+     ctx.add(Constraint::EffSub {
+         sub: fixed(EffectSet {
+             failures: vec![],
+-            names: vec![EffectName::Builtin(BuiltinEffectId::STATE)],
++            names: vec![EffectName::Builtin(
++                BuiltinEffectId::STATE,
++                crate::types::scope::Range::Top,
++            )],
+             vars: vec![],
+         }),
+         sup: ctx.effect.clone(),
+diff --git a/crates/benitoite/src/typeck/effects/tests.rs b/crates/benitoite/src/typeck/effects/tests.rs
+index 288f4096..035a22c4 100644
+--- a/crates/benitoite/src/typeck/effects/tests.rs
++++ b/crates/benitoite/src/typeck/effects/tests.rs
+@@ -132,7 +132,13 @@ fn specification_examples_and_output_tables() {
+     let info = t.handlers.get(h.id).unwrap();
+     assert_eq!(info.clauses[0].op, binding(&r, "write"));
+     assert!(info.clauses[0].tail_resumptive);
+-    assert_eq!(info.handled.names, [EffectName::User(binding(&r, "Log"))]);
++    assert_eq!(
++        info.handled.names,
++        [EffectName::User(
++            binding(&r, "Log"),
++            crate::types::scope::Range::Top
++        )]
++    );
+     assert_eq!(
+         t.expr_types.get(h.clauses[0].params[0].id),
+         Some(&basic(B::STRING))
+@@ -1222,12 +1228,11 @@ fn die_uses_standard_show_and_exit_despite_local_names_and_aliases() {
+         "{diagnostics:#?}"
+     );
+     let exit = crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap();
+-    assert!(
+-        types
+-            .lambda_effects
+-            .iter()
+-            .any(|(_, effects)| effects.names.contains(&EffectName::Builtin(exit)))
+-    );
++    assert!(types.lambda_effects.iter().any(|(_, effects)| {
++        effects
++            .names
++            .contains(&EffectName::Builtin(exit, crate::types::scope::Range::Top))
++    }));
+ }
+ 
+ // 作成時の関門: 本番のソース読み込みから内部依存・利用者の名前空間・不足効果の
+diff --git a/crates/benitoite/src/typeck/external.rs b/crates/benitoite/src/typeck/external.rs
+index c2360c0f..e1f739fe 100644
+--- a/crates/benitoite/src/typeck/external.rs
++++ b/crates/benitoite/src/typeck/external.rs
+@@ -37,7 +37,11 @@ pub(super) fn check(d: &mut Decls<'_>) {
+             };
+             let state = scheme.effects.failures.is_empty()
+                 && scheme.effects.vars.is_empty()
+-                && scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE)];
++                && scheme.effects.names.as_slice()
++                    == [EffectName::Builtin(
++                        BuiltinEffectId::STATE,
++                        crate::types::scope::Range::Top,
++                    )];
+             if external && !state || !external && (f.uses.is_some() || !scheme.effects.is_empty()) {
+                 let file_origin = d.out.effective_effects.get(binding).and_then(|effective| {
+                     effective.origins.iter().find(|origin| {
+@@ -45,7 +49,11 @@ pub(super) fn check(d: &mut Decls<'_>) {
+                             && (!external
+                                 || !origin.effects.failures.is_empty()
+                                 || origin.effects.names.iter().any(|name| {
+-                                    *name != EffectName::Builtin(BuiltinEffectId::STATE)
++                                    *name
++                                        != EffectName::Builtin(
++                                            BuiltinEffectId::STATE,
++                                            crate::types::scope::Range::Top,
++                                        )
+                                 }))
+                     })
+                 });
+diff --git a/crates/benitoite/src/typeck/infer.rs b/crates/benitoite/src/typeck/infer.rs
+index 288ddbdc..3b7f17f7 100644
+--- a/crates/benitoite/src/typeck/infer.rs
++++ b/crates/benitoite/src/typeck/infer.rs
+@@ -53,6 +53,7 @@ pub struct IFnTy {
+ #[derive(Clone, PartialEq, Debug, Default)]
+ pub struct IEffect {
+     pub failures: Vec<ITy>,
++    /// 名前と閉じた範囲の組を、確定型と同じ構造で保持する。
+     pub fixed: EffectSet,
+     pub var: Option<EffInfer>,
+ }
+diff --git a/crates/benitoite/src/typeck/solve.rs b/crates/benitoite/src/typeck/solve.rs
+index 0984b747..7a4dbf28 100644
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -49,7 +49,7 @@ struct ContractState {
+     parent: u32,
+     binding: Option<IContract>,
+ }
+-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
++#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+ enum Elem {
+     Name(EffectName),
+     Var(EffVar),
+@@ -2177,11 +2177,12 @@ impl Solver {
+                     .unwrap_or_default();
+                 if let Some(state) = usize::try_from(v.0).ok().and_then(|i| self.effs.get_mut(i)) {
+                     for elem in elements(&current) {
+-                        if !includes(&sup.fixed, elem) && !includes(&state.set, elem) {
+-                            insert(&mut state.set, elem);
+-                            state
+-                                .origins
+-                                .insert(elem, origins.get(&elem).copied().unwrap_or(r.span));
++                        if !includes(&sup.fixed, &elem) && !includes(&state.set, &elem) {
++                            insert(&mut state.set, elem.clone());
++                            state.origins.insert(
++                                elem.clone(),
++                                origins.get(&elem).copied().unwrap_or(r.span),
++                            );
+                             changed = true;
+                         }
+                     }
+@@ -2225,7 +2226,7 @@ impl Solver {
+                 continue;
+             }
+             for elem in elements(&self.finalize_effect(&sub)) {
+-                if includes(&sup.fixed, elem) {
++                if includes(&sup.fixed, &elem) {
+                     continue;
+                 }
+                 if let Some((a, b)) = &pair {
+@@ -2252,7 +2253,7 @@ impl Solver {
+                     .copied()
+                     .unwrap_or(r.span);
+                 let mut set = EffectSet::empty();
+-                insert(&mut set, elem);
++                insert(&mut set, elem.clone());
+                 let shown = self.show(
+                     ctx,
+                     &ITy::Fn(Box::new(IFnTy {
+@@ -2262,7 +2263,7 @@ impl Solver {
+                         effect: fixed(set),
+                     })),
+                 );
+-                let name = if let Elem::Name(name @ EffectName::Builtin(b)) = elem
++                let name = if let Elem::Name(name @ EffectName::Builtin(b, _)) = &elem
+                     && b.def()
+                         .is_some_and(|d| d.module.last().copied() == Some(d.name))
+                 {
+@@ -2395,14 +2396,14 @@ pub(super) fn has_error(t: &ITy) -> bool {
+ fn elements(set: &EffectSet) -> Vec<Elem> {
+     set.names
+         .iter()
+-        .map(|e| Elem::Name(*e))
++        .map(|e| Elem::Name(e.clone()))
+         .chain(set.vars.iter().map(|v| Elem::Var(*v)))
+         .collect()
+ }
+-fn includes(set: &EffectSet, e: Elem) -> bool {
++fn includes(set: &EffectSet, e: &Elem) -> bool {
+     match e {
+-        Elem::Name(e) => set.names.contains(&e),
+-        Elem::Var(v) => set.vars.contains(&v),
++        Elem::Name(e) => set.names.contains(e),
++        Elem::Var(v) => set.vars.contains(v),
+     }
+ }
+ fn insert(set: &mut EffectSet, e: Elem) {
+diff --git a/crates/benitoite/src/typeck/solve/effect_key.rs b/crates/benitoite/src/typeck/solve/effect_key.rs
+index 71b41e4c..a7002525 100644
+--- a/crates/benitoite/src/typeck/solve/effect_key.rs
++++ b/crates/benitoite/src/typeck/solve/effect_key.rs
+@@ -17,6 +17,7 @@ enum Part {
+     App(IHead, usize),
+     Rigid(NodeId, u32),
+     Error,
++    // 原子の名前と範囲、Fail内の確定型も構造のEq/Hashへ含む。
+     Effect(EffectSet, Option<EffInfer>, usize),
+ }
+ enum Pending<'a> {
+diff --git a/crates/benitoite/src/typeck/solve/provenance.rs b/crates/benitoite/src/typeck/solve/provenance.rs
+index 5a4810d9..e1f710f6 100644
+--- a/crates/benitoite/src/typeck/solve/provenance.rs
++++ b/crates/benitoite/src/typeck/solve/provenance.rs
+@@ -734,6 +734,7 @@ impl Solver {
+             ITy::Con(c, args) => ITy::Con(c, args.iter().map(|t| self.recovered_type(t)).collect()),
+             ITy::App(h, args) => ITy::App(h, args.iter().map(|t| self.recovered_type(t)).collect()),
+             ITy::Fn(mut f) => {
++                // fixedの原子の範囲は複写したまま、型を含む部分だけを回復する。
+                 f.params = f.params.iter().map(|t| self.recovered_type(t)).collect();
+                 f.ret = self.recovered_type(&f.ret);
+                 f.effect.failures = f
+diff --git a/crates/benitoite/src/typeck/tests.rs b/crates/benitoite/src/typeck/tests.rs
+index 5ced6f8b..4c5f8973 100644
+--- a/crates/benitoite/src/typeck/tests.rs
++++ b/crates/benitoite/src/typeck/tests.rs
+@@ -1015,19 +1015,19 @@ fn effect_inference_names_and_stubs() {
+     let s = t.decl_types.get(id(&r, "f")).unwrap();
+     assert!(s.wrote_io_all);
+     assert!(s.effects.names.contains(&EffectName::Builtin(
+-        crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap()
++        crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap(),
++        crate::types::scope::Range::Top
++    )));
++    assert!(!s.effects.names.contains(&EffectName::Builtin(
++        BuiltinEffectId::IO_ALL,
++        crate::types::scope::Range::Top
+     )));
+-    assert!(
+-        !s.effects
+-            .names
+-            .contains(&EffectName::Builtin(BuiltinEffectId::IO_ALL))
+-    );
+     let (_, r, t) = clean(
+         "effect Write\n function write(s: String) -> Unit\nend effect\nfunction f() -> Unit uses Write\n write(\"hello\")\nend function\n",
+     );
+     assert_eq!(
+         t.effects.get(id(&r, "Write")).unwrap().name,
+-        EffectName::User(id(&r, "Write"))
++        EffectName::User(id(&r, "Write"), crate::types::scope::Range::Top)
+     );
+     let d = expect(
+         "effect Write\n function write(s: String) -> Unit\nend effect\nfunction f() -> Unit\n write(\"hi\")\nend function\n",
+diff --git a/crates/benitoite/src/types/mod.rs b/crates/benitoite/src/types/mod.rs
+index 67ebaa63..d12cb61e 100644
+--- a/crates/benitoite/src/types/mod.rs
++++ b/crates/benitoite/src/types/mod.rs
+@@ -37,13 +37,22 @@ pub enum TyHead {
+     Param(u32),
+ }
+ 
+-/// エフェクトの名前（02-05「型とエフェクトの表現」）。
+-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
++/// 名前と閉じた範囲を持つエフェクトの原子（02-05「型とエフェクトの表現」）。
++#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+ pub enum EffectName {
+     /// 組み込みのエフェクト（`State`、`Console.Write` など）
+-    Builtin(BuiltinEffectId),
++    Builtin(BuiltinEffectId, scope::Range),
+     /// 利用者が宣言したエフェクト。宣言の束縛の番号で指す
+-    User(BindingId),
++    User(BindingId, scope::Range),
++}
++
++impl EffectName {
++    /// 名前の原子が持つ閉じた範囲を返す。比較は名前と範囲の両方を使う。
++    pub fn range(&self) -> &scope::Range {
++        match self {
++            Self::Builtin(_, range) | Self::User(_, range) => range,
++        }
++    }
+ }
+ 
+ /// エフェクト変数。定義の中の番号（`types` のモジュールの説明）。
+@@ -114,7 +123,7 @@ impl EffectSet {
+             out.insert_failure(ty.clone());
+         }
+         for n in &other.names {
+-            out.insert_name(*n);
++            out.insert_name(n.clone());
+         }
+         for v in &other.vars {
+             out.insert_var(*v);
+@@ -768,9 +777,10 @@ fn show_ty(
+                     .filter(|(_, d)| d.in_io_all)
+                     .all(|(i, _)| {
+                         u16::try_from(i).ok().is_some_and(|i| {
+-                            f.effects
+-                                .names
+-                                .contains(&EffectName::Builtin(BuiltinEffectId(i)))
++                            f.effects.names.contains(&EffectName::Builtin(
++                                BuiltinEffectId(i),
++                                crate::types::scope::Range::Top,
++                            ))
+                         })
+                     });
+                 if io_all {
+@@ -778,20 +788,20 @@ fn show_ty(
+                 }
+                 for name in &f.effects.names {
+                     if io_all
+-                        && matches!(name, EffectName::Builtin(id) if id.def().is_some_and(|d| d.in_io_all))
++                        && matches!(name, EffectName::Builtin(id, scope::Range::Top) if id.def().is_some_and(|d| d.in_io_all))
+                     {
+                         continue;
+                     }
+                     let text = match name {
+-                        EffectName::Builtin(id) => {
++                        EffectName::Builtin(id, _) => {
+                             builtin::effect_name(*id).unwrap_or_else(|| "_".into())
+                         }
+-                        EffectName::User(id) => names
++                        EffectName::User(id, _) => names
+                             .effects
+                             .get(*id)
+                             .map_or_else(|| "_".into(), |d| d.display_name.clone()),
+                     };
+-                    effects.push(text);
++                    effects.push(format!("{text}{}", name.range().suffix()));
+                 }
+                 for ty in &f.effects.failures {
+                     effects.push(format!(
+@@ -887,7 +897,10 @@ mod tests {
+     #[test]
+     fn function_type_display_groups_all_io_effects_and_keeps_other_effects() {
+         let mut effects = io_all_for_display();
+-        effects.insert_name(EffectName::Builtin(BuiltinEffectId(12)));
++        effects.insert_name(EffectName::Builtin(
++            BuiltinEffectId(12),
++            crate::types::scope::Range::Top,
++        ));
+         effects.insert_var(EffVar(0));
+         assert_eq!(
+             show_effects(effects),
+@@ -912,7 +925,12 @@ mod tests {
+                 .iter()
+                 .enumerate()
+                 .filter(|(_, d)| d.in_io_all)
+-                .map(|(i, _)| EffectName::Builtin(BuiltinEffectId(u16::try_from(i).unwrap())))
++                .map(|(i, _)| {
++                    EffectName::Builtin(
++                        BuiltinEffectId(u16::try_from(i).unwrap()),
++                        crate::types::scope::Range::Top,
++                    )
++                })
+                 .collect(),
+             vars: vec![],
+         }
+@@ -934,24 +952,130 @@ mod tests {
+         })
+     }
+ 
++    // 関門: 公開の集合で名前と範囲の組を区別し、被覆による削除を捕まえる。
++    // 旧テストはTopしか持たず、この退行を検出できない。差し込み口は加えない。
++    #[test]
++    fn scoped_effect_sets_preserve_structural_identity() {
++        use scope::{PathPattern, Range};
++        use std::collections::{BTreeSet, HashSet};
++        let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
++        for user in [false, true] {
++            let atom = |range| {
++                if user {
++                    EffectName::User(BindingId(42), range)
++                } else {
++                    EffectName::Builtin(read, range)
++                }
++            };
++            let atoms = [
++                atom(Range::Top),
++                atom(Range::Path(PathPattern::parse("/data/**").unwrap())),
++                atom(Range::Path(PathPattern::parse("/data/input").unwrap())),
++            ];
++            assert_eq!(atoms.iter().cloned().collect::<HashSet<_>>().len(), 3);
++            assert_eq!(atoms.iter().cloned().collect::<BTreeSet<_>>().len(), 3);
++            let mut combined = EffectSet::empty();
++            for a in &atoms {
++                let mut single = EffectSet::empty();
++                single.insert_name(a.clone());
++                combined = combined.union(&single);
++                single.insert_name(a.clone());
++                assert_eq!(single.names.len(), 1);
++                for b in &atoms {
++                    let mut other = EffectSet::empty();
++                    other.insert_name(b.clone());
++                    assert_eq!(single.is_subset(&other), a == b);
++                }
++            }
++            assert_eq!(combined.names.len(), 3);
++            assert!(atoms.iter().all(|a| combined.names.contains(a)));
++            assert!(
++                combined
++                    .names
++                    .windows(2)
++                    .all(|pair| { matches!(pair, [a, b] if a < b) })
++            );
++        }
++    }
++
++    // 関門: Failの中の関数型と行の像に範囲を残す。Topだけの同時置換の
++    // テストでは、名前だけを複写する退行を検出できない。公開の置換を使う。
++    #[test]
++    fn scoped_effects_survive_rows_and_types_inside_failures() {
++        use scope::{PathPattern, Range};
++        let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
++        let atom = EffectName::Builtin(read, Range::Path(PathPattern::parse("/data/**").unwrap()));
++        let mut image = EffectSet::empty();
++        image.insert_name(atom.clone());
++        let mut row = EffectSet::empty();
++        row.insert_var(EffVar(0));
++        let nested = Ty::Fn(Box::new(FnTy {
++            param_names: vec!["value".into()],
++            params: vec![Ty::Param(0)],
++            ret: Ty::Param(0),
++            effects: row.clone(),
++        }));
++        row.insert_failure(nested);
++        let result = row.subst_types(&[TypeArg::Ty(integer())], &[image.clone()]);
++        let expected = Ty::Fn(Box::new(FnTy {
++            param_names: vec!["value".into()],
++            params: vec![integer()],
++            ret: integer(),
++            effects: image,
++        }));
++        assert_eq!(result.names, [atom]);
++        assert!(result.vars.is_empty());
++        assert_eq!(result.failures, [expected]);
++    }
++
++    // 関門: 公開の型表示が非Topを省略せず、IO.Allで隠さないことを守る。
++    // 既存のIO.AllのテストはTopだけなので、範囲付き原子の消失は分からない。
++    #[test]
++    fn scoped_effect_display_keeps_ranges_beside_io_all() {
++        use scope::{EndpointPattern, HostPattern, PathPattern, Port, PortRange, Range};
++        let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
++        let connect = builtin::find_builtin_effect(&["Network", "Http"], "Connect").unwrap();
++        let mut effects = io_all_for_display();
++        effects.insert_name(EffectName::Builtin(
++            read,
++            Range::Path(PathPattern::parse("/data/**").unwrap()),
++        ));
++        for (lo, hi, expected) in [(443, 443, "443"), (443, 445, "443..445")] {
++            let mut effects = effects.clone();
++            effects.insert_name(EffectName::Builtin(
++                connect,
++                Range::Endpoint(EndpointPattern {
++                    host: HostPattern::parse("**.example.com").unwrap(),
++                    ports: PortRange::new(Port::new(lo), Port::new(hi)).unwrap(),
++                }),
++            ));
++            assert_eq!(
++                show_effects(effects),
++                format!(
++                    "function() -> Integer uses IO.All, File.Read[\"/data/**\"], Http.Connect[\"**.example.com\", {expected}]"
++                )
++            );
++        }
++    }
++
+     #[test]
+     fn substitution_is_simultaneous_and_preserves_unbound_parameters() {
+-        let console = EffectName::Builtin(BuiltinEffectId(2));
+-        let state = EffectName::Builtin(BuiltinEffectId::STATE);
++        let console = EffectName::Builtin(BuiltinEffectId(2), crate::types::scope::Range::Top);
++        let state = EffectName::Builtin(BuiltinEffectId::STATE, crate::types::scope::Range::Top);
+         let effects = EffectSet {
+             failures: vec![],
+-            names: vec![state],
++            names: vec![state.clone()],
+             vars: vec![EffVar(0), EffVar(1), EffVar(3)],
+         };
+         let effs = vec![
+             EffectSet {
+                 failures: vec![],
+-                names: vec![console],
++                names: vec![console.clone()],
+                 vars: vec![EffVar(1)],
+             },
+             EffectSet {
+                 failures: vec![],
+-                names: vec![state],
++                names: vec![state.clone()],
+                 vars: vec![EffVar(2)],
+             },
+         ];
+diff --git a/crates/benitoite/src/types/scope.rs b/crates/benitoite/src/types/scope.rs
+index 6b90de0a..f37d5f65 100644
+--- a/crates/benitoite/src/types/scope.rs
++++ b/crates/benitoite/src/types/scope.rs
+@@ -8,9 +8,11 @@
+ /// IP/CIDR の正規形の文字列との変換。
+ pub mod ip_text;
+ 
+-/// 字句または整形式性の不良。利用側で診断・実行時の誤りへ変換する。
++/// 範囲の構築の失敗。入力の不良と内部の不具合を区別し、利用側で診断へ変換する。
+ #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ pub enum InvalidScope {
++    /// 処理系の内部で範囲の不変条件が破れた。入力の誤りとは区別する。
++    Internal,
+     /// 絶対パスの形式または要素が不正である。
+     Path,
+     /// パスのパターンの形式または幹が不正である。
+@@ -260,6 +262,8 @@ impl IpAddress {
+ pub struct IpPattern {
+     address: IpAddress,
+     prefix_len: Option<u8>,
++    // 構築時に検査したマスク。上端の参照時には失敗する計算を残さない。
++    host_mask: u128,
+ }
+ 
+ impl IpPattern {
+@@ -268,6 +272,7 @@ impl IpPattern {
+         Self {
+             address,
+             prefix_len: None,
++            host_mask: 0,
+         }
+     }
+ 
+@@ -277,12 +282,14 @@ impl IpPattern {
+         let host_bits = width
+             .checked_sub(prefix_len)
+             .ok_or(InvalidScope::PrefixLength)?;
+-        if address.bits() & host_mask(host_bits) != 0 {
++        let host_mask = host_mask(host_bits)?;
++        if address.bits() & host_mask != 0 {
+             return Err(InvalidScope::HostBits);
+         }
+         Ok(Self {
+             address,
+             prefix_len: (prefix_len < width).then_some(prefix_len),
++            host_mask,
+         })
+     }
+ 
+@@ -303,13 +310,7 @@ impl IpPattern {
+ 
+     /// 同族の閉区間の上端を幅内の値で返す。
+     pub fn hi(self) -> u128 {
+-        self.lo()
+-            | self
+-                .prefix_len
+-                // 構築時に p < width を確認済みである。
+-                .map_or(0, |p| {
+-                    host_mask(self.address.family().width().saturating_sub(p))
+-                })
++        self.lo() | self.host_mask
+     }
+ 
+     /// 同じ族かつ閉区間内かを判定する。
+@@ -328,13 +329,14 @@ impl IpPattern {
+ }
+ 
+ // host_bits は検査済みの width - prefix、0..=128。2^128 自身を作らない。
+-fn host_mask(host_bits: u8) -> u128 {
+-    // 幅の不変条件の破れは処理系の不具合として panic 境界で扱う
+-    // （設計書 02-09「panic 境界」）。128 のときだけシフトの失敗を全ビットの mask とする。
+-    assert!(host_bits <= 128, "scope host bit count exceeds 128");
+-    1u128
+-        .checked_shl(u32::from(host_bits))
+-        .map_or(u128::MAX, |power| power.saturating_sub(1))
++fn host_mask(host_bits: u8) -> Result<u128, InvalidScope> {
++    match host_bits {
++        128 => Ok(u128::MAX),
++        n => 1u128
++            .checked_shl(u32::from(n))
++            .map(|power| power.saturating_sub(1))
++            .ok_or(InvalidScope::Internal),
++    }
+ }
+ 
+ /// ホストの対象。ホスト名とIPの分類を保つ。
+@@ -516,6 +518,46 @@ pub enum Range {
+ }
+ 
+ impl Range {
++    /// 原子の名前に続ける範囲の表示。Topは旧来どおり名前だけで表す。
++    pub fn suffix(&self) -> String {
++        fn host(pattern: &HostPattern) -> String {
++            match pattern {
++                HostPattern::Name(p) => format!(
++                    "{}{}",
++                    match p.kind() {
++                        NameKind::Exact => "",
++                        NameKind::One => "*.",
++                        NameKind::Many => "**.",
++                    },
++                    p.stem().labels().join(".")
++                ),
++                HostPattern::Ip(p) => ip_text::format_pattern(*p),
++            }
++        }
++        match self {
++            Self::Top => String::new(),
++            Self::Path(p) => {
++                let stem = format!("/{}", p.stem().parts().join("/"));
++                let text = match p.kind() {
++                    PathKind::Exact => stem,
++                    PathKind::Tree => format!("{}/**", stem.trim_end_matches('/')),
++                };
++                format!("[{text:?}]")
++            }
++            Self::Host(p) => format!("[{:?}]", host(p)),
++            Self::Endpoint(p) => {
++                let lo = p.ports.lo().value();
++                let hi = p.ports.hi().value();
++                let ports = if lo == hi {
++                    lo.to_string()
++                } else {
++                    format!("{lo}..{hi}")
++                };
++                format!("[{:?}, {ports}]", host(&p.host))
++            }
++        }
++    }
++
+     /// 非Topの種類を返す。Topの種類は名前が決めるためNoneとする。
+     pub fn kind(&self) -> Option<Kind> {
+         match self {
+diff --git a/crates/benitoite/tests/declarations.rs b/crates/benitoite/tests/declarations.rs
+index f9eec537..a78c867d 100644
+--- a/crates/benitoite/tests/declarations.rs
++++ b/crates/benitoite/tests/declarations.rs
+@@ -608,7 +608,7 @@ fn log_standard_declarations_and_effect_identity() {
+     let definition = inventory.types.effects.get(log).unwrap();
+     assert!(matches!(
+         definition.name,
+-        benitoite::types::EffectName::Builtin(_)
++        benitoite::types::EffectName::Builtin(_, benitoite::types::scope::Range::Top)
+     ));
+     assert_eq!(definition.ops.len(), 2);
+     let opts = CheckOptions {
+diff --git a/crates/benitoite/tests/desugar_export/builtins.rs b/crates/benitoite/tests/desugar_export/builtins.rs
+index d009083f..9ed85657 100644
+--- a/crates/benitoite/tests/desugar_export/builtins.rs
++++ b/crates/benitoite/tests/desugar_export/builtins.rs
+@@ -295,7 +295,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
+             }
+             let effect = surface.eff(&EffectSet {
+                 failures: vec![],
+-                names: vec![EffectName::Builtin(id)],
++                names: vec![EffectName::Builtin(id, benitoite::types::scope::Range::Top)],
+                 vars: vec![],
+             });
+             let name = effect[0]["name"]["value"].as_str().unwrap();
+diff --git a/crates/benitoite/tests/desugar_export/exchange.rs b/crates/benitoite/tests/desugar_export/exchange.rs
+index 87c5d3df..12c01ce1 100644
+--- a/crates/benitoite/tests/desugar_export/exchange.rs
++++ b/crates/benitoite/tests/desugar_export/exchange.rs
+@@ -381,9 +381,14 @@ impl Surface<'_> {
+             .names
+             .iter()
+             .map(|n| {
++                assert_eq!(
++                    n.range(),
++                    &benitoite::types::scope::Range::Top,
++                    "scoped atom requires the new exchange format"
++                );
+                 let name = match n {
+-                    EffectName::User(id) => format!("effect:{}", id.0),
+-                    EffectName::Builtin(id) => {
++                    EffectName::User(id, _) => format!("effect:{}", id.0),
++                    EffectName::Builtin(id, _) => {
+                         let d = id.def().unwrap();
+                         // die の型規則が指定する標準の原子名へ揃える。型・効果・
+                         // 組み込みの表を同じ名前で交換する（07-04「01-12 との対応」）。
+@@ -2771,7 +2776,12 @@ pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Valu
+             prim_ops.insert(name.to_owned(), entry);
+         } else {
+             assert_eq!(op.param_names, scheme.param_names);
+-            let EffectName::User(effect) = op.effect else {
++            assert_eq!(
++                op.effect.range(),
++                &benitoite::types::scope::Range::Top,
++                "scoped operation requires the new exchange format"
++            );
++            let EffectName::User(effect, _) = &op.effect else {
+                 panic!("non-builtin operation in builtin effect");
+             };
+             let mut header = surface.header(scheme);
+@@ -2793,7 +2803,8 @@ pub fn named_operation_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Valu
+     let effects: Vec<_> = p.types.effects.iter().filter_map(|(_, e)| {
+         for op in &e.ops { assert!(seen.contains(op), "missing core operation"); }
+         if Some(e.binding) == p.resolved.stdlib("Benitoite.Failure.Fail") { return None; }
+-        let EffectName::User(id) = e.name else { return None; };
++        assert_eq!(e.name.range(), &benitoite::types::scope::Range::Top, "scoped effect declaration requires the new exchange format");
++        let EffectName::User(id, _) = &e.name else { return None; };
+         Some(json!({"name":format!("effect:{}",id.0),"ops":e.ops.iter().map(|id| format!("op:{}",id.0)).collect::<Vec<_>>()}))
+     }).collect();
+     assert!(
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index 178f62da..dfd24da9 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -473,13 +473,15 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ - `F[A]` と `G[B]` を等しくするときは、F と G、A と B をそれぞれ等しくする。
+ - `F[A]` と関数の型・基本型を等しくするときは誤りとする。
+ 
+-【方針】エフェクトは、確定した要素の集合と、まだ決まっていないエフェクトの変数（高々一つ）との組で表す。確定した要素は、エフェクトの名前と、検査している関数で宣言したエフェクト変数である。エフェクトの名前は、宣言したモジュールの同一性と名前の組で識別する。宣言したエフェクト変数は、ほかの何とも等しくない一つの要素として扱う（[型システム](../01-spec/01-06-type-system.md)）。一つの `uses` に書けるエフェクト変数は一つまでであり、多相な名前の置き換え、ラムダ、呼び出し、流れ込む制約、`handle` が作るエフェクトも、それぞれ変数を一つだけ持つので、変数が二つ以上になることはない。
++【方針】エフェクトは、確定した要素の集合と、まだ決まっていないエフェクトの変数（高々一つ）との組で表す。確定した要素は、名前と閉じた範囲を持つ原子、検査している関数で宣言したエフェクト変数、型付きの失敗である。原子の名前は、組み込みの番号または宣言の束縛の番号で識別する。`types::EffectName` の `Builtin`・`User` は、名前の番号と `types::scope::Range` の組を保持する。既存の名前だけの原子は、範囲に明示の `Range::Top` を渡して構築する。宣言したエフェクト変数は、ほかの何とも等しくない一つの要素として扱う（[型システム](../01-spec/01-06-type-system.md)）。一つの `uses` に書けるエフェクト変数は一つまでであり、多相な名前の置き換え、ラムダ、呼び出し、流れ込む制約、`handle` が作るエフェクトも、それぞれ変数を一つだけ持つので、変数が二つ以上になることはない。
+ 
+-【方針】`uses` に書いた `IO.All` は、宣言の型と型注釈を内部の型に移すときに、`State` と `Benitoite.IO` の下のすべての組み込みのエフェクトの名前の集合に置き換える。この集合は処理系が組み込みの表として持ち、どの標準ライブラリのモジュールを読み込んだかによらない。ネットワークのエフェクトと `Assert.Check`・`Log` は含めない。宣言の一番外の `uses` に `IO.All` を書いたかを W0501 のために覚える。診断で型を示すときは、`IO.All` の 10 個をすべて含む集合を `IO.All` とまとめて示す。
++【方針】`uses` に書いた `IO.All` は、宣言の型と型注釈を内部の型に移すときに、`State` と `Benitoite.IO` の下のすべての組み込みのエフェクトの名前の集合に置き換える。この集合は処理系が組み込みの表として持ち、どの標準ライブラリのモジュールを読み込んだかによらない。ネットワークのエフェクトと `Assert.Check`・`Log` は含めない。宣言の一番外の `uses` に `IO.All` を書いたかを W0501 のために覚える。診断で型を示すときは、`IO.All` の 10 個の Top の原子をすべて含む集合を `IO.All` とまとめて示す。Top の原子は従来どおり名前だけで表示し、非Topの原子には範囲を表示する。略記の対象は Top の原子だけであり、同じ名前の範囲付き原子も表示に残す。
+ 
+ 型変数は、単一化のために union-find で表す。
+ 
+-【決定】確定した `EffectSet` は名前・宣言した行・型付きの失敗の列を持つ。失敗の列は型の固定順序で整列し、重複を除く。型と効果の同時代入は Fail 内部へも再帰する。推論の `IEffect` は失敗の型を推論中の型で保持し、効果の包含の解決と同時に不変の型として結ぶ。確定後の純粋な集合の和は、内部の上限の複数 Fail を消さない。
++【決定】確定した `EffectSet` は原子・宣言した行・型付きの失敗の列を持つ。原子の比較・hash・整列・重複除去は、名前と範囲の構造を使う。集合の和と包含も構造で判定し、範囲の被覆で狭い原子を除かない。推論の `IEffect.fixed`、制約の索引キー、診断の由来も同じ原子を保持する。理由: 同名でも範囲が違う原子を区別し、行の具体化と診断までその区別を保つためである。
++
++失敗の列は型の固定順序で整列し、重複を除く。型と効果の同時代入は Fail 内部へも再帰する。推論の `IEffect` は失敗の型を推論中の型で保持し、効果の包含の解決と同時に不変の型として結ぶ。確定後の純粋な集合の和は、内部の上限の複数 Fail を消さない。
+ 
+ 【決定】`Scheme.no_fail` はシグネチャの全体から計算した行の番号を保存する。具体化した行の像について、Fail がなく、その中の行も呼び出し側の署名の NoFail に含まれることを検査する。本体から行の条件を補わない。式の結果の型とソースの効果を保存し、解決後に具体化後の単一 Fail と NoFail を検査する。Fail の handle は、本体の残りの効果と節の出力を別の推論変数に置き、節の再 raise を本体の上限へ入れない。
+ 
+diff --git a/docs/design/02-impl/02-06-ir-and-lowering.md b/docs/design/02-impl/02-06-ir-and-lowering.md
+index 203205f1..b88657fc 100644
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -38,7 +38,7 @@
+ 
+ - 型は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型に、初回リリース版の拡張で加えたもの（基本型 `Byte`・`Decimal`、`Map`・`Set`・`Bytes`、`Reference`・`Lazy`、等値を持たない組み込みの不透明型 O（`IOError`・`NetworkError`・`Task[A]`・リソースの型、`Regex.Pattern` など）、辞書の型 `Dict[Cl, τ]`、型構成子を表す型パラメータの適用 `α[Ā]`、継続の型 `Cont(B → T ! ε)`）を含む。継続の型を持つのは、`handle` の節で継続を束縛する変数だけである。型の別名は型検査で展開してあるので、コア IR に現れない。
+ - 辞書と継続は、コア計算の型付けでは型 `Dict[Cl, τ]`・`Cont(B → T ! ε)` を持つ値であるが、表層で値として束縛・返却・格納できない。辞書が現れるのは制約を持つ関数・操作の呼び出しの辞書の引数、メソッドの呼び出しの辞書、実装の定義の上位の型クラスの辞書と実装の制約の辞書、辞書の中の辞書だけであり、継続が現れるのは `handle` の節の継続の変数と `resume` だけである。そこで、処理系のコア IR は、辞書と継続を普通の値と別の分類に置き、型検査器の型の表現（表層の型）に辞書の型と継続の型を加えなくてよい。このとき、辞書の型は辞書の型クラスと対象の型の組で、継続の型は継続の変数が持つ引数の型 B と、節を持つ `handle` の型とエフェクト（T と ε）で表す。辞書の引数は、定義の値の引数と別に並べてよい。制約を持つ関数・操作を呼ばずに値として使う箇所は、同章の表のとおり辞書を渡すラムダに移すので、`f[T̄; Ē]` の値の型を値の引数だけの関数の型としてよい。コア IR の検査器は、この表し方の上で、後述の V-Dict・V-Super・C-Meth・D-Impl・C-Handle・C-Resume と同じ条件を調べる。
+-- エフェクトの集合の要素は、エフェクトの名前とエフェクト変数である。エフェクトの名前は、宣言したモジュールの同一性と名前の組で表す。`IO.All` は型検査が名前の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
++- エフェクトの集合は、名前と閉じた範囲を持つ原子、エフェクト変数、型付きの失敗の列を持つ `types::EffectSet` で表す。原子の `types::EffectName` は、組み込みの番号または宣言の束縛の番号と `types::scope::Range` の組である。既存の名前だけの原子は明示の `Range::Top` を持つ。脱糖は原子の範囲を保持し、ハンドラで除く原子の照合とコア IR の検査は、名前と範囲の構造を使う。`IO.All` は型検査が Top の原子の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
+ - 各ノードは、型（値は A、計算は A ! ε）と、由来位置（[ソース管理と位置情報](02-02-source-and-spans.md)の「合成ノードの由来位置」）を持つ。型とエフェクトの求め方は、この節の後の表で定める。
+ - 変数は、定義ごとに重ならない番号で表す。脱糖で作る新しい変数も、ソースの名前から移した変数も、同じ数え上げから番号を振る。したがって、コア IR の中で変数の名前が衝突することはない。ただし、`match` の同じ分岐から展開した行（後述）は、その分岐の同じ変数を束縛する。ソースの名前は、診断と読みやすさのために変数に添える。
+ - 組み込みの関数 `b` は、組み込みの関数の表の項目を指す（[名前解決とモジュール読込](02-04-resolver.md)）。組み込みの関数は、外部に作用する操作（組み込みのエフェクトの操作）、`State` を型に持つ関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）、純粋な関数の三つに分かれ、項目がどれに当たるかを持つ。外部に作用する操作だけがハンドラで処理される（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「ハンドラ」）。

@@ -1,0 +1,30 @@
+diff --git a/formal/Benitoite/Surface/Typing.lean b/formal/Benitoite/Surface/Typing.lean
+index 1f328489..345239fd 100644
+--- a/formal/Benitoite/Surface/Typing.lean
++++ b/formal/Benitoite/Surface/Typing.lean
+@@ -4,6 +4,7 @@ import Benitoite.Surface.SingleFail
+ import Benitoite.Surface.Desugar
+ import Benitoite.Release.Typing
+ import Benitoite.Release.WellFormed
++import Benitoite.Release.EffectCover
+ 
+ /-!
+ # 表層の型付け（C1・C2・C4・C5a-1・C6a-1・C6a-2・C6a-3・C7b-2）
+@@ -458,7 +459,7 @@ mutual
+         HasTypeQ D B opPrim Q Δ C Γ R p (.resume k e) t ε
+     -- 01-06「エフェクトの包含」「式のエフェクト」。最も外側の関数型だけを広げる。
+     | E_Sub {Δ C Γ R p e a a' ε ε'} :
+-        HasTypeQ D B opPrim Q Δ C Γ R p e a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn 0 C.length (fun _ => True) a' →
++        HasTypeQ D B opPrim Q Δ C Γ R p e a ε → Ty.Le a a' → Eff.Covers ε' ε → Ty.VarsIn 0 C.length (fun _ => True) a' →
+         HasTypeQ D B opPrim Q Δ C Γ R p e a' ε'
+ 
+   inductive HasTypesQ (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFailCtx) :
+@@ -568,7 +569,7 @@ mutual
+         HasBlockQ D B opPrim Q Δ C Γ R p (.bindPat k pat t e rest) a (Eff.union ε εs)
+     -- 01-06「エフェクトの包含」: 分岐のブロックの結果を受け入れる。
+     | B_Sub {Δ C Γ R p body a a' ε ε'} :
+-        HasBlockQ D B opPrim Q Δ C Γ R p body a ε → Ty.Le a a' → Eff.Sub ε ε' → Ty.VarsIn 0 C.length (fun _ => True) a' →
++        HasBlockQ D B opPrim Q Δ C Γ R p body a ε → Ty.Le a a' → Eff.Covers ε' ε → Ty.VarsIn 0 C.length (fun _ => True) a' →
+         HasBlockQ D B opPrim Q Δ C Γ R p body a' ε'
+ end
+ 

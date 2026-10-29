@@ -1,0 +1,96 @@
+== formal/tests/test_batch2_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.280s
+
+OK
+real 1.31
+user 0.99
+sys 0.24
+== exit 0 formal/tests/test_batch2_exchange.py
+== formal/tests/test_batch3_exchange.py
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 3.366s
+
+OK
+real 3.40
+user 2.71
+sys 0.55
+== exit 0 formal/tests/test_batch3_exchange.py
+== formal/tests/test_batch4_exchange.py
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 5.962s
+
+OK
+real 6.00
+user 4.91
+sys 0.88
+== exit 0 formal/tests/test_batch4_exchange.py
+== formal/tests/test_batch5_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 2.066s
+
+OK
+real 2.10
+user 1.68
+sys 0.34
+== exit 0 formal/tests/test_batch5_exchange.py
+== formal/tests/test_extensible_exchange.py
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 5.712s
+
+OK
+real 5.75
+user 4.43
+sys 1.06
+== exit 0 formal/tests/test_extensible_exchange.py
+== formal/tests/test_interval_exchange.py
+{"calls": 144, "profiles": ["base", "flow", "width", "range", "domain"], "definitions": [8, 9, 41, 7, 108], "fuel": [{"profile": "base", "initial": "132", "selected": "132", "attempts": [{"fuel": "132", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow", "initial": "292", "selected": "292", "attempts": [{"fuel": "292", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "width", "initial": "580", "selected": "580", "attempts": [{"fuel": "580", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "range", "initial": "200", "selected": "200", "attempts": [{"fuel": "200", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "domain", "initial": "2192", "selected": "2192", "attempts": [{"fuel": "2192", "exit": 0, "excluded": "0", "matched": true}]}, {"profile": "flow-containers", "initial": "40", "selected": "80", "attempts": [{"fuel": "40", "exit": 1, "excluded": "1"}, {"fuel": "80", "exit": 0, "excluded": "0"}]}]}
+real 3.26
+user 2.55
+sys 0.58
+== exit 0 formal/tests/test_interval_exchange.py
+== formal/tests/test_named_exchange.py
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 2.230s
+
+OK
+real 2.26
+user 1.75
+sys 0.40
+== exit 0 formal/tests/test_named_exchange.py
+== formal/tests/test_range_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 0.934s
+
+OK
+real 0.97
+user 0.78
+sys 0.15
+== exit 0 formal/tests/test_range_exchange.py
+== formal/tests/test_try_exchange.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 3.409s
+
+OK
+real 3.44
+user 2.68
+sys 0.59
+== exit 0 formal/tests/test_try_exchange.py
+== formal/tests/test_width_exchange.py
+....
+----------------------------------------------------------------------
+Ran 4 tests in 1.057s
+
+OK
+real 1.08
+user 0.83
+sys 0.19
+== exit 0 formal/tests/test_width_exchange.py

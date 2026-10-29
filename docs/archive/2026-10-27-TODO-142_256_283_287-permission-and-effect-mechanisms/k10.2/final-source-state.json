@@ -1,0 +1,528 @@
+{
+  "baseline": "c3ca4504dae42271df7336aca41d0a6d5447d0e3",
+  "head": "c3ca4504dae42271df7336aca41d0a6d5447d0e3",
+  "changed": [
+    "crates/benitoite/tests/desugar_export.rs",
+    "crates/benitoite/tests/desugar_export/batch3/manifest.json",
+    "crates/benitoite/tests/desugar_export/check_batch3.py",
+    "crates/benitoite/tests/desugar_export/check_named.py",
+    "crates/benitoite/tests/desugar_export/exchange-manifest.json",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-03-compiler-testing.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/tests/interval_vm_compare.py",
+    "formal/tests/test_batch2_exchange.py",
+    "formal/tests/test_batch3_exchange.py",
+    "formal/tests/test_batch5_exchange.py",
+    "formal/tests/test_range_exchange.py",
+    "scripts/check-formal.sh",
+    "scripts/check/formal_interval.py"
+  ],
+  "untrackedInputs": [
+    "crates/benitoite/tests/desugar_export/range-budget/expected.json",
+    "crates/benitoite/tests/desugar_export/range-budget/last-run.bnt",
+    "crates/benitoite/tests/desugar_export/range-budget/recovered.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/all-top.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/effect-atomic.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/effect-not-covered.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/effect-top.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/expected.json",
+    "crates/benitoite/tests/desugar_export/range-sources/host-many.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/host-one.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/ipv4-cidr.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/ipv4-exact.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/ipv6-cidr.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/ipv6-exact.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/new-invalid-pattern.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/new-invalid-ports.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/new-invalid-target.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/new-outside.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/old-invalid-pattern.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/old-invalid-ports.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/old-invalid-target.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/old-ip.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/old-outside.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/path-tree.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/path-widen.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/port-range.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-expected.json",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/atomic-cover-only.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/budget-exceeded.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/connect-complete.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/connect-missing-upper.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/connect-partial.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/doc-check.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/doc-error.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/handled-scoped-write.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/handled-user-pure.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/non-top.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/not-covered.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/projection-repaired.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/pure.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/read-complete.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/read-missing-upper.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/read-partial.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/redundant.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/show-match.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/show-rejected.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/top.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/unknown-source.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/user-scope-rejected.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/user-unhandled.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/write-complete.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/write-missing-upper.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/report-inputs/write-partial.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/request-errors.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/request-retained.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/request-widen-rejected.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/required-not-covered.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/required-unknown.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/shorthand-location.bnt",
+    "crates/benitoite/tests/desugar_export/range-sources/user-spelling.bnt",
+    "crates/benitoite/tests/desugar_export/range_budget.rs",
+    "crates/benitoite/tests/desugar_export/range_sources.rs",
+    "formal/tests/range-known-differences/class-structural.bnt",
+    "formal/tests/range-known-differences/expected.json",
+    "formal/tests/range-known-differences/manifest.json",
+    "formal/tests/range-known-differences/nul-direct.bnt",
+    "formal/tests/range-known-differences/nul-dynamic.bnt",
+    "formal/tests/test_range_budget_sources.py",
+    "formal/tests/test_range_known_differences.py",
+    "formal/tests/test_range_rejections.py",
+    "formal/tests/test_range_sources.py"
+  ],
+  "diffSha256": "cbf98dbe3e7c89fc1285c5a89a434a857843d8d4f188060f059150d3ce0c5ebe",
+  "files": [
+    {
+      "path": "crates/benitoite/tests/desugar_export.rs",
+      "sha256": "4fefd609b018aefe91b28192c786f5f262b2b6d128844a6b6f12e1a2661c026f",
+      "bytes": 55665
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/batch3/manifest.json",
+      "sha256": "4f706f705ca9bf349b3cd1bf351643331dd82e28e8b8e6b0af6a367d2a752a4d",
+      "bytes": 1310
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/check_batch3.py",
+      "sha256": "58b7015d96f3d62925b9fd9971be19082de09314636f9e7c754e8f18d4c3f66d",
+      "bytes": 10380
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/check_named.py",
+      "sha256": "921d78433f3668bc57340fbd8615f62d44681c155c2233070c928b3261b34a5f",
+      "bytes": 34195
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/exchange-manifest.json",
+      "sha256": "e6df8f4db6ce98dcf7492fbc52f4f507059f5c1547287560038c2bfa0fa1c2ec",
+      "bytes": 558557
+    },
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "sha256": "d600ad7751325748f7b67ca7af733bd26a3c42be1fb3cecaa2050294dfea21c7",
+      "bytes": 635456
+    },
+    {
+      "path": "docs/design/07-quality/07-03-compiler-testing.md",
+      "sha256": "ababc90b3d24c9b76effa0c7ac8ab41f59733e5027056fb5e84195872801efdf",
+      "bytes": 101243
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "sha256": "3ecee71872e38a75c81a009e3861c1be872983a848f1e5ba3b40471212f91268",
+      "bytes": 427034
+    },
+    {
+      "path": "formal/tests/interval_vm_compare.py",
+      "sha256": "913fa7944a5f55d59ae42940cdaf28fde30df083444133ac7335dfd065cbce52",
+      "bytes": 18710
+    },
+    {
+      "path": "formal/tests/test_batch2_exchange.py",
+      "sha256": "295fdd8e895e6b1f2a14b02b7db73077bedcf2ca347e7c1b26c4f0f1f35cb85b",
+      "bytes": 11226
+    },
+    {
+      "path": "formal/tests/test_batch3_exchange.py",
+      "sha256": "aa7a21ccc005d0fb42cc30a2bed16e14c2e618eda6f7d9df8d2326931d12661a",
+      "bytes": 15620
+    },
+    {
+      "path": "formal/tests/test_batch5_exchange.py",
+      "sha256": "2293c6075163c43070ce9e515ed8e16d6649b65def0c8b5aba4b62bda2c9998c",
+      "bytes": 17247
+    },
+    {
+      "path": "formal/tests/test_range_exchange.py",
+      "sha256": "d2c4ec7a0cd70d9da1239c23a5b8a680863911452cbf995d08a5a8e558e2cef2",
+      "bytes": 35454
+    },
+    {
+      "path": "scripts/check-formal.sh",
+      "sha256": "09aa4eb572ef3a9a9368400fe4e0d84df5aee3b7563e247c5b027c99803c2cb1",
+      "bytes": 13157
+    },
+    {
+      "path": "scripts/check/formal_interval.py",
+      "sha256": "afcb44dd470b47a427ac1040e641a70131d1a895fbd574894d608f444571d60a",
+      "bytes": 21973
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-budget/expected.json",
+      "sha256": "a553a9a168fa403d652e8cd90d7fac0f7eaadffb338f891320ed54f48d504bf4",
+      "bytes": 3514
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-budget/last-run.bnt",
+      "sha256": "0605a281493323df9fcfc20ba268a9dedded11170c8791f14064ce5a2532b0b9",
+      "bytes": 283
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-budget/recovered.bnt",
+      "sha256": "756caa937b56baa81c3b29f5677b70e71fe495049810ac841c0c1d5a7ad4c1f4",
+      "bytes": 670
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/all-top.bnt",
+      "sha256": "b41a3949065c35a590a574fce06bd885d4952f010bd151d6b170de6132836faf",
+      "bytes": 183
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/effect-atomic.bnt",
+      "sha256": "ef86737285fe3d809dd4428d7c47136cecd870687e25d04163818b02c26370ad",
+      "bytes": 187
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/effect-not-covered.bnt",
+      "sha256": "f097ffa789d439f38daeb8f4ecce515f1402f4efa571ac3c42a195487b3a7d7d",
+      "bytes": 173
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/effect-top.bnt",
+      "sha256": "da1cf0eec069ffce25c278602e9fc3a665b2db4ba157ef1930e2932578b87f90",
+      "bytes": 161
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/expected.json",
+      "sha256": "86b619ba3726a82e4e191a945886ceb45250816d1d3c9ade5572e838f25893a9",
+      "bytes": 12218
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/host-many.bnt",
+      "sha256": "f45b3231cc15df5f8d1c14c88043bb5ee3e78a342cef83ec52d90485d0eba882",
+      "bytes": 292
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/host-one.bnt",
+      "sha256": "2077959f74444d6d84246c71d2bc5bfcc95d6ec192936fe4f184c73e4c8f6d25",
+      "bytes": 290
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/ipv4-cidr.bnt",
+      "sha256": "2b2e6ccec0183988f63ccd4033f8bb6b1aff6a8b4be602204fc0aaba95145064",
+      "bytes": 288
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/ipv4-exact.bnt",
+      "sha256": "9e9884b65dd0f8389a367bc6618c70c1c2a46fc4cdf23f6bf6ed706b582d5a66",
+      "bytes": 282
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/ipv6-cidr.bnt",
+      "sha256": "8c97f5031959e391b41e6bb1f747390a0d0694a5360b55b2d5ed3a05eb36e911",
+      "bytes": 290
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/ipv6-exact.bnt",
+      "sha256": "6c00e33a523b2f476d2b4534c55345f7ec5d003bdea1e1e23703d4371f6419bd",
+      "bytes": 286
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/new-invalid-pattern.bnt",
+      "sha256": "f09090e140887b5ec58fa279898aa5745d1489cfe84fbe95ed367a48528e4d0e",
+      "bytes": 238
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/new-invalid-ports.bnt",
+      "sha256": "17bfb91e00a641fe06bf0b6e6b782da9ab8e918df0dd70287c79ba2e57ecf465",
+      "bytes": 306
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/new-invalid-target.bnt",
+      "sha256": "17ca95cb385509eef35e795b240bf4af6554ca22d16ecfd8f143b1ffa3a71abc",
+      "bytes": 242
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/new-outside.bnt",
+      "sha256": "3e6b6f7613fbf556bf60bd3d1d59a3bd37e34e2caa800ec08eb08e23e5ab5282",
+      "bytes": 242
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/old-invalid-pattern.bnt",
+      "sha256": "8e7ebea98ef08fc89dbee8d9faef064d8e02ff4d77f900a4c2108a4c1e5c26b5",
+      "bytes": 241
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/old-invalid-ports.bnt",
+      "sha256": "40ef5d610ea80aa85559f1415b4612ca5bc3daf3b201b802587c033b249a2577",
+      "bytes": 302
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/old-invalid-target.bnt",
+      "sha256": "9307699ba22c146957943ffd0d1ab999c4993f3b34d0e8102cb278dbc5b1e31d",
+      "bytes": 249
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/old-ip.bnt",
+      "sha256": "a97acb5a01afe6872dfe5dfb21573e49d31f5141f01c5807d458730acecbf80b",
+      "bytes": 374
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/old-outside.bnt",
+      "sha256": "2a376f92dd48c86e2ca6027393656116bb03b79207c6e2b04a57ee3d41439dbc",
+      "bytes": 245
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/path-tree.bnt",
+      "sha256": "786e6c7dbeef3306eaa22c42170a5c063658826e4ac537e30aa62807b9312dcf",
+      "bytes": 196
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/path-widen.bnt",
+      "sha256": "cbd03cc55f7e9f9962c445e29cf93580ddc879f1f877a12faabab0008df4ae4e",
+      "bytes": 412
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/port-range.bnt",
+      "sha256": "2cd387eccf0e2f7a7dff4e2082da81b92aeeb58c69b70f1227063644d3b20eda",
+      "bytes": 297
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-expected.json",
+      "sha256": "c8bfe176ea31e0098f29063424f722845f3193b7c7106b11a033d88cef1254bc",
+      "bytes": 12930
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/atomic-cover-only.bnt",
+      "sha256": "1d6a7ee2041b6df0c3bc3b33100220076804cd70189f3bde89e21324b0000e18",
+      "bytes": 224
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/budget-exceeded.bnt",
+      "sha256": "df179321213e83537d23dbcfbe527d506afb3727cdc57dcd26ac3af9dd441b6d",
+      "bytes": 34995
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/connect-complete.bnt",
+      "sha256": "2f01a8a351b76b2f804dcb4f244ce5eb790eb86996b715301cf9b88345c194f8",
+      "bytes": 368
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/connect-missing-upper.bnt",
+      "sha256": "f7806e1a8b236c967c004ec375fcd9383f6c50792009ff3421564c0a6e4bbac7",
+      "bytes": 336
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/connect-partial.bnt",
+      "sha256": "4b6d9c5b5378e85f95289d020c204623d3ad4b8fee16b7fdd6295bb602fef3e3",
+      "bytes": 412
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/doc-check.bnt",
+      "sha256": "07044f3856fb4a29cc03e87a323ce94b9add869b00c2e2497393a1b49825c982",
+      "bytes": 260
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/doc-error.bnt",
+      "sha256": "9f7b2393783c281e346db87f25f0722a1e31e2066ed42bc5cefe0b6c7b77daca",
+      "bytes": 228
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/handled-scoped-write.bnt",
+      "sha256": "7ce419aa27567e5bf8ba2ddb0e93cfae3aa3f234742e2003b14909868372afa5",
+      "bytes": 816
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/handled-user-pure.bnt",
+      "sha256": "d32b4806d3bf646a59675f8eb8a415f50c43a9617b8dffbc1d1034a35227570d",
+      "bytes": 198
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/non-top.bnt",
+      "sha256": "0343bd5fb6dcaf5c011f018b849cab4fd993213cb520218dd4aba051fccf1a8a",
+      "bytes": 214
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/not-covered.bnt",
+      "sha256": "8c26a0c13384ee7c6458ac5ffe2c4d97fa70ea7caf0c77cd52cd48969e3abf82",
+      "bytes": 210
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/projection-repaired.bnt",
+      "sha256": "07843877ccb33e11dfa2996233efd9d579c41830b9504e91f284b05e0c090dc4",
+      "bytes": 474
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/pure.bnt",
+      "sha256": "fba7175f66172925e88653ea4f560a154fbe98f575d3de8fe40179f31824f3f1",
+      "bytes": 158
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/read-complete.bnt",
+      "sha256": "367811c7bf54d02a74011fa0366b9b3388153883f141acd0f4544386d76aded3",
+      "bytes": 725
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/read-missing-upper.bnt",
+      "sha256": "5101647cc7b4d2d76a62000ea5bd39a7b47ea0ebc78a0eb3f4df72350f21402e",
+      "bytes": 692
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/read-partial.bnt",
+      "sha256": "297d096b4174401f069cfb804c0c9adf1207824b60f020742716670573dfae71",
+      "bytes": 746
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/redundant.bnt",
+      "sha256": "a73d2bcbc0f3517d51625bd3d3c2877fcd851b79f336bdb2416459f15ef01382",
+      "bytes": 278
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/show-match.bnt",
+      "sha256": "563e1c4d0a383985a4b864eba5ccadb276b128e3e9408abe51c44b7f69993c75",
+      "bytes": 381
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/show-rejected.bnt",
+      "sha256": "28ea2c356b673ff4a36207b760810ccc5425416847336ad77a835518bde177f2",
+      "bytes": 238
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/top.bnt",
+      "sha256": "bba7188e9219fbfcb9dbe4370ba48b75a6ed4258702f8c3b74cd990410b3a298",
+      "bytes": 188
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/unknown-source.bnt",
+      "sha256": "255d418c35c77f668316dfe691f4a2700a35ec1dd3b8ef09268c392b5df39a56",
+      "bytes": 218
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/user-scope-rejected.bnt",
+      "sha256": "435de74f27370ddb13c23e69433b6cb9c99d116cc031b2b2dd88a765a9af2d4a",
+      "bytes": 156
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/user-unhandled.bnt",
+      "sha256": "70823dee85360a5d7b5c3dbc56cdb8a93f52d4be5081904c6faaf3fe2d928304",
+      "bytes": 107
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/write-complete.bnt",
+      "sha256": "ce90e9d7905f50a2be301e43e0f183cfafb8bb6dfb51c771defeda746c4feb45",
+      "bytes": 920
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/write-missing-upper.bnt",
+      "sha256": "f1b61e51b3480ca7af98c60208ed759e1e03dca30736083cfcd277f8cd92a2bf",
+      "bytes": 880
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/report-inputs/write-partial.bnt",
+      "sha256": "ff0a9bbf9e32dcfbd839ebc4aa2d039809830901295c26314f0b79bd97e87df9",
+      "bytes": 936
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/request-errors.bnt",
+      "sha256": "646a4b95bbc25990430c898a2defc9c86e85a3b877614781cdee1fb5affdb7f9",
+      "bytes": 850
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/request-retained.bnt",
+      "sha256": "bbadf5ee2fcd7d85735fd69d2b8dcb8b9e4deb73c03c7e13620e808f8f935d01",
+      "bytes": 710
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/request-widen-rejected.bnt",
+      "sha256": "2435c5d851a90e886ec7c667af34b42465d2fddae85b62c55800b23dfb9f2b19",
+      "bytes": 218
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/required-not-covered.bnt",
+      "sha256": "82af33c459203742a6a149a25ee64d4f7b56264bdbfaa2ae1a5f6bb89d033d82",
+      "bytes": 195
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/required-unknown.bnt",
+      "sha256": "6434b8cf70988c1f81f8ef9c08b8fde7461ba409048bc81e93c93ce1756e8ab4",
+      "bytes": 210
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/shorthand-location.bnt",
+      "sha256": "5dffabf5b6678b61df5c3e1290a8c829981df2f6fbef75e7ad147453eefcc9cb",
+      "bytes": 237
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range-sources/user-spelling.bnt",
+      "sha256": "d2696ca286d0d9358fe24df01a4015a8c9ef35b48b274e010c60ecafffb8e22b",
+      "bytes": 195
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range_budget.rs",
+      "sha256": "9c2ff44ca8762080ad60b2ae75b204eb12f0a93c9e2b1c69f8995410f33987dc",
+      "bytes": 9038
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/range_sources.rs",
+      "sha256": "f944c8f44564ce95aee5d1ad454e95037dbfb20a594eee6ab4be007034c410b4",
+      "bytes": 4552
+    },
+    {
+      "path": "formal/tests/range-known-differences/class-structural.bnt",
+      "sha256": "2bac6c224ba9c89e18511d227e5418f3c342f38c81df7c3afa4e9c570bc40190",
+      "bytes": 291
+    },
+    {
+      "path": "formal/tests/range-known-differences/expected.json",
+      "sha256": "1390b494bd17413eb5345a30771c7f58dafb4cb7f9e14a70bc34a1db2f560652",
+      "bytes": 1187
+    },
+    {
+      "path": "formal/tests/range-known-differences/manifest.json",
+      "sha256": "4a5aae425e29b96dc9a0109d810a035adeec3166342bfc06c283b2e9906c9a2a",
+      "bytes": 652
+    },
+    {
+      "path": "formal/tests/range-known-differences/nul-direct.bnt",
+      "sha256": "d06921573ee3be4360f9bc70e6d6c6b6ad24fbe74541fb263402df34a266083c",
+      "bytes": 261
+    },
+    {
+      "path": "formal/tests/range-known-differences/nul-dynamic.bnt",
+      "sha256": "07bb716f5e740f2eb1ea5157b082a7c99fd72c164b9ed226d4a248d8bdee86d0",
+      "bytes": 286
+    },
+    {
+      "path": "formal/tests/test_range_budget_sources.py",
+      "sha256": "c8accf7ea7982745c7a60b0a63c1b3a8d8fe0163f4dc88693e3097a8b3d633e7",
+      "bytes": 7056
+    },
+    {
+      "path": "formal/tests/test_range_known_differences.py",
+      "sha256": "f693009af321a0a4346cb5c6c2f23c7f8cfa04c6ad030d25a8a8c0decb6f70ef",
+      "bytes": 2701
+    },
+    {
+      "path": "formal/tests/test_range_rejections.py",
+      "sha256": "193e85d2272cfab5aee8a8c0c4fe0eb622601fb350d016e28e3ba300f24f1499",
+      "bytes": 15913
+    },
+    {
+      "path": "formal/tests/test_range_sources.py",
+      "sha256": "e1c01b040865eaf2fc6ab9cad46811ab0e3b05d78851602e2849932f439014fc",
+      "bytes": 12851
+    }
+  ],
+  "runtimeSourceChanges": []
+}

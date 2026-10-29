@@ -264,11 +264,11 @@ fn same_named_types_use_one_qualification_table() {
             ("main.bnt", source),
             (
                 "deps/left/package.bnt",
-                "language \"0.0.12\"\npackage Textkit\nend package\n",
+                "language \"0.0.13\"\npackage Textkit\nend package\n",
             ),
             (
                 "deps/right/package.bnt",
-                "language \"0.0.12\"\npackage Wordkit\nend package\n",
+                "language \"0.0.13\"\npackage Wordkit\nend package\n",
             ),
             ("deps/left/Slug.bnt", a),
             ("deps/right/Slug.bnt", b),

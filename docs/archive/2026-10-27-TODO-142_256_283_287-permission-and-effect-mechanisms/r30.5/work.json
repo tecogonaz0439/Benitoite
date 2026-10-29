@@ -1,0 +1,27 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "ea42f4f97fe34e1f4768404f5b44aac3ff371155"
+  ],
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "ea42f4f97fe34e1f4768404f5b44aac3ff371155"
+  ],
+  "check_exit_code": 0,
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 481.5293325,
+  "started_at": "2026-10-29T08:27:52.277244+00:00",
+  "finished_at": "2026-10-29T08:35:53.807352+00:00",
+  "maxrss_raw": 2763243520,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 2635.234375,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値の補助値。同時常駐量の合計ではない"
+}

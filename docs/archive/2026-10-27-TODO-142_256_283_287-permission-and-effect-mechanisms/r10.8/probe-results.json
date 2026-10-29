@@ -1,0 +1,141 @@
+{
+  "base": "f5821c672d22b32e097ca5980a6f20fa44583722",
+  "build": {
+    "key": {
+      "commit": "f5821c672d22b32e097ca5980a6f20fa44583722",
+      "mode": "default",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+      "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5"
+    },
+    "commit": "f5821c672d22b32e097ca5980a6f20fa44583722",
+    "binary": "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/release/benitoite",
+    "sha256": "f541533d47b2af8aaab5fed18d605f4c129af73b81926c550645ad626e8f2c9b",
+    "archive": "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/source",
+    "features": [
+      "default"
+    ],
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "benitoite",
+      "--manifest-path",
+      "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/source/Cargo.toml",
+      "--target-dir",
+      "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default"
+    ],
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)\n",
+    "cargo_lock_sha256": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "log": "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/build.log",
+    "reused": true,
+    "seconds": 83.247330958,
+    "build_invocation_seconds": 0.013244124999999995,
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726"
+    },
+    "probe": "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/timing-probe",
+    "probe_sha256": "cc09bc49a7d0269f89d904ea041776df08dcfa115855710c9d124e9fabfc2e86",
+    "probe_key": "92bff1604af6bb7b08d7ee004974d895abb9e730cf84d8a9bfae9da290d07b1b6059f87ad1f9492d80479214cfc748852230b4af6e0ac04e3016772689340709",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/release/deps",
+      "-o",
+      "<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/timing-probe",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/f5821c672d22b32e097ca5980a6f20fa44583722-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending"
+    ],
+    "bridge_sources": {
+      "original_convert": "08e662bd7c018ed067a52e6fe8cffe79be392fe682bb1e6b4f60cfd046b26b37",
+      "original_value": "b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c",
+      "observer": "91d3eced66427d9a9d70a9eba6d67656c2ce89b106aa458c493b426cf90d7058",
+      "wrapper": "f0d7d7a59bf752a1b74e2267dd65805960230e59b1fe4b482df964d64c8c58dd",
+      "conversion_unit": "5b804ce9e815a98811cb8cd09fc5b216c59bbce2f10e07ebc78d906cdcebc67e"
+    }
+  },
+  "results": [
+    {
+      "case": "codegen-irenv-empty",
+      "result": {
+        "seconds": 0.3977989999999999,
+        "status": 0,
+        "stdout": "{\"ir_check\":0.000286625,\"ir_errors\":0,\"sibling_rejected\":1}\n",
+        "stderr": ""
+      },
+      "validated": true
+    },
+    {
+      "case": "codegen-irenv-4",
+      "result": {
+        "seconds": 0.01155170800000005,
+        "status": 0,
+        "stdout": "{\"ir_check\":0.000078083,\"ir_errors\":0,\"sibling_rejected\":1}\n",
+        "stderr": ""
+      },
+      "validated": true
+    },
+    {
+      "case": "bridge-empty",
+      "result": {
+        "seconds": 0.006645333999999892,
+        "status": 0,
+        "stdout": "{\"bridge_from_heap\":1.167e-6,\"bridge_time\":6.083e-6,\"bridge_to_heap\":4.916e-6,\"edges\":0,\"heap_nodes\":0,\"observation\":0,\"unique_nodes\":0}\n",
+        "stderr": ""
+      },
+      "validated": true
+    },
+    {
+      "case": "bridge-shared-4",
+      "result": {
+        "seconds": 0.011119958999999957,
+        "status": 0,
+        "stdout": "{\"bridge_from_heap\":4.667e-6,\"bridge_time\":0.000102792,\"bridge_to_heap\":0.000098125,\"edges\":8,\"heap_nodes\":5,\"observation\":7,\"unique_nodes\":5}\n",
+        "stderr": ""
+      },
+      "validated": true
+    },
+    {
+      "case": "bridge-nodes-4",
+      "result": {
+        "seconds": 0.017478792000000132,
+        "status": 0,
+        "stdout": "{\"bridge_from_heap\":2.667e-6,\"bridge_time\":0.000019167,\"bridge_to_heap\":0.0000165,\"edges\":6,\"heap_nodes\":4,\"observation\":7,\"unique_nodes\":4}\n",
+        "stderr": ""
+      },
+      "validated": true
+    },
+    {
+      "case": "bridge-nodes-8",
+      "result": {
+        "seconds": 0.01097487500000005,
+        "status": 0,
+        "stdout": "{\"bridge_from_heap\":6.167e-6,\"bridge_time\":0.000040666999999999995,\"bridge_to_heap\":0.0000345,\"edges\":14,\"heap_nodes\":8,\"observation\":7,\"unique_nodes\":8}\n",
+        "stderr": ""
+      },
+      "validated": true
+    },
+    {
+      "case": "bridge-shared-8",
+      "result": {
+        "seconds": 0.013313875000000142,
+        "status": 0,
+        "stdout": "{\"bridge_from_heap\":6.583e-6,\"bridge_time\":0.000044749,\"bridge_to_heap\":0.000038166,\"edges\":16,\"heap_nodes\":9,\"observation\":7,\"unique_nodes\":9}\n",
+        "stderr": ""
+      },
+      "validated": true
+    }
+  ],
+  "note": "機能検査の一回実行。性能比較の標本ではない。"
+}

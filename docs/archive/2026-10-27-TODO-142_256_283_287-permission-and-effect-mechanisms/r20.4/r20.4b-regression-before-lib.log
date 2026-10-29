@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 31.48s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::scoped_calls_tests::handler_defaults_follow_effect_dependencies_and_children_finish_first' (5289912) panicked at crates/benitoite/src/typeck/scoped_calls_tests.rs:387:9:
+assertion `left == right` failed: later clause call
+  left: [Con(Builtin(BuiltinTypeId(32)), [], RangeIndex(Some(Fixed(Path(PathPattern { kind: Exact, stem: Path(["data", "a"]) })))))]
+ right: [Con(Builtin(BuiltinTypeId(32)), [], RangeIndex(None))]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scoped_calls_tests::handler_defaults_follow_effect_dependencies_and_children_finish_first ... FAILED
+
+failures:
+
+failures:
+    typeck::scoped_calls_tests::handler_defaults_follow_effect_dependencies_and_children_finish_first
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1407 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `-p benitoite --lib`

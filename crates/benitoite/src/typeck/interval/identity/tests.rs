@@ -125,6 +125,7 @@ pub(in crate::typeck::interval) fn fixture_files_batched(
                     ReasonKind::FnBody,
                 );
                 body.add(Constraint::EffSub {
+                    relation: crate::typeck::infer::EffectRelation::Cover,
                     sub: body.body_effect.clone(),
                     sup: fixed(body.scheme.effects.clone()),
                     reason: reason(declaration.name.span, ReasonKind::FnUses),
@@ -585,6 +586,89 @@ fn failure_clause_and_empty_lambda_keep_body_ranges() {
             );
             if name == "empty" {
                 assert!(body.parent_key(&input.definition.name, 1).is_none());
+            }
+        }
+    });
+}
+
+// 関門: 独立した二つの走査が共有する先行順と由来の契約を照合する。
+// 個々の手計算例に加え、片側だけの構文対応の変更を捕まえる。
+// ラムダと節は別本体の命名を持つため、この比較の対象には含めない。
+#[test]
+fn scope_and_interval_preorders_share_origins_without_lambdas_or_clauses() {
+    let source = r#"import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Process
+const number: Integer = 7
+function sample(text: String) -> Unit
+ bind xs <- [1, ..[2], 3]
+ bind message <- "${text}:${number}"
+ bind _ <- if true then
+  Scope.checkPathIn(path: text, pattern: "/**")
+ else if false then
+  Scope.checkPathIn(pattern: "/**", path: text)
+ else
+  Scope.checkPathIn(pattern: "/**", path: text)
+ end if
+ bind _ <- match true with
+ case true if false -> -number
+ case _ -> -1
+ end match
+ ()
+end function
+function resources() -> Unit uses State
+ with first = TaskGroup.open(), second = TaskGroup.open() do
+ ()
+ end with
+end function
+"#;
+    let (_, _, out, diagnostics) =
+        crate::typeck::test_support::check_files(&[("main.bnt", source)], false);
+    assert!(
+        !diagnostics.iter().any(crate::diag::Diagnostic::is_error),
+        "{diagnostics:?}"
+    );
+    fixture(source, |inputs, tables| {
+        for input in inputs {
+            let scope = out
+                .scope_inputs
+                .bodies
+                .iter()
+                .find(|b| b.body_key.definition == input.definition.name)
+                .unwrap()
+                .numbered(crate::typeck::scope::DEFAULT_NUMBERING_OPERATIONS);
+            assert_eq!(scope.stopped, None);
+            let map = build(
+                inputs,
+                tables,
+                input.definition.name.rsplit('.').next().unwrap(),
+                100_000,
+                100_000,
+                4096,
+            );
+            assert_eq!(map.stopped, None);
+            assert_eq!(map.occurrences.len(), scope.occurrences.len() + 1);
+            for (interval, scope) in map.occurrences.iter().skip(1).zip(&scope.occurrences) {
+                assert_eq!(
+                    interval.preorder,
+                    scope.preorder + 1,
+                    "{}",
+                    input.definition.name
+                );
+                use crate::typeck::scope::ScopeOrigin;
+                let node = match scope.origin {
+                    ScopeOrigin::Expression(node)
+                    | ScopeOrigin::Conditional(node)
+                    | ScopeOrigin::WithBinding(node)
+                    | ScopeOrigin::ListConcatenate(node)
+                    | ScopeOrigin::InterpolationConverter(node) => node,
+                };
+                assert_eq!(
+                    interval.origin.unwrap().node,
+                    node,
+                    "{} at {}",
+                    input.definition.name,
+                    scope.preorder
+                );
             }
         }
     });

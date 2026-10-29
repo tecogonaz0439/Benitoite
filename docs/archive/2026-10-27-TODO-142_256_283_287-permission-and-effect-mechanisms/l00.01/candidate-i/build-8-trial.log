@@ -1,0 +1,42 @@
+== wait-for-lock start 17:58:33
+== lock acquired 17:58:33 after 0s
+✔ [69/410] Built Benitoite.Release.TypeSubstLemmas (705ms)
+✔ [70/410] Built Benitoite.Release.TypeSubstLemmas:c.o (231ms)
+✖ [71/410] Building Benitoite.Release.TypeRows (371ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeRows.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeRows.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeRows.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeRows.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeRows.setup.json --json
+error: Benitoite/Release/TypeRows.lean:15:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/TypeRows.lean:40:16: `simp` made no progress
+error: Benitoite/Release/TypeRows.lean:38:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.RowsIn.mono'
+error: Benitoite/Release/TypeRows.lean:67:16: `simp` made no progress
+error: Benitoite/Release/TypeRows.lean:66:92: unsolved goals
+case ctor
+pe : Nat → Prop
+φ✝ : TyCon
+h : True
+⊢ Ty.RowsIn pe (Ty.ctor φ✝).norm
+error: Benitoite/Release/TypeRows.lean:66:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.norm_rowsIn'
+error: Benitoite/Release/TypeRows.lean:96:16: `simp` made no progress
+error: Benitoite/Release/TypeRows.lean:95:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.rowsIn_true'
+Some required targets logged failures:
+- Benitoite.Release.TypeRows
+error: build failed
+        1.18 real         1.41 user         0.36 sys
+           724828160  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              101436  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   9  voluntary context switches
+                8942  involuntary context switches
+          1227420898  instructions retired
+           445613806  cycles elapsed
+            22594736  peak memory footprint
+== exit 1

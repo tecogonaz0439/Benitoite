@@ -1,0 +1,31 @@
+import Benitoite.Unofficial.Scope
+const c0: Integer = 0
+const c1: Integer = c0 + c0
+const c2: Integer = c1 + c1
+const c3: Integer = c2 + c2
+const c4: Integer = c3 + c3
+const c5: Integer = c4 + c4
+const c6: Integer = c5 + c5
+const c7: Integer = c6 + c6
+const c8: Integer = c7 + c7
+const c9: Integer = c8 + c8
+const c10: Integer = c9 + c9
+const c11: Integer = c10 + c10
+const c12: Integer = c11 + c11
+const c13: Integer = c12 + c12
+const c14: Integer = c13 + c13
+const c15: Integer = c14 + c14
+const c16: Integer = c15 + c15
+const c17: Integer = c16 + c16
+const c18: Integer = c17 + c17
+const c19: Integer = c18 + c18
+const c20: Integer = c19 + c19
+function expansion() -> Unit
+ bind _ <- c20
+end function
+function sample(path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ expansion()
+ return Scope.checkPathIn(pattern: "/data/**", path: path)
+end function
+function main() -> Unit
+end function

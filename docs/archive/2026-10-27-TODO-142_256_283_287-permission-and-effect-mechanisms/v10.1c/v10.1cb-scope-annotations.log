@@ -1,0 +1,26 @@
+   Compiling benitoite v0.0.13 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.82s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-b87756d548b471a9)
+
+running 18 tests
+test effect_coverage_reports_one_failure_per_argument ... ok
+test effect_coverage_flows_through_lambdas_callbacks_and_resume ... ok
+test malformed_type_arguments_keep_the_original_syntax_diagnostic ... ok
+test effect_coverage_preserves_missing_effect_diagnostics ... ok
+test scope_shorthand_preserves_atoms_and_source_elements ... ok
+test effect_coverage_keeps_nested_types_and_failures_invariant ... ok
+test only_certified_opaque_types_accept_one_scope ... ok
+test opaque_standard_values_have_no_public_representation ... ok
+test multiline_scopes_keep_valid_groups_and_expression_diagnostics ... ok
+test shorthand_reports_name_resolution_errors_and_repairs_once ... ok
+test unclosed_scopes_stop_at_the_next_unexpected_token ... ok
+test value_type_scope_misuse_and_unrecoverable_syntax_are_rejected ... ok
+test scoped_function_types_and_failure_arguments_survive_instantiation ... ok
+test duplicate_atoms_report_both_original_elements ... ok
+test opaque_standard_value_types_keep_their_invariant_scope ... ok
+test invalid_scopes_are_rejected_by_the_argument_contract ... ok
+test port_arguments_use_integer_literal_values_and_widths ... ok
+test effect_coverage_uses_one_same_named_atom ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.52s
+

@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0603]: module `scope` is private
+   --> crates/benitoite/tests/scoped_calls/closure.rs:149:44
+    |
+149 |                     let benitoite::typeck::scope::ScopeOrigin::Expression(node) = o.origin else {
+    |                                            ^^^^^               ---------- tuple variant `Expression` is not publicly re-exported
+    |                                            |
+    |                                            private module
+    |
+note: the module `scope` is defined here
+   --> crates/benitoite/src/typeck/mod.rs:248:1
+    |
+248 | mod scope;
+    | ^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `benitoite` (test "scoped_calls") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+real 4.62
+user 2.81
+sys 1.15

@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.Network.Http
+
+function f(canned: Result[Http.Response, NetworkError]) -> Result[Http.Response, NetworkError]
+  return handle Http.get(url: "http://a.example/") with
+    case Http.send(request) -> resume(canned)
+    case Http.sendIn(request) -> resume(canned)
+  end handle
+end function
+
+function main() -> Unit
+  ()
+end function

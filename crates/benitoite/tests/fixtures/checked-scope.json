@@ -118,8 +118,8 @@
     "kind": "host",
     "pattern": "localhost",
     "target": "1.2.3.4",
-    "result": "InvalidTarget",
-    "code": "E0460"
+    "result": "OutsideScope",
+    "code": "E0462"
   },
   {
     "kind": "host",
@@ -542,5 +542,379 @@
     "minimum": -9223372036854775808,
     "maximum": 9223372036854775807,
     "port": 0
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.0/24",
+    "target": "192.168.1.20",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "192.168.1.0/24",
+    "expectedTarget": "192.168.1.20"
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.0/24",
+    "target": "192.168.2.20",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.0/24",
+    "target": "::ffff:192.168.1.20",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "::ffff:192.168.1.0/120",
+    "target": "::ffff:192.168.1.20",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "192.168.1.20",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "0.0.0.0/0",
+    "target": "2001:db8::1",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "2001:db8::/32",
+    "target": "2001:db8::a",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "2001:db8::/32",
+    "expectedTarget": "2001:db8::a"
+  },
+  {
+    "kind": "host",
+    "pattern": "2001:db8::/32",
+    "target": "2001:db9::a",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.5/24",
+    "target": "192.168.1.5",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "2001:db8::1/32",
+    "target": "2001:db8::1",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.20/32",
+    "target": "192.168.1.20",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "192.168.1.20",
+    "expectedTarget": "192.168.1.20"
+  },
+  {
+    "kind": "host",
+    "pattern": "2001:db8::a/128",
+    "target": "2001:db8::a",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "2001:db8::a",
+    "expectedTarget": "2001:db8::a"
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.20",
+    "target": "192.168.1.20",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "192.168.1.20",
+    "expectedTarget": "192.168.1.20"
+  },
+  {
+    "kind": "host",
+    "pattern": "2001:db8::a",
+    "target": "2001:db8::a",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "2001:db8::a",
+    "expectedTarget": "2001:db8::a"
+  },
+  {
+    "kind": "host",
+    "pattern": "::ffff:192.168.1.20/128",
+    "target": "::ffff:192.168.1.20",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "192.168.1.20",
+    "target": "host.example",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "**.example",
+    "target": "192.168.1.20",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "127.1",
+    "target": "127.1",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "127.1",
+    "expectedTarget": "127.1"
+  },
+  {
+    "kind": "host",
+    "pattern": "0177.1",
+    "target": "0177.1",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "0177.1",
+    "expectedTarget": "0177.1"
+  },
+  {
+    "kind": "host",
+    "pattern": "127.0x.0.1",
+    "target": "127.0x.0.1",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "127.0x.0.1",
+    "expectedTarget": "127.0x.0.1"
+  },
+  {
+    "kind": "host",
+    "pattern": "001.2.3.4",
+    "target": "1.2.3.4",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "0.0.0.0/0",
+    "target": "001.2.3.4",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "2001:DB8::1",
+    "target": "2001:db8::1",
+    "result": "InvalidPattern",
+    "code": "E0459"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "2001:0db8::1",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "192.168.1.0/24",
+    "target": "192.168.1.20",
+    "result": "ok",
+    "code": null,
+    "minimum": 443,
+    "maximum": 443,
+    "port": 443,
+    "expectedPattern": "192.168.1.0/24",
+    "expectedTarget": "192.168.1.20"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "192.168.1.20/32",
+    "target": "192.168.1.20",
+    "result": "ok",
+    "code": null,
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 65535,
+    "expectedPattern": "192.168.1.20",
+    "expectedTarget": "192.168.1.20"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "2001:db8::a/128",
+    "target": "2001:db8::a",
+    "result": "ok",
+    "code": null,
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 0,
+    "expectedPattern": "2001:db8::a",
+    "expectedTarget": "2001:db8::a"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "2001:db8::/32",
+    "target": "2001:db8::a",
+    "result": "PortOutsideScope",
+    "code": "E0462",
+    "minimum": 80,
+    "maximum": 80,
+    "port": 443
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "192.168.1.0/24",
+    "target": "::ffff:192.168.1.20",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 443
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "192.168.1.1/24",
+    "target": "192.168.1.1",
+    "result": "InvalidPattern",
+    "code": "E0459",
+    "minimum": 443,
+    "maximum": 80,
+    "port": 443
+  },
+  {
+    "kind": "host",
+    "pattern": "::ffff:192.168.1.0/120",
+    "target": "192.168.1.20",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "::ffff:0.0.0.0",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "::ffff:255.255.255.255",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "::FFFF:127.0.0.1",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "0:0:0:0:0:ffff:7f00:1",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "::ffff:7f00:1",
+    "result": "InvalidTarget",
+    "code": "E0460"
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "::/0",
+    "target": "::ffff:0.0.0.0",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 443
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "::/0",
+    "target": "::ffff:255.255.255.255",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 443
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "::/0",
+    "target": "::FFFF:127.0.0.1",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 443
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "::/0",
+    "target": "0:0:0:0:0:ffff:7f00:1",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 443
+  },
+  {
+    "kind": "endpoint",
+    "pattern": "::/0",
+    "target": "::ffff:7f00:1",
+    "result": "InvalidTarget",
+    "code": "E0460",
+    "minimum": 0,
+    "maximum": 65535,
+    "port": 443
+  },
+  {
+    "kind": "host",
+    "pattern": "::ffff:127.0.0.1",
+    "target": "::1",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "::ffff:0.0.0.0/96",
+    "target": "::1",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "::ffff:127.0.0.0/104",
+    "target": "::1",
+    "result": "OutsideScope",
+    "code": "E0462"
+  },
+  {
+    "kind": "host",
+    "pattern": "::/0",
+    "target": "::1",
+    "result": "ok",
+    "code": null,
+    "expectedPattern": "::/0",
+    "expectedTarget": "::1"
   }
 ]

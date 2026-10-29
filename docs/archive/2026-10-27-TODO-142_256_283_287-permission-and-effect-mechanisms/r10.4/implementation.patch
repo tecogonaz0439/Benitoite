@@ -1,0 +1,956 @@
+diff --git a/crates/benitoite/skill/references/diagnostics.md b/crates/benitoite/skill/references/diagnostics.md
+index e442ebde..2af95bd8 100644
+--- a/crates/benitoite/skill/references/diagnostics.md
++++ b/crates/benitoite/skill/references/diagnostics.md
+@@ -1929,6 +1929,15 @@ The failure type must be fixed before its handler is erased.
+ 
+ A failure handle contains exactly one Failure.raise clause.
+ 
++## E0519
++
++- Kind: check (error)
++- Message: effect `{effect}` is not covered by one surrounding atom ({reason})
++- Label: `{effect}` is not covered by `{expected}`
++- `atomic`: each effect atom must be covered by one atom of the same name; a union of scopes cannot cover one atom, and only Top covers Top
++
++Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.
++
+ ## E0520
+ 
+ - Kind: check (error)
+diff --git a/crates/benitoite/src/diag/codes.rs b/crates/benitoite/src/diag/codes.rs
+index c1515b75..a774b8f9 100644
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -970,6 +970,10 @@ diag_codes! {
+         [nest: "nest two handles instead"]
+         "A failure handle contains exactly one Failure.raise clause.";
+ 
++    E0519 Check "effect `{effect}` is not covered by one surrounding atom ({reason})" "`{effect}` is not covered by `{expected}`"
++        [atomic: "each effect atom must be covered by one atom of the same name; a union of scopes cannot cover one atom, and only Top covers Top"]
++        "Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.";
++
+     E0520 Check "invalid scope arguments for `{name}` (expected {expectedScopeKind})" "invalid scope argument"
+         [found: "found: {found}"]
+         "Scope arguments must be nonempty closed literal patterns of the kind required by the resolved standard name. File effects take path strings; Http.Connect takes complete host/port pairs. Expressions, interpolation and constant references are not scope arguments.";
+diff --git a/crates/benitoite/src/ir/check.rs b/crates/benitoite/src/ir/check.rs
+index 5e970fea..e6a80016 100644
+--- a/crates/benitoite/src/ir/check.rs
++++ b/crates/benitoite/src/ir/check.rs
+@@ -206,7 +206,7 @@ fn accepts(actual: &Ty, expected: &Ty) -> bool {
+             || matches!((actual, expected), (Ty::Fn(a), Ty::Fn(b))
+         if a.valid_contract() && b.valid_contract() && a.param_names == b.param_names
+         && a.params.len() == b.params.len() && a.params.iter().zip(&b.params).all(|(a,b)| a == b)
+-        && a.ret == b.ret && a.effects.is_subset(&b.effects)))
++        && a.ret == b.ret && b.effects.covers(&a.effects)))
+ }
+ 
+ /// V-Dict・C-Meth の同時置換。型構成子の頭も置き換える。
+@@ -255,7 +255,7 @@ impl<'a> Checker<'a> {
+     }
+ 
+     fn effects(&mut self, origin: Span, actual: &EffectSet, expected: &EffectSet) {
+-        if !actual.is_subset(expected) {
++        if !expected.covers(actual) {
+             self.error(
+                 origin,
+                 format!("expected effects within {expected:?}, found {actual:?}"),
+@@ -263,6 +263,16 @@ impl<'a> Checker<'a> {
+         }
+     }
+ 
++    // 保護本体と純粋要求は C-Sub の被覆と別の構造包含である。
++    fn structural_effects(&mut self, origin: Span, actual: &EffectSet, expected: &EffectSet) {
++        if !actual.is_subset(expected) {
++            self.error(
++                origin,
++                format!("expected structural effects within {expected:?}, found {actual:?}"),
++            );
++        }
++    }
++
+     fn count(&mut self, origin: Span, label: &str, actual: usize, expected: usize) {
+         if actual != expected {
+             self.error(
+@@ -344,7 +354,7 @@ impl<'a> Checker<'a> {
+         self.name.clone_from(&def.name);
+         self.computation(&def.body, &mut Env::default());
+         self.flow(def.body.origin, &def.body.ty, &def.ty);
+-        self.effects(def.body.origin, &def.body.eff, &EffectSet::empty());
++        self.structural_effects(def.body.origin, &def.body.eff, &EffectSet::empty());
+     }
+ 
+     /// V-Fun・V-Prim（操作を含む）。引数の数、カインド、組み込みの制約を検査する。
+@@ -960,7 +970,7 @@ impl<'a> Checker<'a> {
+         env.hide_builders();
+         self.computation(body, env);
+         env.restore(mark);
+-        self.effects(body.origin, &body.eff, &EffectSet::empty());
++        self.structural_effects(body.origin, &body.eff, &EffectSet::empty());
+         self.equal(
+             comp.origin,
+             &comp.ty,
+@@ -1327,9 +1337,9 @@ impl<'a> Checker<'a> {
+             self.effects(handle.body.origin, &rest, &comp.eff);
+             let mut upper = rest;
+             upper.insert_failure(error_ty.clone());
+-            self.effects(handle.body.origin, &handle.body.eff, &upper);
++            self.structural_effects(handle.body.origin, &handle.body.eff, &upper);
+         } else {
+-            self.effects(
++            self.structural_effects(
+                 handle.body.origin,
+                 &handle.body.eff,
+                 &comp.eff.union(&handle.handled),
+@@ -1457,7 +1467,7 @@ impl<'a> Checker<'a> {
+         self.effects(clause.body.origin, &clause.body.eff, &comp.eff);
+     }
+ 
+-    /// C-Resume。継続の結果の型とエフェクトは一致を求める。
++    /// C-Resume と C-Eff。結果の型は一致し、効果は周囲の一原子で覆える。
+     fn resume(&mut self, cont: VarId, value: &CoreVal, comp: &Comp, env: &mut Env<'_>) {
+         self.value(value, env);
+         match env
+@@ -1470,12 +1480,7 @@ impl<'a> Checker<'a> {
+             Some((_, arg, ret, eff)) => {
+                 self.flow(value.origin, &value.ty, arg);
+                 self.equal(comp.origin, &comp.ty, ret);
+-                if comp.eff != *eff {
+-                    self.error(
+-                        comp.origin,
+-                        format!("resume requires effects {eff:?}, found {:?}", comp.eff),
+-                    );
+-                }
++                self.effects(comp.origin, eff, &comp.eff);
+             }
+             None => self.error(comp.origin, "continuation is not visible in this scope"),
+         }
+@@ -1522,7 +1527,7 @@ impl<'a> Checker<'a> {
+                     &guard.ty,
+                     &builtin(BuiltinTypeId::BOOLEAN, vec![]),
+                 );
+-                self.effects(guard.origin, &guard.eff, &EffectSet::empty());
++                self.structural_effects(guard.origin, &guard.eff, &EffectSet::empty());
+                 effects = effects.union(&guard.eff);
+             }
+             self.computation(&arm.body, env);
+diff --git a/crates/benitoite/src/typeck/calls.rs b/crates/benitoite/src/typeck/calls.rs
+index 7fb82694..05c2671b 100644
+--- a/crates/benitoite/src/typeck/calls.rs
++++ b/crates/benitoite/src/typeck/calls.rs
+@@ -218,6 +218,11 @@ pub(super) fn generate(
+     let ret = partial_ret.unwrap_or_else(|| ctx.fresh_ty());
+     let effect = ctx.fresh_effect();
+     ctx.add(Constraint::EffSub {
++        relation: if partial {
++            crate::typeck::infer::EffectRelation::Structural
++        } else {
++            crate::typeck::infer::EffectRelation::Cover
++        },
+         sub: effect.clone(),
+         sup: ctx.effect.clone(),
+         reason: reason(e.span, ReasonKind::CallEffect),
+@@ -749,6 +754,7 @@ pub(super) fn builder(
+         ctx.add(constraint);
+     }
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Cover,
+         sub: effect,
+         sup: ctx.effect.clone(),
+         reason: reason(e.span, ReasonKind::CallEffect),
+diff --git a/crates/benitoite/src/typeck/effects/handle.rs b/crates/benitoite/src/typeck/effects/handle.rs
+index 1c1ef35e..c6f3d028 100644
+--- a/crates/benitoite/src/typeck/effects/handle.rs
++++ b/crates/benitoite/src/typeck/effects/handle.rs
+@@ -214,17 +214,20 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
+         let mut upper = rest.clone();
+         upper.failures.push(error_ty);
+         ctx.add(Constraint::EffSub {
++            relation: crate::typeck::infer::EffectRelation::Structural,
+             sub: body_effect,
+             sup: upper,
+             reason: reason(e.span, ReasonKind::HandleBody),
+         });
+         ctx.add(Constraint::EffSub {
++            relation: crate::typeck::infer::EffectRelation::Structural,
+             sub: rest,
+             sup: ctx.effect.clone(),
+             reason: reason(e.span, ReasonKind::HandleBody),
+         });
+     } else {
+         ctx.add(Constraint::EffSub {
++            relation: crate::typeck::infer::EffectRelation::Structural,
+             sub: body_effect,
+             sup: IEffect {
+                 failures: vec![],
+@@ -235,6 +238,7 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
+         });
+     }
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Structural,
+         sub: clause_effect,
+         sup: ctx.effect.clone(),
+         reason: reason(e.span, ReasonKind::HandleClause),
+diff --git a/crates/benitoite/src/typeck/effects/mod.rs b/crates/benitoite/src/typeck/effects/mod.rs
+index adb8fdd4..1a3d3660 100644
+--- a/crates/benitoite/src/typeck/effects/mod.rs
++++ b/crates/benitoite/src/typeck/effects/mod.rs
+@@ -63,6 +63,7 @@ fn lazy_expr(ctx: &mut Body<'_, '_>, e: &LazyExpr) -> ITy {
+     let effect = ctx.fresh_effect();
+     let ty = ctx.block_in(&e.body, effect.clone(), None);
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Structural,
+         sub: effect,
+         sup: fixed(EffectSet::empty()),
+         reason: reason(e.span, ReasonKind::LazyBody),
+@@ -110,6 +111,7 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+                     ..*span
+                 });
+                 ctx.add(Constraint::EffSub {
++                    relation: crate::typeck::infer::EffectRelation::Structural,
+                     sub: effect,
+                     sup: fixed(EffectSet::empty()),
+                     reason: r,
+@@ -126,6 +128,7 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+                 return ITy::Error;
+             };
+             ctx.add(Constraint::EffSub {
++                relation: crate::typeck::infer::EffectRelation::Cover,
+                 sub: fixed(EffectSet {
+                     failures: vec![],
+                     names: vec![EffectName::Builtin(effect, crate::types::scope::Range::Top)],
+@@ -152,7 +155,14 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
+ // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+ #[inline(never)]
+ fn resume_expr(ctx: &mut Body<'_, '_>, e: &ResumeExpr) -> ITy {
+-    let value = ctx.expr(&e.value);
++    let argument_effect = ctx.fresh_effect();
++    let value = ctx.expr_in(&e.value, argument_effect.clone(), ctx.ret.clone());
++    ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Cover,
++        sub: argument_effect,
++        sup: ctx.effect.clone(),
++        reason: reason(e.value.span(), ReasonKind::Resume),
++    });
+     let Some(clause) = ctx.clauses.last() else {
+         let mut d = DiagBuilder::new(DiagCode::E0509).primary(e.span);
+         if ctx.die_message_boundary {
+@@ -205,6 +215,7 @@ fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
+         ctx.record_type(bind.id, ty);
+     }
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Structural,
+         sub: fixed(EffectSet {
+             failures: vec![],
+             names: vec![EffectName::Builtin(
+diff --git a/crates/benitoite/src/typeck/generate.rs b/crates/benitoite/src/typeck/generate.rs
+index fc5049cb..d1bf372d 100644
+--- a/crates/benitoite/src/typeck/generate.rs
++++ b/crates/benitoite/src/typeck/generate.rs
+@@ -137,6 +137,7 @@ pub(super) fn check_function(d: &mut Decls<'_>, f: &FnDecl) {
+     let mut r = reason(f.name.span, ReasonKind::FnUses);
+     r.related = Some(f.name.span);
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Cover,
+         sub: ctx.body_effect.clone(),
+         sup: fixed(ctx.scheme.effects.clone()),
+         reason: r,
+@@ -478,6 +479,7 @@ fn apply(
+         );
+     }
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Cover,
+         sub: effect,
+         sup: ctx.effect.clone(),
+         reason: reason(span, ReasonKind::CallEffect),
+@@ -690,6 +692,7 @@ fn lambda_result(
+         let mut r = reason(e.span, ReasonKind::LambdaUses);
+         r.related = Some(u.span);
+         ctx.add(Constraint::EffSub {
++            relation: crate::typeck::infer::EffectRelation::Cover,
+             sub: effect.clone(),
+             sup: fixed.clone(),
+             reason: r,
+diff --git a/crates/benitoite/src/typeck/infer.rs b/crates/benitoite/src/typeck/infer.rs
+index 9e7ef509..c8055cc5 100644
+--- a/crates/benitoite/src/typeck/infer.rs
++++ b/crates/benitoite/src/typeck/infer.rs
+@@ -202,6 +202,15 @@ pub struct Reason {
+     pub int_literal: Option<String>,
+ }
+ 
++/// 効果の包含に使う関係。型の等号と推論の集合は常に構造を使う。
++#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
++pub enum EffectRelation {
++    /// 名前・範囲・行の構造上の包含。
++    Structural,
++    /// 各原子を同じ名前の一原子で覆う包含。
++    Cover,
++}
++
+ /// 制約（02-05「制約の種類」）。
+ #[derive(Clone, PartialEq, Debug)]
+ pub enum Constraint {
+@@ -237,8 +246,9 @@ pub enum Constraint {
+     },
+     /// リソース(A)
+     Resource { ty: ITy, reason: Reason },
+-    /// 含まれる(X, Y)
++    /// 指定した関係で含まれる(X, Y)
+     EffSub {
++        relation: EffectRelation,
+         sub: IEffect,
+         sup: IEffect,
+         reason: Reason,
+diff --git a/crates/benitoite/src/typeck/interval/identity/tests.rs b/crates/benitoite/src/typeck/interval/identity/tests.rs
+index c6359f7a..c4ef2faa 100644
+--- a/crates/benitoite/src/typeck/interval/identity/tests.rs
++++ b/crates/benitoite/src/typeck/interval/identity/tests.rs
+@@ -125,6 +125,7 @@ pub(in crate::typeck::interval) fn fixture_files_batched(
+                     ReasonKind::FnBody,
+                 );
+                 body.add(Constraint::EffSub {
++                    relation: crate::typeck::infer::EffectRelation::Structural,
+                     sub: body.body_effect.clone(),
+                     sup: fixed(body.scheme.effects.clone()),
+                     reason: reason(declaration.name.span, ReasonKind::FnUses),
+diff --git a/crates/benitoite/src/typeck/pattern_ext.rs b/crates/benitoite/src/typeck/pattern_ext.rs
+index 03255706..4edd4260 100644
+--- a/crates/benitoite/src/typeck/pattern_ext.rs
++++ b/crates/benitoite/src/typeck/pattern_ext.rs
+@@ -181,6 +181,7 @@ pub(super) fn guard(ctx: &mut Body<'_, '_>, g: &Expr) {
+     let ty = ctx.expr_in(g, effect.clone(), None);
+     ctx.clauses = clauses;
+     ctx.add(Constraint::EffSub {
++        relation: crate::typeck::infer::EffectRelation::Structural,
+         sub: effect,
+         sup: fixed(EffectSet::empty()),
+         reason: reason(g.span(), ReasonKind::MatchGuard),
+diff --git a/crates/benitoite/src/typeck/solve.rs b/crates/benitoite/src/typeck/solve.rs
+index f69ab6cb..a79ef65c 100644
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -64,7 +64,7 @@ type SuperPaths =
+     BTreeMap<(crate::base::BindingId, crate::base::BindingId), Option<Vec<crate::base::BindingId>>>;
+ type Escape = (NodeId, u32);
+ type LateFailure = (DiagCode, ITy, ITy, Reason, Option<Escape>);
+-type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>);
++type EffectConstraint = (IEffect, IEffect, Reason, Option<(ITy, ITy)>, EffectRelation);
+ 
+ /// 一つの本体でだけ有効な型変数とエフェクト変数の状態。
+ #[derive(Default)]
+@@ -803,6 +803,7 @@ impl Solver {
+                 sup.clone(),
+                 reason.clone(),
+                 Some((found.clone(), expected.clone())),
++                EffectRelation::Structural,
+             );
+             self.register_effect(constraint, true);
+         }
+@@ -856,7 +857,10 @@ impl Solver {
+                 } else {
+                     (e, x.effect.clone())
+                 };
+-                self.register_effect((sub, sup, r.clone(), Some((a, b))), false);
++                self.register_effect(
++                    (sub, sup, r.clone(), Some((a, b)), EffectRelation::Cover),
++                    false,
++                );
+                 Ok(true)
+             }
+             (ITy::Fn(x), ITy::Fn(y)) => {
+@@ -869,7 +873,13 @@ impl Solver {
+                 }
+                 self.equal(&x.ret, &y.ret, r)?;
+                 self.register_effect(
+-                    (x.effect.clone(), y.effect.clone(), r.clone(), Some((a, b))),
++                    (
++                        x.effect.clone(),
++                        y.effect.clone(),
++                        r.clone(),
++                        Some((a, b)),
++                        EffectRelation::Cover,
++                    ),
+                     false,
+                 );
+                 Ok(true)
+@@ -1360,9 +1370,12 @@ impl Solver {
+             .collect();
+         for c in constraints {
+             match c {
+-                Constraint::EffSub { sub, sup, reason } => {
+-                    self.register_effect((sub, sup, reason, None), false)
+-                }
++                Constraint::EffSub {
++                    sub,
++                    sup,
++                    reason,
++                    relation,
++                } => self.register_effect((sub, sup, reason, None, relation), false),
+                 Constraint::Equal {
+                     ref found,
+                     ref reason,
+@@ -1442,8 +1455,13 @@ impl Solver {
+             let mut special_after = 0usize;
+             for c in std::mem::take(&mut ctx.constraints) {
+                 match c {
+-                    Constraint::EffSub { sub, sup, reason } => {
+-                        self.register_effect((sub, sup, reason, None), false);
++                    Constraint::EffSub {
++                        sub,
++                        sup,
++                        reason,
++                        relation,
++                    } => {
++                        self.register_effect((sub, sup, reason, None, relation), false);
+                     }
+                     Constraint::Equal { .. } | Constraint::Flow { .. } => {
+                         self.solve_pair(ctx, c, &mut deferred);
+@@ -2080,14 +2098,14 @@ impl Solver {
+         let has_failures = self
+             .effects
+             .iter()
+-            .any(|(sub, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
++            .any(|(sub, _, _, _, _)| !sub.failures.is_empty() || !sub.fixed.failures.is_empty());
+         let mut pending: Vec<_> = (0..self.effects.len()).collect();
+         loop {
+             let mut changed = false;
+             // 型を先に結び、Fail 以外の残りだけを行へ伝える。節の出力の Fail を
+             // 本体の上限に混ぜない（設計書 02-05「制約の解決」）。
+             for index in pending.iter().copied().filter(|_| has_failures) {
+-                let Some((sub, sup, r, pair)) = self.effects.get(index).cloned() else {
++                let Some((sub, sup, r, pair, _)) = self.effects.get(index).cloned() else {
+                     continue;
+                 };
+                 if pair.as_ref().is_some_and(|(a, b)| {
+@@ -2174,7 +2192,7 @@ impl Solver {
+                     }
+                 }
+             }
+-            for (sub, sup, r, pair) in &self.effects {
++            for (sub, sup, r, pair, relation) in &self.effects {
+                 if pair.as_ref().is_some_and(|(a, b)| {
+                     matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
+                 }) {
+@@ -2191,7 +2209,9 @@ impl Solver {
+                     .unwrap_or_default();
+                 if let Some(state) = usize::try_from(v.0).ok().and_then(|i| self.effs.get_mut(i)) {
+                     for elem in elements(&current) {
+-                        if !includes(&sup.fixed, &elem) && !includes(&state.set, &elem) {
++                        if !effect_accepts(*relation, &sup.fixed, &elem)
++                            && !includes(&state.set, &elem)
++                        {
+                             insert(&mut state.set, elem.clone());
+                             state.origins.insert(
+                                 elem.clone(),
+@@ -2230,7 +2250,7 @@ impl Solver {
+         let mut reported = BTreeSet::new();
+         self.effect_index.clear();
+         let items = std::mem::take(&mut self.effects);
+-        for (sub, sup, r, pair) in items {
++        for (sub, sup, r, pair, relation) in items {
+             if pair.as_ref().is_some_and(|(a, b)| {
+                 matches!(self.zonk(a), ITy::Error) || matches!(self.zonk(b), ITy::Error)
+             }) {
+@@ -2240,7 +2260,40 @@ impl Solver {
+                 continue;
+             }
+             for elem in elements(&self.finalize_effect(&sub)) {
+-                if includes(&sup.fixed, &elem) {
++                if effect_accepts(relation, &sup.fixed, &elem) {
++                    continue;
++                }
++                if relation == EffectRelation::Cover
++                    && let Elem::Name(atom) = &elem
++                    && (!matches!(atom.range(), scope::Range::Top)
++                        || sup
++                            .fixed
++                            .names
++                            .iter()
++                            .any(|n| !matches!(n.range(), scope::Range::Top)))
++                {
++                    let reason = if matches!(atom.range(), scope::Range::Top) {
++                        super::text::UNKNOWN_SOURCE
++                    } else {
++                        super::text::NOT_COVERED
++                    };
++                    let name = super::effects::effect_name(ctx, atom, Some(ctx.module));
++                    let expected = sup
++                        .fixed
++                        .names
++                        .iter()
++                        .map(|n| super::effects::effect_name(ctx, n, Some(ctx.module)))
++                        .collect::<Vec<_>>()
++                        .join(", ");
++                    ctx.diagnostic(
++                        DiagBuilder::new(DiagCode::E0519)
++                            .arg("effect", name)
++                            .arg("expected", expected)
++                            .arg("reason", reason)
++                            .primary(r.span)
++                            .note("atomic")
++                            .build(),
++                    );
+                     continue;
+                 }
+                 if let Some((a, b)) = &pair {
+@@ -2414,6 +2467,12 @@ fn elements(set: &EffectSet) -> Vec<Elem> {
+         .chain(set.vars.iter().map(|v| Elem::Var(*v)))
+         .collect()
+ }
++fn effect_accepts(relation: EffectRelation, set: &EffectSet, elem: &Elem) -> bool {
++    match (relation, elem) {
++        (EffectRelation::Cover, Elem::Name(atom)) => set.names.iter().any(|n| n.covers(atom)),
++        _ => includes(set, elem),
++    }
++}
+ fn includes(set: &EffectSet, e: &Elem) -> bool {
+     match e {
+         Elem::Name(e) => set.names.contains(e),
+diff --git a/crates/benitoite/src/typeck/solve/effect_key.rs b/crates/benitoite/src/typeck/solve/effect_key.rs
+index 4d6d81ea..1d068fdc 100644
+--- a/crates/benitoite/src/typeck/solve/effect_key.rs
++++ b/crates/benitoite/src/typeck/solve/effect_key.rs
+@@ -110,9 +110,10 @@ pub(super) struct EffectConstraintKey {
+     parts: Vec<Part>,
+     reason: ReasonKey,
+     has_pair: bool,
++    relation: EffectRelation,
+ }
+ impl EffectConstraintKey {
+-    pub(super) fn new((sub, sup, reason, pair): &EffectConstraint) -> Self {
++    pub(super) fn new((sub, sup, reason, pair, relation): &EffectConstraint) -> Self {
+         let mut pending = Vec::new();
+         if let Some((a, b)) = pair {
+             pending.push(Pending::Ty(b));
+@@ -153,6 +154,7 @@ impl EffectConstraintKey {
+             parts,
+             reason: ReasonKey::new(reason),
+             has_pair: pair.is_some(),
++            relation: *relation,
+         }
+     }
+ }
+diff --git a/crates/benitoite/src/typeck/text.rs b/crates/benitoite/src/typeck/text.rs
+index 00f02813..6c086b86 100644
+--- a/crates/benitoite/src/typeck/text.rs
++++ b/crates/benitoite/src/typeck/text.rs
+@@ -1,5 +1,8 @@
+ //! 型検査の診断に埋める固定の文言（設計書 02-10「文言の言語」）。
+ 
++pub(super) const NOT_COVERED: &str = "notCovered";
++pub(super) const UNKNOWN_SOURCE: &str = "unknownSource";
++
+ pub(super) const MAIN_MODULE: &str = "main";
+ pub(super) const STANDARD_PACKAGE: &str = "Benitoite";
+ pub(super) const INTEGER_OVERFLOW: &str = "integer overflow";
+diff --git a/crates/benitoite/src/types/mod.rs b/crates/benitoite/src/types/mod.rs
+index 68726fcb..ab348966 100644
+--- a/crates/benitoite/src/types/mod.rs
++++ b/crates/benitoite/src/types/mod.rs
+@@ -47,6 +47,15 @@ pub enum EffectName {
+ }
+ 
+ impl EffectName {
++    /// 同じ名前の一原子の範囲で `other` を覆う。構造等号には使わない。
++    pub fn covers(&self, other: &Self) -> bool {
++        match (self, other) {
++            (Self::Builtin(a, r), Self::Builtin(b, s)) => a == b && r.covers(s),
++            (Self::User(a, r), Self::User(b, s)) => a == b && r.covers(s),
++            _ => false,
++        }
++    }
++
+     /// 名前の原子が持つ閉じた範囲を返す。比較は名前と範囲の両方を使う。
+     pub fn range(&self) -> &scope::Range {
+         match self {
+@@ -131,6 +140,16 @@ impl EffectSet {
+         out
+     }
+ 
++    /// `other` の各原子を self の一原子で覆う。Fail と行は構造の所属を使う。
++    pub fn covers(&self, other: &EffectSet) -> bool {
++        other
++            .names
++            .iter()
++            .all(|n| self.names.iter().any(|outer| outer.covers(n)))
++            && other.vars.iter().all(|v| self.vars.contains(v))
++            && other.failures.iter().all(|ty| self.failures.contains(ty))
++    }
++
+     /// self ⊆ other
+     pub fn is_subset(&self, other: &EffectSet) -> bool {
+         self.failures.iter().all(|ty| other.failures.contains(ty))
+@@ -1062,16 +1081,25 @@ mod tests {
+             assert_eq!(atoms.iter().cloned().collect::<HashSet<_>>().len(), 3);
+             assert_eq!(atoms.iter().cloned().collect::<BTreeSet<_>>().len(), 3);
+             let mut combined = EffectSet::empty();
+-            for a in &atoms {
++            for (i, a) in atoms.iter().enumerate() {
+                 let mut single = EffectSet::empty();
+                 single.insert_name(a.clone());
+                 combined = combined.union(&single);
+                 single.insert_name(a.clone());
+                 assert_eq!(single.names.len(), 1);
+-                for b in &atoms {
++                for (j, b) in atoms.iter().enumerate() {
+                     let mut other = EffectSet::empty();
+                     other.insert_name(b.clone());
+                     assert_eq!(single.is_subset(&other), a == b);
++                    let expected = [
++                        [true, true, true],
++                        [false, true, true],
++                        [false, false, true],
++                    ];
++                    assert_eq!(
++                        Some(single.covers(&other)),
++                        expected.get(i).and_then(|row| row.get(j)).copied()
++                    );
+                 }
+             }
+             assert_eq!(combined.names.len(), 3);
+diff --git a/crates/benitoite/tests/scope_annotations.rs b/crates/benitoite/tests/scope_annotations.rs
+index 82ffd3d6..dba2d5db 100644
+--- a/crates/benitoite/tests/scope_annotations.rs
++++ b/crates/benitoite/tests/scope_annotations.rs
+@@ -171,7 +171,7 @@ fn scoped_function_types_and_failure_arguments_survive_instantiation() {
+             .iter()
+             .filter_map(|d| d.code.map(|c| c.info().id))
+             .collect::<Vec<_>>(),
+-        ["E0401"],
++        ["E0519"],
+         "{:?}",
+         rejected.diagnostics
+     );
+@@ -640,3 +640,188 @@ fn multiline_scopes_keep_valid_groups_and_expression_diagnostics() {
+         );
+     }
+ }
++
++// 関門: 通常ソースの範囲付き uses から一原子の被覆・拒否理由を検査する。
++// 代数の単体テストは制約の選択と関数型の流れ込みを通らず、既存例は同じ範囲の比較だけである。
++// 公開check入口で、名前・族・Top・和の境界を固定した期待値と照合する。
++#[test]
++fn effect_coverage_uses_one_same_named_atom() {
++    for (required, allowed, accepted) in [
++        ("File.Read[\"/data/a\"]", "File.Read[\"/data/**\"]", true),
++        ("File.Read[\"/data/**\"]", "File.Read", true),
++        ("File.Read[\"/data\"]", "File.Read[\"/data/**\"]", true),
++        ("File.Read[\"/data/**\"]", "File.Read[\"/data/a\"]", false),
++        ("File.Read", "File.Read[\"/**\"]", false),
++        ("File.Read[\"/data/a\"]", "File.Write[\"/data/**\"]", false),
++        (
++            "Http.Connect[\"a.example\", 443]",
++            "Http.Connect[\"*.example\", 400..500]",
++            true,
++        ),
++        (
++            "Http.Connect[\"example\", 443]",
++            "Http.Connect[\"**.example\", 443]",
++            false,
++        ),
++        (
++            "Http.Connect[\"a.b.example\", 443]",
++            "Http.Connect[\"*.example\", 443]",
++            false,
++        ),
++        (
++            "Http.Connect[\"a.b.example\", 443]",
++            "Http.Connect[\"**.example\", 443]",
++            true,
++        ),
++        (
++            "Http.Connect[\"a.example\", 0..9]",
++            "Http.Connect[\"a.example\", 0..4, \"a.example\", 5..9]",
++            false,
++        ),
++        (
++            "Http.Connect[\"192.0.2.1\", 443]",
++            "Http.Connect[\"192.0.2.0/24\", 443]",
++            true,
++        ),
++        (
++            "Http.Connect[\"192.0.2.1\", 443]",
++            "Http.Connect[\"::/0\", 443]",
++            false,
++        ),
++        (
++            "Http.Connect[\"::ffff:192.0.2.1\", 443]",
++            "Http.Connect[\"0.0.0.0/0\", 443]",
++            false,
++        ),
++        (
++            "Http.Connect[\"a.example\", 443]",
++            "Http.Connect[\"0.0.0.0/0\", 0..65535]",
++            false,
++        ),
++    ] {
++        let source = format!(
++            "{IMPORTS}function target() -> Unit uses {required}\n ()\nend function\nfunction caller() -> Unit uses {allowed}\n target()\nend function\n"
++        );
++        let checked = check(&source);
++        if accepted {
++            assert!(
++                errors(&checked).is_empty(),
++                "{source}\n{:?}",
++                checked.diagnostics
++            );
++        } else {
++            let ds = errors(&checked);
++            assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
++            assert_eq!(ds[0].code.unwrap().info().id, "E0519", "{source}\n{ds:?}");
++            let reason = if required == "File.Read" {
++                "unknownSource"
++            } else {
++                "notCovered"
++            };
++            assert!(ds[0].message.contains(reason), "{ds:?}");
++            assert!(ds[0].notes.iter().any(|n| n.contains("one atom")), "{ds:?}");
++        }
++    }
++}
++
++// 関門: 被覆を制約の各生成位置へ接続し、型確定後のコアIRにも同じ意味で渡す。
++// 通常の呼び出しだけではラムダ・関数値の潜在効果・resumeの制約の選択漏れを捕まえない。
++#[test]
++fn effect_coverage_flows_through_lambdas_callbacks_and_resume() {
++    let source = format!(
++        r#"{IMPORTS}
++effect Ask
++ function ask() -> Integer
++end effect
++function resumed() -> Integer uses File.Read["/data/**"]
++ return handle
++  ask()
++ with
++ case ask() -> resume(target(value: 1))
++ end handle
++end function
++function target(value: Integer) -> Integer uses File.Read["/data/a"]
++ return value
++end function
++function relay(body: function(value: Integer) -> Integer uses File.Read["/data/**"]) -> Integer uses File.Read["/data/**"]
++ return body(value: 1)
++end function
++trait ReadValue[T]
++ function readValue(value: T) -> Integer uses File.Read["/data/**"]
++end trait
++implement ReadValue[Integer]
++ function readValue(value: Integer) -> Integer uses File.Read["/data/**"]
++  return target(value: value)
++ end function
++end implement
++function sample() -> Integer uses File.Read["/data/**"]
++ bind partial: function(value: Integer) -> Integer uses File.Read["/data/**"] <- target(value: _)
++ bind f: function(value: Integer) -> Integer uses File.Read["/data/**"] <- target
++ bind g <- lambda(value: Integer) -> Integer uses File.Read["/data/**"]
++   return target(value: value)
++ end lambda
++ return relay(body: g) + relay(body: f) + partial(value: 1) + ReadValue.readValue(value: 1)
++end function
++"#
++    );
++    let checked = check(&source);
++    assert!(errors(&checked).is_empty(), "{:?}", checked.diagnostics);
++    let program = checked.program.unwrap();
++    let core = benitoite::ir::desugar::desugar(
++        &program.modules,
++        &program.asts,
++        &program.resolved,
++        &program.types,
++    )
++    .unwrap();
++    assert!(benitoite::ir::check::check_program(&core).is_empty());
++}
++
++// 関門: 最外側の潜在効果の被覆を、コレクション・引数・Failの不変な位置へ広げない。
++// 同じ範囲の既存例だけでは、相互被覆を構造等号に流用する退行が観測できない。
++#[test]
++fn effect_coverage_keeps_nested_types_and_failures_invariant() {
++    for (parameters, code) in [
++        (
++            r#"values: List[function() -> Unit uses File.Read["/data/a"]]"#,
++            "E0401",
++        ),
++        (
++            r#"values: List[function() -> Unit uses File.Read["/data/**"], File.Read["/data/a"]]"#,
++            "E0401",
++        ),
++    ] {
++        let source = format!(
++            r#"{IMPORTS}
++function consume(values: List[function() -> Unit uses File.Read["/data/**"]]) -> Unit
++ ()
++end function
++function caller({parameters}) -> Unit
++ consume(values: values)
++end function
++"#
++        );
++        let checked = check(&source);
++        let ds = errors(&checked);
++        assert_eq!(ds.len(), 1, "{source}\n{ds:?}");
++        assert_eq!(ds[0].code.unwrap().info().id, code, "{ds:?}");
++    }
++    let source = format!(
++        r#"{IMPORTS}
++function target() -> Unit uses Failure.Fail[function() -> Unit uses File.Read["/data/a"]]
++ ()
++end function
++function caller() -> Unit uses Failure.Fail[function() -> Unit uses File.Read["/data/**"]]
++ target()
++end function
++"#
++    );
++    let checked = check(&source);
++    assert!(
++        errors(&checked)
++            .iter()
++            .any(|d| d.code.unwrap().info().id == "E0514"),
++        "{:?}",
++        checked.diagnostics
++    );
++}
+diff --git a/docs/design/01-spec/01-06-type-system.md b/docs/design/01-spec/01-06-type-system.md
+index 47033840..9bd01c1c 100644
+--- a/docs/design/01-spec/01-06-type-system.md
++++ b/docs/design/01-spec/01-06-type-system.md
+@@ -108,7 +108,11 @@ end function
+ 
+ ### エフェクトの包含
+ 
+-【決定】関数の型 `function(a1: A1, ..., an: An) -> R uses X` を持つ式は、`X` を含む集合 `Y` について、型 `function(a1: A1, ..., an: An) -> R uses Y` が求められる位置に使ってよい。
++【決定】関数の型 `function(a1: A1, ..., an: An) -> R uses X` を持つ式は、`X` の各原子を一原子で覆う集合 `Y` について、型 `function(a1: A1, ..., an: An) -> R uses Y` が求められる位置に使ってよい。
++
++【決定】名前を持つ原子の被覆では名前が一致し、周囲の一つの原子の範囲が必要な一つの原子の範囲を覆わなければならない。複数の原子の和では一原子を覆わない。Top を覆うのは同名の Top だけであり、ホスト名・IPv4・IPv6 の族をまたぐ被覆はない。閉じた範囲の被覆は[エフェクト](01-07-effects.md#閉じた範囲引数)に従う。行の原子と Fail のエラー型は、構造上の同一性で所属を判定する。
++
++【決定】型の等号と範囲の添字は不変である。関数型の等号、引数型・戻り値型・型引数の照合に被覆を使わず、相互に覆う効果でも構造が違えば同じ型としない。理由: 値が流れ込む位置で許す潜在効果の拡大と、型の同一性を区別するためである。
+ 
+ 【決定】包含の規則は、値がある型の位置に流れ込む次のすべての箇所で働く。
+ 
+@@ -132,6 +136,8 @@ bind f: function() -> Unit uses Console.Write <- lambda() () end lambda
+ - この規則は、式の型の最も外側の関数の型にだけ働く。引数の型、戻り値の型、型引数の中の関数の型には働かない。例えば、`List[function() -> Unit]` 型の変数を、`List[function() -> Unit uses Console.Write]` 型の引数に渡すと誤りとする。
+ - エフェクト変数を持つ関数の型（`uses E`）が求められる位置には、エフェクトが空集合の関数を使える。本体の中の `E` はほかの何とも等しくないので、`uses Console.Write` の関数は使えない。
+ 
++【決定】関数・実装メソッド・ラムダの本体の効果と宣言した上限、呼び出しの潜在効果と周囲の効果、`resume` の引数の効果と節の効果の照合にも一原子の被覆を使う。ハンドラの保護本体と各節、Fail の節、純粋である要求、部分適用が生成するラムダの潜在効果の推論には構造上の包含を使う。ファイル単位の宣言の合併、main とテストのエフェクトの上限は従来の構造上の規則を保つ。理由: ハンドラで除く原子と推論した原子を構造で保持し、計算の上限を広げる位置と区別するためである。
++
+ ### エフェクト変数の具体化
+ 
+ 【方針】エフェクト変数を持つ関数を呼び出したり値として使ったりするたびに、その関数の各エフェクト変数を、エフェクトの集合で置き換える。置き換える集合は、引数の型とエフェクトの包含の規則を満たすように推論する。
+@@ -512,7 +518,7 @@ end implement
+ 【方針】型クラスの実装には、次の規則がある。
+ 
+ - `implement` は、型クラスのすべてのメソッドを、一度ずつ定義しなければならない。宣言にないメソッドは定義できない。
+-- 各メソッドの型は、型クラスの宣言のメソッドの型の引数を、実装の対象の型で置き換えたものと等しくなければならない。ただし、エフェクトは包含の規則に従い、宣言より少なくてよい。
++- 各メソッドの型は、型クラスの宣言のメソッドの型の引数を、実装の対象の型で置き換えたものと等しくなければならない。ただし、実装メソッドが宣言するエフェクトは、型クラスの宣言のエフェクトの構造上の部分集合であればよい。実装メソッドの本体と、この宣言したエフェクトの照合は、一原子の被覆による包含の規則に従う。
+ - 実装の対象は、型構成子に相異なる型パラメータを並べた形か、型パラメータを持たない型に限る。型構成子を引数にとる型クラスの実装では、対象は引数の個数が合う型構成子の名前（`Option`）である。
+ - 実装の型パラメータは、`implement` の直後に宣言し、制約を付けてよい（`implement[T: Show] Show[Option[T]]`）。実装の型パラメータは、すべて実装の対象に現れなければならない（`implement[T, U] Show[Option[T]]` は誤り）。
+ - 関数の型は、実装の対象にできない。
+diff --git a/docs/design/01-spec/01-07-effects.md b/docs/design/01-spec/01-07-effects.md
+index 99c54b15..05cecb1c 100644
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -32,6 +32,10 @@
+ 
+ 【決定】範囲付きの原子は名前と正規化後の範囲で区別する。同じ名前の異なる範囲、広い範囲と狭い範囲、Top と狭い範囲をそれぞれ残す。明示した同一原子の重複は、略記内と別の群の間のどちらでも E0419 とし、重複した両要素の位置を示す。型の等号・表示・型と効果行の代入は範囲を保持する。
+ 
++【決定】包含を被覆で判定する位置では、必要な各原子を周囲の同名の一原子が覆うことを求める。パスの木はその幹以下を覆い、ホストの one/many は幹を含めず、それぞれ一段の子と任意の正の段数の子を覆う。IP は同族の完全一致か CIDR、ポートは閉区間の包含を使い、ホストとポートの両方が覆うときにその組を覆う。Top は同名の閉じた範囲を覆うが、非 Top は Top を覆わない。例えば `/data/**` は `/data/a` を覆い、`/**` でも Top を覆わない。ポート `0..4` と `5..9` の二原子は、一原子の `0..9` を覆わない。適用位置と構造上に残す位置は[型システム](01-06-type-system.md#エフェクトの包含)で定める。
++
++【決定】範囲の被覆による包含が成立しない場合は E0519 とし、必要な原子、周囲の原子、拒否の理由を示す。必要な範囲が Top なら `unknownSource`、その他は一原子の被覆の不成立として `notCovered` を示し、和では一原子を覆えないことを注記する。既存の Top の原子だけの制約では従来の診断を保つ。
++
+ ```text
+ import Benitoite.Unofficial.IO.File
+ import Benitoite.Unofficial.Network.Http
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index c0ea2fde..64dad633 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -485,7 +485,7 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ 
+ 型変数は、単一化のために union-find で表す。
+ 
+-【決定】確定した `EffectSet` は原子・宣言した行・型付きの失敗の列を持つ。原子の比較・hash・整列・重複除去は、名前と範囲の構造を使う。集合の和と包含も構造で判定し、範囲の被覆で狭い原子を除かない。推論の `IEffect.fixed`、制約の索引キー、診断の由来も同じ原子を保持する。理由: 同名でも範囲が違う原子を区別し、行の具体化と診断までその区別を保つためである。
++【決定】確定した `EffectSet` は原子・宣言した行・型付きの失敗の列を持つ。原子の比較・hash・整列・重複除去は、名前と範囲の構造を使う。集合の和と `is_subset` は構造で判定し、範囲の被覆で狭い原子を除かない。被覆を用いる制約では、別の `covers` が同名の一原子と `Range::covers` を照合する。推論の `IEffect.fixed`、制約の索引キー、診断の由来も同じ原子を保持する。理由: 同名でも範囲が違う原子を区別し、行の具体化と診断までその区別を保つためである。
+ 
+ 失敗の列は型の固定順序で整列し、重複を除く。型と効果の同時代入は Fail 内部へも再帰する。推論の `IEffect` は失敗の型を推論中の型で保持し、効果の包含の解決と同時に不変の型として結ぶ。確定後の純粋な集合の和は、内部の上限の複数 Fail を消さない。
+ 
+@@ -515,6 +515,8 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ 
+ 【方針】これに、リストリテラルの展開の式、レコードの構築と更新の各フィールドの式（[代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md)の「レコード（初回リリース版）」）、`handle` の本体と各節の本体、`resume` の引数と節の操作の戻り値の型を加える（[型システム](../01-spec/01-06-type-system.md)の「エフェクトの包含」）。ほかの位置の型の一致は、等しい制約で表す。関数とラムダの戻り値の型は、`return` の式の流れ込む制約で扱い、本体のブロックの型は `Unit` と等しくする（後述の「制約の生成」の「関数の本体」と「ラムダ」）。ラムダの戻り値の型注釈は、制約を介さずそのまま R' になる。
+ 
++【決定】`Constraint::EffSub` は `EffectRelation::Cover` と `Structural` を区別する。関数・メソッド・ラムダの本体、`resume` の引数、関数型の最外側の潜在効果の流れ込みは被覆で判定する。`calls::generate`・`calls::builder`・`generate::apply` と try の die の Process.Exit が作る `CallEffect` も被覆で判定する。部分適用の `calls::generate` は構造上に残す。ハンドラの保護本体・節と Fail の Rest・節、lazy・guard・die の説明の純粋要求、解放の State の挿入と関数型の単一化は構造上の制約を作る。実装メソッドの宣言と型クラスの契約の照合も構造上の包含を保つ。`resume` の引数は別の効果変数で推論して節の効果への被覆制約を加える。
++
+ 各制約は理由を持つ。理由は、制約が生じた位置の span と、生じた事情の種類（「f の第 2 引数」「if の二つの分岐」「束縛の文の型注釈」など）と、関連する位置（引数の型を宣言した箇所など）からなる。理由は、制約が解けなかったときの診断に使う。
+ 
+ ### 制約の生成
+@@ -600,7 +602,7 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ 
+ 適合した各式の型は `interp_types` に保持し、脱糖が対応する内部の書式化頭を選ぶ。定数評価も解析済みの書式を受け取り、実行時と同じ `base::format` の本体で書式化する。
+ 
+-【決定】効果の包含制約は登録順の列を正本とし、関数型の単一化で加える重複の照合には私有の構造キーの索引を使う。キーは生の推論変数番号、関数の契約名、Fail列の順、固定の効果、理由の種類と全欄、元位置、型の対を保持し、既存の制約の等号と同じ意味にする。通常の包含制約は重複も登録順に保持する。キーに正規化後の可変の推論結果を使わない。理由: 理由や使用位置の異なる制約をまとめず、重複の線形探索を除くためである。
++【決定】効果の包含制約は登録順の列を正本とし、関数型の単一化で加える重複の照合には私有の構造キーの索引を使う。キーは生の推論変数番号、関数の契約名、Fail列の順、固定の効果、理由の種類と全欄、元位置、型の対、被覆か構造かの区別を保持し、既存の制約の等号と同じ意味にする。通常の包含制約は重複も登録順に保持する。キーに正規化後の可変の推論結果を使わない。理由: 理由や使用位置の異なる制約をまとめず、重複の線形探索を除くためである。
+ 
+ 【決定】効果の伝播は登録番号の待ち行列で行い、一巡のFailの処理では開始時の番号を一度ずつ登録順に処理する。列全体を複製せず、その番号の一項だけを複製する。次に通常の行の効果を登録順に伝え、行またはFailの伝播が変わった場合は全登録番号を次の巡へ再投入する。毎巡すべてを再投入して巡ごとの処理の数は変えず、列全体の複製と重複の線形探索を除く。巡の途中に加わった制約のFailは次の巡で処理する。理由: 単一化による型・契約名・行の変更の依存を部分的に追跡すると、診断を確定する順序が変わるおそれがあるためである。
+ 
+@@ -608,7 +610,7 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ 
+ 【方針】型の制約は、次のように解く。
+ 
+-- 等しい: 単一化（unification）する。型変数を、それ自身を含む型と等しくする必要が生じたら誤りとする（出現検査、occurs check）。関数の型どうしの単一化では、引数の個数が違えば誤りとし、エフェクトは含まれる制約を両方向に加える。型構成子の適用は、前述の「型とエフェクトの表現」の規則で単一化する。
++- 等しい: 単一化（unification）する。型変数を、それ自身を含む型と等しくする必要が生じたら誤りとする（出現検査、occurs check）。関数の型どうしの単一化では、引数の個数が違えば誤りとし、エフェクトは構造上の含まれる制約を両方向に加える。型構成子の適用は、前述の「型とエフェクトの表現」の規則で単一化する。
+ - 流れ込む(A, B): 両辺をいまの単一化の状態で置き換えてから、最も外側の形で次のように分ける。
+   - 両辺とも関数の型: 引数の個数が違えば誤りとする。対応する引数の型を単一化し、戻り値の型を単一化し、含まれる(A のエフェクト, B のエフェクト) を加える。
+   - A が関数の型で、B が型変数: B を、A と同じ引数の型と戻り値の型を持ち、エフェクトを `fresh` のエフェクトの変数 ρ とした関数の型と等しくする。含まれる(A のエフェクト, ρ) を加える。
+@@ -624,13 +626,13 @@ main/test の報告全体と各 Target は、追加欄 `intervalAnalysis` に `b
+ - 試行(A, R, τ): 型変数 A に付け、A が決まったときに判定する。A が `Result[T, E1]` なら、τ を T と等しくし、R を `Result[β, E1]`（β は `fresh`）と等しくする。A が `Option[T]` なら、τ を T と等しくし、R を `Option[β]` と等しくする。A がそれ以外の型なら誤りとする。R が `Result` で、`Result.Error` の型が E1 と違うために単一化が失敗したときは、`Result.mapError` で変換する書き方を修正案として示す（[エラー処理](../01-spec/01-09-errors.md)）。判定した種類と R を「`try` の種類」の表に記録する。
+ - リソース(A): 型変数 A に付け、A が決まったときに、A がリソースの型でなければ誤りとする。
+ 
+-【方針】エフェクトの制約は、確定した要素の集合と、エフェクトの変数との間の包含関係である。次のように、条件を満たす最小の集合を求めてから検査する（[型システム](../01-spec/01-06-type-system.md)の「エフェクト変数の具体化」）。以下、エフェクト X の確定した要素の集合を F(X)、X の変数を v(X)、変数 v の現在の集合を S(v) と書き、X の現在の要素を F(X) と S(v(X)) の和集合とする。
++【方針】エフェクトの制約は、確定した要素の集合と、エフェクトの変数との間の包含関係である。次の伝播で定める最小の構造の集合を求めてから検査する（[型システム](../01-spec/01-06-type-system.md)の「エフェクト変数の具体化」）。以下、エフェクト X の確定した要素の集合を F(X)、X の変数を v(X)、変数 v の現在の集合を S(v) と書き、X の現在の要素を F(X) と S(v(X)) の和集合とする。
+ 
+ 1. 各エフェクトの変数の集合を空集合から始める。
+-2. 含まれる(X, Y) のうち Y がエフェクトの変数を持つものについて、X の現在の要素のうち F(Y) に含まれないものを S(v(Y)) に加える。F(Y) に含まれる要素は、Y の確定した要素で満たされるので加えない。どの変数の集合も増えなくなるまで繰り返す。要素を加えるときは、その要素がどの呼び出しから来たかを記録する。
+-3. 含まれる(X, Y) のうち Y がエフェクトの変数を持たないもの（宣言した `uses`、ラムダの `uses`、`lazy` の本体とガードの空集合）について、X の現在の要素が F(Y) に含まれるかを検査する。含まれない要素があれば誤りとし、その要素と、それを生じた呼び出しの位置を示す（[型システム](../01-spec/01-06-type-system.md)の「式のエフェクト」）。`lazy` の本体の誤りでは引数のないラムダを使う書き方を、ガードの誤りでは本体の中で条件を調べる書き方を修正案として示す。
++2. 含まれる(X, Y) のうち Y がエフェクトの変数を持つものについて、X の現在の要素のうち F(Y) で満たされないものを S(v(Y)) に加える。被覆の制約では同名の一原子の被覆、構造上の制約では構造の所属で F(Y) との照合を行う。S(v(Y)) への挿入・重複除去は常に構造で行い、すでにある広い原子を理由に狭い原子を捨てない。どの変数の集合も増えなくなるまで繰り返す。要素を加えるときは、その要素がどの呼び出しから来たかを記録する。
++3. 含まれる(X, Y) のうち Y がエフェクトの変数を持たないもの（宣言した `uses`、ラムダの `uses`、`lazy` の本体とガードの空集合）について、制約ごとの関係で X の現在の要素が F(Y) に含まれるかを検査する。被覆が成立せず非 Top の原子が関わる場合は E0519 とし、必要な原子・周囲の原子・理由（必要な範囲が Top なら `unknownSource`、その他は `notCovered`）と一原子の制限を示す。Top だけの制約では従来の診断を保つ。含まれない要素があれば誤りとし、その要素と、それを生じた呼び出しの位置を示す（[型システム](../01-spec/01-06-type-system.md)の「式のエフェクト」）。`lazy` の本体の誤りでは引数のないラムダを使う書き方を、ガードの誤りでは本体の中で条件を調べる書き方を修正案として示す。
+ 
+-手順 2 は、どの解でもその変数に含まれていなければならない要素だけを加えるので、得られる集合は各変数について最小である。単一化が加える両方向の含まれる制約も、同じ手順で解く。手順 2 を終えた時点で、Y が変数を持つ制約はすべて満たされている。
++手順 2 は、右辺の確定した要素で満たされない元の原子を構造の集合へ追加する。被覆を使って広い原子へ置き換えた別の解は探索しない。この伝播で得られる構造の集合は各変数について最小である。単一化が加える両方向の構造上の含まれる制約も、同じ手順で解く。手順 2 を終えた時点で、Y が変数を持つ制約はすべて満たされている。
+ 
+ 例えば、次の `main` の `choose` の呼び出しでは、`E` を置き換えたエフェクトの変数を ε、第 1 引数のラムダのエフェクトの変数を ρ とする。第 1 引数から含まれる(ρ, Console.Write と ε からなるエフェクト)、第 2 引数から含まれる(空集合, ε)、`main` の本体から含まれる(ε, 空集合) が生じ、ラムダの本体の `Console.writeLine` の呼び出しから ρ は `Console.Write` を持つ。手順 2 は、ρ の `Console.Write` が一つ目の制約の右辺の確定した要素に含まれるので、ε に加えない。ε は空集合のままであり、手順 3 の検査を通る。第 2 引数を `Console.Write` を生じるラムダに変えると、ε に `Console.Write` が加わり、手順 3 で `main` の本体の誤りになる。
+ 
+diff --git a/docs/design/02-impl/02-06-ir-and-lowering.md b/docs/design/02-impl/02-06-ir-and-lowering.md
+index b6a65ef8..85dff8f2 100644
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -39,7 +39,7 @@
+ - 型は、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の型に、初回リリース版の拡張で加えたもの（基本型 `Byte`・`Decimal`、`Map`・`Set`・`Bytes`、`Reference`・`Lazy`、等値を持たない組み込みの不透明型 O（`IOError`・`NetworkError`・`Task[A]`・リソースの型、`Regex.Pattern` など）、辞書の型 `Dict[Cl, τ]`、型構成子を表す型パラメータの適用 `α[Ā]`、継続の型 `Cont(B → T ! ε)`）を含む。継続の型を持つのは、`handle` の節で継続を束縛する変数だけである。型の別名は型検査で展開してあるので、コア IR に現れない。
+ - 名前の型は型検査器と同じ `Ty::Con(TyCon, Vec<Ty>, RangeIndex)` を使い、脱糖後も不変の添字を保持する。既存の型は明示の Top を持つ。コア IR の検査器は、範囲変数のない添字と資源の型の Top を検査し、同じ名前で添字が違う型の照合を断る。型／行の代入は Fail 内にも添字を残す。判定の木の複製前のメモリ計上には、型の添字が所有する文字列と要素列も含める。
+ - 辞書と継続は、コア計算の型付けでは型 `Dict[Cl, τ]`・`Cont(B → T ! ε)` を持つ値であるが、表層で値として束縛・返却・格納できない。辞書が現れるのは制約を持つ関数・操作の呼び出しの辞書の引数、メソッドの呼び出しの辞書、実装の定義の上位の型クラスの辞書と実装の制約の辞書、辞書の中の辞書だけであり、継続が現れるのは `handle` の節の継続の変数と `resume` だけである。そこで、処理系のコア IR は、辞書と継続を普通の値と別の分類に置き、型検査器の型の表現（表層の型）に辞書の型と継続の型を加えなくてよい。このとき、辞書の型は辞書の型クラスと対象の型の組で、継続の型は継続の変数が持つ引数の型 B と、節を持つ `handle` の型とエフェクト（T と ε）で表す。辞書の引数は、定義の値の引数と別に並べてよい。制約を持つ関数・操作を呼ばずに値として使う箇所は、同章の表のとおり辞書を渡すラムダに移すので、`f[T̄; Ē]` の値の型を値の引数だけの関数の型としてよい。コア IR の検査器は、この表し方の上で、後述の V-Dict・V-Super・C-Meth・D-Impl・C-Handle・C-Resume と同じ条件を調べる。
+-- エフェクトの集合は、名前と閉じた範囲を持つ原子、エフェクト変数、型付きの失敗の列を持つ `types::EffectSet` で表す。原子の `types::EffectName` は、組み込みの番号または宣言の束縛の番号と `types::scope::Range` の組である。既存の名前だけの原子は明示の `Range::Top` を持つ。脱糖は原子の範囲を保持し、ハンドラで除く原子の照合とコア IR の検査は、名前と範囲の構造を使う。`IO.All` は型検査が Top の原子の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
++- エフェクトの集合は、名前と閉じた範囲を持つ原子、エフェクト変数、型付きの失敗の列を持つ `types::EffectSet` で表す。原子の `types::EffectName` は、組み込みの番号または宣言の束縛の番号と `types::scope::Range` の組である。既存の名前だけの原子は明示の `Range::Top` を持つ。脱糖は原子の範囲を保持し、ハンドラで除く原子の照合は名前と範囲の構造を使う。コア IR の検査は、計算の効果の拡大と関数型の最外側の潜在効果では一原子の被覆、型の等号とハンドラの保護本体では構造を使う。`IO.All` は型検査が Top の原子の集合に置き換えてあるので、コア IR に現れない（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「エフェクトの名前と開始状態」）。
+ - 各ノードは、型（値は A、計算は A ! ε）と、由来位置（[ソース管理と位置情報](02-02-source-and-spans.md)の「合成ノードの由来位置」）を持つ。型とエフェクトの求め方は、この節の後の表で定める。
+ - 変数は、定義ごとに重ならない番号で表す。脱糖で作る新しい変数も、ソースの名前から移した変数も、同じ数え上げから番号を振る。したがって、コア IR の中で変数の名前が衝突することはない。ただし、`match` の同じ分岐から展開した行（後述）は、その分岐の同じ変数を束縛する。ソースの名前は、診断と読みやすさのために変数に添える。
+ - 組み込みの関数 `b` は、組み込みの関数の表の項目を指す（[名前解決とモジュール読込](02-04-resolver.md)）。組み込みの関数は、外部に作用する操作（組み込みのエフェクトの操作）、`State` を型に持つ関数（可変のセルとタスクの集まりの関数、`Task.await`、リソースを解放する関数）、純粋な関数の三つに分かれ、項目がどれに当たるかを持つ。外部に作用する操作だけがハンドラで処理される（[コア計算と脱糖](../01-spec/01-12-core-calculus.md)の「ハンドラ」）。
+@@ -190,6 +190,8 @@ Die は本番の parser から型検査・脱糖・コア IR の検査・実行
+ 
+ 【決定】型の照合では、Fail のエラー型の中を含むすべての関数型について、契約名の個数が引数型の個数と一致し、契約名が重複しないことを検査する。型の両側に同じ不正な契約名があっても受理しない。理由: 関数型の整形式性は、エフェクトが持つ Fail のエラー型にも再帰的に要求されるためである。
+ 
++【決定】`ir::check` は C-Sub・C-Eff と `Ty.Le` に対応する包含を `EffectSet::covers` で検査する。名前の一致の後で一原子の範囲の被覆を検査し、Fail と行は構造の所属を求める。C-Handle・C-Handle-Fail の保護本体、lazy・guard・定数の純粋要求には `is_subset` を使う。コアの節の計算と Fail の Rest から上限への拡大は C-Sub として被覆で検査する。表層の検査器がハンドラの節を構造で推論することとは区別する。型の引数・戻り値・添字・メソッド宣言の契約は構造で照合し、相互被覆で型の等号を認めない。
++
+ 【決定】検査環境の宣言由来の型パラメータ・NoFail・実装辞書の制約は借用する。局所変数・節の辞書・剛体型の節・継続・戻り先の変更は、変更前の値をログへ記録し、範囲を出るときに開始時のログ長まで戻す。未登録の項目と既存値への上書き、戻り先の none と型のある戻り先を区別する。ラムダと lazy では継続の可視範囲の開始位置を保存して切り替える。検査で誤りが見つかった場合も復元し、兄弟の枝や外側の範囲へ変更を残さない。Let の右辺・本体の検査と復帰は明示した作業列で処理する。理由: 増大する環境全体の複製と Let 鎖に比例する Rust の呼び出しの深さを避け、従来の検査規則と誤りの報告順を保つためである。
+ 
+ 検査器は、V-Sub と C-Sub を、型が求められる位置（関数の引数、構成子の引数、リストの要素、`if`・`match` の分岐、`let` の右側と束縛した変数の型、ラムダの本体と戻り値の型、定義の本体と宣言した型、`escape` の値と最も内側の関数の戻り値の型、`handle` の本体と節の本体、`resume` の値）でだけ使う。その位置で、ノードの型が求められる型と等しいか、同章の `≤` の関係にあるか、ノードのエフェクトが求められるエフェクトに含まれるかを調べる。
+diff --git a/docs/design/02-impl/02-10-diagnostics.md b/docs/design/02-impl/02-10-diagnostics.md
+index d5f71c3e..cc9e6593 100644
+--- a/docs/design/02-impl/02-10-diagnostics.md
++++ b/docs/design/02-impl/02-10-diagnostics.md
+@@ -36,6 +36,8 @@ CLI の文章と JSON、テストの実行器は、どれもこの表現から
+ 
+ 【決定】複数引数の位置指定を E0449、名前のない関数型を E0257 とする。名前付き呼び出しでは、混在を E0450、未知を E0451、重複を E0452、不足を E0453、既知の契約名の不一致を E0454、未確定の契約を E0455、直接のデータ構成子への名前指定を E0456 とする。解析の誤りと呼べない値を先に扱い、対応付けの誤りから不足や型不一致を連鎖させない。ラベルの誤りはラベル位置、契約名の不一致は期待と実際の名前・順を示す。修正案は式の評価順を保ち、契約と個数から一意に決まるラベル挿入に限って編集を付ける。改名・穴・混在・未確定の対応では安全を確認できなければ文だけを示す。
+ 
++【決定】E0519 は、非 Top の原子が関わる一原子の被覆の拒否を表す。主文に必要な原子と理由を示し、主位置のラベルに周囲の原子を示す。理由は必要な原子が Top なら `unknownSource`、その他は `notCovered` とし、同名の一原子で覆うこと、和では覆わないこと、Top を覆うのは Top だけであることを注記する。文言は `diag::codes`、理由の文字列は型検査の `text` に置く。型の構造の不一致と既存の Top だけの制約の診断は、それぞれ従来のコードを保つ。
++
+ ### 修正案
+ 
+ 【決定】E0512 は不足した効果のファイル単位の宣言を補助位置に示す。W0501 はファイル IO.All に対して関数名を主位置、その追加元を補助位置とし、ファイルの宣言の編集を付けない。個別 IO.All だけを狭める修正案では、ファイルの宣言で既に賄う効果を重ねて書かない。個別とファイルの双方に IO.All がある場合も、関数ごとに一件の警告とし、自動編集を出さない。理由: 一関数の本体だけを基にファイルの宣言を変更すると、ほかの関数の契約を壊すためである。

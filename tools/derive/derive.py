@@ -26,8 +26,8 @@ BENITOITE = REPO / 'target/debug/benitoite'
 # 純粋さの契約に既に反する生成の事前拒否は、受理入力の本文と記録を
 # 変えないため、生成規則の版を上げる変更には当たらない。
 GENERATOR_VERSION = '3.1.0-syntax-batch5'
-INVENTORY_VERSION = 3
-HASH_VERSION = 3
+INVENTORY_VERSION = 4
+HASH_VERSION = 4
 MARKER = re.compile(rb'// benitoite-derive:(begin|end) ([A-Za-z0-9_-]+)')
 
 
@@ -66,7 +66,7 @@ def semantic_type(ty):
     tag = ty['tag']
     if tag == 'application':
         return {'tag': tag, 'head': semantic_head(ty['head']),
-                'arguments': [semantic_type(t) for t in ty['arguments']]}
+                'arguments': [semantic_type(t) for t in ty['arguments']], 'ix': ty['ix']}
     if tag == 'parameter':
         return {'tag': tag, 'index': ty['index']}
     return {'tag': tag, 'params': [{'name': p['name'], 'type': semantic_type(p['type'])}
@@ -79,7 +79,7 @@ def semantic_head(h):
 
 
 def semantic_effects(e):
-    return {'names': [dict(tag=n['tag'], name=n['name']) for n in e['names']],
+    return {'names': [dict(tag=n['tag'], name=n['name'], ix=n['ix']) for n in e['names']],
             'vars': list(e['vars']), 'failures': [semantic_type(t) for t in e['failures']]}
 
 
@@ -88,6 +88,7 @@ def semantic_signature(s):
             'returnType': semantic_type(s['returnType']), 'effects': semantic_effects(s['effects']),
             'typeParams': [dict(name=p['name'], kind=dict(p['kind']), builtin=p['builtin']) for p in s['typeParams']],
             'effectParams': list(s['effectParams']), 'noFail': list(s['noFail']),
+            'rkinds': list(s['rkinds']), 'admission': s['admission'], 'shape': s['shape'],
             'constraints': [dict(param=c['param'], **{'class': c['class']}) for c in s['constraints']]}
 
 
@@ -238,7 +239,7 @@ def template_type(ty, inventory):
     tag = containers.get(name)
     if tag in ('list', 'option'):
         return {**out, 'tag': tag, 'element': template_type(args[0], inventory)}
-    if tag == 'map' and args[0] == {'tag': 'application', 'head': {'tag': 'named', 'name': 'Benitoite.String.String'}, 'arguments': []}:
+    if tag == 'map' and args[0] == {'tag': 'application', 'head': {'tag': 'named', 'name': 'Benitoite.String.String'}, 'arguments': [], 'ix': {'fixed': 'top'}}:
         return {**out, 'tag': tag, 'value': template_type(args[1], inventory)}
     if name in inventory['records']:
         return {**out, 'tag': 'record', 'name': name, 'arguments': args}
@@ -258,7 +259,8 @@ def resolved_type(ty):
         if name == 'Benitoite.Unit':
             name = 'Unit'
         args = ty['arguments']
-        return name + ('[' + ', '.join(resolved_type(t) for t in args) + ']' if args else '')
+        return (name + ('[' + ', '.join(resolved_type(t) for t in args) + ']' if args else '')
+                + range_suffix(ty['ix']))
     if ty['tag'] == 'parameter':
         return '$' + str(ty['index'])
     return ('function(' + ', '.join(p['name'] + ': ' + resolved_type(p['type']) for p in ty['params'])
@@ -266,6 +268,11 @@ def resolved_type(ty):
             + (' uses ' + json.dumps(semantic_effects(ty['effects']), ensure_ascii=False, sort_keys=True, separators=(',', ':'))
                if any(ty['effects'].values()) else ''))
 
+
+def range_suffix(ix):
+    # 範囲の正規表示は別の契約であるため、既存の交換JSONを診断にそのまま示す。
+    return '' if ix == {'fixed': 'top'} else '[' + json.dumps(
+        ix, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + ']'
 
 
 def validate_inventory(inv, root):
@@ -346,10 +353,12 @@ def _validate_inventory(inv, root):
     types, classes = inv['types'], inv['classes']
     require(isinstance(types, dict) and isinstance(classes, dict))
     for name, t in types.items():
-        obj(t, ('name', 'kind', 'arity', 'module', 'visibility', 'public', 'package', 'opaque', 'extensible'))
+        obj(t, ('name', 'kind', 'arity', 'module', 'visibility', 'public', 'package', 'opaque', 'extensible', 'rangeKind'))
         require(t['name'] == name and t['kind'] in ('data', 'record', 'builtin', 'external'))
         require(isinstance(name, str) and bool(name))
         number(t['arity'])
+        require(t['rangeKind'] in (None, 'path', 'host', 'endpoint'))
+        require(t['rangeKind'] is None or t['kind'] == 'builtin' and t['arity'] == 0)
         require(type(t['opaque']) is bool and type(t['extensible']) is bool)
         visibility(t)
 
@@ -366,49 +375,145 @@ def _validate_inventory(inv, root):
         require(arity > 0, 'value parameter used as head')
         return arity
 
-    def effects(e, ps, es):
+    def variant(v, tags):
+        require(isinstance(v, dict) and len(v) == 1)
+        tag = next(iter(v))
+        require(tag in tags, 'unknown inventory range tag')
+        return tag, v[tag]
+
+    def host(h):
+        tag, value = variant(h, ('name', 'ip'))
+        if tag == 'name':
+            _, labels = variant(value, ('exact', 'one', 'many'))
+            require(isinstance(labels, list) and bool(labels))
+            require(all(isinstance(p, str) and re.fullmatch(r'[a-z0-9](?:[a-z0-9-]*[a-z0-9])?', p)
+                        for p in labels), 'invalid inventory host labels')
+            require(not (len(labels) == 4 and all(p.isascii() and p.isdecimal() for p in labels)))
+        else:
+            form, data = variant(value, ('exact', 'cidr'))
+            obj(data, ('family', 'bits') if form == 'exact' else ('family', 'network', 'prefixLen'))
+            require(data['family'] in ('v4', 'v6'))
+            width = 32 if data['family'] == 'v4' else 128
+            bits = data['bits'] if form == 'exact' else data['network']
+            number(bits, 1 << width)
+            if form == 'cidr':
+                number(data['prefixLen'], width)
+                require(bits % (1 << (width - data['prefixLen'])) == 0, 'noncanonical inventory host bits')
+
+    def closed_range(r):
+        if r == 'top':
+            return None
+        tag, value = variant(r, ('path', 'host', 'endpoint'))
+        if tag == 'path':
+            _, parts = variant(value, ('exact', 'tree'))
+            require(isinstance(parts, list))
+            require(all(isinstance(p, str) and p not in ('', '.', '..')
+                        and not any(c in p for c in ('/', '\\', '\0', '*')) for p in parts),
+                    'invalid inventory path parts')
+        elif tag == 'host':
+            host(value)
+        else:
+            obj(value, ('host', 'ports'))
+            host(value['host'])
+            obj(value['ports'], ('lo', 'hi'))
+            number(value['ports']['lo'], 65536)
+            number(value['ports']['hi'], 65536)
+            require(value['ports']['lo'] <= value['ports']['hi'], 'invalid inventory port interval')
+        return tag
+
+    def index(ix, expected, rs):
+        form, value = variant(ix, ('fixed', 'rvar'))
+        if form == 'rvar':
+            number(value, len(rs))
+            require(expected is not None and rs[value] == expected, 'inventory range variable kind mismatch')
+        else:
+            actual = closed_range(value)
+            require(actual is None or actual == expected, 'inventory closed range kind mismatch')
+
+    def range_signature(s):
+        rs = s['rkinds']
+        require(isinstance(rs, list) and all(k in ('path', 'host', 'endpoint') for k in rs))
+        if s['admission'] != 'any':
+            obj(s['admission'], ('covers',))
+            obj(s['admission']['covers'], ('inner', 'outer'))
+            inner, outer = (s['admission']['covers'][k] for k in ('inner', 'outer'))
+            number(inner, len(rs))
+            number(outer, len(rs))
+            require(rs[inner] == rs[outer], 'inventory range admission kind mismatch')
+        shape = s['shape']
+        if shape == 'untargeted':
+            return
+        form, data = variant(shape, ('topTargeted', 'single'))
+        obj(data, ('kind',) if form == 'topTargeted' else ('kind', 'position'))
+        require(data['kind'] in ('path', 'host', 'endpoint'))
+        effects = s['effects']
+        require(len(effects['names']) == 1 and not effects['vars'] and not effects['failures']
+                and not s['effectParams'], 'inventory target effect shape mismatch')
+        effect = effects['names'][0]
+        require(effect['tag'] == 'builtin' and effect_kind(effect['name']) == data['kind'],
+                'inventory target effect kind mismatch')
+        if form == 'single':
+            number(data['position'], len(s['params']))
+            target = s['params'][data['position']]['type']
+            require(target.get('tag') == 'application' and target['head']['tag'] == 'named')
+            require(types[target['head']['name']]['rangeKind'] == data['kind'],
+                    'inventory target kind mismatch')
+            require(rs == [data['kind']] and target['ix'] == effect['ix'] == {'rvar': 0},
+                    'inventory single target range mismatch')
+        else:
+            require(not rs and effect['ix'] == {'fixed': 'top'}, 'inventory top target range mismatch')
+
+    def effect_kind(name):
+        return {'IO.File.Read': 'path', 'IO.File.Write': 'path',
+                'Network.Http.Connect': 'endpoint'}.get(name)
+
+    def effects(e, ps, es, rs):
         obj(e, ('names', 'vars', 'failures'))
         for n in e['names']:
-            obj(n, ('tag', 'name'))
+            obj(n, ('tag', 'name', 'ix'))
             require(n['tag'] in ('builtin', 'named') and isinstance(n['name'], str) and bool(n['name']),
                     'unknown inventory effect tag')
-        keys = [n['name'] for n in e['names']]
+            expected = effect_kind(n['name']) if n['tag'] == 'builtin' else None
+            index(n['ix'], expected, rs)
+        keys = [(n['name'], json.dumps(n['ix'], ensure_ascii=False, sort_keys=True, separators=(',', ':'))) for n in e['names']]
         require(keys == sorted(set(keys)), 'noncanonical inventory effects')
         for i in e['vars']:
             number(i, len(es))
         require(e['vars'] == sorted(set(e['vars'])))
         for t in e['failures']:
-            ty(t, ps, es)
+            ty(t, ps, es, rs)
         keys = [json.dumps(t, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode() for t in e['failures']]
         require(keys == sorted(set(keys)), 'noncanonical inventory failure types')
 
-    def function(f, ps, es):
+    def function(f, ps, es, rs):
         names = []
         for p in f['params']:
             obj(p, ('name', 'type'))
             require(isinstance(p['name'], str) and bool(p['name']))
             names.append(p['name'])
-            ty(p['type'], ps, es)
+            ty(p['type'], ps, es, rs)
         require(len(set(names)) == len(names), 'duplicate inventory contract name')
-        ty(f['returnType'], ps, es)
-        effects(f['effects'], ps, es)
+        ty(f['returnType'], ps, es, rs)
+        effects(f['effects'], ps, es, rs)
 
-    def ty(t, ps, es):
+    def ty(t, ps, es, rs=()):
         require(isinstance(t, dict))
         tag = t.get('tag')
         if tag == 'application':
-            obj(t, ('tag', 'head', 'arguments'))
+            obj(t, ('tag', 'head', 'arguments', 'ix'))
             require(isinstance(t['arguments'], list))
             require(head(t['head'], ps) == len(t['arguments']), 'inventory kind/arity mismatch')
+            h = t['head']
+            index(t['ix'], types[h['name']]['rangeKind'] if h['tag'] == 'named' else None, rs)
             for a in t['arguments']:
-                ty(a, ps, es)
+                ty(a, ps, es, rs)
         elif tag == 'parameter':
             obj(t, ('tag', 'index'))
             number(t['index'], len(ps))
             require(kind(ps[t['index']]['kind']) == 0, 'constructor parameter used as value')
         elif tag == 'function':
             obj(t, ('tag', 'params', 'returnType', 'effects'))
-            function(t, ps, es)
+            function(t, ps, es, rs)
         else:
             invalid('derive.invalid_inventory: unknown inventory type tag')
 
@@ -420,7 +525,7 @@ def _validate_inventory(inv, root):
             require(kind(ps[c['param']]['kind']) == kind(classes[c['class']]['paramKind']), 'inventory constraint kind mismatch')
 
     def signature(s):
-        obj(s, ('params', 'returnType', 'effects', 'typeParams', 'effectParams', 'noFail', 'constraints'))
+        obj(s, ('params', 'returnType', 'effects', 'typeParams', 'effectParams', 'noFail', 'constraints', 'rkinds', 'admission', 'shape'))
         params(s['typeParams'])
         require(all(isinstance(n, str) and n for n in s['effectParams']))
         require(len(set(s['effectParams'])) == len(s['effectParams']))
@@ -428,7 +533,8 @@ def _validate_inventory(inv, root):
             number(i, len(s['effectParams']))
         require(s['noFail'] == sorted(set(s['noFail'])))
         constraints(s['constraints'], s['typeParams'])
-        function(s, s['typeParams'], s['effectParams'])
+        range_signature(s)
+        function(s, s['typeParams'], s['effectParams'], s['rkinds'])
 
     def methods(ms):
         names = []
@@ -556,6 +662,9 @@ class Template:
         signature = function['signature']
         params = signature['params']
         expected_params = [] if input_type is None else [input_type]
+        if signature['rkinds']:
+            self.fail(field, f'custom {operation} must be pure and monomorphic: '
+                      'range-polymorphic signatures are unsupported (' + function['name'] + ')')
         actual_params = [self.resolved(p['type']) for p in params]
         if (actual_params != expected_params or self.resolved(signature['returnType']) != output_type
                 or signature['typeParams'] or signature['effectParams'] or signature['constraints']
@@ -569,6 +678,8 @@ class Template:
         if ty['tag'] == 'function':
             names = []
             for n in ty['effects']['names']:
+                if n['ix'] != {'fixed': 'top'}:
+                    invalid('unsupported generated range annotation: ' + range_suffix(n['ix']))
                 if n['tag'] == 'named':
                     names.append(self.reference(n['name']))
                 elif n['name'] == 'State':
@@ -594,6 +705,8 @@ class Template:
         elif '.' in local:
             local = self.reference(name)
         args = ty['arguments']
+        if ty['ix'] != {'fixed': 'top'}:
+            invalid('unsupported generated range annotation: ' + range_suffix(ty['ix']))
         return local + ('[' + ', '.join(self.type_name(t) for t in args) + ']' if args else '')
 
     def dependency(self, ty, feature, field):
@@ -629,7 +742,8 @@ def generate_trait(target, inventory, imports, feature):
     trait = imports.require('Benitoite.Trait', 'Trait')
     name = Template(target, inventory, imports).type_name({
         'tag': 'application', 'head': {'tag': 'named', 'name': target['type']},
-        'arguments': [{'tag': 'parameter', 'index': i} for i in range(len(target['typeParams']))]})
+        'arguments': [{'tag': 'parameter', 'index': i} for i in range(len(target['typeParams']))],
+        'ix': {'fixed': 'top'}})
     requirements = inventory['_traitDependencies'].requirements[(target['type'], 'Benitoite.Trait.' + feature.title())]
     params = []
     for i, p in enumerate(target['typeParams']):
@@ -1191,7 +1305,10 @@ class Manager:
                     'inputs': inputs, 'embeddedInputs': embedded, 'rows': rows,
                     'recordBeforeSha256': old_hash, 'recordAfter': next_record,
                     'migration': ({'previousRecord': old, 'semanticHashesComparable': False}
-                                  if old and (old.get('version') != 3 or old.get('generatorVersion') != GENERATOR_VERSION) else None)}
+                                  if old and (old.get('version') != 3
+                                      or old.get('inventoryVersion') != INVENTORY_VERSION
+                                      or old.get('hashVersion') != HASH_VERSION
+                                      or old.get('generatorVersion') != GENERATOR_VERSION) else None)}
         self.verify_inputs(inputs)
         return manifest
 

@@ -21,7 +21,7 @@ def NoFailCtxOf (q : List Bool) : NoFailCtx := fun i => q[i]?.getD false = true
 
 mutual
   def qTyAt (i : Nat) : Ty → Bool
-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => false
+    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => false
     | .data _ as | .tapp _ as => qTysAt i as
     | .list a | .reference a | .lazy a | .set a | .dict _ a => qTyAt i a
     | .map a b => qTyAt i a || qTyAt i b
@@ -41,7 +41,7 @@ def signatureQ (ne : Nat) (ps : List Ty) (ret : Ty) (e : Eff) : List Bool :=
 /-- 型内部の潜在効果を再検査せず、最外の Fail と行を判定する。 -/
 def noFailCheck (atoms : List Atom) (q : List Bool) (e : Eff) : Bool :=
   e.fails.isEmpty && atoms.all (fun a => match a with
-    | .name _ => true
+    | .name _ _ => true
     | .rho i => !e.test (.rho i) || q[i]?.getD false)
 
 /-- Qcallee の全行について、caller の Q で行の像を検査する。 -/

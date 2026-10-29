@@ -31,6 +31,7 @@ impl<C: Connector> Connector for CheckedConnector<C> {
                 pending: Vec::new(),
                 size: 0,
                 header_limit: details.config.max_response_header_size(),
+                check_redirects: details.config.max_redirects() > 0,
             }))
     }
 }
@@ -42,6 +43,7 @@ pub(super) struct CheckedTransport<T> {
     pending: Vec<u8>,
     size: u64,
     header_limit: usize,
+    check_redirects: bool,
 }
 
 #[derive(Debug)]
@@ -57,7 +59,7 @@ impl<T: Transport> Transport for CheckedTransport<T> {
     }
 
     fn transmit_output(&mut self, amount: usize, timeout: NextTimeout) -> Result<(), ureq::Error> {
-        if matches!(self.check, BodyCheck::Idle) {
+        if self.check_redirects && matches!(self.check, BodyCheck::Idle) {
             // 3xx の本体の有無に関係する方法は HEAD だけである。要求を変更せず、
             // 検査用の解析器だけを同じ本体の受信規則で初期化する。
             let method = if self.inner.buffers().output().starts_with(b"HEAD ") {
@@ -73,6 +75,11 @@ impl<T: Transport> Transport for CheckedTransport<T> {
     }
 
     fn await_input(&mut self, timeout: NextTimeout) -> Result<bool, ureq::Error> {
+        // 非追従の応答は通常の本体の読取りが検査する。読み捨てる追従応答に
+        // 特有の失敗・上限へ変えない（設計書 03-09「クライアント」）。
+        if !self.check_redirects {
+            return self.inner.await_input(timeout);
+        }
         let started = Instant::now();
         loop {
             // 頭が分割されても、この呼び出しに渡された時間の上限を延ばさない。

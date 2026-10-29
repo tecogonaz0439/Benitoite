@@ -1,0 +1,37 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Hefty.lean:337:37: error: Type mismatch
+  FTyped.pure ?m.17
+has type
+  FTyped (Free.pure ?m.17) empty
+but is expected to have type
+  FTyped (Free.pure ()) empty
+(10, [7, 3])
+(10, [7, 7, 3])
+(14, [7, 7])
+(10, [3])
+'SH2.elaborate_typing' depends on axioms: [propext, Quot.sound]
+'SH2.remaining_effects' depends on axioms: [propext]
+'SH2.eval_agrees' depends on axioms: [propext]
+'SH2.recording_typing' depends on axioms: [propext, Quot.sound]
+'SH2.source_no_emit_trace' depends on axioms: [propext, Quot.sound]
+'SH2.recording_value_agrees' depends on axioms: [propext]
+'SH2.recording_needs_emit' depends on axioms: [sorryAx]
+        0.74 real         0.91 user         0.28 sys
+           703938560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45694  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                7963  involuntary context switches
+          8458212689  instructions retired
+          3524074792  cycles elapsed
+           156655168  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

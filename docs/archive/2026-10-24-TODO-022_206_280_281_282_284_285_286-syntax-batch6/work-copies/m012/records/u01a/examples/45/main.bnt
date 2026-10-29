@@ -1,0 +1,16 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind numbers <- List.range(start: 1, stop: 6)
+  bind squares <- List.map(xs: numbers, f: lambda(value) return value * value)
+  bind even <- List.filter(xs: squares, p: lambda(value) return value mod 2 = 0)
+  Console.writeLine("${List.length(numbers)} numbers, sum ${List.fold(xs: numbers, initial: 0, f: lambda(acc, value) return acc + value)}")
+  Console.writeLine(String.join(xs: List.map(xs: even, f: lambda(value) return Integer.toString(value)), separator: ", "))
+  bind words <- String.split(s: "the cat saw the dog", separator: " ")
+  bind counts <- List.fold(xs: words, initial: Map.empty(), f: lambda(acc, value)
+    return Map.set(m: acc, k: value, value: Option.unwrapOr(o: Map.get(m: acc, k: value), fallback: 0) + 1)
+  end lambda)
+  Map.forEach(m: counts, f: lambda(key, value) Console.writeLine("${key}=${value}"))
+  Console.writeLine(String.join(xs: Set.toList(Set.fromList(words)), separator: " "))
+  return ()
+end function

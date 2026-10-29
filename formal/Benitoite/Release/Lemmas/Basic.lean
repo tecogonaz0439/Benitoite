@@ -48,9 +48,9 @@ theorem substRho_empty (es : List Eff) : substRho es empty = empty := by
     Order.sortUnique_nil]
 
 /-- エフェクトの名前は置き換えで消えない。 -/
-theorem substRho_name {es : List Eff} {ε : Eff} {l : EffName} (h : Eff.mem ε (.name l)) :
-    Eff.mem (substRho es ε) (.name l) := by
-  change Eff.mem (Eff.norm (Eff.rawBind (SubstEnv.at 0 [] es) ε)) (.name l)
+theorem substRho_name {es : List Eff} {ε : Eff} {l : EffName} (h : Eff.mem ε (.nameTop l)) :
+    Eff.mem (substRho es ε) (.nameTop l) := by
+  change Eff.mem (Eff.norm (Eff.rawBind (SubstEnv.at 0 [] es) ε)) (.nameTop l)
   rw [Eff.mem_norm, Eff.mem_rawBind, Eff.mem_substAtoms]
   exact Or.inl h
 
@@ -68,20 +68,20 @@ theorem trans {a b c : Ty} (h₁ : Ty.Le a b) (h₂ : Ty.Le b c) : Ty.Le a c := 
   · rcases h₂ with rfl | ⟨names', ps', r', ε₁, ε₂, h, rfl, hs'⟩
     · exact Or.inr ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
     · cases h
-      exact Or.inr ⟨names, ps, r, ε, ε₂, rfl, rfl, hs.trans hs'⟩
+      exact Or.inr ⟨names, ps, r, ε, ε₂, rfl, rfl, hs'.trans hs⟩
 
 /-- 関数の型から広げた型は、契約名・引数・結果が同じで、エフェクトだけが広い関数の型である。 -/
 theorem fn_left {names ps r ε t} (h : Ty.Le (.fn names ps r ε) t) :
-    ∃ ε', t = .fn names ps r ε' ∧ Eff.Sub ε ε' := by
+    ∃ ε', t = .fn names ps r ε' ∧ Eff.Covers ε' ε := by
   rcases h with rfl | ⟨names', ps', r', ε₁, ε₂, h, rfl, hs⟩
-  · exact ⟨ε, rfl, Eff.Sub.refl ε⟩
+  · exact ⟨ε, rfl, Eff.Covers.refl ε⟩
   · cases h; exact ⟨ε₂, rfl, hs⟩
 
 /-- 関数の型に広げた元の型は、契約名・引数・結果が同じで、エフェクトだけが狭い関数の型である。 -/
 theorem fn_right {a names ps r ε} (h : Ty.Le a (.fn names ps r ε)) :
-    ∃ ε', a = .fn names ps r ε' ∧ Eff.Sub ε' ε := by
+    ∃ ε', a = .fn names ps r ε' ∧ Eff.Covers ε ε' := by
   rcases h with rfl | ⟨names', ps', r', ε₁, ε₂, rfl, h, hs⟩
-  · exact ⟨ε, rfl, Eff.Sub.refl ε⟩
+  · exact ⟨ε, rfl, Eff.Covers.refl ε⟩
   · cases h; exact ⟨ε₁, rfl, hs⟩
 
 /-- 関数の型でない型への包含は、等しさである。 -/
@@ -101,7 +101,7 @@ theorem substAt {a b : Ty} (c : Nat) (ts : List Ty) (es : List Eff) (h : Ty.Le a
   rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
   · exact refl _
   · simp only [Ty.substAt, Eff.substAt]
-    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, Eff.substAt_mono c ts es hs⟩
+    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, hs.substAt c ts es⟩
 
 theorem subst {a b : Ty} (ts : List Ty) (es : List Eff) (h : Ty.Le a b) :
     Ty.Le (a.subst ts es) (b.subst ts es) := substAt 0 ts es h
@@ -110,7 +110,7 @@ theorem shift {a b : Ty} (k c : Nat) (h : Ty.Le a b) : Ty.Le (a.shift k c) (b.sh
   rcases h with rfl | ⟨names, ps, r, ε, ε', rfl, rfl, hs⟩
   · exact refl _
   · simp only [Ty.shift]
-    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, Eff.shift_mono k c hs⟩
+    exact Or.inr ⟨_, _, _, _, _, rfl, rfl, hs.shift k c⟩
 
 end Ty.Le
 

@@ -1,0 +1,11 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.IO.Console
+function prefix(text: String, stop: Integer) -> String
+  return "mine"
+end function
+function quoted(text: String) -> String
+  return "q"
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(prefix(text: "a", stop: 1) + quoted("x") + Trait.Show.show("z"))
+end function

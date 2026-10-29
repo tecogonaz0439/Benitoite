@@ -1,0 +1,713 @@
+diff --git a/formal/Benitoite.lean b/formal/Benitoite.lean
+index 3e2ed8e5..45c35697 100644
+--- a/formal/Benitoite.lean
++++ b/formal/Benitoite.lean
+@@ -69,6 +69,7 @@ import Benitoite.Surface.Syntax
+ import Benitoite.Surface.Desugar
+ import Benitoite.Surface.Typing
+ import Benitoite.Surface.RangeFree
++import Benitoite.Surface.PrimRange
+ import Benitoite.Surface.WellFormed
+ import Benitoite.Surface.Lemmas.ShiftClean
+ import Benitoite.Surface.Lemmas.Invariants
+diff --git a/formal/Benitoite/Exchange/Convert.lean b/formal/Benitoite/Exchange/Convert.lean
+index 3a559b76..d013618d 100644
+--- a/formal/Benitoite/Exchange/Convert.lean
++++ b/formal/Benitoite/Exchange/Convert.lean
+@@ -343,7 +343,7 @@ mutual
+     | .handleFail e r b c => return .handleFail (← e.toRelease) (← r.toRelease) (← b.toSurface constants) (← c.toSurface constants)
+     | .opName n ts => return .opName n (← ts.mapM Ty.toRelease)
+     | .funName n ts es => return .funName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
+-    | .primName n ts es => return .primName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
++    | .primName n ts es => return .primName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) []
+     | .nullCon n ts => return .nullCon n (← ts.mapM Ty.toRelease)
+     | .conValue n ts names ps => return .conValue n (← ts.mapM Ty.toRelease) names (← ps.mapM Ty.toRelease)
+     | .literal c => match c with
+@@ -420,7 +420,7 @@ mutual
+               let some name := Benitoite.Surface.FormatSpec.headName t
+                 | throw "missing format head name"
+               match heads.head? with
+-              | some (.primName n [] []) =>
++              | some (.primName n [] [] []) =>
+                   if n != name then throw "formatted interpolation head name mismatch"
+               | _ => throw "formatted interpolation requires direct primitive head"
+               heads := heads.drop 1
+diff --git a/formal/Benitoite/Interval/Analyze.lean b/formal/Benitoite/Interval/Analyze.lean
+index deb2b9c3..bbaee507 100644
+--- a/formal/Benitoite/Interval/Analyze.lean
++++ b/formal/Benitoite/Interval/Analyze.lean
+@@ -42,7 +42,7 @@ mutual
+   /-- 全53構成子を列挙する。未対応の部分木にも入り、解析の伝播とは区別する。 -/
+   def discoverBodies (env : AbstractEnv) : Expr → List BodySeed
+     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+     | .negFloat32 _ | .unit => []
+diff --git a/formal/Benitoite/Interval/BudgetChildren.lean b/formal/Benitoite/Interval/BudgetChildren.lean
+index 3f9c2076..fd2a994d 100644
+--- a/formal/Benitoite/Interval/BudgetChildren.lean
++++ b/formal/Benitoite/Interval/BudgetChildren.lean
+@@ -48,7 +48,7 @@ def unknownChildren (runExpr : AbstractEnv → Expr → Analysis BaseApprox)
+     let body := fun b => independentWith (.block b) env (fun initial => runBlock initial b)
+     match source with
+     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+     | .negFloat32 _ | .unit => pure ()
+diff --git a/formal/Benitoite/Interval/BudgetCount.lean b/formal/Benitoite/Interval/BudgetCount.lean
+index 0c337228..4fb7a833 100644
+--- a/formal/Benitoite/Interval/BudgetCount.lean
++++ b/formal/Benitoite/Interval/BudgetCount.lean
+@@ -20,7 +20,7 @@ def countExpr (source : Expr) : Scan Nat := forNumbering fun _ => frame fun _ =>
+   tick .numbering
+   let count ← match source with
+     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+     | .negFloat32 _ | .unit => pure 0
+diff --git a/formal/Benitoite/Interval/BudgetDiscover.lean b/formal/Benitoite/Interval/BudgetDiscover.lean
+index 4a7bf0b1..76bc1455 100644
+--- a/formal/Benitoite/Interval/BudgetDiscover.lean
++++ b/formal/Benitoite/Interval/BudgetDiscover.lean
+@@ -159,7 +159,7 @@ def expr : Nat → AbstractEnv → Expr → Discovery Unit
+       let inner ← scan (BudgetScan.push env (topSlot (some (.opaqueTop owner))))
+       block fuel inner body
+     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+     | .negFloat32 _ | .unit => pure ()
+diff --git a/formal/Benitoite/Interval/BudgetWalk.lean b/formal/Benitoite/Interval/BudgetWalk.lean
+index d703ef9a..15bde613 100644
+--- a/formal/Benitoite/Interval/BudgetWalk.lean
++++ b/formal/Benitoite/Interval/BudgetWalk.lean
+@@ -109,7 +109,7 @@ def skipChildren : Nat → Expr → Analysis Unit
+   | fuel + 1, source =>
+     match source with
+     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+     | .negFloat32 _ | .unit => pure ()
+diff --git a/formal/Benitoite/Interval/DomainExamples.lean b/formal/Benitoite/Interval/DomainExamples.lean
+index 6a2e384c..156fd290 100644
+--- a/formal/Benitoite/Interval/DomainExamples.lean
++++ b/formal/Benitoite/Interval/DomainExamples.lean
+@@ -39,7 +39,7 @@ private def text : ConcreteValue :=
+ private def call (binding : StandardBinding) (positions : List Nat) (sources : List Expr)
+     (labels : List (Option String)) (operation : Bool := false) (primitive : Bool := true) : Expr :=
+   .call (if operation then .opName binding.declaration []
+-    else if primitive then .primName binding.declaration [] [] else .funName binding.declaration [] [])
++    else if primitive then .primName binding.declaration [] [] [] else .funName binding.declaration [] [])
+     labels positions (sources.foldr Exprs.cons .nil)
+ private def shiftCall (binding : StandardBinding) (reversed : Bool) (primitive : Bool := true) : Expr :=
+   if reversed then call binding [1, 0] [.local 0, .local 1] [some "n", some "a"] (primitive := primitive)
+@@ -175,17 +175,17 @@ private def identityEnvs : List ConcreteEnv :=
+ 
+ -- 操作はハンドラで差し替わる。域外の code/port も固定域の具体規則を持たない。
+ private def exitSource : Expr :=
+-  .call (.primName "resolved:Process.exit" [.base .unit] []) [some "code"] [0]
++  .call (.primName "resolved:Process.exit" [.base .unit] [] []) [some "code"] [0]
+     (.cons (literal ⟨300, by decide⟩) .nil)
+ private def listenSource : Expr :=
+-  .call (.primName "resolved:Http.Listen.listen" [] []) [some "host", some "port"] [0, 1]
++  .call (.primName "resolved:Http.Listen.listen" [] [] []) [some "host", some "port"] [0, 1]
+     (.cons (.local 0) (.cons (literal ⟨65536, by decide⟩) .nil))
+ -- 組み込みの操作の primName も単相なら照会するが、操作の固定域の項は渡さない。
+ #guard [(exitSource, "resolved:Process.exit"), (listenSource, "resolved:Http.Listen.listen")].all fun (source, declaration) =>
+   let env := abstract [identityBinding] [.unknown (some (.base .string))] declaration
+   warningView env source = [] ∧
+     (rangeCallBinding (rangeTables env) ⟨source, .base .unit, key⟩).isNone
+-#guard standardCallHead (.primName "resolved:Http.Listen.listen" [] []) =
++#guard standardCallHead (.primName "resolved:Http.Listen.listen" [] [] []) =
+   some "resolved:Http.Listen.listen"
+ 
+ -- 利用者の操作の opName は、固定域を持つ表が渡されても認定しない。
+@@ -199,8 +199,8 @@ private def listenSource : Expr :=
+ #guard
+   let binding := identityBinding
+   let heads : List Expr :=
+-    [.primName binding.declaration [.base .unit] [],
+-     .primName binding.declaration [] [.mk (fun _ => false) []],
++    [.primName binding.declaration [.base .unit] [] [],
++     .primName binding.declaration [] [.mk (fun _ => false) []] [],
+      .funName binding.declaration [.base .unit] [],
+      .funName binding.declaration [] [.mk (fun _ => false) []],
+      .opName binding.declaration [], .opName binding.declaration [.base .unit],
+diff --git a/formal/Benitoite/Interval/Eval.lean b/formal/Benitoite/Interval/Eval.lean
+index 1b086c78..9a906a84 100644
+--- a/formal/Benitoite/Interval/Eval.lean
++++ b/formal/Benitoite/Interval/Eval.lean
+@@ -27,7 +27,7 @@ def classify : Expr → FragmentClass
+   | .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .neg _ _ => .width
+   | .call _ _ _ _ | .record _ _ _ _ | .recordUpdate _ _ _ _ _ _ => .api
+   | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-  | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++  | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+   | .nullCon _ _ | .conValue _ _ _ _ => .unknownValue
+   | .builderOp _ _ _ _ | .handleFail _ _ _ _ | .negFloat _ | .negDecimal _ _
+   | .negFloat32 _ | .conCall _ _ _ | .pipe _ _ | .partialCall _ _ _ _ _
+@@ -381,7 +381,7 @@ def ConcreteEnv.standardAt (env : ConcreteEnv) (key : OperationKey) : Option Sta
+ 
+ /-- 型引数・エフェクト引数のない標準関数と組み込み関数の直接 call の頭だけを読む。 -/
+ def standardCallHead : Expr → Option FunName
+-  | .funName declaration [] [] | .primName declaration [] [] => some declaration
++  | .funName declaration [] [] | .primName declaration [] [] [] => some declaration
+   | _ => none
+ 
+ /-- Range と固定域の標準宣言を、元のキー・宣言・引数位置で認定する。 -/
+diff --git a/formal/Benitoite/Interval/FixedDomainExamples.lean b/formal/Benitoite/Interval/FixedDomainExamples.lean
+index b69c89e7..c98211e0 100644
+--- a/formal/Benitoite/Interval/FixedDomainExamples.lean
++++ b/formal/Benitoite/Interval/FixedDomainExamples.lean
+@@ -61,9 +61,9 @@ private def env : AbstractEnv :=
+     standards := [binding]
+     apiAt := fun site => if site = key then some binding.declaration else none }
+ private def call (declaration : FunName) : Expr :=
+-  .call (.primName declaration [] []) ["a", "n"] [0, 1] (.cons (.local 1) (.cons (.local 0) .nil))
++  .call (.primName declaration [] [] []) ["a", "n"] [0, 1] (.cons (.local 1) (.cons (.local 0) .nil))
+ private def operationCall : Expr :=
+-  .call (.primName "resolved:Console.writeLine" [] []) [some "text"] [0]
++  .call (.primName "resolved:Console.writeLine" [] [] []) [some "text"] [0]
+     (.cons (.literal (.string "x")) .nil)
+ private def target (environment : AbstractEnv) (site : OperationKey) (source : Expr) : Option String :=
+   (targetOperationAt environment site source).map fun operation => match operation with
+diff --git a/formal/Benitoite/Interval/Identity.lean b/formal/Benitoite/Interval/Identity.lean
+index 060ae83f..a2d94c74 100644
+--- a/formal/Benitoite/Interval/Identity.lean
++++ b/formal/Benitoite/Interval/Identity.lean
+@@ -42,7 +42,7 @@ def clausesChildren : Clauses → List Expr
+ /-- 宣言のフィールド順の直接の子。全相互帰納容器を扱うが、評価は行わない。 -/
+ def children : Expr → List Expr
+   | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-  | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++  | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+   | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+   | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+   | .negFloat32 _ | .unit => []
+@@ -80,7 +80,7 @@ mutual
+   def surfacePreorder (source : Expr) : List Expr :=
+     source :: (match source with
+     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
+     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
+     | .negFloat32 _ | .unit => []
+diff --git a/formal/Benitoite/Interval/Sound.lean b/formal/Benitoite/Interval/Sound.lean
+index 42e6bbb9..b12d9367 100644
+--- a/formal/Benitoite/Interval/Sound.lean
++++ b/formal/Benitoite/Interval/Sound.lean
+@@ -2023,7 +2023,7 @@ def targetOperationAt (env : AbstractEnv) (key : OperationKey) (source : Expr) :
+     Option TargetOperation :=
+   match source with
+   | .call (.funName declaration [] []) _ _ _
+-  | .call (.primName declaration [] []) _ _ _ => do
++  | .call (.primName declaration [] [] []) _ _ _ => do
+     let binding ← env.standardAt key
+     if declaration = binding.declaration then some (.standard binding) else none
+   | _ => arithmeticOperationAt source
+@@ -2055,7 +2055,7 @@ theorem target_at_function (env : AbstractEnv) (key : OperationKey)
+ /-- 組み込み関数の位置も、標準関数と同じ二表と宣言を照合する。 -/
+ theorem target_at_primitive (env : AbstractEnv) (key : OperationKey)
+     (declaration : PrimName) (labels positions arguments) :
+-    targetOperationAt env key (.call (.primName declaration [] []) labels positions arguments) =
++    targetOperationAt env key (.call (.primName declaration [] [] []) labels positions arguments) =
+       (env.standardAt key).bind (fun binding =>
+         if declaration = binding.declaration then some (.standard binding) else none) := rfl
+ 
+@@ -2086,8 +2086,10 @@ theorem call_binding_target {env : AbstractEnv} {key source binding}
+   cases source <;> simp only at head <;> try contradiction
+   rename_i callee labels positions arguments
+   cases callee <;> simp only [standardCallHead] at head <;> try contradiction
+-  all_goals rename_i declaration types effects
+-  all_goals cases types <;> cases effects <;> simp_all [standardCallHead, targetOperationAt]
++  case funName declaration types effects =>
++    cases types <;> cases effects <;> simp_all [standardCallHead, targetOperationAt]
++  case primName declaration types effects ranges =>
++    cases types <;> cases effects <;> cases ranges <;> simp_all [standardCallHead, targetOperationAt]
+ 
+ /-- 算術の構文との一致は保ち、固定域の標準 call の構文だけを追加する。 -/
+ def WarningOperationSyntax (source : Expr) (operation : TargetOperation) : Prop :=
+diff --git a/formal/Benitoite/Surface/BuilderExamples.lean b/formal/Benitoite/Surface/BuilderExamples.lean
+index ed110a81..6d6f93d2 100644
+--- a/formal/Benitoite/Surface/BuilderExamples.lean
++++ b/formal/Benitoite/Surface/BuilderExamples.lean
+@@ -99,7 +99,7 @@ private noncomputable def storedAfter (e : Expr) (fail : Bool) : Option (Bool ×
+ example : storedAfter nestedAppend false = some (false, "oldxsuffix") := by decide
+ -- 通常引数の計算が失敗したときは、専用セルを更新しない。
+ -- 旧合成の組み込みは専用操作では呼ばないため、失敗する呼び出しを通常引数に置く。
+-example : storedAfter (append (.call (.primName "add" [] []) [none, none] [0, 1]
++example : storedAfter (append (.call (.primName "add" [] [] []) [none, none] [0, 1]
+     (.cons (.literal (.string "")) (.cons (.literal (.string "x")) .nil)))) true = some (true, "old") := by decide
+ 
+ -- 宣言だけで終わる場合も、三種類とも Unit と空の効果を返す。
+@@ -111,7 +111,7 @@ example : kinds.all (fun r => match checkedBlock (.builderBind r .empty) with
+ 
+ -- 通常の Reference.get を引数で呼べば、構築器が純粋でも State は残る。
+ private def stateInput : Input := { input with atoms := [.nameTop stateEff] }
+-private def referenceArg : Expr := .call (.primName "get" [strTy] []) [none] [0]
++private def referenceArg : Expr := .call (.primName "get" [strTy] [] []) [none] [0]
+   (.cons (.local 1) .nil)
+ example : (match checkBlock stateInput .strict [] [some (.reference strTy)] none .other []
+     (.builderBind .string (.last (.builderOp .append 0 (.cons referenceArg .nil) .string))) with
+@@ -152,10 +152,10 @@ private def hiddenBuilder (r : Result α) : Bool := match r with
+ private def captureBoundaries : List Expr :=
+   [.lam [] [] strTy (Eff.single stateEff) (.last (.returnE strTy (copyAt 0))),
+    .lazyE (.last (copyAt 0)),
+-   .partialCall (.primName "add" [] []) ["left", "right"]
++   .partialCall (.primName "add" [] [] []) ["left", "right"]
+      (.expr (some "left") 0 (copyAt 0) (.hole (some "right") 1 strTy .nil)) strTy (Eff.single stateEff),
+    .partialCall (.ite (.literal (.boolean true))
+-      (.seq (appendAt 0 "x") (.last (.primName "add" [] []))) (.last (.primName "add" [] [])))
++      (.seq (appendAt 0 "x") (.last (.primName "add" [] [] []))) (.last (.primName "add" [] [] [])))
+      ["left", "right"] (.hole (some "left") 0 strTy (.hole (some "right") 1 strTy .nil))
+      strTy (Eff.single stateEff)]
+ example : captureBoundaries.all (fun e => hiddenBuilder (checkedBlock (declared (.last e)))) = true := by decide
+@@ -177,7 +177,7 @@ example : hiddenBuilder (checkBlock taskInput .strict [] [] none .other []
+ private def snapshotLambda : Block := declared
+   (.bind .bind strTy (copyAt 0) (.last (.lam [] [] strTy Eff.empty (.last (.returnE strTy (.local 0))))))
+ private def snapshotPartial : Block := declared
+-  (.bind .bind strTy (copyAt 0) (.last (.partialCall (.primName "add" [] []) ["left", "right"]
++  (.bind .bind strTy (copyAt 0) (.last (.partialCall (.primName "add" [] [] []) ["left", "right"]
+     (.expr (some "left") 0 (.local 0) (.hole (some "right") 1 strTy .nil)) strTy Eff.empty)))
+ example : [snapshotLambda, snapshotPartial].all (fun b => (checkedBlock b).isOk) = true := by decide
+ 
+@@ -293,7 +293,7 @@ example : returnedText blockAppend = some "block" := by decide
+ -- 通常の Reference の State は block の出口でも残る。
+ example : (checkExpr { input with atoms := [.nameTop stateEff] } .strict []
+     [some (.reference strTy)] none .other []
+-    (.block (.last (.call (.primName "get" [strTy] []) [none] [0] (.cons (.local 0) .nil))))).map
++    (.block (.last (.call (.primName "get" [strTy] [] []) [none] [0] (.cons (.local 0) .nil))))).map
+       (fun (t,e) => tyEq [.nameTop stateEff] t strTy && effEq [.nameTop stateEff] e (Eff.single stateEff)) =
+     .ok true := by rfl
+ 
+diff --git a/formal/Benitoite/Surface/BuilderFree.lean b/formal/Benitoite/Surface/BuilderFree.lean
+index ffc490e8..8a1894be 100644
+--- a/formal/Benitoite/Surface/BuilderFree.lean
++++ b/formal/Benitoite/Surface/BuilderFree.lean
+@@ -14,7 +14,7 @@ mutual
+     | .funName _ _ _ => True
+     | .funDicts _ _ _ _ _ _ => True
+     | .methName _ _ _ _ _ _ _ => True
+-    | .primName _ _ _ => True
++    | .primName _ _ _ _ => True
+     | .opName _ _ => True
+     | .opDicts _ _ _ _ _ => True
+     | .raise _ _ => True
+diff --git a/formal/Benitoite/Surface/Check.lean b/formal/Benitoite/Surface/Check.lean
+index a697c25a..33b108f2 100644
+--- a/formal/Benitoite/Surface/Check.lean
++++ b/formal/Benitoite/Surface/Check.lean
+@@ -262,10 +262,10 @@ mutual
+         require path "method instantiation violates scope or NoFail"
+           (instantiationCheck q.atoms q.noFailRows C.length ms.neffs ms.params ms.ret ms.eff (ts ++ [τ]) es)
+         pure (.fn names ps (substTy q.atoms (ts ++ [τ]) es ms.ret) (substEffAt q.atoms 0 (ts ++ [τ]) es ms.eff), emptyEff)
+-    | .primName b ts es => do
++    | .primName b ts es rs => do
+         let s ← lookup path "unknown primitive" (q.B.sig b)
+           (fun _ => true)
+-        require path "primitive has range variables" (s.nranges == 0)
++        require path "primitive has range variables" (s.nranges == 0 && rs.isEmpty)
+         require path "primitive contract names are not well formed" (namesWF s.names s.params)
+         require path "primitive type argument count mismatch" (ts.length == s.ntys)
+         require path "primitive effect argument count mismatch" (es.length == s.neffs)
+diff --git a/formal/Benitoite/Surface/CheckComputeCases.lean b/formal/Benitoite/Surface/CheckComputeCases.lean
+index 8e184aef..2f8224d4 100644
+--- a/formal/Benitoite/Surface/CheckComputeCases.lean
++++ b/formal/Benitoite/Surface/CheckComputeCases.lean
+@@ -36,7 +36,7 @@ theorem computes_funName {q f ts es} : ExprComputes q (.funName f ts es) := by
+     (hq.declarations.1 f d (lookup_ok hd)).1.2.1
+     (hq.declarations.1 f d (lookup_ok hd)).1.2.2 he.1 he.2, emptyEff_atoms _⟩
+ 
+-theorem computes_primName {q b ts es} : ExprComputes q (.primName b ts es) := by
++theorem computes_primName {q b ts es rs} : ExprComputes q (.primName b ts es rs) := by
+   intro mode Δ C Γ R p path hq he hΓ hR hB
+   simp only [Expr.AtomsIn] at he
+   apply computes_guard
+diff --git a/formal/Benitoite/Surface/CheckExamples.lean b/formal/Benitoite/Surface/CheckExamples.lean
+index 72adb6dc..f0b88d17 100644
+--- a/formal/Benitoite/Surface/CheckExamples.lean
++++ b/formal/Benitoite/Surface/CheckExamples.lean
+@@ -1,5 +1,6 @@
+ import Benitoite.Surface.CheckProgramSound
+ import Benitoite.Release.Examples
++import Benitoite.Surface.PrimRange
+ 
+ /-! 検査全体の公開入口と、実名付きの材料から型付けへの接続の評価例。
+ 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
+@@ -463,7 +464,7 @@ private def env : List (Option Ty) :=
+   [some (.dict "Fancy" intTy), some (.dict "Tag" intTy)]
+ private def pairHead (ds : List DictEv := [.super (.local 0) "Show", .local 1]) : Expr :=
+   .opDicts "pair" [intTy] ds ["first", "second"] [intTy, intTy]
+-private def readArg (name : String) : Expr := .call (.primName name [] []) [] [] .nil
++private def readArg (name : String) : Expr := .call (.primName name [] [] []) [] [] .nil
+ private def pairArgs : Exprs := .cons (readArg "second") (.cons (readArg "first") .nil)
+ private def directCall : Expr := .call (pairHead) [some "second", some "first"] [1, 0] pairArgs
+ private def partialPair : Expr :=
+@@ -489,7 +490,7 @@ private def showValue (d : DictEv) (v : Expr) (method : String := "show") : Expr
+ private def pairClause (depth : Nat := 1) (swapped : Bool := false) : Block :=
+   .last (.resume 0 (.call
+     (.lam ["unused"] [unitTy] strTy emptyEff
+-      (.last (.returnE unitTy (.call (.primName "append" [] []) [some "left", some "right"] [0, 1]
++      (.last (.returnE unitTy (.call (.primName "append" [] [] []) [some "left", some "right"] [0, 1]
+         (.cons (showValue (.clause ⟨2, 2, 2⟩ (if swapped then 1 else 0) depth) (.local 3))
+           (.cons (showValue (.clause ⟨2, 2, 2⟩ 1 depth) (.local 2) "tag") .nil))))))
+     [none] [0] (.cons .unit .nil)))
+@@ -617,11 +618,11 @@ private def collectionInput : Input :=
+     opPrim := CheckTables.makeOpPrim (fun op _ => match op with
+       | .binary .add => some "addString" | _ => none) }
+ example : got (checkExpr collectionInput .strict [] [] none .other []
+-    (.listSpread intTy (.primName "concat" [] []) (.cons (eInt ⟨1, by decide⟩) .nil)
++    (.listSpread intTy (.primName "concat" [] [] []) (.cons (eInt ⟨1, by decide⟩) .nil)
+       (.list intTy (.cons (eInt ⟨2, by decide⟩) .nil)) (.cons (eInt ⟨3, by decide⟩) .nil))) (.list intTy) = true := by decide
+ example : got (checkExpr collectionInput .strict [] [] none .other []
+     (.interpolation [.text "n=", .converted intTy] (.cons (eInt ⟨7, by decide⟩) .nil)
+-      (.cons (.primName "toString" [] []) .nil))) (.base .string) = true := by decide
++      (.cons (.primName "toString" [] [] []) .nil))) (.base .string) = true := by decide
+ 
+ namespace FormattedInterpolation
+ 
+@@ -635,7 +636,7 @@ private def formatInput : Input :=
+       sig := fun b => if b == "%Format.String" then some formatSig else collectionBuiltins.sig b } }
+ private def value : Expr := .literal (.string "x")
+ private def formatted : Expr := .interpolation [.formatted (.base .string) spec]
+-  (.cons value .nil) (.cons (.primName "%Format.String" [] []) .nil)
++  (.cons value .nil) (.cons (.primName "%Format.String" [] [] []) .nil)
+ 
+ -- Stringも固定シグネチャの整形を通り、型判断と検査器がともに受理する。
+ example : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
+@@ -646,9 +647,11 @@ example : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
+   · exact .cons .E_Literal .nil
+   · apply HasTypes.cons (ε := Eff.empty) (εs := Eff.empty) ?_ .nil
+     have hhead : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
+-        (.primName "%Format.String" [] [])
++        (.primName "%Format.String" [] [] [])
+         (fnTy formatSig.names formatSig.params formatSig.ret formatSig.eff [] []) Eff.empty := by
+-      apply HasType.E_Prim (s := formatSig) rfl rfl
++      apply HasTypeQ.E_PrimNil (s := formatSig) rfl rfl
++        (PrimSig.inst_nil_of_canonical (by simp [formatSig, Release.Examples.sig, Ty.Canonical, Ty.norm])
++          (by simp [formatSig, Release.Examples.sig, Eff.fails, Eff.empty]))
+       · simp [NamesWF, formatSig, Release.Examples.sig]
+       · rfl
+       · rfl
+@@ -683,7 +686,7 @@ example : desugarExpr formatInput.opPrim .other formatted =
+ example : desugarExpr formatInput.opPrim .other
+     (.interpolation [.formatted (.base .string) spec, .converted intTy, .stringExpr]
+       (.cons (.local 0) (.cons (.local 1) (.cons (.local 2) .nil)))
+-      (.cons (.primName "%Format.String" [] []) (.cons (.primName "toString" [] []) .nil))) =
++      (.cons (.primName "%Format.String" [] [] []) (.cons (.primName "toString" [] [] []) .nil))) =
+     .letIn (.ret (.var 0))
+       (.letIn (.ret (.var 2))
+         (.letIn (.ret (.var 4))
+@@ -702,7 +705,7 @@ private def typedInput (t : Ty) (s : PrimSig := formatSig) : Input :=
+   let sg : PrimSig := { s with params := t :: s.params.tail }
+   { formatInput with B := { formatInput.B with sig := fun b =>
+       if b == "%Format.String" then Option.some sg else formatInput.B.sig b } }
+-private def single (t : Ty) (s : FormatSpec) (head : Expr := .primName "%Format.String" [] []) : Expr :=
++private def single (t : Ty) (s : FormatSpec) (head : Expr := .primName "%Format.String" [] [] []) : Expr :=
+   .interpolation [.formatted t s] (.cons (.local 0) .nil) (.cons head .nil)
+ private def accepted : List (Ty × FormatSpec) :=
+   [(.base .integer, { kind := .d }), (.base .integer8, { kind := .b, alternate := true }),
+@@ -749,16 +752,16 @@ example : checkExpr (typedInput (.base .string) { formatSig with eff := Eff.sing
+     .error ⟨[1, 0], "type is not included in the expected type"⟩ := by rfl
+ 
+ -- 頭を得る式の効果も空でなければならないが、補間される値の効果は残す。
+-private def printed : Expr := .call (.primName "print" [] []) [none] [0]
++private def printed : Expr := .call (.primName "print" [] [] []) [none] [0]
+   (.cons (eInt ⟨1, by decide⟩) .nil)
+ example : checkExpr formatInput .strict [] [some (.base .string)] none .other []
+     (single (.base .string) spec
+-      (.block (.seq printed (.last (.primName "%Format.String" [] []))))) =
++      (.block (.seq printed (.last (.primName "%Format.String" [] [] []))))) =
+     .error ⟨[1], "effect exceeds the allowed effect"⟩ := by rfl
+ example : got (checkExpr formatInput .strict [] [] none .other []
+     (.interpolation [.formatted (.base .string) spec]
+       (.cons (.block (.seq printed (.last value))) .nil)
+-      (.cons (.primName "%Format.String" [] []) .nil)))
++      (.cons (.primName "%Format.String" [] [] []) .nil)))
+     (.base .string) (Eff.single "Console.Write") = true := by decide
+ 
+ -- 引数名・七定数型・結果型も固定シグネチャの一部である。
+@@ -772,14 +775,14 @@ example : [ { formatSig with names := ["v", "kind", "align", "sign", "alternate"
+       | _ => false) = true := by decide
+ 
+ -- 式と頭は各一つ必要で、余分なものも受理しない。
+-example : [(.nil, .cons (.primName "%Format.String" [] []) .nil),
+-    (.cons value (.cons value .nil), .cons (.primName "%Format.String" [] []) .nil)].all
++example : [(.nil, .cons (.primName "%Format.String" [] [] []) .nil),
++    (.cons value (.cons value .nil), .cons (.primName "%Format.String" [] [] []) .nil)].all
+     (fun (es, fs) => match checkExpr formatInput .strict [] [] none .other []
+         (.interpolation [.formatted (.base .string) spec] es fs) with
+       | .error ⟨[0], "argument count mismatch"⟩ => true
+       | _ => false) = true := by decide
+-example : [Exprs.nil, .cons (.primName "%Format.String" [] [])
+-    (.cons (.primName "%Format.String" [] []) .nil)].all (fun fs =>
++example : [Exprs.nil, .cons (.primName "%Format.String" [] [] [])
++    (.cons (.primName "%Format.String" [] [] []) .nil)].all (fun fs =>
+       match checkExpr formatInput .strict [] [] none .other []
+           (.interpolation [.formatted (.base .string) spec] (.cons value .nil) fs) with
+       | .error ⟨[1], "argument count mismatch"⟩ => true
+@@ -789,7 +792,7 @@ example : [Exprs.nil, .cons (.primName "%Format.String" [] [])
+ private def mixed : Expr := .interpolation
+   [.text "[", .formatted (.base .string) spec, .converted intTy, .stringExpr]
+   (.cons value (.cons (eInt ⟨7, by decide⟩) (.cons value .nil)))
+-  (.cons (.primName "%Format.String" [] []) (.cons (.primName "toString" [] []) .nil))
++  (.cons (.primName "%Format.String" [] [] []) (.cons (.primName "toString" [] [] []) .nil))
+ example : got (checkExpr formatInput .strict [] [] none .other [] mixed) (.base .string) =
+     true := by decide
+ example : checkExpr { formatInput with opPrim := fun _ _ => none }
+diff --git a/formal/Benitoite/Surface/CheckPredicates.lean b/formal/Benitoite/Surface/CheckPredicates.lean
+index f2deae3b..e010e05c 100644
+--- a/formal/Benitoite/Surface/CheckPredicates.lean
++++ b/formal/Benitoite/Surface/CheckPredicates.lean
+@@ -126,7 +126,7 @@ mutual
+     | .funDicts _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+     | .opDicts _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+     | .methName _ _ _ _ _ _ _ => by simp [exprExits, Expr.Exits]
+-    | .primName _ _ _ => by simp [exprExits, Expr.Exits]
++    | .primName _ _ _ _ => by simp [exprExits, Expr.Exits]
+     | .opName _ _ => by simp [exprExits, Expr.Exits]
+     | .raise _ _ => by simp [exprExits, Expr.Exits]
+     | .handleFail _ _ _ _ => by simp [exprExits, Expr.Exits]
+@@ -242,7 +242,7 @@ theorem isIf_spec : (e : Expr) → (isIf e = true ↔ IsIf e)
+   | .funDicts _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
+   | .opDicts _ _ _ _ _ => by constructor <;> intro h <;> cases h
+   | .methName _ _ _ _ _ _ _ => by constructor <;> intro h <;> cases h
+-  | .primName _ _ _ => by constructor <;> intro h <;> cases h
++  | .primName _ _ _ _ => by constructor <;> intro h <;> cases h
+   | .opName _ _ => by constructor <;> intro h <;> cases h
+   | .nullCon _ _ => by constructor <;> intro h <;> cases h
+   | .conValue _ _ _ _ => by constructor <;> intro h <;> cases h
+diff --git a/formal/Benitoite/Surface/CheckSoundBasicExpr.lean b/formal/Benitoite/Surface/CheckSoundBasicExpr.lean
+index 92efae59..5a940467 100644
+--- a/formal/Benitoite/Surface/CheckSoundBasicExpr.lean
++++ b/formal/Benitoite/Surface/CheckSoundBasicExpr.lean
+@@ -156,31 +156,8 @@ theorem funName_case {q f ts es} : CaseSound q (.expr (.funName f ts es)) := by
+       (satAll_sound hq.sat (require_ok hsat).1) (require_ok hInst).1)
+   exact hSafe
+ 
+-theorem primName_case {q b ts es} : CaseSound q (.expr (.primName b ts es)) := by
+-  intro ih Δ C Γ R p path s s' a ε hB hq he hΓ hR h
+-  have hSingle := (guardInferred_result h).2
+-  have h := guardInferred_ok h
+-  simp only [Expr.AtomsIn] at he
+-  obtain ⟨sg, hd, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨uR, hR0, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨uNames, hNames, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨u1, htlen, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨u2, helen, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨u3, hadmit, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨uInst, hInst, h⟩ := checking_lift_bind_ok h
+-  obtain ⟨eq, _⟩ := checking_pure_ok h
+-  cases eq
+-  have hd' := lookup_ok hd
+-  have ha := hq.builtins b sg hd'
+-  have hSafe := (singleTyCheck_spec _ (fnTyCheck_atoms ha.1 ha.2.1 ha.2.2 he.1 he.2)).mp hSingle.1
+-  refine ⟨?_, fnTyCheck_atoms ha.1 ha.2.1 ha.2.2 he.1 he.2, emptyEff_atoms _⟩
+-  rw [fnTyCheck_eq _ _ _ _ _ _ (tysAtoms_iff.mp he.1) he.2 ha.1 ha.2.1 ha.2.2] at hSafe ⊢
+-  apply HasTypeQ.E_Prim hd' (by simpa using (require_ok hR0).1) ((namesWF_spec _ _).mp (require_ok hNames).1) (by simpa using (require_ok htlen).1)
+-    (by simpa using (require_ok helen).1) (hq.admits b C ts sg hd' (require_ok hadmit).1)
+-    (instantiationCheck_primitive ha.1 ha.2.1 ha.2.2 he.1 he.2
+-      (by simpa using (require_ok htlen).1) (hq.admits b C ts sg hd' (require_ok hadmit).1)
+-      (require_ok hInst).1)
+-  exact hSafe
++theorem primName_case {q b ts es rs} : CaseSound q (.expr (.primName b ts es rs)) := by
++  sorry
+ 
+ theorem opName_case {q o ts} : CaseSound q (.expr (.opName o ts)) := by
+   intro ih Δ C Γ R p path s s' a ε hB hq he hΓ hR h
+diff --git a/formal/Benitoite/Surface/CheckSupport.lean b/formal/Benitoite/Surface/CheckSupport.lean
+index ba3d975b..6d528167 100644
+--- a/formal/Benitoite/Surface/CheckSupport.lean
++++ b/formal/Benitoite/Surface/CheckSupport.lean
+@@ -127,7 +127,7 @@ mutual
+     | .builderOp _ _ args k =>
+         k.contents.AtomsIn atoms ∧ args.AtomsIn atoms
+     | .constE t e => t.AtomsIn atoms ∧ e.AtomsIn atoms
+-    | .funName _ ts es | .primName _ ts es =>
++    | .funName _ ts es | .primName _ ts es _ =>
+         Tys.AtomsIn atoms ts ∧ ∀ ε ∈ es, ε.AtomsIn atoms
+     | .funDicts _ ts es ds _ ps => Tys.AtomsIn atoms ts ∧
+         (∀ ε ∈ es, ε.AtomsIn atoms) ∧ DictEvs.AtomsIn atoms ds ∧ Tys.AtomsIn atoms ps
+diff --git a/formal/Benitoite/Surface/CheckToolsExamples.lean b/formal/Benitoite/Surface/CheckToolsExamples.lean
+index e3f37eaa..0b7cef9c 100644
+--- a/formal/Benitoite/Surface/CheckToolsExamples.lean
++++ b/formal/Benitoite/Surface/CheckToolsExamples.lean
+@@ -102,7 +102,7 @@ example : pipeValue (.call .unit [] [] .nil) = false := by decide
+ example : pipeValue (.paren (.call .unit [] [] .nil)) = true := by decide
+ example : isDirect (.funName "f" [] []) = true := by decide
+ example : isDirect (.paren (.funName "f" [] [])) = false := by decide
+-example : allDirect (.cons (.funName "f" [] []) (.cons (.primName "p" [] []) .nil)) = true := by decide
++example : allDirect (.cons (.funName "f" [] []) (.cons (.primName "p" [] [] []) .nil)) = true := by decide
+ example : allDirect (.cons .unit .nil) = false := by decide
+ example : interpAllowed [.text "", .stringExpr, .converted intTy, .converted (.base .decimal)] = true := by decide
+ example : interpAllowed [.converted (.list intTy)] = false := by decide
+@@ -388,7 +388,7 @@ example : got (checkExpr polyQ .strict [] [some (.dict "C" intTy)] none .other [
+ example : (checkExpr polyQ .strict [] [some (.dict "C" intTy)] none .other []
+     (.funDicts "poly" [intTy] [] [.local 0] ["other"] [intTy])).map (fun _ => ()) =
+     .error ⟨[], "function contract annotation mismatch"⟩ := by rfl
+-example : got (run [] (.primName "String.add" [] []))
++example : got (run [] (.primName "String.add" [] [] []))
+     (.fn ["left", "right"] [.base .string, .base .string] (.base .string) emptyEff) = true := by rfl
+ 
+ end Checker
+diff --git a/formal/Benitoite/Surface/Desugar.lean b/formal/Benitoite/Surface/Desugar.lean
+index 26b795ba..96f4b03c 100644
+--- a/formal/Benitoite/Surface/Desugar.lean
++++ b/formal/Benitoite/Surface/Desugar.lean
+@@ -72,7 +72,7 @@ def directCallee : Expr → Option CallHead
+   | .funDicts f ts es ds _ _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
+   -- 同表第 1 行: メソッドの呼び出し。
+   | .methName d m ss es us _ _ => some (.meth d.toVal m ss es (DictEv.toValList us))
+-  | .primName b ts es => some (.app (.prim b ts es []) [])
++  | .primName b ts es rs => some (.app (.prim b ts es rs) [])
+   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
+   | .opName o ts => some (.app (.op o ts) [])
+   | .opDicts o ts ds _ _ => some (.app (.op o ts) (DictEv.toValList ds))
+@@ -207,7 +207,7 @@ mutual
+         (.meth (d.toVal.rename (· + ps.length)) m ss es
+           (Val.renameList (· + ps.length) (DictEv.toValList us) ++ boundVars ps.length)))
+     -- 同節: prelude の関数 M.g | return b[T̄; Ē]（Σ にあるものは関数の名前）
+-    | .primName b ts es => .ret (.prim b ts es [])
++    | .primName b ts es rs => .ret (.prim b ts es rs)
+     -- 01-12「ハンドラ」: 利用者の操作の名前 op を、呼ばずに値として使う | return op[T̄]
+     | .opName o ts => .ret (.op o ts)
+     -- 01-12「形式化した操作の制約と節の辞書」: 辞書を値の作成時に捕え、
+diff --git a/formal/Benitoite/Surface/Lemmas/Invariants.lean b/formal/Benitoite/Surface/Lemmas/Invariants.lean
+index a2372a9f..981d951c 100644
+--- a/formal/Benitoite/Surface/Lemmas/Invariants.lean
++++ b/formal/Benitoite/Surface/Lemmas/Invariants.lean
+@@ -321,7 +321,7 @@ mutual
+             simpa only [List.length_append, List.length_singleton, ht.1] using scopedEff_clean hms.2.2.2),
+           Eff.norm_idem _⟩
+     | .E_Prim hs hr hn ht _ _ hrows _ =>
+-        have ss := (hsig _ _ hs).vars_zero hr
++        have ss := (hsig _ _ hs).inst_varsIn_zero hr.nranges_le
+         exact fnTy_clean hn (scopedList_clean sc.1) (scopedEffList_clean sc.2)
+           (by rw [ht]; exact scopedList_clean ss.1)
+           (by rw [ht]; exact scoped_clean ss.2.1)
+diff --git a/formal/Benitoite/Surface/Lemmas/Typing.lean b/formal/Benitoite/Surface/Lemmas/Typing.lean
+index 3253af5c..9cb72eda 100644
+--- a/formal/Benitoite/Surface/Lemmas/Typing.lean
++++ b/formal/Benitoite/Surface/Lemmas/Typing.lean
+@@ -449,7 +449,7 @@ mutual
+         apply HasTypeCQ.C_Meth hv (classDecl_desugared hc) hm hn ht hscope hrows
+         have hargs := hus.append (boundVars_typed (scopedList_clean sc.2.2.2.2.2))
+         simpa only [binds_length, hp, List.take_append_drop] using hargs
+-    | .E_Prim hs hr hn ht he ha hrows _ => exact .C_Return (.V_PrimNil hs (hsig _ _ hs) hr hn hrows)
++    | .E_Prim hs hr hn ht he ha hrows _ => exact .C_Return (.V_Prim hs hr hn hrows)
+     | .E_Op hd hn ht _ => exact .C_Return (.V_Op hd hn ht)
+     | .E_OpDicts (od := od) (ps := ps) (ts := ts) hd hcore hn ht hpref hnames hns hp hds =>
+         have he : Eff.substAt 0 ts [] (Eff.single od.eff) = Eff.single od.eff :=
+diff --git a/formal/Benitoite/Surface/LogExamples.lean b/formal/Benitoite/Surface/LogExamples.lean
+index deb4ad40..d44fc374 100644
+--- a/formal/Benitoite/Surface/LogExamples.lean
++++ b/formal/Benitoite/Surface/LogExamples.lean
+@@ -74,7 +74,7 @@ def record : Expr := .record "Log.Record" [] [0, 1, 2, 3]
+   (.cons info (.cons (text "done") (.cons (.list attributeTy (one logAttribute)) (one location))))
+ 
+ private def call1 (name arg : String) (value : Expr) : Expr :=
+-  .call (.primName name [] []) [some arg] [0] (one value)
++  .call (.primName name [] [] []) [some arg] [0] (one value)
+ def emit : Expr := call1 "Log.emit" "record" record
+ def enabled : Expr := call1 "Log.enabled" "level" info
+ private def send (value : Expr) : Expr := call1 "Log.emit" "record" value
+diff --git a/formal/Benitoite/Surface/ScopeLower.lean b/formal/Benitoite/Surface/ScopeLower.lean
+index 26f2adc3..6458744f 100644
+--- a/formal/Benitoite/Surface/ScopeLower.lean
++++ b/formal/Benitoite/Surface/ScopeLower.lean
+@@ -53,7 +53,7 @@ def guardSize : Option Expr → Nat
+ 
+ /-- 直接の呼び出しの頭。関数名か組み込みの名前の参照である（間接呼び出し・関数値・メソッドは含めない）。 -/
+ def directHead : Expr → Bool
+-  | .funName _ _ _ | .primName _ _ _ => true
++  | .funName _ _ _ | .primName _ _ _ _ => true
+   | _ => false
+ 
+ /-- 引数の形。 -/
+@@ -1003,7 +1003,7 @@ mutual
+       simp only [analyzeExpr]
+       exact ⟨numbered_rejoin h _, allNumbered_append h1.2 h2.2⟩
+     | .local _ | .builderOp _ _ _ _ | .constE _ _ | .funName _ _ _ | .funDicts _ _ _ _ _ _
+-    | .methName _ _ _ _ _ _ _ | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
++    | .methName _ _ _ _ _ _ _ | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _ | .negDecimal _ _
+     | .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit | .conCall _ _ _
+     | .record _ _ _ _ | .recordUpdate _ _ _ _ _ _ | .pipe _ _ | .partialCall _ _ _ _ _ | .partialCon _ _ _
+diff --git a/formal/Benitoite/Surface/Syntax.lean b/formal/Benitoite/Surface/Syntax.lean
+index 2b43cd09..9975905e 100644
+--- a/formal/Benitoite/Surface/Syntax.lean
++++ b/formal/Benitoite/Surface/Syntax.lean
+@@ -311,7 +311,9 @@ mutual
+     /-- 同表の第 2 行。dicts はメソッド自身の制約、params は辞書を除いた引数型。 -/
+     | methName (dict : DictEv) (m : MethName) (tys : List Ty) (effs : List Eff)
+         (dicts : List DictEv) (names : List String) (params : List Ty)
+-    | primName (b : PrimName) (tys : List Ty) (effs : List Eff)
++    /-- 組み込みの関数の名前。`ranges` は型検査器が選んだ範囲の変数の具体化（範囲の変数のない項目では空の列。
++    設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
++    | primName (b : PrimName) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
+     | opName (o : OpName) (tys : List Ty)
+     /-- 辞書は操作名を解決した位置で選ぶ。params と names は公開の値引数だけ。 -/
+     | opDicts (o : OpName) (tys : List Ty) (dicts : List DictEv)
+diff --git a/formal/Benitoite/Surface/Typing.lean b/formal/Benitoite/Surface/Typing.lean
+index c1a1c25c..d1a5ed13 100644
+--- a/formal/Benitoite/Surface/Typing.lean
++++ b/formal/Benitoite/Surface/Typing.lean
+@@ -131,13 +131,15 @@ mutual
+         SingleTy Q (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) →
+         HasTypeQ D B opPrim Q Δ C Γ R p (.methName d m ss es us names ps)
+           (.fn names ps (ms.ret.subst (ss ++ [τ]) es) (Eff.substAt 0 (ss ++ [τ]) es ms.eff)) Eff.empty
+-    -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じ admits を検査する。表層はまだ範囲の変数を持つ項目を
+-    -- 呼ばない（`s.nranges = 0`。脱糖は空の範囲の列を書く。表層に範囲を入れるまでの中間状態）。
+-    | E_Prim {Δ C Γ R p b s ts es} :
+-        B.sig b = some s → s.nranges = 0 → NamesWF s.names s.params → ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
+-        PrimitiveAdmissible C s Q ts es →
+-        SingleTy Q (fnTy s.names s.params s.ret s.eff ts es) →
+-        HasTypeQ D B opPrim Q Δ C Γ R p (.primName b ts es) (fnTy s.names s.params s.ret s.eff ts es) Eff.empty
++    -- 01-12「名前とリテラル」: prelude の関数 M.g。V-Prim と同じく、型検査器が選んだ範囲の列 rs で具体化した署名
++    -- `s.inst rs` と、範囲の具体化の許容 `RangeAdmissible` で型付ける。
++    | E_Prim {Δ C Γ R p b s ts es rs} :
++        B.sig b = some s → B.RangeAdmissible b s rs → NamesWF (s.inst rs).names (s.inst rs).params →
++        ts.length = s.ntys → es.length = s.neffs → s.admits C ts →
++        PrimitiveAdmissible C (s.inst rs) Q ts es →
++        SingleTy Q (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) →
++        HasTypeQ D B opPrim Q Δ C Γ R p (.primName b ts es rs)
++          (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es) Eff.empty
+     -- 01-12「ハンドラ」: 操作を値として使う。V-Op と同じ宣言と制約を検査する。
+     | E_Raise {Δ C Γ R p t e} :
+         Ty.WF 0 C.length t → Ty.WF 0 C.length e →
+diff --git a/formal/Benitoite/Surface/WellFormed.lean b/formal/Benitoite/Surface/WellFormed.lean
+index bd8b47da..bc4ec1dc 100644
+--- a/formal/Benitoite/Surface/WellFormed.lean
++++ b/formal/Benitoite/Surface/WellFormed.lean
+@@ -35,7 +35,7 @@ mutual
+         Ty.VarsIn 0 nt pe k.contents ∧ args.Scoped nt pe nv
+     -- P5: 型の範囲は使用位置のまま、値の変数は 0 個で本体を検査する。
+     | .constE a body => Ty.VarsIn 0 nt pe a ∧ body.Scoped nt pe 0
+-    | .funName _ ts es | .primName _ ts es =>
++    | .funName _ ts es | .primName _ ts es _ =>
+         Ty.VarsInList 0 nt pe ts ∧ Eff.VarsInList 0 nt pe es
+     -- 01-12「型クラス」第 4 行: 型引数・エフェクト引数・Ū・ラムダの値引数型。
+     | .funDicts _ ts es ds names ps =>
+diff --git a/formal/SurfaceCheck/Walk.lean b/formal/SurfaceCheck/Walk.lean
+index b3b732d0..7df3f24a 100644
+--- a/formal/SurfaceCheck/Walk.lean
++++ b/formal/SurfaceCheck/Walk.lean
+@@ -21,7 +21,7 @@ mutual
+     modify fun s => { s with nodes := s.nodes.push ⟨path,e,expected⟩ }
+     match e with
+     | .constE t a => return .constE t (← walkExpr q R .other (child path 0) (some t) a)
+-    | .primName n _ _ =>
++    | .primName n _ _ _ =>
+       modify fun s => { s with prims := n :: s.prims }; return e
+     | .paren a => return .paren (← walkExpr q R p (child path 0) expected a)
+     | .block b => return .block (← walkBlock q R p (child path 0) expected b)

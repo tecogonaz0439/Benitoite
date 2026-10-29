@@ -1,0 +1,199 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Hefty.lean:108:20: error: don't know how to synthesize implicit argument `a`
+  @elaborateWith (fun {a b} => execution) ?m.5
+context:
+⊢ Code
+Hefty.lean:108:7: error(lean.inferDefTypeFailed): Failed to infer type of definition `elaborate`
+Hefty.lean:183:70: error: unexpected token '·'; expected ')', ',' or ':'
+Hefty.lean:183:33: error: unsolved goals
+case inl
+a b : Code
+t : Free a
+e f : Row
+k : Denote a → Free b
+hk : ∀ (v : Denote a), FTyped (k v) f
+e✝ : Row
+next : Nat → Free a
+h : ∀ (n : Nat), FTyped (next n) e✝
+ih : ∀ (n : Nat), FTyped ((next n).bind k) (join e✝ f)
+x : Eff
+hx : x = Eff.ask
+⊢ join (add Eff.ask e✝) f x
+
+case inr
+a b : Code
+t : Free a
+e f : Row
+k : Denote a → Free b
+hk : ∀ (v : Denote a), FTyped (k v) f
+e✝ : Row
+next : Nat → Free a
+h : ∀ (n : Nat), FTyped (next n) e✝
+ih : ∀ (n : Nat), FTyped ((next n).bind k) (join e✝ f)
+x : Eff
+hx : join e✝ f x
+⊢ join (add Eff.ask e✝) f x
+Hefty.lean:180:2: error: Alternative `emit` has not been provided
+Hefty.lean:180:2: error: Alternative `other` has not been provided
+Hefty.lean:180:2: error: Alternative `weaken` has not been provided
+Hefty.lean:232:3: error: unexpected token 'local'; expected '_' or identifier
+Hefty.lean:220:12: error: Function expected at
+  elaborate
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  t
+
+Hint: The identifier `elaborate` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Hefty.lean:232:2: error: Missing alternative name: Expected `local` or `weaken`
+Hefty.lean:221:2: error: Alternative `local` has not been provided
+Hefty.lean:221:2: error: Alternative `weaken` has not been provided
+Hefty.lean:232:9: error: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+Hefty.lean:234:27: error: unexpected token '.'; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+Hefty.lean:269:3: error: unexpected token 'local'; expected '_' or identifier
+Hefty.lean:263:22: error: Function expected at
+  elaborate
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  t
+
+Hint: The identifier `elaborate` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Hefty.lean:269:2: error: Missing alternative name: Expected `local`
+Hefty.lean:267:28: error: Invalid argument: Variable `elaborate` is not a proposition or let-declaration
+Hefty.lean:267:19: error: unsolved goals
+case emit
+x✝ : Sort u_1
+elaborate : x✝
+a : Code
+oracle : Nat → Nat
+a✝ : Code
+m : Nat
+next : HTree a✝
+ih : ∀ (outer : Nat), run oracle outer sorry = evalH oracle outer next
+outer : Nat
+⊢ evalH oracle outer next = ((evalH oracle outer next).fst, m :: (evalH oracle outer next).snd)
+Hefty.lean:264:2: error: Alternative `local` has not been provided
+Hefty.lean:269:9: error: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+Hefty.lean:274:23: error: Function expected at
+  elaborate
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  t
+
+Hint: The identifier `elaborate` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Hefty.lean:274:69: error: unsolved goals
+x✝ : Sort u_1
+elaborate : x✝
+a : Code
+t : HTree a
+oracle : Nat → Nat
+outer : Nat
+⊢ Sort ?u.15
+
+x✝ : Sort u_1
+elaborate : x✝
+a : Code
+t : HTree a
+oracle : Nat → Nat
+outer : Nat
+⊢ ?m.12
+Hefty.lean:278:23: error: Function expected at
+  elaborate
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  t
+
+Hint: The identifier `elaborate` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Hefty.lean:283:4: error: Function expected at
+  elaborate
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (.local n (.emit m body) next)
+
+Hint: The identifier `elaborate` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Hefty.lean:284:6: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.emit` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Eff.emit`
+  [apply] `FTyped.emit`
+  [apply] `Free.emit`
+  [apply] `HTree.emit`
+  [apply] `HTyped.emit`
+  [apply] `FTyped.below.emit`
+  [apply] `HTyped.below.emit`
+Hefty.lean:288:4: error: Function expected at
+  elaborate
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (.local n (.other req body) next)
+
+Hint: The identifier `elaborate` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Hefty.lean:289:6: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.other` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `IO.FileRight.other`
+  [apply] `Eff.other`
+  [apply] `FTyped.other`
+  [apply] `Free.other`
+  [apply] `HTree.other`
+  [apply] `HTyped.other`
+  [apply] `IO.FS.FileType.other`
+  [apply] `FTyped.below.other`
+  [apply] `HTyped.below.other`
+  [apply] `Std.Http.Status.other`
+  [apply] `Std.Internal.Parsec.Error.other`
+  [apply] `Std.Http.Protocol.H1.Error.other`
+Hefty.lean:321:8: error(lean.unknownIdentifier): Unknown identifier `trace_agrees`
+Hefty.lean:320:37: error: unsolved goals
+a : Code
+t : HTree a
+e : Row
+h : HTyped t e
+hne : ¬e Eff.emit
+oracle : Nat → Nat
+outer : Nat
+⊢ (evalH oracle outer t).snd = []
+Hefty.lean:356:30: error(lean.unknownIdentifier): Unknown identifier `elaborate`
+(10, [7, 7, 3])
+(14, [7, 7])
+(10, [3])
+Hefty.lean:361:31: error(lean.unknownIdentifier): Unknown identifier `elaborate`
+Hefty.lean:365:31: error(lean.unknownIdentifier): Unknown identifier `elaborate`
+Hefty.lean:366:31: error(lean.unknownIdentifier): Unknown identifier `elaborate`
+Hefty.lean:367:31: error(lean.unknownIdentifier): Unknown identifier `elaborate`
+Hefty.lean:368:33: error(lean.unknownIdentifier): Unknown identifier `elaborate`
+Hefty.lean:381:14: error(lean.unknownIdentifier): Unknown constant `elaborate_typing`
+'SH2.remaining_effects' depends on axioms: [propext]
+'SH2.eval_agrees' depends on axioms: [sorryAx]
+'SH2.recording_typing' depends on axioms: [propext, sorryAx, Quot.sound]
+'SH2.source_no_emit_trace' depends on axioms: [sorryAx]
+        0.75 real         0.81 user         0.25 sys
+           698056704  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45179  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                5115  involuntary context switches
+          7926467383  instructions retired
+          3188955113  cycles elapsed
+           150265216  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Network.Http
+function sample(value: Http.RequestIn) -> Http.RequestIn
+ bind extracted: Http.RequestIn <- Http.widenRequestIn(request: value)
+ return extracted
+end function
+function main() -> Unit
+end function

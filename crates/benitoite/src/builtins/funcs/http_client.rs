@@ -5,13 +5,21 @@ use crate::builtins::table::tags;
 use crate::runtime::heap::{CheckedLen, FieldsKind, Value, ValueCtx};
 use crate::runtime::sched::parts::NetworkFault;
 use crate::runtime::{ResourceError, RuntimeError, SizeUnit, Stop};
+use crate::types::scope::Endpoint;
 use std::io::{self, Read};
 use std::time::Duration;
 use ureq::http::{Request, Uri};
 use ureq::unversioned::resolver::{DefaultResolver, ResolvedSocketAddrs, Resolver};
 use ureq::unversioned::transport::NextTimeout;
 
+mod checked_request;
 mod redirect_body;
+
+/// 既存の組み込み番号を保つため、純粋な入口は表の末尾へ登録する。
+pub const PURE_DECLS: &[BuiltinDecl] = checked_request::DECLS;
+
+/// 既存の組み込み番号を保つため、新しい送信は表の末尾へ登録する。
+pub const SCOPED_DECLS: &[BuiltinDecl] = &[send_in::DECL];
 
 // ureq は Instant + Duration で期限を計算し、標準ライブラリは溢れると panic する。
 // 2^40 ミリ秒（約 34.8 年）で頭打ちにして、足し算が溢れない大きさに収める。これより長い上限は
@@ -22,47 +30,97 @@ builtin! {
     /// `Benitoite.Network.Http.send` の本体（設計書 03-09「クライアント」）。
     name = "Benitoite.Network.Http.send",
     io fn send(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
-        let mut ctx = ctx;
-        let (request, timeout) = match read_request(&ctx, arg0)? {
-            Ok(request) => request,
-            Err(failure) => return Ok(IoReply::Done(complete(&ctx, Err(failure))?)),
-        };
-        let host = request.uri().host().ok_or_else(|| internal("validated URL has no host"))?;
-        // Uri::host は IPv6 を角括弧付きで返す。失敗の表は `::1` の形で引くので、照合のためだけに
-        // 角括弧を除き、要求そのものは変えない（設計書 02-09「組み込みの操作とハンドラ表」）。
-        let host = host.strip_prefix('[').and_then(|host| host.strip_suffix(']')).unwrap_or(host);
-        let fault = ctx.services().runtime_view()
-            .ok_or_else(|| internal("HTTP runtime unavailable"))?
-            .rt.parts.network_faults.lookup(host);
-        if let Some(fault) = fault {
-            let kind = match fault {
-                NetworkFault::HostNotFound => tags::NETWORK_ERROR_KIND_HOST_NOT_FOUND,
-                NetworkFault::ConnectionRefused => tags::NETWORK_ERROR_KIND_CONNECTION_REFUSED,
-                NetworkFault::ConnectionReset => tags::NETWORK_ERROR_KIND_CONNECTION_RESET,
-                NetworkFault::TimedOut => tags::NETWORK_ERROR_KIND_TIMED_OUT,
-            };
-            return Ok(IoReply::Done(complete(&ctx, Err(Failure::Network(kind, text::INJECTED.into())))?));
-        }
-        let missing = missing_cpu_features();
-        if request.uri().scheme_str() == Some("https") && let Some(failure) = tls_failure(&missing) {
-            return Ok(IoReply::Done(complete(&ctx, Err(failure))?));
-        }
-        // スレッドに渡す要求・応答は Rust の所有する値だけにする（設計書 02-09「IO 実行器」）。
-        Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
-            Lend::Nothing, move |_| execute(request, timeout, missing), send_done,
-        ))))
+        start_send(ctx, arg0, None, send::DECL.name)
     }
+}
+
+builtin! {
+    /// 保持した要求と endpoint を使い、3xx を追従しない（設計書 03-09「クライアント」）。
+    name = "Benitoite.Network.Http.sendIn",
+    io fn send_in(ctx, arg0: Value<'e>) -> crate::builtins::iface::IoReply<'e> {
+        let (request, endpoint) = checked_request::retained_request(&ctx, arg0)?;
+        start_send(ctx, request, Some(endpoint), send_in::DECL.name)
+    }
+}
+
+fn start_send<'c, 'e>(
+    mut ctx: IoCtx<'c, 'e>,
+    value: Value<'e>,
+    endpoint: Option<Endpoint>,
+    function: &'static str,
+) -> Result<IoReply<'e>, Stop> {
+    let (request, timeout) = match read_request(&ctx, value, function)? {
+        Ok(request) => request,
+        Err(failure) => return Ok(IoReply::Done(complete(&ctx, Err(failure), function)?)),
+    };
+    if let Some(endpoint) = &endpoint {
+        if !checked_request::matches_endpoint(&request.uri().to_string(), endpoint) {
+            return Err(internal(
+                "HTTP retained endpoint differs from the request URI",
+            ));
+        }
+        if let Err(failure) = validate_host(&request, endpoint) {
+            return Ok(IoReply::Done(complete(&ctx, Err(failure), function)?));
+        }
+    }
+    let host = request
+        .uri()
+        .host()
+        .ok_or_else(|| internal("validated URL has no host"))?;
+    // Uri::host は IPv6 を角括弧付きで返す。失敗の表は `::1` の形で引くので、照合のためだけに
+    // 角括弧を除き、要求そのものは変えない（設計書 02-09「組み込みの操作とハンドラ表」）。
+    let host = host
+        .strip_prefix('[')
+        .and_then(|host| host.strip_suffix(']'))
+        .unwrap_or(host);
+    let fault = ctx
+        .services()
+        .runtime_view()
+        .ok_or_else(|| internal("HTTP runtime unavailable"))?
+        .rt
+        .parts
+        .network_faults
+        .lookup(host);
+    if let Some(fault) = fault {
+        let kind = match fault {
+            NetworkFault::HostNotFound => tags::NETWORK_ERROR_KIND_HOST_NOT_FOUND,
+            NetworkFault::ConnectionRefused => tags::NETWORK_ERROR_KIND_CONNECTION_REFUSED,
+            NetworkFault::ConnectionReset => tags::NETWORK_ERROR_KIND_CONNECTION_RESET,
+            NetworkFault::TimedOut => tags::NETWORK_ERROR_KIND_TIMED_OUT,
+        };
+        return Ok(IoReply::Done(complete(
+            &ctx,
+            Err(Failure::Network(kind, text::INJECTED.into())),
+            function,
+        )?));
+    }
+    let missing = missing_cpu_features();
+    if request.uri().scheme_str() == Some("https")
+        && let Some(failure) = tls_failure(&missing)
+    {
+        return Ok(IoReply::Done(complete(&ctx, Err(failure), function)?));
+    }
+    // スレッドに渡す要求・応答は Rust の所有する値だけにする（設計書 02-09「IO 実行器」）。
+    Ok(IoReply::Wait(IoWait::Worker(WorkerWait::new(
+        Lend::Nothing,
+        move |_| (execute(request, timeout, missing, endpoint), function),
+        send_done,
+    ))))
 }
 
 /// 部分の項目。番号は表の中の位置で決まるので、末尾以外には加えない。
 pub const DECLS: &[BuiltinDecl] = &[send::DECL];
 
 // provider を大域に登録せず、Agent ごとに渡す（設計書 02-01「コンパイル済みプログラムと実行ごとの状態」、03-09「実装に使うクレート」）。
-fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent {
+fn make_agent(
+    timeout: std::time::Duration,
+    tls_available: bool,
+    endpoint: Option<Endpoint>,
+) -> ureq::Agent {
     let config = ureq::Agent::config_builder()
         .proxy(None)
         .http_status_as_error(false)
-        .max_redirects(10)
+        .max_redirects(if endpoint.is_some() { 0 } else { 10 })
         .timeout_global(Some(timeout));
     if tls_available {
         let provider: rustls::crypto::CryptoProvider = rustls_graviola::default_provider();
@@ -75,14 +133,14 @@ fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent 
             redirect_body::CheckedConnector(
                 ureq::unversioned::transport::DefaultConnector::default(),
             ),
-            NetworkResolver(DefaultResolver::default()),
+            NetworkResolver(DefaultResolver::default(), endpoint),
         )
     } else {
         // HTTP から HTTPS へのリダイレクトも暗号の入口に到達させない（設計書 03-09「クライアント」）。
         ureq::Agent::with_parts(
             config.build(),
             redirect_body::CheckedConnector(ureq::unversioned::transport::TcpConnector::default()),
-            NetworkResolver(DefaultResolver::default()),
+            NetworkResolver(DefaultResolver::default(), endpoint),
         )
     }
 }
@@ -90,7 +148,7 @@ fn make_agent(timeout: std::time::Duration, tls_available: bool) -> ureq::Agent 
 // DefaultResolver は OS の解決の失敗を Io で返す。接続の失敗と区別できるこの段で
 // HostNotFound に揃え、解決の時間切れはそのまま通す（設計書 03-09「失敗の種類」）。
 #[derive(Debug)]
-struct NetworkResolver<R>(R);
+struct NetworkResolver<R>(R, Option<Endpoint>);
 
 impl<R: Resolver> Resolver for NetworkResolver<R> {
     fn resolve(
@@ -99,6 +157,13 @@ impl<R: Resolver> Resolver for NetworkResolver<R> {
         config: &ureq::config::Config,
         timeout: NextTimeout,
     ) -> Result<ResolvedSocketAddrs, ureq::Error> {
+        // 接続先は保持 endpoint と同じ対象だけにする。名前の解決先やソケットの
+        // アドレスの族は、この対象の単位に含めない（設計書 03-09「クライアント」）。
+        if let Some(endpoint) = &self.1
+            && !checked_request::matches_endpoint(&uri.to_string(), endpoint)
+        {
+            return Err(ureq::Error::BadUri(text::ENDPOINT_MISMATCH.into()));
+        }
         self.0.resolve(uri, config, timeout).map_err(|error| {
             if matches!(error, ureq::Error::Io(_)) {
                 ureq::Error::HostNotFound
@@ -130,7 +195,11 @@ struct ResponseData {
 }
 type PreparedRequest = Result<(Request<Vec<u8>>, Duration), Failure>;
 
-fn read_request<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<PreparedRequest, Stop> {
+fn read_request<'e>(
+    ctx: &ValueCtx<'e>,
+    value: Value<'e>,
+    function: &'static str,
+) -> Result<PreparedRequest, Stop> {
     if ctx.fields_header(value) != Some((FieldsKind::Ctor, tags::RECORD))
         || ctx.fields_len(value) != Some(5)
     {
@@ -158,7 +227,7 @@ fn read_request<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<PreparedRequ
             .iter()
             .any(|(name, value)| !valid_header(name, value))
     {
-        return Err(domain());
+        return Err(domain(function));
     }
     let timeout =
         u64::try_from(timeout).map_err(|_| internal("validated HTTP timeout overflow"))?;
@@ -239,13 +308,40 @@ fn read_pairs<'e>(ctx: &ValueCtx<'e>, value: Value<'e>) -> Result<Vec<(String, S
     Ok(pairs)
 }
 
+// Host は URI の対象を変更しないが、異なる仮想ホストへ要求を送らないよう、
+// sendIn では同じ実効 endpoint だけを許す。省略時は送信器が補う
+// （設計書 03-09「クライアント」）。
+fn validate_host(request: &Request<Vec<u8>>, endpoint: &Endpoint) -> Result<(), Failure> {
+    let mut hosts = request.headers().get_all(ureq::http::header::HOST).iter();
+    let Some(host) = hosts.next() else {
+        return Ok(());
+    };
+    let matches = hosts.next().is_none()
+        && host
+            .to_str()
+            .ok()
+            .and_then(|host| host.parse::<ureq::http::uri::Authority>().ok())
+            .is_some_and(|host| {
+                let scheme = request.uri().scheme_str().unwrap_or_default();
+                checked_request::matches_endpoint(&format!("{scheme}://{host}/"), endpoint)
+            });
+    if !matches {
+        return Err(Failure::Network(
+            tags::NETWORK_ERROR_KIND_INVALID_INPUT,
+            text::HOST_MISMATCH.into(),
+        ));
+    }
+    Ok(())
+}
+
 fn execute(
     request: Request<Vec<u8>>,
     timeout: Duration,
     missing: Vec<&'static str>,
+    endpoint: Option<Endpoint>,
 ) -> Result<ResponseData, Failure> {
     let request = validate_request(request)?;
-    let agent = make_agent(timeout, missing.is_empty());
+    let agent = make_agent(timeout, missing.is_empty(), endpoint);
     let mut response = agent
         .run(request)
         .map_err(|error| classify(error, &missing))?;
@@ -482,36 +578,37 @@ fn tls_failure(missing: &[&str]) -> Option<Failure> {
 
 fn send_done<'c, 'e>(
     ctx: &mut IoCtx<'c, 'e>,
-    output: Result<ResponseData, Failure>,
+    output: (Result<ResponseData, Failure>, &'static str),
     _args: &[Value<'e>],
 ) -> Result<Value<'e>, Stop> {
-    complete(ctx, output)
+    complete(ctx, output.0, output.1)
 }
 fn complete<'e>(
     ctx: &ValueCtx<'e>,
     output: Result<ResponseData, Failure>,
+    function: &'static str,
 ) -> Result<Value<'e>, Stop> {
     match output {
         Err(Failure::InputTooLarge(limit)) => Err(Stop::Resource(ResourceError::InputTooLarge {
-            function: send::DECL.name,
+            function,
             unit: SizeUnit::Bytes,
             limit,
         })),
         Err(Failure::Network(kind, reason)) => {
-            let reason = ctx.alloc_str(&reason, send::DECL.name)?;
+            let reason = ctx.alloc_str(&reason, function)?;
             let error = ctx.alloc_fields(FieldsKind::NetworkError, kind, &[reason])?;
             ctx.alloc_fields(FieldsKind::Ctor, tags::RESULT_ERROR, &[error])
         }
         Ok(output) => {
-            CheckedLen::elements(super::count(output.headers.len())?, send::DECL.name)?;
+            CheckedLen::elements(super::count(output.headers.len())?, function)?;
             let mut headers = Vec::with_capacity(output.headers.len());
             for (name, value) in output.headers {
-                let name = ctx.alloc_str(&name, send::DECL.name)?;
-                let value = ctx.alloc_str(&value, send::DECL.name)?;
+                let name = ctx.alloc_str(&name, function)?;
+                let value = ctx.alloc_str(&value, function)?;
                 headers.push(ctx.alloc_fields(FieldsKind::Ctor, tags::PAIR, &[name, value])?);
             }
-            let headers = crate::runtime::list::from_values(ctx, &headers, send::DECL.name)?;
-            let body = ctx.alloc_bytes(&output.body, send::DECL.name)?;
+            let headers = crate::runtime::list::from_values(ctx, &headers, function)?;
+            let body = ctx.alloc_bytes(&output.body, function)?;
             let response = ctx.alloc_fields(
                 FieldsKind::Ctor,
                 tags::RECORD,
@@ -524,9 +621,9 @@ fn complete<'e>(
 fn internal(message: &str) -> Stop {
     Stop::Internal(message.into())
 }
-fn domain() -> Stop {
+fn domain(function: &'static str) -> Stop {
     Stop::Runtime(RuntimeError::ArgumentOutOfDomain {
-        function: send::DECL.name,
+        function,
         argument: 0,
     })
 }
@@ -537,6 +634,8 @@ mod text {
     pub const INJECTED: &str = "injected network failure";
     pub const INVALID_HEADER_UTF8: &str = "HTTP response header is not valid UTF-8";
     pub const MISSING_CPU: &str = "HTTPS requires unavailable CPU features: ";
+    pub const ENDPOINT_MISMATCH: &str = "HTTP URI differs from the retained endpoint";
+    pub const HOST_MISMATCH: &str = "Host header must name the retained request endpoint";
 }
 
 #[cfg(test)]

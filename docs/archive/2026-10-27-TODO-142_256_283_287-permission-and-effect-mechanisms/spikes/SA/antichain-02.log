@@ -1,0 +1,31 @@
+Antichain.lean:309:13: error(lean.unknownIdentifier): Unknown identifier `a`
+Antichain.lean:309:30: error(lean.unknownIdentifier): Unknown identifier `a`
+Antichain.lean:309:16: error: unsolved goals
+α : Type
+le : α → α → Bool
+refl : ∀ (a : α), le a a = true
+trans : ∀ {a b c : α}, le a b = true → le b c = true → le a c = true
+xs : List α
+ih : Cover le xs (norm le xs)
+c : α
+hc : c ∈ c :: xs
+⊢ sorry () = c ∨ sorry () ∈ norm le xs
+        0.54 real         0.64 user         0.23 sys
+           701349888  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45190  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                4338  involuntary context switches
+          6176776885  instructions retired
+          2601959772  cycles elapsed
+           152640872  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

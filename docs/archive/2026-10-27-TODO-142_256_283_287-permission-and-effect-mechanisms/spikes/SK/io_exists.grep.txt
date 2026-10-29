@@ -1,0 +1,4 @@
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Assumptions.lean:71:  io_exists : ∀ Ψ b s ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:333:  · obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s ts es ws hsig hkd htl hel had hargs
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/StepSound.lean:242:                obtain ⟨o, ho⟩ := hb.io_exists Ψ b0 s0 ts es _ hsig hkd htl hel had hargs
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Model.lean:86:  io_exists := by

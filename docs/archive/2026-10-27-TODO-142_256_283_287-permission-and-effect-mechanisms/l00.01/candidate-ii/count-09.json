@@ -1,0 +1,99 @@
+{
+ "log": "build-09-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Release.Lemmas.PresBase",
+  "Benitoite.Surface.Lemmas.Extensions",
+  "Benitoite.Surface.Lemmas.ReturnTry"
+ ],
+ "unchecked_modules_count": 41,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.Dict",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Lemmas.PresFailure",
+  "Benitoite.Release.Lemmas.PresMain",
+  "Benitoite.Release.Lemmas.Progress",
+  "Benitoite.Release.Lemmas.StepSound",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Lemmas.BuilderCapture",
+  "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+  "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+  "Benitoite.Surface.Lemmas.BuilderNoCapture",
+  "Benitoite.Surface.Lemmas.Program",
+  "Benitoite.Surface.Lemmas.Records",
+  "Benitoite.Surface.Lemmas.Typing",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "error_diagnostics": 19,
+ "error_files": [
+  "Benitoite/Exchange/Convert.lean",
+  "Benitoite/Release/Lemmas/PresBase.lean",
+  "Benitoite/Surface/Lemmas/Extensions.lean",
+  "Benitoite/Surface/Lemmas/ReturnTry.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Exchange/Convert.lean",
+   "decl": "def fromTy",
+   "line": 85,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/PresBase.lean",
+   "decl": "theorem refUpdate_typed",
+   "line": 208,
+   "errors": 12
+  },
+  {
+   "file": "Benitoite/Release/Lemmas/PresBase.lean",
+   "decl": "theorem store_prim_inv",
+   "line": 175,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/Extensions.lean",
+   "decl": "theorem stringAdd_typed",
+   "line": 120,
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+   "decl": "theorem DieExitOk.app_typed",
+   "line": 177,
+   "errors": 3
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

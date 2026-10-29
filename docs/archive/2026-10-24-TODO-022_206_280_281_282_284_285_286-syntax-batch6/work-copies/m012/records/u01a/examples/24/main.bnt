@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  for x in [1, 2, 3] do
+    Console.writeLine(Integer.toString(x))
+  end for
+  return ()
+end function

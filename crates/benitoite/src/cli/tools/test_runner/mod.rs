@@ -346,7 +346,12 @@ pub fn collect_tests(
                 stage: text::STAGE_TEST,
                 message: "test function scheme missing from checked program".into(),
             })?;
-        let kind = if scheme.ret == Ty::Con(TyCon::Builtin(BuiltinTy::UNIT), vec![]) {
+        let kind = if scheme.ret
+            == Ty::Con(
+                TyCon::Builtin(BuiltinTy::UNIT),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP,
+            ) {
             MainKind::Unit
         } else {
             // 型検査（E0806）を通ったテストの関数の戻り値は `Unit` か `Result[Unit, String]` である。

@@ -1,0 +1,48 @@
+   Compiling benitoite v0.0.13 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 32.41s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-d363d81c5cb1e143)
+
+running 40 tests
+test modules::package::tests::interpreter_version_has_three_numbers ... ok
+test modules::package::tests::version_format_and_order ... ok
+test modules::tests::config_cannot_be_a_starting_file ... ok
+test modules::hash::tests::count_and_total_size_limits_include_the_boundary ... ok
+test modules::hash::tests::rejects_colliding_paths_and_newlines ... ok
+test modules::hash::tests::fixed_digest_and_inclusion_rules ... ok
+test modules::hash::tests::malformed_hashes_do_not_trigger_hash_calculation ... ok
+test modules::hash::tests::loading_reports_hash_errors_without_reading_package_modules ... ok
+test modules::hash::tests::editor_lock_links_do_not_block_imports_or_hashes ... ok
+test modules::package::tests::version_check_reports_all_applicable_changes_in_version_order ... ok
+test modules::hash::tests::real_files_reject_links_and_non_regular_files ... ok
+test modules::tests::exact_size_boundaries_and_embedded_sources_count_toward_total ... ok
+test modules::tests::duplicate_dependency_locations_do_not_also_report_root_overlap ... ok
+test modules::tests::dependency_configs_precede_prelude_and_imported_modules ... ok
+test modules::tests::cycles_use_closing_spans_and_do_not_repeat_on_shared_paths ... ok
+test modules::tests::dependency_without_path_reports_only_the_missing_field ... ok
+test modules::tests::die_internal_dependencies_keep_source_spans_and_participate_in_cycles ... ok
+test modules::tests::config_is_a_module_between_entry_and_prelude_and_uses_exact_name ... ok
+test modules::tests::fifo_order_identity_comments_and_display_names ... ok
+test modules::tests::every_stdlib_source_and_its_imports_load_without_cycles ... ok
+test modules::tests::missing_and_case_only_names_do_not_depend_on_fs_case_sensitivity ... ok
+test modules::tests::file_and_scope_do_not_load_standard_traits ... ok
+test modules::tests::dependency_import_edits_only_use_valid_module_names ... ok
+test modules::tests::settings_sources_count_toward_source_limits ... ok
+test modules::tests::size_limits_reject_sources_without_breaking_ids_or_import_order ... ok
+test modules::tests::stdlib_last_segment_candidates_precede_distance_and_require_uniqueness ... ok
+test modules::tests::prelude_order_kinds_and_clock_dependency ... ok
+test modules::tests::root_link_to_the_dependency_imports_the_package ... ok
+test modules::tests::root_settings_do_not_come_from_parent_directories ... ok
+test modules::tests::symbolic_links_enforce_root_and_entry_but_keep_named_module_identity ... ok
+test modules::tests::io_failures_keep_each_import_and_continue_loading_readable_modules ... ok
+test modules::tests::unreadable_entry_continues_prelude_without_reserving_an_id ... ok
+test modules::tests::overlapping_dependency_roots_are_rejected_before_imports ... ok
+test modules::tests::package_imports_keep_their_canonical_root_and_reject_the_entry ... ok
+test modules::tests::user_similar_names_and_wrong_entry_kinds ... ok
+test modules::tests::syntax_and_lexical_errors_precede_import_errors_and_cycles ... ok
+test modules::tests::stdlib_spelling_status_and_reserved_root_diagnostics ... ok
+test modules::tests::real_fs_matches_memory_for_files_imports_and_missing_modules ... ok
+test modules::tests::language_versions_check_the_release_boundary_in_each_header_location ... ok
+test modules::tests::dependency_chain_of_2000_modules_uses_no_rust_recursion ... ok
+
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 1374 filtered out; finished in 1.96s
+

@@ -40,8 +40,9 @@ versioning is updated separately at release. These versions identify different c
 | Contract | Current version |
 |---|---|
 | Derive configuration | `1` |
-| Declaration inventory | `3` |
-| Manifest / receipt / persistent generation record / semantic hash | `3` |
+| Declaration inventory | `4` |
+| Manifest / receipt / persistent generation record | `3` |
+| Semantic hash | `4` |
 | GENERATOR_VERSION | `3.1.0-syntax-batch5` |
 | Property.libraryVersion | `2.0.0` |
 | Property template revision | `3` |
@@ -70,6 +71,53 @@ and custom signature compatibility before producing review artifacts.
 
 The inventory reads declarations without resolving or checking bodies. Its
 success is not a successful normal `check`, `test --check`, or an effects report.
+
+## Inventory 4 and range information
+
+Inventory 4 preserves range indices on every application type and named effect
+atom in `ix`: `{"fixed":"top"}` for Top, `{"fixed": Range}` for a closed
+range, and `{"rvar": 0}` for a signature-local range variable. These are the
+existing exchange representations, including structured path/host/endpoint
+ranges and full-width JSON integers for IP addresses. A type row's `rangeKind`
+identifies its range kind, or is null for a type that only accepts Top.
+Signatures carry ordered `rkinds`, `admission`, and `shape`, preserving both
+range quantification and widening/IO conditions. The
+[inventory contract](../../crates/benitoite/examples/derive_inventory/README.md)
+defines their exact structure. File, Scope and Http imports therefore retain
+their ordinary functions and signatures without erasing range information.
+
+Maintenance: `effect_kind` inside `validate_inventory` in
+[derive.py](derive.py) copies Rust's `BuiltinEffectId::scope_kind` in
+[types/builtin.rs](../../crates/benitoite/src/types/builtin.rs). Effect atoms do
+not carry a separate range-kind field. When adding or changing a builtin effect,
+keep both mappings synchronized: `IO.File.Read` and `IO.File.Write` use `path`,
+`Network.Http.Connect` uses `endpoint`, and other effects accept only Top.
+A new non-Top effect index is rejected until the Python mapping is updated.
+
+The current declaration inventory emits only `"untargeted"` for `shape`.
+Effect operations are outside the declaration list, so `single` and
+`topTargeted` do not currently appear in reader output. Their schema and
+validation rules retain the existing exchange representation; they do not
+indicate that effect operations are included in the inventory.
+
+Semantic hash 4 includes indices in types/effects and the signature's range
+kinds, admission and shape. It continues to exclude source positions and display
+metadata. Non-Top diagnostic type descriptions expose the exchange index
+structure. This transition does not expand the generation templates' supported
+types: a non-Top generated source annotation is explicitly refused, and custom
+JSON/Property functions with range parameters are refused as polymorphic.
+
+Configuration remains version 1; manifests, receipts and persistent records keep
+their version 3 envelopes. Manifests and records carry `inventoryVersion: 4` and
+`hashVersion: 4`; receipts remain bound through the exact manifest digest and
+`recordSha256`.
+Generator rules and template revisions are unchanged. Rebuild the reader and
+formatter, finish any pending old apply/recovery with the saved old tool first,
+then make and review a fresh preview. New tools reject old manifests; old
+records require the existing authenticated migration protocol. Saved old
+manifest bytes and their SHA-256 do not change, but they no longer authorize an
+apply with the new tool. A fresh manifest has a new digest, even if the generated
+body stays identical. The checked-in example has completed this record migration.
 
 ## File-level effects on generation targets
 
@@ -101,7 +149,7 @@ This check also applies to previously generated targets that used to pass derive
 `check`; reorganize them before making a new preview. The refusal enforces the
 existing purity contract without changing accepted inputs' generated bodies,
 semantic hashes, or records. Generator rules remain `3.1.0-syntax-batch5`,
-inventory remains `3`, and this check adds no language-version E0908 entry.
+this check adds no language-version E0908 entry.
 It does not make an earlier manifest reusable: `apply` authenticates the tool
 sources and binaries as inputs. Finish any pending apply/recovery with the saved
 old tool **before** updating it; after updating, make and review a fresh preview
@@ -183,7 +231,7 @@ custom functions, higher-kinded targets, cross-module cycles, and nonregular
 recursion are refused. Recursive edges must pass the same type parameters in the
 same declaration order. JSON retains its monomorphic, noncyclic scope.
 
-The inventory is version 3. The tool collects declaration identities and
+The inventory is version 4. The tool collects declaration identities and
 edges with resolved type arguments, computes strongly connected components, and
 finds a minimum finite base before generating source. Required record fields add
 their minima; None and empty List/Map need no children. A required-field cycle
@@ -338,7 +386,7 @@ markers are rejected. An existing region without its generation record is treate
 as handwritten code. A changed body is rejected rather than overwritten.
 
 The persistent record is `<config-stem>.generated.json` beside the config. It
-contains `version: 3`, `inventoryVersion: 3`, `hashVersion: 3`,
+contains `version: 3`, `inventoryVersion: 4`, `hashVersion: 4`,
 `generatorVersion: "3.1.0-syntax-batch5"`, and ordered `targets`. Each target
 contains `source`, `region`, the resolved `type`, and these SHA-256 hashes:
 
@@ -377,7 +425,7 @@ hashes all this semantic metadata. `outputSha256` separately authenticates the
 formatted body bytes. Changing a dependency therefore requires review of every
 reachable managed region even when some body bytes stay identical.
 
-Version 1 and 2 records, and version 3 records from older inventory or generator
+Version 1 and 2 records, and version 3 records from older inventory, hash, or generator
 rules (including `3.0.0-syntax-batch4`), require migration: `check` returns `derive.migration_required`
 without writing. Finish any pending old apply/recovery with the saved old tool
 and its manifest/receipt first. New `preview` includes the previous record in `manifest.migration` and marks its
@@ -419,7 +467,7 @@ the receipt:
 
 | Artifact | Content |
 | --- | --- |
-| `manifest.json` | Version 3 plan (inventory 3 / hash 3): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
+| `manifest.json` | Version 3 plan (inventory 4 / hash 4): generator version, canonical root/config, all filesystem input hashes, embedded input hashes, exact before/after edits, old record hash or absence, new record. |
 | `changes.diff` | Unified source diff from source-migrate; empty for a record-only change. |
 | `generated.json` | Proposed new generation record for review. |
 | `manifest.json.receipt.json` | After apply: reviewed manifest hash and post-apply hashes for all filesystem inputs. |

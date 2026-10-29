@@ -1,0 +1,6 @@
+effect Audit
+ function flush() -> Unit
+end effect
+function main() -> Unit uses Audit["/srv/**"]
+ ()
+end function

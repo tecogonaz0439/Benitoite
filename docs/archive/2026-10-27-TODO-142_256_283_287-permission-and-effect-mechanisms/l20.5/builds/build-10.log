@@ -1,0 +1,32 @@
+== wait-for-lock start 02:50:57
+== lock acquired 02:50:57 after 0s
+⚠ [68/75] Replayed Benitoite.Release.Lemmas.MembershipBase
+warning: Benitoite/Release/Lemmas/MembershipBase.lean:119:30: This simp argument is unused:
+  Ty.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.subst, Ty.substAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Lemmas/MembershipBase.lean:137:71: `if_true` has been deprecated: Use `ite_true` instead
+✔ [75/75] Built Benitoite.Release.Model (2.0s)
+Build completed successfully (75 jobs).
+        2.07 real         2.30 user         0.19 sys
+           847249408  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               59343  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   3  voluntary context switches
+                4629  involuntary context switches
+           889679892  instructions retired
+           259464512  cycles elapsed
+            19399664  peak memory footprint
+== exit 0

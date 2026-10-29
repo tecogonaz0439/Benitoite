@@ -1,0 +1,18 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function classify(url: String) -> String
+ bind raw <- Http.clientRequest(method: "GET", url: url)
+ bind result <- Http.checkRequestIn(hostPattern: "**.example.com", minimumPort: 0, maximumPort: 65535, request: raw)
+ return match result with
+ case Result.Ok(_) -> "Ok"
+ case Result.Error(Http.RequestCheckError.InvalidUrl(_)) -> "InvalidUrl"
+ case Result.Error(Http.RequestCheckError.Scope(S.ScopeError.InvalidTarget(_, _))) -> "InvalidTarget"
+ case Result.Error(_) -> "other"
+ end match
+end function
+function main() -> Unit uses Console.Write
+ Console.writeLine(classify(url: "http://127.1/"))
+ Console.writeLine(classify(url: "ftp://api.example.com/"))
+ Console.writeLine(classify(url: "http://[::ffff:192.0.2.7]/"))
+end function

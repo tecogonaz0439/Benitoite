@@ -1,0 +1,63 @@
+== wait-for-lock start 17:52:00
+== lock acquired 17:52:00 after 0s
+✔ [30/410] Built Benitoite.Release.Atom (250ms)
+✔ [31/410] Built Benitoite.Release.Types (279ms)
+✔ [32/410] Built Benitoite.Release.Atom:c.o (282ms)
+✔ [33/410] Built Benitoite.Release.Types:c.o (124ms)
+✖ [34/410] Building Benitoite.Release.Order.Atoms (1.4s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Order/Atoms.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Order/Atoms.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Order/Atoms.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Order/Atoms.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Order/Atoms.setup.json --json
+error: Benitoite/Release/Order/Atoms.lean:51:4: Type mismatch
+  name s
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+error: Benitoite/Release/Order/Atoms.lean:60:85: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑(charsCode (String.toList t))
+ b := ↑(charsCode (String.toList s))
+error: Benitoite/Release/Order/Atoms.lean:61:6: Type mismatch
+  congrArg name (String.toList_inj.mp (charsCode_injective hc))
+has type
+  name s = name t
+but is expected to have type
+  name s r✝¹ = name t r✝
+error: Benitoite/Release/Order/Atoms.lean:62:38: omega could not prove the goal:
+No usable constraints found. You may need to unfold definitions so `omega` can see linear arithmetic facts about `Nat` and `Int`, which may also involve multiplication, division, and modular remainder by constants.
+error: Benitoite/Release/Order/Atoms.lean:65:39: omega could not prove the goal:
+No usable constraints found. You may need to unfold definitions so `omega` can see linear arithmetic facts about `Nat` and `Int`, which may also involve multiplication, division, and modular remainder by constants.
+error: Benitoite/Release/Order/Atoms.lean:66:57: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑j
+ b := ↑i
+warning: Benitoite/Release/Order/Atoms.lean:60:73: declaration uses `sorry`
+Some required targets logged failures:
+- Benitoite.Release.Order.Atoms
+error: build failed
+        1.82 real         0.96 user         0.53 sys
+           692944896  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              102064  page reclaims
+               15272  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                2803  voluntary context switches
+               18559  involuntary context switches
+          1183074387  instructions retired
+           441614280  cycles elapsed
+            21791920  peak memory footprint
+== exit 1

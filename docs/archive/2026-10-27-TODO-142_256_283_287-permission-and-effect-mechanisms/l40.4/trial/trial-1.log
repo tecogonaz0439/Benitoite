@@ -1,0 +1,203 @@
+== wait-for-lock start 05:59:19
+== lock acquired 06:01:28 after 129s
+✔ [210/455] Built Benitoite.Surface.Syntax (1.1s)
+✖ [211/455] Building Benitoite.Surface.BuilderFree (547ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/BuilderFree.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/BuilderFree.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/BuilderFree.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/BuilderFree.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/BuilderFree.setup.json --json
+error: Benitoite/Surface/BuilderFree.lean:17:6: Type mismatch
+  Expr.primName ?m.25 ?m.26 ?m.27
+has type
+  List Scope.Domain.Range → Expr
+but is expected to have type
+  Expr
+✔ [212/455] Built Benitoite.Surface.Lemmas.NoFailSignature (524ms)
+✔ [214/455] Built Benitoite.Surface.Builders (631ms)
+✖ [215/455] Building Benitoite.Surface.WellFormed (589ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/WellFormed.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/WellFormed.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/WellFormed.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/WellFormed.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/WellFormed.setup.json --json
+error: Benitoite/Surface/WellFormed.lean:38:25: Type mismatch
+  Expr.primName ?m.28 ts es
+has type
+  List Scope.Domain.Range → Expr
+but is expected to have type
+  Expr
+✔ [216/455] Built Benitoite.Surface.Syntax:c.o (618ms)
+✔ [218/455] Built Benitoite.Surface.Desugar (946ms)
+✖ [287/455] Building Benitoite.Interval.Identity (982ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Interval/Identity.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/Identity.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/Identity.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Interval/Identity.c --setup <wt>/formal/.lake/build/ir/Benitoite/Interval/Identity.setup.json --json
+error: Benitoite/Interval/Identity.lean:45:4: Type mismatch
+  Expr.primName ?m.23 ?m.24 ?m.25
+has type
+  List Scope.Domain.Range → Expr
+but is expected to have type
+  Expr
+error: Benitoite/Interval/Identity.lean:83:6: Type mismatch
+  Expr.primName ?m.23 ?m.24 ?m.25
+has type
+  List Scope.Domain.Range → Expr
+but is expected to have type
+  Expr
+error: Benitoite/Interval/Identity.lean:187:12: too many variable names provided
+error: Benitoite/Interval/Identity.lean:187:36: Unknown identifier `message`
+warning: Benitoite/Interval/Identity.lean:184:25: declaration uses `sorry`
+warning: Benitoite/Interval/Identity.lean:184:42: declaration uses `sorry`
+error: Benitoite/Interval/Identity.lean:182:8: (kernel) declaration has metavariables 'Benitoite.Interval.surfacePreorder_children'
+warning: Benitoite/Interval/Identity.lean:184:52: This simp argument is unused:
+  preorderExprs_children
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [surfacePreorder, children, preorderHoles_children, preorderBlock_children, preorderArms_children,
+    preorderClauses_children]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Identity.lean:185:4: This simp argument is unused:
+  preorderHoles_children
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [surfacePreorder, children, preorderExprs_children, preorderBlock_children, preorderArms_children,
+    preorderClauses_children]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Identity.lean:185:28: This simp argument is unused:
+  preorderBlock_children
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [surfacePreorder, children, preorderExprs_children, preorderHoles_children, preorderArms_children,
+    preorderClauses_children]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Identity.lean:185:52: This simp argument is unused:
+  preorderArms_children
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [surfacePreorder, children, preorderExprs_children, preorderHoles_children, preorderBlock_children,
+    preorderClauses_children]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Identity.lean:186:4: This simp argument is unused:
+  preorderClauses_children
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [surfacePreorder, children, preorderExprs_children, preorderHoles_children, preorderBlock_children,
+    preorderArms_children]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Interval/Identity.lean:232:50: unsolved goals
+e : Expr
+⊢ False
+warning: Benitoite/Interval/Identity.lean:233:21: declaration uses `sorry`
+error: Benitoite/Interval/Identity.lean:236:53: unsolved goals
+t : Ty
+e : Expr
+⊢ False
+warning: Benitoite/Interval/Identity.lean:237:21: declaration uses `sorry`
+error: Benitoite/Interval/Identity.lean:240:54: unsolved goals
+t : Ty
+e : Expr
+⊢ False
+warning: Benitoite/Interval/Identity.lean:241:21: declaration uses `sorry`
+error: Benitoite/Interval/Identity.lean:244:74: unsolved goals
+op : BinOp
+t : Ty
+l r : Expr
+⊢ False
+warning: Benitoite/Interval/Identity.lean:245:21: declaration uses `sorry`
+error: Benitoite/Interval/Identity.lean:323:0: Not a definitional equality: the left-hand side
+  surfacePreorder (bodyRoot body)
+is not definitionally equal to the right-hand side
+  bodyRoot body :: preorderBlock body
+error: Benitoite/Interval/Identity.lean:325:77: Type mismatch
+  rfl
+has type
+  ?m.4 = ?m.4
+but is expected to have type
+  surfacePreorder (bodyRoot body) = bodyRoot body :: preorderBlock body
+error: Benitoite/Interval/Identity.lean:385:2: Tactic `rfl` failed: The left-hand side
+  List.map
+    (fun x =>
+      match x with
+      | (key, e) =>
+        (key.surfacePreorder,
+          match e with
+          | Expr.local index => some index
+          | x => none))
+    (numbered { definition := "Example.preorder", surfacePreorder := 10 }
+      (Expr.handleE
+        (Block.builderBind BuilderKind.string
+          (Block.seq (Expr.constE (Ty.base BaseTy.integer) (Expr.local 0))
+            (Block.last
+              ((Expr.local 1).partialCall []
+                (HoleArgs.hole none 0 (Ty.base BaseTy.integer)
+                  (HoleArgs.expr (some "value") 1 (Expr.local 2) HoleArgs.nil))
+                (Ty.base BaseTy.unit) Eff.empty))))
+        (Clauses.cons (OpRef.user "Example.first") 0 0
+          (Block.last
+            (Expr.matchE (Ty.base BaseTy.unit) (Expr.local 3)
+              (Arms.cons []
+                (some
+                  ((Expr.local 4).call [some "b", some "a"] [1, 0]
+                    (Exprs.cons (Expr.local 5) (Exprs.cons (Expr.local 6) Exprs.nil))))
+                (Block.last
+                  (Expr.tryOptionDie (Ty.base BaseTy.unit) "Some" "None" "exit" (Expr.local 7) (some (Expr.local 8))))
+                Arms.nil)))
+          (Clauses.cons (OpRef.user "Example.second") 0 0 (Block.lastDiscard (Expr.local 9)) Clauses.nil))))
+is not definitionally equal to the right-hand side
+  [(10, none), (11, none), (12, some 0), (13, none), (14, some 1), (15, some 2), (16, none), (17, some 3), (18, none),
+    (19, some 4), (20, some 5), (21, some 6), (22, none), (23, some 7), (24, some 8), (25, some 9)]
+
+⊢ let source :=
+    Expr.handleE
+      (Block.builderBind BuilderKind.string
+        (Block.seq (Expr.constE (Ty.base BaseTy.integer) (Expr.local 0))
+          (Block.last
+            ((Expr.local 1).partialCall []
+              (HoleArgs.hole none 0 (Ty.base BaseTy.integer)
+                (HoleArgs.expr (some "value") 1 (Expr.local 2) HoleArgs.nil))
+              (Ty.base BaseTy.unit) Eff.empty))))
+      (Clauses.cons (OpRef.user "Example.first") 0 0
+        (Block.last
+          (Expr.matchE (Ty.base BaseTy.unit) (Expr.local 3)
+            (Arms.cons []
+              (some
+                ((Expr.local 4).call [some "b", some "a"] [1, 0]
+                  (Exprs.cons (Expr.local 5) (Exprs.cons (Expr.local 6) Exprs.nil))))
+              (Block.last
+                (Expr.tryOptionDie (Ty.base BaseTy.unit) "Some" "None" "exit" (Expr.local 7) (some (Expr.local 8))))
+              Arms.nil)))
+        (Clauses.cons (OpRef.user "Example.second") 0 0 (Block.lastDiscard (Expr.local 9)) Clauses.nil));
+  List.map
+      (fun x =>
+        match x with
+        | (key, e) =>
+          (key.surfacePreorder,
+            match e with
+            | Expr.local index => some index
+            | x => none))
+      (numbered { definition := "Example.preorder", surfacePreorder := 10 } source) =
+    [(10, none), (11, none), (12, some 0), (13, none), (14, some 1), (15, some 2), (16, none), (17, some 3), (18, none),
+      (19, some 4), (20, some 5), (21, some 6), (22, none), (23, some 7), (24, some 8), (25, some 9)]
+✔ [410/455] Built Benitoite.Surface.Desugar:c.o (445ms)
+✔ [411/455] Built Benitoite.Exchange.Syntax (3.2s)
+✔ [413/455] Built Benitoite.Exchange.Version (682ms)
+Some required targets logged failures:
+- Benitoite.Surface.BuilderFree
+- Benitoite.Surface.WellFormed
+- Benitoite.Interval.Identity
+error: build failed
+        6.03 real        10.09 user         2.91 sys
+          1674362880  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              546032  page reclaims
+                2470  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 813  voluntary context switches
+               39459  involuntary context switches
+          1751826954  instructions retired
+           682030534  cycles elapsed
+            44877096  peak memory footprint
+== exit 1

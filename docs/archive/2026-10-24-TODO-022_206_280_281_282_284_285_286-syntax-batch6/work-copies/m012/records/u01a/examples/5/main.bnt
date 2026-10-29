@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.Console
+
+function next(n: Integer) -> Integer
+  bind x <- n
+  bind increased <- x + 1
+  return increased
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(Integer.toString(next(41)))
+end function

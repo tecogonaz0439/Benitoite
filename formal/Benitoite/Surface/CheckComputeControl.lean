@@ -17,7 +17,7 @@ private theorem option_computes_atoms {atoms t cs cn exit e message} :
   cases message <;> simp only [Expr.AtomsIn]
 
 theorem checkDieExit_contains {q C path exit t u}
-    (h : checkDieExit q C path exit t = .ok u) : .name "Process.Exit" ∈ q.atoms := by
+    (h : checkDieExit q C path exit t = .ok u) : .nameTop "Process.Exit" ∈ q.atoms := by
   obtain ⟨s, hs, h⟩ := bind_ok h
   obtain ⟨u, hu, h⟩ := bind_ok h
   obtain ⟨u, hu, h⟩ := bind_ok h
@@ -147,16 +147,16 @@ theorem computes_handle {q body cs} (ihb : BlockComputes q body)
   rintro ⟨t0, εbody⟩ ⟨ht0, hbody⟩
   have hi : (diffEff q.atoms εbody (handled q.D.patternProgram q.B cs.skeleton)).AtomsIn q.atoms :=
     diffEff_atoms hbody
-  apply computes_bind (computes_run_empty (iht Δ _ _ _ _ _ _ hq he.2 hΓ hR hB ht0 hi))
+  apply computes_bind (computes_run_empty (iht Δ _ _ _ _ _ _ _ hq he.2 hΓ hR hB ht0 hi))
   rintro ⟨t, st⟩ ⟨ht, hst⟩
   have hstep : ∀ e, e.AtomsIn q.atoms → ComputesIn q (Eff.AtomsIn q.atoms)
       (do
-        let (actual, req) ← (checkClausesR q .relaxed Δ C Γ R (child path 1) cs t e).run {}
+        let (actual, req) ← (checkClausesR q .relaxed Δ C Γ R (child path 1) εbody cs t e).run {}
         modify fun outer => { outer with requests := outer.requests ++
           (req.requests.filter (fun r => !(clauseKeys Γ.length cs).contains r.1)) }
         pure (union q actual (requestedEffect q (clauseKeys Γ.length cs) req.requests))) := by
     intro e heff
-    apply computes_bind (computes_run_empty (ihc _ Δ _ _ _ _ _ _ hq he.2 hΓ hR hB ht heff))
+    apply computes_bind (computes_run_empty (ihc _ Δ _ _ _ _ _ _ _ hq he.2 hΓ hR hB ht heff))
     rintro ⟨actual, req⟩ ⟨ha, hr⟩
     apply computes_bind (computes_modify
       (f := fun outer => { outer with requests := outer.requests ++
@@ -172,7 +172,7 @@ theorem computes_handle {q body cs} (ihb : BlockComputes q body)
     (f := fun st => { st with strictConts := clauseKeys Γ.length cs ++ saved.strictConts })
     (fun st hs => hs))
   intro u hu
-  apply computes_bind (ihc _ Δ _ _ _ _ _ _ hq he.2 hΓ hR hB ht hε)
+  apply computes_bind (ihc _ Δ _ _ _ _ _ _ _ hq he.2 hΓ hR hB ht hε)
   intro actual ha
   apply computes_bind (computes_modify (f := fun st => { st with strictConts := saved.strictConts })
     (fun st hs => hs))

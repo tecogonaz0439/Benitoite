@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.File
+
+function main() -> Unit uses File.Write
+  File.writeText(path: "out.txt", text: "data")
+  return ()
+end function

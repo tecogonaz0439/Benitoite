@@ -1,0 +1,154 @@
+{
+  "recorded_at": "2026-10-29T11:38:29.723581+00:00",
+  "base": "6b333d12343f922f976e589f6a1c4ab8f2a1929e",
+  "head": "6b333d12343f922f976e589f6a1c4ab8f2a1929e",
+  "branch": "m013/k10.1",
+  "tracked_changes": [
+    "crates/benitoite/tests/desugar_export.rs",
+    "crates/benitoite/tests/desugar_export/builtins.rs",
+    "crates/benitoite/tests/desugar_export/check_batch3.py",
+    "crates/benitoite/tests/desugar_export/check_named.py",
+    "crates/benitoite/tests/desugar_export/exchange-manifest.json",
+    "crates/benitoite/tests/desugar_export/exchange.rs",
+    "crates/benitoite/tests/desugar_export/interval.rs",
+    "crates/benitoite/tests/desugar_export/interval/manifest.rs",
+    "crates/benitoite/tests/desugar_export/interval/prepare-range.py",
+    "crates/benitoite/tests/desugar_export/interval/source.rs",
+    "crates/benitoite/tests/desugar_export/lib.rs",
+    "crates/benitoite/tests/desugar_export/named.rs",
+    "crates/benitoite/tests/desugar_export/routing-manifest.json",
+    "crates/benitoite/tests/desugar_export/scope.rs",
+    "crates/benitoite/tests/desugar_export/scope_tables.rs",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/tests/interval_range_vm.py",
+    "formal/tests/interval_shift_vm.py",
+    "formal/tests/interval_source_compare.py",
+    "formal/tests/interval_vm_compare.py"
+  ],
+  "untracked_source_inputs": [
+    "crates/benitoite/tests/desugar_export/atom_order.rs",
+    "crates/benitoite/tests/desugar_export/named-declarations.bnt"
+  ],
+  "tracked_patch_sha256": "f7923eeed159e1f2d42c69db9e1837d4ab4485e1c5749857aa82f4636ba8048d",
+  "lean_source_setting_version_changes": [],
+  "formal_changes": [
+    "formal/tests/interval_range_vm.py",
+    "formal/tests/interval_shift_vm.py",
+    "formal/tests/interval_source_compare.py",
+    "formal/tests/interval_vm_compare.py"
+  ],
+  "files": [
+    {
+      "path": "crates/benitoite/tests/desugar_export.rs",
+      "bytes": 55541,
+      "sha256": "fbd9cc12c522ab184af02d84b1f56273946f5f1ac4acba3da55094dd53171d3d"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/builtins.rs",
+      "bytes": 21601,
+      "sha256": "fb01886b01e273db7c92c4a382c18f135da018b705db9e6434d997feeb6fda67"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/check_batch3.py",
+      "bytes": 9605,
+      "sha256": "385c5eb8788a128e3808fb9d10930451480dbedd10eb86a35d0107c3cdee82ec"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/check_named.py",
+      "bytes": 30405,
+      "sha256": "ef586cd3d5e973c7100620b525877184bb49125a54f1ec90bc950e007d109b18"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/exchange-manifest.json",
+      "bytes": 558526,
+      "sha256": "31d64c3f12843c696a7a1964f82a1fe9b74791deabc71bdcbd6960027c441b61"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/exchange.rs",
+      "bytes": 134348,
+      "sha256": "f34229dc6b925c42f305747c609e6f69ce447e1bc638a4e4314b89b5fdb6acd8"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/interval.rs",
+      "bytes": 30930,
+      "sha256": "bd5eaa938009c8700bb5ada51f600e8f00745627154764fdffaa057d08265ad7"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/interval/manifest.rs",
+      "bytes": 21123,
+      "sha256": "d70cebd6947ed9ae6dda851bc5d65c3f4c3ef184cb9dcd979dc3e0b7fc4504b7"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/interval/prepare-range.py",
+      "bytes": 5109,
+      "sha256": "b9cbfceb31bc1e011837660c4ef46ec407fd8d0be4e830ef6500ade48b12101c"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/interval/source.rs",
+      "bytes": 21203,
+      "sha256": "9b864b87d59c91eef044e9cbeea721c029326876776a4e20909e722c570a7719"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/lib.rs",
+      "bytes": 12574,
+      "sha256": "c0e3d97f7e911a7c83fb1f68dc1f62df556b5708c0cda7d1105610879400dc34"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/named.rs",
+      "bytes": 33006,
+      "sha256": "1d2b321ff7547a83bb897145670c68811aedba84b2f5e145071c178f2fd3d6b9"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/routing-manifest.json",
+      "bytes": 399133,
+      "sha256": "8109a45857d6ef3dfbfe5d4586da430f531763130f89da8f202f2f50ccbd6e31"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/scope.rs",
+      "bytes": 6778,
+      "sha256": "6ae9479853184a4710e1e48a8b9cc6e07bab7cfb4889075a201a04ff22a31bb1"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/scope_tables.rs",
+      "bytes": 37410,
+      "sha256": "c097991159e2d153370ccf296c8932d86553c065eb3e213bd30957bc118a91ac"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "bytes": 421962,
+      "sha256": "945a05d6c7185cadd764b69bee06f8a88bfc3da42710f0dd1ba75fc3c581bdfd"
+    },
+    {
+      "path": "formal/tests/interval_range_vm.py",
+      "bytes": 14062,
+      "sha256": "354e59e126c58f745e6722da8b99e52681d1a752c389622d59b0b12e5a7f956b"
+    },
+    {
+      "path": "formal/tests/interval_shift_vm.py",
+      "bytes": 10786,
+      "sha256": "703d76c822e4e6f2d86256617d0e73a858def08545ad676ed9b3656d5a2a3211"
+    },
+    {
+      "path": "formal/tests/interval_source_compare.py",
+      "bytes": 28730,
+      "sha256": "9241fa268ba343ec15725dd28f706bd705c1957db4293cf9bfd020e9b36fa9e3"
+    },
+    {
+      "path": "formal/tests/interval_vm_compare.py",
+      "bytes": 18526,
+      "sha256": "fef6f70b9d6f13cc3ef3735a06e453eb7264dd0f3addf1636ba114bde0a70e47"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/atom_order.rs",
+      "bytes": 5849,
+      "sha256": "abce6c347472d1e8ec321aaeb8b317536cfd98ba79e475352e050264cc3be58b"
+    },
+    {
+      "path": "crates/benitoite/tests/desugar_export/named-declarations.bnt",
+      "bytes": 1339,
+      "sha256": "c814f989e479884072469f0138a4874a4bcdf409c70bd7ca932ea8a9d4fda393"
+    }
+  ],
+  "quote_decider": "取りまとめ",
+  "quote_decision_date": "2026-10-29"
+}

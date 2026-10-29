@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-p",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "b1d2f30e99fb37d1a4ea02f647174528b8477c82"
+  ],
+  "check_sh_exit_status": 0,
+  "elapsed_seconds": 17.108287917,
+  "status_capture": "No pipeline: /usr/bin/time propagates the exit status of scripts/check.sh; subprocess.run.returncode is recorded and returned."
+}

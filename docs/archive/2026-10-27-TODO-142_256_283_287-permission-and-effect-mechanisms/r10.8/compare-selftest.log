@@ -1,0 +1,39 @@
+$ env PYTHONPYCACHEPREFIX=target/bench/pycache python3 -m unittest discover -s tools/bench/compare -p 'test_*.py'
+..build default/before: c31e64b03d28 (built)
+build default/after: f5821c672d22 (built)
+Fbuild default/before: 706d7ca3d16f (built)
+build default/after: f5821c672d22 (cached)
+.........build default/before: aaaaaaaaaaaa (built)
+build default/renamed: aaaaaaaaaaaa (cached)
+build default/x: aaaaaaaaaaaa (built)
+.............build default/before: aaaaaaaaaaaa (built)
+build default/after: bbbbbbbbbbbb (built)
+build alloc-stats/before: aaaaaaaaaaaa (built)
+build alloc-stats/after: bbbbbbbbbbbb (built)
+16.2: output verification passed
+16.8: output verification passed
+16.2: 1 cases measured
+16.8: 1 cases measured
+<tmp>/tmppny2v7qp/out
+build default/before: aaaaaaaaaaaa (built)
+build default/after: bbbbbbbbbbbb (built)
+build alloc-stats/before: aaaaaaaaaaaa (built)
+build alloc-stats/after: bbbbbbbbbbbb (built)
+16.2: output verification passed
+16.8: output verification passed
+16.2: 1 cases measured
+16.8: 1 cases measured
+<tmp>/tmpvgwpwmgn/out
+..............
+======================================================================
+FAIL: test_both_revisions_compile_through_the_common_builder (test_compare.CommonProbeCompilationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<wt>/tools/bench/compare/test_compare.py", line 464, in test_both_revisions_compile_through_the_common_builder
+    self.assertIn('probe', record, (state, record.get('probe_unavailable')))
+AssertionError: 'probe' not found in {'key': {'commit': 'c31e64b03d2810343e1779926bea4ebc958b6164', 'mode': 'default', 'rustc': 'rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n', 'cargo': 'cargo 1.98.1 (797e8a9bc 2026-08-05)\n', 'cargo_lock_sha256': '5c6516a1f5afe7e7908f4e354643b2e96d8c61b52aa1dba374bfa41d5493090c'}, 'commit': 'c31e64b03d2810343e1779926bea4ebc958b6164', 'binary': '<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/benitoite', 'sha256': 'af3d5f64a2b9b37f84d862fee82febd73c7f0d2a1f100b7b2d22fca81a76b4f3', 'archive': '<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/source', 'features': ['default'], 'command': ['cargo', 'build', '--release', '--locked', '-p', 'benitoite', '--manifest-path', '<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/source/Cargo.toml', '--target-dir', '<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default'], 'rustc': 'rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n', 'cargo': 'cargo 1.98.1 (797e8a9bc 2026-08-05)\n', 'cargo_lock_sha256': '5c6516a1f5afe7e7908f4e354643b2e96d8c61b52aa1dba374bfa41d5493090c', 'log': '<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/build.log', 'reused': False, 'seconds': 69.390691417, 'build_invocation_seconds': 69.3906925, 'probe_api': {'parser_pending': False, 'parser_sha256': '67c00a7e8a33d9924fa9b52b0692544bb02a8b9bbd25a98c9b4f229cae5d5b73'}, 'probe_key': '92bff1604af6bb7b08d7ee004974d895abb9e730cf84d8a9bfae9da290d07b1b382fa8a6174f1a8fa0e4fcf41429295165a716924d14fc6e15b5da63badd82b8', 'probe_command': ['rustc', '--edition=2024', '-O', '<wt>/tools/bench/compare/timing_probe.rs', '--extern', 'benitoite=<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/libbenitoite.rlib', '-L', 'dependency=<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/deps', '-o', '<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/timing-probe', '--extern', 'serde_json=<wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/release/deps/libserde_json-8caac38b8bfac622.rlib'], 'bridge_sources': {'original_convert': '0f61f76c99cee1c9d9aa02a652085689290a4a273c74da53b7a6a162625e0ea1', 'original_value': 'b49a037eeab116b926ce26acfb5cf0a418610639060ea778e221ca4f21dd7a7c', 'observer': 'd3fda75c9ea5a7208bc834089e5c657cb7bfd8b3f6ab802e31f70f8846560a6a', 'wrapper': 'c739e742795fc04c58011e9f92b11e217e4d8dd7e4d1d11c210c96721e66682b', 'conversion_unit': '03b3c54da5f2b125d82ee5bd2af5c1ec0fd091b9f3153ecddf411d323f4344b8'}, 'probe_unavailable': 'public API helper build failed (1); see <wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/build.log'} : ('before', 'public API helper build failed (1); see <wt>/target/bench/builds/c31e64b03d2810343e1779926bea4ebc958b6164-default/build.log')
+
+----------------------------------------------------------------------
+Ran 39 tests in 287.317s
+
+FAILED (failures=1)

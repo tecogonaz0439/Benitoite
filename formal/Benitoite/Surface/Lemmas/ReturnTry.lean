@@ -47,9 +47,9 @@ mutual
 
   termination_by structural h
 
-  theorem HasTypeClausesQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ cs t ε}
-      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ cs t ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
-      HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl := by
+  theorem HasTypeClausesQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ εb cs t ε}
+      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ εb cs t ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
+      HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl := by
     match h with
     | .nil => exact .nil
     | .cons (k := k) ho hn hp hk hw hb hs =>
@@ -87,7 +87,7 @@ theorem returnTail_typed {C Γ r a e ε}
     (desugarExpr op .tail (.returnE a e)) r ε Δl := he
 
 /-- 非末尾の return は同じ R に escape し、外側の R を参照しない。 -/
-theorem returnOther_typed {C Γ r a e ε} (hr : TyOK C.length r) (ha : Ty.WF C.length a)
+theorem returnOther_typed {C Γ r a e ε} (hr : TyOK C.length r) (ha : Ty.WF 0 C.length a)
   (he : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ (some r)
     (desugarExpr op .other e) r ε Δl) :
   HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ (some r)
@@ -177,10 +177,10 @@ theorem tryOption_typed {C Γ R pos cs cn cds cdn e t u ε}
 theorem DieExitOk.app_typed {P B C Γ R exit t} (h : DieExitOk B C exit t)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped) (hty : TyOK C.length t) :
     HasTypeCQ P B StoreTy.empty Q C Γ R
-      (.app (.prim exit [t] []) [.const (.integer ⟨1, by decide⟩)]) t (Eff.single "Process.Exit") Δl := by
+      (.app (.prim exit [t] [] []) [.const (.integer ⟨1, by decide⟩)]) t (Eff.single "Process.Exit") Δl := by
   obtain ⟨s, hs, _, _, ht, he, hn, ha, hf⟩ := h
-  have hv := HasTypeVQ.V_Prim (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs hn
-    (PrimitiveAdmissible.of_noRows (hsig _ _ hs) he
+  have hv := HasTypeVQ.V_PrimNil (Q := Q) (P := P) (Ψ := StoreTy.empty) (Γ := Γ) hs (hsig _ _ hs) he.2 hn
+    (PrimitiveAdmissible.of_noRows (hsig _ _ hs) he.1
       (by simpa using ht.symm) ha (by
         intro a hm
         have heq : a = t := List.mem_singleton.mp hm

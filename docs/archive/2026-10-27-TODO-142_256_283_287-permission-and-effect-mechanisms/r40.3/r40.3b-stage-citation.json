@@ -1,0 +1,85 @@
+{
+  "sourceResult": "stage.json",
+  "sourceLog": "stage.log",
+  "sourceCounts": "stage-counts.json",
+  "sourceTime": "stage-time.log",
+  "sourceBaselineWork": "867a36713aa30520be4d5ea8dff0d57b846c919c",
+  "sourceBaselineStage": "c2debc9200e7db6aacf4dde10b94eaf330270654",
+  "targetHead": "867a36713aa30520be4d5ea8dff0d57b846c919c",
+  "oldFileCount": 4286,
+  "newFileCount": 4286,
+  "changedFiles": {
+    "crates/benitoite/skill/SKILL.md": {
+      "before": {
+        "bytes": 42517,
+        "sha256": "c0545fb63ab6e875ab58f213c93c2de93a8c0dabbdd249afbf62faa77bc84f3e"
+      },
+      "after": {
+        "bytes": 42707,
+        "sha256": "2e5b4bd541ea5af266e0a14d7cee784136d44642ce12a07aece3f22ffa62d335"
+      }
+    },
+    "crates/benitoite/skill/references/idioms.md": {
+      "before": {
+        "bytes": 68213,
+        "sha256": "0b427c155edb61a8800adcf4cf355b51b49c481f21947ac67810722eba583f97"
+      },
+      "after": {
+        "bytes": 68395,
+        "sha256": "cc5ca706351f7bc7b8881c88abf1329516505b7fa1ee08095b72820a97895356"
+      }
+    },
+    "crates/benitoite/skill/references/inspection.md": {
+      "before": {
+        "bytes": 24572,
+        "sha256": "64becfd5e0d149e8380536e3eb7786702f24e3d085f06d9ad665490bc3d0c335"
+      },
+      "after": {
+        "bytes": 24623,
+        "sha256": "3d617356e59811481cebd5d073d6ffb56181f8d145f17ed3eaf76fe771b4b4a5"
+      }
+    },
+    "docs/design/06-tooling/06-01-cli.md": {
+      "before": {
+        "bytes": 75339,
+        "sha256": "3dcb244745ee57d5287bfd0a9885963a9f121712ea4f0b6988339d1219bdac96"
+      },
+      "after": {
+        "bytes": 75411,
+        "sha256": "f871fa7612d5c1dae5cbcec9de321df66e759246ad49df57deeae3a0142a3383"
+      }
+    },
+    "docs/design/06-tooling/06-04-test-runner.md": {
+      "before": {
+        "bytes": 48420,
+        "sha256": "a35c1283be01cf0bca45e908d0b3553ee8d73b968c9a7d6077c3f64a3e06aa04"
+      },
+      "after": {
+        "bytes": 48413,
+        "sha256": "42fa8fec2ffeeb419e0d9c17fabb9c9629505f2fb944cdffd2d3c1286f0d8f0a"
+      }
+    },
+    "docs/design/06-tooling/06-06-agent-skills.md": {
+      "before": {
+        "bytes": 38716,
+        "sha256": "534de6b119bed221722c717f3a106e5af3bced227af0351bab010316dad3e06d"
+      },
+      "after": {
+        "bytes": 38798,
+        "sha256": "d07fa6c20a6f0ad69b5147228b6f655236ac7ff5d65a8ccfb79048bbde27f59b"
+      }
+    }
+  },
+  "toolsAndPlatformMatched": true,
+  "headBranchIndexMatched": true,
+  "unchangedRuntimeSourceTestsFixturesSettings": true,
+  "protectedFilesMatched": true,
+  "decision": "2026-10-29、担当 Codex が R40.3 の五対象64成功を引用する。変更は手書き Skill と設計書だけで、実行の意味・五対象の入力と期待値は同じ。実行ファイル全バイトの一致は主張しない。",
+  "sourceEvidenceSha256": {
+    "stage.json": "8c7e1c11b0a7c05983cd49b17d732d5fb9d92076a147d2fcf8e7f5e73110f25c",
+    "stage.log": "aebf8a39e4388e15a6bc6c4c654495b0ca62c6f872d8d6f43cf25eec302d90b2",
+    "stage-counts.json": "4d2702a2ee198c85225ff085ed82c842da7663c83872c2f6e83dea285cac359c",
+    "stage-time.log": "62a6dbb9eed62f7fa0c5a525c65e23c0d0319928e2d4faa6ca907f86b60d9ab8",
+    "work-inputs.json": "fce59a1eee7eb16fb75cceb26f7afa211f0953bad904e27cb55c4e8467d34e88"
+  }
+}

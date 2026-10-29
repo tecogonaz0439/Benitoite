@@ -39,7 +39,7 @@ private def text : ConcreteValue :=
 private def call (binding : StandardBinding) (positions : List Nat) (sources : List Expr)
     (labels : List (Option String)) (operation : Bool := false) (primitive : Bool := true) : Expr :=
   .call (if operation then .opName binding.declaration []
-    else if primitive then .primName binding.declaration [] [] else .funName binding.declaration [] [])
+    else if primitive then .primName binding.declaration [] [] [] else .funName binding.declaration [] [])
     labels positions (sources.foldr Exprs.cons .nil)
 private def shiftCall (binding : StandardBinding) (reversed : Bool) (primitive : Bool := true) : Expr :=
   if reversed then call binding [1, 0] [.local 0, .local 1] [some "n", some "a"] (primitive := primitive)
@@ -175,17 +175,17 @@ private def identityEnvs : List ConcreteEnv :=
 
 -- 操作はハンドラで差し替わる。域外の code/port も固定域の具体規則を持たない。
 private def exitSource : Expr :=
-  .call (.primName "resolved:Process.exit" [.base .unit] []) [some "code"] [0]
+  .call (.primName "resolved:Process.exit" [.base .unit] [] []) [some "code"] [0]
     (.cons (literal ⟨300, by decide⟩) .nil)
 private def listenSource : Expr :=
-  .call (.primName "resolved:Http.Listen.listen" [] []) [some "host", some "port"] [0, 1]
+  .call (.primName "resolved:Http.Listen.listen" [] [] []) [some "host", some "port"] [0, 1]
     (.cons (.local 0) (.cons (literal ⟨65536, by decide⟩) .nil))
 -- 組み込みの操作の primName も単相なら照会するが、操作の固定域の項は渡さない。
 #guard [(exitSource, "resolved:Process.exit"), (listenSource, "resolved:Http.Listen.listen")].all fun (source, declaration) =>
   let env := abstract [identityBinding] [.unknown (some (.base .string))] declaration
   warningView env source = [] ∧
     (rangeCallBinding (rangeTables env) ⟨source, .base .unit, key⟩).isNone
-#guard standardCallHead (.primName "resolved:Http.Listen.listen" [] []) =
+#guard standardCallHead (.primName "resolved:Http.Listen.listen" [] [] []) =
   some "resolved:Http.Listen.listen"
 
 -- 利用者の操作の opName は、固定域を持つ表が渡されても認定しない。
@@ -199,8 +199,8 @@ private def listenSource : Expr :=
 #guard
   let binding := identityBinding
   let heads : List Expr :=
-    [.primName binding.declaration [.base .unit] [],
-     .primName binding.declaration [] [.mk (fun _ => false) []],
+    [.primName binding.declaration [.base .unit] [] [],
+     .primName binding.declaration [] [.mk (fun _ => false) []] [],
      .funName binding.declaration [.base .unit] [],
      .funName binding.declaration [] [.mk (fun _ => false) []],
      .opName binding.declaration [], .opName binding.declaration [.base .unit],

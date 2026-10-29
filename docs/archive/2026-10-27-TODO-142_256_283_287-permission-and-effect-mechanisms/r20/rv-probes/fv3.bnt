@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+function apply(g: function(path: S.PathIn["/data/a"]) -> S.PathIn["/etc/**"], p: S.PathIn["/data/a"]) -> S.PathIn["/etc/**"]
+ return g(path: p)
+end function
+function f(p: S.PathIn["/data/a"]) -> S.PathIn["/etc/**"]
+ return apply(g: S.widenPathIn, p: p)
+end function

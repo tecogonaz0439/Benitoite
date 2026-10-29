@@ -1,0 +1,348 @@
+{
+  "recorded_at": "2026-10-29T07:57:24.844120+00:00",
+  "judgment_by": "再開担当 Codex、2026-10-29",
+  "base": "98b420af9bf9e6de4eea81bab140efb835529bd9",
+  "head": "98b420af9bf9e6de4eea81bab140efb835529bd9",
+  "branch": "m013/r30.4",
+  "status": "M crates/benitoite/skill/SKILL.md\n M crates/benitoite/skill/references/idioms.md\n M crates/benitoite/skill/references/stdlib/Network.Http.md\n M crates/benitoite/src/builtins/funcs/http_client.rs\n M crates/benitoite/src/builtins/funcs/http_client/checked_request.rs\n M crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs\n M crates/benitoite/src/builtins/funcs/http_client/tests.rs\n M crates/benitoite/src/builtins/funcs/mod.rs\n M crates/benitoite/src/builtins/table.rs\n M crates/benitoite/src/prelude/stdlib/Network/Http.bnt\n M crates/benitoite/tests/io_modes.rs\n M crates/benitoite/tests/l32_http_client.rs\n M crates/benitoite/tests/network_faults.rs\n M crates/benitoite/tests/scoped_calls.rs\n M docs/design/01-spec/01-06-type-system.md\n M docs/design/01-spec/01-07-effects.md\n M docs/design/02-impl/02-08-vm.md\n M docs/design/02-impl/02-09-runtime.md\n M docs/design/03-interop/03-09-network.md\n M docs/design/07-quality/07-01-security-model.md\n M docs/design/07-quality/07-04-formal-semantics.md\n?? crates/benitoite/tests/scoped_calls/http_io.rs\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/changed-inputs.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/compare-selftest.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-lint.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/final-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/generate.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/handler-inventory.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/heap.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/implementation.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/line-counts.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/link-check.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/ports.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/probe-builds.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-before-design.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-design.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-review.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-start-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/r30.4b-work-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/record-files.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/record-final.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/registry-fixed.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/results.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/run-record.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-http.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-notes.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/runtime-sources.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/scoped-http-initial.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserve.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved-state.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/intermediate.cnf\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/intermediate.der\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/leaf.cnf\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/leaf.der\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-preserved/root.der\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia-sources.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.c\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/sectrust-aia.py\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-fixed.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/skill-handwritten-initial.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/test-counts.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/type-handler-notes.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-concurrent.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-faults.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-after-syntax.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-http-final.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-mapped.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/wire-test-notes.md\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-correction.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-correction.patch\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-fixed.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-dry-run.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-remaining.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work-time.log\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work.json\n?? docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.4/work.log",
+  "input_comparison": [
+    {
+      "path": "crates/benitoite/skill/SKILL.md",
+      "previous_sha256": "ddd481513ce25677025faee0c70b8bf1bb6785ea7b0bc9a510f930fcec685d27",
+      "current_sha256": "ddd481513ce25677025faee0c70b8bf1bb6785ea7b0bc9a510f930fcec685d27",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/skill/references/idioms.md",
+      "previous_sha256": "211a58a7395cb43e1fd3713bc8d71cfaecf662e3e453be9db656259f66c4d318",
+      "current_sha256": "211a58a7395cb43e1fd3713bc8d71cfaecf662e3e453be9db656259f66c4d318",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/skill/references/stdlib/Network.Http.md",
+      "previous_sha256": "61a7b66042699494a050c2a975eb9223357c95b125a963430b57e62e29c3cbe0",
+      "current_sha256": "61a7b66042699494a050c2a975eb9223357c95b125a963430b57e62e29c3cbe0",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client.rs",
+      "previous_sha256": "dd65697f3d40b0fee412acd03e850e86361adeee941213692af2935167d0c331",
+      "current_sha256": "dd65697f3d40b0fee412acd03e850e86361adeee941213692af2935167d0c331",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client/checked_request.rs",
+      "previous_sha256": "47d37a5a6634cc14487f54a8f9da59773280b4f04ea80b32f5e72173910324e1",
+      "current_sha256": "47d37a5a6634cc14487f54a8f9da59773280b4f04ea80b32f5e72173910324e1",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs",
+      "previous_sha256": "82e6a78044b2d93a0e468e80a2165f208ddb555d787d6bfe0342505fb83ff1f9",
+      "current_sha256": "82e6a78044b2d93a0e468e80a2165f208ddb555d787d6bfe0342505fb83ff1f9",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/http_client/tests.rs",
+      "previous_sha256": "48e5caea8c8818b64f7836983f22570d8ccce07f7011e191b0af766190bb3dbb",
+      "current_sha256": "48e5caea8c8818b64f7836983f22570d8ccce07f7011e191b0af766190bb3dbb",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/funcs/mod.rs",
+      "previous_sha256": "c2c013237666f0bdb5049a911ca178acb5c1d7d7db86d3c57488d44d3a2bbf7d",
+      "current_sha256": "c2c013237666f0bdb5049a911ca178acb5c1d7d7db86d3c57488d44d3a2bbf7d",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/builtins/table.rs",
+      "previous_sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0",
+      "current_sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/Network/Http.bnt",
+      "previous_sha256": "7003d22af01401ba20baeb8e9f3f30a09e96f4690d4dc0825c26df26809eb597",
+      "current_sha256": "7003d22af01401ba20baeb8e9f3f30a09e96f4690d4dc0825c26df26809eb597",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/io_modes.rs",
+      "previous_sha256": "ff6f774ea67f9d7024d7b9ba2ab98137f606ef518e393877454542d577c23366",
+      "current_sha256": "ff6f774ea67f9d7024d7b9ba2ab98137f606ef518e393877454542d577c23366",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/l32_http_client.rs",
+      "previous_sha256": "78fb20b8f7538d4d20496dfe067ef76ccc20c6cc37de1c9d146ba7b59207009c",
+      "current_sha256": "78fb20b8f7538d4d20496dfe067ef76ccc20c6cc37de1c9d146ba7b59207009c",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/network_faults.rs",
+      "previous_sha256": "017506592464a23be1bc33f433a118c202d13e0619f1f44e9a4b3f6948ee0116",
+      "current_sha256": "017506592464a23be1bc33f433a118c202d13e0619f1f44e9a4b3f6948ee0116",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/scoped_calls.rs",
+      "previous_sha256": "26eba66f2ab5fdd44f0673e8e9691428db2796e3c202f1c40320d4dabbaf7e45",
+      "current_sha256": "26eba66f2ab5fdd44f0673e8e9691428db2796e3c202f1c40320d4dabbaf7e45",
+      "equal": true
+    },
+    {
+      "path": "crates/benitoite/tests/scoped_calls/http_io.rs",
+      "previous_sha256": "cf4e864fb70bb81a74359cc0f8ad93d0a17eb5e0d04ee326ec07f166d636f039",
+      "current_sha256": "cf4e864fb70bb81a74359cc0f8ad93d0a17eb5e0d04ee326ec07f166d636f039",
+      "equal": true
+    },
+    {
+      "path": "docs/design/01-spec/01-06-type-system.md",
+      "previous_sha256": "c8112e1bd149dff2fc8873a4a74bc8c15122790612885ae2bd0378c0547e276c",
+      "current_sha256": "c8112e1bd149dff2fc8873a4a74bc8c15122790612885ae2bd0378c0547e276c",
+      "equal": true
+    },
+    {
+      "path": "docs/design/01-spec/01-07-effects.md",
+      "previous_sha256": "2a5a57ea205101158b94971ec34cddd1f0554b61adba0758e6f36292a9f533e1",
+      "current_sha256": "2a5a57ea205101158b94971ec34cddd1f0554b61adba0758e6f36292a9f533e1",
+      "equal": true
+    },
+    {
+      "path": "docs/design/02-impl/02-08-vm.md",
+      "previous_sha256": "aff8c80e673cc4cbe1843375b14a2d6468cbae9c819bd6cf96bc686937196be6",
+      "current_sha256": "aff8c80e673cc4cbe1843375b14a2d6468cbae9c819bd6cf96bc686937196be6",
+      "equal": true
+    },
+    {
+      "path": "docs/design/02-impl/02-09-runtime.md",
+      "previous_sha256": "f510161731896aa8c886c8c38c46354fd51a44b81b477dc6e7f4ab5247943b88",
+      "current_sha256": "f510161731896aa8c886c8c38c46354fd51a44b81b477dc6e7f4ab5247943b88",
+      "equal": true
+    },
+    {
+      "path": "docs/design/03-interop/03-09-network.md",
+      "previous_sha256": "ed1b4bac4cab9911417c16c808d6b21a857998009cbde04f401b28a5e26f00c0",
+      "current_sha256": "07aa8cf6e570c8bb5f981381a4c6b0665d45c1644e3dbf8e0ee6d3761f7c9fc9",
+      "equal": false
+    },
+    {
+      "path": "docs/design/07-quality/07-01-security-model.md",
+      "previous_sha256": "9fcbc70eab3dc0dabcbac4ccfba52d046b1793314079e042529b3e50728892ac",
+      "current_sha256": "ae33c5a878d658f061e3b5be20564cd4cf6a48838efe33c344e4562713a836e4",
+      "equal": false
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "previous_sha256": "0ea9412142370934d1eb2eb7a0e415fc5cd5fa3dd908341666cb4d24299f7c07",
+      "current_sha256": "625c0c25817322ba263e8c28cd2b18d4f8d7b798fb464dc306e39edc66a44356",
+      "equal": false
+    }
+  ],
+  "restart_changed_design_files": [
+    "docs/design/03-interop/03-09-network.md",
+    "docs/design/07-quality/07-01-security-model.md",
+    "docs/design/07-quality/07-04-formal-semantics.md"
+  ],
+  "config_hashes": {
+    "Cargo.toml": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec",
+    "Cargo.lock": "56231868e475eec4710ffcf2bda766a377facebddee5d6b646f4df3824161fc5",
+    "fuzz/Cargo.toml": "d8045b5ce1533133739c8b3e53c09c7d88fb0f7ce8252f5640028a73d14a16e2",
+    "fuzz/Cargo.lock": "b4a6253aa895fae5f2ddaa391630f8b57be24b2615af9b1452ed19d14e872a5d",
+    "deny.toml": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+    "rust-toolchain.toml": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb",
+    ".cargo/config.toml": "cfa18b92df6134d8b83cbdd1527a08ad31a913cd17b6eac019cc362207e92254",
+    "crates/benitoite/Cargo.toml": "4675b64779af0eed8040c2b73361180d469a9cba4f214317e5375a25e5bc8dc3",
+    "crates/benitoite/build.rs": "d1714c4a92fb57bffeb259581697e92e43fba793984477c701c88f46f52a8d1c",
+    "crates/benitoite/examples/gen_skill.rs": "1dfaede330b34cd5712bd010c0d4c5d69d3c0d88ba28e18c833c8599396fa297",
+    "crates/benitoite/src/cli/tools/skill/generate.rs": "c57083794a25862c7c452735a19dcd2c254cb982de6e553d602c6c10d45ce846",
+    "crates/benitoite/src/cli/tools/skill/bundle.rs": "c0f7bb1aaa810ed900721ffca81e1399eaa94695334f1fef9d7bd1c45318cd0e",
+    "scripts/check.sh": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34",
+    "tools/spec-coverage/spec_coverage.py": "e83327c94896d8e03d2f4f4b48a95ff445222d215275b27acf10f76f94816bd5",
+    "formal/lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+  },
+  "tools": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "python": "3.9.6",
+    "platform": "macOS-27.0.1-arm64-arm-64bit"
+  },
+  "same_environment_as_previous": {
+    "rustc": true,
+    "cargo": true,
+    "python": true,
+    "platform": true
+  },
+  "tls_primary_source_comparison": [
+    {
+      "source": "cargo-registry:ureq-3.4.2/src/tls/rustls.rs",
+      "previous_sha256": "8c99ca8165723e36a6d19b8b6de79bf98d98654391422f1fa79b35bf71d568cd",
+      "current_sha256": "8c99ca8165723e36a6d19b8b6de79bf98d98654391422f1fa79b35bf71d568cd",
+      "equal": true
+    },
+    {
+      "source": "cargo-registry:rustls-platform-verifier-0.7.1/src/verification/apple.rs",
+      "previous_sha256": "c874abb7dcb9b4542f8bddf51df0e3afaafd9ec710feb735c06db6d2988c5a70",
+      "current_sha256": "c874abb7dcb9b4542f8bddf51df0e3afaafd9ec710feb735c06db6d2988c5a70",
+      "equal": true
+    },
+    {
+      "source": "cargo-registry:rustls-platform-verifier-0.7.1/README.md",
+      "previous_sha256": "91f290f98ddd8c363e516f9f5a90db7948fff4d573cae041d2678e5badef393c",
+      "current_sha256": "91f290f98ddd8c363e516f9f5a90db7948fff4d573cae041d2678e5badef393c",
+      "equal": true
+    },
+    {
+      "source": "cargo-registry:security-framework-3.7.0/src/trust.rs",
+      "previous_sha256": "fe9c95b698c01f579afd6e744b5b3d67fa2ff94299e869cd2c8f4b6b317def36",
+      "current_sha256": "fe9c95b698c01f579afd6e744b5b3d67fa2ff94299e869cd2c8f4b6b317def36",
+      "equal": true
+    },
+    {
+      "source": "macOS-sdk:System/Library/Frameworks/Security.framework/Headers/SecTrust.h",
+      "previous_sha256": "2596ae0621bf36c7e5fa4468a4c5a70b29140048ed778f68d0a3d88828d14500",
+      "current_sha256": "2596ae0621bf36c7e5fa4468a4c5a70b29140048ed778f68d0a3d88828d14500",
+      "equal": true
+    }
+  ],
+  "reused_results": {
+    "work": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9"
+      ],
+      "check_exit_code": 1,
+      "outer_wall_seconds": 97.650452541,
+      "maxrss_raw": 2466119680,
+      "maxrss_unit": "bytes",
+      "record_sha256": "6053bbd6de6c0e8d7ccf47b6001be53378709e098458afca5e01036bb5202719",
+      "log_sha256": "e0e91a8548cd216829c7979bd68f07d5b1729e3cf051d977c97f37d44ba8c946"
+    },
+    "registry-fixed": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "benitoite",
+        "--lib",
+        "builtins::table::tests::table_names_parts_capabilities_and_schemes_are_consistent",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 7.4606657919999995,
+      "maxrss_raw": 2919251968,
+      "maxrss_unit": "bytes",
+      "record_sha256": "83880963cbaf4a8634fc527096de3ebbd21a4af63504e5ee1d858dc0b75e55f7",
+      "log_sha256": "0e0b4bb4ec3521e656c4d6f0dba56603337d521bf691b196d7325dc6a85372d8"
+    },
+    "work-remaining": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9",
+        "--only",
+        "fmt,lint_default,tests_related,source_rules,skill_generated,spec_tally",
+        "--test",
+        "*"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 395.02251775,
+      "maxrss_raw": 1507786752,
+      "maxrss_unit": "bytes",
+      "record_sha256": "8e5fcfca5e51c4402251eed81383479108aad655049eb4943ac4e6b612e4b0ec",
+      "log_sha256": "0c119b25cf34932f98eafc236a96bf2449dd803a05e3471f6d2359cbbdf8ed7b"
+    },
+    "ports": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "benitoite",
+        "--test",
+        "network_faults",
+        "get_send_and_send_in_expose_all_four_fault_kinds_through_run_and_cli",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 4.825821083,
+      "maxrss_raw": 1374961664,
+      "maxrss_unit": "bytes",
+      "record_sha256": "a9a9cf34584d0337d6c63503d4818d2e99feb0ad4f447c58d9da0e7a54f512bf",
+      "log_sha256": "4d3c3e48e35fa64d2154ab29c0a189d1ddecee33b663fd3a393303d6817938f9"
+    },
+    "final-lint": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9",
+        "--only",
+        "fmt,lint_default"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 8.628107541,
+      "maxrss_raw": 1469186048,
+      "maxrss_unit": "bytes",
+      "record_sha256": "0dc9836d9ea71653a421c63a8a4cd3d14d73fc4d9a57087d928ffdc8ab28daeb",
+      "log_sha256": "3678c0e942304b6bb91bb2042384cb5dac9261a5a560ceaafa7ee136e7e36b3e"
+    },
+    "heap": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "98b420af9bf9e6de4eea81bab140efb835529bd9",
+        "--only",
+        "doc_default,heap_local,stress_local",
+        "--test",
+        "runtime_builtins",
+        "--test",
+        "vm_handlers",
+        "--test",
+        "io_modes",
+        "--test",
+        "l32_http_client"
+      ],
+      "check_exit_code": 0,
+      "outer_wall_seconds": 120.93307975,
+      "maxrss_raw": 2346614784,
+      "maxrss_unit": "bytes",
+      "record_sha256": "fe5f8f3ed0dc318bfeee77026ad3e181056470083a221b8771ac99330b5f099d",
+      "log_sha256": "088b9fc1140cce2eb389932954761e0cc10c0488c38d58862258ce841927d03c"
+    }
+  },
+  "headings_equal": {
+    "docs/design/03-interop/03-09-network.md": true,
+    "docs/design/07-quality/07-01-security-model.md": true,
+    "docs/design/07-quality/07-04-formal-semantics.md": true
+  },
+  "fenced_blocks_equal": {
+    "docs/design/03-interop/03-09-network.md": true,
+    "docs/design/07-quality/07-01-security-model.md": true,
+    "docs/design/07-quality/07-04-formal-semantics.md": true
+  },
+  "new_work_ids": [],
+  "local_links_checked": 134,
+  "missing_links": [],
+  "diff_check_exit_code": 0,
+  "index_unchanged": true,
+  "edited_paths_outside_scope": [],
+  "local_absolute_path_leaks": [],
+  "generated_sources_and_outputs_unchanged": true,
+  "remaining_selected_checks_after_citation": [],
+  "excluded": "lake build・check-formal.sh・short・本番TLS/OCSPの追加試験は未実施",
+  "working_diff_sha256": "b69271f8a52dff6039e57b190af0067174caa70722a7c4ff1094cd6bc62ad99d",
+  "results_sha256": "b7d84a17559da9094386e60bd58648809062132a7e07b620d9df9f723d938ea7",
+  "untracked_test_input_sha256": "cf4e864fb70bb81a74359cc0f8ad93d0a17eb5e0d04ee326ec07f166d636f039"
+}

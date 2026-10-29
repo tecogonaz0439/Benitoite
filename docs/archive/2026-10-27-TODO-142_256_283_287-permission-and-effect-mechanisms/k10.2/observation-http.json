@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "l32_http_client",
+    "send_in_returns_redirects_without_connecting_to_location",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "startedUtc": "2026-10-29T12:12:38.853519+00:00",
+  "returncode": 0,
+  "outerSeconds": 3.8930652090000004,
+  "maxRssBytesAuxiliary": 679034880,
+  "expectedSha256": "7155330a43deddcf7abaa264a5d5db30e2408a7ad9c25f235b94733e48c4122e",
+  "scope": "existing runtime test, default features; Direct and Request VM modes within each test"
+}

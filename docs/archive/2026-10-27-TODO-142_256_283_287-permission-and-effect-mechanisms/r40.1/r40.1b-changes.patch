@@ -1,0 +1,347 @@
+--- a/crates/benitoite/skill/references/diagnostics.md
++++ b/crates/benitoite/skill/references/diagnostics.md
+@@ -1935,25 +1935,25 @@
+ - Kind: check (error)
+ - Message: effect `{effect}` is not covered by one surrounding atom ({reason})
+ - Label: `{effect}` is not covered by `{expected}`
+-- `scope_check`: the range arguments of check `{effect}` do not cover the required scope ({reason})
+-- `scope_projection`: the range arguments of projection `{effect}` do not cover the required scope ({reason})
+-- `scope_widen`: the range arguments of widening `{effect}` do not cover the required scope ({reason})
+-- `scope_rule`: the range arguments of this direct call must cover the ranges selected by the local Scope rule
++- `scope_check`: the scope arguments of the annotated contract for check `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})
++- `scope_projection`: the scope arguments of the annotated contract for projection `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})
++- `scope_widen`: the scope arguments of the annotated contract for widening `{effect}` (requiredUpperBound) do not satisfy scope coverage for the locally selected source (knownUpperBound) and the destination ({reason})
++- `scope_rule`: the scope arguments of the annotated contract (requiredUpperBound) must cover the scope selected by the local Scope rule for this call (knownUpperBound); for widening, the destination must also cover the source contract
+ - `scope_numbering`: Scope numbering for this definition exceeded the limit of {numberingLimit} events; all Scope rules in this definition require Top
+-- `scope_budget`: the final local Scope analysis Run still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable
+-- `atomic`: two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked
+-- `uncovered`: no one surrounding atom of the same name covers the required scope
+-- `unknown`: the required scope is Top (all targets); only a surrounding Top atom of the same name covers it
++- `scope_budget`: the final pass of local Scope analysis still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable
++- `atomic`: two or more closed surrounding atoms (requiredUpperBound) have the same name, but no one atom covers the incoming scope (knownUpperBound); coverage by their union is not checked
++- `uncovered`: no one surrounding atom of the same name (requiredUpperBound) covers the incoming scope (knownUpperBound)
++- `unknown`: the incoming scope (knownUpperBound) is Top (all targets); only a surrounding Top atom of the same name in requiredUpperBound covers it
+ - `declared`: declared here
+ - `scope_numbering_help`: split this definition into smaller definitions, or reduce its size and shared constant expansion
+-- `scopes`: to keep the surrounding contract, use an entry whose declared scope it covers; to permit a broader scope, explicitly enlarge the surrounding uses annotation to cover the required scope in one atom
+-- `top`: to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation
+-- `top_write`: to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation
+-- `top_endpoint`: to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation
+-- `scope_unknown`: for a nested projection or widening, move the call to the right-hand side of `bind`, then use that name. If the input has only a narrow parameter annotation, one option is to remove its scope arguments; widening a Top input also requires a result without scope arguments. To preserve the narrow contract, forward the value with the same narrow type instead. For a handler clause parameter, `bind` alone does not establish provenance; using Top also requires the protected body to select Top and may require a broader uses annotation
++- `scopes`: to keep the surrounding contract, use a callee or entry whose declared scope is covered by one surrounding atom; to permit a broader scope, explicitly enlarge the surrounding `uses` annotation to cover the incoming scope in one atom
++- `top`: to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation
++- `top_write`: to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation
++- `top_endpoint`: to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation
++- `scope_unknown`: If the call is nested in an expression, move it to the right-hand side of `bind` and use that name. If the value is a parameter or handler clause parameter with only a narrow type annotation, `bind` alone does not establish provenance. To keep the narrow contract, do not project or widen it here: pass it unchanged to a scoped entry that accepts the same narrow type, such as `File.readTextIn`, or widen it in the caller where the checked value is bound and declare the parameter with the wider type. To accept all targets instead, remove the parameter's scope arguments; callers must then widen to the unscoped type with `Scope.widenPathIn` or `Http.widenRequestIn`. Widening a Top input also requires a result without scope arguments. For a handler clause parameter, using Top also requires the protected body to select Top and may require a broader `uses` annotation.
+ - `scope_check_unknown`: to keep a bounded contract, pass literal or statically known constant check conditions and annotate the checked result with a covered scope; to allow an unknown condition, use a result type without scope arguments (Top)
+-- `scope_coverage`: to keep the contract, use check conditions and a result annotation covered by it; for widening, ensure the destination covers the source; to allow a broader scope, enlarge the annotation explicitly
+-- `scope_budget_help`: split this definition into smaller definitions to retain local provenance; alternatively, remove scope arguments from the annotation to allow Top
++- `scope_coverage`: to keep the contract, change the check conditions so that the annotated result scope covers them; for widening, choose a destination that covers the source; to permit a broader scope, explicitly enlarge the annotation
++- `scope_budget_help`: split this definition into smaller definitions to retain local provenance (this helps only if the check conditions or checked values are statically known after splitting); alternatively, remove scope arguments from the annotation to allow Top
+ 
+ An atom of the same name exists in the surrounding effects, but none covers the required scope. Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.
+ 
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -972,25 +972,25 @@
+         "A failure handle contains exactly one Failure.raise clause.";
+ 
+     E0519 Check "effect `{effect}` is not covered by one surrounding atom ({reason})" "`{effect}` is not covered by `{expected}`"
+-        [scope_check: "the range arguments of check `{effect}` do not cover the required scope ({reason})",
+-         scope_projection: "the range arguments of projection `{effect}` do not cover the required scope ({reason})",
+-         scope_widen: "the range arguments of widening `{effect}` do not cover the required scope ({reason})",
+-         scope_rule: "the range arguments of this direct call must cover the ranges selected by the local Scope rule",
++        [scope_check: "the scope arguments of the annotated contract for check `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})",
++         scope_projection: "the scope arguments of the annotated contract for projection `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})",
++         scope_widen: "the scope arguments of the annotated contract for widening `{effect}` (requiredUpperBound) do not satisfy scope coverage for the locally selected source (knownUpperBound) and the destination ({reason})",
++         scope_rule: "the scope arguments of the annotated contract (requiredUpperBound) must cover the scope selected by the local Scope rule for this call (knownUpperBound); for widening, the destination must also cover the source contract",
+          scope_numbering: "Scope numbering for this definition exceeded the limit of {numberingLimit} events; all Scope rules in this definition require Top",
+-         scope_budget: "the final local Scope analysis Run still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable",
+-         atomic: "two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked",
+-         uncovered: "no one surrounding atom of the same name covers the required scope",
+-         unknown: "the required scope is Top (all targets); only a surrounding Top atom of the same name covers it",
++         scope_budget: "the final pass of local Scope analysis still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable",
++         atomic: "two or more closed surrounding atoms (requiredUpperBound) have the same name, but no one atom covers the incoming scope (knownUpperBound); coverage by their union is not checked",
++         uncovered: "no one surrounding atom of the same name (requiredUpperBound) covers the incoming scope (knownUpperBound)",
++         unknown: "the incoming scope (knownUpperBound) is Top (all targets); only a surrounding Top atom of the same name in requiredUpperBound covers it",
+          declared: "declared here",
+          scope_numbering_help: "split this definition into smaller definitions, or reduce its size and shared constant expansion",
+-         scopes: "to keep the surrounding contract, use an entry whose declared scope it covers; to permit a broader scope, explicitly enlarge the surrounding uses annotation to cover the required scope in one atom",
+-         top: "to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation",
+-         top_write: "to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation",
+-         top_endpoint: "to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract; to permit all targets, declare the same effect without scope arguments in the surrounding uses annotation",
+-         scope_unknown: "for a nested projection or widening, move the call to the right-hand side of `bind`, then use that name. If the input has only a narrow parameter annotation, one option is to remove its scope arguments; widening a Top input also requires a result without scope arguments. To preserve the narrow contract, forward the value with the same narrow type instead. For a handler clause parameter, `bind` alone does not establish provenance; using Top also requires the protected body to select Top and may require a broader uses annotation",
++         scopes: "to keep the surrounding contract, use a callee or entry whose declared scope is covered by one surrounding atom; to permit a broader scope, explicitly enlarge the surrounding `uses` annotation to cover the incoming scope in one atom",
++         top: "to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
++         top_write: "to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
++         top_endpoint: "to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
++         scope_unknown: "If the call is nested in an expression, move it to the right-hand side of `bind` and use that name. If the value is a parameter or handler clause parameter with only a narrow type annotation, `bind` alone does not establish provenance. To keep the narrow contract, do not project or widen it here: pass it unchanged to a scoped entry that accepts the same narrow type, such as `File.readTextIn`, or widen it in the caller where the checked value is bound and declare the parameter with the wider type. To accept all targets instead, remove the parameter's scope arguments; callers must then widen to the unscoped type with `Scope.widenPathIn` or `Http.widenRequestIn`. Widening a Top input also requires a result without scope arguments. For a handler clause parameter, using Top also requires the protected body to select Top and may require a broader `uses` annotation.",
+          scope_check_unknown: "to keep a bounded contract, pass literal or statically known constant check conditions and annotate the checked result with a covered scope; to allow an unknown condition, use a result type without scope arguments (Top)",
+-         scope_coverage: "to keep the contract, use check conditions and a result annotation covered by it; for widening, ensure the destination covers the source; to allow a broader scope, enlarge the annotation explicitly",
+-         scope_budget_help: "split this definition into smaller definitions to retain local provenance; alternatively, remove scope arguments from the annotation to allow Top"]
++         scope_coverage: "to keep the contract, change the check conditions so that the annotated result scope covers them; for widening, choose a destination that covers the source; to permit a broader scope, explicitly enlarge the annotation",
++         scope_budget_help: "split this definition into smaller definitions to retain local provenance (this helps only if the check conditions or checked values are statically known after splitting); alternatively, remove scope arguments from the annotation to allow Top"]
+         "An atom of the same name exists in the surrounding effects, but none covers the required scope. Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.";
+ 
+     E0520 Check "invalid scope arguments for `{name}` (expected {expectedScopeKind})" "invalid scope argument"
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -1089,7 +1089,13 @@
+         escaped: Option<Escape>,
+         effect_mismatch: bool,
+     ) {
+-        let (expected, found) = types;
++        // ScopeResult の補助制約は (生成した成功型, 注釈で決まった型) の順である。
++        // 型の解決順は保ち、E0401 の表示だけを通常の (注釈, 値) にそろえる。
++        let (expected, found) = if code == DiagCode::E0401 && r.kind == ReasonKind::ScopeResult {
++            (types.1, types.0)
++        } else {
++            types
++        };
+         if r.kind == ReasonKind::LambdaReturn
+             && ctx
+                 .lambda_body_ends
+@@ -2543,11 +2549,11 @@
+                         }
+                         let mut diagnostic = builder.build();
+                         for (key, value) in [
++                            (super::text::SCOPE_REASON, reason),
+                             (super::text::SCOPE_REQUIRED_UPPER_BOUND, expected.as_str()),
+                             (super::text::SCOPE_KNOWN_UPPER_BOUND, name.as_str()),
+                             (super::text::SCOPE_UNCOVERED_ATOM, name.as_str()),
+                             (super::text::SCOPE_SOURCE, super::text::SCOPE_EFFECT_SOURCE),
+-                            (super::text::SCOPE_REASON, reason),
+                         ] {
+                             diagnostic.notes.push(super::text::scope_field(key, value));
+                         }
+--- a/crates/benitoite/src/typeck/text.rs
++++ b/crates/benitoite/src/typeck/text.rs
+@@ -113,7 +113,7 @@
+ pub(super) const SCOPE_BUDGET_WHOLE: &str = "whole";
+ pub(super) const SCOPE_BUDGET_OPERATIONS: &str = "operations";
+ pub(super) const SCOPE_BUDGET_ITEMS: &str = "items";
+-pub(super) const SCOPE_RULE_CONTRACT: &str = "the required scope contract";
++pub(super) const SCOPE_RULE_CONTRACT: &str = "the annotated scope contract (requiredUpperBound)";
+ pub(super) fn scope_key(definition: &str, preorder: Option<u64>) -> String {
+     match preorder {
+         Some(preorder) => format!("scope call: {definition} at surface preorder {preorder}"),
+@@ -142,8 +142,7 @@
+     "no local provenance for the same successful checked value at this call";
+ pub(super) const SCOPE_NUMBERING_SOURCE: &str =
+     "numbering stopped; every Scope rule in this definition requires Top";
+-pub(super) const SCOPE_BUDGET_SOURCE: &str =
+-    "the final local analysis run remains over budget; checked-value provenance was forgotten";
++pub(super) const SCOPE_BUDGET_SOURCE: &str = "the final pass of local Scope analysis remains over budget; checked-value provenance was forgotten";
+ pub(super) const SCOPE_EFFECT_SOURCE: &str = "the effect flowing from this call or expression";
+ 
+ pub(super) fn scope_field(name: &str, value: &str) -> String {
+--- a/crates/benitoite/tests/cli_process/scoped_diagnostics.rs
++++ b/crates/benitoite/tests/cli_process/scoped_diagnostics.rs
+@@ -1,6 +1,7 @@
+ //! 関門: CLI の範囲診断に、拒否理由・注釈の位置と実行できる修正案を残す。
+ //! 規則の単体検査では届かない英文の退行と JSON 化の欠落を守り、案内を当てた
+-//! ソースも同じ CLI で受理する。本番の差し込み口や規則の模倣は加えない。
++//! ソースも呼び出し元を含めて同じ CLI で受理する。引数だけの空の例では
++//! 型不変性による呼び出し元の失敗を捕まえられない。本番の差し込み口は加えない。
+ 
+ use super::{TestDirectory, command, exit_code};
+ use serde_json::Value;
+@@ -82,6 +83,10 @@
+         "Scope.checkPathIn"
+     );
+     assert_eq!(
++        result_diagnostic["primary"]["label"],
++        "expected `Integer`, found `Scope.PathIn[\"/data/**\"]`"
++    );
++    assert_eq!(
+         result_diagnostic["notes"],
+         serde_json::json!([
+             "the result of this scope check or widening must match its annotated or inferred type"
+@@ -105,6 +110,14 @@
+     let guidance = diagnostic["helps"].to_string();
+     assert!(guidance.contains("File.readTextIn"), "{diagnostic}");
+     assert!(guidance.contains("annotation"), "{diagnostic}");
++    assert!(guidance.contains("callee's `uses`"), "{diagnostic}");
++    assert!(
++        diagnostic["notes"][0]
++            .as_str()
++            .unwrap()
++            .contains("incoming scope (knownUpperBound) is Top"),
++        "{diagnostic}"
++    );
+     // 契約を維持する検査と In 入口、および契約を Top に広げる修正を別々に通す。
+     let bounded = format!(
+         "{imports}import Benitoite.Unofficial.Scope\nfunction sample(path: String) -> Result[String, IOError] uses File.Read[\"/**\"]\n bind checked: Result[Scope.PathIn[\"/**\"], Scope.ScopeError] <- Scope.checkPathIn(pattern: \"/**\", path: path)\n return match checked with\n case Result.Ok(checkedPath) -> File.readTextIn(path: checkedPath)\n case Result.Error(_) -> Result.Ok(\"failed check\")\n end match\nend function\n"
+@@ -150,6 +163,13 @@
+         diagnostic["message"]
+             .as_str()
+             .unwrap()
++            .contains("scope arguments of the annotated contract"),
++        "{diagnostic}"
++    );
++    assert!(
++        diagnostic["message"]
++            .as_str()
++            .unwrap()
+             .contains("notCovered"),
+         "{diagnostic}"
+     );
+@@ -235,6 +255,14 @@
+     );
+     assert!(notes.contains("literal"), "{diagnostic}");
+     assert!(!notes.contains("numbering"), "{diagnostic}");
++    assert!(notes.contains("the final pass of local Scope analysis"));
++    assert!(
++        diagnostic["helps"][0]["message"]
++            .as_str()
++            .unwrap()
++            .contains("only if the check conditions or checked values are statically known"),
++        "{diagnostic}"
++    );
+     check(
+         &directory,
+         "local-budget-top-repair",
+@@ -326,6 +354,7 @@
+             );
+             let help = diagnostic["helps"].to_string();
+             assert!(help.contains("bind"), "{diagnostic}");
++            assert!(help.contains("widen it in the caller"), "{diagnostic}");
+             let repaired = source.replace(
+                 &format!("consume(value: {call})"),
+                 &format!("bind extracted: {output_type} <- {call}\n consume(value: extracted)"),
+@@ -361,6 +390,31 @@
+                 &repaired,
+                 None,
+             );
++            // 裸の仮引数に変えるだけでは、狭い実引数は不変性により渡せない。
++            let caller = format!(
++                "function caller(raw: {raw}) -> Unit\n bind checked: Result[{ty}{narrow}, {error}] <- {check_call}\n match checked with\n case Result.Ok(value) ->\n  bind _ <- sample(value: value)\n  ()\n case Result.Error(_) -> ()\n end match\nend function\n"
++            );
++            check(
++                &directory,
++                &format!("{prefix}-{widening}-caller-bare"),
++                &format!("{repaired}{caller}"),
++                Some("E0401"),
++            );
++            let widen_operation = if path {
++                "Scope.widenPathIn"
++            } else {
++                "Http.widenRequestIn"
++            };
++            let caller = caller.replace(
++                "bind _ <- sample(value: value)",
++                &format!("bind wideValue: {ty} <- {widen_operation}({argument}: value)\n  bind _ <- sample(value: wideValue)"),
++            );
++            check(
++                &directory,
++                &format!("{prefix}-{widening}-caller-bare-widen"),
++                &format!("{repaired}{caller}"),
++                None,
++            );
+             let clause_call = call.replace(": value)", ": captured)");
+             let clause = format!(
+                 "{imports}function sample({argument}: {ty}{narrow}) -> {result} uses {effect}{narrow}\n return handle {io}({argument}: {argument}) with\n case {io}(captured) ->\n bind extracted: {output_type} <- {clause_call}\n resume({success})\n end handle\nend function\n"
+@@ -381,7 +435,7 @@
+             );
+             let help = diagnostic["helps"].to_string();
+             assert!(
+-                help.contains("clause") && help.contains("forward"),
++                help.contains("clause") && help.contains("pass it unchanged to a scoped entry"),
+                 "{diagnostic}"
+             );
+             let repaired = clause.replace(narrow, "");
+@@ -398,15 +452,46 @@
+                 None,
+             );
+         }
+-        // 同じ狭い型のまま転送する案は上限を Top に広げずに受理できる。
+-        let forwarded = format!(
+-            "{imports}function accept({argument}: {ty}{narrow}) -> {result}\n return {success}\nend function\nfunction sample({argument}: {ty}{narrow}) -> {result} uses {effect}{narrow}\n return handle {io}({argument}: {argument}) with\n case {io}(captured) -> resume(accept({argument}: captured))\n end handle\nend function\n"
++        let caller = format!(
++            "function caller(raw: {raw}) -> {result} uses {effect}{narrow}\n bind checked: Result[{ty}{narrow}, {error}] <- {check_call}\n return match checked with\n case Result.Ok(value) -> sample({argument}: value)\n case Result.Error(_) -> {success}\n end match\nend function\n"
+         );
+-        check(
+-            &directory,
+-            &format!("{prefix}-forward-clause"),
+-            &forwarded,
+-            None,
+-        );
++        let projection = if path {
++            "Scope.pathInValue"
++        } else {
++            "Http.requestInValue"
++        };
++        // 転送先で射影すると由来を得られず再び拒否される。範囲付き IO への
++        // 直接の転送なら、関数・節の引数とも狭い契約と呼び出し元を保てる。
++        for (name, accept_body, sample_body, code) in [
++            (
++                "forward-project",
++                format!(
++                    "bind extracted: {raw} <- {projection}({argument}: value)\n return {success}"
++                ),
++                format!(
++                    "return handle {io}({argument}: {argument}) with\n case {io}(captured) -> resume(accept(value: captured))\n end handle"
++                ),
++                Some("E0519"),
++            ),
++            (
++                "param-forward-io",
++                format!("return {io}({argument}: value)"),
++                format!("return accept(value: {argument})"),
++                None,
++            ),
++            (
++                "clause-forward-io",
++                format!("return {io}({argument}: value)"),
++                format!(
++                    "return handle {io}({argument}: {argument}) with\n case {io}(captured) -> resume(accept(value: captured))\n end handle"
++                ),
++                None,
++            ),
++        ] {
++            let source = format!(
++                "{imports}function accept(value: {ty}{narrow}) -> {result} uses {effect}{narrow}\n {accept_body}\nend function\nfunction sample({argument}: {ty}{narrow}) -> {result} uses {effect}{narrow}\n {sample_body}\nend function\n{caller}"
++            );
++            check(&directory, &format!("{prefix}-{name}"), &source, code);
++        }
+     }
+ }
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -121,7 +121,7 @@
+ 
+ 範囲を通常の型制約へ結び付ける補助制約では、元の引数の制約と、検査・拡大の戻り値の制約を区別する。元の引数の不一致はその引数の位置と引数番号を示す。戻り値を確定する制約は呼び出しの位置と、結果が注釈または推論した型に一致する必要があることを示し、引数1の不一致として報告しない。理由: 射影・拡大の具体化を補う制約を呼び出し引数の説明で一括すると、戻り型の修正が必要な入力でも引数を直すように読めるためである。
+ 
+-【決定】型付けの検査の後に、全ての定義と実装メソッドの本体を受理する。各呼び出しで全記録状態の選択を確かめ、無記録なら事実のない状態を使う。規則が選ぶ位置だけに被覆を要求し、列の個数・種類と widen の被覆は標準署名でも検査する。最初の拒否を E0519 とし、定義名・確定した先行順番号・`notCovered`・`unknownSource`・`budgetExceeded` を示す。番号付けが予算で止まった本体の番号は未確定とし、途中の番号を補わない。効果原子の和での被覆の拒否は従来の `atomicCoverOnly` に従う。 診断の補足には、確定した契約 `requiredUpperBound`、規則が選んだ範囲 `knownUpperBound`、理由 `reason`、成功値の由来 `source` を示す。効果の被覆の拒否には `uncoveredAtom` も示す。主位置と補助位置、欄の意味と修正案は[診断エンジン](02-10-diagnostics.md#診断の内部の表現)に従う。
++【決定】型付けの検査の後に、全ての定義と実装メソッドの本体を受理する。各呼び出しで全記録状態の選択を確かめ、無記録なら事実のない状態を使う。規則が選ぶ位置だけに被覆を要求し、列の個数・種類と widen の被覆は標準署名でも検査する。最初の拒否を E0519 とし、定義名・確定した先行順番号・`notCovered`・`unknownSource`・`budgetExceeded` を示す。番号付けが予算で止まった本体の番号は未確定とし、途中の番号を補わない。効果原子の和での被覆の拒否は従来の `atomicCoverOnly` に従う。診断の補足には、確定した契約 `requiredUpperBound`、規則が選んだ範囲 `knownUpperBound`、理由 `reason`、成功値の由来 `source` を示す。効果の被覆の拒否には `uncoveredAtom` も示す。主位置と補助位置、欄の意味と修正案は[診断エンジン](02-10-diagnostics.md#診断の内部の表現)に従う。
+ 
+ Scope の予算の超過は Scope の由来だけを忘れ、区間解析の状態・予算・警告候補を変更しない。区間解析の停止や警告候補も、型制約、確定済みの範囲の列、宣言の契約を変更しない。本体の型検査または既知の不良の追加検査で誤りがあれば、その本体の区間解析の入力を無効にする。全本体の後の必須の受理が出す E0519 はこの無効化を行わない。いずれの場合も、ほかの正常な本体の警告の収集は続ける。`--deny-warnings` による警告の昇格は、型検査後のパイプラインの処理である。
+ 
+--- a/docs/design/02-impl/02-10-diagnostics.md
++++ b/docs/design/02-impl/02-10-diagnostics.md
+@@ -49,7 +49,7 @@
+ 
+ 理由は必要な原子の範囲が Top なら `unknownSource` とする。Top でない閉じた範囲なら、上限に同じ名前の Top でない閉じた原子が二つ以上ある場合は `atomicCoverOnly`、それ以外（範囲変数を含む）は `notCovered` とする。`atomicCoverOnly` は同名の非 Top の閉じた原子が二つ以上ある場合の保守的な分類である。その注記は一原子では覆えないことと、和による被覆は判定しないことを示し、和なら覆えるとは断定しない。`notCovered` の注記は同名のどの一原子も覆わないことを示す。どちらも包含を確認できないという診断であり、対象が必ず範囲外であるとは主張しない。
+ 
+-修正案では、現在の契約を保つ変更と、契約を広げる変更を分ける。前者は、契約が宣言範囲を覆う入口を使うことである。例えば Top の `File.readText` を範囲付きの契約の下で使った場合は、`Scope.checkPathIn` で検査し、成功型に契約が覆う範囲を注釈し、`File.readTextIn` を使うよう案内する。`File.Read["/**"]` も Top を覆わないため、全パスを表すこの注釈の下でも同じ案内を使う。`File.Write` には `File.writeTextIn`、`Http.Connect` には `Http.checkRequestIn` と `Http.sendIn` を例示し、その効果に対応する入口を案内する。後者は、必要な範囲を一原子で覆うよう `uses` の上限を明示的に広げることであり、Top を許すなら同じエフェクトの範囲引数を省略する。宣言を自動で拡大する修正は付けない。
++修正案では、現在の契約を保つ変更と、契約を広げる変更を分ける。前者は、契約が宣言範囲を覆う入口を使うか、呼び先の `uses` の上限を狭めることである。例えば Top の `File.readText` を範囲付きの契約の下で使った場合は、`Scope.checkPathIn` で検査し、成功型に契約が覆う範囲を注釈し、`File.readTextIn` を使うよう案内する。`File.Read["/**"]` も Top を覆わないため、全パスを表すこの注釈の下でも同じ案内を使う。`File.Write` には `File.writeTextIn`、`Http.Connect` には `Http.checkRequestIn` と `Http.sendIn` を例示し、その効果に対応する入口を案内する。後者は、必要な範囲を一原子で覆うよう `uses` の上限を明示的に広げることであり、Top を許すなら同じエフェクトの範囲引数を省略する。宣言を自動で拡大する修正は付けない。
+ 
+ 【決定】純粋な Scope の検査・射影・明示拡大の必須の判定も E0519 で拒否する。主位置は呼び出しとし、主文は三つの役割を区別する。既知の範囲を契約が覆わない場合は `notCovered`、由来を認定できず Top を要求する場合は `unknownSource` とする。型に明示した Top も `unknownSource` である。局所解析の最後の Run が予算を超えていれば、地点によらず Top の位置の理由を `budgetExceeded` とする。既に記録した非 Top の範囲や、リテラルから読める非 Top の範囲は、この理由に変えない。番号付けの予算超過は実装固有の資源制限として全規則に Top を要求し、予算超過として報告する。番号付けの停止の注記には、この定義の番号イベントの上限と全規則が Top を要求することを示し、定義を分けるか小さくする修正案を付ける。局所解析の超過の注記には、本体か全体か、操作数か保持数かと、由来を忘れるがリテラルのパターンは読めることを示す。番号付けを完了した呼び出しでは定義名と先行順番号を保ち、番号付けを停止した場合だけ番号を取得不能と示す。
+ 
+@@ -65,11 +65,11 @@
+ | `reason` | `notCovered`・`atomicCoverOnly`・`unknownSource` | `notCovered`・`unknownSource`・`budgetExceeded` |
+ | `source` | 原子の由来の説明と主位置 | 既知の検査条件、または成功値の由来となる検査の鍵と位置。由来を認定できなければその旨 |
+ 
+-純粋な必須判定の主位置は拒否した呼び出しとし、取得できる契約の注釈と、既知の成功値の由来となる検査を補助位置に示す。番号付けの停止と局所解析の超過は別の注記とし、後者には本体／全体、操作数／保持数の区分を付ける。`source` は権限の一覧や許可の集合へ混ぜない。E0520 は不正な範囲引数を主位置とし、期待する形式 `expectedScopeKind` と入力の字面 `found` を示す。`Scope.PathIn` はパスの文字列一つ、`Http.RequestIn` はホストとポートの一組だけを受け取ることを期待する形式に明記する。引数を取らない利用者エフェクトや、値型引数を取る `Failure.Fail` の型・範囲引数の不正は E0513 を保つ。
+-
+-【決定】由来が未知の射影・拡大の修正案は、入れ子の式の位置と、狭い引数の注釈だけを持つ位置を区別して説明する。前者は射影・拡大の結果にいったん `bind` で名前を付けてから使う。後者は引数を範囲引数のない型にするか、同じ狭い型を受け取る関数へ値をそのまま渡す。Top の入力を拡大する場合は、戻り型も範囲引数を省略した Top にする必要がある。ハンドラの狭い節引数も入口で由来を持たず、`bind` に置くだけでは射影・拡大できない。裸の型を使うには保護本体から選ぶ範囲も Top とする必要があり、IO の上限が広がる変更を元の契約を保つ修正として示さない。受理する位置は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+-
+-【決定】E0521 は、関数の再推論の上限に達しても、ハンドラで選んだ範囲が最終の保護本体の効果と一致しないことを伝える。主位置は不一致となった `handle` とし、保護本体が使う callback の関数型とエフェクトを明記するか、ハンドラ間の依存を簡略化する修正案を示す。節の引数には型注釈を書けない。この上限へ自然に到達する入力と、案内した変更による解消の効果は未確認であり、この修正案は収束を保証しない。上限と const の先行拒否は[型検査器](02-05-typechecker.md)の「型とエフェクトの表現」で定める。
++主文と規則の説明でも、契約を `requiredUpperBound`、局所規則が選ぶ範囲を `knownUpperBound` として区別する。補足欄は効果の被覆と純粋な必須判定の双方で `reason`、`requiredUpperBound`、`knownUpperBound`、効果の被覆だけの `uncoveredAtom`、`source` の順に示す。純粋な必須判定の主位置は拒否した呼び出しとし、取得できる契約の注釈と、既知の成功値の由来となる検査を補助位置に示す。番号付けの停止と局所解析の超過は別の注記とし、後者には本体／全体、操作数／保持数の区分を付ける。`source` は権限の一覧や許可の集合へ混ぜない。E0520 は不正な範囲引数を主位置とし、期待する形式 `expectedScopeKind` と入力の字面 `found` を示す。`Scope.PathIn` はパスの文字列一つ、`Http.RequestIn` はホストとポートの一組だけを受け取ることを期待する形式に明記する。引数を取らない利用者エフェクトや、値型引数を取る `Failure.Fail` の型・範囲引数の不正は E0513 を保つ。
++
++【決定】由来が未知の射影・拡大の修正案は、入れ子の式の位置と、狭い型の注釈だけを持つ関数・節の引数を区別して説明する。前者は呼び出しを `bind` の右辺へ出し、その名前を使う。後者は `bind` に置くだけでは由来を得られない。狭い契約を保つには、その位置で射影・拡大せず、`File.readTextIn` など同じ狭い型を受け取る範囲付きの入口へ値をそのまま渡すか、検査済みの値が束縛されている呼び出し元で必要な範囲へ拡大し、引数をその広い型にする。全対象を受け取る契約へ広げるには、引数の範囲引数を外し、呼び出し元で `Scope.widenPathIn`・`Http.widenRequestIn` を使って範囲引数のない Top の型へ拡大してから渡す。Top の入力をさらに拡大する場合は、戻り型も Top とする必要がある。節の引数を Top にするには、保護本体が選ぶ範囲も Top とする必要があり、`uses` の上限を広げる必要がある場合もある。この変更を元の狭い契約を保つ修正として示さない。受理する位置は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
++
++【決定】E0521 は、関数の再推論の上限に達しても、ハンドラで選んだ範囲が最終の保護本体の効果と一致しないことを伝える。主位置は不一致となった `handle` とし、保護本体が使う callback の関数型とエフェクトを明記するか、ハンドラ間の依存を簡略化する修正案を示す。節の引数には型注釈を書けない。この修正案は収束を保証しない。上限と const の先行拒否は[型検査器](02-05-typechecker.md)の「型とエフェクトの表現」で定める。
+ 
+ 文言と注記・修正案の型板は `diag::codes`、理由の列挙値と動的に組み立てる補足は各モジュールの `text` に置く。CLI の E0512 は名前集合の不足、旧 Scope の E0459〜E0462 は既知の条件・対象の不良を扱い、E0519 の包含の未確認と混同しない。
+ 

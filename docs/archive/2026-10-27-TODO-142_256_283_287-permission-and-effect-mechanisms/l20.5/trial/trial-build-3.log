@@ -1,0 +1,836 @@
+== wait-for-lock start 02:06:30
+== lock acquired 02:06:30 after 0s
+✔ [129/436] Built Benitoite.Release.WellFormed (440ms)
+✔ [131/436] Built Benitoite.Release.Lemmas.TyLemmas (783ms)
+✖ [132/436] Building Benitoite.Release.Admissible (746ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Admissible.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Admissible.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Admissible.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Admissible.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Admissible.setup.json --json
+error: Benitoite/Release/Admissible.lean:60:38: Application type mismatch: The argument
+  hs.right.right.right
+has type
+  Eff.VarsIn s.nranges s.ntys (fun x => x < s.neffs) s.eff ∧
+    ∀ (p : Ty), p ∈ s.params → (∃ o ix, p = Ty.opaque o ix) ∨ Ty.VarsIn 0 s.ntys (fun x => x < s.neffs) p
+but is expected to have type
+  Eff.VarsIn ?m.38 ?m.39 ?m.40 s.eff
+in the application
+  Eff.VarsIn.rows s.eff hs.right.right.right
+error: Benitoite/Release/Admissible.lean:59:39: unsolved goals
+C : List TParam
+s : PrimSig
+Q : NoFailCtx
+ts : List Ty
+hs : s.Scoped
+hne : s.neffs = 0
+ht : ts.length = s.ntys
+had : s.admits C ts
+hw : ∀ (t : Ty), t ∈ ts → Ty.WF 0 C.length t ∧ ∀ (b r : Ty) (e : EffR), t ≠ b.cont r e
+⊢ PrimitiveAdmissible C s Q ts []
+✔ [135/436] Built Benitoite.Release.Semantics (1.9s)
+✔ [137/436] Built Benitoite.Release.Assumptions (644ms)
+✔ [138/436] Built Benitoite.Release.RangeIxExamples (614ms)
+✖ [140/436] Building Benitoite.Release.RangeWF (2.6s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/RangeWF.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/RangeWF.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/RangeWF.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/RangeWF.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/RangeWF.setup.json --json
+error: Benitoite/Release/RangeWF.lean:404:70: Application type mismatch: The argument
+  h4
+has type
+  Eff.VarsInOld s.ntys (fun x => x < s.neffs) s.eff ∧ Eff.RangesIn s.nranges s.eff
+but is expected to have type
+  Eff.VarsInOld s.ntys (fun x => x < s.neffs) s.eff
+in the application
+  ⟨h3, h4⟩
+error: Benitoite/Release/RangeWF.lean:404:75: Application type mismatch: The argument
+  h2'
+has type
+  Ty.RangesInList s.nranges s.params
+but is expected to have type
+  Ty.RangesInList 0 s.params
+in the application
+  And.intro h2'
+error: Benitoite/Release/RangeWF.lean:404:80: Application type mismatch: The argument
+  h3'
+has type
+  Ty.RangesIn s.nranges s.ret
+but is expected to have type
+  Ty.RangesIn 0 s.ret
+in the application
+  And.intro h3'
+error: Benitoite/Release/RangeWF.lean:405:62: Application type mismatch: The argument
+  h2'
+has type
+  Ty.RangesInList 0 s.params
+but is expected to have type
+  Ty.RangesInList s.nranges s.params
+in the application
+  ⟨h2, h2'⟩
+error: Benitoite/Release/RangeWF.lean:405:73: Application type mismatch: The argument
+  h3'
+has type
+  Ty.RangesIn 0 s.ret
+but is expected to have type
+  Ty.RangesIn s.nranges s.ret
+in the application
+  ⟨h3, h3'⟩
+error: Benitoite/Release/RangeWF.lean:405:80: Application type mismatch: The argument
+  h4
+has type
+  Eff.VarsInOld s.ntys (fun x => x < s.neffs) s.eff
+but is expected to have type
+  Eff.VarsInOld s.ntys (fun x => x < s.neffs) s.eff ∧ Eff.RangesIn s.nranges s.eff
+in the application
+  And.intro h4
+✖ [142/436] Building Benitoite.Release.Examples (1.8s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Examples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Examples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Examples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Examples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Examples.setup.json --json
+error: Benitoite/Release/Examples.lean:39:20: Unknown constant `Benitoite.Scope.Domain.Range.const`
+
+Note: Inferred this name from the expected resulting type of `.const`:
+  Scope.Domain.Range
+error: Benitoite/Release/Examples.lean:45:35: Unknown constant `List.val`
+
+Note: Inferred this name from the expected resulting type of `.val`:
+  List Val
+error: Benitoite/Release/Examples.lean:46:21: Unknown constant `Benitoite.Scope.Domain.Range.const`
+
+Note: Inferred this name from the expected resulting type of `.const`:
+  Scope.Domain.Range
+error: Benitoite/Release/Examples.lean:60:19: Unknown constant `Benitoite.Scope.Domain.Range.const`
+
+Note: Inferred this name from the expected resulting type of `.const`:
+  Scope.Domain.Range
+error: Benitoite/Release/Examples.lean:81:28: Application type mismatch: The argument
+  Val.prim "add" [] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "add" [] [])
+error: Benitoite/Release/Examples.lean:183:35: Application type mismatch: The argument
+  Val.prim "add" [] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "add" [] [])
+error: Benitoite/Release/Examples.lean:195:96: Tactic `decide` failed for proposition
+  exec
+      (((Comp.app (Val.op "ask" []) []).letIn (add (Val.var 0) (int ⟨1, ⋯⟩))).handle
+        [Clause.mk (OpRef.user "ask") 0 0 (Comp.resume (Val.var 0) (int ⟨41, ⋯⟩))]) =
+    (Result.returned 42, 0)
+because its `Decidable` instance
+  instDecidableEqProd
+    (exec
+      (((Comp.app (Val.op "ask" []) []).letIn (add (Val.var 0) (int ⟨1, ⋯⟩))).handle
+        [Clause.mk (OpRef.user "ask") 0 0 (Comp.resume (Val.var 0) (int ⟨41, ⋯⟩))]))
+    (Result.returned 42, 0)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqProd`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, `UInt8.decEq`, `instDecidableEqOpRef`, `instDecidableEqResult`, `instDecidableEqOpRef.decEq`, and `instDecidableEqResult.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    match
+      (match
+          step program builtins oracle rel fresh
+            (State.run
+              (Comp.instantiate
+                [Val.subst (instSubst ([] ++ [Val.loc (fresh Store.empty)])) (Val.substTyAt 0 [] [] (int ⟨41, ⋯⟩))
+                    (instLocalSubst ([] ++ [Val.loc (fresh Store.empty)]).length)]
+                (add (Val.var 0) (int ⟨1, ⋯⟩)))
+              (([].append
+                    [Frame.handleF [Clause.mk (OpRef.user "ask") 0 0 (Comp.resume (Val.var 0) (int ⟨41, ⋯⟩))]]).append
+                [Frame.drop (fresh Store.empty)])
+              ((Store.empty.set (fresh Store.empty)
+                    (Cell.cont
+                      ([Frame.letF (add (Val.var 0) (int ⟨1, ⋯⟩))] ++
+                        [Frame.handleF
+                            [Clause.mk (OpRef.user "ask") 0 0 (Comp.resume (Val.var 0) (int ⟨41, ⋯⟩))]]))).set
+                (fresh Store.empty) Cell.used)) with
+        | none =>
+          (State.run
+              (Comp.instantiate
+                [Val.subst (instSubst ([] ++ [Val.loc (fresh Store.empty)])) (Val.substTyAt 0 [] [] (int ⟨41, ⋯⟩))
+                    (instLocalSubst ([] ++ [Val.loc (fresh Store.empty)]).length)]
+                (add (Val.var 0) (int ⟨1, ⋯⟩)))
+              (([].append
+                    [Frame.handleF [Clause.mk (OpRef.user "ask") 0 0 (Comp.resume (Val.var 0) (int ⟨41, ⋯⟩))]]).append
+                [Frame.drop (fresh Store.empty)])
+              ((Store.empty.set (fresh Store.empty)
+                    (Cell.cont
+                      ([Frame.letF (add (Val.var 0) (int ⟨1, ⋯⟩))] ++
+                        [Frame.handleF
+                            [Clause.mk (OpRef.user "ask") 0 0 (Comp.resume (Val.var 0) (int ⟨41, ⋯⟩))]]))).set
+                (fresh Store.empty) Cell.used),
+            [].reverse)
+        | some (none, s') => run program builtins oracle rel fresh 994 s' []
+        | some (some ev, s') => run program builtins oracle rel fresh 994 s' [ev]).fst with
+    | State.run (Comp.ret (Val.const (Const.integer n))) [] σ => Result.returned n.toInt
+    | State.run (Comp.ret (Val.const Const.unit)) [] σ => Result.returnedUnit
+    | State.run (Comp.ret (Val.con "Box" tys [Val.const (Const.integer n)])) [] σ => Result.boxed n.toInt
+    | State.error rs [] σ => Result.error rs
+    | State.exit n rs [] σ => Result.exited n
+    | x => Result.other,
+    Result.returned 42 with
+  | Result.returned a, Result.returned b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.returned n, Result.returnedUnit => isFalse ⋯
+  | Result.returned n, Result.boxed n_1 => isFalse ⋯
+  | Result.returned n, Result.error rs => isFalse ⋯
+  | Result.returned n, Result.exited n_1 => isFalse ⋯
+  | Result.returned n, Result.other => isFalse ⋯
+  | Result.returnedUnit, Result.returned n => isFalse ⋯
+  | Result.returnedUnit, Result.returnedUnit => isTrue ⋯
+  | Result.returnedUnit, Result.boxed n => isFalse ⋯
+  | Result.returnedUnit, Result.error rs => isFalse ⋯
+  | Result.returnedUnit, Result.exited n => isFalse ⋯
+  | Result.returnedUnit, Result.other => isFalse instDecidableEqResult.decEq._proof_12
+  | Result.boxed n, Result.returned n_1 => isFalse ⋯
+  | Result.boxed n, Result.returnedUnit => isFalse ⋯
+  | Result.boxed a, Result.boxed b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.boxed n, Result.error rs => isFalse ⋯
+  | Result.boxed n, Result.exited n_1 => isFalse ⋯
+  | Result.boxed n, Result.other => isFalse ⋯
+  | Result.error rs, Result.returned n => isFalse ⋯
+  | Result.error rs, Result.returnedUnit => isFalse ⋯
+  | Result.error rs, Result.boxed n => isFalse ⋯
+  | Result.error a, Result.error b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.error rs, Result.exited n => isFalse ⋯
+  | Result.error rs, Result.other => isFalse ⋯
+  | Result.exited n, Result.returned n_1 => isFalse ⋯
+  | Result.exited n, Result.returnedUnit => isFalse ⋯
+  | Result.exited n, Result.boxed n_1 => isFalse ⋯
+  | Result.exited n, Result.error rs => isFalse ⋯
+  | Result.exited a, Result.exited b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.exited n, Result.other => isFalse ⋯
+  | Result.other, Result.returned n => isFalse ⋯
+  | Result.other, Result.returnedUnit => isFalse instDecidableEqResult.decEq._proof_35
+  | Result.other, Result.boxed n => isFalse ⋯
+  | Result.other, Result.error rs => isFalse ⋯
+  | Result.other, Result.exited n => isFalse ⋯
+  | Result.other, Result.other => isTrue ⋯
+error: Benitoite/Release/Examples.lean:198:30: Application type mismatch: The argument
+  Val.prim "print" [] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "print" [] [])
+error: Benitoite/Release/Examples.lean:202:21: Application type mismatch: The argument
+  Val.prim "print" [] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "print" [] [])
+error: Benitoite/Release/Examples.lean:211:29: Application type mismatch: The argument
+  Val.prim "new" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "new" [intTy] [])
+error: Benitoite/Release/Examples.lean:212:18: Application type mismatch: The argument
+  Val.prim "set" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "set" [intTy] [])
+error: Benitoite/Release/Examples.lean:213:12: Application type mismatch: The argument
+  Val.prim "get" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "get" [intTy] [])
+error: Benitoite/Release/Examples.lean:216:29: Application type mismatch: The argument
+  Val.prim "new" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "new" [intTy] [])
+error: Benitoite/Release/Examples.lean:217:18: Application type mismatch: The argument
+  Val.prim "update" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "update" [intTy] [])
+error: Benitoite/Release/Examples.lean:218:12: Application type mismatch: The argument
+  Val.prim "get" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "get" [intTy] [])
+error: Benitoite/Release/Examples.lean:223:18: Application type mismatch: The argument
+  Val.prim "force" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "force" [intTy] [])
+error: Benitoite/Release/Examples.lean:224:12: Application type mismatch: The argument
+  Val.prim "force" [intTy] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "force" [intTy] [])
+error: Benitoite/Release/Examples.lean:229:2: Tactic `decide` failed for proposition
+  exec ((Comp.app (Val.fnRef "f" [] []) []).letIn (add (Val.var 0) (int ⟨100, ⋯⟩))) = (Result.returned 107, 0)
+because its `Decidable` instance
+  instDecidableEqProd (exec ((Comp.app (Val.fnRef "f" [] []) []).letIn (add (Val.var 0) (int ⟨100, ⋯⟩))))
+    (Result.returned 107, 0)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqProd`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, `UInt8.decEq`, `instDecidableEqResult`, and `instDecidableEqResult.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    match
+      (match
+          step program builtins oracle rel fresh
+            (State.run
+              (Comp.instantiate
+                [Val.subst (instSubst []) (Val.substTyAt 0 [] [] (int ⟨7, program._proof_1⟩))
+                    (instLocalSubst [].length)]
+                (add (Val.var 0) (int ⟨100, ⋯⟩)))
+              [] Store.empty) with
+        | none =>
+          (State.run
+              (Comp.instantiate
+                [Val.subst (instSubst []) (Val.substTyAt 0 [] [] (int ⟨7, program._proof_1⟩))
+                    (instLocalSubst [].length)]
+                (add (Val.var 0) (int ⟨100, ⋯⟩)))
+              [] Store.empty,
+            [].reverse)
+        | some (none, s') => run program builtins oracle rel fresh 993 s' []
+        | some (some ev, s') => run program builtins oracle rel fresh 993 s' [ev]).fst with
+    | State.run (Comp.ret (Val.const (Const.integer n))) [] σ => Result.returned n.toInt
+    | State.run (Comp.ret (Val.const Const.unit)) [] σ => Result.returnedUnit
+    | State.run (Comp.ret (Val.con "Box" tys [Val.const (Const.integer n)])) [] σ => Result.boxed n.toInt
+    | State.error rs [] σ => Result.error rs
+    | State.exit n rs [] σ => Result.exited n
+    | x => Result.other,
+    Result.returned 107 with
+  | Result.returned a, Result.returned b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.returned n, Result.returnedUnit => isFalse ⋯
+  | Result.returned n, Result.boxed n_1 => isFalse ⋯
+  | Result.returned n, Result.error rs => isFalse ⋯
+  | Result.returned n, Result.exited n_1 => isFalse ⋯
+  | Result.returned n, Result.other => isFalse ⋯
+  | Result.returnedUnit, Result.returned n => isFalse ⋯
+  | Result.returnedUnit, Result.returnedUnit => isTrue ⋯
+  | Result.returnedUnit, Result.boxed n => isFalse ⋯
+  | Result.returnedUnit, Result.error rs => isFalse ⋯
+  | Result.returnedUnit, Result.exited n => isFalse ⋯
+  | Result.returnedUnit, Result.other => isFalse instDecidableEqResult.decEq._proof_12
+  | Result.boxed n, Result.returned n_1 => isFalse ⋯
+  | Result.boxed n, Result.returnedUnit => isFalse ⋯
+  | Result.boxed a, Result.boxed b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.boxed n, Result.error rs => isFalse ⋯
+  | Result.boxed n, Result.exited n_1 => isFalse ⋯
+  | Result.boxed n, Result.other => isFalse ⋯
+  | Result.error rs, Result.returned n => isFalse ⋯
+  | Result.error rs, Result.returnedUnit => isFalse ⋯
+  | Result.error rs, Result.boxed n => isFalse ⋯
+  | Result.error a, Result.error b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.error rs, Result.exited n => isFalse ⋯
+  | Result.error rs, Result.other => isFalse ⋯
+  | Result.exited n, Result.returned n_1 => isFalse ⋯
+  | Result.exited n, Result.returnedUnit => isFalse ⋯
+  | Result.exited n, Result.boxed n_1 => isFalse ⋯
+  | Result.exited n, Result.error rs => isFalse ⋯
+  | Result.exited a, Result.exited b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.exited n, Result.other => isFalse ⋯
+  | Result.other, Result.returned n => isFalse ⋯
+  | Result.other, Result.returnedUnit => isFalse instDecidableEqResult.decEq._proof_35
+  | Result.other, Result.boxed n => isFalse ⋯
+  | Result.other, Result.error rs => isFalse ⋯
+  | Result.other, Result.exited n => isFalse ⋯
+  | Result.other, Result.other => isTrue ⋯
+error: Benitoite/Release/Examples.lean:235:55: Application type mismatch: The argument
+  Val.prim "exit" [] []
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+in the application
+  Comp.app (Val.prim "exit" [] [])
+error: Benitoite/Release/Examples.lean:241:27: Tactic `decide` failed for proposition
+  exec (Comp.meth ((Val.dict "MonoidInt" [] []).super "Semigroup") "combine" [] [] [int ⟨1, ⋯⟩, int ⟨2, ⋯⟩]) =
+    (Result.returned 3, 0)
+because its `Decidable` instance
+  instDecidableEqProd
+    (exec (Comp.meth ((Val.dict "MonoidInt" [] []).super "Semigroup") "combine" [] [] [int ⟨1, ⋯⟩, int ⟨2, ⋯⟩]))
+    (Result.returned 3, 0)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqProd`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, `UInt8.decEq`, `instDecidableEqResult`, and `instDecidableEqResult.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    match
+      (match
+          step program builtins oracle rel fresh
+            (State.run
+              (Comp.instantiate
+                (Val.substList (instSubst []) (Val.substTyAtList 0 [] [] []) (instLocalSubst [].length) ++
+                  [int ⟨1, ⋯⟩, int ⟨2, ⋯⟩])
+                (Comp.substTy ([] ++ List.map (Ty.substAt 0 [] []) []) [] (Comp.app sorry [Val.var 1, Val.var 0])))
+              (markPush []) Store.empty) with
+        | none =>
+          (State.run
+              (Comp.instantiate
+                (Val.substList (instSubst []) (Val.substTyAtList 0 [] [] []) (instLocalSubst [].length) ++
+                  [int ⟨1, ⋯⟩, int ⟨2, ⋯⟩])
+                (Comp.substTy ([] ++ List.map (Ty.substAt 0 [] []) []) [] (Comp.app sorry [Val.var 1, Val.var 0])))
+              (markPush []) Store.empty,
+            [].reverse)
+        | some (none, s') => run program builtins oracle rel fresh 997 s' []
+        | some (some ev, s') => run program builtins oracle rel fresh 997 s' [ev]).fst with
+    | State.run (Comp.ret (Val.const (Const.integer n))) [] σ => Result.returned n.toInt
+    | State.run (Comp.ret (Val.const Const.unit)) [] σ => Result.returnedUnit
+    | State.run (Comp.ret (Val.con "Box" tys [Val.const (Const.integer n)])) [] σ => Result.boxed n.toInt
+    | State.error rs [] σ => Result.error rs
+    | State.exit n rs [] σ => Result.exited n
+    | x => Result.other,
+    Result.returned 3 with
+  | Result.returned a, Result.returned b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.returned n, Result.returnedUnit => isFalse ⋯
+  | Result.returned n, Result.boxed n_1 => isFalse ⋯
+  | Result.returned n, Result.error rs => isFalse ⋯
+  | Result.returned n, Result.exited n_1 => isFalse ⋯
+  | Result.returned n, Result.other => isFalse ⋯
+  | Result.returnedUnit, Result.returned n => isFalse ⋯
+  | Result.returnedUnit, Result.returnedUnit => isTrue ⋯
+  | Result.returnedUnit, Result.boxed n => isFalse ⋯
+  | Result.returnedUnit, Result.error rs => isFalse ⋯
+  | Result.returnedUnit, Result.exited n => isFalse ⋯
+  | Result.returnedUnit, Result.other => isFalse instDecidableEqResult.decEq._proof_12
+  | Result.boxed n, Result.returned n_1 => isFalse ⋯
+  | Result.boxed n, Result.returnedUnit => isFalse ⋯
+  | Result.boxed a, Result.boxed b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.boxed n, Result.error rs => isFalse ⋯
+  | Result.boxed n, Result.exited n_1 => isFalse ⋯
+  | Result.boxed n, Result.other => isFalse ⋯
+  | Result.error rs, Result.returned n => isFalse ⋯
+  | Result.error rs, Result.returnedUnit => isFalse ⋯
+  | Result.error rs, Result.boxed n => isFalse ⋯
+  | Result.error a, Result.error b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.error rs, Result.exited n => isFalse ⋯
+  | Result.error rs, Result.other => isFalse ⋯
+  | Result.exited n, Result.returned n_1 => isFalse ⋯
+  | Result.exited n, Result.returnedUnit => isFalse ⋯
+  | Result.exited n, Result.boxed n_1 => isFalse ⋯
+  | Result.exited n, Result.error rs => isFalse ⋯
+  | Result.exited a, Result.exited b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.exited n, Result.other => isFalse ⋯
+  | Result.other, Result.returned n => isFalse ⋯
+  | Result.other, Result.returnedUnit => isFalse instDecidableEqResult.decEq._proof_35
+  | Result.other, Result.boxed n => isFalse ⋯
+  | Result.other, Result.error rs => isFalse ⋯
+  | Result.other, Result.exited n => isFalse ⋯
+  | Result.other, Result.other => isTrue ⋯
+error: Benitoite/Release/Examples.lean:249:116: Tactic `decide` failed for proposition
+  exec
+      (Comp.meth (Val.dict "SemigroupBox" [intTy] [(Val.dict "MonoidInt" [] []).super "Semigroup"]) "combine" [] []
+        [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]) =
+    (Result.boxed 3, 0)
+because its `Decidable` instance
+  instDecidableEqProd
+    (exec
+      (Comp.meth (Val.dict "SemigroupBox" [intTy] [(Val.dict "MonoidInt" [] []).super "Semigroup"]) "combine" [] []
+        [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]))
+    (Result.boxed 3, 0)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqProd`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, `UInt8.decEq`, `instDecidableEqResult`, and `instDecidableEqResult.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    match
+      (match
+          step program builtins oracle rel fresh
+            (State.run
+              (Comp.instantiate
+                (Val.substList
+                    (instSubst
+                      (Val.substList
+                        (instSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                              (Val.rename
+                                (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (int ⟨2, ⋯⟩))
+                              (instLocalSubst [int ⟨1, ⋯⟩].length)])
+                        (Val.substList
+                          (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instSubst [int ⟨1, ⋯⟩]))
+                          (Val.renameList
+                            (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (Val.renameList
+                              (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }]) []))
+                          (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instLocalSubst [int ⟨1, ⋯⟩].length)))
+                        (instLocalSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                (Val.rename
+                                  (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                  (int ⟨2, ⋯⟩))
+                                (instLocalSubst [int ⟨1, ⋯⟩].length)].length)))
+                    (Val.substTyAtList 0 [] [] [])
+                    (instLocalSubst
+                      (Val.substList
+                          (instSubst
+                            [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                (Val.rename
+                                  (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                  (int ⟨2, ⋯⟩))
+                                (instLocalSubst [int ⟨1, ⋯⟩].length)])
+                          (Val.substList
+                            (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (instSubst [int ⟨1, ⋯⟩]))
+                            (Val.renameList
+                              (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (Val.renameList
+                                (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }]) []))
+                            (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (instLocalSubst [int ⟨1, ⋯⟩].length)))
+                          (instLocalSubst
+                            [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                  (Val.rename
+                                    (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                    (int ⟨2, ⋯⟩))
+                                  (instLocalSubst [int ⟨1, ⋯⟩].length)].length)).length) ++
+                  Val.substList
+                    (instSubst
+                      [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                          (Val.rename (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (int ⟨2, ⋯⟩))
+                          (instLocalSubst [int ⟨1, ⋯⟩].length)])
+                    (Val.substList
+                      (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                        (instSubst [int ⟨1, ⋯⟩]))
+                      (Val.substList
+                        (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                          (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instSubst
+                              ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]))))
+                        (Val.substTyAtList 0 ([] ++ [intTy]) [] [Val.var 1, Val.var 0])
+                        (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                          (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instLocalSubst
+                              ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                  [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]).length))))
+                      (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                        (instLocalSubst [int ⟨1, ⋯⟩].length)))
+                    (instLocalSubst
+                      [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                            (Val.rename (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (int ⟨2, ⋯⟩))
+                            (instLocalSubst [int ⟨1, ⋯⟩].length)].length))
+                (Comp.substTy (List.map (Ty.substAt 0 ([] ++ [intTy]) []) [] ++ List.map (Ty.substAt 0 [] []) [])
+                  (List.map (Eff.substAt 0 ([] ++ [intTy]) []) []) (Comp.app sorry [Val.var 1, Val.var 0])))
+              (markPush
+                (Frame.letF
+                    (Comp.subst
+                      (upSubst 1
+                        (instSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                              (Val.rename
+                                (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (int ⟨2, ⋯⟩))
+                              (instLocalSubst [int ⟨1, ⋯⟩].length)]))
+                      (Comp.subst
+                        (upSubst 1
+                          (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instSubst [int ⟨1, ⋯⟩])))
+                        (Comp.subst
+                          (upSubst 1
+                            (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (instSubst
+                                  ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                    [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]])))))
+                          (Comp.substTyAt 0 ([] ++ [intTy]) [] (Comp.ret (Val.con "Box" [Ty.tvar 0] [Val.var 0])))
+                          (upLocalSubst 1
+                            (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (instLocalSubst
+                                  ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                      [Val.con "Box" [intTy] [int ⟨1, ⋯⟩],
+                                        Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]).length)))))
+                        (upLocalSubst 1
+                          (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instLocalSubst [int ⟨1, ⋯⟩].length))))
+                      (upLocalSubst 1
+                        (instLocalSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                (Val.rename
+                                  (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                  (int ⟨2, ⋯⟩))
+                                (instLocalSubst [int ⟨1, ⋯⟩].length)].length))) ::
+                  markPush []))
+              Store.empty) with
+        | none =>
+          (State.run
+              (Comp.instantiate
+                (Val.substList
+                    (instSubst
+                      (Val.substList
+                        (instSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                              (Val.rename
+                                (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (int ⟨2, ⋯⟩))
+                              (instLocalSubst [int ⟨1, ⋯⟩].length)])
+                        (Val.substList
+                          (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instSubst [int ⟨1, ⋯⟩]))
+                          (Val.renameList
+                            (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (Val.renameList
+                              (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }]) []))
+                          (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instLocalSubst [int ⟨1, ⋯⟩].length)))
+                        (instLocalSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                (Val.rename
+                                  (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                  (int ⟨2, ⋯⟩))
+                                (instLocalSubst [int ⟨1, ⋯⟩].length)].length)))
+                    (Val.substTyAtList 0 [] [] [])
+                    (instLocalSubst
+                      (Val.substList
+                          (instSubst
+                            [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                (Val.rename
+                                  (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                  (int ⟨2, ⋯⟩))
+                                (instLocalSubst [int ⟨1, ⋯⟩].length)])
+                          (Val.substList
+                            (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (instSubst [int ⟨1, ⋯⟩]))
+                            (Val.renameList
+                              (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (Val.renameList
+                                (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }]) []))
+                            (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (instLocalSubst [int ⟨1, ⋯⟩].length)))
+                          (instLocalSubst
+                            [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                  (Val.rename
+                                    (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                    (int ⟨2, ⋯⟩))
+                                  (instLocalSubst [int ⟨1, ⋯⟩].length)].length)).length) ++
+                  Val.substList
+                    (instSubst
+                      [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                          (Val.rename (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (int ⟨2, ⋯⟩))
+                          (instLocalSubst [int ⟨1, ⋯⟩].length)])
+                    (Val.substList
+                      (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                        (instSubst [int ⟨1, ⋯⟩]))
+                      (Val.substList
+                        (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                          (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instSubst
+                              ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]))))
+                        (Val.substTyAtList 0 ([] ++ [intTy]) [] [Val.var 1, Val.var 0])
+                        (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                          (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instLocalSubst
+                              ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                  [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]).length))))
+                      (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                        (instLocalSubst [int ⟨1, ⋯⟩].length)))
+                    (instLocalSubst
+                      [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                            (Val.rename (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (int ⟨2, ⋯⟩))
+                            (instLocalSubst [int ⟨1, ⋯⟩].length)].length))
+                (Comp.substTy (List.map (Ty.substAt 0 ([] ++ [intTy]) []) [] ++ List.map (Ty.substAt 0 [] []) [])
+                  (List.map (Eff.substAt 0 ([] ++ [intTy]) []) []) (Comp.app sorry [Val.var 1, Val.var 0])))
+              (markPush
+                (Frame.letF
+                    (Comp.subst
+                      (upSubst 1
+                        (instSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                              (Val.rename
+                                (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (int ⟨2, ⋯⟩))
+                              (instLocalSubst [int ⟨1, ⋯⟩].length)]))
+                      (Comp.subst
+                        (upSubst 1
+                          (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instSubst [int ⟨1, ⋯⟩])))
+                        (Comp.subst
+                          (upSubst 1
+                            (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (upSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (instSubst
+                                  ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                    [Val.con "Box" [intTy] [int ⟨1, ⋯⟩], Val.con "Box" [intTy] [int ⟨2, ⋯⟩]])))))
+                          (Comp.substTyAt 0 ([] ++ [intTy]) [] (Comp.ret (Val.con "Box" [Ty.tvar 0] [Val.var 0])))
+                          (upLocalSubst 1
+                            (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                              (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                (instLocalSubst
+                                  ([(Val.dict "MonoidInt" [] []).super "Semigroup"] ++
+                                      [Val.con "Box" [intTy] [int ⟨1, ⋯⟩],
+                                        Val.con "Box" [intTy] [int ⟨2, ⋯⟩]]).length)))))
+                        (upLocalSubst 1
+                          (upLocalSubst (Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                            (instLocalSubst [int ⟨1, ⋯⟩].length))))
+                      (upLocalSubst 1
+                        (instLocalSubst
+                          [Val.subst (instSubst [int ⟨1, ⋯⟩])
+                                (Val.rename
+                                  (fun x => x + Arm.bindersOf [{ pat := Pat.con "Box" [Pat.var], slots := [0] }])
+                                  (int ⟨2, ⋯⟩))
+                                (instLocalSubst [int ⟨1, ⋯⟩].length)].length))) ::
+                  markPush []))
+              Store.empty,
+            [].reverse)
+        | some (none, s') => run program builtins oracle rel fresh 991 s' []
+        | some (some ev, s') => run program builtins oracle rel fresh 991 s' [ev]).fst with
+    | State.run (Comp.ret (Val.const (Const.integer n))) [] σ => Result.returned n.toInt
+    | State.run (Comp.ret (Val.const Const.unit)) [] σ => Result.returnedUnit
+    | State.run (Comp.ret (Val.con "Box" tys [Val.const (Const.integer n)])) [] σ => Result.boxed n.toInt
+    | State.error rs [] σ => Result.error rs
+    | State.exit n rs [] σ => Result.exited n
+    | x => Result.other,
+    Result.boxed 3 with
+  | Result.returned a, Result.returned b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.returned n, Result.returnedUnit => isFalse ⋯
+  | Result.returned n, Result.boxed n_1 => isFalse ⋯
+  | Result.returned n, Result.error rs => isFalse ⋯
+  | Result.returned n, Result.exited n_1 => isFalse ⋯
+  | Result.returned n, Result.other => isFalse ⋯
+  | Result.returnedUnit, Result.returned n => isFalse ⋯
+  | Result.returnedUnit, Result.returnedUnit => isTrue ⋯
+  | Result.returnedUnit, Result.boxed n => isFalse ⋯
+  | Result.returnedUnit, Result.error rs => isFalse ⋯
+  | Result.returnedUnit, Result.exited n => isFalse ⋯
+  | Result.returnedUnit, Result.other => isFalse instDecidableEqResult.decEq._proof_12
+  | Result.boxed n, Result.returned n_1 => isFalse ⋯
+  | Result.boxed n, Result.returnedUnit => isFalse ⋯
+  | Result.boxed a, Result.boxed b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.boxed n, Result.error rs => isFalse ⋯
+  | Result.boxed n, Result.exited n_1 => isFalse ⋯
+  | Result.boxed n, Result.other => isFalse ⋯
+  | Result.error rs, Result.returned n => isFalse ⋯
+  | Result.error rs, Result.returnedUnit => isFalse ⋯
+  | Result.error rs, Result.boxed n => isFalse ⋯
+  | Result.error a, Result.error b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.error rs, Result.exited n => isFalse ⋯
+  | Result.error rs, Result.other => isFalse ⋯
+  | Result.exited n, Result.returned n_1 => isFalse ⋯
+  | Result.exited n, Result.returnedUnit => isFalse ⋯
+  | Result.exited n, Result.boxed n_1 => isFalse ⋯
+  | Result.exited n, Result.error rs => isFalse ⋯
+  | Result.exited a, Result.exited b => if h : a = b then h ▸ isTrue ⋯ else isFalse ⋯
+  | Result.exited n, Result.other => isFalse ⋯
+  | Result.other, Result.returned n => isFalse ⋯
+  | Result.other, Result.returnedUnit => isFalse instDecidableEqResult.decEq._proof_35
+  | Result.other, Result.boxed n => isFalse ⋯
+  | Result.other, Result.error rs => isFalse ⋯
+  | Result.other, Result.exited n => isFalse ⋯
+  | Result.other, Result.other => isTrue ⋯
+✖ [143/436] Building Benitoite.Release.Lemmas.Closed (6.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Closed.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Closed.setup.json --json
+error: Benitoite/Release/Lemmas/Closed.lean:143:6: Type mismatch
+  Val.prim ?m.127 tys ?m.128
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+error: Benitoite/Release/Lemmas/Closed.lean:274:6: Type mismatch
+  Val.prim ?m.37 tys ?m.38
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+error: Benitoite/Release/Lemmas/Closed.lean:365:6: Type mismatch
+  Val.prim ?m.37 tys ?m.38
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+error: Benitoite/Release/Lemmas/Closed.lean:455:6: Type mismatch
+  Val.prim ?m.40 ?m.41 ?m.42
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+error: Benitoite/Release/Lemmas/Closed.lean:586:6: Type mismatch
+  Val.prim ?m.67 ?m.68 ?m.69
+has type
+  List Scope.Domain.Range → Val
+but is expected to have type
+  Val
+✔ [148/436] Built Benitoite.Release.Lemmas.Names (7.5s)
+✔ [149/436] Built Benitoite.Release.Lemmas.Rename (8.8s)
+✔ [152/436] Built Benitoite.Release.Lemmas.Rename:c.o (637ms)
+✔ [153/436] Built Benitoite.Release.Lemmas.Irrelevant (3.6s)
+✔ [154/436] Built Benitoite.Release.Lemmas.FailureBase (375ms)
+✔ [156/436] Built Benitoite.Release.Lemmas.Inversion (15s)
+✖ [158/436] Building Benitoite.Release.Lemmas.Regularity (1.4s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/Regularity.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/Regularity.setup.json --json
+error: Benitoite/Release/Lemmas/Regularity.lean:164:45: Application type mismatch: The argument
+  hsc.left
+has type
+  Ty.VarsInList s✝.nranges s✝.ntys (fun x => x < s✝.neffs) s✝.params
+but is expected to have type
+  Ty.VarsInList 0 (PrimSig.inst rs✝ s✝).ntys ?m.1979 (PrimSig.inst rs✝ s✝).params
+in the application
+  Ty.VarsInList.wf (PrimSig.inst rs✝ s✝).params hsc.left
+error: Benitoite/Release/Lemmas/Regularity.lean:165:41: Application type mismatch: The argument
+  hsc.right.left
+has type
+  Ty.VarsIn s✝.nranges s✝.ntys (fun x => x < s✝.neffs) s✝.ret
+but is expected to have type
+  Ty.VarsIn 0 (PrimSig.inst rs✝ s✝).ntys ?m.1986 (PrimSig.inst rs✝ s✝).ret
+in the application
+  Ty.VarsIn.wf (PrimSig.inst rs✝ s✝).ret hsc.right.left
+error: Benitoite/Release/Lemmas/Regularity.lean:166:42: Application type mismatch: The argument
+  hsc.right.right
+has type
+  Eff.VarsIn s✝.nranges s✝.ntys (fun x => x < s✝.neffs) s✝.eff ∧
+    ∀ (p : Ty), p ∈ s✝.params → (∃ o ix, p = Ty.opaque o ix) ∨ Ty.VarsIn 0 s✝.ntys (fun x => x < s✝.neffs) p
+but is expected to have type
+  Eff.VarsIn 0 (PrimSig.inst rs✝ s✝).ntys ?m.1995 (PrimSig.inst rs✝ s✝).eff
+in the application
+  Eff.VarsIn.wf (PrimSig.inst rs✝ s✝).eff hsc.right.right
+Some required targets logged failures:
+- Benitoite.Release.Admissible
+- Benitoite.Release.RangeWF
+- Benitoite.Release.Examples
+- Benitoite.Release.Lemmas.Closed
+- Benitoite.Release.Lemmas.Regularity
+error: build failed
+       16.98 real       112.41 user         4.33 sys
+          2252111872  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              833590  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  48  voluntary context switches
+              117240  involuntary context switches
+          1700373734  instructions retired
+           749490824  cycles elapsed
+            75285776  peak memory footprint
+== exit 1

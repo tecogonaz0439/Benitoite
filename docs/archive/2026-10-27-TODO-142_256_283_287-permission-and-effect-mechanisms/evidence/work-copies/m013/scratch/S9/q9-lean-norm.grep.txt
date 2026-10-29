@@ -1,0 +1,239 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/BuilderExamples.lean:132:  refine .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.empty, Eff.Canonical, Eff.norm]) ?_
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/CoverageTypes.lean:39:  @[simp] theorem erase_norm (t : Ty) : erase t.norm = erase t := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/CoverageTypes.lean:40:    cases t <;> simp only [Ty.norm, erase, erase_norm, eraseTys_norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:24:noncomputable def singleFail (t : Ty) : Eff := .mk (fun _ => false) [t.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:31:noncomputable def union (e f : Eff) : Eff := norm (.mk (fun a => test e a || test f a) (e.fails ++ f.fails))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:42:  simp [mem, test, union, norm, atoms]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:50:theorem memFail_singleFail (a b : Ty) : memFail (singleFail a) b ↔ a.norm = b.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:59:@[simp] theorem mem_norm (e : Eff) (a : Atom) : mem (norm e) a ↔ mem e a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:63:theorem sub_norm (e f : Eff) : Sub e f ↔ Sub (norm e) (norm f) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:78:  have hfs : (norm e).fails = (norm f).fails := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:83:        simp only [norm, fails]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:115:theorem sub_norm_self (e : Eff) : Sub e (norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Effect.lean:119:theorem norm_sub_self (e : Eff) : Sub (norm e) e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureEffects.lean:11:    Eff.norm, Ty.normTys, Ty.norm_rawBind, Ty.norm_idem,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FailureExamples.lean:121:      Eff.empty, Eff.norm] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:129:      t.normWith s = t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:131:    all_goals simp only [Ty.normWith, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:153:      Eff.normWith s e = Eff.norm e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:156:      simp only [Eff.normWith, Eff.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Finite.lean:165:    Eff.normWith s e = Eff.norm e :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:151:  theorem Ty.support_of_norm {p} (t : Ty) (h : t.norm.Support p) : t.Support p := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:152:    cases t <;> simp only [Ty.norm, Ty.Support] at h ⊢
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:168:  theorem Eff.support_of_norm {p} (e : Eff) (h : Eff.Support p (Eff.norm e)) : Eff.Support p e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:174:      exact Ty.SupportList.iff.mp h.2 t.norm (Order.mem_sortUnique.mpr
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/FiniteSupport.lean:180:    Ty.SupportList p (Eff.norm e).fails := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:41:    substAtoms_false, rowFails_false, Ty.rawBindTys, List.nil_append, norm, Ty.normTys,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:47:    substAtoms_false, rowFails_false, Ty.rawBindTys, List.nil_append, norm, Ty.normTys,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Basic.lean:53:  change Eff.mem (Eff.norm (Eff.rawBind (SubstEnv.at 0 [] es) ε)) (.name l)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:103:      · obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ (Eff.rowFails (es.map (Eff.rawShift c 0)) a).map Ty.norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Closed.lean:113:        exact Ty.VarsIn.mono (Nat.zero_le c) (fun _ h => h) x.norm (Ty.norm_VarsIn x hx)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:36:    change (Ty.bind (SubstEnv.at 0 (ss ++ ts) es) (.tvar (i + g))).norm = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:65:    change (Ty.bind φ (θ.types i)).norm = (ψ.types i).norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:69:      change (Ty.bind φ (if i < g then Ty.tvar i else _)).norm = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:71:      change (φ.types i).norm.norm = (ψ.types i).norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:90:    change Eff.norm (Eff.bind φ (Eff.row i)) = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Dict.lean:124:  have hw : Ty.VarsIn (g + 1) pe (.fn [] [] (.base .unit) (Eff.norm e)) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/FailureBase.lean:63:noncomputable def captureEff (Rest ec : Eff) : Eff := Eff.norm (Eff.union Rest ec)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresFailure.lean:21:    HasTypeC P B Ψ [] [] R ((body.substTy [T] []).instantiate [v, .loc κ]) t (Eff.norm ec) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresFailure.lean:46:        Eff.substAt_nil_of_wf (c := 0) [T] (Eff.norm ec) (Eff.norm_WF ec hew) (Eff.norm_idem ec)] at hθ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/PresFailure.lean:97:  refine ⟨Ψ.set κ x, Rh, t, b, eout, Eff.norm ec, hσnew, ?_,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:137:  have hshE : Eff.shift c.ntys 0 εc = Eff.norm εc := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:151:  rw [htθ, hRθ, Eff.substAt_nil_of_wf (c := 0) ts (Eff.norm εc) (Eff.norm_WF εc hew) (Eff.norm_idem εc)] at hθ
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:165:  let x : LocTy := .cont (Ty.subst ts [] sg.ret) t (Eff.norm εc) Rh
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:171:  refine ⟨Ψ.set κ x, Rh, t, b, εb, Eff.norm εc, ?_, ?_, (Eff.norm_sub_self εc).trans hsub, ?_, ?_, ?_, ?_⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:176:      (ContTy.K_Empty (Eff.Sub.refl (Eff.norm εc)) htw) (Eff.sub_norm_self εc)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:181:    rw [show some (Ty.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)) ::
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Preservation.lean:183:        binds (sg.params.map (Ty.substAt 0 ts []) ++ [.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)]) by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Regularity.lean:179:            simp [Eff.Canonical, Eff.singleFail, Eff.norm, Ty.norm_idem]⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TyLemmas.lean:22:  | _ => simp [Ty.applyTo, Ty.norm, Ty.IsHead]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubst.lean:30:  | _ => intro b t ε h; simp [Ty.applyTo, Ty.norm] at h
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/VariableBind.lean:17:      simp only [Ty.bind, Ty.rawBind, Ty.norm, TyOK, Ty.VarsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/VariableBind.lean:58:      · obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ (Eff.rowFails θ.rows a).map Ty.norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:347:  exact .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:361:  exact .V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:408:  exact .C_App (.V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return .V_Const))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:409:    (.cons (.V_Lam (by simp [NamesWF]) (by simp [Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.empty, Eff.norm, Ty.normTys]) (.C_Return (.V_Var rfl (by intros; intro h; cases h)))) .nil)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:112:    NoFail Q (Eff.norm e) ↔ NoFail Q e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:253:theorem Eff.norm_fails_eq_nil (e : Eff) : (Eff.norm e).fails = [] ↔ e.fails = [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:267:  theorem QTy.norm_iff (t : Ty) (i : Nat) : QTy t.norm i ↔ QTy t i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:268:    cases t <;> simp only [Ty.norm, QTy, QTy.norm_iff, QTys.norm_iff, QEff.norm_iff]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:275:  theorem QEff.norm_iff (e : Eff) (i : Nat) : QEff (Eff.norm e) i ↔ QEff e i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:279:      simp only [Eff.norm, Eff.fails] at hn
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:280:      simp only [Eff.norm, QEff, not_congr hn, QTys.sortUnique_iff, QTys.norm_iff]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:16:  noncomputable def Ty.norm : Ty → Ty
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:20:    | .list a => .list a.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:21:    | .fn ns ps r e => .fn ns (Ty.normTys ps) r.norm (Eff.norm e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:23:    | .reference a => .reference a.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:24:    | .lazy a => .lazy a.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:25:    | .cont b t e => .cont b.norm t.norm (Eff.norm e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:26:    | .map a b => .map a.norm b.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:27:    | .set a => .set a.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:29:    | .dict cl a => .dict cl a.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:37:    | a :: as => a.norm :: Ty.normTys as
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:41:  noncomputable def Eff.norm : Eff → Eff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:46:@[simp] theorem Ty.normTys_eq_map (as : List Ty) : Ty.normTys as = as.map Ty.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:52:def Ty.Canonical (t : Ty) : Prop := t.norm = t
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:55:def Eff.Canonical (e : Eff) : Prop := e.norm = e
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:60:  have hf : ∀ a ∈ as, a.norm = a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:70:        bs.map Ty.norm = bs.map id := List.map_congr_left (fun b hb =>
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:76:  theorem Ty.norm_idem (t : Ty) : t.norm.norm = t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:77:    cases t <;> simp only [Ty.norm, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:86:  theorem Eff.norm_idem (e : Eff) : e.norm.norm = e.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:89:      simp only [Eff.norm, normTys_sortUnique (Ty.normTys_idem fs), sortUnique_idem]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:93:def Eff.memFail (e : Eff) (t : Ty) : Prop := ∃ x ∈ e.fails, x.norm = t.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:96:theorem Eff.norm_memFail (e : Eff) (t : Ty) : e.norm.memFail t ↔ e.memFail t := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:99:    simp only [Eff.memFail, Eff.norm, Eff.fails, mem_sortUnique, Ty.normTys_eq_map, List.mem_map]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:104:      exact ⟨x.norm, ⟨x, hx, rfl⟩, (Ty.norm_idem x).trans ht⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:125:  theorem Ty.norm_legacy (t : Ty) (h : t.Legacy) : t.norm = t := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:127:      simp only [Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:146:  theorem Eff.norm_legacy (e : Eff) (h : e.Legacy) : e.norm = e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:172:    cases t <;> simp only [Ty.FailsLeOne] at h <;> unfold Ty.Canonical <;> simp only [Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Normalize.lean:197:      simp only [Eff.norm, Ty.canonicalTys_of_failsLeOne fs hfs]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Order/Shift.lean:16:    tyCompare (a.shift k c) (b.shift k c) = tyCompare a.norm b.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/SubstEnv.lean:42:    Eff.substRho es (Eff.row i) = Eff.norm (Eff.rowImage es i) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeBounds.lean:67:  theorem Ty.norm_rawWF {n : Nat} (t : Ty) (h : t.RawWF n) : Ty.WF n t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeBounds.lean:68:    cases t <;> simp only [Ty.RawWF] at h <;> simp only [Ty.norm, Ty.WF]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeBounds.lean:87:  theorem Eff.norm_rawWF {n : Nat} (e : Eff) (h : Eff.RawWF n e) : Eff.WF n (Eff.norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:36:      (∃ x ∈ e.fails, (Ty.rawBind θ x).norm = t.norm) ∨
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:53:    (ht : ∀ t, Eff.memFail e t ↔ Eff.memFail f t) : Eff.norm e = Eff.norm f := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:64:      simp only [Ty.bind, Ty.rawBind, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:73:        show (r.rawBind θ).norm = (r.rawBind φ).norm from Ty.bind_congr_rows θ φ ht r h.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:74:        show Eff.norm (Eff.rawBind θ e) = Eff.norm (Eff.rawBind φ e) from Eff.bind_congr_rows θ φ ht e h.2.2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:75:    case tvar i => exact congrArg Ty.norm (congrFun ht i)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:77:      rw [show (a.rawBind θ).norm = (a.rawBind φ).norm from Ty.bind_congr_rows θ φ ht a h.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:78:        show (b.rawBind θ).norm = (b.rawBind φ).norm from Ty.bind_congr_rows θ φ ht b h.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:79:        show Eff.norm (Eff.rawBind θ e) = Eff.norm (Eff.rawBind φ e) from Eff.bind_congr_rows θ φ ht e h.2.2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:81:      rw [show (a.rawBind θ).norm = (a.rawBind φ).norm from Ty.bind_congr_rows θ φ ht a h.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:82:        show (b.rawBind θ).norm = (b.rawBind φ).norm from Ty.bind_congr_rows θ φ ht b h.2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:84:      apply Ty.rawApplyTo_norm_congr (congrArg Ty.norm (congrFun ht i))
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:94:      rw [show (t.rawBind θ).norm = (t.rawBind φ).norm from Ty.bind_congr_rows θ φ ht t h.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:115:        · have hm := Iff.of_eq (congrArg (fun xs => t.norm ∈ xs) hfs)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:142:      (∃ x, Eff.memFail e x ∧ Ty.bind θ x = t.norm) ∨
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:154:    Eff.bind θ (Eff.row i) = Eff.norm (Eff.rowImage θ.rows i) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:209:theorem Ty.bind_norm (θ : SubstEnv) (t : Ty) : Ty.bind θ t.norm = Ty.bind θ t :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:269:    cases t <;> simp only [Ty.rawBind, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:286:        show ((r.rawBind θ).rawBind φ).norm = (r.rawBind (θ.compose φ)).norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:288:        show Eff.norm (Eff.rawBind φ (Eff.rawBind θ e)) = Eff.norm (Eff.rawBind (θ.compose φ) e) from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:292:      rw [show ((a.rawBind θ).rawBind φ).norm = (a.rawBind (θ.compose φ)).norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:294:        show ((b.rawBind θ).rawBind φ).norm = (b.rawBind (θ.compose φ)).norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:296:        show Eff.norm (Eff.rawBind φ (Eff.rawBind θ e)) = Eff.norm (Eff.rawBind (θ.compose φ) e) from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:299:      rw [show ((a.rawBind θ).rawBind φ).norm = (a.rawBind (θ.compose φ)).norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:301:        show ((b.rawBind θ).rawBind φ).norm = (b.rawBind (θ.compose φ)).norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeComposition.lean:315:      rw [show ((t.rawBind θ).rawBind φ).norm = (t.rawBind (θ.compose φ)).norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:15:  theorem Ty.bind_congr_scoped (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (t : Ty) (hw : t.RawWF n)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:19:      simp only [Ty.bind, Ty.rawBind, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:31:        show (r.rawBind θ).norm = (r.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht r hw.2.2.1 h.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:32:        show Eff.norm (Eff.rawBind θ e) = Eff.norm (Eff.rawBind φ e) from Eff.bind_congr_scoped θ φ ht e hw.2.2.2 h.2.2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:35:      rw [show (a.rawBind θ).norm = (a.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht a hw.1 h.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:36:        show (b.rawBind θ).norm = (b.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht b hw.2.1 h.2.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:37:        show Eff.norm (Eff.rawBind θ e) = Eff.norm (Eff.rawBind φ e) from Eff.bind_congr_scoped θ φ ht e hw.2.2 h.2.2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:39:      rw [show (a.rawBind θ).norm = (a.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht a hw.1 h.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:40:        show (b.rawBind θ).norm = (b.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht b hw.2 h.2]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:43:  theorem Ty.bindTys_congr_scoped (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (ts : List Ty) (hw : Ty.RawWFList n ts)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:50:      rw [show (t.rawBind θ).norm = (t.rawBind φ).norm from Ty.bind_congr_scoped θ φ ht t hw.1 h.1,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:53:  theorem Eff.bind_congr_scoped (θ φ : SubstEnv) {n : Nat} (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (e : Eff) (hw : Eff.RawWF n e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:71:        · have hm := Iff.of_eq (congrArg (fun xs => t.norm ∈ xs) hfs)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:103:theorem Ty.bind_identity (t : Ty) : Ty.bind SubstEnv.identity t = t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:106:theorem Eff.bind_identity (e : Eff) : Eff.bind SubstEnv.identity e = Eff.norm e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:110:    Eff.rowImage θ.norm.rows i = Eff.norm (Eff.rowImage θ.rows i) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:112:  | none => simp only [Eff.rowImage, SubstEnv.norm, List.getElem?_map, hi, Option.map_none, Option.getD_none]; rfl
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:113:  | some e => simp only [Eff.rowImage, SubstEnv.norm, List.getElem?_map, hi, Option.map_some, Option.getD_some]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:115:theorem Ty.bind_normEnv (θ : SubstEnv) (t : Ty) : Ty.bind θ.norm t = Ty.bind θ t :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:120:    (ht : ∀ i < n, (θ.types i).norm = (φ.types i).norm) (t : Ty) (hw : t.RawWF n)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:121:    (hr : t.RowsIn (fun i => Eff.norm (Eff.rowImage θ.rows i) = Eff.norm (Eff.rowImage φ.rows i))) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeCongruence.lean:126:    change (θ.types i).norm.norm = (φ.types i).norm.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRegularity.lean:17:    cases t <;> simp only [Ty.WF] at h <;> unfold Ty.Canonical <;> simp only [Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRegularity.lean:36:theorem Ty.norm_WF {n : Nat} (t : Ty) (h : Ty.WF n t) : Ty.WF n t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRegularity.lean:47:theorem Eff.norm_WF {n : Nat} (e : Eff) (h : Eff.WF n e) : Eff.WF n (Eff.norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRegularity.lean:50:    simp only [Eff.norm, Eff.WF]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRows.lean:66:  theorem Ty.norm_rowsIn {pe : Nat → Prop} (t : Ty) (h : t.RowsIn pe) : t.norm.RowsIn pe := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRows.lean:67:    cases t <;> simp only [Ty.RowsIn] at h <;> simp only [Ty.norm, Ty.RowsIn]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeRows.lean:86:      Eff.RowsIn pe (Eff.norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:152:    change Eff.norm es[i] = Eff.norm (Eff.rawBind (SubstEnv.shift k 0) es[i])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:181:    simp only [Eff.substAt, Eff.rawSubstAt, Eff.rawBind, Eff.norm, Eff.fails,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:203:theorem Eff.substRho_nil_norm (e : Eff) : Eff.substRho [] e = Eff.norm e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeScopedSubst.lean:288:    Eff.substAt c ts es (Eff.norm e) = Eff.substAt c ts es e :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:86:      (t.rawShift k c).norm = t.norm.rawShift k c := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:87:    cases t <;> simp only [Ty.rawShift, Ty.norm, Ty.norm_rawShift, Ty.normTys_rawShift, Eff.norm_rawShift]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:96:      Eff.norm (Eff.rawShift k c e) = Eff.rawShift k c (Eff.norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:99:      simp only [Eff.rawShift, Eff.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:118:noncomputable def Eff.shift (k c : Nat) (e : Eff) : Eff := Eff.norm (Eff.rawShift k c e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:149:  theorem Ty.shift_eq_norm_rawShift (k c : Nat) (t : Ty) : t.shift k c = (t.rawShift k c).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:150:    cases t <;> simp only [Ty.shift, Ty.rawShift, Ty.norm, Ty.shift_eq_norm_rawShift,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:183:theorem Ty.shift_zero_norm (c : Nat) (t : Ty) : t.shift 0 c = t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeShift.lean:186:theorem Eff.shift_zero_norm (c : Nat) (e : Eff) : Eff.shift 0 c e = Eff.norm e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:33:  | t => t.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:111:noncomputable def Ty.bind (θ : SubstEnv) (t : Ty) : Ty := (t.rawBind θ).norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:112:noncomputable def Eff.bind (θ : SubstEnv) (e : Eff) : Eff := Eff.norm (Eff.rawBind θ e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubst.lean:129:  Eff.norm (Eff.rawSubstAt c ts es e)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:20:    (c.rawApply as).norm = c.rawApply (Ty.normTys as) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:21:  cases c <;> cases as <;> simp only [TyCon.rawApply, Ty.norm, Ty.normTys,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:28:    (t.norm.rawApplyTo (Ty.normTys as)).norm = (t.rawApplyTo as).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:29:  cases t <;> simp only [Ty.norm, Ty.rawApplyTo, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:35:      (t.norm.rawBind θ).norm = (t.rawBind θ).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:37:      simp only [Ty.norm, Ty.rawBind, Ty.norm_rawBind, Ty.normTys_rawBind, Eff.norm_rawBind]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:52:      Eff.norm (Eff.rawBind θ (Eff.norm e)) = Eff.norm (Eff.rawBind θ e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:55:      simp only [Eff.norm, Eff.rawBind, Ty.normTys_append]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:65:theorem Ty.rawBind_norm_congr (θ : SubstEnv) {a b : Ty} (h : a.norm = b.norm) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:66:    (a.rawBind θ).norm = (b.rawBind θ).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:72:      (∃ x ∈ e.fails, (Ty.rawBind θ x).norm = t.norm) ∨
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:73:      ∃ i f x, θ.rows[i]? = some f ∧ Eff.mem e (.rho i) ∧ x ∈ f.fails ∧ x.norm = t.norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:124:    change Eff.mem (Eff.norm (Eff.rawBind θ e)) a at ha
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:125:    change Eff.mem (Eff.norm (Eff.rawBind θ f)) a
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:135:    change Eff.memFail (Eff.norm (Eff.rawBind θ e)) t at ht
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:136:    change Eff.memFail (Eff.norm (Eff.rawBind θ f)) t
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:147:@[simp] theorem Eff.test_norm (e : Eff) (a : Atom) : Eff.test (Eff.norm e) a = Eff.test e a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:152:    Eff.substAtoms (es.map Eff.norm) a = Eff.substAtoms es a := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:164:    sortUnique tyCompare (Ty.normTys (Eff.rowFails (es.map Eff.norm) a)) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:180:    refine ⟨x.norm, Eff.mem_rowFails.mpr ⟨i, Eff.norm e, ?_, ha, ?_⟩, (Ty.norm_idem x).trans hxt⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:182:    · have hx' : x.norm ∈ sortUnique tyCompare (Ty.normTys e.fails) :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:187:noncomputable def SubstEnv.norm (θ : SubstEnv) : SubstEnv :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:188:  ⟨fun i => (θ.types i).norm, θ.rows.map Eff.norm⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:192:    (ha : a.norm = b.norm) (has : Ty.normTys as = Ty.normTys bs) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:193:    (a.rawApplyTo as).norm = (b.rawApplyTo bs).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:199:      (t.rawBind θ.norm).norm = (t.rawBind θ).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:200:    cases t <;> simp only [Ty.rawBind, Ty.norm,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:209:      Ty.normTys (Ty.rawBindTys θ.norm as) = Ty.normTys (Ty.rawBindTys θ as) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:215:      Eff.norm (Eff.rawBind θ.norm e) = Eff.norm (Eff.rawBind θ e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:218:      simp only [Eff.rawBind, Eff.norm, Ty.normTys_append]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:220:      change EffR.mk (Eff.substAtoms (θ.rows.map Eff.norm) a)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:222:            Ty.normTys (Eff.rowFails (θ.rows.map Eff.norm) a))) = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:230:    SubstEnv.at c (ts.map Ty.norm) (es.map Eff.norm) = (SubstEnv.at c ts es).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:231:  unfold SubstEnv.at SubstEnv.norm
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:236:    · simp only [hi, ↓reduceIte, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:242:      · simp only [hj, ↓reduceIte, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:250:    (t.rawSubstAt c ts es).norm =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:251:      (t.norm.rawSubstAt c (ts.map Ty.norm) (es.map Eff.norm)).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:257:    Eff.norm (Eff.rawSubstAt c ts es e) =
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:258:      Eff.norm (Eff.rawSubstAt c (ts.map Ty.norm) (es.map Eff.norm) (Eff.norm e)) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:263:theorem Ty.applyTo_eq_raw_norm (t : Ty) (as : List Ty) : t.applyTo as = (t.rawApplyTo as).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:270:      t.substAt c ts es = (t.rawBind (SubstEnv.at c ts es)).norm := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:271:    cases t <;> simp only [Ty.substAt, Ty.rawBind, Ty.norm, Ty.substAt_eq_rawBind,
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSubstLemmas.lean:437:  change Eff.norm (.mk (Eff.substAtoms [] a) []) = _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:32:  theorem Ty.norm_support {p} (t : Ty) (h : t.Support p) : t.norm.Support p := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:33:    cases t <;> simp only [Ty.norm, Ty.Support] at h ⊢
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeSupport.lean:49:  theorem Eff.norm_support {p} (e : Eff) (h : Eff.Support p e) : Eff.Support p (Eff.norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeVariables.lean:130:theorem Ty.norm_VarsIn {n pe} (t : Ty) (h : t.VarsIn n pe) : t.norm.VarsIn n pe := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeVariables.lean:135:theorem Eff.norm_VarsIn {n pe} (e : Eff) (h : Eff.VarsIn n pe e) : Eff.VarsIn n pe (Eff.norm e) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/TypeVariables.lean:140:    obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ fs.map Ty.norm from by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:97:        (by simp [SingleEff, SingleTys, SingleFail, Eff.union, Eff.empty, Eff.single, Eff.ofAtoms, Eff.norm, Eff.fails])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:103:    (by simp [SingleEff, SingleTys, SingleFail, Eff.union, Eff.empty, Eff.single, Eff.ofAtoms, Eff.norm, Eff.fails])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:115:    · simpa [Ty.shift, intTy, Eff.shift, Eff.rawShift, Eff.norm, Eff.empty, Ty.normTys] using
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:258:      (by simp [SingleTy, SingleTys, SingleEff, SingleFail, intTy, Eff.union, Eff.empty, Eff.norm, Eff.fails])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:271:    (by simp [Expr.Scoped, Block.Scoped, intTy, NamesWF, Ty.VarsInList, Ty.VarsIn, Eff.VarsIn, Eff.empty, Eff.Canonical, Eff.norm, Ty.normTys])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:504:    (by simp [SingleEff, SingleTys, SingleFail, Eff.union, Eff.empty, Eff.norm, Eff.fails])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Invariants.lean:362:        by simp [Eff.Canonical, Eff.singleFail, Eff.norm, Ty.norm_idem]⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Records.lean:103:      simp [SubstEnv.at, SubstEnv.identity, hi, Ty.rawShift, Ty.norm]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Sequence.lean:333:  have he : Eff.union ε Eff.empty = Eff.norm ε := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Sequence.lean:342:  have he : Eff.union Eff.empty ε = Eff.norm ε := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:216:    (resultWF : Ty.WF C.length (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs))) :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:219:      (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs)) Eff.empty Δl := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Typing.lean:354:    (by simp [mixedHoles, HoleArgs.holeNames, HoleArgs.holeTypes, Ty.WF, Ty.WFList, NamesWF, Eff.WF, Eff.Canonical, Eff.single, Eff.ofAtoms, Eff.norm, Ty.normTys])
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Monad2Examples.lean:267:    NamesWF, Ty.VarsIn, Ty.VarsInList, Eff.VarsIn, Eff.empty, row, Eff.ofAtoms, Eff.Canonical, Eff.norm, Ty.normTys]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Monad2Examples.lean:325:      Eff.VarsIn, row, Eff.ofAtoms, Eff.Canonical, Eff.norm, Ty.normTys]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:286:          (.fn (args.holeNames (positionalNames args.positions.length)) args.holeTypes r (Eff.norm εargs)) Eff.empty
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1116:  all_goals simp [SingleEff, SingleTys, SingleFail, Eff.empty, Eff.union, Eff.norm, Eff.fails]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1151:  all_goals simp [SingleEff, SingleTys, SingleFail, Eff.empty, Eff.union, Eff.norm, Eff.fails]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1169:  all_goals simp [SingleEff, SingleTys, SingleFail, Eff.empty, Eff.union, Eff.single, Eff.ofAtoms, Eff.norm, Eff.fails]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1201:  all_goals simp [SingleEff, SingleTys, SingleFail, Eff.empty, Eff.union, Eff.norm, Eff.fails]

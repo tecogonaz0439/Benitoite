@@ -1,0 +1,9 @@
+function f() -> Integer8
+  bind n <- -128s8
+  return -n
+end function
+
+function main() -> Unit
+  bind _ <- f()
+  return ()
+end function

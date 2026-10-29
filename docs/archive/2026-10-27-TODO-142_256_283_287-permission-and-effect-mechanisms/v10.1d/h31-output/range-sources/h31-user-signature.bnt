@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+effect Audit
+ function log(path: Scope.PathIn["/srv/audit/**"], line: String) -> Unit
+ function flush() -> Unit
+end effect
+
+function sample(path: Scope.PathIn["/srv/audit/**"]) -> Unit uses Audit
+ log(path: path, line: "a")
+end function

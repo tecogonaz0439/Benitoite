@@ -12,8 +12,9 @@ import Benitoite.Release.BuilderExec
 - E-Super は、値の等しさではなく、メソッドの呼び出しの辞書から `↑` を一段取り出す遷移として定める（01-12「型クラス」）。
 - ストアは、場所から中身への関数とする。有限であることは、ストアの型付け（`StoreOk`）の条件にする。
 - 組み込みの操作の E-Op は、規則 E-OpPrim として分けて書く。
-- IO の事象は、組み込みの関数の名前、引数、応答からなり、型引数とエフェクト引数を含めない（01-12「実行の規則」）。
-  応答の関係は、型引数とエフェクト引数も受け取る。
+- IO の事象は、組み込みの関数の名前、引数、応答、観測からなり、型引数とエフェクト引数を含めない（01-12「実行の規則」）。
+  観測は、その応答で作用した対象の有限列であり、応答の関係が応答とともに与える（問 8 の O1）。観測は状態に入らない。
+  応答の関係は、型引数とエフェクト引数も受け取る。範囲の列は受け取らない（範囲の列は δ にだけ渡す）。
 - `escape`、実行時エラーの状態、終了の状態が `drop κ` の枠を通るときの扱い（01-12「ハンドラ」の箇条）を、
   E-EscDrop・E-EscDropRel・E-ErrDrop・E-ErrDropRel・E-ExitDrop・E-ExitDropRel の規則として書く。
 -/
@@ -58,9 +59,10 @@ inductive State where
   /-- 実行中だけの照合。分岐全体を保持し、next 番目から調べる。 -/
   | matchRun (v : Val) (arms : List Arm) (next : Nat) (k : Cont) (σ : Store)
 
-/-- 事象。IO の事象 `b(W̄) ↦ …` と、解放の事象 `release(V) ↦ ok | error(r)`。 -/
+/-- 事象。IO の事象 `b(W̄) ↦ … @ obs` と、解放の事象 `release(V) ↦ ok | error(r)`。IO の事象の `obs` は、その応答で
+作用した対象の観測（有限列）である。順と重複は意味を持たない（設計書 01-12「実行の規則」）。 -/
 inductive Event where
-  | io (b : PrimName) (ws : List Val) (o : Outcome)
+  | io (b : PrimName) (ws : List Val) (o : Outcome) (obs : List Scope.Domain.Target)
   | release (v : Val) (r : Option ErrKind)
 
 /-- `mark ▷ K`。 -/
@@ -174,55 +176,55 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
       Step P B (.error rs (.guardF v arms next body :: k) σ) none (.error rs k σ)
   | E_ExitPopGuard {n rs v arms next body k σ} :
       Step P B (.exit n rs (.guardF v arms next body :: k) σ) none (.exit n rs k σ)
-  | E_Prim {b ts es ws k σ s v} :
-      B.sig b = some s → s.kind = .pure → B.delta b ts es ws = some (.val v) →
-      Step P B (.run (.app (.prim b ts es) ws) k σ) none (.run (.ret v) k σ)
-  | E_Err {b ts es ws k σ s r} :
-      B.sig b = some s → s.kind = .pure → B.delta b ts es ws = some (.err r) →
-      Step P B (.run (.app (.prim b ts es) ws) k σ) none (.error [r] k σ)
+  | E_Prim {b ts es rs ws k σ s v} :
+      B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.val v) →
+      Step P B (.run (.app (.prim b ts es rs) ws) k σ) none (.run (.ret v) k σ)
+  | E_Err {b ts es rs ws k σ s r} :
+      B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.err r) →
+      Step P B (.run (.app (.prim b ts es rs) ws) k σ) none (.error [r] k σ)
   /-- E-IO。組み込みの操作 b は、継続に b の節を持つ `handle` の枠がないときにだけ、E-IO を使う。 -/
-  | E_IO {b ts es ws k σ s v} :
+  | E_IO {b ts es rs ws k σ s v obs} :
       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
-      B.ioResponse b ts es ws (.val v) →
-      Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.val v))) (.run (.ret v) k σ)
+      B.ioResponse b ts es ws (.val v) obs →
+      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.val v) obs)) (.run (.ret v) k σ)
   /-- E-IOErr。プロセスの終了の関数の、引数が定義域の外のときの応答も `error(r)` である（01-12「プロセスの終了」）。 -/
-  | E_IOErr {b ts es ws k σ s r} :
+  | E_IOErr {b ts es rs ws k σ s r obs} :
       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
-      B.ioResponse b ts es ws (.err r) →
-      Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.err r))) (.error [r] k σ)
+      B.ioResponse b ts es ws (.err r) obs →
+      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.err r) obs)) (.error [r] k σ)
   /-- E-Exit。終了状態を指定したプロセスの終了の関数にだけ使う。 -/
-  | E_Exit {b ts es ws k σ s n} :
+  | E_Exit {b ts es rs ws k σ s n obs} :
       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
-      B.ioResponse b ts es ws (.exit n) →
-      Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.exit n))) (.exit n [] k σ)
+      B.ioResponse b ts es ws (.exit n) obs →
+      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.exit n) obs)) (.exit n [] k σ)
   -- ストア
-  | E_RefNew {b ts es v k σ s l} :
+  | E_RefNew {b ts es rs v k σ s l} :
       B.sig b = some s → s.kind = .refNew → σ l = none →
-      Step P B (.run (.app (.prim b ts es) [v]) k σ) none (.run (.ret (.loc l)) k (σ.set l (.val v)))
-  | E_RefGet {b ts es l k σ s v} :
+      Step P B (.run (.app (.prim b ts es rs) [v]) k σ) none (.run (.ret (.loc l)) k (σ.set l (.val v)))
+  | E_RefGet {b ts es rs l k σ s v} :
       B.sig b = some s → s.kind = .refGet → σ l = some (.val v) →
-      Step P B (.run (.app (.prim b ts es) [.loc l]) k σ) none (.run (.ret v) k σ)
-  | E_RefSet {b ts es l v k σ s} :
+      Step P B (.run (.app (.prim b ts es rs) [.loc l]) k σ) none (.run (.ret v) k σ)
+  | E_RefSet {b ts es rs l v k σ s} :
       B.sig b = some s → s.kind = .refSet →
-      Step P B (.run (.app (.prim b ts es) [.loc l, v]) k σ) none
+      Step P B (.run (.app (.prim b ts es rs) [.loc l, v]) k σ) none
         (.run (.ret (.const .unit)) k (σ.set l (.val v)))
   /-- `Reference.update[A](ℓ, V)` は `let x ⇐ Reference.get[A](ℓ) in let y ⇐ V(x) in Reference.set[A](ℓ, y)`
   と同じく遷移する。 -/
-  | E_RefUpdate {b ts es l f k σ s} :
+  | E_RefUpdate {b ts es rs l f k σ s} :
       B.sig b = some s → s.kind = .refUpdate →
-      Step P B (.run (.app (.prim b ts es) [.loc l, f]) k σ) none
-        (.run (.letIn (.app (.prim B.refGet ts []) [.loc l])
+      Step P B (.run (.app (.prim b ts es rs) [.loc l, f]) k σ) none
+        (.run (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
                 (.letIn (.app (f.rename (· + 1)) [.var 0])
-                  (.app (.prim B.refSet ts []) [.loc l, .var 0]))) k σ)
+                  (.app (.prim B.refSet ts [] []) [.loc l, .var 0]))) k σ)
   | E_Lazy {m k σ l} :
       σ l = none →
       Step P B (.run (.lazyC m) k σ) none (.run (.ret (.loc l)) k (σ.set l (.thunk m)))
-  | E_ForceDone {b ts es l k σ s v} :
+  | E_ForceDone {b ts es rs l k σ s v} :
       B.sig b = some s → s.kind = .force → σ l = some (.done v) →
-      Step P B (.run (.app (.prim b ts es) [.loc l]) k σ) none (.run (.ret v) k σ)
-  | E_Force {b ts es l k σ s m} :
+      Step P B (.run (.app (.prim b ts es rs) [.loc l]) k σ) none (.run (.ret v) k σ)
+  | E_Force {b ts es rs l k σ s m} :
       B.sig b = some s → s.kind = .force → σ l = some (.thunk m) →
-      Step P B (.run (.app (.prim b ts es) [.loc l]) k σ) none (.run m (.update l :: k) σ)
+      Step P B (.run (.app (.prim b ts es rs) [.loc l]) k σ) none (.run m (.update l :: k) σ)
   | E_Update {v l k σ} :
       Step P B (.run (.ret v) (.update l :: k) σ) none (.run (.ret v) k (σ.set l (.done v)))
   -- 関数の境界と `escape`
@@ -284,10 +286,10 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State �
         (.run ((body.substTy [T] []).instantiate [v, .loc κ])
           (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF [.fail E body]]))))
   /-- E-Op（組み込みの操作）。継続に b の節を持つ `handle` の枠があるときは、E-IO の代わりに使う。 -/
-  | E_OpPrim {b ts es ws k σ s k1 h k2 c κ} :
+  | E_OpPrim {b ts es rs ws k σ s k1 h k2 c κ} :
       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
       SplitAt (.prim b) k k1 h k2 → findClause h (.prim b) = some c → σ κ = none →
-      Step P B (.run (.app (.prim b ts es) ws) k σ) none
+      Step P B (.run (.app (.prim b ts es rs) ws) k σ) none
         (.run ((c.body.substTy ts []).instantiate (ws ++ [.loc κ])) (.drop κ :: k2)
           (σ.set κ (.cont (k1 ++ [.handleF h]))))
   | E_Resume {κ v k σ k'} :
@@ -335,8 +337,8 @@ def State.Final : State → Prop
 
 /-! ## 遷移を計算する関数 -/
 
-/-- IO の応答を選ぶ関数（段階 A と同じく、同じ入力には同じ応答を返す）。 -/
-abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome
+/-- IO の応答と観測を選ぶ関数（段階 A と同じく、同じ入力には同じ応答を返す）。 -/
+abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome × List Scope.Domain.Target
 
 /-- 継続を、op を処理する最も内側の `handle` の枠で分ける。 -/
 def splitHandler (o : OpRef) : Cont → Option (Cont × List Clause × Cont)
@@ -412,13 +414,13 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
           some (none, .run ((body.substTy [t] []).instantiate [v, .loc κ])
             (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF [.fail e body]]))))
       | _ => none
-  | .run (.app (.prim b ts es) ws) k σ =>
+  | .run (.app (.prim b ts es rs) ws) k σ =>
       match B.sig b with
       | none => none
       | some s =>
           match s.kind, ws with
           | .pure, _ =>
-              match B.delta b ts es ws with
+              match B.delta b ts es rs ws with
               | some (.val v) => some (none, .run (.ret v) k σ)
               | some (.err r) => some (none, .error [r] k σ)
               | _ => none
@@ -433,9 +435,9 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
                   | none => none
               | none =>
                   match s.kind, oracle b ts es ws with
-                  | .io, .val v => some (some (.io b ws (.val v)), .run (.ret v) k σ)
-                  | _, .err r => some (some (.io b ws (.err r)), .error [r] k σ)
-                  | .exit, .exit n => some (some (.io b ws (.exit n)), .exit n [] k σ)
+                  | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (.ret v) k σ)
+                  | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k σ)
+                  | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k σ)
                   | _, _ => none
           | .refNew, [v] =>
               let l := fresh σ
@@ -446,9 +448,9 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
               | _ => none
           | .refSet, [.loc l, v] => some (none, .run (.ret (.const .unit)) k (σ.set l (.val v)))
           | .refUpdate, [.loc l, f] =>
-              some (none, .run (.letIn (.app (.prim B.refGet ts []) [.loc l])
+              some (none, .run (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
                 (.letIn (.app (f.rename (· + 1)) [.var 0])
-                  (.app (.prim B.refSet ts []) [.loc l, .var 0]))) k σ)
+                  (.app (.prim B.refSet ts [] []) [.loc l, .var 0]))) k σ)
           | .force, [.loc l] =>
               match σ l with
               | some (.done v) => some (none, .run (.ret v) k σ)
@@ -544,32 +546,35 @@ def run (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Err
 R である。ストアの継続の型付けで、末尾の `handle` の枠を κ を作った節の R で型付けすることを表すために使う。 -/
 inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
     Option Ty → Eff → Cont → Ty → Ty → Eff → Option Ty → Prop
-  | K_Empty {R ε a ε0} : Eff.Sub ε ε0 → Ty.WF 0 a → ContTy P B Ψ R ε [] a a ε0 R
+  | K_Empty {R ε a ε0} : Eff.Sub ε ε0 → Ty.WF 0 0 a → ContTy P B Ψ R ε [] a a ε0 R
   | K_Let {R ε n k a c b ε0 ε1 Re} :
-      HasTypeC P B Ψ [] [some a] R n c ε1 → Ty.WF 0 a → Eff.Sub ε1 ε → ContTy P B Ψ R ε k c b ε0 Re →
+      HasTypeC P B Ψ [] [some a] R n c ε1 → Ty.WF 0 0 a → Eff.Sub ε1 ε → ContTy P B Ψ R ε k c b ε0 Re →
       ContTy P B Ψ R ε (.letF n :: k) a b ε0 Re
   | K_Mark {R' ε k a b ε0 Re} :
-      ContTy P B Ψ R' ε k a b ε0 Re → Ty.WF 0 a → ContTy P B Ψ (some a) ε (.mark :: k) a b ε0 Re
+      ContTy P B Ψ R' ε k a b ε0 Re → Ty.WF 0 0 a → ContTy P B Ψ (some a) ε (.mark :: k) a b ε0 Re
   | K_Update {R ε l k a b ε0 Re} :
       Ψ l = some (.lazy a) → ContTy P B Ψ R ε k a b ε0 Re →
       ContTy P B Ψ none ε (.update l :: k) a b ε0 Re
   | K_Release {R ε v o k a b ε0 Re} :
-      HasTypeV P B Ψ [] [] v (.opaque o) → B.isResource o = true → Eff.mem ε (.name stateEff) →
+      HasTypeV P B Ψ [] [] v (.opaqueTop o) → B.isResource o = true → Eff.mem ε (.nameTop stateEff) →
       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
-  /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
-  | K_Handle {R ε εc h k t b ε0 Re} :
-      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ.hideBuilders [] [] R h t εc →
-      Ty.WF 0 t →
-      ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
-  /-- Fail節の出力を、捕捉する本体の上限へ混ぜない。 -/
+  /-- K-Handle。節は、枠の下の継続が許すエフェクト ε に被覆で含まれる（判断 5 の一原子の被覆 `Eff.Covers`。L40.6c）
+  エフェクト εc で検査する（01-12「確かめる性質」）。枠の穴の効果 εb は保護本体の効果であり、`εc ∪ handled(H)` に
+  構造上の包含で含まれる。節の添字は εb から選ぶ（L30.1。`ClauseSig`）。 -/
+  | K_Handle {R ε εc εb h k t b ε0 Re} :
+      ContTy P B Ψ R ε k t b ε0 Re → Eff.Covers ε εc → Eff.Sub εb (Eff.union εc (handled P B h)) →
+      HasTypeClauses P B Ψ.hideBuilders [] [] R εb h t εc →
+      Ty.WF 0 0 t →
+      ContTy P B Ψ R εb (.handleF h :: k) t b ε0 Re
+  /-- Fail節の出力を、捕捉する本体の上限へ混ぜない。Rest と節の効果は、枠の下の継続の効果に被覆で含まれる（L40.6c）。 -/
   | K_Handle_Fail {R ε ec Rest E h k t b ε0 Re} :
-      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub Rest ε → NoFail Qempty Rest →
-      HasFailureClause P B Ψ.hideBuilders Qempty [] [] E R h t ec → Eff.Sub ec ε → Ty.WF 0 t →
+      ContTy P B Ψ R ε k t b ε0 Re → Eff.Covers ε Rest → NoFail Qempty Rest →
+      HasFailureClause P B Ψ.hideBuilders Qempty [] [] E R h t ec → Eff.Covers ε ec → Ty.WF 0 0 t →
       ContTy P B Ψ R (Eff.union (Eff.singleFail E) Rest) (.handleF h :: k) t b ε0 Re
   /-- K-Drop。捨てる継続の解放の枠を、この位置で実行できるように、κ の継続の型のエフェクトが `State` を
   含むなら、ε も `State` を含む（01-12「確かめる性質」）。 -/
   | K_Drop {R ε κ k a b ε0 Re b' t' ε' R'} :
-      Ψ κ = some (.cont b' t' ε' R') → (Eff.mem ε' (.name stateEff) → Eff.mem ε (.name stateEff)) →
+      Ψ κ = some (.cont b' t' ε' R') → (Eff.mem ε' (.nameTop stateEff) → Eff.mem ε (.nameTop stateEff)) →
       ContTy P B Ψ R ε k a b ε0 Re →
       ContTy P B Ψ R ε (.drop κ :: k) a b ε0 Re
   /-- ガードは R = none、空のエフェクトで実行し、本体と再開先では元の R とエフェクトに戻る。 -/
@@ -597,10 +602,10 @@ def CellOk (P : Program) (B : Builtins) (Ψ : StoreTy) (l : Nat) : Cell → Prop
 
 /-- ストアの場所の型は、型の変数を含まない。 -/
 def LocTy.WF : LocTy → Prop
-  | .builder k => match k with | .list a => Ty.WF 0 a | _ => True
-  | .ref a => Ty.WF 0 a
-  | .lazy a => Ty.WF 0 a
-  | .cont b t e r => Ty.WF 0 b ∧ Ty.WF 0 t ∧ (∀ x, r = some x → Ty.WF 0 x) ∧ Eff.WF 0 e ∧ Eff.Canonical e
+  | .builder k => match k with | .list a => Ty.WF 0 0 a | _ => True
+  | .ref a => Ty.WF 0 0 a
+  | .lazy a => Ty.WF 0 0 a
+  | .cont b t e r => Ty.WF 0 0 b ∧ Ty.WF 0 0 t ∧ (∀ x, r = some x → Ty.WF 0 0 x) ∧ Eff.WF 0 0 e ∧ Eff.Canonical e
 
 /-- ストアがストアの型付けに合う。ストアは有限であり、Ψ が型を与える場所には中身がある（`dom Ψ = dom σ`。
 01-12「確かめる性質」）。 -/
@@ -609,10 +614,38 @@ def StoreOk (P : Program) (B : Builtins) (Ψ : StoreTy) (σ : Store) : Prop :=
     (∀ l x, Ψ l = some x → σ l ≠ none) ∧
     (∀ l c, σ l = some c → CellOk P B Ψ l c)
 
-/-- 継続の末尾で許すエフェクト Eb は、Fail を含まない組み込みのエフェクトの名前の集合である。 -/
+/-- 継続の末尾で許すエフェクト Eb は、Fail を含まない組み込みのエフェクトの名前の原子の集合である。原子の範囲の
+位置は問わず、名前が組み込みのエフェクトであること（利用者が宣言した名前でないこと）で判定する（案 BA。L20.1 の後の
+設計者の決定）。範囲付きの組み込みのエフェクト（`File.Write[/data/**]` など）を末尾に許すので、範囲付きの効果を
+宣言した関数を呼ぶ状態も型が付く。 -/
 def BuiltinOnly (P : Program) (B : Builtins) (ε : Eff) : Prop :=
   ε.fails = [] ∧
-    ∀ a, Eff.mem ε a → ∃ l, a = .name l ∧ P.effects l = none ∧ (B.effects l).isSome
+    ∀ a, Eff.mem ε a → ∃ l r, a = .name l r ∧ P.effects l = none ∧ (B.effects l).isSome
+
+/-- L20.7 の前の `BuiltinOnly`（原子は Top の名前の原子だけ）。旧の像での同値（`BuiltinOnly.iff_old`）の比較に使う。 -/
+def BuiltinOnlyOld (P : Program) (B : Builtins) (ε : Eff) : Prop :=
+  ε.fails = [] ∧
+    ∀ a, Eff.mem ε a → ∃ l, a = .nameTop l ∧ P.effects l = none ∧ (B.effects l).isSome
+
+/-- 旧の `BuiltinOnly` を満たす効果は、新しい `BuiltinOnly` を満たす（新しい定義は旧の定義より弱い）。 -/
+theorem BuiltinOnlyOld.toNew {P : Program} {B : Builtins} {ε : Eff} (h : BuiltinOnlyOld P B ε) :
+    BuiltinOnly P B ε :=
+  ⟨h.1, fun a ha => by
+    obtain ⟨l, rfl, h1, h2⟩ := h.2 a ha
+    exact ⟨l, _, rfl, h1, h2⟩⟩
+
+/-- 旧の像での同値: 原子がすべて旧の原子の像（`Atom.TopImage`。範囲の位置が Top の名前の原子と行の原子）の効果では、
+新しい `BuiltinOnly` は旧の定義と同値である（`BuiltinOnly.topImage` を置き換えた補題）。 -/
+theorem BuiltinOnly.iff_old {P : Program} {B : Builtins} {ε : Eff} (himg : ∀ a, Eff.mem ε a → a.TopImage) :
+    BuiltinOnly P B ε ↔ BuiltinOnlyOld P B ε := by
+  constructor
+  · intro h
+    refine ⟨h.1, fun a ha => ?_⟩
+    obtain ⟨l, r, rfl, h1, h2⟩ := h.2 a ha
+    have hr : r = .fixed .top := himg _ ha
+    subst hr
+    exact ⟨l, rfl, h1, h2⟩
+  · exact BuiltinOnlyOld.toNew
 
 /-! ## 状態の中の項が閉じていること -/
 
@@ -630,7 +663,7 @@ def Cont.Closed (k : Cont) : Prop := ∀ f ∈ k, f.Closed
 
 def Cell.Closed : Cell → Prop
   | .builder (.string _) | .builder (.bytes _) => True
-  | .builder (.list a vs) => Ty.VarsIn 0 (fun _ => True) a ∧ Val.VarsInList 0 (fun _ => True) vs
+  | .builder (.list a vs) => Ty.VarsIn 0 0 (fun _ => True) a ∧ Val.VarsInList 0 (fun _ => True) vs
   | .val v => Val.VarsIn 0 (fun _ => True) v
   | .thunk m => Comp.VarsIn 0 (fun _ => True) m
   | .done v => Val.VarsIn 0 (fun _ => True) v

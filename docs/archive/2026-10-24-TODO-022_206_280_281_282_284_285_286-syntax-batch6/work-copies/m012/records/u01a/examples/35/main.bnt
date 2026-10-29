@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+
+function main() -> Unit uses File.Read, Console.Write
+  return match File.readText("missing.txt") with
+    case Result.Ok(text) -> Console.write(text)
+    case Result.Error(error) ->
+      match IOError.kind(error) with
+        case IOErrorKind.NotFound -> Console.writeLine("missing.txt does not exist")
+        case otherKind -> Console.writeLine("could not read: ${IOError.message(error)}")
+      end match
+  end match
+end function

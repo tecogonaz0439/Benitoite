@@ -33,8 +33,13 @@ fn effect_names(
     let mut out = Vec::new();
     for effect in &effects.names {
         out.push(match effect {
-            EffectName::Builtin(id) => benitoite::types::builtin::effect_name(*id)?,
-            EffectName::User(id) => checked.types.effects.get(*id)?.display_name.clone(),
+            EffectName::Builtin(id, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP => {
+                benitoite::types::builtin::effect_name(*id)?
+            }
+            EffectName::User(id, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP => {
+                checked.types.effects.get(*id)?.display_name.clone()
+            }
+            EffectName::Builtin(..) | EffectName::User(..) => return None,
         });
     }
     for failure in &effects.failures {

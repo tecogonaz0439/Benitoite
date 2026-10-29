@@ -93,6 +93,14 @@ fn parse_type_in(p: &mut Parser, depth: u32, in_list: bool) -> PResult<Box<TypeE
 fn parse_named(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     let start = p.pos;
     let path = p.qual_name(true)?;
+    if p.at(TokenKind::LBracket)
+        && matches!(
+            p.peek_nth_kind(1),
+            TokenKind::StringLit | TokenKind::StrStart | TokenKind::IntLit
+        )
+    {
+        return parse_scope_named(p, start, path);
+    }
     let args = if p.eat(TokenKind::LBracket) {
         comma_list(
             p,
@@ -110,13 +118,122 @@ fn parse_named(p: &mut Parser, depth: u32) -> PResult<Box<TypeExpr>> {
     } else {
         Vec::new()
     };
-    Ok(Box::new(TypeExpr::Named(NamedType {
+    Ok(finish_named(p, start, path, args, None))
+}
+// 範囲の分岐を再帰する型引数の枠から外す。
+#[inline(never)]
+fn parse_scope_named(p: &mut Parser, start: usize, path: Vec<Name>) -> PResult<Box<TypeExpr>> {
+    let from = p.pos;
+    p.bump();
+    let scope = super::scope::parse(p, from)?;
+    Ok(finish_named(
+        p,
+        start,
+        path,
+        Vec::new(),
+        Some(Box::new(scope)),
+    ))
+}
+fn type_start(kind: TokenKind) -> bool {
+    matches!(
+        kind,
+        TokenKind::UpperIdent | TokenKind::KwDie | TokenKind::KwFunction | TokenKind::LParen
+    )
+}
+// 再帰中の枠に AST の構築領域を置かない（設計書 02-01「関数の呼び出しと処理系のスタック」）。
+#[inline(never)]
+fn finish_named(
+    p: &mut Parser,
+    start: usize,
+    path: Vec<Name>,
+    args: Vec<TypeExpr>,
+    scope: Option<Box<ScopeArgs>>,
+) -> Box<TypeExpr> {
+    Box::new(TypeExpr::Named(NamedType {
         id: p.node_id(),
         span: p.span_from(start),
         path,
         args,
-    })))
+        scope,
+    }))
 }
+// 型を始める字句と範囲の字句を分ける。名前の種類は解決後に検査する。
+type ParsedArguments = (Option<Vec<TypeExpr>>, Option<Box<ScopeArgs>>);
+
+fn parse_arguments(p: &mut Parser, depth: u32) -> PResult<ParsedArguments> {
+    if !p.at(TokenKind::LBracket) {
+        return Ok((None, None));
+    }
+    let start = p.pos;
+    p.bump();
+    if type_start(p.peek_kind()) {
+        let args = comma_list(
+            p,
+            depth,
+            CommaList {
+                close: TokenKind::RBracket,
+                element: text::TYPE,
+                separator: text::COMMA_OR_RBRACKET,
+                allow_empty: true,
+                indexed: false,
+            },
+            push_type,
+            |out, error| out.push(TypeExpr::Error(error)),
+        )?;
+        Ok((Some(args), None))
+    } else {
+        Ok((None, Some(Box::new(super::scope::parse(p, start)?))))
+    }
+}
+
+// 字句上の文字列列か endpoint の組の列だけを展開する。不正な群は一つで残す。
+fn expand_effect(p: &mut Parser, effect: EffectRef, out: &mut Vec<EffectRef>) {
+    let Some(scope) = &effect.scope else {
+        out.push(effect);
+        return;
+    };
+    let path = scope
+        .items
+        .iter()
+        .all(|a| matches!(a.kind, ScopeArgKind::String(_)));
+    let endpoints = scope.items.len().is_multiple_of(2)
+        && scope.items.as_chunks::<2>().0.iter().all(|pair| {
+            matches!(
+                pair,
+                [
+                    ScopeArg {
+                        kind: ScopeArgKind::String(_),
+                        ..
+                    },
+                    ScopeArg {
+                        kind: ScopeArgKind::Port(..),
+                        ..
+                    }
+                ]
+            )
+        });
+    let width = if path {
+        1
+    } else if endpoints {
+        2
+    } else {
+        out.push(effect);
+        return;
+    };
+    if scope.items.is_empty() {
+        out.push(effect);
+        return;
+    }
+    for start in (0..scope.items.len()).step_by(width) {
+        let mut atom = effect.clone();
+        atom.id = p.node_id();
+        if let Some(scope) = &mut atom.scope {
+            scope.element = start..start.saturating_add(width);
+        }
+        out.push(atom);
+    }
+}
+
 fn push_type(p: &mut Parser, depth: u32, out: &mut Vec<TypeExpr>) -> PResult<()> {
     let Ok(ty) = parse_type_in(p, depth, true) else {
         return Err(Fail);
@@ -256,29 +373,19 @@ pub(super) fn parse_uses(
         let from = p.pos;
         let path = p.qual_name(true)?;
         let ambiguous = !effects.is_empty() && path.len() == 1;
-        let args = if !ambiguous && p.eat(TokenKind::LBracket) {
-            Some(comma_list(
-                p,
-                depth,
-                CommaList {
-                    close: TokenKind::RBracket,
-                    element: text::TYPE,
-                    separator: text::COMMA_OR_RBRACKET,
-                    allow_empty: true,
-                    indexed: false,
-                },
-                push_type,
-                |out, error| out.push(TypeExpr::Error(error)),
-            )?)
+        let (args, scope) = if ambiguous {
+            (None, None)
         } else {
-            None
+            parse_arguments(p, depth)?
         };
-        effects.push(EffectRef {
+        let effect = EffectRef {
             id: p.node_id(),
             span: p.span_from(from),
             path,
             args,
-        });
+            scope,
+        };
+        expand_effect(p, effect, &mut effects);
         if effects.len() > 1
             && effects.last().is_some_and(|e| e.path.len() == 1)
             && p.at(TokenKind::LBracket)
@@ -360,32 +467,17 @@ pub(super) fn parse_file_uses(p: &mut Parser) -> Option<UsesList> {
         let parsed = (|| {
             p.enter(1)?;
             let path = p.qual_name(true)?;
-            let args = if p.eat(TokenKind::LBracket) {
-                Some(comma_list(
-                    p,
-                    1,
-                    CommaList {
-                        close: TokenKind::RBracket,
-                        element: text::TYPE,
-                        separator: text::COMMA_OR_RBRACKET,
-                        allow_empty: true,
-                        indexed: false,
-                    },
-                    push_type,
-                    |out, error| out.push(TypeExpr::Error(error)),
-                )?)
-            } else {
-                None
-            };
+            let (args, scope) = parse_arguments(p, 1)?;
             Ok::<_, Fail>(EffectRef {
                 id: p.node_id(),
                 span: p.span_from(from),
                 path,
                 args,
+                scope,
             })
         })();
         match parsed {
-            Ok(effect) => effects.push(effect),
+            Ok(effect) => expand_effect(p, effect, &mut effects),
             Err(_) => {
                 recover_file_uses(p);
                 return None;

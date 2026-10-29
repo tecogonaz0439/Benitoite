@@ -1,0 +1,49 @@
+import Benitoite.Unofficial.Scope
+const c0: Integer = 0
+const c1: Integer = c0 + c0
+const c2: Integer = c1 + c1
+const c3: Integer = c2 + c2
+const c4: Integer = c3 + c3
+const c5: Integer = c4 + c4
+const c6: Integer = c5 + c5
+const c7: Integer = c6 + c6
+const c8: Integer = c7 + c7
+const c9: Integer = c8 + c8
+const c10: Integer = c9 + c9
+const c11: Integer = c10 + c10
+const c12: Integer = c11 + c11
+const c13: Integer = c12 + c12
+const c14: Integer = c13 + c13
+const c15: Integer = c14 + c14
+const c16: Integer = c15 + c15
+const c17: Integer = c16 + c16
+const c18: Integer = c17 + c17
+const c19: Integer = c18 + c18
+const c20: Integer = c19 + c19
+const c21: Integer = c20 + c20
+const c22: Integer = c21 + c21
+const c23: Integer = c22 + c22
+const c24: Integer = c23 + c23
+const c25: Integer = c24 + c24
+const c26: Integer = c25 + c25
+const c27: Integer = c26 + c26
+const c28: Integer = c27 + c27
+const c29: Integer = c28 + c28
+const c30: Integer = c29 + c29
+const c31: Integer = c30 + c30
+const c32: Integer = c31 + c31
+const c33: Integer = c32 + c32
+const c34: Integer = c33 + c33
+const c35: Integer = c34 + c34
+const c36: Integer = c35 + c35
+const c37: Integer = c36 + c36
+const c38: Integer = c37 + c37
+const c39: Integer = c38 + c38
+const c40: Integer = c39 + c39
+function sample(path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ bind _ <- c40
+ return Scope.checkPathIn(pattern: "/data/**", path: path)
+end function
+function main() -> Unit
+ ()
+end function

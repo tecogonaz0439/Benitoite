@@ -1,0 +1,44 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 22 tests
+test closure::an_inferred_body_does_not_narrow_the_public_return_contract ... ok
+test closure::stage_closure_input_keeps_ranges_through_methods_constants_and_forgetting ... ok
+test acceptance_checks_definitions_before_implementation_methods ... ok
+test closure::warning_candidates_do_not_change_scoped_type_acceptance ... ok
+test closure::scope_rejection_and_legacy_errors_leave_other_range_warnings_intact ... ok
+test handler_selection::handler_selection_uses_callback_annotations_and_rejects_unsupported_entry_forms ... ok
+test function_values_holes_and_unannotated_widen_do_not_invent_ranges ... ok
+test an_unrelated_handler_does_not_finalize_a_prior_scope_check_before_its_later_use ... ok
+test resolution::standard_import_names_cannot_be_redeclared ... ok
+
+thread 'closure::scope_exhaustion_preserves_range_warnings_and_unknown_acceptance' (5740216) panicked at crates/benitoite/tests/scoped_calls/closure.rs:54:5:
+assertion failed: program.types.call_ranges.iter().all(|(_, ranges)|
+        ranges.iter().all(|r| *r == benitoite::types::scope::Range::Top))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test closure::scope_exhaustion_preserves_range_warnings_and_unknown_acceptance ... FAILED
+test accepted_calls_keep_non_top_ranges_and_widen_uses_the_return_annotation ... ok
+test resolution::permitted_alias_keeps_scope_rules_and_effect_module_alias_is_rejected ... ok
+test handlers_remove_complete_names_and_keep_clause_io_at_its_own_scope ... ok
+test reversed_request_literals_are_unknown_and_do_not_gain_membership_from_an_annotation ... ok
+test closure::range_budget_stop_does_not_erase_a_required_scope_selection ... ok
+test numbering_budget_applies_to_a_rule_after_the_expanding_constant ... ok
+test numbering_and_local_budget_diagnostics_explain_different_losses ... ok
+test user_operation_clauses_keep_their_declared_fixed_scope ... ok
+test unannotated_checks_use_top_when_projection_or_join_requires_it ... ok
+test scope_acceptance_rejects_unknown_uncovered_pipe_and_implicit_widening ... ok
+test resolution::user_spellings_and_standard_like_import_aliases_are_ordinary_functions ... ok
+test resolution::indirect_six_declarations_keep_top_instead_of_recovering_a_direct_rule ... ok
+
+failures:
+
+failures:
+    closure::scope_exhaustion_preserves_range_warnings_and_unknown_acceptance
+
+test result: FAILED. 21 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.08s
+
+error: test failed, to rerun pass `-p benitoite --test scoped_calls`
+real 3.33
+user 13.05
+sys 0.50

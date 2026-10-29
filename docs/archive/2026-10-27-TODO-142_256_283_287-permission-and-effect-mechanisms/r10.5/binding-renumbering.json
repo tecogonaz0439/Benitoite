@@ -1,0 +1,1021 @@
+{
+  "before_declarations": 506,
+  "after_declarations": 507,
+  "added": [
+    [
+      "Benitoite.Scope",
+      "builtin-type",
+      "",
+      "PathIn"
+    ]
+  ],
+  "supplemental_data": [
+    {
+      "qualified": "Benitoite.Csv.ParseError",
+      "before": 1930,
+      "after": 1931
+    },
+    {
+      "qualified": "Benitoite.IO.File.EntryKind",
+      "before": 1924,
+      "after": 1925
+    },
+    {
+      "qualified": "Benitoite.IO.File.Info",
+      "before": 1923,
+      "after": 1924
+    },
+    {
+      "qualified": "Benitoite.IO.File.WriteMode",
+      "before": 1925,
+      "after": 1926
+    },
+    {
+      "qualified": "Benitoite.IO.Process.Command",
+      "before": 1926,
+      "after": 1927
+    },
+    {
+      "qualified": "Benitoite.IO.Process.Output",
+      "before": 1927,
+      "after": 1928
+    },
+    {
+      "qualified": "Benitoite.Json.Codec.ConversionError",
+      "before": 1935,
+      "after": 1936
+    },
+    {
+      "qualified": "Benitoite.Json.Codec.PathPart",
+      "before": 1934,
+      "after": 1935
+    },
+    {
+      "qualified": "Benitoite.Json.ParseError",
+      "before": 1929,
+      "after": 1930
+    },
+    {
+      "qualified": "Benitoite.Json.Value",
+      "before": 1928,
+      "after": 1929
+    },
+    {
+      "qualified": "Benitoite.Network.Http.ClientRequest",
+      "before": 1933,
+      "after": 1934
+    },
+    {
+      "qualified": "Benitoite.Network.Http.Request",
+      "before": 1931,
+      "after": 1932
+    },
+    {
+      "qualified": "Benitoite.Network.Http.Response",
+      "before": 1932,
+      "after": 1933
+    },
+    {
+      "qualified": "Benitoite.NonEmptyList.EmptyListError",
+      "before": 1949,
+      "after": 1950
+    },
+    {
+      "qualified": "Benitoite.NonEmptyList.NonEmptyList",
+      "before": 1948,
+      "after": 1949
+    },
+    {
+      "qualified": "Benitoite.Range.CheckedIndex",
+      "before": 1946,
+      "after": 1947
+    },
+    {
+      "qualified": "Benitoite.Range.CheckedInteger",
+      "before": 1942,
+      "after": 1943
+    },
+    {
+      "qualified": "Benitoite.Range.CheckedLength",
+      "before": 1944,
+      "after": 1945
+    },
+    {
+      "qualified": "Benitoite.Range.IndexError",
+      "before": 1947,
+      "after": 1948
+    },
+    {
+      "qualified": "Benitoite.Range.LengthError",
+      "before": 1945,
+      "after": 1946
+    },
+    {
+      "qualified": "Benitoite.Range.RangeError",
+      "before": 1943,
+      "after": 1944
+    },
+    {
+      "qualified": "Benitoite.Test.Property.CheckFailure",
+      "before": 1941,
+      "after": 1942
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Config",
+      "before": 1939,
+      "after": 1940
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Counterexample",
+      "before": 1940,
+      "after": 1941
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Gen",
+      "before": 1936,
+      "after": 1937
+    },
+    {
+      "qualified": "Benitoite.Test.Property.ShrinkStep",
+      "before": 1938,
+      "after": 1939
+    },
+    {
+      "qualified": "Benitoite.Test.Property.Shrinker",
+      "before": 1937,
+      "after": 1938
+    }
+  ],
+  "renumbered": [
+    {
+      "identity": [
+        "Benitoite.IO.Clock",
+        "effect",
+        "",
+        "Time"
+      ],
+      "before": 564,
+      "after": 565
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Clock",
+        "op",
+        "Time",
+        "localOffsetMinutes"
+      ],
+      "before": 568,
+      "after": 569
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Clock",
+        "op",
+        "Time",
+        "monotonicMilliseconds"
+      ],
+      "before": 566,
+      "after": 567
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Clock",
+        "op",
+        "Time",
+        "now"
+      ],
+      "before": 567,
+      "after": 568
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Clock",
+        "op",
+        "Time",
+        "sleep"
+      ],
+      "before": 565,
+      "after": 566
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "effect",
+        "",
+        "Read"
+      ],
+      "before": 574,
+      "after": 575
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "effect",
+        "",
+        "Write"
+      ],
+      "before": 569,
+      "after": 570
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Read",
+        "readAll"
+      ],
+      "before": 576,
+      "after": 577
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Read",
+        "readAllBytes"
+      ],
+      "before": 578,
+      "after": 579
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Read",
+        "readAllLines"
+      ],
+      "before": 577,
+      "after": 578
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Read",
+        "readLine"
+      ],
+      "before": 575,
+      "after": 576
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Write",
+        "write"
+      ],
+      "before": 570,
+      "after": 571
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Write",
+        "writeError"
+      ],
+      "before": 572,
+      "after": 573
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Write",
+        "writeErrorLine"
+      ],
+      "before": 573,
+      "after": 574
+    },
+    {
+      "identity": [
+        "Benitoite.IO.Console",
+        "op",
+        "Write",
+        "writeLine"
+      ],
+      "before": 571,
+      "after": 572
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "builtin-fn",
+        "",
+        "inspectEndpoint"
+      ],
+      "before": 556,
+      "after": 557
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "builtin-fn",
+        "",
+        "inspectHost"
+      ],
+      "before": 554,
+      "after": 555
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "builtin-fn",
+        "",
+        "inspectPath"
+      ],
+      "before": 555,
+      "after": 556
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "data",
+        "",
+        "ScopeError"
+      ],
+      "before": 535,
+      "after": 536
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "checkEndpoint"
+      ],
+      "before": 544,
+      "after": 545
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "checkHost"
+      ],
+      "before": 542,
+      "after": 543
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "checkPath"
+      ],
+      "before": 543,
+      "after": 544
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "endpointHost"
+      ],
+      "before": 549,
+      "after": 550
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "endpointHostPattern"
+      ],
+      "before": 550,
+      "after": 551
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "endpointMaximumPort"
+      ],
+      "before": 553,
+      "after": 554
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "endpointMinimumPort"
+      ],
+      "before": 552,
+      "after": 553
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "endpointPort"
+      ],
+      "before": 551,
+      "after": 552
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "fitQuoted"
+      ],
+      "before": 561,
+      "after": 562
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "host"
+      ],
+      "before": 545,
+      "after": 546
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "hostPattern"
+      ],
+      "before": 546,
+      "after": 547
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "limited"
+      ],
+      "before": 558,
+      "after": 559
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "path"
+      ],
+      "before": 547,
+      "after": 548
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "pathPattern"
+      ],
+      "before": 548,
+      "after": 549
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "prefix"
+      ],
+      "before": 559,
+      "after": 560
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "quoted"
+      ],
+      "before": 560,
+      "after": 561
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "renderStrings"
+      ],
+      "before": 562,
+      "after": 563
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "fn",
+        "",
+        "stringError"
+      ],
+      "before": 557,
+      "after": 558
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "record",
+        "",
+        "CheckedEndpoint"
+      ],
+      "before": 529,
+      "after": 530
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "record",
+        "",
+        "CheckedHost"
+      ],
+      "before": 523,
+      "after": 524
+    },
+    {
+      "identity": [
+        "Benitoite.Scope",
+        "record",
+        "",
+        "CheckedPath"
+      ],
+      "before": 526,
+      "after": 527
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "addMilliseconds"
+      ],
+      "before": 697,
+      "after": 698
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "differenceMilliseconds"
+      ],
+      "before": 698,
+      "after": 699
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "format"
+      ],
+      "before": 703,
+      "after": 704
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "formatISO8601"
+      ],
+      "before": 701,
+      "after": 702
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "fromDateTime"
+      ],
+      "before": 700,
+      "after": 701
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "fromUnixMilliseconds"
+      ],
+      "before": 694,
+      "after": 695
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "fromUnixSeconds"
+      ],
+      "before": 693,
+      "after": 694
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "parseISO8601"
+      ],
+      "before": 702,
+      "after": 703
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "toDateTime"
+      ],
+      "before": 699,
+      "after": 700
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "toUnixMilliseconds"
+      ],
+      "before": 696,
+      "after": 697
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "builtin-fn",
+        "",
+        "toUnixSeconds"
+      ],
+      "before": 695,
+      "after": 696
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "record",
+        "",
+        "DateTime"
+      ],
+      "before": 684,
+      "after": 685
+    },
+    {
+      "identity": [
+        "Benitoite.Time",
+        "record",
+        "",
+        "Instant"
+      ],
+      "before": 682,
+      "after": 683
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "builtin-fn",
+        "",
+        "showCharacter"
+      ],
+      "before": 610,
+      "after": 611
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "builtin-fn",
+        "",
+        "showString"
+      ],
+      "before": 609,
+      "after": 610
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Applicative"
+      ],
+      "before": 593,
+      "after": 594
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Applicative2"
+      ],
+      "before": 600,
+      "after": 601
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Foldable"
+      ],
+      "before": 605,
+      "after": 606
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Functor"
+      ],
+      "before": 591,
+      "after": 592
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Functor2"
+      ],
+      "before": 598,
+      "after": 599
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Monad"
+      ],
+      "before": 596,
+      "after": 597
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Monad2"
+      ],
+      "before": 603,
+      "after": 604
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Monoid"
+      ],
+      "before": 589,
+      "after": 590
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Order"
+      ],
+      "before": 585,
+      "after": 586
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Semigroup"
+      ],
+      "before": 587,
+      "after": 588
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Show"
+      ],
+      "before": 583,
+      "after": 584
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "class",
+        "",
+        "Traversable"
+      ],
+      "before": 607,
+      "after": 608
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "data",
+        "",
+        "Ordering"
+      ],
+      "before": 579,
+      "after": 580
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "fn",
+        "",
+        "appendToList"
+      ],
+      "before": 681,
+      "after": 682
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "fn",
+        "",
+        "applyFrom"
+      ],
+      "before": 665,
+      "after": 666
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "fn",
+        "",
+        "compareListsFrom"
+      ],
+      "before": 648,
+      "after": 649
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "fn",
+        "",
+        "flatMapFrom"
+      ],
+      "before": 667,
+      "after": 668
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "fn",
+        "",
+        "traverseFrom"
+      ],
+      "before": 670,
+      "after": 671
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Applicative",
+        "apply"
+      ],
+      "before": 595,
+      "after": 596
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Applicative",
+        "pure"
+      ],
+      "before": 594,
+      "after": 595
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Applicative2",
+        "apply"
+      ],
+      "before": 602,
+      "after": 603
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Applicative2",
+        "pure"
+      ],
+      "before": 601,
+      "after": 602
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Foldable",
+        "fold"
+      ],
+      "before": 606,
+      "after": 607
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Functor",
+        "map"
+      ],
+      "before": 592,
+      "after": 593
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Functor2",
+        "map"
+      ],
+      "before": 599,
+      "after": 600
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Monad",
+        "flatMap"
+      ],
+      "before": 597,
+      "after": 598
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Monad2",
+        "flatMap"
+      ],
+      "before": 604,
+      "after": 605
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Monoid",
+        "empty"
+      ],
+      "before": 590,
+      "after": 591
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Order",
+        "compare"
+      ],
+      "before": 586,
+      "after": 587
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Semigroup",
+        "combine"
+      ],
+      "before": 588,
+      "after": 589
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Show",
+        "show"
+      ],
+      "before": 584,
+      "after": 585
+    },
+    {
+      "identity": [
+        "Benitoite.Trait",
+        "method",
+        "Traversable",
+        "traverse"
+      ],
+      "before": 608,
+      "after": 609
+    }
+  ]
+}

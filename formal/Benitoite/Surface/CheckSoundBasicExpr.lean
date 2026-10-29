@@ -110,7 +110,7 @@ theorem const_case {q t body} : CaseSound q (.expr (.constE t body)) := by
   obtain ⟨u, hu, h⟩ := checking_lift_bind_ok h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  exact ⟨.E_Const (.E_Sub ht (Or.inl rfl) (acceptEff_sound hb (emptyEff_atoms _) hu) hbClean), he.1, emptyEff_atoms _⟩
+  exact ⟨.E_Const (.E_Sub ht (Or.inl rfl) (acceptEff_sound hb (emptyEff_atoms _) hu).covers hbClean), he.1, emptyEff_atoms _⟩
 
 theorem block_case {q body} : CaseSound q (.expr (.block body)) := by
   intro ih
@@ -156,12 +156,14 @@ theorem funName_case {q f ts es} : CaseSound q (.expr (.funName f ts es)) := by
       (satAll_sound hq.sat (require_ok hsat).1) (require_ok hInst).1)
   exact hSafe
 
-theorem primName_case {q b ts es} : CaseSound q (.expr (.primName b ts es)) := by
+theorem primName_case {q b ts es rs} : CaseSound q (.expr (.primName b ts es rs)) := by
   intro ih Δ C Γ R p path s s' a ε hB hq he hΓ hR h
   have hSingle := (guardInferred_result h).2
   have h := guardInferred_ok h
   simp only [Expr.AtomsIn] at he
   obtain ⟨sg, hd, h⟩ := checking_lift_bind_ok h
+  obtain ⟨uRA, hRA, h⟩ := checking_lift_bind_ok h
+  obtain ⟨uRC, hRC, h⟩ := checking_lift_bind_ok h
   obtain ⟨uNames, hNames, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, htlen, h⟩ := checking_lift_bind_ok h
   obtain ⟨u2, helen, h⟩ := checking_lift_bind_ok h
@@ -170,15 +172,20 @@ theorem primName_case {q b ts es} : CaseSound q (.expr (.primName b ts es)) := b
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
   have hd' := lookup_ok hd
-  have ha := hq.builtins b sg hd'
+  have ha0 := hq.builtins b sg hd'
+  have hclosed := (require_ok hRC).1
+  have hsi := CheckRanges.instSig_eq ha0 hclosed
+  have ha := CheckRanges.inst_atoms ha0 hclosed
+  rw [hsi] at hNames htlen helen hInst hSingle ⊢
+  have hadm := hq.admits b C ts sg hd' (require_ok hadmit).1
+  have htl : ts.length = sg.ntys := by simpa using (require_ok htlen).1
   have hSafe := (singleTyCheck_spec _ (fnTyCheck_atoms ha.1 ha.2.1 ha.2.2 he.1 he.2)).mp hSingle.1
   refine ⟨?_, fnTyCheck_atoms ha.1 ha.2.1 ha.2.2 he.1 he.2, emptyEff_atoms _⟩
   rw [fnTyCheck_eq _ _ _ _ _ _ (tysAtoms_iff.mp he.1) he.2 ha.1 ha.2.1 ha.2.2] at hSafe ⊢
-  apply HasTypeQ.E_Prim hd' ((namesWF_spec _ _).mp (require_ok hNames).1) (by simpa using (require_ok htlen).1)
-    (by simpa using (require_ok helen).1) (hq.admits b C ts sg hd' (require_ok hadmit).1)
-    (instantiationCheck_primitive ha.1 ha.2.1 ha.2.2 he.1 he.2
-      (by simpa using (require_ok htlen).1) (hq.admits b C ts sg hd' (require_ok hadmit).1)
-      (require_ok hInst).1)
+  apply HasTypeQ.E_Prim hd' (CheckRanges.rangeAdmissibleCheck_sound hq.admitsR (require_ok hRA).1)
+    ((namesWF_spec _ _).mp (require_ok hNames).1) htl
+    (by simpa using (require_ok helen).1) hadm
+    (instantiationCheck_primitive (s := sg.inst rs) ha.1 ha.2.1 ha.2.2 he.1 he.2 htl hadm (require_ok hInst).1)
   exact hSafe
 
 theorem opName_case {q o ts} : CaseSound q (.expr (.opName o ts)) := by
@@ -195,7 +202,7 @@ theorem opName_case {q o ts} : CaseSound q (.expr (.opName o ts)) := by
   have hd' := lookup_ok hd
   have ha := hq.declarations.2.2.1 o od hd'
   refine ⟨?_, fnTyCheck_atoms ha.1 ha.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok heff).1)) he (by simp), emptyEff_atoms _⟩
-  rw [fnTyCheck_eq od.names od.params od.ret (singleEff q.atoms (.name od.eff)) ts [] (tysAtoms_iff.mp he) (by simp) ha.1 ha.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok heff).1)), singleEff_eq_contains (require_ok heff).1]
+  rw [fnTyCheck_eq od.names od.params od.ret (singleEff q.atoms (.nameTop od.eff)) ts [] (tysAtoms_iff.mp he) (by simp) ha.1 ha.2 (singleEff_atoms _ _ (List.mem_of_elem_eq_true (require_ok heff).1)), singleEff_eq_contains (require_ok heff).1]
   exact .E_Op hd' ((namesWF_spec _ _).mp (require_ok hNames).1) (satAll_sound hq.sat (require_ok hsat).1) (List.isEmpty_iff.mp (require_ok hDict).1)
 
 theorem opDicts_case {q o ts ds names ps} : CaseSound q (.expr (.opDicts o ts ds names ps)) := by

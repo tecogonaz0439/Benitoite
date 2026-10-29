@@ -82,7 +82,7 @@ mutual
     | .con _ _ vs | .list vs | .setV vs | .dict _ _ vs => Vals.Captures p vs
     | .mapV ks vs => Vals.Captures p ks ∧ Vals.Captures p vs
     | .super v _ => Val.Captures p v
-    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. => True
+    | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
   def Vals.Captures (p : Nat → Prop) : List Val → Prop
     | [] => True
     | v :: vs => Val.Captures p v ∧ Vals.Captures p vs

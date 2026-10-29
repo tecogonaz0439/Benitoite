@@ -1,0 +1,75 @@
+import Benitoite
+
+open Benitoite.Scope.Domain
+
+-- L10.3 が置いた定理と、値を作る定義（証明の項を含む）
+#print axioms Groups.length_split
+#print axioms Groups.lt_of_mem_split
+#print axioms Groups.join_lt
+#print axioms Groups.join_split
+#print axioms Groups.split_add_mul
+#print axioms Groups.split_join
+#print axioms Family.groupWidth_mul_groupCount
+#print axioms IPAddr.length_groups
+#print axioms IPAddr.lt_of_mem_groups
+#print axioms IPAddr.ofGroups?
+#print axioms IPAddr.ofGroups?_groups
+#print axioms IPAddr.groups_of_ofGroups?
+#print axioms IPAddr.ofGroups?_isSome_iff
+#print axioms IPAddr.mapped
+#print axioms IPAddr.mapped_family
+#print axioms IPAddr.mapped_ne_of_v4
+#print axioms IPAddr.mapped_bits_mod
+#print axioms CIDR.blockSize_pos
+#print axioms CIDR.lo_le_hi
+#print axioms CIDR.mem_network
+#print axioms CIDR.mem_iff_prefixMem
+#print axioms IPPattern.lo_le_hi
+#print axioms IPPattern.lo_lt
+#print axioms IPPattern.hi_lt
+#print axioms IPPattern.matches_iff_interval
+#print axioms IPPattern.family_of_matches
+#print axioms IPPattern.loAddr
+#print axioms IPPattern.hiAddr
+#print axioms IPPattern.matches_loAddr
+#print axioms IPPattern.matches_hiAddr
+#print axioms IPPattern.nonempty
+#print axioms IPPattern.Covers
+#print axioms IPPattern.covers?
+#print axioms IPPattern.covers?_spec
+#print axioms IPPattern.covers_exact_iff
+#print axioms IPPattern.Covers.sound
+#print axioms IPPattern.Covers.refl
+#print axioms IPPattern.Covers.trans
+#print axioms IPPattern.covers_of_sub
+#print axioms IPPattern.covers_iff
+#print axioms IPPattern.normalize_family
+#print axioms IPPattern.normalize_lo
+#print axioms IPPattern.normalize_hi
+#print axioms IPPattern.covers_normalize_iff
+#print axioms IPPattern.not_covers_of_family_ne
+#print axioms IPPattern.disjoint_of_family_ne
+#print axioms IPPattern.not_sub_of_family_ne
+#print axioms IPPattern.not_matches_mapped
+#print axioms IPPattern.zero
+#print axioms IPPattern.zero_wf
+#print axioms IPPattern.zero_matches_iff
+#print axioms IPPattern.zero_covers_iff
+#print axioms NamePattern.matches_witness
+#print axioms NamePattern.nonempty
+#print axioms HostPattern.name_ip_disjoint
+#print axioms HostPattern.ip_not_sub_name
+#print axioms HostPattern.name_not_sub_ip
+#print axioms HostPattern.ip_not_sub_ip_of_family_ne
+#print axioms Range.host_ip_not_sub_host_name
+#print axioms Range.host_name_not_sub_host_ip
+#print axioms Range.host_ip_not_sub_of_family_ne
+
+-- 旧の主定理（変えていないことの確かめ）
+#print axioms Benitoite.Release.progress
+#print axioms Benitoite.Release.preservation
+#print axioms Benitoite.Release.effect_soundness
+#print axioms Benitoite.Release.effect_soundness_noLamNames
+#print axioms Benitoite.Release.step_sound
+#print axioms Benitoite.Surface.desugar_typed
+#print axioms Benitoite.Surface.surface_effect_soundness

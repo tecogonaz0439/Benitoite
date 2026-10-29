@@ -126,7 +126,7 @@ Pattern     = "_"
 
 `Uses` に書く `UpperIdent` は、エフェクトの名前か、関数の型パラメータの並びで `effect` を付けて宣言したエフェクト変数である。エフェクトの名前は[エフェクト](01-07-effects.md)で定める。型の宣言の型パラメータには `effect` を付けられない。エフェクト変数の規則は[型システム](01-06-type-system.md)で定める。
 
-【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない大文字の名前が来たときは、名前解決の誤りとする。関数型の次のパラメータの小文字名の前では `uses` の並びを閉じる。並びの 2 番目以降の名前の直後に `[` が続くとき（`List[Integer]` など、型引数を伴う名前）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
+【決定】型は括弧で囲める。括弧で囲んだ型は、囲まない型と同じ型を表す。`uses` は、その直前にある最も内側の関数の型に付き、`uses` の後のコンマ区切りの並びはできるだけ長く読む（最長一致、longest match）。この並びにエフェクトでない大文字の名前が来たときは、名前解決の誤りとする。関数型の次のパラメータの小文字名の前では `uses` の並びを閉じる。並びの 2 番目以降の修飾のない名前の直後に `[` が続くとき（`List[Integer]` など）は、`uses` の並びに書けない形なので構文エラーとし、診断は同じく関数の型を括弧で囲む書き方を修正案として示す。
 
 ```text
 function(action: (function() -> Unit uses Console.Write), count: Integer) -> Unit // 関数型の例
@@ -474,7 +474,7 @@ end function
 【決定】ファイルの先頭の `//!` の後、最初の import か宣言の前に、言語の版、依存の記述、パッケージの名前を書ける。項目の順序は問わない。`language`・`dependency`・`package` と欄の名前は、予約語ではなく、この位置で意味を持つ語である。理由: 通常の識別子としての用途を保ち、同じ設定を入口と設定ファイルで同じ構文で書くためである。
 
 ```text
-language "0.0.12"
+language "0.0.13"
 
 dependency Textkit
   path "../packages/textkit"
@@ -736,9 +736,17 @@ HandleArm   = "case" OpName "(" CommaList(OpParam) ")" "->" ArmBody .
 OpName      = { UpperIdent "." } LowerIdent .
 OpParam     = LowerIdent | "_" .
 Uses        = "uses" EffectRef { "," EffectRef } .
-EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
+EffectRef   = QualUpper [ EffectArgs ] .
+EffectArgs  = TypeArgs | PathEffectArgs | EndpointEffectArgs .
+TypeArgs    = "[" CommaList(Type) "]" .
+PathEffectArgs = "[" StringLit { "," StringLit } [ "," ] "]" .
+EndpointEffectArgs = "[" EndpointArg { "," EndpointArg } [ "," ] "]" .
+EndpointArg = StringLit "," PortArg .
+PortArg     = IntLit [ ".." IntLit ] .
 ```
 
+- 標準の `File.Read`・`File.Write` は、補間のない文字列リテラルでパスの範囲引数を書く。複数の文字列を並べる略記は、同じ名前の原子の列へ展開する。`Http.Connect` は、ホストの文字列とポートの整数または閉区間の組を反復する。`Http.Connect["a.example", 443, "192.168.1.0/24", 80..81]` は二原子である。末尾のコンマを認め、空の角括弧と組の部分省略は拒否する。範囲を省略した名前は全対象の範囲（Top）を表す。
+- 範囲引数には、式・文字列補間・定数参照を使えない。型を始める字句と範囲の字句を区別して解析し、解決した名前に従って引数の種類を検査する。`File.Write[Integer]` は E0520、`Failure.Fail["x"]` と利用者のエフェクトへの引数は E0513 とする。構文として回復できない入力は通常の構文診断とする。範囲の字句と正規化は[エフェクト](01-07-effects.md#閉じた範囲引数)で定める。
 - 標準の `Failure.Fail[E]` だけが値の型引数を一つ取る。`import Benitoite.Unofficial.Failure` で明示的に取り込み、`uses Failure.Fail[E]` と書く。一般の `effect L[E]` は宣言できない。他のエフェクトへの型引数と、Fail の型引数の省略・過不足は E0513 とする。
 - 二つ目以降の型引数付きエフェクト参照は、モジュール名で修飾する。修飾のない `uses A, List[Integer]` は、従来どおり関数型を括弧で囲む E0209 の修正案を出す。
 - Fail の節は `case Failure.raise(error) -> ...` と書く。節から handle 全体の結果を返し、`resume` は書けない（E0516）。普通の操作の節と混ぜた場合は E0518 とし、handle を入れ子にする修正案を示す。
@@ -957,7 +965,13 @@ Constraint  = QualUpper | LowerIdent .
 TypeParamDecl = UpperIdent [ "[" "_" { "," "_" } "]" ] .
 Param       = LowerIdent ":" Type .
 Uses        = "uses" EffectRef { "," EffectRef } .
-EffectRef   = QualUpper [ "[" CommaList(Type) "]" ] .
+EffectRef   = QualUpper [ EffectArgs ] .
+EffectArgs  = TypeArgs | PathEffectArgs | EndpointEffectArgs .
+TypeArgs    = "[" CommaList(Type) "]" .
+PathEffectArgs = "[" StringLit { "," StringLit } [ "," ] "]" .
+EndpointEffectArgs = "[" EndpointArg { "," EndpointArg } [ "," ] "]" .
+EndpointArg = StringLit "," PortArg .
+PortArg     = IntLit [ ".." IntLit ] .
 
 (* 定数の宣言 *)
 ConstDecl   = "const" LowerIdent ":" Type "=" Expr .
@@ -1064,6 +1078,8 @@ FieldPat    = LowerIdent ":" Pattern .
 RangeEnd    = [ "-" ] IntLit | CharLit .
 ListPatElem = Pattern | ".." [ LowerIdent ] .
 ```
+
+`Type` の位置では、`[` の直後が `StringLit`・`StrStart`・`IntLit` のときだけ範囲引数の候補として読み、名前が範囲引数を取らない場合や要素の種類・個数が合わない場合は E0520 とし、それ以外の字句では従来の型引数の構文と診断を用いる。
 
 この文法だけでは決まらない規則は、次のとおりである。いずれも、この文法で読める並びのうちの一部を誤りとするか、読み方を一つに決めるものである。
 

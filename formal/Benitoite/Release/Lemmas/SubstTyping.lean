@@ -32,7 +32,7 @@ mutual
     | .var i => rfl
     | .const _ => rfl
     | .fnRef _ _ _ => rfl
-    | .prim _ _ _ => rfl
+    | .prim _ _ _ _ => rfl
     | .lam names ps body => by simp only [Val.rename, upRen_id, Comp.rename_id]
     | .con c ts args => by simp only [Val.rename, Val.renameList_id]
     | .list elems => by simp only [Val.rename, Val.renameList_id]
@@ -42,6 +42,8 @@ mutual
     | .mapV ks vs => by simp only [Val.rename, Val.renameList_id]
     | .setV elems => by simp only [Val.rename, Val.renameList_id]
     | .bytesV _ => rfl
+    | .checked _ => rfl
+    | .checkedRequest _ _ => rfl
     | .dict _ _ args => by simp only [Val.rename, Val.renameList_id]
     | .super v _ => by simp only [Val.rename, Val.rename_id]
 
@@ -77,7 +79,7 @@ mutual
     | .fail e m :: cs => by simp only [Clause.renameList, upRen_id, Comp.rename_id, Clause.renameList_id]
 end
 
-theorem ClosedTy.of (hb : B.Assumptions P) {Ψ v x} (h : HasTypeV P B Ψ [] [] v x)
+theorem ClosedTy.of (hb : B.CoreAssumptions P) {Ψ v x} (h : HasTypeV P B Ψ [] [] v x)
     (hv : Val.VarsIn 0 (fun _ => True) v) : ClosedTy P B Ψ v x := by
   intro Q C Γ
   have h1 : HasTypeVQ P B Ψ Q ([] ++ C) [] v x := HasTypeVQ.outer hb (h.q_mono (QLe.empty Q)) hv
@@ -96,9 +98,9 @@ def SubstOk (P : Program) (B : Builtins) (Ψ : StoreTy) (Γ Δ : List (Option Ty
     (σ : Nat → Val) : Prop :=
   ∀ (i : Nat) (x : Ty), Γ[i]? = some (some x) →
     (∃ j, σ i = .var j ∧ Δ[j]? = some (some x)) ∨
-    ((∀ b t ε, x ≠ .cont b t ε) ∧ Ty.WF 0 x ∧ ClosedTy P B Ψ (σ i) x) ∨
-    (∃ b t ε l, x = .cont b t ε ∧ Ty.WF 0 x ∧ σ i = .loc l ∧ Ψ l = some (.cont b t ε R0) ∧
-      ∀ r, R0 = some r → Ty.WF 0 r)
+    ((∀ b t ε, x ≠ .cont b t ε) ∧ Ty.WF 0 0 x ∧ ClosedTy P B Ψ (σ i) x) ∨
+    (∃ b t ε l, x = .cont b t ε ∧ Ty.WF 0 0 x ∧ σ i = .loc l ∧ Ψ l = some (.cont b t ε R0) ∧
+      ∀ r, R0 = some r → Ty.WF 0 0 r)
 
 /-- 置換する通常値の強化により、捕捉境界でも同じ通常置換を使える。 -/
 theorem SubstOk.hideBuilders {Ψ Γ Δ R σ} (h : SubstOk P B Ψ Γ Δ R σ) :
@@ -198,7 +200,7 @@ mutual
         · exact absurd hx (hc b t ε)
     | .V_Const => simp only [Val.subst]; exact .V_Const
     | .V_Fun hd hnames had => simp only [Val.subst]; exact .V_Fun hd hnames had
-    | .V_Prim hs hnames had => simp only [Val.subst]; exact .V_Prim hs hnames had
+    | .V_Prim hs hrs hnames had => simp only [Val.subst]; exact .V_Prim hs hrs hnames had
     | .V_Op hod hnames hts => simp only [Val.subst]; exact .V_Op hod hnames hts
     | .V_Raise ht he => exact .V_Raise ht he
     | .V_Lam (ps := ps) (r := r) hnames hw hbody =>
@@ -220,6 +222,8 @@ mutual
     | .V_Dict hi hts hvs => simp only [Val.subst]; exact .V_Dict hi hts (HasTypeVsQ.subst (ρ := _) hvs hσ)
     | .V_Super hv hc hs => simp only [Val.subst]; exact .V_Super (HasTypeVQ.subst (ρ := _) hv hσ) hc hs
     | .V_Sub h hle hw => exact .V_Sub (HasTypeVQ.subst (ρ := _) h hσ) hle hw
+    | .V_Checked hk hm => simp only [Val.subst]; exact .V_Checked hk hm
+    | .V_CheckedRequest hk hm hc ht => simp only [Val.subst]; exact .V_CheckedRequest hk hm hc ht
 
   theorem HasTypeVsQ.subst {ρ : Nat → LocalRef} {Ψ C Γ Δ R0 σ vs as} (h : HasTypeVsQ P B Ψ Q C Γ vs as)
       (hσ : SubstOk P B Ψ Γ Δ R0 σ) : HasTypeVsQ P B Ψ Q C Δ (Val.substList σ vs ρ) as := by
@@ -298,9 +302,9 @@ mutual
         exact .guarded hp (HasTypeCQ.subst (ρ := _) hg (hσ'.hide none) (by simpa [hp.2.1] using hL.extend δ.length)) (HasTypeCQ.subst (ρ := _) hm hσ' (by simpa [hp.2.1] using hL.extend δ.length))
           (HasTypeArmsQ.subst (ρ := _) ht hσ hL)
 
-  theorem HasTypeClausesQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+  theorem HasTypeClausesQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R εb σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
       (hσ : SubstOk P B Ψ Γ Δ R σ) {Δl' : LocalCtx}
-      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.substList σ h ρ) t ε Δl' := by
+      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeClausesQ P B Ψ Q C Δ R εb (Clause.substList σ h ρ) t ε Δl' := by
     match hc with
     | .nil => simp only [Clause.substList]; exact .nil
     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
@@ -331,9 +335,9 @@ def InstOk (P : Program) (B : Builtins) (Ψ : StoreTy) (R0 : Option Ty) (as : Li
     (ws : List Val) : Prop :=
   ws.length = as.length ∧
   ∀ (i : Nat) (x : Ty) (w : Val), as[i]? = some x → ws[i]? = some w →
-    ((∀ b t ε, x ≠ .cont b t ε) ∧ Ty.WF 0 x ∧ ClosedTy P B Ψ w x) ∨
-    (∃ b t ε l, x = .cont b t ε ∧ Ty.WF 0 x ∧ w = .loc l ∧ Ψ l = some (.cont b t ε R0) ∧
-      ∀ r, R0 = some r → Ty.WF 0 r)
+    ((∀ b t ε, x ≠ .cont b t ε) ∧ Ty.WF 0 0 x ∧ ClosedTy P B Ψ w x) ∨
+    (∃ b t ε l, x = .cont b t ε ∧ Ty.WF 0 0 x ∧ w = .loc l ∧ Ψ l = some (.cont b t ε R0) ∧
+      ∀ r, R0 = some r → Ty.WF 0 0 r)
 
 theorem SubstOk.inst {Ψ R0 as ws} (h : InstOk P B Ψ R0 as ws) :
     SubstOk P B Ψ (binds as) [] R0 (instSubst ws) := by

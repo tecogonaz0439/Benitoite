@@ -1,0 +1,804 @@
+{
+  "baseline": "765ae6d1606f8874761f881aebef585dd89d294d",
+  "source": {
+    "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-serialization.bnt",
+    "bytes": 410,
+    "sha256": "866225283646907c5d878926241ba2369215326011b5d0bf9986396a96847155"
+  },
+  "comparison": "five final JSON documents agree outside explicit version/range projection",
+  "scope": "one source, four definitions; Float64/negFloat/Decimal/numeric String/Console IO; not all corpus",
+  "projected_paths": [
+    "/builtins.json/inputs/0/admitsR",
+    "/builtins.json/inputs/0/dataDecls/29/ctors/0/args/0/fn/params/0/opaque/ix",
+    "/builtins.json/inputs/0/dataDecls/29/ctors/0/args/0/fn/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/effKinds",
+    "/builtins.json/inputs/0/prims/0/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/0/rkinds",
+    "/builtins.json/inputs/0/prims/0/shape",
+    "/builtins.json/inputs/0/prims/1/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/1/rkinds",
+    "/builtins.json/inputs/0/prims/1/shape",
+    "/builtins.json/inputs/0/prims/10/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/10/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/10/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/10/rkinds",
+    "/builtins.json/inputs/0/prims/10/shape",
+    "/builtins.json/inputs/0/prims/11/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/11/rkinds",
+    "/builtins.json/inputs/0/prims/11/shape",
+    "/builtins.json/inputs/0/prims/12/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/12/rkinds",
+    "/builtins.json/inputs/0/prims/12/shape",
+    "/builtins.json/inputs/0/prims/13/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/13/rkinds",
+    "/builtins.json/inputs/0/prims/13/shape",
+    "/builtins.json/inputs/0/prims/14/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/14/rkinds",
+    "/builtins.json/inputs/0/prims/14/shape",
+    "/builtins.json/inputs/0/prims/15/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/15/rkinds",
+    "/builtins.json/inputs/0/prims/15/shape",
+    "/builtins.json/inputs/0/prims/16/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/16/rkinds",
+    "/builtins.json/inputs/0/prims/16/shape",
+    "/builtins.json/inputs/0/prims/17/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/17/rkinds",
+    "/builtins.json/inputs/0/prims/17/shape",
+    "/builtins.json/inputs/0/prims/18/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/18/rkinds",
+    "/builtins.json/inputs/0/prims/18/shape",
+    "/builtins.json/inputs/0/prims/19/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/19/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/19/rkinds",
+    "/builtins.json/inputs/0/prims/19/shape",
+    "/builtins.json/inputs/0/prims/2/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/2/rkinds",
+    "/builtins.json/inputs/0/prims/2/shape",
+    "/builtins.json/inputs/0/prims/20/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/20/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/20/rkinds",
+    "/builtins.json/inputs/0/prims/20/shape",
+    "/builtins.json/inputs/0/prims/21/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/21/rkinds",
+    "/builtins.json/inputs/0/prims/21/shape",
+    "/builtins.json/inputs/0/prims/22/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/22/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/22/rkinds",
+    "/builtins.json/inputs/0/prims/22/shape",
+    "/builtins.json/inputs/0/prims/23/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/23/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/23/rkinds",
+    "/builtins.json/inputs/0/prims/23/shape",
+    "/builtins.json/inputs/0/prims/24/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/24/rkinds",
+    "/builtins.json/inputs/0/prims/24/shape",
+    "/builtins.json/inputs/0/prims/25/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/25/rkinds",
+    "/builtins.json/inputs/0/prims/25/shape",
+    "/builtins.json/inputs/0/prims/26/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/26/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/26/rkinds",
+    "/builtins.json/inputs/0/prims/26/shape",
+    "/builtins.json/inputs/0/prims/27/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/27/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/27/rkinds",
+    "/builtins.json/inputs/0/prims/27/shape",
+    "/builtins.json/inputs/0/prims/28/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/28/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/28/rkinds",
+    "/builtins.json/inputs/0/prims/28/shape",
+    "/builtins.json/inputs/0/prims/29/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/29/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/29/rkinds",
+    "/builtins.json/inputs/0/prims/29/shape",
+    "/builtins.json/inputs/0/prims/3/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/3/rkinds",
+    "/builtins.json/inputs/0/prims/3/shape",
+    "/builtins.json/inputs/0/prims/30/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/30/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/30/rkinds",
+    "/builtins.json/inputs/0/prims/30/shape",
+    "/builtins.json/inputs/0/prims/31/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/31/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/31/rkinds",
+    "/builtins.json/inputs/0/prims/31/shape",
+    "/builtins.json/inputs/0/prims/32/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/32/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/32/rkinds",
+    "/builtins.json/inputs/0/prims/32/shape",
+    "/builtins.json/inputs/0/prims/33/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/33/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/33/rkinds",
+    "/builtins.json/inputs/0/prims/33/shape",
+    "/builtins.json/inputs/0/prims/34/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/34/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/34/rkinds",
+    "/builtins.json/inputs/0/prims/34/shape",
+    "/builtins.json/inputs/0/prims/35/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/35/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/35/rkinds",
+    "/builtins.json/inputs/0/prims/35/shape",
+    "/builtins.json/inputs/0/prims/36/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/36/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/36/rkinds",
+    "/builtins.json/inputs/0/prims/36/shape",
+    "/builtins.json/inputs/0/prims/37/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/37/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/37/rkinds",
+    "/builtins.json/inputs/0/prims/37/shape",
+    "/builtins.json/inputs/0/prims/38/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/38/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/38/rkinds",
+    "/builtins.json/inputs/0/prims/38/shape",
+    "/builtins.json/inputs/0/prims/39/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/39/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/39/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/39/rkinds",
+    "/builtins.json/inputs/0/prims/39/shape",
+    "/builtins.json/inputs/0/prims/4/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/4/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/4/rkinds",
+    "/builtins.json/inputs/0/prims/4/shape",
+    "/builtins.json/inputs/0/prims/40/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/40/ret/data/args/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/40/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/40/rkinds",
+    "/builtins.json/inputs/0/prims/40/shape",
+    "/builtins.json/inputs/0/prims/41/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/41/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/41/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/41/rkinds",
+    "/builtins.json/inputs/0/prims/41/shape",
+    "/builtins.json/inputs/0/prims/42/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/42/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/42/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/42/rkinds",
+    "/builtins.json/inputs/0/prims/42/shape",
+    "/builtins.json/inputs/0/prims/43/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/43/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/43/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/43/rkinds",
+    "/builtins.json/inputs/0/prims/43/shape",
+    "/builtins.json/inputs/0/prims/44/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/44/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/44/rkinds",
+    "/builtins.json/inputs/0/prims/44/shape",
+    "/builtins.json/inputs/0/prims/45/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/45/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/45/rkinds",
+    "/builtins.json/inputs/0/prims/45/shape",
+    "/builtins.json/inputs/0/prims/46/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/46/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/46/rkinds",
+    "/builtins.json/inputs/0/prims/46/shape",
+    "/builtins.json/inputs/0/prims/47/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/47/rkinds",
+    "/builtins.json/inputs/0/prims/47/shape",
+    "/builtins.json/inputs/0/prims/48/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/48/rkinds",
+    "/builtins.json/inputs/0/prims/48/shape",
+    "/builtins.json/inputs/0/prims/49/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/49/rkinds",
+    "/builtins.json/inputs/0/prims/49/shape",
+    "/builtins.json/inputs/0/prims/5/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/5/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/5/rkinds",
+    "/builtins.json/inputs/0/prims/5/shape",
+    "/builtins.json/inputs/0/prims/50/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/50/rkinds",
+    "/builtins.json/inputs/0/prims/50/shape",
+    "/builtins.json/inputs/0/prims/51/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/51/rkinds",
+    "/builtins.json/inputs/0/prims/51/shape",
+    "/builtins.json/inputs/0/prims/52/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/52/ret/data/args/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/52/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/52/rkinds",
+    "/builtins.json/inputs/0/prims/52/shape",
+    "/builtins.json/inputs/0/prims/53/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/53/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/53/rkinds",
+    "/builtins.json/inputs/0/prims/53/shape",
+    "/builtins.json/inputs/0/prims/54/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/54/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/54/ret/data/args/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/54/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/54/rkinds",
+    "/builtins.json/inputs/0/prims/54/shape",
+    "/builtins.json/inputs/0/prims/55/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/55/params/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/55/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/55/rkinds",
+    "/builtins.json/inputs/0/prims/55/shape",
+    "/builtins.json/inputs/0/prims/56/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/56/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/56/rkinds",
+    "/builtins.json/inputs/0/prims/56/shape",
+    "/builtins.json/inputs/0/prims/57/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/57/rkinds",
+    "/builtins.json/inputs/0/prims/57/shape",
+    "/builtins.json/inputs/0/prims/58/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/58/rkinds",
+    "/builtins.json/inputs/0/prims/58/shape",
+    "/builtins.json/inputs/0/prims/6/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/6/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/6/rkinds",
+    "/builtins.json/inputs/0/prims/6/shape",
+    "/builtins.json/inputs/0/prims/7/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/7/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/7/rkinds",
+    "/builtins.json/inputs/0/prims/7/shape",
+    "/builtins.json/inputs/0/prims/8/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/8/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/8/rkinds",
+    "/builtins.json/inputs/0/prims/8/shape",
+    "/builtins.json/inputs/0/prims/9/eff/0/name/ix",
+    "/builtins.json/inputs/0/prims/9/ret/data/args/0/opaque/ix",
+    "/builtins.json/inputs/0/prims/9/ret/data/args/1/opaque/ix",
+    "/builtins.json/inputs/0/prims/9/rkinds",
+    "/builtins.json/inputs/0/prims/9/shape",
+    "/builtins.json/inputs/0/valContents",
+    "/builtins.json/inputs/0/valKinds",
+    "/builtins.json/version",
+    "/corpus.json/inputs/0/definitions/3/scope/inScope/core/header/eff/0/name/ix",
+    "/corpus.json/inputs/0/definitions/3/scope/inScope/surface/header/eff/0/name/ix",
+    "/corpus.json/version",
+    "/stdlib-decls.json/version",
+    "/stream.json/inputs/0/definitions/3/scope/inScope/core/header/eff/0/name/ix",
+    "/stream.json/inputs/0/definitions/3/scope/inScope/surface/header/eff/0/name/ix"
+  ],
+  "artifacts": [
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-baseline-corpus.json",
+      "bytes": 22492,
+      "sha256": "04a6eb2034be046e4f04e1b493a46d14ef2bd17bc29e766895a7d43c8a6d0c7b"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-current-corpus.json",
+      "bytes": 22534,
+      "sha256": "0f1cf95138075133b8ffd84e28c8c8b04fcc85eb36900a2d593ace3a389e5de4"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-baseline-builtins.json",
+      "bytes": 50164,
+      "sha256": "7c132faef263d39ac1f523d38db84817d37d8ccee26060bde2195f6da9854aba"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-current-builtins.json",
+      "bytes": 58230,
+      "sha256": "e60def863375993cdf5bd3173fbf9dfda8ce14ed029f84d4e84b16c9faa3993c"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-baseline-stdlib-decls.json",
+      "bytes": 1976,
+      "sha256": "945f664ebbfb06ba04938f792969cb0ac62f70560390b967574e946c9e857f94"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-current-stdlib-decls.json",
+      "bytes": 1976,
+      "sha256": "a2f44579b52884c7ccdfa9b8205d35d1627059f5a3fc0638dacc78256aaf4192"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-baseline-coverage.json",
+      "bytes": 89,
+      "sha256": "49873749afc3035fa46e9e143b3250860f4f174a70da7859b602dc1142f96b4a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-current-coverage.json",
+      "bytes": 89,
+      "sha256": "49873749afc3035fa46e9e143b3250860f4f174a70da7859b602dc1142f96b4a"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-baseline-stream.json",
+      "bytes": 13543,
+      "sha256": "7422a2f215e35df2518be60ef2f171673aaa067d2e8175ab37e99ffd91dd2411"
+    },
+    {
+      "path": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/r10.7b-current-stream.json",
+      "bytes": 13585,
+      "sha256": "c20d192c216800114304454824f24870008d7be2347c727130cf1b96df535679"
+    }
+  ],
+  "exporter_sources": {
+    "baseline": [
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/builders.bnt",
+        "bytes": 1020,
+        "sha256": "1678ee25159b8234d4e7e291db26fc25f69e734755b5cba1c3433b67db53b864"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/control.bnt",
+        "bytes": 2129,
+        "sha256": "0c3688a48678a0058e8069ddd48366e87c4625285c7474f7b7253507fd3b2c35"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/failure.bnt",
+        "bytes": 457,
+        "sha256": "79a016529ddfd5a3e9a0b7f8638d3516b10f08307f105790c8e268d834099a94"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/higher-order.bnt",
+        "bytes": 408,
+        "sha256": "ea03d777d30ee6c658805550b52e19728008a7e8a3e8d2e394454d1650fa9a57"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/manifest.json",
+        "bytes": 1068,
+        "sha256": "3aa074b22b0009cca167996758e9a2a2cb6ac1967734d3a3c9f152ca1baa0401"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/numbering.bnt",
+        "bytes": 729,
+        "sha256": "ec5a2219bf3e1e755182d93388b83e894ed83af50291f440bb9199a25f52aad4"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/range.bnt",
+        "bytes": 1384,
+        "sha256": "734a5a1e7e97fab04fa06dcaa4e67cc76dab4c09db64611db2a3a3d624f47bfe"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/scope.bnt",
+        "bytes": 855,
+        "sha256": "2ba70f69bbc39a29021000b6741b425306b966a72b2f5c35336a52e2ce1a4f76"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3/super-paths.bnt",
+        "bytes": 570,
+        "sha256": "9500838a664e41daab6c1807084ef640634074c3e38f518f357ec1ed7ca54a10"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch3.rs",
+        "bytes": 7688,
+        "sha256": "43fe44afc38dab07b5f911f9663560ec94dd35272ce3ee73a6b9cd71a618a624"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch4/block-guards.bnt",
+        "bytes": 702,
+        "sha256": "4e2a628bab0c7f6c6f9ba2f8d209361a375ac44665df2da3fccdb7ba12dfe110"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch4/checked-lists.bnt",
+        "bytes": 2535,
+        "sha256": "d737f12a883cbbcc86e0b394cb9254d9baac63c0fc5b3c96cdd57165d6ef6ef8"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch4/log-standard.bnt",
+        "bytes": 2450,
+        "sha256": "08355567519234c5cf2a51af8c7394126d794a6054b42f18459bf2cae549684b"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/batch5.rs",
+        "bytes": 4661,
+        "sha256": "c372ec7e6536b5dc7694ddfd507ec68dac1f1a27daabf9eadea9c2b7ea4c3811"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/builders.rs",
+        "bytes": 467,
+        "sha256": "8887c74a45188d35adf0feff681fec74cd1032c4cb396107cb625d887cc35056"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/builtins.rs",
+        "bytes": 15583,
+        "sha256": "6f873e5fe1c6b90f4290a8529853c9597321af943d1e7161fc21185f07781d8d"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/check_batch3.py",
+        "bytes": 9605,
+        "sha256": "f11d3b6f7ea2abe2d9117b95f4f5f246c8b5ffd09cce1850de4c266b1dfe41fe"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/check_failure.py",
+        "bytes": 3702,
+        "sha256": "abf44866721f9573291f0c17f7637e72abcb7f6aa14054f03b17a40cc229d77c"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/check_named.py",
+        "bytes": 30405,
+        "sha256": "b7cbfe8a799888779536de67ddd1ad0fffe2427c376a8325171817f7fb26a912"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/exchange-manifest.json",
+        "bytes": 558526,
+        "sha256": "6511d75dacbb3588b5931e990efb616158fe7b85f5dc460330973844d4ef8be2"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/exchange.rs",
+        "bytes": 131823,
+        "sha256": "8e81be2095a0f644f980a5e39d225790c97fab82490b1906198c8064a42bcf48"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/README.md",
+        "bytes": 21337,
+        "sha256": "ef1077888eb491f1442dfba2fecf6f42b8a915ae8b0d3ef270aaf2fce9d8d466"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/budget-prelude.bnt",
+        "bytes": 146,
+        "sha256": "66a134ea8aa44964bfdfa5d7bd720b3c8ffacf058385b4f97bf7a8f0e639d6b1"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/check-manifest.py",
+        "bytes": 10276,
+        "sha256": "1d3d5afc1acb6d1f99924ddb91dfa406eb5f4e6270215448e41eb4b3446ebf89"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/fake-range.bnt",
+        "bytes": 254,
+        "sha256": "2096f1cf1052d69ebcbdc25a0b2d00a8b5e3d818919ffda7a64cc924edd8f4c4"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/manifest.rs",
+        "bytes": 21123,
+        "sha256": "2dd7bf8dc97583331772c902560458abc3b96c75809cf83aa8a32242d5e7a971"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/prepare-range.py",
+        "bytes": 5109,
+        "sha256": "d800c3b002960cb07afca5b50eec25153296be943945b54e6cf74f3b568853db"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/range-expectations.json",
+        "bytes": 8331,
+        "sha256": "094c5b31d262f7a80cd6e034f5711ad924e08104102d16bf601eb8872b361a79"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/range.bnt",
+        "bytes": 10058,
+        "sha256": "e8ac99d288f0c2ee9cfe130c3929dfcec3ae1cff1d6337e8ef3e03cf161daa5b"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeAllArms.bnt",
+        "bytes": 249,
+        "sha256": "26c04976a11c7e575e13d5d775774b0cace58790fc6a47587914b3b6b83b4898"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeCall.bnt",
+        "bytes": 161,
+        "sha256": "8102d7ba9b8529b44fca4059dbba19dbb42308740e860e952db2cc263ff70eae"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeDynamic.bnt",
+        "bytes": 223,
+        "sha256": "a933da1aa78f1c8ca6577c10d2d0177191ddc53608530b092e780896ace4c9c5"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeFake.bnt",
+        "bytes": 116,
+        "sha256": "3ca5655d3110f67d4a2f1febd64efbb4f84c9e4b5544aa6956c9899cd51fe872"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeIncrement.bnt",
+        "bytes": 229,
+        "sha256": "deadde0449ca3abae6dd037592c09bbcebbbaff2c623b83274bfc1b65db50037"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeSaved.bnt",
+        "bytes": 247,
+        "sha256": "a349baef2d456d1fa4328de7fc811d46a9ba3b2dbc58301a2859cb0df00771b7"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeUnrecognized.bnt",
+        "bytes": 122,
+        "sha256": "62ee597414c880fc6fb784d4732b5b7b5e9bd5d9bba7ca7001d116ff027a766a"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/rangeValue.bnt",
+        "bytes": 107,
+        "sha256": "193bf6256c7531ad0374529b07330fbe9d5e8cf2c51ec60387ef763451923f9a"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/source.rs",
+        "bytes": 21203,
+        "sha256": "af0bab517c2d475c1adcc06fe131aedd42d217f688576d4f471977d451b853dd"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/surface_keys.py",
+        "bytes": 1768,
+        "sha256": "88d38890983c544976927ceb1006a2ae3cce3b544014614b8ef4743a7f2f87e2"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/vm-arithmetic.bnt",
+        "bytes": 3343,
+        "sha256": "dfbd98979fb6b6b9253118c99b185fd8950be72a837b5d5d9e75a246673937fd"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/vm-range.bnt",
+        "bytes": 1142,
+        "sha256": "d6159e454bfc1ccc4599c209c520be4427f5182865d942c40815ab9eecc444b8"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval/vm.rs",
+        "bytes": 8827,
+        "sha256": "ef152416bea3f39adea2ca717e2ec6e666c681d71e15936e11bbc798e15bb778"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/interval.rs",
+        "bytes": 30929,
+        "sha256": "de4bf0a68311b7277ca7fa0d4e9bfb7ed1bf1f5a5919aeb00a30c34441b11eea"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/lib.rs",
+        "bytes": 11207,
+        "sha256": "8b4463324872ce8d5605195d53a46bd3ebbf2d98133c3772f989283b46cf13ab"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/named.rs",
+        "bytes": 32904,
+        "sha256": "e0bdf83398c060f6e93090c9d2c162fa59ad740d68a250e98fdccdaed3d3a390"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/named_calls.rs",
+        "bytes": 6003,
+        "sha256": "6882c66e086e916e29ff67a2d9ef9e69b17993e53e93c3506ad407a826198199"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline/routing-manifest.json",
+        "bytes": 399133,
+        "sha256": "28f91c016c7c117d18237999448b9d8536e01ad8adb69d866ed839051a63f1eb"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_baseline.rs",
+        "bytes": 50029,
+        "sha256": "4a1fb5beb76eb7e4954c3a0698d83771f167249d8a36bf94193286701918bbee"
+      }
+    ],
+    "current": [
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/builders.bnt",
+        "bytes": 1020,
+        "sha256": "1678ee25159b8234d4e7e291db26fc25f69e734755b5cba1c3433b67db53b864"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/control.bnt",
+        "bytes": 2129,
+        "sha256": "0c3688a48678a0058e8069ddd48366e87c4625285c7474f7b7253507fd3b2c35"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/failure.bnt",
+        "bytes": 457,
+        "sha256": "79a016529ddfd5a3e9a0b7f8638d3516b10f08307f105790c8e268d834099a94"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/higher-order.bnt",
+        "bytes": 408,
+        "sha256": "ea03d777d30ee6c658805550b52e19728008a7e8a3e8d2e394454d1650fa9a57"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/manifest.json",
+        "bytes": 1068,
+        "sha256": "3aa074b22b0009cca167996758e9a2a2cb6ac1967734d3a3c9f152ca1baa0401"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/numbering.bnt",
+        "bytes": 729,
+        "sha256": "ec5a2219bf3e1e755182d93388b83e894ed83af50291f440bb9199a25f52aad4"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/range.bnt",
+        "bytes": 1384,
+        "sha256": "734a5a1e7e97fab04fa06dcaa4e67cc76dab4c09db64611db2a3a3d624f47bfe"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/scope.bnt",
+        "bytes": 855,
+        "sha256": "2ba70f69bbc39a29021000b6741b425306b966a72b2f5c35336a52e2ce1a4f76"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3/super-paths.bnt",
+        "bytes": 570,
+        "sha256": "9500838a664e41daab6c1807084ef640634074c3e38f518f357ec1ed7ca54a10"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch3.rs",
+        "bytes": 7688,
+        "sha256": "43fe44afc38dab07b5f911f9663560ec94dd35272ce3ee73a6b9cd71a618a624"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch4/block-guards.bnt",
+        "bytes": 702,
+        "sha256": "4e2a628bab0c7f6c6f9ba2f8d209361a375ac44665df2da3fccdb7ba12dfe110"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch4/checked-lists.bnt",
+        "bytes": 2535,
+        "sha256": "d737f12a883cbbcc86e0b394cb9254d9baac63c0fc5b3c96cdd57165d6ef6ef8"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch4/log-standard.bnt",
+        "bytes": 2450,
+        "sha256": "08355567519234c5cf2a51af8c7394126d794a6054b42f18459bf2cae549684b"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/batch5.rs",
+        "bytes": 4661,
+        "sha256": "c372ec7e6536b5dc7694ddfd507ec68dac1f1a27daabf9eadea9c2b7ea4c3811"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/builders.rs",
+        "bytes": 467,
+        "sha256": "8887c74a45188d35adf0feff681fec74cd1032c4cb396107cb625d887cc35056"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/builtins.rs",
+        "bytes": 16804,
+        "sha256": "6fe578ba743fa76e5662678102d887299274a22449c742f7c966ecf75d5ef3cc"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/check_batch3.py",
+        "bytes": 9605,
+        "sha256": "f11d3b6f7ea2abe2d9117b95f4f5f246c8b5ffd09cce1850de4c266b1dfe41fe"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/check_failure.py",
+        "bytes": 3702,
+        "sha256": "abf44866721f9573291f0c17f7637e72abcb7f6aa14054f03b17a40cc229d77c"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/check_named.py",
+        "bytes": 30405,
+        "sha256": "b7cbfe8a799888779536de67ddd1ad0fffe2427c376a8325171817f7fb26a912"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/exchange-manifest.json",
+        "bytes": 558526,
+        "sha256": "6511d75dacbb3588b5931e990efb616158fe7b85f5dc460330973844d4ef8be2"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/exchange.rs",
+        "bytes": 132137,
+        "sha256": "ef54360ca64fc2c69cb5e3f00d14d1fbc089f2ad0028df9cd156873351296e91"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/README.md",
+        "bytes": 21337,
+        "sha256": "ef1077888eb491f1442dfba2fecf6f42b8a915ae8b0d3ef270aaf2fce9d8d466"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/budget-prelude.bnt",
+        "bytes": 146,
+        "sha256": "66a134ea8aa44964bfdfa5d7bd720b3c8ffacf058385b4f97bf7a8f0e639d6b1"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/check-manifest.py",
+        "bytes": 10276,
+        "sha256": "1d3d5afc1acb6d1f99924ddb91dfa406eb5f4e6270215448e41eb4b3446ebf89"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/fake-range.bnt",
+        "bytes": 254,
+        "sha256": "2096f1cf1052d69ebcbdc25a0b2d00a8b5e3d818919ffda7a64cc924edd8f4c4"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/manifest.rs",
+        "bytes": 21123,
+        "sha256": "2dd7bf8dc97583331772c902560458abc3b96c75809cf83aa8a32242d5e7a971"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/prepare-range.py",
+        "bytes": 5109,
+        "sha256": "d800c3b002960cb07afca5b50eec25153296be943945b54e6cf74f3b568853db"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/range-expectations.json",
+        "bytes": 8331,
+        "sha256": "094c5b31d262f7a80cd6e034f5711ad924e08104102d16bf601eb8872b361a79"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/range.bnt",
+        "bytes": 10058,
+        "sha256": "e8ac99d288f0c2ee9cfe130c3929dfcec3ae1cff1d6337e8ef3e03cf161daa5b"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeAllArms.bnt",
+        "bytes": 249,
+        "sha256": "26c04976a11c7e575e13d5d775774b0cace58790fc6a47587914b3b6b83b4898"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeCall.bnt",
+        "bytes": 161,
+        "sha256": "8102d7ba9b8529b44fca4059dbba19dbb42308740e860e952db2cc263ff70eae"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeDynamic.bnt",
+        "bytes": 223,
+        "sha256": "a933da1aa78f1c8ca6577c10d2d0177191ddc53608530b092e780896ace4c9c5"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeFake.bnt",
+        "bytes": 116,
+        "sha256": "3ca5655d3110f67d4a2f1febd64efbb4f84c9e4b5544aa6956c9899cd51fe872"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeIncrement.bnt",
+        "bytes": 229,
+        "sha256": "deadde0449ca3abae6dd037592c09bbcebbbaff2c623b83274bfc1b65db50037"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeSaved.bnt",
+        "bytes": 247,
+        "sha256": "a349baef2d456d1fa4328de7fc811d46a9ba3b2dbc58301a2859cb0df00771b7"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeUnrecognized.bnt",
+        "bytes": 122,
+        "sha256": "62ee597414c880fc6fb784d4732b5b7b5e9bd5d9bba7ca7001d116ff027a766a"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/rangeValue.bnt",
+        "bytes": 107,
+        "sha256": "193bf6256c7531ad0374529b07330fbe9d5e8cf2c51ec60387ef763451923f9a"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/source.rs",
+        "bytes": 21203,
+        "sha256": "af0bab517c2d475c1adcc06fe131aedd42d217f688576d4f471977d451b853dd"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/surface_keys.py",
+        "bytes": 1768,
+        "sha256": "88d38890983c544976927ceb1006a2ae3cce3b544014614b8ef4743a7f2f87e2"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/vm-arithmetic.bnt",
+        "bytes": 3343,
+        "sha256": "dfbd98979fb6b6b9253118c99b185fd8950be72a837b5d5d9e75a246673937fd"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/vm-range.bnt",
+        "bytes": 1142,
+        "sha256": "d6159e454bfc1ccc4599c209c520be4427f5182865d942c40815ab9eecc444b8"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval/vm.rs",
+        "bytes": 8827,
+        "sha256": "ef152416bea3f39adea2ca717e2ec6e666c681d71e15936e11bbc798e15bb778"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/interval.rs",
+        "bytes": 30929,
+        "sha256": "de4bf0a68311b7277ca7fa0d4e9bfb7ed1bf1f5a5919aeb00a30c34441b11eea"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/lib.rs",
+        "bytes": 12100,
+        "sha256": "f76d67a65defe054b902f68f0640b03bc6dc1f9c250e236f24cf5d865944b072"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/named.rs",
+        "bytes": 32904,
+        "sha256": "de6fe44bc3ceaff88c8feae7c3b347f46a6a7294fbc1e362cfc98e7a07f09165"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/named_calls.rs",
+        "bytes": 6003,
+        "sha256": "6882c66e086e916e29ff67a2d9ef9e69b17993e53e93c3506ad407a826198199"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/routing-manifest.json",
+        "bytes": 399133,
+        "sha256": "28f91c016c7c117d18237999448b9d8536e01ad8adb69d866ed839051a63f1eb"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/scope-tables-expected.json",
+        "bytes": 17195,
+        "sha256": "2e29bf6b6d047152ec19998273d718c3994393ebe4bfd6b45bb2af9e3b1db1d2"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/scope.rs",
+        "bytes": 5182,
+        "sha256": "42095201af9c20be022bd8b193815ae549996a3896e648668e4aef117aa39674"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current/scope_tables.rs",
+        "bytes": 20039,
+        "sha256": "ef94720aa22c4b4791787cd6e7c95e750776ca9305952682728cba5aa10993a8"
+      },
+      {
+        "path": "crates/benitoite/tests/r10_7b_current.rs",
+        "bytes": 51701,
+        "sha256": "6e08e12f3f41d6c0c327a3b71ebd36a19f213366e744db8567ae98e79a9f6aea"
+      }
+    ]
+  },
+  "temporary_tests_removed": true
+}

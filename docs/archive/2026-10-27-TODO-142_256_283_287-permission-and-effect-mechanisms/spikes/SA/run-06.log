@@ -1,0 +1,57 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SA.lean:764:45: warning: This simp argument is unused:
+  Eff.memFail
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rowImage, hf, singleton, Eff.fails] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:764:58: warning: This simp argument is unused:
+  Eff.fails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rowImage, hf, singleton, Eff.memFail] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:849:99: warning: This simp argument is unused:
+  sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [redundant, wide, singleton, Eff.memFail, Eff.fails, union, norm, rawUnion] at ht
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SA.lean:886:22: error(lean.unknownIdentifier): Unknown constant `Nat.strong_induction_on`
+SA.lean:924:29: error: Application type mismatch: The argument
+  Structural.norm_idem e
+has type
+  Structural.norm (Structural.norm e) = Structural.norm e
+but is expected to have type
+  Structural.norm (norm e) = norm e
+in the application
+  congrArg Eff.fails (Structural.norm_idem e)
+SA.lean:983:4: warning: This simp argument is unused:
+  Bool.and_eq_false_iff
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [normAtomsWith, Bool.and_eq_true, Bool.not_eq_true', List.any_eq_false, IsMax]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        1.00 real         1.64 user         0.31 sys
+           737132544  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47459  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               13330  involuntary context switches
+         12729536421  instructions retired
+          5752893393  cycles elapsed
+           183524808  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

@@ -1,0 +1,35 @@
+== wait-for-lock start 01:28:47
+== lock acquired 01:28:47 after 0s
+✔ [158/433] Built Benitoite.Release.Lemmas.OuterC (1.0s)
+✖ [160/433] Building Benitoite.Release.Lemmas.SubstTyping (2.3s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/SubstTyping.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/SubstTyping.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/SubstTyping.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/SubstTyping.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/SubstTyping.setup.json --json
+error: Benitoite/Release/Lemmas/SubstTyping.lean:193:4: Missing cases:
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.path _) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.name _)) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v4 (Fin.mk _ _)))) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.host (Scope.Domain.HostTarget.ip (Scope.Domain.IPAddr.mk Scope.Domain.Family.v6 (Fin.mk _ _)))) _ True.intro)
+_, _, (HasTypeVQ.V_Checked _ _ _ _ (String.ofByteArray (ByteArray.mk (Array.mk _)) (ByteArray.IsValidUTF8.intro _ _)) Scope.Domain.Range.top (Scope.Domain.Target.endpoint (Scope.Domain.Endpoint.mk (Scope.Domain.HostTarget.name _) (Fin.mk _ _))) _ True.intro)
+(further cases omitted, increase `set_option match.maxCounterExamples 5` to see more)
+✔ [392/433] Built Benitoite.Release.Lemmas.FailureCont (5.8s)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.SubstTyping
+error: build failed
+        6.00 real        12.83 user         0.66 sys
+           955039744  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              173395  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  10  voluntary context switches
+               11065  involuntary context switches
+          1438887761  instructions retired
+           575676361  cycles elapsed
+            29312224  peak memory footprint
+== exit 1

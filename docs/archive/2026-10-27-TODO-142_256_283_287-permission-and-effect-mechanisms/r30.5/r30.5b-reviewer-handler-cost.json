@@ -1,0 +1,179 @@
+{
+  "base": "ea42f4f97fe34e1f4768404f5b44aac3ff371155",
+  "quiet_machine_confirmed": false,
+  "rerun": false,
+  "measurements": [
+    {
+      "source": "../r30/rv-probes/handlers-chain-400.log",
+      "source_sha256": "4d243e423fc155504efd0f70934323d9ad0386481ecd92dded612125ac5de70f",
+      "measurement_owner": "RV-R30 reviewer",
+      "configuration": "release-default",
+      "case": "handlers-chain-400",
+      "typecheck_seconds": 1.703324042,
+      "occurrences": 7607,
+      "handler_reinferences": 2,
+      "numbering_events": [
+        27219
+      ],
+      "local_metrics": [
+        {
+          "body_operations": 0,
+          "max_body_items": 0,
+          "max_whole_items": 0,
+          "stops": [],
+          "whole_operations": 0
+        }
+      ],
+      "large_candidate": {
+        "definition": ".sample",
+        "limits": {
+          "body": {
+            "items": 512,
+            "operations": 16384
+          },
+          "whole": {
+            "items": 2048,
+            "operations": 65536
+          }
+        },
+        "local_stopped": "None",
+        "lost_ranges": 0,
+        "name": "large",
+        "numbering_operations": 27219,
+        "numbering_stopped": "None",
+        "rejections": [],
+        "stops": []
+      },
+      "exit": 0
+    },
+    {
+      "source": "../r30/rv-probes/handlers-later-400.log",
+      "source_sha256": "6345740f4f0d28ebda711616972fffcd04798ee8a52d0984ebacd29ac167da8f",
+      "measurement_owner": "RV-R30 reviewer",
+      "configuration": "release-default",
+      "case": "handlers-later-400",
+      "typecheck_seconds": 1.446863375,
+      "occurrences": 5201,
+      "handler_reinferences": 0,
+      "numbering_events": [
+        14803
+      ],
+      "local_metrics": [
+        {
+          "body_operations": 0,
+          "max_body_items": 0,
+          "max_whole_items": 0,
+          "stops": [],
+          "whole_operations": 0
+        }
+      ],
+      "large_candidate": {
+        "definition": ".sample",
+        "limits": {
+          "body": {
+            "items": 512,
+            "operations": 16384
+          },
+          "whole": {
+            "items": 2048,
+            "operations": 65536
+          }
+        },
+        "local_stopped": "None",
+        "lost_ranges": 0,
+        "name": "large",
+        "numbering_operations": 14803,
+        "numbering_stopped": "None",
+        "rejections": [],
+        "stops": []
+      },
+      "exit": 0
+    },
+    {
+      "source": "../r30/rv-probes/handlers-reinfer-400.log",
+      "source_sha256": "1161d490e4de31bbd4566b57c81ba09da926b0394a87a0172f1ccffce4dac07d",
+      "measurement_owner": "RV-R30 reviewer",
+      "configuration": "release-default",
+      "case": "handlers-reinfer-400",
+      "typecheck_seconds": 2.431907417,
+      "occurrences": 10001,
+      "handler_reinferences": 1,
+      "numbering_events": [
+        34003
+      ],
+      "local_metrics": [
+        {
+          "body_operations": 0,
+          "max_body_items": 0,
+          "max_whole_items": 0,
+          "stops": [],
+          "whole_operations": 0
+        }
+      ],
+      "large_candidate": {
+        "definition": ".sample",
+        "limits": {
+          "body": {
+            "items": 512,
+            "operations": 16384
+          },
+          "whole": {
+            "items": 2048,
+            "operations": 65536
+          }
+        },
+        "local_stopped": "None",
+        "lost_ranges": 0,
+        "name": "large",
+        "numbering_operations": 34003,
+        "numbering_stopped": "None",
+        "rejections": [],
+        "stops": []
+      },
+      "exit": 0
+    },
+    {
+      "source": "../r30/rv-probes/handlers-sequential-400.log",
+      "source_sha256": "a1f85bef56d81a1baf8a52b36f98d87b91fb841e99effd8dfc6361ffa4eb8df9",
+      "measurement_owner": "RV-R30 reviewer",
+      "configuration": "release-default",
+      "case": "handlers-sequential-400",
+      "typecheck_seconds": 0.132973458,
+      "occurrences": 2001,
+      "handler_reinferences": 0,
+      "numbering_events": [
+        6003
+      ],
+      "local_metrics": [
+        {
+          "body_operations": 0,
+          "max_body_items": 0,
+          "max_whole_items": 0,
+          "stops": [],
+          "whole_operations": 0
+        }
+      ],
+      "large_candidate": {
+        "definition": ".sample",
+        "limits": {
+          "body": {
+            "items": 512,
+            "operations": 16384
+          },
+          "whole": {
+            "items": 2048,
+            "operations": 65536
+          }
+        },
+        "local_stopped": "None",
+        "lost_ranges": 0,
+        "name": "large",
+        "numbering_operations": 6003,
+        "numbering_stopped": "None",
+        "rejections": [],
+        "stops": []
+      },
+      "exit": 0
+    }
+  ]
+}

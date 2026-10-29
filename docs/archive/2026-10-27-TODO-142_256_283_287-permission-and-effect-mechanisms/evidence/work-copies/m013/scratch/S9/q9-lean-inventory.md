@@ -1,0 +1,709 @@
+# S9 Q9 Lean 直接参照の集計
+
+基準版: `04c78e527e6c23c0be8a9dbce26f23d685a5e04d`。
+
+git grep -n -w と宣言単位の字句検索。コメント・文字列・自身の宣言名を除く。推移的依存数でも変更確定数でもない。
+
+| 群 | 宣言 | 定理 | 定理のファイル | 例を除く定理 | 言明に直接現れる定理 |
+|---|---:|---:|---:|---:|---:|
+| operation_signature | 65 | 44 | 28 | 42 | 9 |
+| handler_removal | 120 | 105 | 35 | 96 | 46 |
+| row_substitution | 212 | 186 | 44 | 177 | 141 |
+| type_effect_representation | 361 | 221 | 52 | 213 | 187 |
+| union | 693 | 502 | 94 | 478 | 364 |
+
+## 宣言の一覧
+
+- `formal/Benitoite/Release/Admissible.lean:14` `Qsig.varsIn_scoped` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Admissible.lean:20` `noFail_subst` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Admissible.lean:28` `Admissible.mono` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Admissible.lean:38` `MethodRowsAdmissible.mono` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Admissible.lean:49` `Admissible.closed_row` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Admissible.lean:55` `PrimitiveAdmissible.of_noRows` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Admissible.lean:66` `MethodRowsAdmissible.of_noRows` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Assumptions.lean:40` `Builtins.Assumptions` (structure): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Atom.lean:15` `stateEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Atom.lean:18` `Atom` (inductive): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/BuilderExamples.lean:129` `dedicated_inside_lambda` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/CoverageTypes.lean:39` `erase_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:18` `single` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:24` `singleFail` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Effect.lean:31` `union` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Effect.lean:33` `mem_empty` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:35` `mem_single` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:38` `mem_row` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:41` `mem_union` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:47` `memFail_single` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:50` `memFail_singleFail` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:59` `mem_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:63` `sub_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:67` `union_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:70` `canonical_ofAtoms` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:73` `eq_of_sub_of_sub` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:115` `sub_norm_self` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Effect.lean:119` `norm_sub_self` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Examples.lean:18` `sig` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FailureEffects.lean:7` `Eff.substAt_singleFail` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/FailureExamples.lean:50` `toResult_return` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/FailureExamples.lean:55` `toResult_raise` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/FailureExamples.lean:84` `result_values_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/FailureExamples.lean:99` `toResult_typed` (theorem): row_substitution, type_effect_representation; 言明: 
+- `formal/Benitoite/Release/FailureExamples.lean:132` `fromResult_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Finite.lean:9` `Eff.support_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:16` `tyCompareWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:38` `effCompareWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:42` `tysCompareWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:50` `compareWith_eq_compare` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:57` `comparesWith_eq_compare` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:65` `effCompareWith_eq_compare` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:76` `Ty.normWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:95` `Ty.normTysWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:101` `Eff.normWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:128` `Ty.normWith_eq_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:143` `Ty.normTysWith_eq_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:151` `Eff.normWith_eq_norm_of_fails` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:164` `Eff.normWith_eq_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:168` `Ty.normTysWith_eq_map` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:176` `Ty.normWith_legacy` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:188` `Ty.normTysWith_legacy` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:194` `Eff.normWith_legacy` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:210` `Ty.normWith_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Finite.lean:214` `Eff.normWith_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:7` `Ty.collectAtoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:14` `Ty.collectAtomsList` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:17` `Eff.collectAtoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:22` `Ty.support_mono` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:35` `Ty.supportList_mono` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:40` `Eff.support_mono` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:48` `Ty.collectAtoms_complete` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:75` `Ty.collectAtomsList_complete` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:84` `Eff.collectAtoms_complete` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:95` `Ty.collectAtoms_sound` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:122` `Ty.collectAtomsList_sound` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:131` `Eff.collectAtoms_sound` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:142` `Ty.collectAtoms_support_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:146` `Eff.collectAtoms_support_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:151` `Ty.support_of_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:168` `Eff.support_of_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:179` `Eff.norm_fails_support` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/FiniteSupport.lean:188` `Eff.support_of_sub` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/Basic.lean:39` `substRho_empty` (theorem): row_substitution, type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Basic.lean:44` `substAt_empty` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Basic.lean:51` `substRho_name` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/Basic.lean:99` `substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Basic.lean:106` `subst` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/Canonical.lean:21` `HasTypeVQ.inhabits'` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Canonical.lean:219` `HasTypeVQ.inv_list_wf` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Closed.lean:31` `Ty.VarsIn.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Closed.lean:82` `Ty.VarsInList.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Closed.lean:90` `Eff.VarsIn.substAt` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Closed.lean:122` `Eff.VarsInList.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Closed.lean:134` `Val.VarsIn.substTyAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Closed.lean:182` `Comp.VarsIn.substTyAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Closed.lean:244` `Clause.VarsInList.substTyAt` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:19` `ContTy.store` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:36` `ContTy.name_end` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:62` `handled_state` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:74` `ContTy.state_end` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:131` `ContTy.inv_handle` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:148` `ContTy.inv_handle_tail` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:206` `ContTy.resume_append` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:240` `ContTy.split` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:335` `ContTy.framesOk` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Dict.lean:20` `Eff.substRho_of_noRho` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/Dict.lean:29` `Ty.shift_subst_append` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Dict.lean:45` `Ty.shiftList_subst_append` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Dict.lean:51` `Ty.methTy_subst` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Dict.lean:95` `Ty.methTyList_subst` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Dict.lean:102` `ImplDecl.methTy_subst` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/Dict.lean:120` `Eff.methTy_subst` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Dict.lean:130` `ImplDecl.methEff_subst` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Dict.lean:178` `superStep_dict_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/EffectSound.lean:20` `ContTy.end_of_noHandler` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/EffectSound.lean:39` `no_event` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:16` `opSig_ne_fail` (theorem): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:22` `HasTypeClausesQ.no_failure` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:38` `HasFailureClause.handles` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:54` `handled_noFail` (theorem): handler_removal, row_substitution; 言明: handler_removal, row_substitution
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:63` `captureEff` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:81` `failure_capture_base` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:16` `ContTy.handler_kind` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:37` `ContTy.selected_ordinary` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:47` `ContTy.fail_end` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:66` `ContTy.failure_prefix` (theorem): handler_removal, row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:142` `ContTy.split_failure` (theorem): handler_removal, row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:231` `splitAt_failure_prefix` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:251` `HasTypeCQ.inv_handle_failure` (theorem): handler_removal, row_substitution; 言明: handler_removal, row_substitution
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:19` `fnTy_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:25` `HasTypeVQ.inv_var` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:42` `HasTypeVQ.inv_const` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:57` `HasTypeVQ.inv_fnRef` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:75` `HasTypeVQ.fnRef_admissible` (theorem): operation_signature, row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:91` `HasTypeVQ.inv_prim` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:109` `HasTypeVQ.inv_op` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:127` `HasTypeVQ.inv_lam_wf` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:154` `HasTypeVQ.inv_con` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:172` `HasTypeVQ.inv_list` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:189` `HasTypeVQ.inv_loc` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:211` `HasTypeCQ.inv_ret` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:231` `HasTypeCQ.inv_let` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:254` `HasTypeCQ.inv_app` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:277` `HasTypeCQ.inv_ite` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:300` `HasTypeCQ.inv_match` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:316` `HasTypeCQ.inv_lazy` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:336` `HasTypeCQ.inv_escape` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:354` `HasTypeCQ.inv_use` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:377` `HasTypeCQ.inv_handle` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:405` `HasTypeCQ.inv_resumeL` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:428` `HasTypeCQ.inv_resumeVar` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:502` `HasTypeCQ.inv_meth` (theorem): handler_removal, row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:521` `HasTypeCQ.ret_value` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:532` `HasTypeCQ.inv_builderLet` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:548` `HasTypeCQ.inv_builderOp` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Irrelevant.lean:75` `HasTypeVQ.subst_congr` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Irrelevant.lean:108` `HasTypeCQ.subst_congr` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Irrelevant.lean:156` `HasTypeClausesQ.subst_congr` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/LocalInvariant.lean:41` `ContTy.localRefs` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Names.lean:131` `HasTypeVQ.lambdaNamesWF` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Names.lean:165` `HasTypeCQ.lambdaNamesWF` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Names.lean:194` `HasTypeClausesQ.lambdaNamesWF` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/NoFailContext.lean:9` `HasTypeVQ.q_mono` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/NoFailContext.lean:43` `HasTypeCQ.q_mono` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/NoFailContext.lean:75` `HasTypeClausesQ.q_mono` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:25` `Admissible.outer` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:41` `MethodRowsAdmissible.outer` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:46` `HasTypeVQ.outer` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:100` `HasTypeCQ.outer` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:161` `HasTypeClausesQ.outer` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/PresBase.lean:175` `store_prim_inv` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresBase.lean:208` `refUpdate_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresFailure.lean:15` `HasFailureClause.instantiate` (theorem): row_substitution, type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/PresFailure.lean:60` `pres_failure` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresHelpers.lean:95` `ContTy.R_wf` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresHelpers.lean:122` `HasTypeClausesQ.find` (theorem): operation_signature, handler_removal; 言明: operation_signature
+- `formal/Benitoite/Release/Lemmas/PresMain.lean:18` `preservationE` (theorem): operation_signature, handler_removal, row_substitution, type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:24` `inv_prim_app` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:36` `inv_op_app` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:48` `Ty.subst_tvar0` (theorem): row_substitution, type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:111` `pres_op_common` (theorem): operation_signature, row_substitution, type_effect_representation; 言明: operation_signature
+- `formal/Benitoite/Release/Lemmas/Progress.lean:114` `HasTypeCQ.resume_form` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:168` `split_of_not_noHandler` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Progress.lean:190` `findClause_of_handles` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Progress.lean:200` `no_unhandled_user` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:349` `progress_prim` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:459` `progress_run` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Regularity.lean:138` `HasTypeVQ.wf` (theorem): operation_signature, type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Regularity.lean:204` `HasTypeCQ.wf` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:154` `handles_of_ops` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Rename.lean:163` `handled_of_ops` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Rename.lean:176` `handled_renameList` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Rename.lean:181` `HasTypeVQ.rename` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:224` `HasTypeCQ.rename` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:284` `HasTypeClausesQ.rename` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Rename.lean:337` `HasTypeVQ.store` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:371` `HasTypeCQ.store` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:404` `HasTypeClausesQ.store` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Rename.lean:424` `HasTypeClausesQ.hideBuilders` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/Rename.lean:442` `HasTypeVQ.hide` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/StepSound.lean:15` `splitHandler_some` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/StepSound.lean:102` `step_soundE` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/StoreLemmas.lean:111` `HasTypeVQ.notCont` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/SubstTyping.lean:190` `HasTypeVQ.subst` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Lemmas/SubstTyping.lean:238` `HasTypeCQ.subst` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/Lemmas/SubstTyping.lean:301` `HasTypeClausesQ.subst` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:19` `Ty.applyTo_notHead` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:25` `Ty.applyTo_of_notHead` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:29` `Ty.substAt_notHead` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:44` `Ty.substAt_applyTo` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:62` `Ty.shift_zero` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:65` `Ty.shiftList_zero` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:84` `Ty.substAtList_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:93` `Ty.shiftList_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:25` `Ty.applyTo_notCont` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:39` `Ty.substAt_notCont` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:80` `hideConts_map` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:105` `shiftEnv_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:118` `handled_substRho` (theorem): handler_removal, row_substitution; 言明: handler_removal
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:145` `handled_substAt` (theorem): handler_removal, row_substitution; 言明: handler_removal, row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:152` `StoreFix` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:222` `BuilderKind.contents_substTyAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:226` `BuilderOp.params_substTyAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:230` `BuilderOp.result_substTyAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:18` `Const.type_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:23` `ConDecl.args_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:33` `fnTy_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:51` `PatTy.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:73` `PatTys.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:81` `AltsTy.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:93` `Inhabits.of_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:310` `InhabitsAll.of_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:324` `InhabitsEach.of_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:331` `Exhaustive.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:338` `envSubst` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:341` `opSig_scoped` (theorem): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:390` `SatAll.substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:399` `envSubst_binds` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:403` `envSubst_get` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:424` `ImplDecl.subst_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:439` `substTy_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:448` `substEff_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:457` `Admissible.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:480` `PrimitiveAdmissible.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:504` `MethodRowsAdmissible.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:518` `HasTypeVQ.substTy` (theorem): operation_signature, row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:630` `HasTypeVsQ.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:641` `HasTypeEachQ.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:652` `HasTypeCQ.substTy` (theorem): handler_removal, row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:783` `HasTypeArmsQ.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:823` `HasTypeClausesQ.substTy` (theorem): handler_removal, row_substitution; 言明: handler_removal, row_substitution
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:863` `HasFailureClause.substTy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:12` `Ty.bind_clean` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:44` `Eff.bind_clean` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:82` `Eff.subst_clean` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/LocalScope.lean:68` `HasTypeVQ.localRefs` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/LocalScope.lean:102` `HasTypeCQ.localRefs` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Release/LocalScope.lean:135` `HasTypeClausesQ.localRefs` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Model.lean:219` `const_body_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Model.lean:229` `classProgram_wellTyped` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Model.lean:267` `super_call_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/Model.lean:365` `lambda_names_wellFormed` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/NoFail.lean:80` `Qsig.scoped` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:92` `RowTransport` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/NoFail.lean:107` `NoFail.iff_mem` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:111` `NoFail.norm_iff` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/NoFail.lean:115` `NoFail.empty` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:118` `NoFail.row_iff` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:126` `NoFail.mono` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:136` `NoFail.not_memFail` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:139` `NoFail.empty_iff` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:143` `NoFail.union_iff` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:154` `NoFail.union` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:158` `NoFail.sub` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:163` `NoFail.shift_iff` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:180` `NoFail.shift` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:184` `NoFail.bind` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:197` `RowTransport.nil_iff` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/NoFail.lean:205` `RowTransport.at` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/NoFail.lean:219` `noFail_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:225` `RowTransport.compose_scoped` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/NoFail.lean:236` `RowTransport.compose` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/NoFail.lean:244` `failure_upper_bound` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/NoFail.lean:253` `Eff.norm_fails_eq_nil` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/NoFail.lean:267` `QTy.norm_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/NoFail.lean:275` `QEff.norm_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:16` `Ty.norm` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:35` `Ty.normTys` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:46` `Ty.normTys_eq_map` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:52` `Ty.Canonical` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:55` `Eff.Canonical` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:57` `normTys_sortUnique` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:76` `Ty.norm_idem` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:86` `Eff.norm_idem` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:93` `Eff.memFail` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:96` `Eff.norm_memFail` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:125` `Ty.norm_legacy` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:146` `Eff.norm_legacy` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:171` `Ty.canonical_of_failsLeOne` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Normalize.lean:192` `Eff.canonical_of_failsLeOne` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:50` `code` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:55` `code_injective` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:71` `exists_least_atom` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:89` `exists_atoms_difference` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:100` `atomsCompare` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:107` `AtomsBefore` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:110` `atomsCompare_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:128` `atomsCompare_eq_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:140` `atomsBefore_unique` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:154` `atomsCompare_lt_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:174` `atomsCompare_gt_iff` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:202` `atomsCompare_swap` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:210` `atomsCompare_lt_trans` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:238` `atomsCompare_total` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:246` `atomsCompare_antisymm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Atoms.lean:251` `atomsCompare_ext` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/FiniteAtoms.lean:6` `firstDifference` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/FiniteAtoms.lean:15` `firstDifference_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/FiniteAtoms.lean:58` `atomsCompareWith` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/FiniteAtoms.lean:63` `atomsCompareWith_eq_compare` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Labels.lean:25` `Label` (inductive): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Shift.lean:15` `Ty.shift_compare_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Shift.lean:20` `Ty.shift_compare` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Shift.lean:24` `shift_map` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Shift.lean:31` `Ty.shift_compareList` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Order/Shift.lean:38` `Ty.sortUnique_shift` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Semantics.lean:83` `NoHandler` (def): handler_removal; 言明: 
+- `formal/Benitoite/Release/Semantics.lean:94` `SplitAt` (def): handler_removal; 言明: 
+- `formal/Benitoite/Release/Semantics.lean:116` `Step` (inductive): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Semantics.lean:342` `splitHandler` (def): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Release/Semantics.lean:545` `ContTy` (inductive): handler_removal, row_substitution; 言明: handler_removal, row_substitution
+- `formal/Benitoite/Release/Semantics.lean:599` `LocTy.WF` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Subst.lean:48` `Ty.subst` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/Subst.lean:51` `Val.substTyAt` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Subst.lean:72` `Comp.substTyAt` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Subst.lean:97` `Clause.substTyAtList` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/SubstEnv.lean:29` `Eff.mem_substRho_rowImage` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/SubstEnv.lean:41` `Eff.substRho_row` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Syntax.lean:103` `BuilderKind.substTyAt` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Syntax.lean:344` `OpDecl` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Syntax.lean:354` `OpDecl.dictTys` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Release/Syntax.lean:358` `OpDecl.valueParams` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Release/Syntax.lean:361` `OpDecl.valueNames` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Release/Syntax.lean:399` `Program` (structure): operation_signature, type_effect_representation; 言明: operation_signature, type_effect_representation
+- `formal/Benitoite/Release/TypeBounds.lean:67` `Ty.norm_rawWF` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeBounds.lean:87` `Eff.norm_rawWF` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeBounds.lean:188` `Ty.substAt_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeBounds.lean:231` `Eff.subst_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeBounds.lean:253` `Eff.substAt_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeComposition.lean:13` `Eff.mem_rawBind_rowImage` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:34` `Eff.memFail_rawBind_rowImage` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:52` `Eff.norm_ext` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:60` `Ty.bind_congr_rows` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:87` `Ty.bindTys_congr_rows` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:97` `Eff.bind_congr_rows` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:133` `Eff.mem_bind` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:140` `Eff.memFail_bind` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:153` `Eff.bind_row` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:209` `Ty.bind_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:213` `Eff.bind_comp_of_types` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:265` `Ty.bind_comp` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:308` `Ty.bindTys_comp` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:334` `Eff.ext_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeComposition.lean:352` `Eff.bind_ofAtoms_noRhos` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:15` `Ty.bind_congr_scoped` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:43` `Ty.bindTys_congr_scoped` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:53` `Eff.bind_congr_scoped` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:95` `Eff.rawBind_identity` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/TypeCongruence.lean:103` `Ty.bind_identity` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:106` `Eff.bind_identity` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:109` `Eff.rowImage_normEnv` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:115` `Ty.bind_normEnv` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeCongruence.lean:119` `Ty.bind_congr_scoped_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRegularity.lean:16` `Ty.WF.canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRegularity.lean:36` `Ty.norm_WF` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRegularity.lean:47` `Eff.norm_WF` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRegularity.lean:58` `Ty.LatentWF` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRegularity.lean:132` `Eff.shift_of_wf` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRows.lean:66` `Ty.norm_rowsIn` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeRows.lean:85` `Eff.norm_rowsIn` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:14` `Eff.substRho_true` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:23` `Eff.substRho_true_scoped` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:49` `Ty.substAt_of_closed` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:60` `Ty.substAtList_of_closed` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:69` `Ty.subst_comp` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:91` `Ty.subst_comp_list` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:115` `SubstEnv.shift_at_types` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/TypeScopedSubst.lean:139` `Eff.shift_at_rowImages` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeScopedSubst.lean:161` `Ty.shift_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:175` `Eff.substAt_fails` (theorem): row_substitution, type_effect_representation; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:185` `Ty.substAt_nil_of_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:196` `Ty.substAtList_nil_of_wf` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:203` `Eff.substRho_nil_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:208` `Eff.substRho_nil` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:217` `Eff.substAt_nil_of_wf` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:229` `Eff.substAt_comp` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:253` `Eff.substAt_union` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:257` `Eff.substAt_empty` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:261` `Eff.substAt_single` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeScopedSubst.lean:266` `Eff.substAt_name` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:271` `Eff.shift_substAt` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeScopedSubst.lean:287` `Eff.substAt_norm` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:85` `Ty.norm_rawShift` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:95` `Eff.norm_rawShift` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:107` `Ty.rawShift_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:112` `Eff.rawShift_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:118` `Eff.shift` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeShift.lean:149` `Ty.shift_eq_norm_rawShift` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:163` `Ty.shift_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:166` `Eff.shift_canonical` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:183` `Ty.shift_zero_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeShift.lean:186` `Eff.shift_zero_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubst.lean:29` `Ty.applyTo` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:45` `Eff.substAtoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubst.lean:55` `Eff.rowFails` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubst.lean:62` `Eff.substAtoms_false` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubst.lean:73` `Eff.substAtoms_nil` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeSubst.lean:77` `Eff.rowFails_nil` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubst.lean:105` `Eff.rawBind` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubst.lean:111` `Ty.bind` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:112` `Eff.bind` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:128` `Eff.substAt` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:133` `Ty.substAt` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubst.lean:160` `Ty.substTysAt` (def): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubst.lean:166` `Eff.substRho` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:182` `Ty.substTysAt_eq_map` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubst.lean:198` `Eff.mem_rowFails` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:19` `TyCon.norm_rawApply` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:27` `Ty.norm_rawApplyTo` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:34` `Ty.norm_rawBind` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:51` `Eff.norm_rawBind` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:65` `Ty.rawBind_norm_congr` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:70` `Eff.memFail_rawBind` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:87` `Eff.mem_substAtoms` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:115` `Eff.mem_rawBind` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:120` `Eff.bind_mono` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:144` `Eff.substAt_mono` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:147` `Eff.test_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:151` `Eff.substAtoms_map_norm` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:163` `Eff.rowFails_map_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:187` `SubstEnv.norm` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:191` `Ty.rawApplyTo_norm_congr` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:198` `Ty.norm_rawBind_normEnv` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:208` `Ty.normTys_rawBind_normEnv` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:214` `Eff.norm_rawBind_normEnv` (theorem): row_substitution, type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:229` `SubstEnv.at_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:249` `Ty.norm_substAt` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:256` `Eff.norm_substAt` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:263` `Ty.applyTo_eq_raw_norm` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:269` `Ty.substAt_eq_rawBind` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:297` `Ty.substAt_eq_bind` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:352` `Eff.rowFails_legacy` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:421` `Ty.substAt_eq_raw_of_legacy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:428` `Eff.substAt_eq_raw_of_legacy` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:435` `Eff.substAt_ofAtoms` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Release/TypeSupport.lean:12` `Ty.Support` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSupport.lean:19` `Ty.SupportList` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSupport.lean:22` `Eff.Support` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSupport.lean:32` `Ty.norm_support` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSupport.lean:49` `Eff.norm_support` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeSupport.lean:125` `Eff.rawBind_support` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Release/TypeSupport.lean:168` `Ty.substAt_support` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeSupport.lean:175` `Eff.substAt_support` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/TypeVariables.lean:17` `Ty.VarsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeVariables.lean:130` `Ty.norm_VarsIn` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/TypeVariables.lean:135` `Eff.norm_VarsIn` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Types.lean:64` `EffR` (inductive): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Types.lean:73` `atoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Types.lean:80` `test` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Types.lean:81` `mem` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Types.lean:82` `ofAtoms` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Typing.lean:46` `PrimSig` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Typing.lean:62` `Builtins` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Typing.lean:91` `OpSig` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Typing.lean:98` `opSig` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Release/Typing.lean:115` `effOps` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Typing.lean:124` `handled` (def): handler_removal; 言明: 
+- `formal/Benitoite/Release/Typing.lean:136` `Ty.WF` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Release/Typing.lean:174` `PrimitiveAdmissible` (structure): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Release/Typing.lean:185` `MethodRowsAdmissible` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/Typing.lean:380` `HasTypeVQ` (inductive): operation_signature, row_substitution; 言明: operation_signature, row_substitution
+- `formal/Benitoite/Release/Typing.lean:447` `HasTypeCQ` (inductive): handler_removal, row_substitution; 言明: 
+- `formal/Benitoite/Release/Typing.lean:533` `HasTypeClausesQ` (inductive): operation_signature, handler_removal; 言明: 
+- `formal/Benitoite/Release/Typing.lean:564` `hideBuilders_strengthen_val` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Release/Typing.lean:604` `HasTypeClauses` (abbrev): handler_removal; 言明: 
+- `formal/Benitoite/Release/Typing.lean:612` `Def.WellTyped` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/Typing.lean:618` `ImplDecl.methTy` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/Typing.lean:625` `ImplDecl.WellTyped` (def): row_substitution; 言明: 
+- `formal/Benitoite/Release/WellFormed.lean:91` `OpDecl.Scoped` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:15` `rowsTyCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:22` `rowsTysCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:25` `rowsEffCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:31` `rowsAtoms_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:79` `instantiationCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:86` `instantiationCheck_admissible` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:111` `instantiationCheck_primitive` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/AdmissibleCheck.lean:137` `instantiationCheck_method` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Builders.lean:60` `AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Builders.lean:111` `atomsIn_empty` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Check.lean:23` `Input` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Check.lean:81` `singleFailure` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Check.lean:85` `substParams` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Check.lean:206` `checkExprR` (def): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Check.lean:742` `checkClausesR` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/Check.lean:766` `inferClauseTypesR` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/CheckComputeAtoms.lean:9` `Requests.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckComputeAtoms.lean:12` `CheckState.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckComputeAtoms.lean:19` `Inferred.AtomsIn` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckComputeAtoms.lean:110` `requests_atoms_nil` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckComputeCalls.lean:17` `computes_opDicts` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Surface/CheckComputeControl.lean:140` `computes_handle` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/CheckExamples.lean:14` `atoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckExamples.lean:141` `dieAtoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckExamples.lean:281` `renderDecl` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/CheckExamples.lean:428` `pairDecl` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/CheckExamples.lean:557` `fancyDecl` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/CheckExamples.lean:963` `noFailInput` (def): type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/CheckInduction.lean:47` `ClausesSound` (def): handler_removal; 言明: 
+- `formal/Benitoite/Surface/CheckInduction.lean:236` `checkClauses_of_mutual` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/CheckInduction.lean:314` `checkDef_of_mutual` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/CheckLemmas.lean:70` `ReturnAtoms` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckLemmas.lean:163` `Ty.length_normTysWith` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckLemmas.lean:240` `opSig_atoms` (theorem): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/CheckLemmas.lean:329` `acceptEff_handled_sound` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/CheckLemmas.lean:378` `substTyAt_rule` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckLemmas.lean:498` `clauseEnv_atoms` (theorem): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/CheckLemmas.lean:528` `substTyAt_fun_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckLemmas.lean:536` `methTy_fun_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckPatterns.lean:18` `ConAtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:22` `patTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:43` `patTys` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:52` `pat_sound` (theorem): row_substitution, type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:117` `surfacePatTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:156` `checkAlt` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:164` `checkAlts` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPatterns.lean:203` `altsTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPredicates.lean:69` `canonicalEff_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPredicates.lean:78` `wfEff_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPredicates.lean:87` `cleanEff_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckPredicates.lean:400` `stringAddOk` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckProgramSound.lean:145` `ImplBodiesAtoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSoundBasicExpr.lean:201` `opDicts_case` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Surface/CheckSoundControl.lean:302` `handle_case` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/CheckSoundDicts.lean:123` `checkImpl_of_checker` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/CheckSupport.lean:17` `diffEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:22` `diffEff_atoms` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:28` `singleEff_eq_contains` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:37` `Env.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:40` `Env.atoms_nil` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:83` `Builtins.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:90` `Declarations.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:99` `OpDecl.dictTys_atoms` (theorem): operation_signature, type_effect_representation; 言明: operation_signature, type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:106` `OpDecl.valueParams_atoms` (theorem): operation_signature, type_effect_representation; 言明: operation_signature, type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:113` `DictEv.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:117` `DictEvs.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:122` `InterpParts.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:126` `Expr.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:172` `Exprs.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:175` `HoleArgs.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:179` `Block.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:186` `Arms.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:189` `Clauses.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:194` `Def.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:197` `ImplDecl.AtomsIn` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckSupport.lean:203` `FunDecl.dictTys_atoms` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTables.lean:34` `PrimMaterial` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTables.lean:52` `BuiltinMaterial` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTables.lean:59` `BuiltinMaterial.effectOps` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTables.lean:138` `Materials` (structure): operation_signature, type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/CheckTables.lean:176` `recordOk` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTables.lean:189` `Names` (structure): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTables.lean:204` `Materials.input` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:7` `Eff.AtomsIn` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:9` `Ty.AtomsIn` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:10` `Tys.AtomsIn` (abbrev): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:21` `singleEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:36` `emptyEff_atoms` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:41` `singleEff_atoms` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:45` `singleEff_eq` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:64` `shiftTys` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:68` `substTysAt` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:70` `substTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:71` `fnTyCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/CheckTools.lean:88` `substEffAt_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckTools.lean:92` `substTyAt_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckTools.lean:96` `substTysAt_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckTools.lean:127` `substAt_atoms` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/CheckToolsExamples.lean:10` `atoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Examples.lean:10` `canonical_empty` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Examples.lean:11` `canonical_single` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Examples.lean:29` `readOp` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/Examples.lean:60` `mainExpr_typed` (theorem): handler_removal, row_substitution, type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Examples.lean:119` `program_wellFormed` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Surface/Examples.lean:181` `program_wellTyped` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Examples.lean:412` `dieExit_ok` (theorem): row_substitution, type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Examples.lean:516` `noReturnWithoutTarget` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Examples.lean:585` `resume_requires_binding` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/FiniteExamples.lean:12` `atoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteExamples.lean:32` `substAtoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:14` `canonicalEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:17` `canonicalEff_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:23` `wfTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:32` `wfTys` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:35` `wfEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:59` `wfEff_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:67` `cleanTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:76` `cleanTys` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:79` `cleanEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FinitePredicates.lean:100` `cleanEff_spec` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:11` `tyEq` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:12` `tysEq` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:13` `effEq` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:39` `applyToTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:41` `shiftTy` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:42` `shiftEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:44` `substTyAt` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:46` `substEffAt` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:63` `substTyAt_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/FiniteTools.lean:70` `substEffAt_eq` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/FiniteTools.lean:77` `unionEff` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:80` `union_support` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:123` `effSub` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:185` `tyLe` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:202` `tyJoin` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/FiniteTools.lean:241` `diffEff_support` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:107` `HasTypeVQ.reads` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:134` `HasTypeCQ.reads` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:185` `HasTypeClausesQ.reads` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:237` `HasTypeQ.closure_empty` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:314` `HasClausesQ.closure_empty` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:322` `builderClauses_no_capture` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean:16` `HasTypeQ.captures` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Builders.lean:31` `boundary` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Lemmas/CallHead.lean:76` `HasTypeQ.inv_funDicts` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Lemmas/CallHead.lean:145` `HasTypeQ.inv_methName` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Lemmas/CallHead.lean:188` `directCallee_typed` (theorem): operation_signature; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Calls.lean:13` `CallHead.HasTypeQ` (inductive): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Lemmas/Calls.lean:59` `desugarClauses_handles` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/Calls.lean:67` `desugarClauses_handled` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/Dict.lean:8` `op_dicts_typed` (theorem): operation_signature, row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Dict.lean:25` `op_value_typed` (theorem): operation_signature, row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/DictSupport.lean:29` `FunDecl.dictTys_substEff` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:31` `clean_le` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:260` `opSig_clean` (theorem): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:286` `HasTypeQ.clean` (theorem): handler_removal, type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/NoFailSignature.lean:22` `FunDecl.Qsig_core` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Lemmas/Program.lean:61` `desugar_wellTyped` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Program.lean:140` `main_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Records.lean:96` `record_subst_identity` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:15` `HasTypeCQ.withReturn` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:50` `HasTypeClausesQ.withReturn` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:98` `tryResult_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:140` `tryOption_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:226` `tryResultDie_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:299` `tryOptionDie_typed` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Scoped.lean:76` `HasTypeQ.desugar_scoped` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Scoped.lean:298` `HasClausesQ.desugar_scoped` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:332` `union_empty_right` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:341` `union_empty_left` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:351` `union_empty_right_nested` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:358` `union_empty_left_nested` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/SubstClean.lean:8` `substAt_clean` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Lemmas/SubstClean.lean:30` `substAtList_clean` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:209` `HasTypeQ.desugar_partialCon` (theorem): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:298` `fixedOp` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:390` `HasTypeQ.desugar` (theorem): operation_signature, handler_removal, row_substitution; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:880` `HasClausesQ.desugar` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/LogExamples.lean:21` `atoms` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/LogExamples.lean:102` `handled_checked` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/LogExamples.lean:105` `forwarded_checked` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/LogExamples.lean:109` `console_remains_checked` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/LogExamples.lean:123` `programMaterials` (def): handler_removal; 言明: 
+- `formal/Benitoite/Surface/LogExamples.lean:137` `console_pure_rejected` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Monad2Examples.lean:264` `signatures_scoped` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Monad2Examples.lean:315` `program_wellFormed` (theorem): type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/NoFailCheck.lean:42` `noFailCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/NoFailCheck.lean:48` `rowTransportCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/NoFailCheck.lean:75` `signatureQ_spec` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/NoFailCheck.lean:83` `signatureQ_scoped` (theorem): row_substitution; 言明: row_substitution
+- `formal/Benitoite/Surface/NoFailCheck.lean:92` `noFailCheck_spec` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Surface/NoFailCheck.lean:113` `noFailCheck_atoms_spec` (theorem): row_substitution, type_effect_representation; 言明: row_substitution, type_effect_representation
+- `formal/Benitoite/Surface/NoFailCheck.lean:142` `rowTransportCheck_complete` (theorem): row_substitution; 言明: 
+- `formal/Benitoite/Surface/SingleFailCheck.lean:8` `singleFailCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/SingleFailCheck.lean:13` `singleTyCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/SingleFailCheck.lean:20` `singleTysCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/SingleFailCheck.lean:23` `singleEffCheck` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/Syntax.lean:536` `Declarations` (structure): operation_signature, type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Syntax.lean:606` `ImplDecl.methTy` (def): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Syntax.lean:615` `Program` (structure): operation_signature, type_effect_representation; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:84` `HasTypeQ` (inductive): handler_removal, row_substitution, type_effect_representation; 言明: handler_removal, row_substitution, type_effect_representation
+- `formal/Benitoite/Surface/Typing.lean:491` `HasClausesQ` (inductive): operation_signature, handler_removal; 言明: operation_signature, handler_removal
+- `formal/Benitoite/Surface/Typing.lean:575` `HasTypeQ.congrΔ` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:736` `HasClausesQ.congrΔ` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Typing.lean:776` `HasTypeQ.of_builderFree` (theorem): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:936` `HasClausesQ.of_builderFree` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Typing.lean:998` `HasClausesQ.builderFree_iff` (theorem): handler_removal; 言明: handler_removal
+- `formal/Benitoite/Surface/Typing.lean:1037` `HasClauses` (abbrev): handler_removal; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:1046` `Def.WellTyped` (def): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:1052` `ImplDecl.WellTyped` (def): row_substitution; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:1087` `askDecl` (def): operation_signature; 言明: operation_signature
+- `formal/Benitoite/Surface/WellFormed.lean:32` `Expr.Scoped` (def): type_effect_representation; 言明: type_effect_representation
+- `formal/Benitoite/Surface/WellFormed.lean:137` `_root_.Benitoite.Release.OpDecl.DictionaryScoped` (def): operation_signature; 言明: operation_signature

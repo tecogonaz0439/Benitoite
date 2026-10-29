@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.Json
+
+function main() -> Unit uses Console.Write
+  bind value <- Json.Value.Object(Map.fromList([
+    Pair("name", Json.Value.String("benitoite")),
+    Pair("tags", Json.Value.Array([Json.Value.String("script"), Json.Value.String("typed")])),
+    Pair("stars", Json.Value.Integer(42)),
+    Pair("archived", Json.Value.Boolean(false)),
+    Pair("license", Json.Value.Null)
+  ]))
+  return Console.writeLine(Json.stringify(value))
+end function

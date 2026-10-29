@@ -1,0 +1,16 @@
+--- port 18411
+GET /h_upper HTTP/1.1
+content-length: 0
+user-agent: ureq/3.4.2
+accept: */*
+host: 127.0.0.1:18411
+
+
+--- port 18411
+GET /h_zero HTTP/1.1
+content-length: 0
+user-agent: ureq/3.4.2
+accept: */*
+host: 127.0.0.1:0018411
+
+

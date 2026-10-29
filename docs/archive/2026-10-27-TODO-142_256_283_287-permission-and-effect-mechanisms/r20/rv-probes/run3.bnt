@@ -1,0 +1,35 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Trait
+function one(url: String) -> Unit uses Console.Write
+ bind req <- Http.clientRequest(method: "GET", url: url)
+ bind a: Result[Http.RequestIn["*.example.com", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "*.example.com", minimumPort: 443, maximumPort: 443, request: req)
+ match a with
+ case Result.Ok(v) ->
+  bind s <- Http.requestInValue(request: v)
+  Console.writeLine("ok ${url} -> ${Http.ClientRequest.url(s)}")
+ case Result.Error(Http.RequestCheckError.InvalidUrl(m)) -> Console.writeLine("errurl ${url} ${m}")
+ case Result.Error(Http.RequestCheckError.Scope(e)) -> Console.writeLine("errscope ${url} ${Trait.Show.show(e)}")
+ end match
+end function
+function main() -> Unit uses Console.Write
+ one(url: "https://api.example.com/x")
+ one(url: "https://api.example.com@evil.com/")
+ one(url: "https://evil.com#@api.example.com")
+ one(url: "https://evil.com\\@api.example.com/")
+ one(url: "https://api.example.com.evil.com/")
+ one(url: "https://API.EXAMPLE.COM./")
+ one(url: "https://api.example.com:443/")
+ one(url: "https://api.example.com:0443/")
+ one(url: "http://api.example.com:443/")
+ one(url: "https://api.example.com:80/")
+ one(url: "HTTPS://api.example.com/")
+ one(url: "https://ap%69.example.com/")
+ one(url: "https://xn--80ak6aa92e.example.com/")
+ one(url: "https://аpi.example.com/")
+ one(url: " https://api.example.com/")
+ one(url: "https://api.example.com\t/")
+ one(url: "https:api.example.com/")
+ one(url: "https:/api.example.com/")
+ one(url: "https://user:pw@api.example.com/")
+end function

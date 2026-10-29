@@ -1,0 +1,29 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.14s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 1 test
+
+thread 'unannotated_checks_use_top_when_projection_or_join_requires_it' (4976343) panicked at crates/benitoite/tests/scoped_calls.rs:108:5:
+alias: import Benitoite.Unofficial.Scope
+function sample(path: String) -> String
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ return match checked with
+ case Result.Ok(value) ->
+  bind alias <- value
+  Scope.pathInValue(path: alias)
+ case Result.Error(_) -> "error"
+ end match
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0519), message: "effect `Scope.pathInValue` is not covered by one surrounding atom (unknownSource)", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(219), end: BytePos(236) }, text: "`Scope.pathInValue` is not covered by `the required scope contract`" }), secondary: [], notes: ["the range arguments of this direct call must cover the ranges selected by the local Scope rule", "scope call: .sample at surface preorder 8"], helps: [Help { message: "the range arguments of this direct call must cover the ranges selected by the local Scope rule", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test unannotated_checks_use_top_when_projection_or_join_requires_it ... FAILED
+
+failures:
+
+failures:
+    unannotated_checks_use_top_when_projection_or_join_requires_it
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p benitoite --test scoped_calls`

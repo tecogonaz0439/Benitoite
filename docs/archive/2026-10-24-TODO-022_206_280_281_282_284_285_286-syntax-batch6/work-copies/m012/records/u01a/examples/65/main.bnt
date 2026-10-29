@@ -1,0 +1,5 @@
+@test
+function formatRecordExample() -> Unit uses Assert.Check
+  bind record <- Log.Record(level: Log.Level.Debug, message: "done\n\"ok\"", attributes: [Log.attribute(key: "tag", value: "first"), Log.attribute(key: "tag", value: true)], location: SourceLocation.Location(file: "app/Main.bnt", line: 12, column: 3))
+  Assert.equal(actual: Log.formatRecord(record: record), expected: "level=DEBUG source=\"app/Main.bnt:12:3\" message=\"done\\n\\\"ok\\\"\" attr.\"tag\"=\"first\" attr.\"tag\"=true")
+end function

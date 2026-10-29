@@ -1,0 +1,9 @@
+runtime error[R0102]: integer overflow
+  --> work/m012/scratch/interval-analysis/local-overflow.bnt:3:13
+   |
+ 3 |   bind y <- x + 1
+   |             ^^^^^
+   |
+   = note: call trace (innermost first):
+             main
+   = note: functions left by tail calls are not shown

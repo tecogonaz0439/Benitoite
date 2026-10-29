@@ -42,7 +42,7 @@ impl IntKind {
 
     /// Byte と型引数を持つ型を除き、解決済みの型だけを認定する。
     pub fn of_type(ty: &Ty) -> Option<Self> {
-        let Ty::Con(TyCon::Builtin(id), args) = ty else {
+        let Ty::Con(TyCon::Builtin(id), args, _) = ty else {
             return None;
         };
         if !args.is_empty() {

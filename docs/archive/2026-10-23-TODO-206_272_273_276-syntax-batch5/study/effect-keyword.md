@@ -238,7 +238,7 @@ effects をなお採る選択肢は、欄名の位置でキーワードを許す
 
 ### 7.2 8入力での適用しない移行の試行
 
-`work/m011/scratch/rs3-keyword-dry-run.py` は `source_extract.snippets` と `source_migrate.proposed` を使い、手で選んだ testdata の8入力・15箇所の注釈について、uses を with・can・effects に置換したバイト列をメモリ上で作る。入力には関数・ラムダ・関数型と整形用の例を含む。各入力の SHA-256、編集数、既存診断JSONの位置を移した結果は、同じディレクトリの `rs3-keyword-dry-run.json` に残る。2026-10-23 に `python3 -B work/m011/scratch/rs3-keyword-dry-run.py` で再実行し、終了0、8入力の元のバイト列が変わっていないことも確認した。スクリプト内部の経過時間は約0.002秒である。
+[rs3-keyword-dry-run.py](../work-copies/m011/scratch/rs3-keyword-dry-run.py) は `source_extract.snippets` と `source_migrate.proposed` を使い、手で選んだ testdata の8入力・15箇所の注釈について、uses を with・can・effects に置換したバイト列をメモリ上で作る。入力には関数・ラムダ・関数型と整形用の例を含む。各入力の SHA-256、編集数、既存診断JSONの位置を移した結果は、同じディレクトリの `rs3-keyword-dry-run.json` に残る。2026-10-23 に [python3 -B rs3-keyword-dry-run.py](../work-copies/m011/scratch/rs3-keyword-dry-run.py) で再実行し、終了0、8入力の元のバイト列が変わっていないことも確認した。スクリプト内部の経過時間は約0.002秒である。
 
 | 置換先 | 一箇所あたりのバイト数の差 | 既存JSONの14位置のうち列が変わる数 | バイト位置が変わる数 |
 |---|---:|---:|---:|
@@ -300,4 +300,4 @@ effects をなお採る選択肢は、欄名の位置でキーワードを許す
 | 新語 | 全域／文脈だけ | 全域を推す。内部の KwUses を保ち、正常な注釈の解析・改行の分担を維持できる | 新語の名前としての使用を断る。文脈案の追加費用は不明。Lean は同じ |
 | 旧 uses | 一版は診断用キーワード／今回から識別子／旧注釈を受理 | 一版残し、旧注釈を拒否して安全な編集を示す案を推す。原則4・5に従い成功する表記を一つに保つ | その版では uses を名前にできず、01-01の期限付きの例外を要する。解除する版を明記。すぐ識別子へ戻す案の追加費用は不明 |
 
-今回の仕上げでは、RS3の8指摘、途中までの修正、既存の試行を照合し、字句・改行・整形・生成器・Leanの該当箇所と、Nim・Ante・Delphi等の一次資料を確認した。変更した文書は本書、[設計者への問い](effect-keyword-questions.md)、[指摘への対応記録](../reviews/RS3-response.md)である。試行と確認用の書き込みは `work/m011/scratch/` に限った。ビルド、テスト、ベンチマーク、LLM評価、ソースの変更、gitのadd・commit・branchは行っていない。
+今回の仕上げでは、RS3の8指摘、途中までの修正、既存の試行を照合し、字句・改行・整形・生成器・Leanの該当箇所と、Nim・Ante・Delphi等の一次資料を確認した。変更した文書は本書、[設計者への問い](effect-keyword-questions.md)、[指摘への対応記録](../reviews/RS3-response.md)である。試行と確認用の書き込みは [当時の作業用領域の対応表](../work-copies/README.md#分類と元の対応) に限った。ビルド、テスト、ベンチマーク、LLM評価、ソースの変更、gitのadd・commit・branchは行っていない。

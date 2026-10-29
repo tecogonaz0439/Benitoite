@@ -8,9 +8,16 @@
 //! 実装の中の関数は実装の制約を先に、関数自身の制約を後に並べる。
 
 pub mod builtin;
+pub mod scope;
+pub mod signature;
 
 mod text {
     pub const EXCLUDES_FAILURE: &str = "excludes Failure.Fail";
+
+    /// 標準署名の内部表示であり、利用者の範囲引数の構文ではない。
+    pub fn range_variable(index: u32) -> String {
+        format!("[rvar {index}]")
+    }
 }
 
 use crate::base::{BindingId, BindingMap, Decimal, ModuleId, NodeId, Span};
@@ -36,13 +43,58 @@ pub enum TyHead {
     Param(u32),
 }
 
-/// エフェクトの名前（02-05「型とエフェクトの表現」）。
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+/// 名前と範囲の位置を持つエフェクトの原子（02-05「型とエフェクトの表現」）。
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum EffectName {
     /// 組み込みのエフェクト（`State`、`Console.Write` など）
-    Builtin(BuiltinEffectId),
+    Builtin(BuiltinEffectId, builtin::RangeIndex),
     /// 利用者が宣言したエフェクト。宣言の束縛の番号で指す
-    User(BindingId),
+    User(BindingId, builtin::RangeIndex),
+}
+
+impl EffectName {
+    /// 同じ名前の一原子の範囲で `other` を覆う。構造等号には使わない。
+    pub fn covers(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Builtin(a, r), Self::Builtin(b, s)) => a == b && r.covers(s),
+            (Self::User(a, r), Self::User(b, s)) => a == b && r.covers(s),
+            _ => false,
+        }
+    }
+
+    /// 閉じた原子の範囲。標準署名の範囲変数なら値を返さない。
+    pub fn range(&self) -> Option<&scope::Range> {
+        self.index().range()
+    }
+
+    /// 名前の原子が持つ範囲の位置。比較は名前と添字の両方を使う。
+    pub fn index(&self) -> &builtin::RangeIndex {
+        match self {
+            Self::Builtin(_, index) | Self::User(_, index) => index,
+        }
+    }
+
+    /// 署名の内部だけに範囲変数を許し、非 Top の固定範囲は認定した名前と種類を照合する。
+    pub fn indices_valid(&self, count: u32) -> bool {
+        self.index().vars_in(count)
+            && match self {
+                Self::Builtin(id, ix) => match (id.scope_kind(), ix.range()) {
+                    (_, Some(scope::Range::Top)) => true,
+                    (Some(kind), Some(range)) => range.fits_kind(kind),
+                    (Some(_), None) => true,
+                    (None, _) => false,
+                },
+                Self::User(_, ix) => ix == &builtin::RangeIndex::TOP,
+            }
+    }
+
+    /// 型と同じ列で原子の側の範囲変数も具体化する。不足する番号は保持する。
+    pub fn instantiate_ranges(&self, ranges: &[scope::Range]) -> Self {
+        match self {
+            Self::Builtin(id, ix) => Self::Builtin(*id, ix.instantiate(ranges)),
+            Self::User(id, ix) => Self::User(*id, ix.instantiate(ranges)),
+        }
+    }
 }
 
 /// エフェクト変数。定義の中の番号（`types` のモジュールの説明）。
@@ -113,12 +165,22 @@ impl EffectSet {
             out.insert_failure(ty.clone());
         }
         for n in &other.names {
-            out.insert_name(*n);
+            out.insert_name(n.clone());
         }
         for v in &other.vars {
             out.insert_var(*v);
         }
         out
+    }
+
+    /// `other` の各原子を self の一原子で覆う。Fail と行は構造の所属を使う。
+    pub fn covers(&self, other: &EffectSet) -> bool {
+        other
+            .names
+            .iter()
+            .all(|n| self.names.iter().any(|outer| outer.covers(n)))
+            && other.vars.iter().all(|v| self.vars.contains(v))
+            && other.failures.iter().all(|ty| self.failures.contains(ty))
     }
 
     /// self ⊆ other
@@ -135,10 +197,11 @@ impl EffectSet {
     }
 }
 
-/// 型検査を終えた後の型。
+/// 型と標準署名の内部表現。確定したプログラムの添字に範囲変数は置かない。
 #[derive(Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
 pub enum Ty {
-    Con(TyCon, Vec<Ty>),
+    /// 型構成子・型引数・不変の添字。既存の型も明示の Top を持つ。
+    Con(TyCon, Vec<Ty>, builtin::RangeIndex),
     Fn(Box<FnTy>),
     /// 型パラメータ（値の型を表すもの）
     Param(u32),
@@ -259,7 +322,7 @@ impl Scheme {
                     pending.push(&f.ret);
                     pending.extend(&f.effects.failures);
                 }
-                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
+                Ty::Con(_, ts, _) | Ty::App(_, ts) => pending.extend(ts),
                 Ty::Param(_) | Ty::Rigid { .. } => {}
             }
         }
@@ -560,13 +623,84 @@ impl TySet {
 }
 
 impl Ty {
+    /// 型と Fail 内部の添字を検査する。資源・基本型・データ型・外部型の添字は Top に限る。
+    /// 範囲変数を許すのは標準署名の宣言した個数の内側だけである。
+    pub fn indices_valid(&self, range_count: u32) -> bool {
+        let mut pending = vec![self];
+        while let Some(ty) = pending.pop() {
+            match ty {
+                Ty::Con(con, args, ix) => {
+                    if !ix.vars_in(range_count)
+                        || (ix != &builtin::RangeIndex::TOP
+                            && !matches!(con, TyCon::Builtin(id)
+                                if id.value_kind().is_some_and(|kind|
+                                    ix.range().is_none_or(|range| range.fits_kind(kind)))))
+                    {
+                        return false;
+                    }
+                    pending.extend(args);
+                }
+                Ty::Fn(f) => {
+                    if !f
+                        .effects
+                        .names
+                        .iter()
+                        .all(|atom| atom.indices_valid(range_count))
+                    {
+                        return false;
+                    }
+                    pending.extend(&f.params);
+                    pending.push(&f.ret);
+                    pending.extend(&f.effects.failures);
+                }
+                Ty::App(_, args) => pending.extend(args),
+                Ty::Param(_) | Ty::Rigid { .. } => {}
+            }
+        }
+        true
+    }
+
+    /// 標準署名内の型の範囲変数を具体化する。型／行の代入とは独立であり、
+    /// 不足する番号を Top に変えない。確定型への接続では `indices_valid(0)` が必要である。
+    pub fn instantiate_ranges(&self, ranges: &[scope::Range]) -> Ty {
+        match self {
+            Ty::Con(con, args, ix) => Ty::Con(
+                *con,
+                args.iter().map(|t| t.instantiate_ranges(ranges)).collect(),
+                ix.instantiate(ranges),
+            ),
+            Ty::App(i, args) => Ty::App(
+                *i,
+                args.iter().map(|t| t.instantiate_ranges(ranges)).collect(),
+            ),
+            Ty::Fn(f) => {
+                let effects = f.effects.instantiate_ranges(ranges);
+                Ty::Fn(Box::new(FnTy {
+                    param_names: f.param_names.clone(),
+                    params: f
+                        .params
+                        .iter()
+                        .map(|t| t.instantiate_ranges(ranges))
+                        .collect(),
+                    ret: f.ret.instantiate_ranges(ranges),
+                    effects,
+                }))
+            }
+            Ty::Param(_) | Ty::Rigid { .. } => self.clone(),
+        }
+    }
+
     /// 型パラメータを `tys` で、エフェクト変数を `effs` で置き換える（`Ty::App(i, args)` の i が
-    /// `TypeArg::Head(TyHead::Con(c))` に置き換わるときは `Ty::Con(c, args)` にする）。
+    /// `TypeArg::Head(TyHead::Con(c))` に置き換わるときは `Ty::Con(c, args, RangeIndex::TOP)` にする）。
     /// `tys`・`effs` にない番号はそのまま残す。`Ty::Rigid` は置き換えない。
     pub fn subst(&self, tys: &[TypeArg], effs: &[EffectSet]) -> Ty {
         let arg = |i: u32| usize::try_from(i).ok().and_then(|i| tys.get(i));
         match self {
-            Ty::Con(con, args) => Ty::Con(*con, args.iter().map(|t| t.subst(tys, effs)).collect()),
+            Ty::Con(con, args, ix) => Ty::Con(
+                *con,
+                args.iter().map(|t| t.subst(tys, effs)).collect(),
+                ix.clone(),
+            ),
             Ty::Fn(f) => Ty::Fn(Box::new(FnTy {
                 param_names: f.param_names.clone(),
                 params: f.params.iter().map(|t| t.subst(tys, effs)).collect(),
@@ -581,7 +715,9 @@ impl Ty {
             Ty::App(i, args) => {
                 let args = args.iter().map(|t| t.subst(tys, effs)).collect();
                 match arg(*i) {
-                    Some(TypeArg::Head(TyHead::Con(con))) => Ty::Con(*con, args),
+                    Some(TypeArg::Head(TyHead::Con(con))) => {
+                        Ty::Con(*con, args, crate::types::builtin::RangeIndex::TOP)
+                    }
                     Some(TypeArg::Head(TyHead::Param(j))) => Ty::App(*j, args),
                     Some(TypeArg::Ty(_)) | None => Ty::App(*i, args),
                 }
@@ -602,7 +738,7 @@ impl Ty {
                     pending.push(&f.ret);
                     pending.extend(&f.effects.failures);
                 }
-                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
+                Ty::Con(_, ts, _) | Ty::App(_, ts) => pending.extend(ts),
                 Ty::Param(_) | Ty::Rigid { .. } => {}
             }
         }
@@ -623,7 +759,7 @@ impl Ty {
                     pending.push(&f.ret);
                     pending.extend(&f.effects.failures);
                 }
-                Ty::Con(_, ts) | Ty::App(_, ts) => pending.extend(ts),
+                Ty::Con(_, ts, _) | Ty::App(_, ts) => pending.extend(ts),
                 Ty::Param(_) | Ty::Rigid { .. } => {}
             }
         }
@@ -648,6 +784,28 @@ impl Ty {
 }
 
 impl EffectSet {
+    /// 原子と Fail の型の範囲変数を検査する。行の変数は別の名前空間である。
+    pub fn indices_valid(&self, count: u32) -> bool {
+        self.names.iter().all(|atom| atom.indices_valid(count))
+            && self.failures.iter().all(|ty| ty.indices_valid(count))
+    }
+
+    /// 型と原子の範囲変数を同じ列で具体化し、構造上の整列と重複除去を保つ。
+    pub fn instantiate_ranges(&self, ranges: &[scope::Range]) -> Self {
+        let mut out = Self {
+            failures: vec![],
+            names: vec![],
+            vars: self.vars.clone(),
+        };
+        for atom in &self.names {
+            out.insert_name(atom.instantiate_ranges(ranges));
+        }
+        for ty in &self.failures {
+            out.insert_failure(ty.instantiate_ranges(ranges));
+        }
+        out
+    }
+
     /// エフェクト変数を集合で置き換える（01-12「構文」の `ε[E/ρ]`）。`effs` にない変数はそのまま残す。
     pub fn subst(&self, effs: &[EffectSet]) -> EffectSet {
         self.subst_types(&[], effs)
@@ -710,7 +868,7 @@ fn show_ty(
     out: &mut String,
 ) {
     match ty {
-        Ty::Con(con, args) => {
+        Ty::Con(con, args, ix) => {
             if let Some(name) = qualified.get(con) {
                 out.push_str(name);
             } else {
@@ -739,6 +897,7 @@ fn show_ty(
                 }
             }
             show_args(args, names, qualified, out);
+            out.push_str(&ix.suffix());
         }
         Ty::Param(i) => out.push_str(param_name(*i, names.type_params)),
         Ty::App(i, args) => {
@@ -767,9 +926,10 @@ fn show_ty(
                     .filter(|(_, d)| d.in_io_all)
                     .all(|(i, _)| {
                         u16::try_from(i).ok().is_some_and(|i| {
-                            f.effects
-                                .names
-                                .contains(&EffectName::Builtin(BuiltinEffectId(i)))
+                            f.effects.names.contains(&EffectName::Builtin(
+                                BuiltinEffectId(i),
+                                builtin::RangeIndex::TOP,
+                            ))
                         })
                     });
                 if io_all {
@@ -777,20 +937,20 @@ fn show_ty(
                 }
                 for name in &f.effects.names {
                     if io_all
-                        && matches!(name, EffectName::Builtin(id) if id.def().is_some_and(|d| d.in_io_all))
+                        && matches!(name, EffectName::Builtin(id, ix) if ix == &builtin::RangeIndex::TOP && id.def().is_some_and(|d| d.in_io_all))
                     {
                         continue;
                     }
                     let text = match name {
-                        EffectName::Builtin(id) => {
+                        EffectName::Builtin(id, _) => {
                             builtin::effect_name(*id).unwrap_or_else(|| "_".into())
                         }
-                        EffectName::User(id) => names
+                        EffectName::User(id, _) => names
                             .effects
                             .get(*id)
                             .map_or_else(|| "_".into(), |d| d.display_name.clone()),
                     };
-                    effects.push(text);
+                    effects.push(format!("{text}{}", name.index().suffix()));
                 }
                 for ty in &f.effects.failures {
                     effects.push(format!(
@@ -846,7 +1006,11 @@ mod tests {
     use super::*;
 
     fn integer() -> Ty {
-        Ty::Con(TyCon::Builtin(BuiltinTypeId::INTEGER), vec![])
+        Ty::Con(
+            TyCon::Builtin(BuiltinTypeId::INTEGER),
+            vec![],
+            crate::types::builtin::RangeIndex::TOP,
+        )
     }
 
     #[test]
@@ -874,10 +1038,19 @@ mod tests {
             (BuiltinTypeId::UNSIGNED_INTEGER32, "UnsignedInteger32"),
             (BuiltinTypeId::FLOAT32, "Float32"),
         ] {
-            let ty = Ty::Con(TyCon::Builtin(ty), vec![]);
+            let ty = Ty::Con(
+                TyCon::Builtin(ty),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP,
+            );
             assert_eq!(ty.show(&names), expected);
             assert_eq!(
-                Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![ty]).show(&names),
+                Ty::Con(
+                    TyCon::Builtin(BuiltinTypeId::LIST),
+                    vec![ty],
+                    crate::types::builtin::RangeIndex::TOP
+                )
+                .show(&names),
                 format!("List[{expected}]")
             );
         }
@@ -886,7 +1059,10 @@ mod tests {
     #[test]
     fn function_type_display_groups_all_io_effects_and_keeps_other_effects() {
         let mut effects = io_all_for_display();
-        effects.insert_name(EffectName::Builtin(BuiltinEffectId(12)));
+        effects.insert_name(EffectName::Builtin(
+            BuiltinEffectId::HTTP_CONNECT,
+            builtin::RangeIndex::TOP,
+        ));
         effects.insert_var(EffVar(0));
         assert_eq!(
             show_effects(effects),
@@ -911,7 +1087,12 @@ mod tests {
                 .iter()
                 .enumerate()
                 .filter(|(_, d)| d.in_io_all)
-                .map(|(i, _)| EffectName::Builtin(BuiltinEffectId(u16::try_from(i).unwrap())))
+                .map(|(i, _)| {
+                    EffectName::Builtin(
+                        BuiltinEffectId(u16::try_from(i).unwrap()),
+                        builtin::RangeIndex::TOP,
+                    )
+                })
                 .collect(),
             vars: vec![],
         }
@@ -933,24 +1114,231 @@ mod tests {
         })
     }
 
+    // 関門: 公開の集合で名前と範囲の組を区別し、被覆による削除を捕まえる。
+    // 旧テストはTopしか持たず、この退行を検出できない。差し込み口は加えない。
+    #[test]
+    fn scoped_effect_sets_preserve_structural_identity() {
+        use scope::{PathPattern, Range};
+        use std::collections::{BTreeSet, HashSet};
+        let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
+        for user in [false, true] {
+            let atom = |range| {
+                if user {
+                    EffectName::User(BindingId(42), builtin::RangeIndex::fixed(range))
+                } else {
+                    EffectName::Builtin(read, builtin::RangeIndex::fixed(range))
+                }
+            };
+            let atoms = [
+                atom(Range::Top),
+                atom(Range::Path(PathPattern::parse("/data/**").unwrap())),
+                atom(Range::Path(PathPattern::parse("/data/input").unwrap())),
+            ];
+            assert_eq!(atoms.iter().cloned().collect::<HashSet<_>>().len(), 3);
+            assert_eq!(atoms.iter().cloned().collect::<BTreeSet<_>>().len(), 3);
+            let mut combined = EffectSet::empty();
+            for (i, a) in atoms.iter().enumerate() {
+                let mut single = EffectSet::empty();
+                single.insert_name(a.clone());
+                combined = combined.union(&single);
+                single.insert_name(a.clone());
+                assert_eq!(single.names.len(), 1);
+                for (j, b) in atoms.iter().enumerate() {
+                    let mut other = EffectSet::empty();
+                    other.insert_name(b.clone());
+                    assert_eq!(single.is_subset(&other), a == b);
+                    let expected = [
+                        [true, true, true],
+                        [false, true, true],
+                        [false, false, true],
+                    ];
+                    assert_eq!(
+                        Some(single.covers(&other)),
+                        expected.get(i).and_then(|row| row.get(j)).copied()
+                    );
+                }
+            }
+            assert_eq!(combined.names.len(), 3);
+            assert!(atoms.iter().all(|a| combined.names.contains(a)));
+            assert!(
+                combined
+                    .names
+                    .windows(2)
+                    .all(|pair| { matches!(pair, [a, b] if a < b) })
+            );
+        }
+    }
+
+    // 関門: Failの中の関数型と行の像に範囲を残す。Topだけの同時置換の
+    // テストでは、名前だけを複写する退行を検出できない。公開の置換を使う。
+    #[test]
+    fn scoped_effects_survive_rows_and_types_inside_failures() {
+        use scope::{PathPattern, Range};
+        let value = Ty::Con(
+            TyCon::Builtin(BuiltinTypeId::PATH_IN),
+            vec![],
+            builtin::RangeIndex::fixed(Range::Path(PathPattern::parse("/data/input").unwrap())),
+        );
+        let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
+        let atom = EffectName::Builtin(
+            read,
+            builtin::RangeIndex::fixed(Range::Path(PathPattern::parse("/data/**").unwrap())),
+        );
+        let mut image = EffectSet::empty();
+        image.insert_name(atom.clone());
+        let mut row = EffectSet::empty();
+        row.insert_var(EffVar(0));
+        let nested = Ty::Fn(Box::new(FnTy {
+            param_names: vec!["value".into()],
+            params: vec![Ty::Param(0)],
+            ret: Ty::Param(0),
+            effects: row.clone(),
+        }));
+        row.insert_failure(nested);
+        row.insert_failure(value.clone());
+        let result = row.subst_types(&[TypeArg::Ty(value.clone())], &[image.clone()]);
+        let expected = Ty::Fn(Box::new(FnTy {
+            param_names: vec!["value".into()],
+            params: vec![value.clone()],
+            ret: value.clone(),
+            effects: image,
+        }));
+        assert_eq!(result.names, [atom]);
+        assert!(result.vars.is_empty());
+        assert_eq!(result.failures.len(), 2);
+        assert!(result.failures.contains(&expected));
+        assert!(result.failures.contains(&value));
+    }
+
+    // 関門: 公開の型表示が非Topを省略せず、IO.Allで隠さないことを守る。
+    // 既存のIO.AllのテストはTopだけなので、範囲付き原子の消失は分からない。
+    #[test]
+    fn scoped_effect_display_keeps_ranges_beside_io_all() {
+        use scope::{EndpointPattern, HostPattern, PathPattern, Port, PortRange, Range};
+        let read = builtin::find_builtin_effect(&["IO", "File"], "Read").unwrap();
+        let connect = builtin::find_builtin_effect(&["Network", "Http"], "Connect").unwrap();
+        let mut effects = io_all_for_display();
+        effects.insert_name(EffectName::Builtin(
+            read,
+            builtin::RangeIndex::fixed(Range::Path(PathPattern::parse("/data/**").unwrap())),
+        ));
+        for (lo, hi, expected) in [(443, 443, "443"), (443, 445, "443..445")] {
+            let mut effects = effects.clone();
+            effects.insert_name(EffectName::Builtin(
+                connect,
+                builtin::RangeIndex::fixed(Range::Endpoint(EndpointPattern {
+                    host: HostPattern::parse("**.example.com").unwrap(),
+                    ports: PortRange::new(Port::new(lo), Port::new(hi)).unwrap(),
+                })),
+            ));
+            assert_eq!(
+                show_effects(effects),
+                format!(
+                    "function() -> Integer uses IO.All, File.Read[\"/data/**\"], Http.Connect[\"**.example.com\", {expected}]"
+                )
+            );
+        }
+    }
+
+    // 関門: Topだけの既存テストでは、添字を消す等号・hash・表示・具体化を検出できない。
+    // 公開の型APIを使い、広い範囲と狭い範囲も別の型として残す。差し込み口は加えない。
+    #[test]
+    fn indexed_type_identity_display_and_signature_instantiation() {
+        use builtin::RangeIndex;
+        use scope::{PathPattern, Range};
+        use std::collections::{BTreeSet, HashSet};
+        let wide = Range::Path(PathPattern::parse("/data/**").unwrap());
+        let narrow = Range::Path(PathPattern::parse("/data/input").unwrap());
+        let ty = |ix| Ty::Con(TyCon::Builtin(BuiltinTypeId::PATH_IN), vec![], ix);
+        let bindings = BindingMap::default();
+        let effects = BindingMap::default();
+        let adts = AdtTable::default();
+        let names = TyNames {
+            bindings: &bindings,
+            effects: &effects,
+            adts: &adts,
+            type_params: &[],
+            effect_params: &[],
+        };
+        let cases = [
+            (RangeIndex::TOP, "Scope.PathIn"),
+            (
+                RangeIndex::fixed(wide.clone()),
+                "Scope.PathIn[\"/data/**\"]",
+            ),
+            (
+                RangeIndex::fixed(narrow.clone()),
+                "Scope.PathIn[\"/data/input\"]",
+            ),
+            (RangeIndex::var(0), "Scope.PathIn[rvar 0]"),
+            (RangeIndex::var(1), "Scope.PathIn[rvar 1]"),
+        ];
+        let mut types = Vec::new();
+        for (ix, expected) in cases {
+            let t = ty(ix);
+            assert_eq!(t.show(&names), expected);
+            assert_eq!(t.subst(&[], &[]), t);
+            types.push(t);
+        }
+        assert_eq!(types.iter().collect::<HashSet<_>>().len(), 5);
+        assert_eq!(types.iter().collect::<BTreeSet<_>>().len(), 5);
+        let signature = ty(RangeIndex::var(0));
+        assert!(!signature.indices_valid(0));
+        assert!(signature.indices_valid(1));
+        assert_eq!(signature.instantiate_ranges(&[]), signature);
+        let closed = signature.instantiate_ranges(std::slice::from_ref(&narrow));
+        assert_eq!(closed, ty(RangeIndex::fixed(narrow)));
+        assert!(closed.indices_valid(0));
+        assert_eq!(
+            closed.instantiate_ranges(std::slice::from_ref(&wide)),
+            closed
+        );
+        let reader = builtin::find_builtin_type(&["IO", "File"], "Reader").unwrap();
+        for ix in [RangeIndex::fixed(wide), RangeIndex::var(0)] {
+            assert!(!Ty::Con(TyCon::Builtin(reader), vec![], ix).indices_valid(1));
+        }
+        let mut failures = EffectSet::empty();
+        failures.insert_failure(signature.clone());
+        let nested = Ty::Fn(Box::new(FnTy {
+            param_names: vec!["value".into()],
+            params: vec![signature.clone()],
+            ret: signature,
+            effects: failures,
+        }));
+        assert!(!nested.indices_valid(0));
+        let instantiated = nested.instantiate_ranges(&[Range::Top]);
+        assert!(instantiated.indices_valid(0));
+        let mut expected_effects = EffectSet::empty();
+        expected_effects.insert_failure(ty(RangeIndex::TOP));
+        assert_eq!(
+            instantiated,
+            Ty::Fn(Box::new(FnTy {
+                param_names: vec!["value".into()],
+                params: vec![ty(RangeIndex::TOP)],
+                ret: ty(RangeIndex::TOP),
+                effects: expected_effects,
+            }))
+        );
+    }
+
     #[test]
     fn substitution_is_simultaneous_and_preserves_unbound_parameters() {
-        let console = EffectName::Builtin(BuiltinEffectId(2));
-        let state = EffectName::Builtin(BuiltinEffectId::STATE);
+        let console = EffectName::Builtin(BuiltinEffectId(2), builtin::RangeIndex::TOP);
+        let state = EffectName::Builtin(BuiltinEffectId::STATE, builtin::RangeIndex::TOP);
         let effects = EffectSet {
             failures: vec![],
-            names: vec![state],
+            names: vec![state.clone()],
             vars: vec![EffVar(0), EffVar(1), EffVar(3)],
         };
         let effs = vec![
             EffectSet {
                 failures: vec![],
-                names: vec![console],
+                names: vec![console.clone()],
                 vars: vec![EffVar(1)],
             },
             EffectSet {
                 failures: vec![],
-                names: vec![state],
+                names: vec![state.clone()],
                 vars: vec![EffVar(2)],
             },
         ];
@@ -978,7 +1366,11 @@ mod tests {
         for (head, applied) in [
             (
                 TyHead::Con(TyCon::Builtin(BuiltinTypeId::LIST)),
-                Ty::Con(TyCon::Builtin(BuiltinTypeId::LIST), vec![integer()]),
+                Ty::Con(
+                    TyCon::Builtin(BuiltinTypeId::LIST),
+                    vec![integer()],
+                    crate::types::builtin::RangeIndex::TOP,
+                ),
             ),
             (TyHead::Param(7), Ty::App(7, vec![integer()])),
         ] {
@@ -1061,6 +1453,7 @@ mod tests {
                     fields: vec![Ty::Con(
                         TyCon::Builtin(BuiltinTypeId::LIST),
                         vec![Ty::Param(0)],
+                        crate::types::builtin::RangeIndex::TOP,
                     )],
                 }],
                 record: None,
@@ -1073,7 +1466,8 @@ mod tests {
             table.field_types(binding, 0, &[integer()]),
             Some(vec![Ty::Con(
                 TyCon::Builtin(BuiltinTypeId::LIST),
-                vec![integer()]
+                vec![integer()],
+                crate::types::builtin::RangeIndex::TOP
             )])
         );
         assert!(table.get(BindingId(99)).is_none());

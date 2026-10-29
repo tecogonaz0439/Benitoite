@@ -1,0 +1,74 @@
+{
+  "recordedAt": "2026-10-29T09:58:33Z",
+  "scope": "資源停止の操作名、E0407 の案内、全操作と不足節の CLI 照合",
+  "runs": [
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostic_fields_and_effect_repairs_reach_cli -- --exact scoped_diagnostics::scoped_diagnostic_fields_and_effect_repairs_reach_cli",
+      "exitCode": 101,
+      "state": "本番の修正前",
+      "testSeconds": 0.33,
+      "observed": "path-widen-wrong-result は E0407、helps[0].message は add a type annotation。existing annotation を含む案内を要求した検査が失敗した。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics::scoped_file_input_limit_reports_the_called_operation -- --exact",
+      "exitCode": 101,
+      "state": "本番の修正前・テストの初回",
+      "testSeconds": 1.18,
+      "observed": "テストが終了5と誤って仮定したため、実際の終了1との比較で失敗。診断は R0903、主文は `Benitoite.IO.File.readBytes` read more than the limit of 1073741824 bytes。",
+      "correction": "資源停止の終了状態の期待を既存 CLI の契約である1へ修正した。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics::scoped_file_input_limit_reports_the_called_operation -- --exact",
+      "exitCode": 101,
+      "state": "本番の修正前・終了状態の期待を修正後",
+      "testSeconds": 2.74,
+      "observed": "R0903 の主文は `Benitoite.IO.File.readBytes` read more than the limit of 1073741824 bytes。`Benitoite.IO.File.readBytesIn` を要求した検査が意図した名前の差で失敗した。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics:: -- --nocapture",
+      "exitCode": 0,
+      "state": "本番の修正後・全操作表の追加前",
+      "testSeconds": 4.78,
+      "passed": 3,
+      "failed": 0,
+      "observed": "PathIn と RequestIn の誤った戻り注釈で E0407 の有用な案内を確認し、正しい検査済み型への修正で受理した。readBytesIn の資源停止の主文と終了1を確認した。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics::complete_handler_names_and_every_missing_clause_reach_reports_and_limits -- --exact",
+      "exitCode": 0,
+      "state": "本番の修正後・全操作表の追加後",
+      "testSeconds": 19.29,
+      "passed": 1,
+      "failed": 0,
+      "observed": "Read13・Write16・Connect2 の完全な全節3例は純粋である。各一節を抜いた31例は、その名前が通常と集約の expanded に残り、uses なしで E0501、名前の allow-effects で受理、空の allow-effects で E0512 となる。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics::complete_handler_names_and_every_missing_clause_reach_reports_and_limits -- --exact",
+      "exitCode": 101,
+      "state": "同じ全操作表を test へ拡張した初回",
+      "testSeconds": 1.87,
+      "observed": "test の成功時には要約の前に各テストの進捗行があるため、stdout 全体と要約だけを比較した検査が失敗した。",
+      "correction": "既存の進捗行を含め、末尾の 1 passed; 0 failed の要約を確かめる検査へ直した。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics::complete_handler_names_and_every_missing_clause_reach_reports_and_limits -- --exact",
+      "exitCode": 101,
+      "state": "test の成功時の進捗を考慮した後",
+      "testSeconds": 2.86,
+      "observed": "allow-effects 不足による test の非実行では stdout に 1 files not run の要約があるため、空を要求した検査が失敗した。E0512 と終了2は期待どおりであった。",
+      "correction": "run の stdout は空、test の stdout は非実行の要約を要求する形へ直した。本番の処理は変えていない。"
+    },
+    {
+      "command": "rtk cargo test -p benitoite --test cli_process scoped_diagnostics::complete_handler_names_and_every_missing_clause_reach_reports_and_limits -- --exact",
+      "exitCode": 0,
+      "state": "全操作表の通常・集約・test と名前による照合を接続後",
+      "testSeconds": 39.10,
+      "passed": 1,
+      "failed": 0,
+      "observed": "完全3例と各一節欠落31例について、通常 check と test --check の単一 JSON の個別 effects と aggregateEffects を独立した expanded/bounds の期待値で照合した。run と test で名前 allow-effects の成功、空指定による E0512 と終了2、完全な処理後の空指定の成功を確認した。File は pathTree /data、Connect は endpoint exact api.example:443 であり、完全な処理後の bounds は空である。"
+    }
+  ],
+  "timingNote": "testSeconds は Cargo のテスト実行器が示した値であり、外側の計時やビルド時間ではない。",
+  "resourceTestLimit": "readBytesIn の1 GiB+1の sparse file は metadata の検査で停止し、内容を読まない。readTextIn は共有開始関数から worker の出力と完了へ同じ報告名を渡す。readTextIn の InputTooLarge を1 GiB超の実入力で実行する検査は今回追加していない。",
+  "testGate": "観察するのは実 CLI の診断、JSON、終了、宣言上限と名前の照合である。既存の規則のテストは全欠落位置から所有契約・報告への接続を覆わない。本番専用の差し込み口や公開 API は増やしていない。既存のテストの削除はない。"
+}

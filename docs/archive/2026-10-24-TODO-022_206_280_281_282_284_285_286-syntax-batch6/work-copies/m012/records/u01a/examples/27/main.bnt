@@ -1,0 +1,4 @@
+function main() -> Unit
+  bind _ <- List.map(xs: [1, 2], f: lambda(x) return x * 2)
+  return ()
+end function

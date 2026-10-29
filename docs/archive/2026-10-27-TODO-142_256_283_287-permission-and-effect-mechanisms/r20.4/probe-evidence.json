@@ -1,0 +1,68 @@
+{
+  "start": {
+    "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+    "probe": "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+    "probe_sha256": "d83b67613fe82713118dfa308bfc5cfaa1e6b9bb9169a7cc26c7761cd42129bc",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+      "-o",
+      "<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/timing-probe",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending"
+    ],
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "d2df47e23ecae22342f4a3b76cd7c55a1e0f847d89c46735b952dbab7c2118c2",
+      "range_index": false,
+      "types_sha256": "a8d25a6452521157508223529c218d242e5bc5ed9601fa7f36ecf008d0510bf3",
+      "range_signatures": false,
+      "core_ir_sha256": "bb3fa3189542c88316cb707fa529e1d678865e02e705e0df10f2d4e5875798c1"
+    },
+    "reused": false,
+    "build_invocation_seconds": 72.235225541
+  },
+  "B_WORK": {
+    "commit": "f647757900b24b97e4bad25a7544905b0ef2b772",
+    "probe": "<wt>/target/bench/builds/f647757900b24b97e4bad25a7544905b0ef2b772-default/timing-probe",
+    "probe_sha256": "5cdd1a9df51238638ac038b2120028b9568e1d0e22c981e9ebf2b22489a1560c",
+    "probe_command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/f647757900b24b97e4bad25a7544905b0ef2b772-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/f647757900b24b97e4bad25a7544905b0ef2b772-default/release/deps",
+      "-o",
+      "<wt>/target/bench/builds/f647757900b24b97e4bad25a7544905b0ef2b772-default/timing-probe",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/f647757900b24b97e4bad25a7544905b0ef2b772-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending",
+      "--cfg",
+      "benitoite_range_index",
+      "--cfg",
+      "benitoite_range_signatures"
+    ],
+    "probe_api": {
+      "parser_pending": true,
+      "parser_sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726",
+      "range_index": true,
+      "types_sha256": "2ea25e082980a0fc4965f9d293442841147a256db0f8c557a7364be9ac5f42cb",
+      "range_signatures": true,
+      "core_ir_sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2"
+    },
+    "reused": true,
+    "build_invocation_seconds": 0.0127886670000521
+  }
+}

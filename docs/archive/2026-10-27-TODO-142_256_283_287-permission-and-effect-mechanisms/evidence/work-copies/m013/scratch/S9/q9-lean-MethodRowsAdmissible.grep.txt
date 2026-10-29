@@ -1,0 +1,21 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:38:theorem MethodRowsAdmissible.mono {C Q Q' ms es}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:39:    (h : MethodRowsAdmissible C Q ms es) (hq : QLe Q Q') :
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:40:    MethodRowsAdmissible C Q' ms es :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:66:theorem MethodRowsAdmissible.of_noRows {C Q ms}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:67:    (hs : ms.Scoped) (hne : ms.neffs = 0) : MethodRowsAdmissible C Q ms [] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:507:      Ty.Le (ms.ret.subst (ss ++ [τ]) es) T ∧ Eff.Sub (Eff.substAt 0 (ss ++ [τ]) es ms.eff) ε ∧ MethodRowsAdmissible C Q ms es ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:41:theorem MethodRowsAdmissible.outer {C1 C0 Q ms es}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/OuterC.lean:42:    (h : MethodRowsAdmissible C1 Q ms es) : MethodRowsAdmissible (C1 ++ C0) Q ms es :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:504:theorem MethodRowsAdmissible.substTy {C c Q Q' ms es ts' es'}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:505:    (h : MethodRowsAdmissible C Q ms es) (hc : c ≤ C.length)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/TySubstMain.lean:508:    MethodRowsAdmissible (C.take c) Q' ms (es.map (Eff.substAt c ts' es')) := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Model.lean:281:    (MethodRowsAdmissible.of_noRows
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:185:def MethodRowsAdmissible (C : List TParam) (Q : NoFailCtx) (ms : MethSig)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:512:        MethodRowsAdmissible C Q ms es →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:142:      MethodRowsAdmissible C (NoFailCtxOf caller) ms es := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:80:      (MethodRowsAdmissible.of_noRows (by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:155:      MethodRowsAdmissible C Q ms es ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:171:      MethodRowsAdmissible C Q ms es ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Calls.lean:24:      MethodRowsAdmissible C Q ms es →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:280:        (MethodRowsAdmissible.of_noRows (hwf.2.2.2.2.2.2.1 _ _ hcl _ _ hms) hneff) hargs)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:130:        MethodRowsAdmissible C Q ms es →

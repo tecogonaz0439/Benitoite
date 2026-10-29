@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "basis": "hand-written from preorder traversal, stepCost, Run.enter/leave and Required.ofIndex before comparisons",
+  "cases": [
+    {
+      "name": "numbering-stop",
+      "source": "recovered.bnt",
+      "numberingOperations": 0,
+      "limits": {"body": {"operations": 100, "items": 100}, "whole": {"operations": 100, "items": 100}},
+      "finalStop": "numberingLimit",
+      "numberingComplete": false,
+      "calls": [
+        {"rule": "Scope.checkPathIn", "preorder": null, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"},
+        {"rule": "Scope.checkPathIn", "preorder": null, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"},
+        {"rule": "Scope.checkPathIn", "preorder": null, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"},
+        {"rule": "Scope.checkPathIn", "preorder": null, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"},
+        {"rule": "Scope.pathInValue", "preorder": null, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"},
+        {"rule": "Scope.pathInValue", "preorder": null, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"}
+      ],
+      "lean": {"comparison": "rust-only-numbering-limit", "reason": "Lean has no numbering-event budget; do not reuse prefix occurrence numbers"}
+    },
+    {
+      "name": "last-run-exceeded",
+      "source": "last-run.bnt",
+      "numberingOperations": 200000,
+      "limits": {"body": {"operations": 4, "items": 100}, "whole": {"operations": 100, "items": 100}},
+      "finalStop": "bodyOperations",
+      "numberingComplete": true,
+      "firstStopPreorder": 6,
+      "calls": [
+        {"rule": "Scope.checkPathIn", "preorder": 0, "required": "/data/**", "kind": "known", "reason": null},
+        {"rule": "Scope.pathInValue", "preorder": 6, "required": "top", "kind": "exceeded", "reason": "budgetExceeded"}
+      ],
+      "lean": {"comparison": "same-key-required", "preorder": 6, "reason": "budgetExceeded", "surfaceCheckExit": 1, "surfaceCheckAllCategory": "mismatched", "surfaceCheckAllReasonContains": "required check is not covered:", "nonTopRangesPositive": true, "desugarDiffExit": 0}
+    },
+    {
+      "name": "inner-exceeded-outer-recovered",
+      "source": "recovered.bnt",
+      "numberingOperations": 200000,
+      "limits": {"body": {"operations": 5, "items": 100}, "whole": {"operations": 100, "items": 100}},
+      "finalStop": null,
+      "numberingComplete": true,
+      "firstStopPreorder": 13,
+      "calls": [
+        {"rule": "Scope.checkPathIn", "preorder": 0, "required": "/outer/**", "kind": "known", "reason": null},
+        {"rule": "Scope.checkPathIn", "preorder": 5, "required": "/inner/**", "kind": "known", "reason": null},
+        {"rule": "Scope.checkPathIn", "preorder": 9, "required": "/inner/**", "kind": "known", "reason": null},
+        {"rule": "Scope.checkPathIn", "preorder": 13, "required": "/inner/**", "kind": "known", "reason": null},
+        {"rule": "Scope.pathInValue", "preorder": 19, "required": "top", "kind": "unknown", "reason": "unknownSource"},
+        {"rule": "Scope.pathInValue", "preorder": 27, "required": "/outer/**", "kind": "known", "reason": null}
+      ],
+      "lean": {"comparison": "same-key-required", "preorder": 19, "reason": "unknownSource", "surfaceCheckExit": 1, "surfaceCheckAllCategory": "mismatched", "surfaceCheckAllReasonContains": "required check is not covered:", "nonTopRangesPositive": true, "desugarDiffExit": 0}
+    }
+  ]
+}

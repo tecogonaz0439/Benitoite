@@ -1,0 +1,29 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "stage",
+    "--base",
+    "c2debc9200e7db6aacf4dde10b94eaf330270654",
+    "--only",
+    "tests_related",
+    "--test",
+    "runtime_builtins",
+    "--test",
+    "vm_handlers",
+    "--test",
+    "io_modes",
+    "--test",
+    "l32_http_client",
+    "--test",
+    "network_faults"
+  ],
+  "startUtc": "2026-10-29T10:43:12.311184+00:00",
+  "endUtc": "2026-10-29T10:43:52.284065+00:00",
+  "exitCode": 0,
+  "checkExitCode": 0,
+  "elapsedSeconds": 39.972321625000006,
+  "maxRssRaw": 1382416384,
+  "maxRssUnit": "bytes",
+  "measurement": "getrusage(RUSAGE_CHILDREN), 子孫の最大値。合計常駐量ではない"
+}

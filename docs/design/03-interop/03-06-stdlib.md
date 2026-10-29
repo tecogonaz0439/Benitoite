@@ -115,7 +115,9 @@ end function
 
 ### Scope
 
-【決定】`Benitoite.Scope` は、ホスト・パス・ポートの字面と、明示した条件への所属を検査する純粋な非公式モジュールである。三つの公開型を不透明型の `@opaque public record` とし、構築・更新・パターン・自動アクセサは宣言モジュールの中だけで使う。公開関数のパラメータ名と型は次のとおりである。
+【決定】`Scope.PathIn` は、パスの範囲を添字に持つ組み込みの不透明型であり、型注釈で利用できる。裸の `Scope.PathIn` は Top、`Scope.PathIn["/data/**"]` は一つのパスの範囲を表す。型引数と複数の範囲は持たない。利用者による構築・更新・表現のパターン・自動アクセサは認めない。添字の不変性と照合の制限は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+
+【決定】`Benitoite.Scope` は、ホスト・パス・ポートの字面と、明示した条件への所属を検査する純粋な非公式モジュールである。既存の `CheckedHost`・`CheckedPath`・`CheckedEndpoint` の三つは不透明型の `@opaque public record` とし、構築・更新・パターン・自動アクセサは宣言モジュールの中だけで使う。公開関数のパラメータ名と型は次のとおりである。
 
 | 関数 | 型 |
 |---|---|
@@ -127,9 +129,25 @@ end function
 | `endpointHost`・`endpointHostPattern` | `function(value: CheckedEndpoint) -> String` |
 | `endpointPort`・`endpointMinimumPort`・`endpointMaximumPort` | `function(value: CheckedEndpoint) -> Integer` |
 
-CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhostPattern/host/minimumPort/maximumPort/portを宣言順に保存する。ホストの条件と対象はASCIIの小文字に揃え、パスの条件と対象は受理した字面を保つ。整数は入力をそのまま保つ。変更する場合は公開の検査関数で再検査する。同じ型名の値でも、保存する条件は値ごとに異なる。
+【決定】範囲付きのパスには、検査・射影・明示拡大の三つの純粋な入口を提供する。次の表の R と S は説明のための範囲であり、利用者が宣言する型引数ではない。標準署名の内部では、検査と射影は一つ、拡大は元と行き先の二つの範囲変数を持つ。
 
-ホストは、ASCIIの英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非ASCII、NUL、URL、ポート付き、IPv6を拒否する。四つのラベルがすべて十進数字だけなら、数の範囲を問わずIPv4形式として拒否する。localhostは認める。DNSの長さの規格への適合は保証しない。パターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）だけであり、後二者は幹自身を含まない。
+| 関数 | 型 |
+|---|---|
+| `checkPathIn` | `function(pattern: String, path: String) -> Result[PathIn[R], ScopeError]` |
+| `pathInValue` | `function(path: PathIn[R]) -> String` |
+| `widenPathIn` | `function(path: PathIn[R]) -> PathIn[S]` |
+
+直接呼び出しの `checkPathIn` は、型の制約で R が決まらなければ、リテラルまたは const の直接参照から既知のパターンを R に選ぶ。未知なら Top を選ぶ。検査の Result を一度保存して同じ `Result.Ok` を照合した成功値と、その直接の射影では局所解析の事実を使う。未知の呼び出し・別名・再包装・本体の境界などで事実を忘れた位置、間接呼び出し・穴のある部分適用・パイプの右辺の呼び出しには、狭い範囲を与えない。期待する型の注釈だけから所属を得ることもない。詳しい選択と受理の条件は[型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)に従う。
+
+たとえば、`checkPathIn(pattern: "/data/**", path: raw)` の成功型は、型の制約で決まらなければ `Scope.PathIn["/data/**"]` となる。成功値を裸の `Scope.PathIn`（Top）の引数へ直接渡すなど、型の制約から R が Top と決まれば、検査も Top へ具体化する。R が狭い範囲に確定した値を Top へ拡大する場合は、同じ成功値が分かる位置で `widenPathIn` を呼び、戻りの型を `Scope.PathIn` と明示する。S は戻りの注釈から一意に選び、S が R を覆う場合だけ受理する。拡大は同じ値を返し、保持したパスを変更しない。Top はパターンへの所属を静的に絞らないことを表し、実行時の検査の成功を表す値の代用ではない。
+
+`checkPathIn` は、後述のパスの字面とパターンの規則で動的な入力を検査し、選んだ静的な範囲への所属も確かめる。パターンの形式不良は `InvalidPattern`、対象の形式不良は `InvalidTarget`、所属不良は `OutsideScope` とし、この順で判定する。成功時は入力された同じパスを保持する `PathIn` を `Result.Ok` に入れる。`pathInValue` は、その同じパスを変更せず返す。既存の `CheckedPath` から検査を省いて変換する入口は持たない。
+
+CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhostPattern/host/minimumPort/maximumPort/portを宣言順に保存する。ホスト名の条件と対象は ASCII の小文字にそろえ、IP の条件と対象は範囲の共通の代数の正規形で保存する。最大 prefix の CIDR（IPv4 の `/32`、IPv6 の `/128`）は完全一致にそろえる。パスの条件と対象は受理した正規の字面を保つ。保存したパターンを再び検査へ渡したときも、静的と動的の判定は同じ条件を読む。整数は入力をそのまま保つ。変更する場合は公開の検査関数で再検査する。同じ型名の値でも、保存する条件は値ごとに異なる。
+
+ホストの対象は、ホスト名または正規形の IPv4・IPv6 アドレスとする。ホスト名は、ASCII の英数字・ハイフンからなる空でないラベルをドットで区切る。ラベルの先頭末尾のハイフン、空ラベル、末尾ドット、非 ASCII、NUL、URL、ポート付きを拒否する。四つの全数字ラベルはホスト名として扱わず、正規形の IPv4 として読める場合だけ IP の対象とする。`localhost` は認める。DNS の長さの規格への適合は保証しない。ホスト名のパターンは完全一致、`*.host`（幹の前に一段）、`**.host`（幹の前に一段以上）であり、後二者は幹自身を含まない。IP のパターンは完全一致と CIDR とする。IP の字面、host bits、prefix と正規化は[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)と同じ規則に従う。ホスト名と IP、IPv4 と IPv6 は互いに所属せず、IPv4 を射影した IPv6 も範囲の代数では IPv6 のままとする。名前の解決や族の変換は行わない。
+
+【決定】`checkHost` と `checkEndpoint` は、IPv4 射影の IPv6（`::ffff:0:0/96` に入るアドレス）を対象とすると `InvalidTarget` を返す。正規形の `::ffff:127.0.0.1` にもこの拒否を適用する。大文字・ゼロの省略・末尾を16進数にする表記の違いは、直接入力の正規形の条件でも拒否する。既知の対象にも同じ検査を適用し、E0460 を報告する。IPv4 射影の範囲だけを指すパターンは `InvalidPattern` や E0459 にはせず、その範囲の有効な対象がないものとして受理する。IPv4 射影の範囲を含む `::/0` も受理する。理由: 対象の拒否を入口の条件とし、範囲の正規化・所属・被覆の数値の規則を保つためである。
 
 パスはスラッシュ区切りの絶対形式であり、根 `/` を認める。根以外の末尾スラッシュ、空要素、`.`・`..`、NUL、逆斜線を拒否し、その他のUnicode文字を保つ。パターンは完全一致か末尾 `/**` の木だけであり、他の位置の `*` を拒否する。`/data/reports/**` は幹自身と任意段の子を含み、`/data/reports-old` を含まない。`/**` は根とすべての受理したパスを含む。対象側の `*` は普通の文字である。
 
@@ -144,13 +162,17 @@ CheckedHostはpattern/host、CheckedPathはpattern/path、CheckedEndpointはhost
 | `OutsideScope(String, String)` | 元のパターン、元の対象 |
 | `PortOutsideScope(Integer, Integer, Integer)` | minimumPort、maximumPort、port |
 
+`Scope.ScopeError` の `Show` の実装と、その引用・切り詰め用の私有関数は `Benitoite.Trait` に置く。Trait が Scope を import し、Scope は Trait を import しない。理由: 型クラスを使わない Scope や File の利用で、Trait の読み込みと型検査を避けるためである。
+
 ScopeErrorのShowは構成子名と入力を表示し、文字列を既存のShowで引用・エスケープする。表示用の入力をUTF-8の境目で4096バイト以内へ省略し、引用後の各引数を2000バイト以内へ収める。引用後に長すぎる場合は、引用前の入力をUTF-8の境目で半分へ縮めて `...` を加え、引用し直す。構成子名・括弧・引用符・完成したエスケープを残し、省略時は閉じ括弧の後にも `...` を付ける。最終結果は4096バイト以内とする。保存した入力自体は切り詰めない。
 
-形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。静的検査は借用した入力の判定までとし、成功文字列を複製しない。実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。VM値・構成子の固定タグは追加しない。
+形式・所属の判定はヒープに依存しない `builtins/checked_scope` に集め、型検査と実行時で共有する。ホストの判定と正規形には `types::scope` の共通の代数を使い、パスは受理した正規の字面を借用する。既存の三つの検査の実行時の私有builtinは既存のResult/Pairで、成功時に正規化した条件と対象、失敗時に番号とreasonを返す。番号は上表の順に1〜6である。標準ソースの公開ラッパーが通常のレコード・ScopeErrorを作り、射影を提供する。`checkPathIn` の実行本体も同じパスの判定を使い、成功時は入力の文字列の値を保持し、失敗時は既存の `ScopeError` の構成子を直接作る。`PathIn` 専用のVM値・構成子の固定タグは追加しない。
 
-直接呼び出しでは既知の部分を追加検査する。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
+`checkHost`・`checkPath`・`checkEndpoint`・`checkPathIn` と `Http.checkRequestIn` の直接呼び出しでは、リテラルまたは const の直接参照から既知の部分を本体の後に追加検査する。`checkPathIn` は `checkPath` と同じパターン・パスを検査し、`Http.checkRequestIn` はホストのパターンとポートの両端を検査する。要求内の URL の解析は実行時に残す。射影 `pathInValue`・`Http.requestInValue` は追加検査する条件を引数に持たない。この追加検査は、静的な範囲を選ぶ必須の判定から独立している。形式不良はパターンE0459、対象E0460、ポート・端点E0461、所属不良はE0462である。EndpointはhostPattern/hostとminimumPort/maximumPort/portを別々の所属判定の入力とする。未知の引数をどの値で埋めても実行時Errorになる不良だけを拒否し、複数不良の優先順を保つ。取得の範囲・予算・対象の呼び出し形は[型検査](../02-impl/02-05-typechecker.md#本体の後の検査)に従う。
 
-成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
+成功が表すのは、保存した条件に対象の字面が適合することである。利用者の操作の許可、DNSの解決先、網に依るアドレスやポートの変換、URLやリダイレクト、実ファイルやリンク先、検査後の変更、IOの成功は保証しない。既存のIOはString・Integerを受ける署名を保ち、利用者が射影した値を明示して渡す。理由: 字面の検査だけでは、外部資源の同一性や操作の許可を確定できないためである。
+
+要求の検査・射影・明示拡大は `Benitoite.Network.Http` の `checkRequestIn`・`requestInValue`・`widenRequestIn` に置く。三つとも純粋であり、標準署名の内部では、検査と射影は種類 endpoint の範囲変数を一つ、拡大は二つ持つ。検査は、同じ要求の `url` から得た端点と、ホストのパターン・ポートの閉区間を、共通の範囲の代数で照合する。型の制約で範囲が決まらなければ、既知の条件では規則が選ぶ範囲、未知なら Top へ具体化する。URL から端点を得られない失敗と Scope の失敗を `Http.RequestCheckError` で区別し、成功時には同じ `Http.ClientRequest` を保持して射影する。明示拡大は保持した要求と実効の端点を変えない。署名と URL の条件は[ネットワークのモジュール](03-09-network.md#クライアント)に従う。
 
 ### Range
 
@@ -621,7 +643,7 @@ end function
 | 型クラス | 実装する型 |
 |---|---|
 | `Show`・`Order` | 基本型（各幅の数、`Decimal`・`Character`・`String`・`Boolean`・`Unit`）、`List[T]`・`Option[T]`・`Pair[A, B]`・`Triple[A, B, C]`（要素の型が同じ型クラスを実装するとき） |
-| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
+| `Show` | `Map[K, V]`・`Set[T]`（鍵・値・要素の型が `Show` を実装するとき）、`IOError`・`NetworkError`・`Scope.ScopeError`・`Json.ParseError`・`Csv.ParseError`・`Json.Codec.ConversionError` |
 | `Semigroup`・`Monoid` | `String`・`List[T]`・`Map[K, V]`・`Set[T]` |
 | `Functor`・`Applicative`・`Monad`・`Foldable`・`Traversable` | `Option`・`List` |
 | `Functor2`・`Applicative2`・`Monad2` | `Result` |
@@ -644,7 +666,7 @@ end function
 
 【決定】`IOError`・`NetworkError`・`Json.ParseError`・`Csv.ParseError` の `Show.show` は、各型の `message` が返す文字列をそのまま返す。引用符や位置などの情報は加えない。理由: 失敗値から人間が読める原因を取得し、既存の型クラスの仕組みで表示できるようにするためである。
 
-`IOError` と `NetworkError` の実装は `Benitoite.Trait` に置き、prelude の `IOError.message`・`NetworkError.message` を呼ぶ。二型のモジュールから Trait への import は置かない。理由: Trait を使わないプログラムで、標準の型クラスの読み込みと型検査を避けるためである。`Json.ParseError` と `Csv.ParseError` の実装はそれぞれ Json・Csv のモジュールに置き、そこから Trait を import する。利用者が `Trait.Show.show` を名前で使う場合は、`import Benitoite.Trait` を必要とする。
+`IOError` と `NetworkError` の実装は `Benitoite.Trait` に置き、prelude の `IOError.message`・`NetworkError.message` を呼ぶ。二型のモジュールから Trait への import は置かない。理由: Trait を使わないプログラムで、標準の型クラスの読み込みと型検査を避けるためである。`Scope.ScopeError` の実装も Trait に置き、表示は本章「Scope」の規則に従う。`Json.ParseError` と `Csv.ParseError` の実装はそれぞれ Json・Csv のモジュールに置き、そこから Trait を import する。利用者が `Trait.Show.show` を名前で使う場合は、`import Benitoite.Trait` を必要とする。
 
 【方針】`Order.compare` は、次の順序で比べる。
 
@@ -749,7 +771,9 @@ public function sort[T: ordered](xs: List[T]) -> List[T]
 
 ### 外部生成の宣言情報
 
-【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 3 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。対象レコードの型パラメータを一律には拒否せず、再帰・型引数の対応範囲は機能ごとに生成道具が判定する。
+【決定】開発用の example `derive_inventory --root <dir> --config <path>` は、[宣言だけの収集](../02-impl/02-01-pipeline.md#宣言だけの収集)を利用し、version 4 の JSON を標準出力へ書く。公開の `benitoite` CLI のサブコマンドには加えない。設定の未知のキーと重複キーを拒否し、対象のレコードの解決名・位置・可視性・宣言順の欄と型の木・依存型・カスタム関数のシグネチャ・全入力の SHA-256 を渡す。型の木は application・parameter・function、頭は named・parameter、種類は value・constructor として明示する。型の別名は展開し、組み込み型も表の正の完全修飾名へそろえる。型の一覧は種類と引数数、クラスの一覧は引数の種類・上位クラス・メソッドの署名、実装の一覧は宣言順に解決したクラス・対象・制約・メソッド・位置・管理領域を保持する。匿名の実装も省かない。内部のDebug表示を公開契約へ使わず、型パラメータの番号・種類・引数数・契約名の一意性を出力側と読取側で検査する。元の注釈と表示はmetadataへ分ける。対象レコードの型パラメータを一律には拒否せず、再帰・型引数の対応範囲は機能ごとに生成道具が判定する。
+
+【決定】型の application と効果の名前の原子は、必須の `ix` に添字を保持する。Top は `{"fixed":"top"}`、閉じた範囲は `{"fixed":範囲}`、範囲変数は `{"rvar":番号}` とする。閉じた範囲の構造と IP の全幅の整数は、[交換の形式](../07-quality/07-04-formal-semantics.md#交換の形式の版)と同じ表現を使う。型の一覧の `rangeKind` は添字の種類または null とし、署名の `rkinds`・`admission`・`shape` は変数の種類、被覆の条件、IO の対象の形を保持する。通常の関数を省いたり、範囲変数を Top に置き換えたりしない。出力側と読取側で変数の番号と種類、閉じた範囲の構造、被覆と対象の位置の参照を検査する。理由: 宣言情報から生成と署名の照合を行うときに、型と効果の範囲の関係を失わないためである。
 
 【決定】可視性はprivate・package・publicへ正規化し、互換のpublic/package欄との不一致を拒否する。opaqueと生成先からのcanConstruct/canInspectを明示する。生成先は型の宣言元のモジュールであり、宣言情報に表現を保持していても、不透明型自身のJSON復号・Property生成器・縮小器の自動生成を認めない。通常のレコードの不透明型の欄には、欄全体を扱う手書きのカスタム関数を要求する。理由: 宣言元での構築可否だけでは、検査を伴う作成経路の不変条件を守れないためである。
 
@@ -779,9 +803,9 @@ JSON 変換を要求する target では Json.Codec、Property を要求する t
 
 受理する入力の生成本文・意味ハッシュ・生成記録は保ち、この事前拒否を理由とする E0908 の登録を加えない。
 
-【決定】カスタムのJSON変換・Property関数の純粋さは、合併済みの有効な署名で照合する。deriveのcheckとは別に、ハーネスから通常のcheck/testで生成後の本体も検査する。
+【決定】カスタムのJSON変換・Property関数の純粋さと単相性は、範囲変数を含む合併済みの有効な署名で照合する。範囲変数を持つ関数は理由を示して拒否する。非Topの添字を持つ型を含む生成注釈は対応範囲外として明示的に拒否し、範囲を省略した注釈を生成しない。deriveのcheckとは別に、ハーネスから通常のcheck/testで生成後の本体も検査する。
 
-【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版3・inventoryVersion 3・hashVersion 3・道具の版3.1.0-syntax-batch5、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。宣言名順のグラフ・型引数付きの辺・強連結成分・有限基底の最小量・予算規則・生成する署名と制約・依存先の設定と指定関数・選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
+【決定】設定の版は1を保ち、設定と同じディレクトリの `<設定のstem>.generated.json` に、記録の版3・inventoryVersion 4・hashVersion 4・道具の版3.1.0-syntax-batch5、target の識別、宣言順の欄の構造・推移的な依存レコード・カスタム関数のシグネチャ・正規化設定・本番 formatter 後の領域本文の SHA-256 を保存する。型と効果の添字、署名の範囲変数の種類・被覆の条件・対象の形も意味のハッシュに含める。意味のキーを明示して正準JSONを作り、位置・元の型の表記・表示・コメント・空白・packageの表示名は構造ハッシュに含めない。宣言名順のグラフ・型引数付きの辺・強連結成分・有限基底の最小量・予算規則・生成する署名と制約・依存先の設定と指定関数・選択したテンプレートの版・欄順・依存する実装の同一性・Property.libraryVersion（2.0.0）も記録し、無関係な関数の追加では無効化しない。`check` は現在の入力から再生成し、記録と本文の両方を比べる。通常の型検査が通る古い出力も、この照合の対象である。
 
 【決定】編集位置・全入力の生バイトのハッシュ・diff・再適用の receipt は `tools/source-migrate/` を再利用する。`preview` は永続の記録を変えず、変更前後の本文と新しい記録を manifest に含める。`apply` は確認済み manifest のハッシュ、全入力、既存の記録と領域を検証してから書く。複数ファイルの原子的な書き込みと、検証後の外部更新の排除は保証しない。ソースの適用後にreceiptへ版3・生成規則の版・新記録のSHA-256を保存してから生成記録を書き、最後の記録の書き込みだけが失敗した場合は、同じ manifest と receipt の検証後に完了できる。
 

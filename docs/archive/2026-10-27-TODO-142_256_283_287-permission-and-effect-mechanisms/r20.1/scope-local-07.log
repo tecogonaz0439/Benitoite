@@ -1,0 +1,16 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 29.66s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 5 tests
+test typeck::scope::tests::dedicated_bindings_and_handler_clauses_follow_surface_preorder ... ok
+test typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments ... ok
+test typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters ... ok
+test typeck::scope::tests::entry_scope_matches_explicit_function_and_method_arguments ... ok
+test typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1380 filtered out; finished in 0.15s
+
+
+exit: 0
+wall_seconds: 31.036

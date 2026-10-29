@@ -1,0 +1,7 @@
+function evens(m: Map[String, Integer]) -> Map[String, Integer]
+  return Map.filter(m: m, p: lambda(_, value) return value mod 2 = 0 end lambda)
+end function
+
+function main() -> Unit
+  return ()
+end function

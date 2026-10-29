@@ -1,0 +1,35 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/FailureCont.lean:258:  | .C_Handle _ _ hc => cases hm; rw [hc.no_failure] at ho; cases ho
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:227:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:250:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:273:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:296:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:313:  | .C_Escape _ _ | .C_Use _ _ _ _ | .C_Handle _ _ _ | .C_Resume _ _ | .C_ResumeL _ _
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:332:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:350:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:373:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:382:  | .C_Handle h1 hs hc => cases hm; exact ⟨_, _, _, h1, hs, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:426:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:450:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:518:  | .C_Return .. | .C_Let .. | .C_App .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeL .. | .C_BuilderLet .. | .C_BuilderOp .. => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:528:  | .C_Escape _ _ | .C_Use _ _ _ _ | .C_Handle _ _ _ | .C_Resume _ _ | .C_ResumeL _ _
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:545:  | .C_Return .. | .C_Let .. | .C_App .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeL .. | .C_Meth .. | .C_BuilderOp .. => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:558:  | .C_Return .. | .C_Let .. | .C_App .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeL .. | .C_Meth .. | .C_BuilderLet .. => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Irrelevant.lean:131:    | .C_Handle hm _ hc =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Names.lean:181:    | .C_Handle hm _ hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeClausesQ.lambdaNamesWF hs⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/NoFailContext.lean:59:    | .C_Handle hm hs hc => exact .C_Handle (HasTypeCQ.q_mono hm hq) hs (HasTypeClausesQ.q_mono hc hq)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:131:    | .C_Handle hm' hs hc =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:133:        exact .C_Handle (HasTypeCQ.outer (depth := _) hb hm' hm.1) hs (HasTypeClausesQ.outer (depth := _) hb hc hm.2)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Progress.lean:129:  | .C_Handle _ _ _ => cases hm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Regularity.lean:238:    | .C_Handle hm' _ _ => simp only [Comp.VarsIn] at hm; exact HasTypeCQ.wf (depth := _) hwf hb hm' hΓ hΨ hm.1
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:252:    | .C_Handle hm hs hc =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:254:        refine .C_Handle (HasTypeCQ.rename hm hξ Δl' hL) ?_ (HasTypeClausesQ.rename hc hξ Δl' hL)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:387:    | .C_Handle hm hs hc => exact .C_Handle (HasTypeCQ.store hm hΨ) hs (HasTypeClausesQ.store hc hΨ)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/SubstTyping.lean:266:    | .C_Handle hm hs hc =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/SubstTyping.lean:268:        refine .C_Handle (HasTypeCQ.subst (ρ := _) hm hσ hL) ?_ (HasTypeClausesQ.subst (ρ := _) hc hσ hL)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:725:    | .C_Handle hm hs hcl =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:727:        refine .C_Handle (HasTypeCQ.substTy hwf hb hm hc hts hes' hsat hΨ hrow) ?_
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/LocalScope.lean:121:    | .C_Handle hm _ hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hm hΔ hΨ, HasTypeClausesQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:489:    | C_Handle {Δ Γ R m h t εm ε} :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:160:  | .C_Handle hm _ hc =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:31:    | .C_Handle hm he hs => exact .C_Handle (HasTypeCQ.withReturn hm hΨ hR R) he (HasTypeClausesQ.withReturn hs hΨ hR R)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/Typing.lean:777:        apply HasTypeCQ.C_Handle (HasBlockQ.desugar hAlign hΔ hwf hsig hb sc.1 hΓ hR)

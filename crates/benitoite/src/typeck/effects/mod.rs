@@ -2,6 +2,8 @@
 mod declarations;
 pub(super) use declarations::{duplicate_use, effect_name};
 mod handle;
+pub(super) use handle::finish_next as finish_next_handler;
+pub(super) use handle::{CheckedHandle, PendingHandle, Selection, recheck as recheck_handlers};
 mod special;
 mod tail;
 #[cfg(test)]
@@ -63,11 +65,16 @@ fn lazy_expr(ctx: &mut Body<'_, '_>, e: &LazyExpr) -> ITy {
     let effect = ctx.fresh_effect();
     let ty = ctx.block_in(&e.body, effect.clone(), None);
     ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Structural,
         sub: effect,
         sup: fixed(EffectSet::empty()),
         reason: reason(e.span, ReasonKind::LazyBody),
     });
-    ITy::Con(TyCon::Builtin(B::LAZY), vec![ty])
+    ITy::Con(
+        TyCon::Builtin(B::LAZY),
+        vec![ty],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
@@ -92,7 +99,11 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
                 ctx.die_message_boundary = boundary;
                 ctx.add(Constraint::Flow {
                     from: ty,
-                    to: ITy::Con(TyCon::Builtin(B::STRING), vec![]),
+                    to: ITy::Con(
+                        TyCon::Builtin(B::STRING),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP,
+                    ),
                     reason: reason(message.span(), ReasonKind::DieMessage),
                 });
                 let mut r = reason(message.span(), ReasonKind::DieMessage);
@@ -102,6 +113,7 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
                     ..*span
                 });
                 ctx.add(Constraint::EffSub {
+                    relation: crate::typeck::infer::EffectRelation::Structural,
                     sub: effect,
                     sup: fixed(EffectSet::empty()),
                     reason: r,
@@ -118,9 +130,13 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
                 return ITy::Error;
             };
             ctx.add(Constraint::EffSub {
+                relation: crate::typeck::infer::EffectRelation::Cover,
                 sub: fixed(EffectSet {
                     failures: vec![],
-                    names: vec![EffectName::Builtin(effect)],
+                    names: vec![EffectName::Builtin(
+                        effect,
+                        crate::types::builtin::RangeIndex::TOP,
+                    )],
                     vars: vec![],
                 }),
                 sup: ctx.effect.clone(),
@@ -144,7 +160,14 @@ fn try_expr(ctx: &mut Body<'_, '_>, e: &TryExpr) -> ITy {
 // 再帰の入口の枠を小さく保ち、展開で分岐が戻るのを防ぐ（設計書 02-01「関数の呼び出しと処理系のスタック」）。
 #[inline(never)]
 fn resume_expr(ctx: &mut Body<'_, '_>, e: &ResumeExpr) -> ITy {
-    let value = ctx.expr(&e.value);
+    let argument_effect = ctx.fresh_effect();
+    let value = ctx.expr_in(&e.value, argument_effect.clone(), ctx.ret.clone());
+    ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Cover,
+        sub: argument_effect,
+        sup: ctx.effect.clone(),
+        reason: reason(e.value.span(), ReasonKind::Resume),
+    });
     let Some(clause) = ctx.clauses.last() else {
         let mut d = DiagBuilder::new(DiagCode::E0509).primary(e.span);
         if ctx.die_message_boundary {
@@ -197,9 +220,13 @@ fn with(ctx: &mut Body<'_, '_>, e: &WithExpr) -> ITy {
         ctx.record_type(bind.id, ty);
     }
     ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Structural,
         sub: fixed(EffectSet {
             failures: vec![],
-            names: vec![EffectName::Builtin(BuiltinEffectId::STATE)],
+            names: vec![EffectName::Builtin(
+                BuiltinEffectId::STATE,
+                crate::types::builtin::RangeIndex::TOP,
+            )],
             vars: vec![],
         }),
         sup: ctx.effect.clone(),

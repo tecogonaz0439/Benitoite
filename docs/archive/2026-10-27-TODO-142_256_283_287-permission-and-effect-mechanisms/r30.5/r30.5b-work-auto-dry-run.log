@@ -1,0 +1,22 @@
+== plan: level work against ea42f4f97fe34e1f4768404f5b44aac3ff371155 (103 changed file(s))
+   [fmt] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: seconds)
+      command: cargo fmt --all --check
+   [lint_default] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: ~1-3 min (cache dependent))
+      command: cargo clippy -p benitoite --lib --tests --examples --no-default-features --features gc-mark-sweep
+   [lib_default] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: ~1 min)
+      command: cargo test -p benitoite --lib
+   [tests_related] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: target dependent)
+      command: cargo test -p benitoite --test \*
+   [source_rules] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: seconds)
+      command: check_placeholder_allows
+      command: check_unsafe_allows
+   [skill_generated] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: seconds to a few min)
+      command: cargo run -q -p benitoite --example gen_skill (compare git status --porcelain before/after for crates/benitoite/skill and crates/benitoite/src/cli/tools/skill/bundle.rs)
+   [spec_tally] because of crates/benitoite/src/typeck/scope/measure.rs (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   omitted: spec_examples (included by tests_related, default configuration)
+   later: stage checks named connections; change covers full regression; release checks the candidate
+real 0.11
+user 0.03
+sys 0.17

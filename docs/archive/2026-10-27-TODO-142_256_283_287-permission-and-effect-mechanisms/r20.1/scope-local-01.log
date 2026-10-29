@@ -1,0 +1,295 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.88s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 4 tests
+
+thread 'typeck::scope::tests::entry_scope_counts_function_and_implementation_dictionaries_first' (4292593) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Scope` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        7,
+                    ),
+                    end: BytePos(
+                        22,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is unofficial in this version and is imported as `Benitoite.Unofficial.Scope`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                7,
+                            ),
+                            end: BytePos(
+                                22,
+                            ),
+                        },
+                        replacement: "Benitoite.Unofficial.Scope",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters' (4292594) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0227,
+        ),
+        message: "`...` is not the spread syntax",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        103,
+                    ),
+                    end: BytePos(
+                        106,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "write `..[2]` to spread a list",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                103,
+                            ),
+                            end: BytePos(
+                                106,
+                            ),
+                        },
+                        replacement: "..",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Scope` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        7,
+                    ),
+                    end: BytePos(
+                        22,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is unofficial in this version and is imported as `Benitoite.Unofficial.Scope`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                7,
+                            ),
+                            end: BytePos(
+                                22,
+                            ),
+                        },
+                        replacement: "Benitoite.Unofficial.Scope",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+
+thread 'typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments' (4292595) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Scope` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        7,
+                    ),
+                    end: BytePos(
+                        22,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is unofficial in this version and is imported as `Benitoite.Unofficial.Scope`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                7,
+                            ),
+                            end: BytePos(
+                                22,
+                            ),
+                        },
+                        replacement: "Benitoite.Unofficial.Scope",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments ... FAILED
+test typeck::scope::tests::entry_scope_counts_function_and_implementation_dictionaries_first ... FAILED
+test typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters ... FAILED
+
+thread 'typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations' (4292596) panicked at crates/benitoite/src/typeck/scope/tests.rs:12:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0321,
+        ),
+        message: "`Benitoite.Scope` is not a standard library module",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        7,
+                    ),
+                    end: BytePos(
+                        22,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "this module is unofficial in this version and is imported as `Benitoite.Unofficial.Scope`",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                7,
+                            ),
+                            end: BytePos(
+                                22,
+                            ),
+                        },
+                        replacement: "Benitoite.Unofficial.Scope",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+test typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::tests::entry_scope_counts_function_and_implementation_dictionaries_first
+    typeck::scope::tests::normalization_counts_const_bodies_and_only_present_interpolation_converters
+    typeck::scope::tests::source_preorder_keeps_nested_bodies_guards_and_named_arguments
+    typeck::scope::tests::standard_identity_and_contract_order_use_resolved_declarations
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 1380 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+
+exit: 101

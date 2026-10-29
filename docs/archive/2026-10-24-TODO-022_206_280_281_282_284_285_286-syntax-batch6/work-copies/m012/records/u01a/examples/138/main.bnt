@@ -1,0 +1,9 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+function inspect(pattern: String, host: String) -> Result[Scope.CheckedHost, Scope.ScopeError]
+  return Scope.checkHost(pattern: pattern, host: host)
+end function
+function main() -> Unit uses Console.Write
+  Console.writeLine(Trait.Show.show(Result.isError(inspect(pattern: "*.example.com", host: "a.b.example.com"))))
+end function

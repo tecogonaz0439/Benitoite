@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Scope
+import Benitoite.Trait
+function describe(error: Http.RequestCheckError) -> String
+ return match error with
+ case Http.RequestCheckError.InvalidUrl(message) -> message
+ case Http.RequestCheckError.Scope(scopeError) -> Trait.Show.show(scopeError)
+ end match
+end function
+function main() -> Unit
+end function

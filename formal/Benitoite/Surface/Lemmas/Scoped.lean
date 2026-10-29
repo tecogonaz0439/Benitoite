@@ -10,8 +10,8 @@ variable {Q : NoFailCtx}
 
 variable {D : Declarations} {B : Builtins} {op : OpPrim}
 
-theorem operator_typeArgs_scoped {nt pe t} (h : Ty.VarsIn nt pe t) (o : Operator) :
-    Ty.VarsInList nt pe (o.typeArgs t) := by
+theorem operator_typeArgs_scoped {nt pe t} (h : Ty.VarsIn 0 nt pe t) (o : Operator) :
+    Ty.VarsInList 0 nt pe (o.typeArgs t) := by
   cases o with
   | neg => trivial
   | binary o => cases o <;> simp [Operator.typeArgs, Ty.VarsInList, h]
@@ -56,7 +56,7 @@ theorem directHeads_scoped {fs nt pe nv} (hd : fs.AllDirect) (sc : fs.Scoped nt 
 
 /-- 説明の有無によらず、失敗側の挿入は型・エフェクト変数の範囲を保つ。 -/
 theorem dieFailure_scoped {nv nt pe t exit depth cause message}
-    (ht : Ty.VarsIn nt pe t) (hc : Comp.VarsIn nt pe cause)
+    (ht : Ty.VarsIn 0 nt pe t) (hc : Comp.VarsIn nt pe cause)
     (hm : ∀ m, message = some m → Comp.VarsIn nt pe m nv) :
     Comp.VarsIn nt pe (dieFailure t exit depth cause message) (nv + depth) := by
   cases message with
@@ -96,7 +96,7 @@ mutual
           Val.VarsInList.append
             (Val.VarsInList.renameScoped _ _ (DictEv.toValList_scoped us sc.2.2.2.1))
             (boundVars_scoped ps.length nt pe)⟩
-    | .E_Prim _ _ _ _ _ hrows _ => exact sc
+    | .E_Prim _ _ _ _ _ _ hrows _ => exact sc
     | .E_Op _ _ _ _ => exact sc
     | .E_OpDicts (ps := ps) (ds := ds) _ _ _ _ _ _ _ _ _ =>
         exact ⟨sc.2.2.1, sc.2.2.2, sc.1,
@@ -295,8 +295,8 @@ mutual
           Benitoite.Release.Comp.VarsIn.renameLocal _ (by intro i hi; simp only [upRen]; split <;> omega) _ (HasBlockQ.desugar_scoped hb sc.2.1),
           HasArmsQ.desugar_scoped hs sc.2.2⟩
 
-  theorem HasClausesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R cs t ε nt pe nv}
-      (h : HasClausesQ D B op Q Δb C Γ R cs t ε) (sc : cs.Scoped nt pe nv) :
+  theorem HasClausesQ.desugar_scoped {Δb : BuilderCtx} {C Γ R εb cs t ε nt pe nv}
+      (h : HasClausesQ D B op Q Δb C Γ R εb cs t ε) (sc : cs.Scoped nt pe nv) :
       Clause.VarsInList nt pe (desugarClauses op cs) nv := by
     match h with
     | .nil => trivial

@@ -39,14 +39,14 @@ private def declarations : Declarations := {
     else none,
   cons := fun _ => none }
 private def builtins : Builtins := {
-  sig := fun _ => none, delta := fun _ _ _ _ => none,
-  ioResponse := fun _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
+  sig := fun _ => none, delta := fun _ _ _ _ _ => none,
+  ioResponse := fun _ _ _ _ _ _ => False, releaseResponse := fun _ _ => False,
   isResource := fun _ => false, effects := fun _ => none, sat := fun _ _ _ => True,
   refGet := "get", refSet := "set" }
 private def input : Input := {
   D := declarations, B := builtins, satDec := fun _ _ _ => true,
   admitsDec := fun _ _ _ => false, opPrim := fun _ _ => none, ctors := fun _ => [],
-  atoms := [.name "State", .name "IO", .rho 0, .rho 1] }
+  atoms := [.nameTop "State", .nameTop "IO", .rho 0, .rho 1] }
 private def check (e : Expr) := checkExpr input .strict [] [] none .other [] e
 private def hasResult (e : Expr) (t : Ty) (eff : Eff) : Bool :=
   match check e with
@@ -113,14 +113,14 @@ private def leaksRigid : Expr := .handleFail strTy intTy (.last raised)
   (.last (raiseAt intTy (.tvar 0) (call0 (.funName "Other.arbitrary" [.tvar 0] []))))
 example : reason (check leaksRigid) = some "Fail clause effect mentions its rigid result type" := by decide
 -- 通常の効果は捕捉後にも残す。節のFailとの合流も失わない。
-private def ioBody : Expr := call0 (.funName "Other.twoRows" [] [failString, .mk (fun a => a == .name "IO") []])
+private def ioBody : Expr := call0 (.funName "Other.twoRows" [] [failString, .mk (fun a => a == .nameTop "IO") []])
 example : hasResult (.handleFail strTy intTy (.last ioBody) (.last value))
-    intTy (.mk (fun a => a == .name "IO") []) = true := by decide
+    intTy (.mk (fun a => a == .nameTop "IO") []) = true := by decide
 
 -- Showや等値の制約を持たないエラー値でも捕捉できる。
-example : (checkExpr input .strict [] [some (.opaque "Secret")] none .other []
-    (.handleFail (.opaque "Secret") intTy
-      (.last (raiseAt intTy (.opaque "Secret") (.local 0))) (.last value))).isOk = true := by decide
+example : (checkExpr input .strict [] [some (.opaqueTop "Secret")] none .other []
+    (.handleFail (.opaqueTop "Secret") intTy
+      (.last (raiseAt intTy (.opaqueTop "Secret") (.local 0))) (.last value))).isOk = true := by decide
 -- 節から持ち出すラムダはエラー値を捕え、利用不能な継続には触れない。
 private def escapedTy : Ty := .fn [] [] strTy emptyEff
 example : (check (.handleFail strTy escapedTy

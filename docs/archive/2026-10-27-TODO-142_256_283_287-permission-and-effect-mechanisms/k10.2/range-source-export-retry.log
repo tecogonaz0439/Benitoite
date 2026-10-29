@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.54s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'range_sources::export_range_sources' (7737616) panicked at crates/benitoite/tests/desugar_export/range_sources.rs:22:9:
+assertion `left == right` failed: request-errors: [Diagnostic { kind: Check, severity: Error, code: Some(E0315), message: "`Console` is not an effect", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(648), end: BytePos(655) }, text: "expected an effect name or an effect variable" }), secondary: [], notes: [], helps: [Help { message: "effects of other modules are written with the module name, such as `Console.Write`", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: Array [String("E0315")]
+ right: Array []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test range_sources::export_range_sources ... FAILED
+
+failures:
+
+failures:
+    range_sources::export_range_sources
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 48 filtered out; finished in 3.18s
+
+error: test failed, to rerun pass `--test desugar_export`
+real 5.73
+user 5.69
+sys 0.71

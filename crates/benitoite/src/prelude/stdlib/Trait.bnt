@@ -1,5 +1,7 @@
 //! Standard type classes. Import `Benitoite.Trait` and write `Trait.Show.show(x)`.
 
+import Benitoite.Unofficial.Scope
+
 /// The result of comparing two values.
 public data Ordering
   Less
@@ -90,6 +92,50 @@ function showString(s: String) -> String
 function showCharacter(c: Character) -> String
 
 // Show
+
+// 表示用の入力を4096バイトに収め、引用後は一引数2000バイト以内にする。
+// 切り詰めは引用前に行い、完成したエスケープ・引用符・括弧を残す。UTF-8の境目を最大三バイト戻す
+// （設計書 03-06「Scope」）。保存した入力そのものは変えない。
+function limited(text: String) -> String
+  return if String.byteLength(text) <= 4096 then text else prefix(text: text, stop: 4093) + "..." end if
+end function
+
+function prefix(text: String, stop: Integer) -> String
+  return match String.byteSlice(s: text, start: 0, stop: stop) with
+    case Option.Some(value) -> value
+    case Option.None -> prefix(text: text, stop: stop - 1)
+  end match
+end function
+
+function quoted(text: String) -> String
+  return fitQuoted(limited(text))
+end function
+
+function fitQuoted(text: String) -> String
+  bind shown <- Show.show(text)
+  return if String.byteLength(shown) <= 2000 then shown
+  else fitQuoted(prefix(text: text, stop: String.byteLength(text) div 2) + "...") end if
+end function
+
+function renderStrings(name: String, first: String, second: String) -> String
+  bind a <- quoted(first)
+  bind b <- quoted(second)
+  bind omitted <- String.byteLength(first) > 4096 or String.byteLength(second) > 4096 or a <> Show.show(limited(first)) or b <> Show.show(limited(second))
+  return "${name}(${a}, ${b})" + if omitted then "..." else "" end if
+end function
+
+implement Show[Scope.ScopeError]
+  function show(x: Scope.ScopeError) -> String
+    return match x with
+      case Scope.ScopeError.InvalidPattern(pattern, reason) -> renderStrings(name: "InvalidPattern", first: pattern, second: reason)
+      case Scope.ScopeError.InvalidTarget(target, reason) -> renderStrings(name: "InvalidTarget", first: target, second: reason)
+      case Scope.ScopeError.InvalidPortRange(minimum, maximum) -> "InvalidPortRange(${minimum}, ${maximum})"
+      case Scope.ScopeError.InvalidPort(port) -> "InvalidPort(${port})"
+      case Scope.ScopeError.OutsideScope(pattern, target) -> renderStrings(name: "OutsideScope", first: pattern, second: target)
+      case Scope.ScopeError.PortOutsideScope(minimum, maximum, port) -> "PortOutsideScope(${minimum}, ${maximum}, ${port})"
+    end match
+  end function
+end implement
 
 implement Show[IOError]
   function show(x: IOError) -> String

@@ -18,7 +18,7 @@ RV-X05 は取りまとめが別に行い、`reviews/RV-X05.md` に記録する�
 
 K1 の実行状態は `d62dbaa1c9293bd32e3dbb1b65b1efbc90a6d44b`、その記録の取り込みが現在の `732b2925` である。`git diff --stat d62dbaa1 HEAD` の[出力](relation-diff-stat.log)は52ファイル・185,294行追加で、[ファイル一覧](relation-diff-files.log)は時間方針の実績1行、X05a の3回目と受け入れ、run3 の実行・保存・点検記録だけである。本枝の work 前・最終状態の未コミット差分と未追跡ファイルの内容の SHA-256 は [work 前](state-before-work.json)・[最終状態](state-final.json)に保存する。
 
-[点検器](audit.py)の evidence は、元の `<repo>/work/m012/records/x05a-run3-k1-records.zip` を読み、ZIP 自体と全12,055収録ファイルのハッシュを確認した。索引は12,064件、ハッシュのみの大型再生成可能入力は9件、報告・ログの省略0件である。最終 manifest の12,063成果物と入力 manifest の1,220ファイルを全て索引の元ハッシュへ照合し、10系統と五 profile の件数も元の要約と一致した（[読み戻し結果](evidence-check.json)・[実行](evidence-corrected.json)・[ログ](evidence-corrected.log)）。
+[点検器](audit.py)の evidence は、元の [x05a-run3-k1-records.zip の索引とハッシュ](../work-copies/README.md#f475) を読み、ZIP 自体と全12,055収録ファイルのハッシュを確認した。索引は12,064件、ハッシュのみの大型再生成可能入力は9件、報告・ログの省略0件である。最終 manifest の12,063成果物と入力 manifest の1,220ファイルを全て索引の元ハッシュへ照合し、10系統と五 profile の件数も元の要約と一致した（[読み戻し結果](evidence-check.json)・[実行](evidence-corrected.json)・[ログ](evidence-corrected.log)）。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 最初の読み戻し確認は、パスを伏せた1ファイルの保存後バイト数を元 manifest と同じとしたため終了1になった（[初回](evidence.json)・[ログ](evidence.log)）。確認器を、その1ファイルについて元ハッシュと保存後ハッシュを分ける形へ直し、同じ ZIP を読み直して終了0・0.629秒になった。元の ZIP・索引・要約・K1 の入力や比較器は変更していない。これは記録用の確認器の修正であり、K1 の失敗・修正・再実行ではない。
 

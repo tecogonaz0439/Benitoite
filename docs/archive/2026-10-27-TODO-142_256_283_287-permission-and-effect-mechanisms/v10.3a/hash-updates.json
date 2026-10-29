@@ -1,0 +1,77 @@
+[
+  {
+    "name": "hashkit",
+    "old": "sha256:957fa49ad82a7d47e84a1f4730596d02f9dcd6dbf4b77321a6166decf235154b",
+    "new": "sha256:3964a146fd259d0fef4d48af4ffb39ac0c824bd9ce6aaa67d3fef0e8211e6bdd",
+    "targets": [
+      "crates/benitoite/testdata/packages/hash-match/package.bnt",
+      "crates/benitoite/testdata/packages/hash-mismatch.diag.json"
+    ],
+    "inputs": [
+      {
+        "path": "package.bnt",
+        "sha256": "241c48d038a579b01fbe845a49d3b24b825816eb77d4b6f5a70bf1a5fd0df141"
+      },
+      {
+        "path": "Value.bnt",
+        "sha256": "b6eab88d0e8ae6bcd83665b5a7687dab90f7c16aa48208345fe715e29df96824"
+      }
+    ]
+  },
+  {
+    "name": "modules-hash",
+    "old": "sha256:4fb9f0d272db82091050add15b118cfe017d3841af3a6020b7ddd19c618be2a4",
+    "new": "sha256:730c7986f912d2cbafaf963824f1f28ed8bd731c4c04e28b7bd3ad288aa67546",
+    "targets": [
+      "crates/benitoite/src/modules/hash.rs::FIXED"
+    ],
+    "inputs": [
+      {
+        "path": "package.bnt",
+        "sha256": "e1a0b8c3d72ffaa1f8557d742af6d6e6d313a32808230351b2f7061641ec2cf1"
+      },
+      {
+        "path": "Z.bnt",
+        "sha256": "552bab6864c7a7b69a502ed1854b9245c0e1a30f008aaa0b281da62585fdb025"
+      },
+      {
+        "path": "A/Sub.bnt",
+        "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+      },
+      {
+        "path": "License.md",
+        "sha256": "adc37366f403835c1470ab2df93d3837d4719372fc1ef8593d922e06f033f8b2"
+      },
+      {
+        "path": "readme.md",
+        "sha256": "13550350a8681c84c861aac2e5b440161c2b33a3e4f302ac680ca5b686de48de"
+      },
+      {
+        "path": "COPYING",
+        "sha256": "4d00967e353d87ca937a76b4b1dafe6a72fd872e4f8370534972ec111cb86c0e"
+      },
+      {
+        "path": "wasm/x.wasm",
+        "sha256": "3cc34474f2adb05aa3e99c9dde5a2066c1bf292310ba8c6026f9027ae11d74d7"
+      }
+    ]
+  },
+  {
+    "name": "package-command",
+    "old": "sha256:b43b05e8f8d278bca44f4159a12db4fe14192cca587a25593e23706dbf4ef9fb",
+    "new": "sha256:4eefbd9e6069548683f4aad0bed473b5b76b734591264b65e49b51854d70ffb8",
+    "targets": [
+      "crates/benitoite/tests/package_command.rs::add_and_update_record_hashes_effect_deltas_and_unchanged_state"
+    ],
+    "inputs": [
+      {
+        "path": "package.bnt",
+        "sha256": "31224c71fd20f257d4f2f550bf6fbf0108b7431639feb8c67d2b979478e439f2"
+      },
+      {
+        "path": "Value.bnt",
+        "sha256": "52573934e713a6f05acffa3bd7aae060036defb25d61a387f1acea6aab456c87"
+      }
+    ]
+  }
+]

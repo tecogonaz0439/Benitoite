@@ -1,0 +1,13 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses Process.Run, Console.Write, Process.Exit
+  bind printed <- try Process.run(Process.command(program: "echo", arguments: ["hello", "$HOME"])) or die
+  Console.write(Process.Output.standardOutput(printed))
+  bind sort <- Process.Command(..Process.command(program: "sort", arguments: []), environment: Map.fromList([Pair("LC_ALL", "C")]), input: Option.Some("pear\napple\n"))
+  bind sorted <- try Process.run(sort) or die
+  Console.write(Process.Output.standardOutput(sorted))
+  bind failed <- try Process.run(Process.command(program: "sh", arguments: ["-c", "exit 3"])) or die
+  Console.writeLine("exit code: ${Process.Output.exitCode(failed)}")
+  return ()
+end function

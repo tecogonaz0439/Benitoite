@@ -1,0 +1,2276 @@
+== wait-for-lock start 02:55:32
+== lock acquired 02:55:32 after 0s
+⚠ [86/439] Replayed Benitoite.Release.Lemmas.MembershipBase
+warning: Benitoite/Release/Lemmas/MembershipBase.lean:119:30: This simp argument is unused:
+  Ty.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.subst, Ty.substAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Lemmas/MembershipBase.lean:137:71: `if_true` has been deprecated: Use `ite_true` instead
+⚠ [192/439] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:969:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1246:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [198/439] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:782:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:792:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1243:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1758:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1765:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2044:30: This simp argument is unused:
+  targetOperationAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AbstractEnv.standardAt, standards, apiAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2090:56: This simp argument is unused:
+  standardCallHead
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2251:75: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [arithmeticOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:117: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [206/439] Replayed Benitoite.Interval.RangeBorrowed
+warning: Benitoite/Interval/RangeBorrowed.lean:204:27: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [noArgs, hl, hp, ne_eq, not_true_eq_false, false_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:207:24: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:208:62: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rule, ha]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [209/439] Replayed Benitoite.Interval.BudgetRange
+warning: Benitoite/Interval/BudgetRange.lean:367:27: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:367:34: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:19: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:26: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:373:51: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:29: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:36: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:42: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:21: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:28: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:34: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:419:53: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:35: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:45: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:51: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:27: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:37: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:43: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:427:72: This simp argument is unused:
+  hMaximum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:530:23: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:532:15: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:35: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:42: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:48: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:27: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:34: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:40: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:596:23: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:599:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:25: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:33: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:39: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:17: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:25: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:31: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:614:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:621:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:664:35: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:666:27: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [211/439] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:23: This simp argument is unused:
+  binarySupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:40: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [binarySupported]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:182:19: Variable name `labels` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _labels
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [215/439] Replayed Benitoite.Interval.SyntacticReach
+warning: Benitoite/Interval/SyntacticReach.lean:83:28: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:85:30: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:156:154: This simp argument is unused:
+  List.append_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [syntacticReachChildren, List.map_append, syntacticReachExpr_sources, syntacticReachBlock_sources,
+    syntacticReachArms_sources, syntacticReachExprs_sources, outsideSyntacticReach_sources, surfacePreorder,
+    List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [216/439] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:472:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Benitoite/Interval/BudgetNormal.lean:493:57: This simp argument is unused:
+  exprsChildren
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fieldAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:1328:0: unused `termination_by`, function is not recursive
+⚠ [218/439] Replayed Benitoite.Interval.BudgetSound
+warning: Benitoite/Interval/BudgetSound.lean:425:31: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:425:60: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_assoc, Nat.add_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:639:105: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:727:27: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [222/439] Replayed Benitoite.Interval.BudgetCallReach
+warning: Benitoite/Interval/BudgetCallReach.lean:384:26: This simp argument is unused:
+  exprsTables_sources
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [CallReach.children, childrenTables, append_sources, exprTables_sources, blockTables_sources,
+    armListTables_sources, outside, surfacePreorder, List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [412/439] Built Benitoite.Surface.CheckSoundBasicExpr (606ms)
+✔ [413/439] Built SurfaceCheck.Validation (732ms)
+✔ [414/439] Built SurfaceCheck.Validation:c.o (83ms)
+✔ [415/439] Built Benitoite.Surface.CheckSoundCollections (423ms)
+✔ [416/439] Built SurfaceCheck.All (586ms)
+✔ [418/439] Built Benitoite.Surface.CheckSoundControl (581ms)
+✔ [419/439] Built surfaceCheckAll:exe (487ms)
+✔ [420/439] Built Benitoite.Surface.CheckSoundDicts (397ms)
+✔ [421/439] Built Benitoite.Surface.CheckSound (318ms)
+✔ [422/439] Built Benitoite.Surface.CheckTablesSound (292ms)
+✔ [423/439] Built Benitoite.Surface.CheckProgramSound (347ms)
+✔ [424/439] Built Benitoite.Surface.Lemmas.Scoped (8.7s)
+✖ [425/439] Building Benitoite.Surface.CheckExamples (6.0s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/CheckExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/CheckExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/CheckExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/CheckExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/CheckExamples.setup.json --json
+error: Benitoite/Surface/CheckExamples.lean:455:45: Application type mismatch: The argument
+  vs
+has type
+  List Val
+but is expected to have type
+  List Scope.Domain.Range
+in the application
+  renderBuiltins.delta b ts es vs
+error: Benitoite/Surface/CheckExamples.lean:554:48: Tactic `decide` failed for proposition
+  List.map result calls =
+    [(some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]),
+      (some "7tag9", ["first", "second"]), (some "7tag9", ["first", "second"])]
+because its `Decidable` instance
+  instDecidableEqList (List.map result calls)
+    [(some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]),
+      (some "7tag9", ["first", "second"]), (some "7tag9", ["first", "second"])]
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqProd`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Option.instDecidableEq`, `String.decEq`, `UInt8.decEq`, `instDecidableEqOpRef`, and `instDecidableEqOpRef.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    match
+      (match
+          step program builtins oracle Examples.rel Examples.fresh
+            (State.run
+              (Comp.instantiate
+                (Val.substList
+                    (instSubst
+                      (Val.substList
+                        (instSubst
+                          [Val.subst
+                              (instSubst
+                                (Val.substList
+                                  (instSubst
+                                    [Val.subst
+                                        (instSubst
+                                          [Val.subst
+                                              (instSubst
+                                                (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)]))
+                                              (Val.substTyAt 0 [intTy] []
+                                                (Val.subst
+                                                  (upSubst (2 + 2 + 1)
+                                                    (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                  (Val.rename (fun x => x + 0)
+                                                    (Val.lam ["unused"] [unitTy]
+                                                      (desugarBlock (fun x x_1 => none) Position.tail
+                                                        (Block.last
+                                                          (Expr.returnE unitTy
+                                                            ((Expr.primName "append" [] []).call
+                                                              [some "left", some "right"] [0, 1]
+                                                              (Exprs.cons
+                                                                (showValue
+                                                                  (DictEv.clause
+                                                                    { outer := 2, arity := 2, dictCount := 2 }
+                                                                    (if false = true then 1 else 0) 1)
+                                                                  (Expr.local 3))
+                                                                (Exprs.cons
+                                                                  (showValue
+                                                                    (DictEv.clause
+                                                                      { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                    (Expr.local 2) "tag")
+                                                                  Exprs.nil))))))))
+                                                  (upLocalSubst (2 + 2 + 1)
+                                                    (instLocalSubst
+                                                      [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                              (instLocalSubst
+                                                (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]).length)])
+                                        (Val.subst
+                                          (upSubst 1
+                                            (instSubst
+                                              (Val.substList
+                                                  (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                  (Val.substList
+                                                    (upSubst 1
+                                                      (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                      (Val.renameList
+                                                          (fun x =>
+                                                            x +
+                                                              (0 + (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (DictEv.toValList
+                                                            [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                        (fun vs =>
+                                                            recordFields
+                                                              ([].length +
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              (List.range [].length ++ [1, 0]) vs
+                                                              (Val.const Const.unit))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              [] ++
+                                                            boundVars
+                                                              (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                      (upLocalSubst 1
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.dict "TagInt" [] [],
+                                                                Val.dict "FancyInt" [] []].length))))
+                                                    (upLocalSubst 1
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                  (instLocalSubst
+                                                    [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                [Val.loc (Examples.fresh Store.empty)])))
+                                          (Val.substTyAt 0 [intTy] []
+                                            (Val.subst
+                                              (upSubst 1
+                                                (upSubst (2 + 2 + 1)
+                                                  (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                              (Val.rename (fun x => x + ([].length + 1)) (Val.const Const.unit))
+                                              (upLocalSubst 1
+                                                (upLocalSubst (2 + 2 + 1)
+                                                  (instLocalSubst
+                                                    [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length)))))
+                                          (upLocalSubst 1
+                                            (instLocalSubst
+                                              (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)]).length)))
+                                        (instLocalSubst
+                                          [Val.subst
+                                                (instSubst
+                                                  (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]))
+                                                (Val.substTyAt 0 [intTy] []
+                                                  (Val.subst
+                                                    (upSubst (2 + 2 + 1)
+                                                      (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                    (Val.rename (fun x => x + 0)
+                                                      (Val.lam ["unused"] [unitTy]
+                                                        (desugarBlock (fun x x_1 => none) Position.tail
+                                                          (Block.last
+                                                            (Expr.returnE unitTy
+                                                              ((Expr.primName "append" [] []).call
+                                                                [some "left", some "right"] [0, 1]
+                                                                (Exprs.cons
+                                                                  (showValue
+                                                                    (DictEv.clause
+                                                                      { outer := 2, arity := 2, dictCount := 2 }
+                                                                      (if false = true then 1 else 0) 1)
+                                                                    (Expr.local 3))
+                                                                  (Exprs.cons
+                                                                    (showValue
+                                                                      (DictEv.clause
+                                                                        { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                      (Expr.local 2) "tag")
+                                                                    Exprs.nil))))))))
+                                                    (upLocalSubst (2 + 2 + 1)
+                                                      (instLocalSubst
+                                                        [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                                (instLocalSubst
+                                                  (Val.substList
+                                                        (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                          (Val.substList
+                                                            (upSubst 1
+                                                              (upSubst 1
+                                                                (instSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []])))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (0 +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length))
+                                                                (DictEv.toValList
+                                                                  [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                              (fun vs =>
+                                                                  recordFields
+                                                                    ([].length +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                    (List.range [].length ++ [1, 0]) vs
+                                                                    (Val.const Const.unit))
+                                                                (Val.renameList
+                                                                    (fun x =>
+                                                                      x +
+                                                                        (desugarExprs (fun x x_1 => none)
+                                                                            pairArgs).length)
+                                                                    [] ++
+                                                                  boundVars
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (upLocalSubst 1
+                                                              (upLocalSubst 1
+                                                                (instLocalSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                      Val.dict "FancyInt" [] []].length))))
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.const
+                                                                    (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                      [Val.loc (Examples.fresh Store.empty)]).length)].length)])
+                                  (Val.substList
+                                    (upSubst 1
+                                      (instSubst
+                                        [Val.subst
+                                            (instSubst
+                                              (Val.substList
+                                                  (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                  (Val.substList
+                                                    (upSubst 1
+                                                      (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                      (Val.renameList
+                                                          (fun x =>
+                                                            x +
+                                                              (0 + (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (DictEv.toValList
+                                                            [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                        (fun vs =>
+                                                            recordFields
+                                                              ([].length +
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              (List.range [].length ++ [1, 0]) vs
+                                                              (Val.const Const.unit))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              [] ++
+                                                            boundVars
+                                                              (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                      (upLocalSubst 1
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.dict "TagInt" [] [],
+                                                                Val.dict "FancyInt" [] []].length))))
+                                                    (upLocalSubst 1
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                  (instLocalSubst
+                                                    [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                [Val.loc (Examples.fresh Store.empty)]))
+                                            (Val.substTyAt 0 [intTy] []
+                                              (Val.subst
+                                                (upSubst (2 + 2 + 1)
+                                                  (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                (Val.rename (fun x => x + 0)
+                                                  (Val.lam ["unused"] [unitTy]
+                                                    (desugarBlock (fun x x_1 => none) Position.tail
+                                                      (Block.last
+                                                        (Expr.returnE unitTy
+                                                          ((Expr.primName "append" [] []).call
+                                                            [some "left", some "right"] [0, 1]
+                                                            (Exprs.cons
+                                                              (showValue
+                                                                (DictEv.clause
+                                                                  { outer := 2, arity := 2, dictCount := 2 }
+                                                                  (if false = true then 1 else 0) 1)
+                                                                (Expr.local 3))
+                                                              (Exprs.cons
+                                                                (showValue
+                                                                  (DictEv.clause
+                                                                    { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                  (Expr.local 2) "tag")
+                                                                Exprs.nil))))))))
+                                                (upLocalSubst (2 + 2 + 1)
+                                                  (instLocalSubst
+                                                    [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                            (instLocalSubst
+                                              (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)]).length)]))
+                                    (Val.substList
+                                      (upSubst 1
+                                        (upSubst 1
+                                          (instSubst
+                                            (Val.substList
+                                                (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                (Val.substList
+                                                  (upSubst 1
+                                                    (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                  (Val.substList
+                                                    (upSubst 1
+                                                      (upSubst 1
+                                                        (instSubst
+                                                          [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                    (Val.renameList
+                                                        (fun x =>
+                                                          x + (0 + (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (DictEv.toValList
+                                                          [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                      (fun vs =>
+                                                          recordFields
+                                                            ([].length +
+                                                              (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                            (List.range [].length ++ [1, 0]) vs (Val.const Const.unit))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                            [] ++
+                                                          boundVars (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                    (upLocalSubst 1
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.dict "TagInt" [] [],
+                                                              Val.dict "FancyInt" [] []].length))))
+                                                  (upLocalSubst 1
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                (instLocalSubst
+                                                  [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                              [Val.loc (Examples.fresh Store.empty)]))))
+                                      (Val.substTyAtList 0 [intTy] []
+                                        (Val.substList
+                                          (upSubst 1
+                                            (upSubst 1
+                                              (upSubst (2 + 2 + 1)
+                                                (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))))
+                                          ((fun vs =>
+                                              recordFields
+                                                ([].length +
+                                                  (desugarExprs (fun x x_1 => none)
+                                                      (Exprs.cons Expr.unit Exprs.nil)).length)
+                                                (List.range [].length ++ [0]) vs (Val.const Const.unit))
+                                            (Val.renameList
+                                                (fun x =>
+                                                  x +
+                                                    ((desugarExprs (fun x x_1 => none)
+                                                          (Exprs.cons Expr.unit Exprs.nil)).length +
+                                                      1))
+                                                [] ++
+                                              boundVars
+                                                (desugarExprs (fun x x_1 => none)
+                                                    (Exprs.cons Expr.unit Exprs.nil)).length))
+                                          (upLocalSubst 1
+                                            (upLocalSubst 1
+                                              (upLocalSubst (2 + 2 + 1)
+                                                (instLocalSubst
+                                                  [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))))
+                                      (upLocalSubst 1
+                                        (upLocalSubst 1
+                                          (instLocalSubst
+                                            (Val.substList
+                                                  (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                  (Val.substList
+                                                    (upSubst 1
+                                                      (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                      (Val.renameList
+                                                          (fun x =>
+                                                            x +
+                                                              (0 + (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (DictEv.toValList
+                                                            [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                        (fun vs =>
+                                                            recordFields
+                                                              ([].length +
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              (List.range [].length ++ [1, 0]) vs
+                                                              (Val.const Const.unit))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              [] ++
+                                                            boundVars
+                                                              (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                      (upLocalSubst 1
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.dict "TagInt" [] [],
+                                                                Val.dict "FancyInt" [] []].length))))
+                                                    (upLocalSubst 1
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                  (instLocalSubst
+                                                    [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                [Val.loc (Examples.fresh Store.empty)]).length))))
+                                    (upLocalSubst 1
+                                      (instLocalSubst
+                                        [Val.subst
+                                              (instSubst
+                                                (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)]))
+                                              (Val.substTyAt 0 [intTy] []
+                                                (Val.subst
+                                                  (upSubst (2 + 2 + 1)
+                                                    (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                  (Val.rename (fun x => x + 0)
+                                                    (Val.lam ["unused"] [unitTy]
+                                                      (desugarBlock (fun x x_1 => none) Position.tail
+                                                        (Block.last
+                                                          (Expr.returnE unitTy
+                                                            ((Expr.primName "append" [] []).call
+                                                              [some "left", some "right"] [0, 1]
+                                                              (Exprs.cons
+                                                                (showValue
+                                                                  (DictEv.clause
+                                                                    { outer := 2, arity := 2, dictCount := 2 }
+                                                                    (if false = true then 1 else 0) 1)
+                                                                  (Expr.local 3))
+                                                                (Exprs.cons
+                                                                  (showValue
+                                                                    (DictEv.clause
+                                                                      { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                    (Expr.local 2) "tag")
+                                                                  Exprs.nil))))))))
+                                                  (upLocalSubst (2 + 2 + 1)
+                                                    (instLocalSubst
+                                                      [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                              (instLocalSubst
+                                                (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]).length)].length)))
+                                  (instLocalSubst
+                                    [Val.subst
+                                          (instSubst
+                                            [Val.subst
+                                                (instSubst
+                                                  (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]))
+                                                (Val.substTyAt 0 [intTy] []
+                                                  (Val.subst
+                                                    (upSubst (2 + 2 + 1)
+                                                      (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                    (Val.rename (fun x => x + 0)
+                                                      (Val.lam ["unused"] [unitTy]
+                                                        (desugarBlock (fun x x_1 => none) Position.tail
+                                                          (Block.last
+                                                            (Expr.returnE unitTy
+                                                              ((Expr.primName "append" [] []).call
+                                                                [some "left", some "right"] [0, 1]
+                                                                (Exprs.cons
+                                                                  (showValue
+                                                                    (DictEv.clause
+                                                                      { outer := 2, arity := 2, dictCount := 2 }
+                                                                      (if false = true then 1 else 0) 1)
+                                                                    (Expr.local 3))
+                                                                  (Exprs.cons
+                                                                    (showValue
+                                                                      (DictEv.clause
+                                                                        { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                      (Expr.local 2) "tag")
+                                                                    Exprs.nil))))))))
+                                                    (upLocalSubst (2 + 2 + 1)
+                                                      (instLocalSubst
+                                                        [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                                (instLocalSubst
+                                                  (Val.substList
+                                                        (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                          (Val.substList
+                                                            (upSubst 1
+                                                              (upSubst 1
+                                                                (instSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []])))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (0 +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length))
+                                                                (DictEv.toValList
+                                                                  [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                              (fun vs =>
+                                                                  recordFields
+                                                                    ([].length +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                    (List.range [].length ++ [1, 0]) vs
+                                                                    (Val.const Const.unit))
+                                                                (Val.renameList
+                                                                    (fun x =>
+                                                                      x +
+                                                                        (desugarExprs (fun x x_1 => none)
+                                                                            pairArgs).length)
+                                                                    [] ++
+                                                                  boundVars
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (upLocalSubst 1
+                                                              (upLocalSubst 1
+                                                                (instLocalSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                      Val.dict "FancyInt" [] []].length))))
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.const
+                                                                    (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                      [Val.loc (Examples.fresh Store.empty)]).length)])
+                                          (Val.subst
+                                            (upSubst 1
+                                              (instSubst
+                                                (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)])))
+                                            (Val.substTyAt 0 [intTy] []
+                                              (Val.subst
+                                                (upSubst 1
+                                                  (upSubst (2 + 2 + 1)
+                                                    (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                (Val.rename (fun x => x + ([].length + 1)) (Val.const Const.unit))
+                                                (upLocalSubst 1
+                                                  (upLocalSubst (2 + 2 + 1)
+                                                    (instLocalSubst
+                                                      [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length)))))
+                                            (upLocalSubst 1
+                                              (instLocalSubst
+                                                (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]).length)))
+                                          (instLocalSubst
+                                            [Val.subst
+                                                  (instSubst
+                                                    (Val.substList
+                                                        (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                          (Val.substList
+                                                            (upSubst 1
+                                                              (upSubst 1
+                                                                (instSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []])))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (0 +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length))
+                                                                (DictEv.toValList
+                                                                  [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                              (fun vs =>
+                                                                  recordFields
+                                                                    ([].length +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                    (List.range [].length ++ [1, 0]) vs
+                                                                    (Val.const Const.unit))
+                                                                (Val.renameList
+                                                                    (fun x =>
+                                                                      x +
+                                                                        (desugarExprs (fun x x_1 => none)
+                                                                            pairArgs).length)
+                                                                    [] ++
+                                                                  boundVars
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (upLocalSubst 1
+                                                              (upLocalSubst 1
+                                                                (instLocalSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                      Val.dict "FancyInt" [] []].length))))
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.const
+                                                                    (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                      [Val.loc (Examples.fresh Store.empty)]))
+                                                  (Val.substTyAt 0 [intTy] []
+                                                    (Val.subst
+                                                      (upSubst (2 + 2 + 1)
+                                                        (instSubst
+                                                          [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                      (Val.rename (fun x => x + 0)
+                                                        (Val.lam ["unused"] [unitTy]
+                                                          (desugarBlock (fun x x_1 => none) Position.tail
+                                                            (Block.last
+                                                              (Expr.returnE unitTy
+                                                                ((Expr.primName "append" [] []).call
+                                                                  [some "left", some "right"] [0, 1]
+                                                                  (Exprs.cons
+                                                                    (showValue
+                                                                      (DictEv.clause
+                                                                        { outer := 2, arity := 2, dictCount := 2 }
+                                                                        (if false = true then 1 else 0) 1)
+                                                                      (Expr.local 3))
+                                                                    (Exprs.cons
+                                                                      (showValue
+                                                                        (DictEv.clause
+                                                                          { outer := 2, arity := 2, dictCount := 2 } 1
+                                                                          1)
+                                                                        (Expr.local 2) "tag")
+                                                                      Exprs.nil))))))))
+                                                      (upLocalSubst (2 + 2 + 1)
+                                                        (instLocalSubst
+                                                          [Val.dict "TagInt" [] [],
+                                                              Val.dict "FancyInt" [] []].length))))
+                                                  (instLocalSubst
+                                                    (Val.substList
+                                                          (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                          (Val.substList
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                            (Val.substList
+                                                              (upSubst 1
+                                                                (upSubst 1
+                                                                  (instSubst
+                                                                    [Val.dict "TagInt" [] [],
+                                                                      Val.dict "FancyInt" [] []])))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (0 +
+                                                                        (desugarExprs (fun x x_1 => none)
+                                                                            pairArgs).length))
+                                                                  (DictEv.toValList
+                                                                    [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                                (fun vs =>
+                                                                    recordFields
+                                                                      ([].length +
+                                                                        (desugarExprs (fun x x_1 => none)
+                                                                            pairArgs).length)
+                                                                      (List.range [].length ++ [1, 0]) vs
+                                                                      (Val.const Const.unit))
+                                                                  (Val.renameList
+                                                                      (fun x =>
+                                                                        x +
+                                                                          (desugarExprs (fun x x_1 => none)
+                                                                              pairArgs).length)
+                                                                      [] ++
+                                                                    boundVars
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length))
+                                                              (upLocalSubst 1
+                                                                (upLocalSubst 1
+                                                                  (instLocalSubst
+                                                                    [Val.dict "TagInt" [] [],
+                                                                        Val.dict "FancyInt" [] []].length))))
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.const
+                                                                      (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                          (instLocalSubst
+                                                            [Val.const
+                                                                  (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                        [Val.loc
+                                                            (Examples.fresh Store.empty)]).length)].length)].length)))
+                              (Val.subst
+                                (upSubst (List.map (Ty.substAt 0 [intTy] []) [unitTy]).length
+                                  (instSubst
+                                    [Val.subst
+                                        (instSubst
+                                          [Val.subst
+                                              (instSubst
+                                                (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)]))
+                                              (Val.substTyAt 0 [intTy] []
+                                                (Val.subst
+                                                  (upSubst (2 + 2 + 1)
+                                                    (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                  (Val.rename (fun x => x + 0)
+                                                    (Val.lam ["unused"] [unitTy]
+                                                      (desugarBlock (fun x x_1 => none) Position.tail
+                                                        (Block.last
+                                                          (Expr.returnE unitTy
+                                                            ((Expr.primName "append" [] []).call
+                                                              [some "left", some "right"] [0, 1]
+                                                              (Exprs.cons
+                                                                (showValue
+                                                                  (DictEv.clause
+                                                                    { outer := 2, arity := 2, dictCount := 2 }
+                                                                    (if false = true then 1 else 0) 1)
+                                                                  (Expr.local 3))
+                                                                (Exprs.cons
+                                                                  (showValue
+                                                                    (DictEv.clause
+                                                                      { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                    (Expr.local 2) "tag")
+                                                                  Exprs.nil))))))))
+                                                  (upLocalSubst (2 + 2 + 1)
+                                                    (instLocalSubst
+                                                      [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                              (instLocalSubst
+                                                (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]).length)])
+                                        (Val.subst
+                                          (upSubst 1
+                                            (instSubst
+                                              (Val.substList
+                                                  (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                  (Val.substList
+                                                    (upSubst 1
+                                                      (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                      (Val.renameList
+                                                          (fun x =>
+                                                            x +
+                                                              (0 + (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (DictEv.toValList
+                                                            [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                        (fun vs =>
+                                                            recordFields
+                                                              ([].length +
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              (List.range [].length ++ [1, 0]) vs
+                                                              (Val.const Const.unit))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                              [] ++
+                                                            boundVars
+                                                              (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                      (upLocalSubst 1
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.dict "TagInt" [] [],
+                                                                Val.dict "FancyInt" [] []].length))))
+                                                    (upLocalSubst 1
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                  (instLocalSubst
+                                                    [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                [Val.loc (Examples.fresh Store.empty)])))
+                                          (Val.substTyAt 0 [intTy] []
+                                            (Val.subst
+                                              (upSubst 1
+                                                (upSubst (2 + 2 + 1)
+                                                  (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                              (Val.rename (fun x => x + ([].length + 1)) (Val.const Const.unit))
+                                              (upLocalSubst 1
+                                                (upLocalSubst (2 + 2 + 1)
+                                                  (instLocalSubst
+                                                    [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length)))))
+                                          (upLocalSubst 1
+                                            (instLocalSubst
+                                              (Val.substList
+                                                    (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                    (Val.substList
+                                                      (upSubst 1
+                                                        (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                        (Val.renameList
+                                                            (fun x =>
+                                                              x +
+                                                                (0 +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (DictEv.toValList
+                                                              [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                          (fun vs =>
+                                                              recordFields
+                                                                ([].length +
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                (List.range [].length ++ [1, 0]) vs
+                                                                (Val.const Const.unit))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                [] ++
+                                                              boundVars
+                                                                (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                        (upLocalSubst 1
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.dict "TagInt" [] [],
+                                                                  Val.dict "FancyInt" [] []].length))))
+                                                      (upLocalSubst 1
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                    (instLocalSubst
+                                                      [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                  [Val.loc (Examples.fresh Store.empty)]).length)))
+                                        (instLocalSubst
+                                          [Val.subst
+                                                (instSubst
+                                                  (Val.substList
+                                                      (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                      (Val.substList
+                                                        (upSubst 1
+                                                          (instSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (upSubst 1
+                                                              (instSubst
+                                                                [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                          (Val.renameList
+                                                              (fun x =>
+                                                                x +
+                                                                  (0 +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                              (DictEv.toValList
+                                                                [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                            (fun vs =>
+                                                                recordFields
+                                                                  ([].length +
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                                  (List.range [].length ++ [1, 0]) vs
+                                                                  (Val.const Const.unit))
+                                                              (Val.renameList
+                                                                  (fun x =>
+                                                                    x +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                  [] ++
+                                                                boundVars
+                                                                  (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                          (upLocalSubst 1
+                                                            (upLocalSubst 1
+                                                              (instLocalSubst
+                                                                [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []].length))))
+                                                        (upLocalSubst 1
+                                                          (instLocalSubst
+                                                            [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                      (instLocalSubst
+                                                        [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                    [Val.loc (Examples.fresh Store.empty)]))
+                                                (Val.substTyAt 0 [intTy] []
+                                                  (Val.subst
+                                                    (upSubst (2 + 2 + 1)
+                                                      (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []]))
+                                                    (Val.rename (fun x => x + 0)
+                                                      (Val.lam ["unused"] [unitTy]
+                                                        (desugarBlock (fun x x_1 => none) Position.tail
+                                                          (Block.last
+                                                            (Expr.returnE unitTy
+                                                              ((Expr.primName "append" [] []).call
+                                                                [some "left", some "right"] [0, 1]
+                                                                (Exprs.cons
+                                                                  (showValue
+                                                                    (DictEv.clause
+                                                                      { outer := 2, arity := 2, dictCount := 2 }
+                                                                      (if false = true then 1 else 0) 1)
+                                                                    (Expr.local 3))
+                                                                  (Exprs.cons
+                                                                    (showValue
+                                                                      (DictEv.clause
+                                                                        { outer := 2, arity := 2, dictCount := 2 } 1 1)
+                                                                      (Expr.local 2) "tag")
+                                                                    Exprs.nil))))))))
+                                                    (upLocalSubst (2 + 2 + 1)
+                                                      (instLocalSubst
+                                                        [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                                (instLocalSubst
+                                                  (Val.substList
+                                                        (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                                        (Val.substList
+                                                          (upSubst 1
+                                                            (instSubst
+                                                              [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                                          (Val.substList
+                                                            (upSubst 1
+                                                              (upSubst 1
+                                                                (instSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                    Val.dict "FancyInt" [] []])))
+                                                            (Val.renameList
+                                                                (fun x =>
+                                                                  x +
+                                                                    (0 +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length))
+                                                                (DictEv.toValList
+                                                                  [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                              (fun vs =>
+                                                                  recordFields
+                                                                    ([].length +
+                                                                      (desugarExprs (fun x x_1 => none)
+                                                                          pairArgs).length)
+                                                                    (List.range [].length ++ [1, 0]) vs
+                                                                    (Val.const Const.unit))
+                                                                (Val.renameList
+                                                                    (fun x =>
+                                                                      x +
+                                                                        (desugarExprs (fun x x_1 => none)
+                                                                            pairArgs).length)
+                                                                    [] ++
+                                                                  boundVars
+                                                                    (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                            (upLocalSubst 1
+                                                              (upLocalSubst 1
+                                                                (instLocalSubst
+                                                                  [Val.dict "TagInt" [] [],
+                                                                      Val.dict "FancyInt" [] []].length))))
+                                                          (upLocalSubst 1
+                                                            (instLocalSubst
+                                                              [Val.const
+                                                                    (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                                        (instLocalSubst
+                                                          [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                                      [Val.loc (Examples.fresh Store.empty)]).length)].length)]))
+                                (Val.rename (upRen (List.map (Ty.substAt 0 [intTy] []) [unitTy]).length fun x => x + 1)
+                                  (Val.subst
+                                    (upSubst (List.map (Ty.substAt 0 [intTy] []) [unitTy]).length
+                                      (instSubst
+                                        (Val.substList (instSubst [Val.const (Const.integer ⟨7, builtins._proof_1⟩)])
+                                            (Val.substList
+                                              (upSubst 1 (instSubst [Val.const (Const.integer ⟨9, builtins._proof_2⟩)]))
+                                              (Val.substList
+                                                (upSubst 1
+                                                  (upSubst 1
+                                                    (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                                (Val.renameList
+                                                    (fun x =>
+                                                      x + (0 + (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                    (DictEv.toValList
+                                                      [(DictEv.local 0).super "Show", DictEv.local 1]) ++
+                                                  (fun vs =>
+                                                      recordFields
+                                                        ([].length + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                        (List.range [].length ++ [1, 0]) vs (Val.const Const.unit))
+                                                    (Val.renameList
+                                                        (fun x =>
+                                                          x + (desugarExprs (fun x x_1 => none) pairArgs).length)
+                                                        [] ++
+                                                      boundVars (desugarExprs (fun x x_1 => none) pairArgs).length))
+                                                (upLocalSubst 1
+                                                  (upLocalSubst 1
+                                                    (instLocalSubst
+                                                      [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length))))
+                                              (upLocalSubst 1
+                                                (instLocalSubst
+                                                  [Val.const (Const.integer ⟨9, builtins._proof_2⟩)].length)))
+                                            (instLocalSubst
+                                              [Val.const (Const.integer ⟨7, builtins._proof_1⟩)].length) ++
+                                          [Val.loc (Examples.fresh Store.empty)])))
+                                    (Val.substTyAt 0 [intTy] []
+                                      (Val.subst
+                                        (upSubst [unitTy].length
+                                          (upSubst (2 + 2 + 1)
+                                            (instSubst [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []])))
+                                        (Val.rename (upRen [unitTy].length fun x => x + 0)
+                                          (Val.rename (fun x => x + [].length)
+                                            (Val.rename (fun x => x + [].length) (Val.var 3))))
+                                        (upLocalSubst [unitTy].length
+                                          (upLocalSubst (2 + 2 + 1)
+                                            (instLocalSubst
+                                              [Val.dict "TagInt" [] [], Val.dict "FancyInt" [] []].length)))))
+                                    (upLocalSubst (List.map (Ty.substAt 0 [intTy] []) [unitTy]).length
+                                      (instLocalSubst (Val.substList (instSubst [Val.const ⋯, ⋯]) ⋯ ⋯ ++ ⋯).length))))
+                                ⋯)
+                              ⋯,
+                            ⋯])
+                        ⋯ ⋯))
+                    ⋯ ⋯ ++
+                  ⋯)
+                ⋯)
+              ⋯ ⋯) with
+        | ⋯ => ⋯
+        | ⋯ => ⋯
+        | ⋯ => ⋯).fst with
+    | ⋯ => ⋯
+    | ⋯ => ⋯ with
+  | ⋯ => ⋯
+  | ⋯ => ⋯
+error: Benitoite/Surface/CheckExamples.lean:599:69: Tactic `decide` failed for proposition
+  List.map fancyResult [false, true] = [some "7", some "7"]
+because its `Decidable` instance
+  instDecidableEqList (List.map fancyResult [false, true]) [some "7", some "7"]
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Option.instDecidableEq`, `String.decEq`, `UInt8.decEq`, `instDecidableEqOpRef`, and `instDecidableEqOpRef.decEq`, reduction got stuck at the `Decidable` instance
+  match fancyResult false with
+  | none =>
+    match some "7" with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some "7" with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqString a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+✔ [426/439] Built Benitoite.Surface.LogExamples (6.9s)
+✖ [427/439] Building Benitoite.Surface.Lemmas.Typing (6.8s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/Lemmas/Typing.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Typing.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Typing.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/Lemmas/Typing.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/Lemmas/Typing.setup.json --json
+error: Benitoite/Surface/Lemmas/Typing.lean:619:38: Application type mismatch: The argument
+  hn
+has type
+  NamesWF sg.names sg.params
+but is expected to have type
+  B.RangeAdmissible b✝ sg ?m.10799
+in the application
+  HasTypeVQ.V_Prim hs hn
+error: Benitoite/Surface/Lemmas/Typing.lean:619:12: Tactic `apply` failed: could not unify the conclusion of `HasTypeVQ.V_Prim hs sorry`
+  HasTypeVQ ?m.10791 B ?m.10795 ?m.10794 ?m.10793 ?m.10796 (Val.prim b✝ ?m.10800 ?m.10801 ?m.10799)
+    (fnTy (PrimSig.inst ?m.10799 sg).names (PrimSig.inst ?m.10799 sg).params (PrimSig.inst ?m.10799 sg).ret
+      (PrimSig.inst ?m.10799 sg).eff ?m.10800 ?m.10801)
+with the goal
+  HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C (binds [t, t] ++ Γ) (Val.prim b✝ ts [] [])
+    (fnTy sg.names sg.params sg.ret sg.eff ts [])
+
+Note: The full type of `HasTypeVQ.V_Prim hs sorry` is
+  NamesWF (PrimSig.inst ?m.10799 sg).names (PrimSig.inst ?m.10799 sg).params →
+    PrimitiveAdmissible ?m.10793 (PrimSig.inst ?m.10799 sg) ?m.10794 ?m.10800 ?m.10801 →
+      HasTypeVQ ?m.10791 B ?m.10795 ?m.10794 ?m.10793 ?m.10796 (Val.prim b✝ ?m.10800 ?m.10801 ?m.10799)
+        (fnTy (PrimSig.inst ?m.10799 sg).names (PrimSig.inst ?m.10799 sg).params (PrimSig.inst ?m.10799 sg).ret
+          (PrimSig.inst ?m.10799 sg).eff ?m.10800 ?m.10801)
+
+case h.a
+Q : NoFailCtx
+view : CoverageView
+p : Program
+B : Builtins
+op : OpPrim
+Δb : BuilderCtx
+C : List TParam
+Γ : List (Option Ty)
+hAlign : BuilderCtx.Aligned Γ Δb
+hΔ : BuilderCtx.Clean C.length Δb
+hwf : p.WellFormed
+hsig : ∀ (b : PrimName) (s : PrimSig), B.sig b = some s → s.Scoped
+R✝ : Option Ty
+pos✝ : Position
+e : Expr
+a✝¹ : Ty
+ε : Eff
+pe : Nat → Prop
+h : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R✝ pos✝ e a✝¹ ε
+hΓ : EnvClean C.length Γ
+pos : Position
+R : Option Ty
+a : Ty
+o : BinOp
+t : Ty
+b✝ : PrimName
+ts : List Ty
+sg : PrimSig
+lhs✝ rhs✝ : Expr
+εl✝ εr✝ : Eff
+a✝ : (Operator.binary o).allowed t = true
+hop : op (Operator.binary o) t = some (b✝, ts)
+hts : ts = (Operator.binary o).typeArgs t
+hs : B.sig b✝ = some sg
+hn : NamesWF sg.names sg.params
+ht : ts.length = sg.ntys
+he : sg.neffs = 0 ∧ sg.nranges = 0
+ha : sg.admits C ts
+hfn : fnTy sg.names sg.params sg.ret sg.eff ts [] = Ty.fn ["left", "right"] [t, t] a Eff.empty
+hl : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R Position.other lhs✝ t εl✝
+hr : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R Position.other rhs✝ t εr✝
+sc : Expr.Scoped C.length pe Γ.length (Expr.binary o t lhs✝ rhs✝)
+hR : ∀ (r : Ty), R = some r → TyOK C.length r
+resultWF : Ty.WF 0 C.length a
+hl' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op Position.other lhs✝) t εl✝ Δb.toLocal
+hr' : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op Position.other rhs✝) t εr✝ Δb.toLocal
+hc : Ty.VarsInList 0 C.length (fun x => True) [t, t]
+vs : List Val
+hv : HasTypeVsQ (desugarProgram op p) B StoreTy.empty Q C (binds [t, t] ++ Γ) vs [t, t]
+⊢ HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C (binds [t, t] ++ Γ) (Val.prim b✝ ts [] [])
+    (fnTy sg.names sg.params sg.ret sg.eff ts [])
+error: Benitoite/Surface/Lemmas/Typing.lean:633:38: Application type mismatch: The argument
+  (hsig b✝ s✝ hs).left
+has type
+  NamesWF s✝.names s✝.params
+but is expected to have type
+  B.RangeAdmissible b✝ s✝ ?m.10872
+in the application
+  HasTypeVQ.V_Prim hs (hsig b✝ s✝ hs).left
+error: Benitoite/Surface/Lemmas/Typing.lean:633:12: Tactic `apply` failed: could not unify the conclusion of `HasTypeVQ.V_Prim hs sorry`
+  HasTypeVQ ?m.10864 B ?m.10868 ?m.10867 ?m.10866 ?m.10869 (Val.prim b✝ ?m.10873 ?m.10874 ?m.10872)
+    (fnTy (PrimSig.inst ?m.10872 s✝).names (PrimSig.inst ?m.10872 s✝).params (PrimSig.inst ?m.10872 s✝).ret
+      (PrimSig.inst ?m.10872 s✝).eff ?m.10873 ?m.10874)
+with the goal
+  HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C (some a :: Γ) (Val.prim b✝ ts✝ [] [])
+    (fnTy s✝.names s✝.params s✝.ret s✝.eff ts✝ [])
+
+Note: The full type of `HasTypeVQ.V_Prim hs sorry` is
+  NamesWF (PrimSig.inst ?m.10872 s✝).names (PrimSig.inst ?m.10872 s✝).params →
+    PrimitiveAdmissible ?m.10866 (PrimSig.inst ?m.10872 s✝) ?m.10867 ?m.10873 ?m.10874 →
+      HasTypeVQ ?m.10864 B ?m.10868 ?m.10867 ?m.10866 ?m.10869 (Val.prim b✝ ?m.10873 ?m.10874 ?m.10872)
+        (fnTy (PrimSig.inst ?m.10872 s✝).names (PrimSig.inst ?m.10872 s✝).params (PrimSig.inst ?m.10872 s✝).ret
+          (PrimSig.inst ?m.10872 s✝).eff ?m.10873 ?m.10874)
+
+case h.a
+Q : NoFailCtx
+view : CoverageView
+p : Program
+B : Builtins
+op : OpPrim
+Δb : BuilderCtx
+C : List TParam
+Γ : List (Option Ty)
+hAlign : BuilderCtx.Aligned Γ Δb
+hΔ : BuilderCtx.Clean C.length Δb
+hwf : p.WellFormed
+hsig : ∀ (b : PrimName) (s : PrimSig), B.sig b = some s → s.Scoped
+R✝ : Option Ty
+pos✝ : Position
+e : Expr
+a✝¹ : Ty
+ε✝ : Eff
+pe : Nat → Prop
+h✝ : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R✝ pos✝ e a✝¹ ε✝
+hΓ : EnvClean C.length Γ
+pos : Position
+R : Option Ty
+ε : Eff
+a : Ty
+b✝ : PrimName
+ts✝ : List Ty
+s✝ : PrimSig
+e✝ : Expr
+a✝ : Operator.neg.allowed a = true
+hop : op Operator.neg a = some (b✝, ts✝)
+hts : ts✝ = []
+hs : B.sig b✝ = some s✝
+ht : ts✝.length = s✝.ntys
+he : s✝.neffs = 0 ∧ s✝.nranges = 0
+ha : s✝.admits C ts✝
+hfn : fnTy s✝.names s✝.params s✝.ret s✝.eff ts✝ [] = Ty.fn ["value"] [a] a Eff.empty
+h : HasTypeQ (p.declarationsFor view) B op Q Δb C Γ R Position.other e✝ a ε
+sc : Expr.Scoped C.length pe Γ.length (Expr.neg a e✝)
+hR : ∀ (r : Ty), R = some r → TyOK C.length r
+resultWF : Ty.WF 0 C.length a
+hh : HasTypeCQ (desugarProgram op p) B StoreTy.empty Q C Γ R (desugarExpr op Position.other e✝) a ε Δb.toLocal
+⊢ HasTypeVQ (desugarProgram op p) B StoreTy.empty Q C (some a :: Γ) (Val.prim b✝ ts✝ [] [])
+    (fnTy s✝.names s✝.params s✝.ret s✝.eff ts✝ [])
+Some required targets logged failures:
+- Benitoite.Surface.CheckExamples
+- Benitoite.Surface.Lemmas.Typing
+error: build failed
+       15.70 real        45.01 user         3.11 sys
+          2651914240  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              947080  page reclaims
+                6516  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 174  voluntary context switches
+               38610  involuntary context switches
+          2411985977  instructions retired
+          1162109657  cycles elapsed
+           136545624  peak memory footprint
+== exit 1

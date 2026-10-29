@@ -393,7 +393,16 @@ fn add_bytes(a: usize, b: usize) -> Result<usize, LowerError> {
 fn ty_bytes(t: &Ty) -> Result<usize, LowerError> {
     let mut bytes = size_of::<Ty>();
     match t {
-        Ty::Con(_, args) | Ty::App(_, args) => {
+        Ty::Con(_, args, ix) => {
+            bytes = add_bytes(bytes, ix.allocation_bytes())?;
+            if let Some(range) = ix.range() {
+                bytes = add_bytes(bytes, range_bytes(range)?)?;
+            }
+            for t in args {
+                bytes = add_bytes(bytes, ty_bytes(t)?)?;
+            }
+        }
+        Ty::App(_, args) => {
             for t in args {
                 bytes = add_bytes(bytes, ty_bytes(t)?)?;
             }
@@ -414,6 +423,12 @@ fn ty_bytes(t: &Ty) -> Result<usize, LowerError> {
                     .checked_mul(size_of::<crate::types::EffectName>())
                     .ok_or_else(|| error("effect capacity overflow"))?,
             )?;
+            for atom in &f.effects.names {
+                bytes = add_bytes(bytes, atom.index().allocation_bytes())?;
+                if let Some(range) = atom.range() {
+                    bytes = add_bytes(bytes, range_bytes(range)?)?;
+                }
+            }
             bytes = add_bytes(
                 bytes,
                 f.effects
@@ -424,6 +439,26 @@ fn ty_bytes(t: &Ty) -> Result<usize, LowerError> {
             )?;
         }
         Ty::Param(_) | Ty::Rigid { .. } => (),
+    }
+    Ok(bytes)
+}
+
+// 原子の本体はty_bytesで数えた。範囲が所有する要素列と文字列も複製前に数える。
+fn range_bytes(range: &crate::types::scope::Range) -> Result<usize, LowerError> {
+    use crate::types::scope::{HostPattern, Range};
+    let parts = match range {
+        Range::Top => None,
+        Range::Path(p) => Some(p.stem().parts()),
+        Range::Host(HostPattern::Name(p)) => Some(p.stem().labels()),
+        Range::Endpoint(p) => match &p.host {
+            HostPattern::Name(p) => Some(p.stem().labels()),
+            HostPattern::Ip(_) => None,
+        },
+        Range::Host(HostPattern::Ip(_)) => None,
+    };
+    let mut bytes = 0;
+    for part in parts.into_iter().flatten() {
+        bytes = add_bytes(bytes, add_bytes(size_of::<String>(), part.len())?)?;
     }
     Ok(bytes)
 }

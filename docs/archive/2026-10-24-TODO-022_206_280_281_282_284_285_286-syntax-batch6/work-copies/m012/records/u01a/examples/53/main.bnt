@@ -1,0 +1,11 @@
+import Benitoite.StringBuilder
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind text <- block
+    bind builder: StringBuilder <- StringBuilder.new()
+    StringBuilder.appendAll(builder: builder, texts: ["hello", " world"])
+    StringBuilder.copy(builder)
+  end block
+  Console.writeLine(text)
+end function

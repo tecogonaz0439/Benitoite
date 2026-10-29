@@ -1,0 +1,75 @@
+{"fields":{"level":"INFO","message":"using config from <repo>/target/check-advisories/20261029T225712Z-rg718iml/deny.effective.toml","timestamp":"2026-10-29T22:57:14.024878Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetching crates for fuzz/Cargo.toml","timestamp":"2026-10-29T22:57:14.024999Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"Fetching advisory database with git cli from 'https://github.com/RustSec/advisory-db'","timestamp":"2026-10-29T22:57:14.025033Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"reset https://github.com/RustSec/advisory-db","timestamp":"2026-10-29T22:57:14.086988Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"fetched crates in 115.382875ms","timestamp":"2026-10-29T22:57:14.140383Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathering crates for fuzz/Cargo.toml","timestamp":"2026-10-29T22:57:14.140405Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathering crate metadata","timestamp":"2026-10-29T22:57:14.140414Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"gathered crate metadata in 145ms","timestamp":"2026-10-29T22:57:14.286171Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered addr2line 0.26.1","timestamp":"2026-10-29T22:57:14.351364Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered bitflags 1.3.2","timestamp":"2026-10-29T22:57:14.35919Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered combine 4.6.8","timestamp":"2026-10-29T22:57:14.359221Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered cpp_demangle 0.5.1","timestamp":"2026-10-29T22:57:14.359238Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt 1.1.1","timestamp":"2026-10-29T22:57:14.359276Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt-macros 1.1.1","timestamp":"2026-10-29T22:57:14.35929Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered defmt-parser 1.0.0","timestamp":"2026-10-29T22:57:14.359301Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered embedded-io 0.4.0","timestamp":"2026-10-29T22:57:14.359316Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered embedded-io 0.6.1","timestamp":"2026-10-29T22:57:14.35933Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures 0.3.34","timestamp":"2026-10-29T22:57:14.359349Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-channel 0.3.34","timestamp":"2026-10-29T22:57:14.35937Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-core 0.3.34","timestamp":"2026-10-29T22:57:14.359385Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-io 0.3.34","timestamp":"2026-10-29T22:57:14.359399Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-sink 0.3.34","timestamp":"2026-10-29T22:57:14.359411Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-task 0.3.34","timestamp":"2026-10-29T22:57:14.359423Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered futures-util 0.3.34","timestamp":"2026-10-29T22:57:14.359436Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered getrandom 0.2.17","timestamp":"2026-10-29T22:57:14.35945Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jiff-static 0.2.37","timestamp":"2026-10-29T22:57:14.359484Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni 0.22.4","timestamp":"2026-10-29T22:57:14.359497Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-macros 0.22.4","timestamp":"2026-10-29T22:57:14.359512Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-sys 0.4.1","timestamp":"2026-10-29T22:57:14.359523Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered jni-sys-macros 0.4.1","timestamp":"2026-10-29T22:57:14.359536Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered pin-project-lite 0.2.17","timestamp":"2026-10-29T22:57:14.359568Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered portable-atomic 1.15.0","timestamp":"2026-10-29T22:57:14.359584Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered portable-atomic-util 0.2.8","timestamp":"2026-10-29T22:57:14.359596Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered r-efi 5.3.0","timestamp":"2026-10-29T22:57:14.359614Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered r-efi 6.0.0","timestamp":"2026-10-29T22:57:14.359628Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered ring 0.17.14","timestamp":"2026-10-29T22:57:14.359649Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustc-demangle 0.1.28","timestamp":"2026-10-29T22:57:14.359666Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustc_version 0.4.1","timestamp":"2026-10-29T22:57:14.35968Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered rustls-platform-verifier-android 0.2.0","timestamp":"2026-10-29T22:57:14.359707Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered same-file 1.0.6","timestamp":"2026-10-29T22:57:14.359725Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered schannel 0.1.29","timestamp":"2026-10-29T22:57:14.359741Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered simd_cesu8 1.2.0","timestamp":"2026-10-29T22:57:14.359772Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered slab 0.4.12","timestamp":"2026-10-29T22:57:14.359788Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered stable_deref_trait 1.2.1","timestamp":"2026-10-29T22:57:14.359802Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered walkdir 2.5.0","timestamp":"2026-10-29T22:57:14.35983Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasi 0.11.1+wasi-snapshot-preview1","timestamp":"2026-10-29T22:57:14.359845Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasip2 1.0.4+wasi-0.2.12","timestamp":"2026-10-29T22:57:14.359862Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmtime-internal-fiber 49.0.4","timestamp":"2026-10-29T22:57:14.359885Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wasmtime-internal-jit-debug 49.0.4","timestamp":"2026-10-29T22:57:14.359899Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered webpki-root-certs 1.0.10","timestamp":"2026-10-29T22:57:14.359918Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered winapi-util 0.1.11","timestamp":"2026-10-29T22:57:14.359939Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-link 0.2.1","timestamp":"2026-10-29T22:57:14.359951Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-sys 0.52.0","timestamp":"2026-10-29T22:57:14.359964Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-sys 0.61.2","timestamp":"2026-10-29T22:57:14.359982Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows-targets 0.52.6","timestamp":"2026-10-29T22:57:14.360004Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_aarch64_gnullvm 0.52.6","timestamp":"2026-10-29T22:57:14.360017Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_aarch64_msvc 0.52.6","timestamp":"2026-10-29T22:57:14.360033Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_gnu 0.52.6","timestamp":"2026-10-29T22:57:14.360048Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_gnullvm 0.52.6","timestamp":"2026-10-29T22:57:14.360059Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_i686_msvc 0.52.6","timestamp":"2026-10-29T22:57:14.36007Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_gnu 0.52.6","timestamp":"2026-10-29T22:57:14.360081Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_gnullvm 0.52.6","timestamp":"2026-10-29T22:57:14.360095Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered windows_x86_64_msvc 0.52.6","timestamp":"2026-10-29T22:57:14.360105Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"filtered wit-bindgen 0.57.1","timestamp":"2026-10-29T22:57:14.360116Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"gathered 147 crates in 220ms","timestamp":"2026-10-29T22:57:14.361254Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"fetched https://github.com/RustSec/advisory-db","timestamp":"2026-10-29T22:57:14.724872Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"advisory database https://github.com/RustSec/advisory-db fetched in 699.872375ms","timestamp":"2026-10-29T22:57:14.7249Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"loading advisory database from <repo>/target/v10.3c/advisory-dbs/advisory-db-3157b0e258782691","timestamp":"2026-10-29T22:57:14.724912Z"},"type":"log"}
+{"fields":{"level":"DEBUG","message":"finished loading advisory database from <repo>/target/v10.3c/advisory-dbs/advisory-db-3157b0e258782691","timestamp":"2026-10-29T22:57:14.760238Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"no workspace dependencies were declared","timestamp":"2026-10-29T22:57:14.76871Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"loading index metadata for crates...","timestamp":"2026-10-29T22:57:14.768746Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"cached index metadata loaded in 27ms","timestamp":"2026-10-29T22:57:14.796641Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"checking advisories...","timestamp":"2026-10-29T22:57:14.796677Z"},"type":"log"}
+{"fields":{"level":"INFO","message":"advisories checked in 0ms","timestamp":"2026-10-29T22:57:14.797626Z"},"type":"log"}
+{"fields":{"advisories":{"errors":0,"helps":0,"notes":0,"warnings":0}},"type":"summary"}

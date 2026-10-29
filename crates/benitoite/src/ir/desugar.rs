@@ -62,7 +62,11 @@ fn fresh(n: &mut u32) -> Result<u32, InternalError> {
 }
 
 fn basic(id: BuiltinTypeId) -> Ty {
-    Ty::Con(TyCon::Builtin(id), vec![])
+    Ty::Con(
+        TyCon::Builtin(id),
+        vec![],
+        crate::types::builtin::RangeIndex::TOP,
+    )
 }
 fn value(kind: ValKind<Comp>, ty: Ty, origin: Span) -> CoreVal {
     Val { kind, ty, origin }
@@ -305,9 +309,16 @@ impl<'a> State<'a> {
             table::builtin_scheme(id)
                 .ok_or_else(|| error(format!("missing builtin_scheme for {id:?}")))?
         };
+        let signature = table::builtin_range_signature(id)
+            .ok_or_else(|| error("missing builtin range signature"))?;
+        let ranges = vec![crate::types::scope::Range::Top; signature.kinds.len()];
+        let s = signature
+            .instantiate(&s, &ranges, op.is_some())
+            .ok_or_else(|| error("builtin range instantiation failed"))?;
         Ok(value(
             ValKind::Builtin {
                 id,
+                ranges,
                 info: BuiltinInfo {
                     class: entry.capability,
                     op,

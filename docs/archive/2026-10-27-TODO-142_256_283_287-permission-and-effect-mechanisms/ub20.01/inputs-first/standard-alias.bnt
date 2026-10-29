@@ -1,0 +1,4 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ bind _ <- S.checkPath(pattern: "bad", path: "/a")
+end function

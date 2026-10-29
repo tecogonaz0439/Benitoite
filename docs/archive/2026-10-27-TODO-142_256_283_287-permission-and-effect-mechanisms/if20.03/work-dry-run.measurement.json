@@ -1,0 +1,21 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "fe26879c27acd39b2d0fe46ecbd6a9a94d3b47b2",
+    "--dry-run"
+  ],
+  "environment": {
+    "GIT_OPTIONAL_LOCKS": "0"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 0.08545145800000001,
+  "platform": "darwin",
+  "rss_method": "resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss",
+  "max_rss_raw": 10027008,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 9.5625,
+  "max_rss_gib": 0.00933837890625
+}

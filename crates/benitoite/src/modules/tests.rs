@@ -20,6 +20,31 @@ use memfs::{MemFs, load_files};
 
 const MAIN: &str = "function main() -> Unit\n  return ()\nend function\n";
 
+// 関門: File と Scope だけの利用では標準の型クラスを読み込まない。
+// Scope の表示のために Trait への依存を戻す退行を、公開 loader の出力で捕まえる。
+// 既存の表示の実行検査は、余分に読み込んでも成功する。差し込み口は増やさない。
+#[test]
+fn file_and_scope_do_not_load_standard_traits() {
+    for imported in ["Benitoite.Unofficial.IO.File", "Benitoite.Unofficial.Scope"] {
+        let source = format!("import {imported}\n{MAIN}");
+        let (output, _) = load_files(&[("main.bnt", &source)]);
+        assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
+        assert!(
+            output
+                .modules
+                .find(&module_path("Benitoite.Scope"))
+                .is_some()
+        );
+        assert!(
+            output
+                .modules
+                .find(&module_path("Benitoite.Trait"))
+                .is_none(),
+            "{imported} loaded Trait"
+        );
+    }
+}
+
 // spec: 01-03 依存の記述と `package.bnt`
 #[test]
 fn language_versions_check_the_release_boundary_in_each_header_location() {
@@ -35,8 +60,9 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             ("0.0.9", Some(DiagCode::E0908)),
             ("0.0.10", Some(DiagCode::E0908)),
             ("0.0.11", Some(DiagCode::E0908)),
-            ("0.0.12", None),
-            ("0.0.13", Some(DiagCode::E0907)),
+            ("0.0.12", Some(DiagCode::E0908)),
+            ("0.0.13", None),
+            ("0.0.14", Some(DiagCode::E0907)),
         ] {
             let header = format!("language \"{version}\"\n");
             let entry_source = format!("{header}{MAIN}");
@@ -70,6 +96,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     format!(
                         "this file was written for Benitoite {version}, and the language changed incompatibly in {}",
                         match version {
+                            "0.0.12" => "0.0.13",
                             "0.0.11" => "0.0.12",
                             "0.0.10" => "0.0.11",
                             "0.0.9" => "0.0.10",
@@ -82,6 +109,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     )
                 );
                 let first = match version {
+                    "0.0.12" => 8,
                     "0.0.11" => 7,
                     "0.0.10" => 6,
                     "0.0.9" => 5,
@@ -100,6 +128,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     "0.0.10: `block` is reserved; Integer ranges covering the full signed 64-bit domain are exhaustive and a following catch-all is unreachable",
                     "0.0.11: derive uses inventory 3 and generator 3.1.0; try-actions uses inventory and manifest 2; package effect records now recognize prelude Log and file-level declarations",
                     "0.0.12: each WASM Store limits live component handles to 100,000; excess allocation stops with R0906",
+                    "0.0.13: scoped operations were added to File.Read, File.Write, and Http.Connect; handlers that cover only their earlier operations, such as a handler with only an Http.send clause, are partial and leave the effect unhandled",
                 ];
                 let helps = [
                     "see the 0.0.5 section of CHANGELOG.md for named arguments and named function types",
@@ -110,6 +139,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
                     "rename identifiers spelled `block`; review full-domain Integer matches and remove unreachable branches or correct their intervals; keep catch-alls for guarded or incomplete ranges; review Log and SourceLocation prelude names, explicit Log permissions, width-specific numeric warnings under --deny-warnings, and derive version 3 records; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.10 section of CHANGELOG.md",
                     "recheck old derive records with a fresh preview that verifies source bodies and hashes, apply with its reviewed manifest hash, then check; regenerate and review old try-actions manifests; review Log records and package update effect additions and removals; update language declarations and dependency hashes after reviewing the source; see the 0.0.11 section of CHANGELOG.md",
                     "review WASM guests and drop component handles they no longer need, including across stateful calls; review local interval warnings under --deny-warnings, inspection intervalAnalysis fields, and JSON/Property derive targets with file-level uses; update language declarations to the current version and dependency hashes after reviewing the source; see the 0.0.12 section of CHANGELOG.md",
+                    "the File.Read effect declares 13 operations, File.Write 16, and Http.Connect send and sendIn; a handler without every operation of an effect leaves that effect in the effect contract",
                 ];
                 assert_eq!(diagnostic.notes, notes[first..]);
                 assert_eq!(diagnostic.helps.len(), helps.len() - first);
@@ -120,7 +150,7 @@ fn language_versions_check_the_release_boundary_in_each_header_location() {
             } else {
                 assert_eq!(
                     diagnostic.message,
-                    "this file needs Benitoite 0.0.13 or later, but this is Benitoite 0.0.12"
+                    "this file needs Benitoite 0.0.14 or later, but this is Benitoite 0.0.13"
                 );
                 assert!(diagnostic.notes.is_empty());
                 assert!(diagnostic.helps.is_empty());
@@ -916,7 +946,7 @@ fn root_settings_do_not_come_from_parent_directories() {
 #[test]
 fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
     for config_name in ["package.bnt", "Package.bnt"] {
-        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.12\"\n")]);
+        let (output, _) = load_files(&[("main.bnt", MAIN), (config_name, "language \"0.0.13\"\n")]);
         assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
         assert_aligned(&output);
         if config_name == "package.bnt" {
@@ -936,7 +966,7 @@ fn config_is_a_module_between_entry_and_prelude_and_uses_exact_name() {
 
 #[test]
 fn config_cannot_be_a_starting_file() {
-    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.12\"\n")]);
+    let fs = MemFs::new(&[("/root/package.bnt", "language \"0.0.13\"\n")]);
     let entry = EntrySpec {
         path: "/root/package.bnt".into(),
         display_name: "package.bnt".into(),
@@ -960,19 +990,19 @@ fn dependency_configs_precede_prelude_and_imported_modules() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.12\"\npackage Textkit\nend package\n",
+            "language \"0.0.13\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", "import Internal.Helper\n"),
         ("/library/Internal/Helper.bnt", ""),
         (
             "/second/package.bnt",
-            "language \"0.0.12\"\npackage Textkit\nend package\n",
+            "language \"0.0.13\"\npackage Textkit\nend package\n",
         ),
         ("/second/Slug.bnt", "import Internal.Helper\n"),
         ("/second/Internal/Helper.bnt", ""),
         (
             "/unused/package.bnt",
-            "language \"0.0.12\"\npackage Unused\nend package\n",
+            "language \"0.0.13\"\npackage Unused\nend package\n",
         ),
         ("/unused/Unread.bnt", "this is deliberately not a module"),
     ]);
@@ -1045,7 +1075,7 @@ fn package_imports_keep_their_canonical_root_and_reject_the_entry() {
             ("main.bnt", main),
             (
                 "deps/library/package.bnt",
-                "language \"0.0.12\"\npackage Library\nend package\n",
+                "language \"0.0.13\"\npackage Library\nend package\n",
             ),
             ("/outside/Target.bnt", ""),
         ]);
@@ -1080,7 +1110,7 @@ fn root_link_to_the_dependency_imports_the_package() {
         ),
         (
             "/library/package.bnt",
-            "language \"0.0.12\"\npackage Textkit\nend package\n",
+            "language \"0.0.13\"\npackage Textkit\nend package\n",
         ),
         ("/library/Slug.bnt", ""),
     ]);
@@ -1116,11 +1146,11 @@ fn overlapping_dependency_roots_are_rejected_before_imports() {
             ("main.bnt", &main),
             (
                 "/libs/package.bnt",
-                "language \"0.0.12\"\npackage Libs\nend package\n",
+                "language \"0.0.13\"\npackage Libs\nend package\n",
             ),
             (
                 "/libs/Nested/package.bnt",
-                "language \"0.0.12\"\npackage Nested\nend package\n",
+                "language \"0.0.13\"\npackage Nested\nend package\n",
             ),
             ("/libs/Value.bnt", ""),
             ("/libs/Nested/Value.bnt", ""),
@@ -1155,7 +1185,7 @@ fn dependency_import_edits_only_use_valid_module_names() {
             ),
             (
                 "/library/package.bnt",
-                "language \"0.0.12\"\npackage Library\nend package\n",
+                "language \"0.0.13\"\npackage Library\nend package\n",
             ),
         ]);
         fs.add_file(format!("/library/{tail}"), vec![]);
@@ -1191,7 +1221,7 @@ fn duplicate_dependency_locations_do_not_also_report_root_overlap() {
         ),
         (
             "deps/lib/package.bnt",
-            "language \"0.0.12\"\npackage Library\nend package\n",
+            "language \"0.0.13\"\npackage Library\nend package\n",
         ),
         ("deps/lib/Value.bnt", ""),
     ]);

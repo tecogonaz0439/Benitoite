@@ -1,0 +1,8 @@
+effect Ask
+ function ask() -> Unit
+end effect
+function sample() -> Unit uses Ask[Integer]
+ ()
+end function
+function main() -> Unit
+end function

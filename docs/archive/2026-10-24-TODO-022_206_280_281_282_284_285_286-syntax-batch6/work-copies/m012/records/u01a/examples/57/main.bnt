@@ -1,0 +1,11 @@
+uses Hidden
+
+effect Hidden
+  function ask() -> Unit
+end effect
+
+function main() -> Unit
+  handle ask() with
+    case ask() -> resume(())
+  end handle
+end function

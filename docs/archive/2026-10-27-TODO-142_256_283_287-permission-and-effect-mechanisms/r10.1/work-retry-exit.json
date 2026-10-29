@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-l",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "0b684ee4284fac6d6f9f9159fad9bc806e41e369",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally",
+    "--test",
+    "*"
+  ],
+  "exit": 1,
+  "start_utc": "2026-10-28T07:08:59.570562+00:00",
+  "end_utc": "2026-10-28T07:16:38.773606+00:00",
+  "outer_seconds": 459.202,
+  "getrusage_children_ru_maxrss_bytes": 3287580672
+}

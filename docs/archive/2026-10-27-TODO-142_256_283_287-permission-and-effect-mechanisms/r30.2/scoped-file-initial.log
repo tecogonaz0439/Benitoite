@@ -1,0 +1,51 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 5 tests
+
+thread 'file_io::file_single_target_operations_work_in_implementation_methods_with_dictionaries' (6225777) panicked at crates/benitoite/tests/scoped_calls/file_io.rs:14:5:
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+trait Read[T]
+ function read(value: T, path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
+end trait
+implement Read[String]
+ function read(value: String, path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
+  bind _ <- Trait.Show.show(value)
+  return File.readTextIn(path: path)
+ end function
+end implement
+function sample(path: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
+ return Read.read(value: "read", path: path)
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0332), message: "the module `Trait` is not imported", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(356), end: BytePos(361) }, text: "" }), secondary: [], notes: [], helps: [Help { message: "add `import Benitoite.Trait` at the start of the file", edits: [Edit { span: Span { file: FileId(0), start: BytePos(0), end: BytePos(0) }, replacement: "import Benitoite.Trait\n" }] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test file_io::file_single_target_operations_work_in_implementation_methods_with_dictionaries ... FAILED
+
+thread 'file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle' (6225774) panicked at crates/benitoite/tests/scoped_calls/file_io.rs:36:5:
+assertion `left == right` failed: import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(path: Scope.PathIn["/data/a"], other: Scope.PathIn["/logs/a"]) -> Result[Unit, IOError] uses File.Write["/data/a"]
+ return handle File.writeTextIn(path: path, text: "x") with
+ case File.writeTextIn(captured, text) ->
+  bind result <- File.writeTextIn(path: other, text: text)
+  resume(result)
+ end handle
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0519), message: "effect `File.Write[\"/logs/a\"]` is not covered by one surrounding atom (notCovered)", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(320), end: BytePos(336) }, text: "`File.Write[\"/logs/a\"]` is not covered by `File.Write[\"/data/a\"]`" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(79), end: BytePos(85) }, text: "declared here" }], notes: ["no one surrounding atom of the same name covers the required scope"], helps: [Help { message: "declare a surrounding scope that covers the required scope in one atom, or use a callee with a narrower scope", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: ["E0519"]
+ right: ["E0501"]
+test file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle ... FAILED
+test file_io::file_handler_unhandled_write_is_accepted_but_captured_index_is_invariant ... ok
+test file_io::file_handler_clause_projection_and_widen_require_local_facts_for_non_top ... ok
+test file_io::file_single_target_signatures_follow_inputs_and_expected_function_inputs ... ok
+
+failures:
+
+failures:
+    file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle
+    file_io::file_single_target_operations_work_in_implementation_methods_with_dictionaries
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 23 filtered out; finished in 2.39s
+
+error: test failed, to rerun pass `--test scoped_calls`

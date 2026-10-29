@@ -42,8 +42,8 @@ theorem singleEff_atoms (atoms : List Atom) (a : Atom) (ha : a ∈ atoms) :
     Eff.AtomsIn atoms (singleEff atoms a) := by
   exact ⟨fun b h => (eq_of_beq h) ▸ ha, trivial⟩
 
-theorem singleEff_eq {atoms : List Atom} {l : EffName} (_h : Atom.name l ∈ atoms) :
-    singleEff atoms (.name l) = Eff.single l := rfl
+theorem singleEff_eq {atoms : List Atom} {l : EffName} (_h : Atom.nameTop l ∈ atoms) :
+    singleEff atoms (.nameTop l) = Eff.single l := rfl
 
 theorem union_atoms {atoms a b} (ha : Eff.AtomsIn atoms a) (hb : Eff.AtomsIn atoms b) :
     Eff.AtomsIn atoms (Eff.union a b) := Eff.norm_support _ (Finite.union_support ha hb)

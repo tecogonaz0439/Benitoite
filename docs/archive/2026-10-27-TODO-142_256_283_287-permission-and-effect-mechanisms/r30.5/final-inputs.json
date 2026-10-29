@@ -1,0 +1,21 @@
+{
+  "description": "R30.5 の W-R 終了時の記録。R30.5b でバイト一致を確認し、重複本文を除いた。現在の R30.5b の入力一覧ではない。",
+  "pairs": [
+    {
+      "retained": "work-inputs.json",
+      "deduplicated": "final-inputs.json",
+      "bytes_each": 876929,
+      "retained_sha256": "f21216995c8f85b565bfec98c67120ec30ffd6a6c18d805aba7536ff73d01896",
+      "deduplicated_sha256": "f21216995c8f85b565bfec98c67120ec30ffd6a6c18d805aba7536ff73d01896",
+      "byte_identical": true
+    },
+    {
+      "retained": "work-inputs.patch",
+      "deduplicated": "final-inputs.patch",
+      "bytes_each": 181043,
+      "retained_sha256": "82a34022212807b2cd8d97f2530f4342d9b65b8783837b64d6f8483e31fa2376",
+      "deduplicated_sha256": "82a34022212807b2cd8d97f2530f4342d9b65b8783837b64d6f8483e31fa2376",
+      "byte_identical": true
+    }
+  ]
+}

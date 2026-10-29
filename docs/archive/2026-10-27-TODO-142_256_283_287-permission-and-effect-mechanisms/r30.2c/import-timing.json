@@ -1,0 +1,29 @@
+{
+  "command": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "python3",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.2c/measure-imports.py"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 13.017819291999999,
+  "maxrss_raw": 32899072,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 31.375,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 13.0430145,
+  "recorded_at": "2026-10-29T05:49:55.874592+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2c/run-record.py",
+    "--child",
+    "import-timing",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "python3",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r30.2c/measure-imports.py"
+  ]
+}

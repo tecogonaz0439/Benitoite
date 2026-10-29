@@ -1,0 +1,19 @@
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/EffectSound.lean:22:    (hε : Eff.mem ε (.name l)) (hno : NoHandler k (.prim b0)) : Eff.mem Eb (.name l) := by
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/EffectSound.lean:51:      (s0.kind = .io ∨ s0.kind = .exit) → NoHandler k (.prim b0) → False := by
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:48:    (h : ContTy P B Ψ R ε k a b ε0 Re) (hno : NoHandler k .fail)
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:68:    (hno : NoHandler k1 .fail) (he : Eff.memFail ein E') :
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/FailureCont.lean:233:    NoHandler k1 .fail ∧ ∀ E' body', .handleF [.fail E' body'] ∉ k1 := by
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:168:theorem split_of_not_noHandler {o : OpRef} : ∀ {k : Cont}, ¬ NoHandler k o →
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:175:      · have hno' : ¬ NoHandler k o := by
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:202:    (hε : Eff.mem ε (.name od.eff)) (hno : NoHandler k (.user o)) : False := by
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:332:  by_cases hno : NoHandler k (.prim b0)
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:432:  · by_cases hno : NoHandler k (.user o)
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/Progress.lean:448:        by_cases hno : NoHandler k .fail
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Lemmas/StepSound.lean:56:theorem splitHandler_none {o : OpRef} : ∀ {k : Cont}, splitHandler o k = none → NoHandler k o
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:83:def NoHandler (k : Cont) (o : OpRef) : Prop :=
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:88:  | .run (.app (.raise _ _) _) k _ => NoHandler k .fail
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:89:  | .run (.app (.op o _) _) k _ => NoHandler k (.user o)
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:95:  k = k1 ++ .handleF h :: k2 ∧ handles h o = true ∧ NoHandler k1 o
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:185:      B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:190:      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
+ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c:formal/Benitoite/Release/Semantics.lean:195:      B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →

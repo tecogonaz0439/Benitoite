@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Network.Http
+function target() -> Unit uses Http.Connect["a.example", 0..9]
+ ()
+end function
+function main() -> Unit uses Http.Connect["a.example", 0..4, "a.example", 5..9]
+ target()
+end function

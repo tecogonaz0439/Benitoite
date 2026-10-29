@@ -1,0 +1,169 @@
+== wait-for-lock start 17:59:57
+== lock acquired 17:59:58 after 1s
+✔ [73/410] Built Benitoite.Release.TypeComposition (451ms)
+✔ [75/410] Built Benitoite.Release.TypeSupport (574ms)
+✖ [77/410] Building Benitoite.Release.NoFail (1.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/NoFail.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/NoFail.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/NoFail.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/NoFail.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/NoFail.setup.json --json
+error: Benitoite/Release/NoFail.lean:21:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/NoFail.lean:40:10: fail to show termination for
+  Benitoite.Release.QTy.scoped
+  Benitoite.Release.QEff.scoped
+  Benitoite.Release.QTys.scoped
+with errors
+failed to infer structural recursion:
+Not considering parameter pe of Benitoite.Release.QTy.scoped:
+  it is unchanged in the recursive calls
+Not considering parameter h of Benitoite.Release.QTy.scoped:
+  its type is not an inductive
+Not considering parameter pe of Benitoite.Release.QEff.scoped:
+  it is unchanged in the recursive calls
+Not considering parameter h of Benitoite.Release.QEff.scoped:
+  its type is not an inductive
+Not considering parameter pe of Benitoite.Release.QTys.scoped:
+  it is unchanged in the recursive calls
+Not considering parameter h of Benitoite.Release.QTys.scoped:
+  its type is not an inductive
+Skipping arguments of type List Ty, as Benitoite.Release.QTy.scoped has no compatible argument.
+Cannot use parameters t of Benitoite.Release.QTy.scoped, e of Benitoite.Release.QEff.scoped, and ts of Benitoite.Release.QTys.scoped:
+  failed to eliminate recursive application
+    QTy.scoped (Ty.opaque o✝ r✝) h
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 45:14-28:
+ #1
+  ≤
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTys.scoped at 46:14-29:
+   #1
+#3  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 45:14-28:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTys.scoped at 51:14-37:
+   #1
+#3  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 52:14-37:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QEff.scoped at 53:14-38:
+   #1
+#2  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 45:14-28:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 45:14-28:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 57:14-35:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 58:14-37:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QEff.scoped at 59:14-38:
+   #1
+#2  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 62:21-39:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 62:42-60:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 45:14-28:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTy.scoped at 45:14-28:
+ #1
+  <
+Call from Benitoite.Release.QTy.scoped to Benitoite.Release.QTys.scoped at 46:14-29:
+   #1
+#3  <
+Call from Benitoite.Release.QEff.scoped to Benitoite.Release.QTys.scoped at 77:44-64:
+   #2
+#3  <
+Call from Benitoite.Release.QTys.scoped to Benitoite.Release.QTy.scoped at 70:21-39:
+   #3
+#1  <
+Call from Benitoite.Release.QTys.scoped to Benitoite.Release.QTys.scoped at 70:42-62:
+ #3
+  <
+
+
+#1: sizeOf t
+#2: sizeOf e
+#3: sizeOf ts
+
+Please use `termination_by` to specify a decreasing measure.
+error: Benitoite/Release/NoFail.lean:194:4: unsolved goals
+case right.inl.top
+Qs Qt : NoFailCtx
+e : Eff
+θ : SubstEnv
+hr : RowTransport Qs Qt θ.rows
+h : NoFail Qs e
+j : Nat
+hj : (Eff.bind θ e).mem (Atom.rho j)
+l : EffName
+h✝ : Atom.rho j = Atom.name l ∧ e.mem (Atom.name l)
+⊢ Qt j
+
+case right.inl.pathExact
+Qs Qt : NoFailCtx
+e : Eff
+θ : SubstEnv
+hr : RowTransport Qs Qt θ.rows
+h : NoFail Qs e
+j : Nat
+hj : (Eff.bind θ e).mem (Atom.rho j)
+l : EffName
+stem✝ : List String
+h✝ : Atom.rho j = Atom.name l (ScopeRange.pathExact stem✝) ∧ e.mem (Atom.name l (ScopeRange.pathExact stem✝))
+⊢ Qt j
+✖ [282/410] Building Benitoite.Release.Finite (934ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Finite.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Finite.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Finite.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Finite.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Finite.setup.json --json
+error: Benitoite/Release/Finite.lean:52:45: unsolved goals
+case opaque.opaque
+s : List Atom
+o✝¹ : OpaqueName
+r✝¹ : ScopeRange
+o✝ : OpaqueName
+r✝ : ScopeRange
+⊢ tyCompareWith s (Ty.opaque o✝¹ r✝¹) (Ty.opaque o✝ r✝) =
+    (stringCompare o✝¹ o✝).then (compare (Atom.rangeCode r✝¹) (Atom.rangeCode r✝))
+error: Benitoite/Release/Finite.lean:77:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+error: Benitoite/Release/Finite.lean:129:31: unsolved goals
+case opaque
+s : List Atom
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : True
+⊢ Ty.normWith s (Ty.opaque o✝ r✝) = Ty.opaque o✝ r✝
+error: Benitoite/Release/Finite.lean:177:47: `simp` made no progress
+error: Benitoite/Release/Finite.lean:176:10: (kernel) declaration has metavariables 'Benitoite.Release.Ty.normWith_legacy'
+Some required targets logged failures:
+- Benitoite.Release.NoFail
+- Benitoite.Release.Finite
+error: build failed
+        2.12 real         3.32 user         0.63 sys
+           723730432  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              188052  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  14  voluntary context switches
+               13734  involuntary context switches
+          1244199115  instructions retired
+           447082991  cycles elapsed
+            22414464  peak memory footprint
+== exit 1

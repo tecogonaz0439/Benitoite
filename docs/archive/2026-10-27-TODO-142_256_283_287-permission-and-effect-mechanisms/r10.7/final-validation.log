@@ -1,0 +1,67 @@
+$ python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.7/final_validation.py
+{
+  "validation": "passed",
+  "work_counts": {
+    "lib": {
+      "target": "unittests src/lib.rs",
+      "passed": 1358,
+      "failed": 0,
+      "ignored": 21,
+      "measured": 0,
+      "filtered": 0
+    },
+    "integration_targets": 41,
+    "integration_passed": 420,
+    "integration_ignored": 10
+  },
+  "stage_targets": [
+    {
+      "target": "tests/golden.rs",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "target": "tests/verify.rs",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "target": "tests/random_programs.rs",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "target": "tests/desugar_export.rs",
+      "passed": 38,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "target": "tests/checked_args.rs",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "target": "tests/fmt_command.rs",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  ]
+}

@@ -59,13 +59,25 @@ impl Random {
     }
 }
 fn base(b: B) -> Ty {
-    Ty::Con(TyCon::Builtin(b), vec![])
+    Ty::Con(
+        TyCon::Builtin(b),
+        vec![],
+        benitoite::types::builtin::RangeIndex::TOP,
+    )
 }
 fn data(n: u32, args: Vec<Ty>) -> Ty {
-    Ty::Con(TyCon::Adt(BindingId(n)), args)
+    Ty::Con(
+        TyCon::Adt(BindingId(n)),
+        args,
+        benitoite::types::builtin::RangeIndex::TOP,
+    )
 }
 fn list(a: Ty) -> Ty {
-    Ty::Con(TyCon::Builtin(B::LIST), vec![a])
+    Ty::Con(
+        TyCon::Builtin(B::LIST),
+        vec![a],
+        benitoite::types::builtin::RangeIndex::TOP,
+    )
 }
 fn con(n: u32, tag: u32, args: Vec<Pat>) -> Pat {
     Pat::Ctor {
@@ -208,7 +220,7 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut 
     }
     *nodes += 1;
     match ty {
-        Ty::Con(TyCon::Adt(id), args) => {
+        Ty::Con(TyCon::Adt(id), args, _) => {
             let def = table.get(*id).unwrap();
             let ctor = &def.ctors[r.index(def.ctors.len())];
             let ts: Vec<_> = args.iter().cloned().map(TypeArg::Ty).collect();
@@ -221,7 +233,7 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut 
                     .collect(),
             )
         }
-        Ty::Con(TyCon::Builtin(b), args) => match *b {
+        Ty::Con(TyCon::Builtin(b), args, _) => match *b {
             B::INTEGER => {
                 let a = INTEGERS[r.index(INTEGERS.len())];
                 let b = INTEGERS[r.index(INTEGERS.len())];
@@ -257,7 +269,7 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut 
             }
             _ => panic!("unexpected builtin"),
         },
-        Ty::Con(TyCon::External(_), _)
+        Ty::Con(TyCon::External(_), _, _)
         | Ty::Param(_)
         | Ty::App(_, _)
         | Ty::Rigid { .. }
@@ -267,15 +279,22 @@ fn gen_pat(r: &mut Random, ty: &Ty, table: &AdtTable, depth: usize, nodes: &mut 
     }
 }
 fn ty_json(t: &Ty) -> Value {
+    if let Ty::Con(_, _, ix) = t {
+        assert_eq!(
+            *ix,
+            benitoite::types::builtin::RangeIndex::TOP,
+            "scoped type in legacy coverage exchange"
+        );
+    }
     match t {
-        Ty::Con(TyCon::Adt(id), args) => {
+        Ty::Con(TyCon::Adt(id), args, _) => {
             json!({"kind":"data", "name":format!("d{}",id.0), "args":args.iter().map(ty_json).collect::<Vec<_>>()})
         }
-        Ty::Con(TyCon::Builtin(b), args) => {
+        Ty::Con(TyCon::Builtin(b), args, _) => {
             json!({"kind":b.def().unwrap().name.to_lowercase(),"args":args.iter().map(ty_json).collect::<Vec<_>>()})
         }
         Ty::Param(i) => json!({"kind":"param","index":i}),
-        Ty::Con(TyCon::External(_), _) | Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => {
+        Ty::Con(TyCon::External(_), _, _) | Ty::App(_, _) | Ty::Rigid { .. } | Ty::Fn(_) => {
             panic!("external or unexpected type")
         }
     }
@@ -732,6 +751,13 @@ fn count_kinds(j: &Value, stats: &mut BTreeMap<String, usize>) {
 
 // 旧生成器へ名前付きの型を混ぜず、網羅性 2 の型を再帰的に書き出す。
 fn named_ty_json(ty: &Ty) -> Value {
+    if let Ty::Con(_, _, ix) = ty {
+        assert_eq!(
+            *ix,
+            benitoite::types::builtin::RangeIndex::TOP,
+            "scoped type in legacy named coverage exchange"
+        );
+    }
     match ty {
         Ty::Fn(f) => {
             assert_eq!(
@@ -752,11 +778,11 @@ fn named_ty_json(ty: &Ty) -> Value {
             assert!(f.effects.names.is_empty() && f.effects.vars.is_empty());
             json!({"kind":"function","names":f.param_names,"params":f.params.iter().map(named_ty_json).collect::<Vec<_>>(),"ret":named_ty_json(&f.ret),"eff":[]})
         }
-        Ty::Con(TyCon::Builtin(b), args) => {
+        Ty::Con(TyCon::Builtin(b), args, _) => {
             json!({"kind":b.def().unwrap().name.to_lowercase(),"args":args.iter().map(named_ty_json).collect::<Vec<_>>()})
         }
-        Ty::Con(TyCon::Adt(_), _)
-        | Ty::Con(TyCon::External(_), _)
+        Ty::Con(TyCon::Adt(_), _, _)
+        | Ty::Con(TyCon::External(_), _, _)
         | Ty::Param(_)
         | Ty::App(_, _)
         | Ty::Rigid { .. } => panic!("unsupported independent named coverage type"),

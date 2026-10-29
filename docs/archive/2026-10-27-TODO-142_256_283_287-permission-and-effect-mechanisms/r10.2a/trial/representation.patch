@@ -1,0 +1,105 @@
+diff --git a/crates/benitoite/src/types/mod.rs b/crates/benitoite/src/types/mod.rs
+index 67ebaa63..e1f2b472 100644
+--- a/crates/benitoite/src/types/mod.rs
++++ b/crates/benitoite/src/types/mod.rs
+@@ -37,13 +37,13 @@ pub enum TyHead {
+     Param(u32),
+ }
+ 
+-/// エフェクトの名前（02-05「型とエフェクトの表現」）。
+-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
++/// 名前と閉じた範囲を持つエフェクトの原子（02-05「型とエフェクトの表現」）。
++#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+ pub enum EffectName {
+     /// 組み込みのエフェクト（`State`、`Console.Write` など）
+-    Builtin(BuiltinEffectId),
++    Builtin(BuiltinEffectId, scope::Range),
+     /// 利用者が宣言したエフェクト。宣言の束縛の番号で指す
+-    User(BindingId),
++    User(BindingId, scope::Range),
+ }
+ 
+ /// エフェクト変数。定義の中の番号（`types` のモジュールの説明）。
+diff --git a/crates/benitoite/src/types/scope.rs b/crates/benitoite/src/types/scope.rs
+index 6b90de0a..ec8ccb6e 100644
+--- a/crates/benitoite/src/types/scope.rs
++++ b/crates/benitoite/src/types/scope.rs
+@@ -11,6 +11,8 @@ pub mod ip_text;
+ /// 字句または整形式性の不良。利用側で診断・実行時の誤りへ変換する。
+ #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ pub enum InvalidScope {
++    /// 処理系の内部で範囲の不変条件が破れた。入力の誤りとは区別する。
++    Internal,
+     /// 絶対パスの形式または要素が不正である。
+     Path,
+     /// パスのパターンの形式または幹が不正である。
+@@ -260,6 +262,8 @@ impl IpAddress {
+ pub struct IpPattern {
+     address: IpAddress,
+     prefix_len: Option<u8>,
++    // 構築時に検査したマスク。上端の参照時には失敗する計算を残さない。
++    host_mask: u128,
+ }
+ 
+ impl IpPattern {
+@@ -268,6 +272,7 @@ impl IpPattern {
+         Self {
+             address,
+             prefix_len: None,
++            host_mask: 0,
+         }
+     }
+ 
+@@ -277,12 +282,14 @@ impl IpPattern {
+         let host_bits = width
+             .checked_sub(prefix_len)
+             .ok_or(InvalidScope::PrefixLength)?;
+-        if address.bits() & host_mask(host_bits) != 0 {
++        let host_mask = host_mask(host_bits)?;
++        if address.bits() & host_mask != 0 {
+             return Err(InvalidScope::HostBits);
+         }
+         Ok(Self {
+             address,
+             prefix_len: (prefix_len < width).then_some(prefix_len),
++            host_mask,
+         })
+     }
+ 
+@@ -303,13 +310,7 @@ impl IpPattern {
+ 
+     /// 同族の閉区間の上端を幅内の値で返す。
+     pub fn hi(self) -> u128 {
+-        self.lo()
+-            | self
+-                .prefix_len
+-                // 構築時に p < width を確認済みである。
+-                .map_or(0, |p| {
+-                    host_mask(self.address.family().width().saturating_sub(p))
+-                })
++        self.lo() | self.host_mask
+     }
+ 
+     /// 同じ族かつ閉区間内かを判定する。
+@@ -328,13 +329,14 @@ impl IpPattern {
+ }
+ 
+ // host_bits は検査済みの width - prefix、0..=128。2^128 自身を作らない。
+-fn host_mask(host_bits: u8) -> u128 {
+-    // 幅の不変条件の破れは処理系の不具合として panic 境界で扱う
+-    // （設計書 02-09「panic 境界」）。128 のときだけシフトの失敗を全ビットの mask とする。
+-    assert!(host_bits <= 128, "scope host bit count exceeds 128");
+-    1u128
+-        .checked_shl(u32::from(host_bits))
+-        .map_or(u128::MAX, |power| power.saturating_sub(1))
++fn host_mask(host_bits: u8) -> Result<u128, InvalidScope> {
++    match host_bits {
++        128 => Ok(u128::MAX),
++        n => 1u128
++            .checked_shl(u32::from(n))
++            .map(|power| power.saturating_sub(1))
++            .ok_or(InvalidScope::Internal),
++    }
+ }
+ 
+ /// ホストの対象。ホスト名とIPの分類を保つ。

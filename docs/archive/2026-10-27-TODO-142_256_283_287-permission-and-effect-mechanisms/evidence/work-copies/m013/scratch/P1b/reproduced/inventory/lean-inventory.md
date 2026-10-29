@@ -1,0 +1,406 @@
+# S8 Lean 直接参照の集計
+
+基準版: `80d1eeadcc9dc386560e0e2890c6da3ef518a1c5`。
+
+git grep -n -w と宣言単位の字句検索。コメント・文字列・自身の宣言名を除く。推移的依存数でも変更確定数でもない。
+
+| 群 | 宣言 | 定理 | 定理のファイル | 例を除く定理 | 言明に直接現れる定理 |
+|---|---:|---:|---:|---:|---:|
+| equality | 5 | 5 | 2 | 5 | 0 |
+| normalization | 169 | 149 | 39 | 141 | 112 |
+| contracts | 7 | 6 | 6 | 5 | 0 |
+| events | 22 | 6 | 5 | 6 | 4 |
+| propagation | 100 | 89 | 29 | 85 | 42 |
+| nonfunction_equality | 15 | 15 | 4 | 15 | 0 |
+| range_state | 86 | 50 | 7 | 50 | 44 |
+| union | 387 | 306 | 75 | 293 | 0 |
+
+## 宣言の一覧
+
+- `formal/Benitoite/Exchange/Builtins.lean:236` `mkBuiltins` (def): events; 言明: 
+- `formal/Benitoite/Interval/BudgetDiscoverProof.lean:379` `typedValues_agrees` (theorem): range_state; 言明: 
+- `formal/Benitoite/Interval/BudgetPatterns.lean:122` `selectReverse` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetPatterns.lean:346` `replicateEnv_agrees` (theorem): range_state; 言明: 
+- `formal/Benitoite/Interval/BudgetPatterns.lean:359` `values_agrees` (theorem): range_state; 言明: 
+- `formal/Benitoite/Interval/BudgetPatterns.lean:383` `selectReverse_agrees` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:93` `rangeOrigin` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:118` `rangeResultSource` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:192` `rangeMatch` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:207` `rangeChecked` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:252` `reserveRangeFact` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:258` `rangeBind` (def): range_state; 言明: 
+- `formal/Benitoite/Interval/BudgetRange.lean:269` `readRangeArm` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:526` `rangeMatch_agrees` (theorem): range_state; 言明: 
+- `formal/Benitoite/Interval/BudgetRange.lean:550` `rangeChecked_agrees` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/BudgetRange.lean:608` `rangeBind_agrees` (theorem): range_state; 言明: 
+- `formal/Benitoite/Interval/Environment.lean:22` `AbstractEnv` (structure): range_state; 言明: 
+- `formal/Benitoite/Interval/Environment.lean:29` `AbstractEnv.ofLocals` (def): range_state; 言明: 
+- `formal/Benitoite/Interval/Environment.lean:33` `resetRanges` (def): range_state; 言明: 
+- `formal/Benitoite/Interval/Environment.lean:41` `clearLocals` (def): range_state; 言明: 
+- `formal/Benitoite/Interval/Environment.lean:194` `forget_idempotent` (theorem): range_state; 言明: 
+- `formal/Benitoite/Interval/Environment.lean:708` `BindingScope.fresh_shift` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:236` `range_result_at_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:256` `range_result_ok_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:278` `range_checked_models_mem` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:308` `rangeCallOrigin` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:327` `range_call_origin_table` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:361` `range_call_origin_arguments` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:414` `rangeResultOrigin` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:423` `rangeSaveResult` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:433` `rangeBindOk` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:437` `rangeCheckedOrigin` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:445` `RangeSourceNormal` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:454` `range_source_normal_of_eval` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:521` `range_result_source_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:562` `range_saved_result_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:647` `range_result_not_other` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:655` `range_ok_payload_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:664` `rangeMatchOk` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:670` `range_match_ok_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:693` `range_bind_ok_valid` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:697` `range_checked_wrong_id` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:704` `range_checked_shift` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:708` `range_empty_valid` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:713` `range_save_result_valid` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:768` `rangeValueOrigin` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:825` `range_value_origin_source` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:842` `rangeValueInterval` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:849` `range_value_origin_mem` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:879` `range_value_interval_mem` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:899` `range_value_origin_total` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:956` `range_value_call_normal_mem` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1032` `range_value_surface_mem` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1044` `range_value_origin_evaluated` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1075` `range_value_forget_top` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1214` `range_match_selected_ok_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1242` `rangeMatchAt` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1263` `range_result_origin_type` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1286` `range_result_models_type` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/Range.lean:1296` `range_result_models_viewable` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeBorrowed.lean:164` `borrowRangeOrigin` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:19` `BindingScope.idAt` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:23` `BindingScope.fresh` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:28` `BindingScope.fresh_idAt` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:34` `BindingScope.fresh_distinct` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:42` `BindingScope.fresh_valid` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:60` `RangeOrigin.ResultModels` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:69` `RangeOrigin.CheckedModels` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:75` `RangeLocalFact` (inductive): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:80` `RangeLocalFact.Models` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:87` `RangeState` (structure): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:92` `RangeState.Valid` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:97` `RangeState.Models` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:103` `RangeState.empty` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:107` `RangeState.extend` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:111` `RangeState.forget` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:114` `range_empty_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:121` `range_forget_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:125` `range_extend_valid` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:130` `range_extend_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:145` `RangeState.extendUnknown` (def): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:150` `RangeState.extendUnknown_extend` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:157` `range_extend_unknown_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:168` `range_extend_unknowns_models` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/RangeState.lean:178` `RangeState.forget_idempotent` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/TablePreservation.lean:12` `tables_update` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Interval/TablePreservation.lean:18` `tables_ranges` (theorem): range_state; 言明: range_state
+- `formal/Benitoite/Release/Assumptions.lean:40` `Builtins.Assumptions` (structure): contracts, events; 言明: contracts, events
+- `formal/Benitoite/Release/BuilderExamples.lean:129` `dedicated_inside_lambda` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/CoverageTypes.lean:39` `erase_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:24` `singleFail` (def): normalization; 言明: 
+- `formal/Benitoite/Release/Effect.lean:31` `union` (def): normalization; 言明: 
+- `formal/Benitoite/Release/Effect.lean:41` `mem_union` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Effect.lean:50` `memFail_singleFail` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:59` `mem_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:63` `sub_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:67` `union_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:70` `canonical_ofAtoms` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:73` `eq_of_sub_of_sub` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:115` `sub_norm_self` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Effect.lean:119` `norm_sub_self` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Examples.lean:26` `builtins` (def): events; 言明: 
+- `formal/Benitoite/Release/Examples.lean:169` `summarize` (def): events; 言明: events
+- `formal/Benitoite/Release/FailureEffects.lean:7` `Eff.substAt_singleFail` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/FailureExamples.lean:99` `toResult_typed` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Finite.lean:128` `Ty.normWith_eq_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Finite.lean:151` `Eff.normWith_eq_norm_of_fails` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Finite.lean:164` `Eff.normWith_eq_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Finite.lean:210` `Ty.normWith_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Finite.lean:214` `Eff.normWith_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/FiniteSupport.lean:151` `Ty.support_of_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/FiniteSupport.lean:168` `Eff.support_of_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/FiniteSupport.lean:179` `Eff.norm_fails_support` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/Basic.lean:39` `substRho_empty` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/Basic.lean:44` `substAt_empty` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/Basic.lean:51` `substRho_name` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/BuilderTyping.lean:26` `HasTypeVQ.canonical_bytes` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Canonical.lean:61` `HasTypeVQ.canonical_boolean` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Canonical.lean:95` `HasTypeVQ.canonical_ref` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Canonical.lean:129` `HasTypeVQ.canonical_lazy` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Canonical.lean:219` `HasTypeVQ.inv_list_wf` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Closed.lean:90` `Eff.VarsIn.substAt` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:19` `ContTy.store` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:36` `ContTy.name_end` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:62` `handled_state` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:74` `ContTy.state_end` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:131` `ContTy.inv_handle` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:148` `ContTy.inv_handle_tail` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:206` `ContTy.resume_append` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:240` `ContTy.split` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/ContLemmas.lean:335` `ContTy.framesOk` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Dict.lean:20` `Eff.substRho_of_noRho` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/Dict.lean:29` `Ty.shift_subst_append` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/Dict.lean:51` `Ty.methTy_subst` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/Dict.lean:120` `Eff.methTy_subst` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/EffectSound.lean:15` `builtinOnly_empty` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/EffectSound.lean:20` `ContTy.end_of_noHandler` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/EffectSound.lean:39` `no_event` (theorem): contracts, events, propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/EffectSound.lean:82` `no_unhandledOp` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:22` `HasTypeClausesQ.no_failure` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:54` `handled_noFail` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/FailureBase.lean:63` `captureEff` (def): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:16` `ContTy.handler_kind` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:47` `ContTy.fail_end` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:66` `ContTy.failure_prefix` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:142` `ContTy.split_failure` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:231` `splitAt_failure_prefix` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/FailureCont.lean:251` `HasTypeCQ.inv_handle_failure` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:154` `HasTypeVQ.inv_con` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:172` `HasTypeVQ.inv_list` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:189` `HasTypeVQ.inv_loc` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:211` `HasTypeCQ.inv_ret` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:231` `HasTypeCQ.inv_let` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:254` `HasTypeCQ.inv_app` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:277` `HasTypeCQ.inv_ite` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:300` `HasTypeCQ.inv_match` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:316` `HasTypeCQ.inv_lazy` (theorem): propagation, nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:336` `HasTypeCQ.inv_escape` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:354` `HasTypeCQ.inv_use` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:377` `HasTypeCQ.inv_handle` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:405` `HasTypeCQ.inv_resumeL` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:428` `HasTypeCQ.inv_resumeVar` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:454` `HasTypeVQ.inv_mapV` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:463` `HasTypeVQ.inv_setV` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:472` `HasTypeVQ.inv_bytesV` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:482` `HasTypeVQ.inv_dict` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:492` `HasTypeVQ.inv_super` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:502` `HasTypeCQ.inv_meth` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:521` `HasTypeCQ.ret_value` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:532` `HasTypeCQ.inv_builderLet` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Inversion.lean:548` `HasTypeCQ.inv_builderOp` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Irrelevant.lean:108` `HasTypeCQ.subst_congr` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Irrelevant.lean:156` `HasTypeClausesQ.subst_congr` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/LocalInvariant.lean:41` `ContTy.localRefs` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Names.lean:165` `HasTypeCQ.lambdaNamesWF` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Names.lean:194` `HasTypeClausesQ.lambdaNamesWF` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/NoFailContext.lean:43` `HasTypeCQ.q_mono` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/NoFailContext.lean:75` `HasTypeClausesQ.q_mono` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:100` `HasTypeCQ.outer` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/OuterC.lean:161` `HasTypeClausesQ.outer` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/PresFailure.lean:15` `HasFailureClause.instantiate` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/PresFailure.lean:60` `pres_failure` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresHelpers.lean:31` `stateTy_iff` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/PresHelpers.lean:95` `ContTy.R_wf` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresHelpers.lean:122` `HasTypeClausesQ.find` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/PresMain.lean:18` `preservationE` (theorem): normalization, contracts, events, propagation; 言明: events
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:48` `Ty.subst_tvar0` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/Preservation.lean:111` `pres_op_common` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:53` `HasTypeVQ.canonical_dict` (theorem): nonfunction_equality; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:114` `HasTypeCQ.resume_form` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:168` `split_of_not_noHandler` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Progress.lean:200` `no_unhandled_user` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Progress.lean:327` `progress_io` (theorem): contracts, events, propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Progress.lean:417` `progress_app` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Progress.lean:459` `progress_run` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Progress.lean:505` `progressE` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Regularity.lean:138` `HasTypeVQ.wf` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/Regularity.lean:204` `HasTypeCQ.wf` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:163` `handled_of_ops` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Rename.lean:176` `handled_renameList` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Rename.lean:224` `HasTypeCQ.rename` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:284` `HasTypeClausesQ.rename` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Rename.lean:371` `HasTypeCQ.store` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/Rename.lean:404` `HasTypeClausesQ.store` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/Rename.lean:424` `HasTypeClausesQ.hideBuilders` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/StepSound.lean:56` `splitHandler_none` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/StepSound.lean:102` `step_soundE` (theorem): contracts, events; 言明: events
+- `formal/Benitoite/Release/Lemmas/SubstTyping.lean:238` `HasTypeCQ.subst` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/SubstTyping.lean:301` `HasTypeClausesQ.subst` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:19` `Ty.applyTo_notHead` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:25` `Ty.applyTo_of_notHead` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:62` `Ty.shift_zero` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/TyLemmas.lean:65` `Ty.shiftList_zero` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:25` `Ty.applyTo_notCont` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:118` `handled_substRho` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/TySubst.lean:145` `handled_substAt` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:341` `opSig_scoped` (theorem): contracts; 言明: 
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:652` `HasTypeCQ.substTy` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/Lemmas/TySubstMain.lean:823` `HasTypeClausesQ.substTy` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:12` `Ty.bind_clean` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Lemmas/VariableBind.lean:44` `Eff.bind_clean` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/LocalScope.lean:102` `HasTypeCQ.localRefs` (theorem): propagation; 言明: 
+- `formal/Benitoite/Release/LocalScope.lean:135` `HasTypeClausesQ.localRefs` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Release/Model.lean:38` `builtins` (def): events; 言明: 
+- `formal/Benitoite/Release/Model.lean:61` `assumptions` (theorem): contracts; 言明: 
+- `formal/Benitoite/Release/NoFail.lean:111` `NoFail.norm_iff` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/NoFail.lean:244` `failure_upper_bound` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/NoFail.lean:253` `Eff.norm_fails_eq_nil` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/NoFail.lean:267` `QTy.norm_iff` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/NoFail.lean:275` `QEff.norm_iff` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:16` `Ty.norm` (def): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:35` `Ty.normTys` (def): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:46` `Ty.normTys_eq_map` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:52` `Ty.Canonical` (def): normalization; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:55` `Eff.Canonical` (def): normalization; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:57` `normTys_sortUnique` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:76` `Ty.norm_idem` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:86` `Eff.norm_idem` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:93` `Eff.memFail` (def): normalization; 言明: 
+- `formal/Benitoite/Release/Normalize.lean:96` `Eff.norm_memFail` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:125` `Ty.norm_legacy` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:146` `Eff.norm_legacy` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:171` `Ty.canonical_of_failsLeOne` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Normalize.lean:192` `Eff.canonical_of_failsLeOne` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Order/Shift.lean:15` `Ty.shift_compare_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Order/Shift.lean:20` `Ty.shift_compare` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Order/Shift.lean:24` `shift_map` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Order/Shift.lean:31` `Ty.shift_compareList` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Order/Shift.lean:38` `Ty.sortUnique_shift` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Semantics.lean:87` `UnhandledOp` (def): propagation; 言明: propagation
+- `formal/Benitoite/Release/Semantics.lean:94` `SplitAt` (def): propagation; 言明: 
+- `formal/Benitoite/Release/Semantics.lean:116` `Step` (inductive): events, propagation; 言明: events, propagation
+- `formal/Benitoite/Release/Semantics.lean:350` `releaseStep` (def): events; 言明: events
+- `formal/Benitoite/Release/Semantics.lean:358` `step` (def): events; 言明: events
+- `formal/Benitoite/Release/Semantics.lean:532` `run` (def): events; 言明: events
+- `formal/Benitoite/Release/Semantics.lean:545` `ContTy` (inductive): propagation; 言明: propagation
+- `formal/Benitoite/Release/Semantics.lean:599` `LocTy.WF` (def): normalization; 言明: normalization
+- `formal/Benitoite/Release/Semantics.lean:647` `StateTy` (def): propagation; 言明: propagation
+- `formal/Benitoite/Release/SubstEnv.lean:41` `Eff.substRho_row` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Theorems.lean:23` `step_sound` (theorem): events; 言明: events
+- `formal/Benitoite/Release/Theorems.lean:42` `preservation` (theorem): events; 言明: events
+- `formal/Benitoite/Release/TypeBounds.lean:67` `Ty.norm_rawWF` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeBounds.lean:87` `Eff.norm_rawWF` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeComposition.lean:34` `Eff.memFail_rawBind_rowImage` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeComposition.lean:52` `Eff.norm_ext` (theorem): equality, normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeComposition.lean:60` `Ty.bind_congr_rows` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:87` `Ty.bindTys_congr_rows` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:97` `Eff.bind_congr_rows` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:140` `Eff.memFail_bind` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeComposition.lean:153` `Eff.bind_row` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeComposition.lean:209` `Ty.bind_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeComposition.lean:213` `Eff.bind_comp_of_types` (theorem): equality, normalization; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:265` `Ty.bind_comp` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:308` `Ty.bindTys_comp` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeComposition.lean:334` `Eff.ext_canonical` (theorem): equality, normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:15` `Ty.bind_congr_scoped` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:43` `Ty.bindTys_congr_scoped` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:53` `Eff.bind_congr_scoped` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:103` `Ty.bind_identity` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:106` `Eff.bind_identity` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:109` `Eff.rowImage_normEnv` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:115` `Ty.bind_normEnv` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeCongruence.lean:119` `Ty.bind_congr_scoped_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRegularity.lean:16` `Ty.WF.canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRegularity.lean:36` `Ty.norm_WF` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRegularity.lean:47` `Eff.norm_WF` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRegularity.lean:58` `Ty.LatentWF` (def): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRegularity.lean:132` `Eff.shift_of_wf` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRows.lean:66` `Ty.norm_rowsIn` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeRows.lean:85` `Eff.norm_rowsIn` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeScopedSubst.lean:139` `Eff.shift_at_rowImages` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeScopedSubst.lean:175` `Eff.substAt_fails` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeScopedSubst.lean:203` `Eff.substRho_nil_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeScopedSubst.lean:208` `Eff.substRho_nil` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeScopedSubst.lean:217` `Eff.substAt_nil_of_wf` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeScopedSubst.lean:287` `Eff.substAt_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:85` `Ty.norm_rawShift` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:95` `Eff.norm_rawShift` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:107` `Ty.rawShift_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:112` `Eff.rawShift_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:118` `Eff.shift` (def): normalization; 言明: 
+- `formal/Benitoite/Release/TypeShift.lean:149` `Ty.shift_eq_norm_rawShift` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:163` `Ty.shift_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:166` `Eff.shift_canonical` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:183` `Ty.shift_zero_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeShift.lean:186` `Eff.shift_zero_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubst.lean:29` `Ty.applyTo` (def): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:111` `Ty.bind` (def): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:112` `Eff.bind` (def): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSubst.lean:128` `Eff.substAt` (def): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:19` `TyCon.norm_rawApply` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:27` `Ty.norm_rawApplyTo` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:34` `Ty.norm_rawBind` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:51` `Eff.norm_rawBind` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:65` `Ty.rawBind_norm_congr` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:70` `Eff.memFail_rawBind` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:120` `Eff.bind_mono` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:147` `Eff.test_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:151` `Eff.substAtoms_map_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:163` `Eff.rowFails_map_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:187` `SubstEnv.norm` (def): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:191` `Ty.rawApplyTo_norm_congr` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:198` `Ty.norm_rawBind_normEnv` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:208` `Ty.normTys_rawBind_normEnv` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:214` `Eff.norm_rawBind_normEnv` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:229` `SubstEnv.at_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:249` `Ty.norm_substAt` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:256` `Eff.norm_substAt` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:263` `Ty.applyTo_eq_raw_norm` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:269` `Ty.substAt_eq_rawBind` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSubstLemmas.lean:435` `Eff.substAt_ofAtoms` (theorem): normalization; 言明: 
+- `formal/Benitoite/Release/TypeSupport.lean:32` `Ty.norm_support` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeSupport.lean:49` `Eff.norm_support` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeVariables.lean:17` `Ty.VarsIn` (def): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeVariables.lean:130` `Ty.norm_VarsIn` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/TypeVariables.lean:135` `Eff.norm_VarsIn` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Release/Typing.lean:62` `Builtins` (structure): events; 言明: events
+- `formal/Benitoite/Release/Typing.lean:136` `Ty.WF` (def): normalization; 言明: normalization
+- `formal/Benitoite/Release/Typing.lean:447` `HasTypeCQ` (inductive): propagation; 言明: 
+- `formal/Benitoite/Release/Typing.lean:533` `HasTypeClausesQ` (inductive): propagation; 言明: 
+- `formal/Benitoite/Release/Typing.lean:604` `HasTypeClauses` (abbrev): propagation; 言明: 
+- `formal/Benitoite/Surface/Check.lean:206` `checkExprR` (def): propagation; 言明: 
+- `formal/Benitoite/Surface/CheckComputeControl.lean:140` `computes_handle` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/CheckCounterexamples.lean:20` `builtins` (def): events; 言明: 
+- `formal/Benitoite/Surface/CheckExamples.lean:443` `builtins` (def): events; 言明: 
+- `formal/Benitoite/Surface/CheckLemmas.lean:329` `acceptEff_handled_sound` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/CheckPredicates.lean:69` `canonicalEff_spec` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/CheckPredicates.lean:78` `wfEff_spec` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/CheckPredicates.lean:87` `cleanEff_spec` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/CheckSoundControl.lean:302` `handle_case` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/CheckTables.lean:97` `builtins` (def): events; 言明: 
+- `formal/Benitoite/Surface/CheckToolsExamples.lean:202` `stringBuiltins` (def): events; 言明: 
+- `formal/Benitoite/Surface/Examples.lean:10` `canonical_empty` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Examples.lean:11` `canonical_single` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Examples.lean:60` `mainExpr_typed` (theorem): normalization; 言明: 
+- `formal/Benitoite/Surface/Examples.lean:412` `dieExit_ok` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/FailureExamples.lean:41` `builtins` (def): events; 言明: 
+- `formal/Benitoite/Surface/FinitePredicates.lean:17` `canonicalEff_spec` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/FinitePredicates.lean:59` `wfEff_spec` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/FinitePredicates.lean:100` `cleanEff_spec` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:134` `HasTypeCQ.reads` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:185` `HasTypeClausesQ.reads` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:322` `builderClauses_no_capture` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean:16` `HasTypeQ.captures` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Calls.lean:67` `desugarClauses_handled` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:31` `clean_le` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Lemmas/Invariants.lean:286` `HasTypeQ.clean` (theorem): normalization; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Records.lean:96` `record_subst_identity` (theorem): normalization; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:15` `HasTypeCQ.withReturn` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/ReturnTry.lean:50` `HasTypeClausesQ.withReturn` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:332` `union_empty_right` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:341` `union_empty_left` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:351` `union_empty_right_nested` (theorem): equality, normalization; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Sequence.lean:358` `union_empty_left_nested` (theorem): equality, normalization; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:209` `HasTypeQ.desugar_partialCon` (theorem): normalization; 言明: normalization
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:390` `HasTypeQ.desugar` (theorem): propagation; 言明: 
+- `formal/Benitoite/Surface/Lemmas/Typing.lean:880` `HasClausesQ.desugar` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/LogExamples.lean:102` `handled_checked` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/LogExamples.lean:105` `forwarded_checked` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/LogExamples.lean:109` `console_remains_checked` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/LogExamples.lean:123` `programMaterials` (def): propagation; 言明: 
+- `formal/Benitoite/Surface/LogExamples.lean:137` `console_pure_rejected` (theorem): propagation; 言明: propagation
+- `formal/Benitoite/Surface/Monad2Examples.lean:264` `signatures_scoped` (theorem): normalization; 言明: 
+- `formal/Benitoite/Surface/Monad2Examples.lean:315` `program_wellFormed` (theorem): normalization; 言明: 
+- `formal/Benitoite/Surface/Typing.lean:84` `HasTypeQ` (inductive): normalization, propagation; 言明: normalization, propagation
+- `formal/Benitoite/Surface/WellFormed.lean:32` `Expr.Scoped` (def): normalization; 言明: normalization
+- `formal/SurfaceCheck/Validation.lean:8` `q` (def): events; 言明: 

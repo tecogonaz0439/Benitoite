@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  bind e <- Scope.ScopeError.InvalidPort(1)
+  Console.writeLine("${e}")
+end function

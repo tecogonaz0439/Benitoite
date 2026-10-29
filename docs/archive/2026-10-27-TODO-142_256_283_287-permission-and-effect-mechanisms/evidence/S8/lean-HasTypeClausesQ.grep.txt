@@ -1,0 +1,62 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/FailureBase.lean:22:theorem HasTypeClausesQ.no_failure {Δl : LocalCtx} {Ψ Q C Γ R h t ec}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/FailureBase.lean:23:    (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec Δl) : handles h .fail = false := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/FailureBase.lean:27:    have ih := HasTypeClausesQ.no_failure ht
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:380:      HasTypeClausesQ P B Ψ Q C Γ R h t ε' Δl ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Irrelevant.lean:132:      simp only [Comp.subst, HasTypeCQ.subst_congr (ρ := ρ) (η := η) hm hs hL, HasTypeClausesQ.subst_congr (ρ := ρ) (η := η) hc hs hL]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Irrelevant.lean:156:  theorem HasTypeClausesQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R cs t e σ τ}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Irrelevant.lean:157:      (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) (hs : SubstAgree Γ σ τ)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Irrelevant.lean:167:      simp only [Clause.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst (n + 1) ρ) (η := upLocalSubst (n + 1) η) hb hs'', HasTypeClausesQ.subst_congr (ρ := ρ) (η := η) ht hs hL]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Names.lean:181:    | .C_Handle hm _ hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeClausesQ.lambdaNamesWF hs⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Names.lean:194:  theorem HasTypeClausesQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Names.lean:198:    | .cons _ _ _ _ _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeClausesQ.lambdaNamesWF hs⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/NoFailContext.lean:59:    | .C_Handle hm hs hc => exact .C_Handle (HasTypeCQ.q_mono hm hq) hs (HasTypeClausesQ.q_mono hc hq)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/NoFailContext.lean:75:  theorem HasTypeClausesQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/NoFailContext.lean:76:      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R h t ε Δl := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/NoFailContext.lean:80:        exact .cons hsg hnames hn hk hew (HasTypeCQ.q_mono hbody hq) (HasTypeClausesQ.q_mono hrest hq)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:133:        exact .C_Handle (HasTypeCQ.outer (depth := _) hb hm' hm.1) hs (HasTypeClausesQ.outer (depth := _) hb hc hm.2)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:161:  theorem HasTypeClausesQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.Assumptions P) {Ψ C1 C0 Γ R h t ε}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:162:      (hc : HasTypeClausesQ P B Ψ Q C1 Γ R h t ε Δl) (hm : Clause.VarsInList C1.length (fun _ => True) h depth) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:163:      HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ R h t ε Δl := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/OuterC.lean:167:        refine .cons hsg hnames hn hk (Eff.WF.mono (by simp) _ hew) ?_ (HasTypeClausesQ.outer (depth := _) hb hrest hm.2)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/PresHelpers.lean:122:theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/PresHelpers.lean:139:      · exact HasTypeClausesQ.find hrest hc
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:254:        refine .C_Handle (HasTypeCQ.rename hm hξ Δl' hL) ?_ (HasTypeClausesQ.rename hc hξ Δl' hL)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:284:  theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:287:      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε Δl' := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:292:        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.rename hrest hξ Δl' hL)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:387:    | .C_Handle hm hs hc => exact .C_Handle (HasTypeCQ.store hm hΨ) hs (HasTypeClausesQ.store hc hΨ)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:404:  theorem HasTypeClausesQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:405:      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R h t ε Δl := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:409:        exact .cons hsg hnames hn hk hew (HasTypeCQ.store hbody (hideBuilders_mono hΨ)) (HasTypeClausesQ.store hrest hΨ)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:424:theorem HasTypeClausesQ.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ R cs t e}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:425:    (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Rename.lean:426:    HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R cs t e Δl := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/SubstTyping.lean:268:        refine .C_Handle (HasTypeCQ.subst (ρ := _) hm hσ hL) ?_ (HasTypeClausesQ.subst (ρ := _) hc hσ hL)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/SubstTyping.lean:301:  theorem HasTypeClausesQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/SubstTyping.lean:303:      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.substList σ h ρ) t ε Δl' := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/SubstTyping.lean:308:        refine .cons hsg hnames hn hk hew ?_ (HasTypeClausesQ.subst (ρ := _) hrest hσ hL)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:728:          (HasTypeClausesQ.substTy hwf hb hcl hc hts hes' hsat hΨ hrow)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:823:  theorem HasTypeClausesQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.Assumptions P)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:825:      (hcl : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:827:      HasTypeClausesQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/TySubstMain.lean:838:          exact Eff.WF.mono (by simp; omega) ε hew) ?_ (HasTypeClausesQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/LocalScope.lean:121:    | .C_Handle hm _ hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hm hΔ hΨ, HasTypeClausesQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/LocalScope.lean:135:  theorem HasTypeClausesQ.localRefs {depth : Nat} {places : Nat → Prop} {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/LocalScope.lean:140:    | .cons _ _ _ _ _ hm hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hm (.nil _) (.hidden _ _), HasTypeClausesQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:491:        HasTypeClausesQ P B Ψ Q C Γ R h t ε Δ →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:533:  inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:535:    | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:541:        HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δ →
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:542:        HasTypeClausesQ P B Ψ Q C Γ R (.mk o n k body :: cs) t ε Δ
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Typing.lean:604:abbrev HasTypeClauses (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeClausesQ P B Ψ Qempty
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:161:      simp only [Comp.Reads] <;> exact ⟨HasTypeCQ.reads hm hp hΔ, HasTypeClausesQ.reads hc hp⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:185: theorem HasTypeClausesQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:191:      refine ⟨?_, HasTypeClausesQ.reads hr hp⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:332:  exact HasTypeClausesQ.reads hc (BuilderCtx.aligned_envReads ha)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean:207:        exact HasTypeClausesQ.reads cc hp
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:31:    | .C_Handle hm he hs => exact .C_Handle (HasTypeCQ.withReturn hm hΨ hR R) he (HasTypeClausesQ.withReturn hs hΨ hR R)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:50:  theorem HasTypeClausesQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ cs t ε}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:51:      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ cs t ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:52:      HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/ReturnTry.lean:57:          (HasTypeClausesQ.withReturn hs hΨ hR R)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Surface/Lemmas/Typing.lean:886:      HasTypeClausesQ (desugarProgram op p) B StoreTy.empty Q C Γ R

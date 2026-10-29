@@ -1,0 +1,33 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "ea42f4f97fe34e1f4768404f5b44aac3ff371155",
+    "--only",
+    "spec_examples,skill_generated,spec_tally",
+    "--dry-run"
+  ],
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "ea42f4f97fe34e1f4768404f5b44aac3ff371155",
+    "--only",
+    "spec_examples,skill_generated,spec_tally",
+    "--dry-run"
+  ],
+  "check_exit_code": 0,
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 0.011418209,
+  "started_at": "2026-10-29T08:58:32.112458+00:00",
+  "finished_at": "2026-10-29T08:58:32.124195+00:00",
+  "maxrss_raw": 2785280,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 2.65625,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値の補助値。同時常駐量の合計ではない"
+}

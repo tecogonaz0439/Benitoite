@@ -91,6 +91,10 @@ private def fieldsOptional (label : String) (required optional : List String) (j
 
 /-- Surfaceの復号器が読まなかった欄・曖昧な構成子も、深い位置で拒否する。 -/
 private def surface [FromJson α] [ToJson α] (j : Json) : Except String α := do
+  -- 埋め込みの Surface は版14（範囲のない旧版）か版15である。版14は `decodeCorpus` が範囲の欄を全て拒否してあり、
+  -- 欠けた欄に明示の Top と空の範囲の列を加えてから読む。版15は欠けた欄がないことを `decodeCorpus` が確かめてあり、
+  -- この変換は何も変えない（`Exchange.legacyRangesMissing`。設計書 07-04「交換の形式の版」）。
+  let j := Benitoite.Exchange.legacyRangesMissing j
   let value : α ← fromJson? j
   if toJson value != j then throw "noncanonical Surface fields or constructor"
   pure value
@@ -718,7 +722,16 @@ def decodeCorpus (j : Json) : Except String Corpus := do
   fields "interval corpus" ["kind", "version", "surfaceVersion", "traversalVersion", "profile", "inputs"] j
   if (← j.getObjValAs? String "kind") != "interval-corpus" then throw "unknown corpus kind"
   if (← j.getObjValAs? Nat "version") != 1 then throw "unsupported interval corpus version"
-  if (← j.getObjValAs? Nat "surfaceVersion") != 14 then throw "unsupported Surface version"
+  let surfaceVersion ← j.getObjValAs? Nat "surfaceVersion"
+  if surfaceVersion != 14 && surfaceVersion != 15 then throw "unsupported Surface version"
+  if surfaceVersion == 14 then
+    -- 範囲のない旧版。埋め込みの Surface に範囲の欄を置かせない。
+    Benitoite.Exchange.rejectFields Benitoite.Exchange.rangeFields j
+  else
+    -- 版15は範囲の欄を必須とし、範囲の変数を置かせず、範囲の正規形を確かめる（L50.2）。
+    Benitoite.Exchange.rejectFields ["rvar"] j
+    Benitoite.Exchange.validateRanges 0 j
+    if Benitoite.Exchange.legacyRangesMissing j != j then throw "missing range fields in Surface 15"
   if (← j.getObjValAs? Nat "traversalVersion") != 1 then throw "unsupported traversal version"
   let profile ← j.getObjValAs? String "profile"
   if !["base", "flow", "width", "range", "domain"].contains profile then throw "unsupported interval profile"

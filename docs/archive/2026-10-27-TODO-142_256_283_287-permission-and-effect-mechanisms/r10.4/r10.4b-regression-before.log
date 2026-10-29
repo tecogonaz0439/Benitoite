@@ -1,0 +1,49 @@
+$ cargo test -p benitoite --test scope_annotations effect_coverage -- --nocapture
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.46s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 5 tests
+
+thread 'effect_coverage_reports_one_failure_per_argument' (3003747) panicked at crates/benitoite/tests/scope_annotations.rs:784:5:
+assertion `left == right` failed: [Diagnostic { kind: Check, severity: Error, code: Some(E0201), message: "expected `->`, found a newline", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(252), end: BytePos(253) }, text: "unexpected a newline" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: "E0201"
+ right: "E0519"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test effect_coverage_reports_one_failure_per_argument ... FAILED
+
+thread 'effect_coverage_preserves_missing_effect_diagnostics' (3003746) panicked at crates/benitoite/tests/scope_annotations.rs:751:9:
+assertion `left == right` failed: import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+function target() -> Unit uses File.Read["/data/a"]
+ ()
+end function
+function main()
+ target()
+end function
+
+[Diagnostic { kind: Check, severity: Error, code: Some(E0201), message: "expected `->`, found a newline", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(236), end: BytePos(237) }, text: "unexpected a newline" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: "E0201"
+ right: "E0501"
+test effect_coverage_preserves_missing_effect_diagnostics ... FAILED
+test effect_coverage_flows_through_lambdas_callbacks_and_resume ... ok
+test effect_coverage_keeps_nested_types_and_failures_invariant ... ok
+
+thread 'effect_coverage_uses_one_same_named_atom' (3003748) panicked at crates/benitoite/tests/scope_annotations.rs:719:13:
+assertion `left == right` failed
+  left: "caller"
+ right: "target()"
+test effect_coverage_uses_one_same_named_atom ... FAILED
+
+failures:
+
+failures:
+    effect_coverage_preserves_missing_effect_diagnostics
+    effect_coverage_reports_one_failure_per_argument
+    effect_coverage_uses_one_same_named_atom
+
+test result: FAILED. 2 passed; 3 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.41s
+
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

@@ -11,12 +11,13 @@ use std::mem::{Discriminant, discriminant};
 #[derive(PartialEq, Eq, Hash)]
 enum Part {
     Var(TyVar),
-    Con(TyCon, usize),
+    Con(TyCon, usize, crate::types::builtin::RangeIndex),
     Fn(IContract, usize),
     Param(u32),
     App(IHead, usize),
     Rigid(NodeId, u32),
     Error,
+    // 原子の名前と範囲、Fail内の確定型も構造のEq/Hashへ含む。
     Effect(EffectSet, Option<EffInfer>, usize),
 }
 enum Pending<'a> {
@@ -58,7 +59,8 @@ impl ReasonKey {
             ReasonKind::ClassUse { class } | ReasonKind::ImplSuper { class } => {
                 Detail::Binding(*class)
             }
-            ReasonKind::Call
+            ReasonKind::ScopeResult
+            | ReasonKind::Call
             | ReasonKind::IfCondition
             | ReasonKind::IfBranches
             | ReasonKind::IfNoElse
@@ -109,9 +111,10 @@ pub(super) struct EffectConstraintKey {
     parts: Vec<Part>,
     reason: ReasonKey,
     has_pair: bool,
+    relation: EffectRelation,
 }
 impl EffectConstraintKey {
-    pub(super) fn new((sub, sup, reason, pair): &EffectConstraint) -> Self {
+    pub(super) fn new((sub, sup, reason, pair, relation): &EffectConstraint) -> Self {
         let mut pending = Vec::new();
         if let Some((a, b)) = pair {
             pending.push(Pending::Ty(b));
@@ -128,8 +131,8 @@ impl EffectConstraintKey {
                 }
                 Pending::Ty(t) => match t {
                     ITy::Var(v) => parts.push(Part::Var(*v)),
-                    ITy::Con(c, args) => {
-                        parts.push(Part::Con(*c, args.len()));
+                    ITy::Con(c, args, ix) => {
+                        parts.push(Part::Con(*c, args.len(), ix.clone()));
                         pending.extend(args.iter().rev().map(Pending::Ty));
                     }
                     ITy::App(h, args) => {
@@ -152,6 +155,7 @@ impl EffectConstraintKey {
             parts,
             reason: ReasonKey::new(reason),
             has_pair: pair.is_some(),
+            relation: *relation,
         }
     }
 }

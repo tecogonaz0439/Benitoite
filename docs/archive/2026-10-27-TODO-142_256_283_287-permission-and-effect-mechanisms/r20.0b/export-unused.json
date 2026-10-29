@@ -1,0 +1,21 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "desugar_export",
+    "scope_tables::exports_all_unused_operations_from_complete_stdlib",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "started_utc": "2026-10-28T17:08:45.459896+00:00",
+  "finished_utc": "2026-10-28T17:08:55.205403+00:00",
+  "exit": 101,
+  "outer_seconds": 9.745469334,
+  "max_rss_raw": 2210922496,
+  "max_rss_unit": "bytes",
+  "max_rss_mib": 2108.5,
+  "rss_method": "getrusage(RUSAGE_CHILDREN); 実行器と終了した子孫の最大値。一括の同時常駐量ではない",
+  "platform": "darwin"
+}

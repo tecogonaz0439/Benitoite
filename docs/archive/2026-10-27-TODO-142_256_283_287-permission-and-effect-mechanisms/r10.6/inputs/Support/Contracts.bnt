@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Failure
+uses Failure.Fail[String]
+public function forward[effect E](body: function() -> Integer uses E) -> Integer uses E, Failure.Fail[String]
+ return body()
+end function

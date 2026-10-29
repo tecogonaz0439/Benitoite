@@ -1,0 +1,201 @@
+== wait-for-lock start 17:54:53
+== lock acquired 17:54:53 after 0s
+✔ [36/410] Built Benitoite.Release.Order.FiniteAtoms (350ms)
+✔ [38/410] Built Benitoite.Release.Order.Labels (640ms)
+✔ [40/410] Built Benitoite.Release.Order.Types (1.4s)
+✖ [41/410] Building Benitoite.Release.Normalize (327ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Normalize.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Normalize.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Normalize.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Normalize.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Normalize.setup.json --json
+error: Benitoite/Release/Normalize.lean:18:6: Type mismatch
+  Ty.opaque o
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+warning: Benitoite/Release/Normalize.lean:32:2: unused `termination_by`, function is not recursive
+warning: Benitoite/Release/Normalize.lean:43:2: unused `termination_by`, function is not recursive
+warning: Benitoite/Release/Normalize.lean:77:27: declaration uses `sorry`
+warning: Benitoite/Release/Normalize.lean:76:10: declaration uses `sorry`
+warning: Benitoite/Release/Normalize.lean:77:36: This simp argument is unused:
+  Ty.norm_idem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, Ty.normTys_idem, Eff.norm_idem]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Normalize.lean:77:50: This simp argument is unused:
+  Ty.normTys_idem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, Ty.norm_idem, Eff.norm_idem]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Normalize.lean:77:67: This simp argument is unused:
+  Eff.norm_idem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, Ty.norm_idem, Ty.normTys_idem]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Benitoite/Release/Normalize.lean:109:16: Type mismatch
+  Ty.opaque ?m.3
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+error: Benitoite/Release/Normalize.lean:125:65: unsolved goals
+case base
+ι✝ : BaseTy
+h : sorry
+⊢ sorry = Ty.base ι✝
+
+case opaque
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : sorry
+⊢ sorry = Ty.opaque o✝ r✝
+
+case data
+d✝ : DataName
+args✝ : List Ty
+h : sorry
+⊢ sorry = Ty.data d✝ args✝
+
+case list
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.list
+
+case tvar
+i✝ : Nat
+h : sorry
+⊢ sorry = Ty.tvar i✝
+
+case reference
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.reference
+
+case lazy
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.lazy
+
+case set
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.set
+
+case bytes
+h : sorry
+⊢ sorry = Ty.bytes
+
+case dict
+cl✝ : ClassName
+τ✝ : Ty
+h : sorry
+⊢ sorry = Ty.dict cl✝ τ✝
+
+case tapp
+i✝ : Nat
+args✝ : List Ty
+h : sorry
+⊢ sorry = Ty.tapp i✝ args✝
+
+case ctor
+φ✝ : TyCon
+h : sorry
+⊢ sorry = Ty.ctor φ✝
+warning: Benitoite/Release/Normalize.lean:126:27: declaration uses `sorry`
+error: Benitoite/Release/Normalize.lean:154:16: Type mismatch
+  Ty.opaque ?m.3
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+error: Benitoite/Release/Normalize.lean:171:82: unsolved goals
+case base
+ι✝ : BaseTy
+h : sorry
+⊢ sorry = Ty.base ι✝
+
+case opaque
+o✝ : OpaqueName
+r✝ : ScopeRange
+h : sorry
+⊢ sorry = Ty.opaque o✝ r✝
+
+case data
+d✝ : DataName
+args✝ : List Ty
+h : sorry
+⊢ sorry = Ty.data d✝ args✝
+
+case list
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.list
+
+case tvar
+i✝ : Nat
+h : sorry
+⊢ sorry = Ty.tvar i✝
+
+case reference
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.reference
+
+case lazy
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.lazy
+
+case set
+a✝ : Ty
+h : sorry
+⊢ sorry = a✝.set
+
+case bytes
+h : sorry
+⊢ sorry = Ty.bytes
+
+case dict
+cl✝ : ClassName
+τ✝ : Ty
+h : sorry
+⊢ sorry = Ty.dict cl✝ τ✝
+
+case tapp
+i✝ : Nat
+args✝ : List Ty
+h : sorry
+⊢ sorry = Ty.tapp i✝ args✝
+
+case ctor
+φ✝ : TyCon
+h : sorry
+⊢ sorry = Ty.ctor φ✝
+warning: Benitoite/Release/Normalize.lean:172:27: declaration uses `sorry`
+✔ [403/410] Built Benitoite.Release.Order.Types:c.o (574ms)
+Some required targets logged failures:
+- Benitoite.Release.Normalize
+error: build failed
+        2.74 real         3.31 user         0.67 sys
+           777093120  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              195733  page reclaims
+                  23  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  19  voluntary context switches
+               11583  involuntary context switches
+          1205100088  instructions retired
+           430567778  cycles elapsed
+            25117824  peak memory footprint
+== exit 1

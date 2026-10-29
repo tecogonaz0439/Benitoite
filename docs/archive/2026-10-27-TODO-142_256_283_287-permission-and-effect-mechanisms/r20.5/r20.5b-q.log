@@ -1,0 +1,110 @@
+# 取りまとめが抜粋した。全体の大きさと SHA-256 は LARGE-FILES.txt。先頭40行と末尾80行、各行は400文字まで。
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `release` profile [optimized] target(s) in 54.61s
+     Running unittests src/lib.rs (target/release/deps/benitoite-75ebea65efc3b7c6)
+
+running 1 test
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000017125,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.625e-6,"samples_seconds":[1.583e-6,1.625e-6,1.625e-6,1.667e-6,1.834e-6],"stopped"
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":8,"max_body_items":2,"max_whole_items":2,"stops":[{"preorder":9,"reason":"BudgetExceeded { scope: Body, resource: Operations }"}],"whole_operations":8},"numbering_and_local_seconds":0.000014458,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.375e-
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000011875,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.167e-6,"samples_seconds":[1.125e-6,1.166e-6,1.167e-6,1.208e-6,1.292e-6],"stopped
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":8,"max_body_items":2,"max_whole_items":2,"stops":[{"preorder":9,"reason":"BudgetExceeded { scope: Body, resource: Operations }"}],"whole_operations":8},"numbering_and_local_seconds":0.000011459,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.166e
+SCOPE_MEASURE {"accepted_selected_calls":1000,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000012083,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.125e-6,"samples_seconds":[1.084e-6,1.125e-6,1.125e-6,1.208e-6,1.25e-6],"stopped
+SCOPE_MEASURE {"accepted_selected_calls":1000,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":8,"max_body_items":2,"max_whole_items":2,"stops":[{"preorder":9,"reason":"BudgetExceeded { scope: Body, resource: Operations }"}],"whole_operations":8},"numbering_and_local_seconds":0.00001075,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.084e
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000013125,"numbering_candidates":[{"events":153,"limit":100000,"numbering_seconds_median":1.209e-6,"samples_seconds":[1.125e-6,1.125e-6,1.209e-6,1.209e-6,1.333e-6],"stopped":
+SCOPE_MEASURE {"accepted_selected_calls":1,"bodies":[{"calls":1,"definition":".sample","metrics":{"body_operations":3,"max_body_items":1,"max_whole_items":1,"stops":[],"whole_operations":3},"numbering_and_local_seconds":1.959e-6,"numbering_candidates":[{"events":13,"limit":100000,"numbering_seconds_median":1.66e-7,"samples_seconds":[1.66e-7,1.66e-7,1.66e-7,1.67e-7,1.67e-7],"stopped":"None"},{"even
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":100,"definition":".sample","metrics":{"body_operations":350,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":350},"numbering_and_local_seconds":0.000081667,"numbering_candidates":[{"events":1503,"limit":100000,"numbering_seconds_median":8.875e-6,"samples_seconds":[8.625e-6,8.667e-6,8.875e-6,8.916e-6,9.25e-6],"stopp
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample","metrics":{"body_operations":30,"max_body_items":10,"max_whole_items":10,"stops":[],"whole_operations":30},"numbering_and_local_seconds":8.5e-6,"numbering_candidates":[{"events":103,"limit":100000,"numbering_seconds_median":1.125e-6,"samples_seconds":[1.042e-6,1.125e-6,1.125e-6,1.292e-6,1.333e-6],"stopped":"No
+SCOPE_MEASURE {"accepted_selected_calls":1000,"bodies":[{"calls":1000,"definition":".sample","metrics":{"body_operations":3500,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":3500},"numbering_and_local_seconds":0.000914916,"numbering_candidates":[{"events":15003,"limit":100000,"numbering_seconds_median":0.000079791,"samples_seconds":[0.000079166,0.000079458,0.000079791,0.00007
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":100,"definition":".sample","metrics":{"body_operations":300,"max_body_items":100,"max_whole_items":100,"stops":[],"whole_operations":300},"numbering_and_local_seconds":0.00008425,"numbering_candidates":[{"events":1003,"limit":100000,"numbering_seconds_median":6.542e-6,"samples_seconds":[6.333e-6,6.375e-6,6.542e-6,6.583e-6,8.583e-6],"s
+SCOPE_MEASURE {"accepted_selected_calls":1,"bodies":[{"calls":1,"definition":".sample","metrics":{"body_operations":3,"max_body_items":1,"max_whole_items":1,"stops":[],"whole_operations":3},"numbering_and_local_seconds":0.000081125,"numbering_candidates":[{"events":10013,"limit":100000,"numbering_seconds_median":0.000023458,"samples_seconds":[0.000023042,0.000023125,0.000023458,0.000023708,0.00002
+SCOPE_MEASURE {"accepted_selected_calls":1,"bodies":[{"calls":1,"definition":".sample","metrics":{"body_operations":3,"max_body_items":1,"max_whole_items":1,"stops":[],"whole_operations":3},"numbering_and_local_seconds":0.000220958,"numbering_candidates":[{"events":20513,"limit":100000,"numbering_seconds_median":0.00005725,"samples_seconds":[0.000056541,0.000057208,0.00005725,0.000057375,0.0000575
+
+thread 'typeck::scope::tests::measure_scope_budget' (5590082) panicked at crates/benitoite/src/typeck/scope/measure.rs:249:5:
+ordinary-arithmetic-1000: [
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0208,
+        ),
+        message: "the program is nested too deeply",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        77542,
+                    ),
+                    end: BytePos(
+                        77543,
+# …（省略）…
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `release` profile [optimized] target(s) in 54.61s
+     Running unittests src/lib.rs (target/release/deps/benitoite-75ebea65efc3b7c6)
+
+running 1 test
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000017125,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.625e-6,"samples_seconds":[1.583e-6,1.625e-6,1.625e-6,1.667e-6,1.834e-6],"stopped"
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":8,"max_body_items":2,"max_whole_items":2,"stops":[{"preorder":9,"reason":"BudgetExceeded { scope: Body, resource: Operations }"}],"whole_operations":8},"numbering_and_local_seconds":0.000014458,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.375e-
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000011875,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.167e-6,"samples_seconds":[1.125e-6,1.166e-6,1.167e-6,1.208e-6,1.292e-6],"stopped
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":8,"max_body_items":2,"max_whole_items":2,"stops":[{"preorder":9,"reason":"BudgetExceeded { scope: Body, resource: Operations }"}],"whole_operations":8},"numbering_and_local_seconds":0.000011459,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.166e
+SCOPE_MEASURE {"accepted_selected_calls":1000,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000012083,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.125e-6,"samples_seconds":[1.084e-6,1.125e-6,1.125e-6,1.208e-6,1.25e-6],"stopped
+SCOPE_MEASURE {"accepted_selected_calls":1000,"bodies":[{"calls":10,"definition":".sample0","metrics":{"body_operations":8,"max_body_items":2,"max_whole_items":2,"stops":[{"preorder":9,"reason":"BudgetExceeded { scope: Body, resource: Operations }"}],"whole_operations":8},"numbering_and_local_seconds":0.00001075,"numbering_candidates":[{"events":146,"limit":100000,"numbering_seconds_median":1.084e
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample","metrics":{"body_operations":35,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":35},"numbering_and_local_seconds":0.000013125,"numbering_candidates":[{"events":153,"limit":100000,"numbering_seconds_median":1.209e-6,"samples_seconds":[1.125e-6,1.125e-6,1.209e-6,1.209e-6,1.333e-6],"stopped":
+SCOPE_MEASURE {"accepted_selected_calls":1,"bodies":[{"calls":1,"definition":".sample","metrics":{"body_operations":3,"max_body_items":1,"max_whole_items":1,"stops":[],"whole_operations":3},"numbering_and_local_seconds":1.959e-6,"numbering_candidates":[{"events":13,"limit":100000,"numbering_seconds_median":1.66e-7,"samples_seconds":[1.66e-7,1.66e-7,1.66e-7,1.67e-7,1.67e-7],"stopped":"None"},{"even
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":100,"definition":".sample","metrics":{"body_operations":350,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":350},"numbering_and_local_seconds":0.000081667,"numbering_candidates":[{"events":1503,"limit":100000,"numbering_seconds_median":8.875e-6,"samples_seconds":[8.625e-6,8.667e-6,8.875e-6,8.916e-6,9.25e-6],"stopp
+SCOPE_MEASURE {"accepted_selected_calls":10,"bodies":[{"calls":10,"definition":".sample","metrics":{"body_operations":30,"max_body_items":10,"max_whole_items":10,"stops":[],"whole_operations":30},"numbering_and_local_seconds":8.5e-6,"numbering_candidates":[{"events":103,"limit":100000,"numbering_seconds_median":1.125e-6,"samples_seconds":[1.042e-6,1.125e-6,1.125e-6,1.292e-6,1.333e-6],"stopped":"No
+SCOPE_MEASURE {"accepted_selected_calls":1000,"bodies":[{"calls":1000,"definition":".sample","metrics":{"body_operations":3500,"max_body_items":4,"max_whole_items":4,"stops":[],"whole_operations":3500},"numbering_and_local_seconds":0.000914916,"numbering_candidates":[{"events":15003,"limit":100000,"numbering_seconds_median":0.000079791,"samples_seconds":[0.000079166,0.000079458,0.000079791,0.00007
+SCOPE_MEASURE {"accepted_selected_calls":100,"bodies":[{"calls":100,"definition":".sample","metrics":{"body_operations":300,"max_body_items":100,"max_whole_items":100,"stops":[],"whole_operations":300},"numbering_and_local_seconds":0.00008425,"numbering_candidates":[{"events":1003,"limit":100000,"numbering_seconds_median":6.542e-6,"samples_seconds":[6.333e-6,6.375e-6,6.542e-6,6.583e-6,8.583e-6],"s
+SCOPE_MEASURE {"accepted_selected_calls":1,"bodies":[{"calls":1,"definition":".sample","metrics":{"body_operations":3,"max_body_items":1,"max_whole_items":1,"stops":[],"whole_operations":3},"numbering_and_local_seconds":0.000081125,"numbering_candidates":[{"events":10013,"limit":100000,"numbering_seconds_median":0.000023458,"samples_seconds":[0.000023042,0.000023125,0.000023458,0.000023708,0.00002
+SCOPE_MEASURE {"accepted_selected_calls":1,"bodies":[{"calls":1,"definition":".sample","metrics":{"body_operations":3,"max_body_items":1,"max_whole_items":1,"stops":[],"whole_operations":3},"numbering_and_local_seconds":0.000220958,"numbering_candidates":[{"events":20513,"limit":100000,"numbering_seconds_median":0.00005725,"samples_seconds":[0.000056541,0.000057208,0.00005725,0.000057375,0.0000575
+
+thread 'typeck::scope::tests::measure_scope_budget' (5590082) panicked at crates/benitoite/src/typeck/scope/measure.rs:249:5:
+ordinary-arithmetic-1000: [
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0208,
+        ),
+        message: "the program is nested too deeply",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        77542,
+                    ),
+                    end: BytePos(
+                        77543,
+                    ),
+                },
+                text: "nesting limit of 1000 reached here",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::tests::measure_scope_budget ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::tests::measure_scope_budget
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1412 filtered out; finished in 0.48s
+
+error: test failed, to rerun pass `-p benitoite --lib`
+real 55.70
+user 287.63
+sys 3.23

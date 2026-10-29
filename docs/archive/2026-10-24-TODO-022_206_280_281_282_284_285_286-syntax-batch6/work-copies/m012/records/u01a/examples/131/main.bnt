@@ -1,0 +1,13 @@
+import Benitoite.ListBuilder
+import Benitoite.BytesBuilder
+
+function main() -> Unit
+  bind xs: ListBuilder[Integer] <- ListBuilder.new()
+  ListBuilder.append(value: 1, builder: xs)
+  bind before <- ListBuilder.copy(xs)
+  ListBuilder.appendAll(builder: xs, values: [2, 3])
+  bind bs: BytesBuilder <- BytesBuilder.new()
+  BytesBuilder.append(builder: bs, value: 0xffu8)
+  BytesBuilder.appendAll(bytes: Bytes.fromList([0x00u8]), builder: bs)
+  bind bytes <- BytesBuilder.copy(bs)
+end function

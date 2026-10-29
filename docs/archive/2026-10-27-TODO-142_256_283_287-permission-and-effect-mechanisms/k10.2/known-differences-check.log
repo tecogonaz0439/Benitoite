@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<wt>/formal/tests/test_range_known_differences.py", line 52, in <module>
+    main()
+  File "<wt>/formal/tests/test_range_known_differences.py", line 34, in main
+    assert process.returncode == case["status"], (case["name"], process.returncode, output)
+AssertionError: ('class-structural', 2, 'error: unexpected argument `--report=json`\nrun `benitoite --help` for usage\n')
+real 0.03
+user 0.02
+sys 0.01

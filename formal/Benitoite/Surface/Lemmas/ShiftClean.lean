@@ -8,7 +8,7 @@ mutual
   theorem shift_clean {n : Nat} (ntys : Nat) :
       (a : Ty) → TyOK n a → TyOK (n + ntys) (a.shift ntys 0)
     | .base _, _ => by simp [Ty.shift, TyOK, Ty.VarsIn]
-    | .opaque _, _ => by simp [Ty.shift, TyOK, Ty.VarsIn]
+    | .opaque _ _, h => by simpa [Ty.shift, TyOK, Ty.VarsIn] using h
     | .data _ args, h => by
         simp only [Ty.shift, Ty.shiftTys_eq_map, TyOK, Ty.VarsIn] at h ⊢
         exact shiftList_clean ntys args h
@@ -47,39 +47,39 @@ mutual
     | .ctor _, _ => by simp [Ty.shift, TyOK, Ty.VarsIn]
 
   theorem shiftList_clean {n : Nat} (ntys : Nat) :
-      (as : List Ty) → Ty.VarsInList n (fun _ => True) as →
-        Ty.VarsInList (n + ntys) (fun _ => True) (as.map (Ty.shift ntys 0))
+      (as : List Ty) → Ty.VarsInList 0 n (fun _ => True) as →
+        Ty.VarsInList 0 (n + ntys) (fun _ => True) (as.map (Ty.shift ntys 0))
     | [], _ => trivial
     | a :: as, h => by
         simp only [List.map_cons, Ty.VarsInList] at h ⊢
         exact ⟨shift_clean ntys a h.1, shiftList_clean ntys as h.2⟩
   theorem shiftEff_clean {n : Nat} (ntys : Nat) (e : Eff)
-      (h : Eff.VarsIn n (fun _ => True) e) :
-      Eff.VarsIn (n + ntys) (fun _ => True) (Eff.shift ntys 0 e) := by
+      (h : Eff.VarsIn 0 n (fun _ => True) e) :
+      Eff.VarsIn 0 (n + ntys) (fun _ => True) (Eff.shift ntys 0 e) := by
     cases e with
     | mk a fs =>
-      refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_⟩
+      refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_, h.2.2⟩
       intro t ht
       obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ fs.map (Ty.shift ntys 0) from by
         change t ∈ Order.sortUnique tyCompare (Ty.normTys (Ty.rawShiftTys ntys 0 fs)) at ht
         have hm := Order.mem_sortUnique.mp ht
         rw [← Ty.shiftTys_eq_norm_rawShift, Ty.shiftTys_eq_map] at hm
         exact hm)
-      exact shift_clean ntys x (Ty.VarsInList.iff.mp h.2 x hx)
+      exact shift_clean ntys x (Ty.VarsInList.iff.mp h.2.1 x hx)
 
 end
 
 /-- 行の像の最上位は整列せず、その中の型だけを移動する。 -/
 theorem rawShiftEff_clean {n : Nat} (k : Nat) (e : Eff)
-    (h : Eff.VarsIn n (fun _ => True) e) :
-    Eff.VarsIn (n + k) (fun _ => True) (Eff.rawShift k 0 e) := by
+    (h : Eff.VarsIn 0 n (fun _ => True) e) :
+    Eff.VarsIn 0 (n + k) (fun _ => True) (Eff.rawShift k 0 e) := by
   cases e with
   | mk a fs =>
-    refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_⟩
+    refine ⟨fun _ _ => trivial, Ty.VarsInList.iff.mpr ?_, h.2.2⟩
     intro t ht
     obtain ⟨x, hx, rfl⟩ := List.mem_map.mp
       (show t ∈ fs.map (Ty.rawShift k 0) from by simpa only [Ty.rawShiftTys_eq_map] using ht)
-    have hclean := Ty.VarsInList.iff.mp h.2 x hx
+    have hclean := Ty.VarsInList.iff.mp h.2.1 x hx
     have he : x.shift k 0 = x.rawShift k 0 := by
       rw [Ty.shift_eq_norm_rawShift]
       exact Ty.rawShift_canonical k 0 ((Ty.VarsIn.wf x hclean).canonical x)

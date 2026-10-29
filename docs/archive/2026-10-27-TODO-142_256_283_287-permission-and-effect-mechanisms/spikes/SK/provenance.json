@@ -1,0 +1,29 @@
+{
+  "base": "ec1c26afbe4253d38fc24c2d63d0ca367fa08b2c",
+  "start_utc": "2026-10-26T16:04:54+00:00",
+  "end_utc": "2026-10-26T16:24:41+00:00",
+  "elapsed_seconds": 1187,
+  "limit_minutes": 150,
+  "command": "zsh work/m013/remote-lean.sh SK SK.lean 4096 120",
+  "final_log": "run-11.log",
+  "source": "SK.lean",
+  "source_sha256": "80090b5448958c65ac0bd1f92605b388a9e7fedc6221f06cfaa4ae22b79b3c36",
+  "final_log_sha256": "b48690e0e3eaaa8841404eda90a622313788decfb9adaef461a14accc474d5dd",
+  "reference_sha256": {
+    "work/m013/spike-common.md": "bc94b100dc75b37e8de5808f76d949300b8995d10a6289d0575b0c55286871e7",
+    "work/m013/spikes/SA/findings.md": "57e48d7a3aa5bbe43be8c4230202c43bb22edc87a48e3635e8064e825171d2d0",
+    "work/m013/spikes/SA/SA.lean": "5cf5337ed8ec500a75c4aeab6e39512b20ad513b942e88ab1be603862eb040d1",
+    "docs/todo/sources/2026-10-17-feasibility-spikes/142/Scope.lean": "4de0bd773f5c16a597157f1383723b97d5a273cab00ef3b7a553ab93d508ee5a",
+    "work/m013/TODO-283_287-permission-and-effect-mechanisms/study/synthesis.md": "bf134c4d30ee910b8dd3876416dcded431b298bd080da8a1d243c558e4370312",
+    "docs/design/00-overview/00-01-goals.md": "2241213070d75ddabda4731a9978158c64f17df618671688d0a8b7a92dde7e84",
+    "docs/design/00-overview/00-04-glossary.md": "2973039f0c5058288e7e8f04f655d43fa948b8b94d0063ca664332af5733c96e",
+    "work/m013/remote-lean.sh": "af1ba4830dcc4163f067df3d7b00d21485efb4115055ce69603f9d99f9c55ee0"
+  },
+  "baseline_source_hashes": "inventory.json:source_sha256",
+  "lean_version": "4.34.1",
+  "monitor_summary": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB",
+  "lean_time_real_seconds": 0.98,
+  "maximum_resident_bytes": 744636416,
+  "peak_footprint_bytes": 193928744,
+  "gate": "信頼の条件を加えれば閉じた"
+}

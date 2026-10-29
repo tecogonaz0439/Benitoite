@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit uses Http.Connect["10.0.0.1/32", 80, "10.0.0.1", 80]
+  ()
+end function

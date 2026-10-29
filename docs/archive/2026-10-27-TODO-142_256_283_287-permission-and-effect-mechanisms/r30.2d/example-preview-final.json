@@ -1,0 +1,41 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "tools/derive/derive.py",
+    "preview",
+    "--root",
+    "tools/derive/examples",
+    "--config",
+    "tools/derive/examples/derive.json",
+    "--out",
+    "target/r30.2d/example-review-final"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 0.420296791,
+  "maxrss_raw": 183025664,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 174.546875,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 0.443769208,
+  "recorded_at": "2026-10-29T06:17:02.743779+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2d/run-record.py",
+    "--child",
+    "example-preview-final",
+    "python3",
+    "-B",
+    "tools/derive/derive.py",
+    "preview",
+    "--root",
+    "tools/derive/examples",
+    "--config",
+    "tools/derive/examples/derive.json",
+    "--out",
+    "target/r30.2d/example-review-final"
+  ]
+}

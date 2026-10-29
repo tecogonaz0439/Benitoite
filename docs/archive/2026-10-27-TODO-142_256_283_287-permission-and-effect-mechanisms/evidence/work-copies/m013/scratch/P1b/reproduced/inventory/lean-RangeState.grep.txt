@@ -1,0 +1,77 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetDiscoverProof.lean:389:      RangeState.extendUnknown, RangeState.extendUnknown_extend] using
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetPatterns.lean:123:    (ranges : RangeState) : Scan (Option (List AbstractSlot × RangeState)) := frame fun _ => do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetPatterns.lean:355:      simpa only [List.replicate_succ, List.cons_append, extend, RangeState.extendUnknown] using
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetPatterns.lean:369:      RangeState.extendUnknown, RangeState.extendUnknown_extend] using
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetPatterns.lean:384:    (tail : List AbstractSlot) (ranges : RangeState) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetPatterns.lean:397:        (agrees_pure (α := Option (List AbstractSlot × RangeState)) none)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetPatterns.lean:403:          RangeState.extendUnknown, RangeState.extendUnknown_extend] using ih
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:207:def rangeChecked (state : RangeState) (index : Nat) : Scan (Option RangeOrigin) := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:270:    Scan (Option RangeState) := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:550:theorem rangeChecked_agrees (state : RangeState) (index : Nat) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:1:import Benitoite.Interval.RangeState
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:26:  ranges : RangeState := RangeState.empty ⟨[], 0⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:30:  ⟨locals, [], fun _ => none, RangeState.empty ⟨[], 0⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:34:  { env with ranges := RangeState.empty ⟨[], 0⟩ }
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:42:  { env with locals := [], ranges := RangeState.empty ⟨[], env.ranges.scope.nextId⟩ }
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Environment.lean:201:  simp only [forget, slots, RangeState.forget_idempotent]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Examples.lean:902:    let start := RangeState.empty ⟨[], 0⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Examples.lean:924:    let start := RangeState.empty ⟨[], 0⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Examples.lean:933:  have saved := range_save_result_of_eval (state := RangeState.empty ⟨[], 0⟩) models
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:414:def rangeResultOrigin (env : AbstractEnv) (state : RangeState)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:423:def rangeSaveResult (env : AbstractEnv) (state : RangeState) (input : EvalInput) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:433:def rangeBindOk (state : RangeState) (origin : RangeOrigin) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:437:def rangeCheckedOrigin (state : RangeState) (index : Nat) : Option RangeOrigin := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:454:theorem range_source_normal_of_eval {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:521:theorem range_result_source_models {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:562:theorem range_saved_result_models {state : RangeState} {env : ConcreteEnv} {index : Nat}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:664:def rangeMatchOk (env : AbstractEnv) (state : RangeState) (input : EvalInput)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:665:    (pattern : Pattern) : Option RangeState := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:670:theorem range_match_ok_models {abstract : AbstractEnv} {state inner : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:693:theorem range_bind_ok_valid {state : RangeState} (valid : state.Valid) (origin : RangeOrigin) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:697:theorem range_checked_wrong_id {state : RangeState} {index stored actual : Nat}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:704:theorem range_checked_shift (state : RangeState) (fact : Option RangeLocalFact) (index : Nat) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:709:    (valid : ∀ id ∈ scope.positions, id < scope.nextId) : (RangeState.empty scope).Valid :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:713:theorem range_save_result_valid {state : RangeState} (valid : state.Valid)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:768:def rangeValueOrigin (env : AbstractEnv) (state : RangeState)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:825:theorem range_value_origin_source {env : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:842:def rangeValueInterval (env : AbstractEnv) (state : RangeState) (input : EvalInput) : Interval :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:849:theorem range_value_origin_mem {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:879:theorem range_value_interval_mem {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:899:theorem range_value_origin_total {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:956:theorem range_value_call_normal_mem {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1032:theorem range_value_surface_mem {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1044:theorem range_value_origin_evaluated {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1075:theorem range_value_forget_top (env : AbstractEnv) (state : RangeState) (input : EvalInput) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1083:      simp [rangeCheckedOrigin, RangeState.forget, RangeState.empty, BindingScope.idAt]
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1214:theorem range_match_selected_ok_models {abstract : AbstractEnv} {state : RangeState}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1263:theorem range_result_origin_type (env : AbstractEnv) (state : RangeState)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1519:    let state := rangeBindOk (RangeState.empty ⟨[], 0⟩) origin
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1561:    let start := RangeState.empty ⟨[3], 4⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1566:    let snapshot := fun (inner : RangeState) (i : Nat) =>
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1598:    let state := rangeBindOk (RangeState.empty ⟨[1, 0], 2⟩) origin
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1606:      (rangeCheckedOrigin (RangeState.empty ⟨[0], 1⟩) 0).isNone ∧
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1630:    let empty : RangeState := .empty ⟨[], 0⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1673:  have bound : (rangeBindOk ((RangeState.empty ⟨[], 0⟩).extend
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1686:      AbstractEnv.standardAt, rangeCheckedOrigin, rangeBindOk, RangeState.extend,
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1687:      RangeState.empty, BindingScope.fresh, BindingScope.idAt, origin])
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:87:structure RangeState where
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:92:def RangeState.Valid (state : RangeState) : Prop :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:97:def RangeState.Models (state : RangeState) (env : ConcreteEnv) : Prop :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:103:def RangeState.empty (scope : BindingScope) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:107:def RangeState.extend (state : RangeState) (fact : Option RangeLocalFact) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:111:def RangeState.forget (state : RangeState) : RangeState := .empty ⟨[], state.scope.nextId⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:115:    (RangeState.empty scope).Models env := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:117:  simp only [RangeState.empty, List.getElem?_replicate] at found
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:121:theorem range_forget_models (state : RangeState) (env : ConcreteEnv) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:125:theorem range_extend_valid {state : RangeState} (valid : state.Valid) (fact : Option RangeLocalFact) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:130:theorem range_extend_models {state : RangeState} {env : ConcreteEnv} {value : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:138:    simp only [RangeState.extend, List.getElem?_cons_zero, Option.some.injEq] at found
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:145:def RangeState.extendUnknown : RangeState → Nat → RangeState
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:150:theorem RangeState.extendUnknown_extend (state : RangeState) (count : Nat) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:154:  | succ count ih => simpa only [RangeState.extendUnknown] using congrArg (·.extend none) ih
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:157:theorem range_extend_unknown_models {state : RangeState} {env : ConcreteEnv}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:162:  | zero => simp [RangeState.extend] at found
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:168:theorem range_extend_unknowns_models {state : RangeState} {env : ConcreteEnv}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:178:theorem RangeState.forget_idempotent (state : RangeState) : state.forget.forget = state.forget := rfl
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/TablePreservation.lean:12:@[simp] theorem tables_update (env : AbstractEnv) (locals : List AbstractSlot) (ranges : RangeState) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/TablePreservation.lean:18:@[simp] theorem tables_ranges (env : AbstractEnv) (ranges : RangeState) :

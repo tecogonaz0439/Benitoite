@@ -298,7 +298,13 @@ impl<'p> Gen<'p> {
                 )
                 || std::iter::once(&report.cause)
                     .chain(report.message.iter())
-                    .any(|v| v.ty != Ty::Con(TyCon::Builtin(BuiltinTypeId::STRING), vec![]))
+                    .any(|v| {
+                        v.ty != Ty::Con(
+                            TyCon::Builtin(BuiltinTypeId::STRING),
+                            vec![],
+                            crate::types::builtin::RangeIndex::TOP,
+                        )
+                    })
             {
                 return Err(internal("invalid exit report call"));
             }
@@ -324,7 +330,13 @@ impl<'p> Gen<'p> {
         } else {
             None
         };
-        if let ValKind::Builtin { id, targs, info } = &func.kind {
+        if let ValKind::Builtin {
+            id,
+            targs,
+            info,
+            ranges,
+        } = &func.kind
+        {
             if !dicts.is_empty() {
                 return Err(internal("builtin with dictionary arguments"));
             }
@@ -336,7 +348,7 @@ impl<'p> Gen<'p> {
                 if usize::from(decl.arity) != args.len() || decl.capability != info.class {
                     return Err(internal("builtin call disagrees with declaration"));
                 }
-                let b = self.builtin(*id, info.op)?;
+                let b = self.scoped_builtin(*id, info.op, ranges)?;
                 let base = fg.alloc_block(count(args.len())?);
                 self.vals(fg, args, base, future)?;
                 let dst = fg.result(target);
@@ -659,7 +671,7 @@ fn plan(intrinsic: Intrinsic, types: &TypeArgs) -> CgResult<Plan> {
 fn equality(ty: &Ty, negate: bool) -> CgResult<Plan> {
     use BuiltinTypeId as T;
     let op = match ty {
-        Ty::Con(TyCon::Builtin(id), _) => match *id {
+        Ty::Con(TyCon::Builtin(id), _, _) => match *id {
             T::INTEGER => Opcode::EqI,
             T::FLOAT => Opcode::EqF,
             T::DECIMAL => Opcode::EqD,
@@ -681,7 +693,7 @@ fn equality(ty: &Ty, negate: bool) -> CgResult<Plan> {
             | T::FLOAT32 => Opcode::EqV,
             _ => return Err(internal("equality on an opaque type")),
         },
-        Ty::Con(TyCon::Adt(_) | TyCon::External(_), _)
+        Ty::Con(TyCon::Adt(_) | TyCon::External(_), _, _)
         | Ty::Param(_)
         | Ty::App(_, _)
         | Ty::Rigid { .. } => Opcode::EqV,
@@ -1227,8 +1239,13 @@ impl<'p> Gen<'p> {
                 fg.load(dst, k, Some(v.origin))
             }
             ValKind::External { .. } => Err(internal("external function used as a value")),
-            ValKind::Builtin { id, targs, info } => {
-                let index = self.builtin_value(*id, targs, *info, fg.def)?;
+            ValKind::Builtin {
+                id,
+                targs,
+                info,
+                ranges,
+            } => {
+                let index = self.builtin_value(*id, targs, *info, ranges, fg.def)?;
                 let k = self.constant(ConstDesc::Func(index))?;
                 fg.load(dst, k, Some(v.origin))
             }
@@ -1579,6 +1596,7 @@ impl<'p> Gen<'p> {
         id: BuiltinId,
         types: &TypeArgs,
         info: BuiltinInfo,
+        ranges: &[crate::types::scope::Range],
         def: &'p LowerDef,
     ) -> CgResult<ProtoIdx> {
         let key = (
@@ -1588,6 +1606,7 @@ impl<'p> Gen<'p> {
             } else {
                 vec![]
             },
+            ranges.to_vec(),
         );
         if let Some(index) = self.builtin_protos.get(&key) {
             return Ok(*index);
@@ -1601,7 +1620,7 @@ impl<'p> Gen<'p> {
             let args: Vec<u32> = (0..n).collect();
             self.emit_plan(&mut fg, plan(intrinsic, types)?, &args, 0, None)?;
         } else {
-            let b = self.builtin(id, info.op)?;
+            let b = self.scoped_builtin(id, info.op, ranges)?;
             fg.emit(
                 Instr::abc(
                     if info.class == Capability::Io {
@@ -1672,6 +1691,7 @@ fn const_ty(c: &Const) -> Ty {
             Const::Decimal(_) => T::DECIMAL,
         }),
         Vec::new(),
+        crate::types::builtin::RangeIndex::TOP,
     )
 }
 

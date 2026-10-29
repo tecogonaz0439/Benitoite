@@ -1,0 +1,68 @@
+'Benitoite.Scope.Domain.Groups.length_split' depends on axioms: [propext]
+'Benitoite.Scope.Domain.Groups.lt_of_mem_split' depends on axioms: [propext]
+'Benitoite.Scope.Domain.Groups.join_lt' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.Groups.join_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.Groups.split_add_mul' depends on axioms: [propext]
+'Benitoite.Scope.Domain.Groups.split_join' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.Family.groupWidth_mul_groupCount' does not depend on any axioms
+'Benitoite.Scope.Domain.IPAddr.length_groups' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPAddr.lt_of_mem_groups' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPAddr.ofGroups?' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.ofGroups?_groups' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.groups_of_ofGroups?' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.ofGroups?_isSome_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.mapped' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.mapped_family' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.mapped_ne_of_v4' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPAddr.mapped_bits_mod' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.CIDR.blockSize_pos' does not depend on any axioms
+'Benitoite.Scope.Domain.CIDR.lo_le_hi' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.CIDR.mem_network' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.CIDR.mem_iff_prefixMem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.lo_le_hi' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.lo_lt' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.hi_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.matches_iff_interval' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.family_of_matches' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.loAddr' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.hiAddr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.matches_loAddr' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.matches_hiAddr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.nonempty' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.Covers' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.covers?' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.covers?_spec' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPPattern.covers_exact_iff' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.Covers.sound' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPPattern.Covers.refl' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.Covers.trans' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.covers_of_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.covers_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.normalize_family' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPPattern.normalize_lo' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPPattern.normalize_hi' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPPattern.covers_normalize_iff' depends on axioms: [propext]
+'Benitoite.Scope.Domain.IPPattern.not_covers_of_family_ne' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.disjoint_of_family_ne' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.not_sub_of_family_ne' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.not_matches_mapped' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.zero' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.zero_wf' does not depend on any axioms
+'Benitoite.Scope.Domain.IPPattern.zero_matches_iff' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.IPPattern.zero_covers_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.NamePattern.matches_witness' does not depend on any axioms
+'Benitoite.Scope.Domain.NamePattern.nonempty' does not depend on any axioms
+'Benitoite.Scope.Domain.HostPattern.name_ip_disjoint' depends on axioms: [propext]
+'Benitoite.Scope.Domain.HostPattern.ip_not_sub_name' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.HostPattern.name_not_sub_ip' depends on axioms: [propext]
+'Benitoite.Scope.Domain.HostPattern.ip_not_sub_ip_of_family_ne' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.Range.host_ip_not_sub_host_name' depends on axioms: [propext, Quot.sound]
+'Benitoite.Scope.Domain.Range.host_name_not_sub_host_ip' depends on axioms: [propext]
+'Benitoite.Scope.Domain.Range.host_ip_not_sub_of_family_ne' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.progress' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.preservation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.effect_soundness_noLamNames' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.step_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Surface.desugar_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Surface.surface_effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]

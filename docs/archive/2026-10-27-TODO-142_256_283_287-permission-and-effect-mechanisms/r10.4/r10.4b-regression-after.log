@@ -1,0 +1,14 @@
+$ cargo test -p benitoite --test scope_annotations effect_coverage -- --nocapture
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.35s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 5 tests
+test effect_coverage_reports_one_failure_per_argument ... ok
+test effect_coverage_flows_through_lambdas_callbacks_and_resume ... ok
+test effect_coverage_preserves_missing_effect_diagnostics ... ok
+test effect_coverage_keeps_nested_types_and_failures_invariant ... ok
+test effect_coverage_uses_one_same_named_atom ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1.56s
+

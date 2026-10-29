@@ -1,0 +1,55 @@
+{
+  "runs": [
+    {
+      "source": "Contracts.lean",
+      "sha256": "cb357fc0d0234cb4f3a0ae7ee8803c121044a14bb9fe3fc566cec7464acbc47d",
+      "log": "contracts-final.log",
+      "theorems": 44,
+      "audited": 44,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "errors_or_warnings": [],
+      "banned_source_tokens": [],
+      "last_line": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB ",
+      "exit": 0,
+      "elapsed_seconds": 5,
+      "top_mem_peak_mb": 0,
+      "maximum_rss_bytes": 727220224,
+      "maximum_rss_mib": 693.53,
+      "lean_real_seconds": 0.92,
+      "command": "zsh work/m013/remote-lean.sh SB Contracts.lean 6144 180",
+      "memory_limit_mib": 6144,
+      "time_limit_seconds": 180,
+      "ok": true
+    },
+    {
+      "source": "FullTypes.lean",
+      "sha256": "193a9d3d769ef2280aa2bbf0a0a0b3882bfa9be9493789a44246726d2e8e7bbd",
+      "log": "full-types-final.log",
+      "theorems": 23,
+      "audited": 23,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "errors_or_warnings": [],
+      "banned_source_tokens": [],
+      "last_line": "== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB ",
+      "exit": 0,
+      "elapsed_seconds": 5,
+      "top_mem_peak_mb": 0,
+      "maximum_rss_bytes": 715685888,
+      "maximum_rss_mib": 682.53,
+      "lean_real_seconds": 0.82,
+      "command": "zsh work/m013/remote-lean.sh SB FullTypes.lean 6144 180",
+      "memory_limit_mib": 6144,
+      "time_limit_seconds": 180,
+      "ok": true
+    }
+  ],
+  "ok": true
+}

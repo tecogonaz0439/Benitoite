@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+ ()
+end function
+function sample(b: Scope.PathIn["/logs/b"]) -> List[Result[String, IOError]] uses File.Read["/data/a"]
+ return Task.all([lambda() return File.readTextIn(path: b) end lambda])
+end function

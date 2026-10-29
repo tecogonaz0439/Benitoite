@@ -1,0 +1,23 @@
+import Benitoite.Unofficial.IO.Console
+
+function condition(label: String, value: Boolean) -> Boolean uses Console.Write
+  Console.writeLine(label)
+  return value
+end function
+
+function choose(first: Boolean, second: Boolean) -> String uses Console.Write
+  match condition(label: "first", value: first) with
+    case true -> return "first selected"
+    case false ->
+      match condition(label: "second", value: second) with
+        case true -> return "second selected"
+        case false -> return "neither selected"
+      end match
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(choose(first: true, second: true))
+  Console.writeLine(choose(first: false, second: true))
+  Console.writeLine(choose(first: false, second: false))
+end function

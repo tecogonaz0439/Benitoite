@@ -1,0 +1,34 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.23s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 6 tests
+test file_io::file_handler_clause_io_on_another_path_remains_outside_the_handle ... ok
+test file_io::file_single_target_operations_work_in_implementation_methods_with_dictionaries ... ok
+
+thread 'file_io::file_io_constraints_choose_check_indices_and_top_cannot_be_narrowed_afterward' (6234186) panicked at crates/benitoite/tests/scoped_calls/file_io.rs:120:9:
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(path: String) -> Result[String, IOError] uses File.Read
+ bind checked <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ return match checked with
+ case Result.Ok(checkedPath) ->
+  bind operation <- File.readTextIn
+ operation(path: checkedPath)
+ case Result.Error(_) -> Result.Ok("failed check")
+ end match
+end function: [(NodeId(9), [Path(PathPattern { kind: Tree, stem: Path(["data"]) })]), (NodeId(18), [Path(PathPattern { kind: Tree, stem: Path(["data"]) })])]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test file_io::file_io_constraints_choose_check_indices_and_top_cannot_be_narrowed_afterward ... FAILED
+test file_io::file_handler_unhandled_write_is_accepted_but_captured_index_is_invariant ... ok
+test file_io::file_handler_clause_projection_and_widen_require_local_facts_for_non_top ... ok
+test file_io::file_single_target_signatures_follow_inputs_and_expected_function_inputs ... ok
+
+failures:
+
+failures:
+    file_io::file_io_constraints_choose_check_indices_and_top_cannot_be_narrowed_afterward
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 23 filtered out; finished in 3.78s
+
+error: test failed, to rerun pass `--test scoped_calls`

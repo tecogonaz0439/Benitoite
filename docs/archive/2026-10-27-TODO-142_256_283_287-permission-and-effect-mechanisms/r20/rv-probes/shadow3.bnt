@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Scope as S
+function main() -> Unit
+ ()
+end function
+const pattern: String = "/data/a"
+function f(p: String) -> Result[S.PathIn["/data/a"], S.ScopeError]
+ return match p with
+ case pattern -> S.checkPathIn(pattern: pattern, path: p)
+ end match
+end function

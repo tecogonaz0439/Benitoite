@@ -18,7 +18,8 @@
     },
     {
       "stem": "named-declarations",
-      "definitions": 2,
+      "rangeComparison": true,
+      "definitions": 5,
       "origin": "checked-program",
       "coverage": null
     },
@@ -92,9 +93,9 @@
     }
   ],
   "namedVersions": {
-    "corpus": 14,
-    "table": 6,
-    "coverage": 6
+    "corpus": 15,
+    "table": 7,
+    "coverage": 7
   },
   "namedCoverageCases": 10,
   "namedExcluded": [],
@@ -1707,7 +1708,7 @@
       "group": "golden",
       "name": "testdata/modules/c11-no-main",
       "excluded": [
-        "entry: NoMainFile { dir: \"/Users/tecogonaz/src/Benitoite/crates/benitoite/testdata/modules/c11-no-main\" }"
+        "entry: NoMainFile { dir: \"crates/benitoite/testdata/modules/c11-no-main\" }"
       ],
       "definitions": 0,
       "scopes": {},
@@ -3808,7 +3809,7 @@
       "group": "golden",
       "name": "testdata/test/check_error",
       "excluded": [
-        "entry: NoMainFile { dir: \"/Users/tecogonaz/src/Benitoite/crates/benitoite/testdata/test/check_error\" }"
+        "entry: NoMainFile { dir: \"crates/benitoite/testdata/test/check_error\" }"
       ],
       "definitions": 0,
       "scopes": {},
@@ -3820,7 +3821,7 @@
       "group": "golden",
       "name": "testdata/test/directory",
       "excluded": [
-        "entry: NoMainFile { dir: \"/Users/tecogonaz/src/Benitoite/crates/benitoite/testdata/test/directory\" }"
+        "entry: NoMainFile { dir: \"crates/benitoite/testdata/test/directory\" }"
       ],
       "definitions": 0,
       "scopes": {},

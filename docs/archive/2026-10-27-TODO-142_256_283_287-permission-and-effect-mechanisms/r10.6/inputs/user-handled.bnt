@@ -1,0 +1,8 @@
+effect Ask
+ function ask() -> Integer
+end effect
+function main() -> Unit
+ bind _ <- handle ask() with
+  case ask() -> resume(42)
+ end handle
+end function

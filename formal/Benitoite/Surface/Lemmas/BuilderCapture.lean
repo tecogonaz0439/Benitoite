@@ -47,7 +47,7 @@ mutual
     | .con _ _ vs | .list vs | .setV vs | .dict _ _ vs => Vals.Reads p vs
     | .mapV ks vs => Vals.Reads p ks ∧ Vals.Reads p vs
     | .super v _ => Val.Reads p v
-    | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. => True
+    | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
   def Vals.Reads (p : Nat → Prop) : List Val → Prop
     | [] => True
     | v :: vs => Val.Reads p v ∧ Vals.Reads p vs
@@ -110,6 +110,8 @@ mutual
   | .V_Var hi _ =>
       simp only [Val.Reads] <;> exact hp _ _ hi
   | .V_Const | .V_Fun .. | .V_Prim .. | .V_Op .. | .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes => simp only [Val.Reads]
+  | .V_Checked _ _ => simp only [Val.Reads]
+  | .V_CheckedRequest _ _ _ _ => simp only [Val.Reads]
   | .V_Lam _ _ hb => simpa only [Val.Reads, binds_length] using HasTypeCQ.reads hb (hp.hide.append _)
   | .V_Con _ _ hs | .V_Dict _ _ hs =>
       simp only [Val.Reads] <;> exact HasTypeVsQ.reads hs hp
@@ -182,7 +184,7 @@ mutual
       · intro m hm; cases hm
         simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hg (hp.append _).hide (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
       · simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hb (hp.append _) (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
- theorem HasTypeClausesQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
+ theorem HasTypeClausesQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R εb cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl)
      {pv} (hp : EnvReads pv Γ) : Clauses.Reads pv cs := by
   match h with
   | .nil => simp only [Clauses.Reads]
@@ -244,7 +246,7 @@ theorem HasTypeQ.closure_empty {D B op Q Δ C Γ R pos e a ε}
   | .E_Fun h0 h1 h2 h3 h4 h5 h6 h7 => simp only [Expr.EmitsClosure] at site
   | .E_FunDicts h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 => exact .E_FunDicts h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10
   | .E_MethName h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12 => exact .E_MethName h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12
-  | .E_Prim h0 h1 h2 h3 h4 h5 h6 => simp only [Expr.EmitsClosure] at site
+  | .E_Prim h0 hr h1 h2 h3 h4 h5 h6 => simp only [Expr.EmitsClosure] at site
   | .E_Raise h0 h1 => simp only [Expr.EmitsClosure] at site
   | .E_HandleFail h0 h1 h2 h3 h4 h5 h6 => simp only [Expr.EmitsClosure] at site
   | .E_Op h0 h1 h2 h3 => simp only [Expr.EmitsClosure] at site
@@ -311,18 +313,18 @@ theorem builderExprBoundary_no_capture {p : Program} {view B op Q C Γ Δ R pos 
     (BuilderCtx.aligned_envReads ha)
 
 /-- 節の列では本体が初めから空分類表である。続きも同じ条件で移す。 -/
-theorem HasClausesQ.closure_empty {D B op Q Δ C Γ R cs a ε}
-    (h : HasClausesQ D B op Q Δ C Γ R cs a ε) :
-    HasClausesQ D B op Q [] C Γ R cs a ε := by
+theorem HasClausesQ.closure_empty {D B op Q Δ C Γ R εb cs a ε}
+    (h : HasClausesQ D B op Q Δ C Γ R εb cs a ε) :
+    HasClausesQ D B op Q [] C Γ R εb cs a ε := by
   match h with
   | .nil => exact .nil
   | .cons h0 h1 h2 h3 h4 h5 h6 => exact .cons h0 h1 h2 h3 h4 h5 (HasClausesQ.closure_empty h6)
 
 /-- 通常節のコアの本体も、節の引数・継続・辞書の位置を除いた外側のセルを読まない。 -/
-theorem builderClauses_no_capture {p : Program} {view B op Q C Γ Δ R cs a ε pe}
+theorem builderClauses_no_capture {p : Program} {view B op Q C Γ Δ R εb cs a ε pe}
     (ha : BuilderCtx.Aligned Γ Δ) (hwf : p.WellFormed)
     (hsig : ∀ b s, B.sig b = some s → s.Scoped)
-    (h : HasClausesQ (p.declarationsFor view) B op Q Δ C Γ R cs a ε)
+    (h : HasClausesQ (p.declarationsFor view) B op Q Δ C Γ R εb cs a ε)
     (sc : cs.Scoped C.length pe Γ.length) (hΓ : EnvClean C.length Γ)
     (hR : ∀ r, R = some r → TyOK C.length r) (ht : TyOK C.length a) :
     Clauses.Reads (fun i => Δ.kindAt i = none) (desugarClauses op cs) := by

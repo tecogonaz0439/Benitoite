@@ -1,0 +1,20 @@
+[
+  {
+    "file": "request-retained.bnt",
+    "before": "f87479e6c4a5a6687e406d9da818731b49b1991946e60c1e64fd54e432f82afa",
+    "after": "bbadf5ee2fcd7d85735fd69d2b8dcb8b9e4deb73c03c7e13620e808f8f935d01",
+    "reason": "widen結果は由来を保持しないため射影は元の同じ成功値で行う。widen自体と契約の期待値は変更しない。初稿はindependentに保持"
+  },
+  {
+    "file": "path-widen.bnt",
+    "before": "00a8eabcbcfd6d47f8d4652a87bdb0c81508c8a76d44fb363d4ea349538b3138",
+    "after": "cbd03cc55f7e9f9962c445e29cf93580ddc879f1f877a12faabab0008df4ae4e",
+    "reason": "widen結果は由来を保持しないため射影は元の同じ成功値で行う。widen自体と契約の期待値は変更しない。初稿はindependentに保持"
+  },
+  {
+    "file": "request-errors.bnt",
+    "before": "2afbc77e677683183aa703ad796fea90371e65d1cc5471756f9b556f738ba7bf",
+    "after": "646a4b95bbc25990430c898a2defc9c86e85a3b877614781cdee1fb5affdb7f9",
+    "reason": "Consoleモジュールの公開効果名はConsole.Write。入力の宣言だけを訂正し期待する終了/InvalidTarget/InvalidUrlは変更しない"
+  }
+]

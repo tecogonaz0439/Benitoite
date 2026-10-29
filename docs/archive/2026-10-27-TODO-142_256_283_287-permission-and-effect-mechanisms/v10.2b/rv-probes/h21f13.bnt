@@ -1,0 +1,26 @@
+import Benitoite.Unofficial.IO.File
+
+effect Tick
+  function tick() -> Result[String, IOError]
+end effect
+
+function main() -> Unit
+  bind run <- lambda(e: IOError)
+    return handle File.readText(path: "/a") with
+      case File.readText(path) -> resume(Result.Error(e))
+      case File.openReader(path) -> resume(Result.Error(e))
+      case File.readLine(reader) -> resume(Result.Error(e))
+      case File.readBytes(path) -> resume(Result.Error(e))
+      case File.readLines(path) -> resume(Result.Error(e))
+      case File.exists(path) -> resume(Result.Error(e))
+      case File.info(path) -> resume(Result.Error(e))
+      case File.listDirectory(path) -> resume(Result.Error(e))
+      case File.walk(path) -> resume(Result.Error(e))
+      case File.canonicalize(path) -> resume(Result.Error(e))
+      case File.readChunk(reader, maximumBytes) -> resume(Result.Error(e))
+      case File.readTextIn(path) -> resume(Result.Error(e))
+      case File.readBytesIn(path) -> resume(Result.Error(e))
+    end handle
+  end lambda
+  ()
+end function

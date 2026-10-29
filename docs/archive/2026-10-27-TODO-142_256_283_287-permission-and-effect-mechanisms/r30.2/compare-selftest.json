@@ -1,0 +1,37 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 91.136120292,
+  "maxrss_raw": 2875621376,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 2742.40625,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 91.160146916,
+  "recorded_at": "2026-10-29T04:47:38.575932+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2/run-record.py",
+    "--child",
+    "compare-selftest",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ]
+}

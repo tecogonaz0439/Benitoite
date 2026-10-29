@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.Network.Http
+function main() -> Unit
+ ()
+end function
+function f(r: Http.RequestIn["api.example.com", 443]) -> Http.RequestIn["*.example.com", 443]
+ return Http.widenRequestIn(request: r)
+end function

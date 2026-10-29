@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+function get(p: Scope.PathIn["/data/**"]) -> Scope.PathIn["/data/**"]
+  return p
+end function
+
+function use(p: Scope.PathIn["/data/**"]) -> Result[String, IOError] uses File.Read["/data/**"]
+  bind v <- get(p: p)
+  return File.readTextIn(path: v)
+end function
+
+function main() -> Unit
+  ()
+end function

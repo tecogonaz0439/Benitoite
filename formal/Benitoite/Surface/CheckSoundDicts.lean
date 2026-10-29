@@ -23,7 +23,7 @@ def MethodChecked (q : Input) (id : ImplInput) (ms : MethSig) (method : MethodIn
         ms.params.map (substTyAt q.atoms ms.tparams.length [id.target] [])))
       (some (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret)) .tail path method.body = .ok (a, ε) ∧
     accept { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } (ms.tparams ++ id.tparams).length path (substTyAt q.atoms ms.tparams.length [id.target] [] ms.ret) (a, ε) = .ok out ∧
-    acceptEff { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } path (substEffAt q.atoms ms.tparams.length [id.target] [] ms.eff) out = .ok ()
+    acceptEffCover { q with noFailRows := signatureQ ms.neffs ms.params ms.ret ms.eff } path (substEffAt q.atoms ms.tparams.length [id.target] [] ms.eff) out = .ok ()
 
 theorem checkMethods_entry {q path id cd names index views}
     (h : checkMethods q path id cd views names index = .ok ()) :
@@ -187,7 +187,7 @@ theorem checkImpl_of_checker {q methods supers path id views}
         ((rowsTysCheck_spec ms.neffs ms.params msAtoms.1).mp hRows.1.1)
         ((rowsTyCheck_spec ms.neffs ms.ret msAtoms.2.1).mp hRows.1.2)
         ((rowsEffCheck_spec ms.neffs ms.eff msAtoms.2.2).mp hRows.2) i)
-    have typed := accept_block_eff hb'.1 hb'.2.1 resultAtoms hb'.2.2 effectAtoms hAccept hEff
+    have typed := accept_block_effCover hb'.1 hb'.2.1 resultAtoms hb'.2.2 effectAtoms hAccept hEff
     refine ⟨method.body, hb, ?_, ?_⟩
     · simpa only [hretEq, ImplDecl.methTy, ImplInput.decl] using (lamBodyOk_spec _ _).mp hExit
     · simpa only [hqs, hretEq, hparamsEq, hdictsEq, heffEq, methTy_fun_eq, ImplDecl.methTy, ImplInput.decl] using typed

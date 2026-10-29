@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-29",
+  "decisionBy": "K10.2b担当",
+  "basis": "拒否ソースの契約だけを受理する範囲へ変えた対照。式と宣言順序を保つ",
+  "cases": [
+    {
+      "name": "required-not-covered",
+      "file": "required-not-covered.bnt",
+      "changes": [
+        [
+          "S.PathIn[\"/data/a\"]",
+          "S.PathIn[\"/data/**\"]"
+        ]
+      ],
+      "sha256": "786e6c7dbeef3306eaa22c42170a5c063658826e4ac537e30aa62807b9312dcf"
+    },
+    {
+      "name": "required-unknown",
+      "file": "required-unknown.bnt",
+      "changes": [
+        [
+          "S.PathIn[\"/data/**\"]",
+          "S.PathIn"
+        ]
+      ],
+      "sha256": "4932dd85c4fa19f63afcbab14d2d757955626d790dd1d8e2fc78e1c21b7330b0"
+    },
+    {
+      "name": "request-widen-rejected",
+      "file": "request-widen-rejected.bnt",
+      "changes": [
+        [
+          "Http.RequestIn[\"api.example.com\", 443]",
+          "Http.RequestIn"
+        ],
+        [
+          "Http.RequestIn[\"**.example.com\", 80..443]",
+          "Http.RequestIn"
+        ]
+      ],
+      "sha256": "f77d2dad5ff9c223e36b722cc4e808e517ee2181d4f7fda22a393c5b80ad0dbd"
+    }
+  ]
+}

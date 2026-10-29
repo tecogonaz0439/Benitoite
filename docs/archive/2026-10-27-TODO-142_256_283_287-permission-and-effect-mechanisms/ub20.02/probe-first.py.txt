@@ -1,0 +1,96 @@
+"""UB20.02 の表示と名前による上限照合を通常 CLI で確認する。"""
+from pathlib import Path
+import hashlib
+import json
+import subprocess
+import time
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+CLI = ROOT / "target/ub20/debug/benitoite"
+INPUTS = HERE / "inputs"
+INPUTS.mkdir(exist_ok=True)
+FIRST = HERE.parent / "ub20.01/inputs/fixed-argument.bnt"
+pure = INPUTS / "pure-handled.bnt"
+pure.write_text('''effect Report
+ function log(text: String) -> Unit
+end effect
+function main() -> Unit
+ handle log("test") with
+ case log(text) -> resume(())
+ end handle
+end function
+''')
+test = INPUTS / "test-handled.bnt"
+test.write_text(FIRST.read_text().replace("function main() -> Unit uses", "@test\nfunction sample() -> Unit uses"))
+duplicate = INPUTS / "same-name-ranges.bnt"
+duplicate.write_text('''import Benitoite.Unofficial.IO.File
+function main() -> Unit uses File.Write["/data/a/**"], File.Write["/data/b/**"], File.Write
+ ()
+end function
+''')
+unhandled = HERE.parent / "ub20.01/inputs/unhandled.bnt"
+
+checks = [
+    ("main-fixed", ["check", "--report=json", FIRST], 0, ["File.Write"]),
+    ("main-pure", ["check", "--report=json", pure], 0, []),
+    ("main-same-name-ranges", ["check", "--report=json", duplicate], 0, ["File.Write"]),
+    ("aggregate", ["check", "--report=json", FIRST, pure], 0, ["File.Write"]),
+    ("test", ["test", "--check", "--report=json", test], 0, ["File.Write"]),
+    ("unhandled", ["check", "--report=json", unhandled], 2, None),
+    ("allow-standard", ["run", "--allow-effects=File.Write", FIRST], 0, None),
+    ("missing-standard", ["run", "--diagnostics=json", "--allow-effects=", FIRST], 2, None),
+    ("reject-user-limit", ["run", "--allow-effects=Report", pure], 2, None),
+    ("reject-scoped-limit", ["run", '--allow-effects=File.Write["/data/reports/**"]', FIRST], 2, None),
+    ("allow-empty-after-handling", ["run", "--allow-effects=", pure], 0, None),
+]
+
+def contracts(value):
+    if isinstance(value, dict):
+        for key, part in value.items():
+            if key == "effects" and isinstance(part, dict):
+                yield part
+            yield from contracts(part)
+    elif isinstance(value, list):
+        for part in value:
+            yield from contracts(part)
+
+records = []
+start_all = time.monotonic()
+for name, args, expected_exit, expected_expanded in checks:
+    args = [str(a.relative_to(ROOT)) if isinstance(a, Path) else a for a in args]
+    started = time.monotonic()
+    p = subprocess.run([str(CLI), *args], cwd=ROOT, capture_output=True, text=True)
+    clean = lambda s: s.replace(str(ROOT), "<wt>").replace(str(Path.home()), "<home>")
+    record = {"name": name, "command": ["target/ub20/debug/benitoite", *args],
+              "exit": p.returncode, "elapsedSeconds": time.monotonic() - started,
+              "stdout": clean(p.stdout), "stderr": clean(p.stderr),
+              "expectedExit": expected_exit}
+    matched = p.returncode == expected_exit
+    if "--report=json" in args:
+        report = json.loads(p.stdout)
+        aggregate = report["aggregateEffects"]
+        record["aggregateEffects"] = aggregate
+        record["contracts"] = list(contracts(report))
+        record["diagnosticCodes"] = [d.get("code") for d in report["diagnostics"]]
+        if expected_expanded is None:
+            matched &= aggregate is None
+        else:
+            matched &= aggregate == {"basis": "declaredUpperBound", "expanded": expected_expanded}
+            matched &= all("Report" not in c["expanded"] and "bounds" not in c for c in record["contracts"])
+        record["expectedExpanded"] = expected_expanded
+    if name == "missing-standard":
+        record["diagnosticCodes"] = [json.loads(line)["code"] for line in p.stderr.splitlines() if line.startswith("{")]
+        matched &= record["diagnosticCodes"] == ["E0512"]
+    if name in ["reject-user-limit", "reject-scoped-limit"]:
+        matched &= "invalid effect name" in p.stderr
+    record["matched"] = bool(matched)
+    records.append(record)
+    print(name, record["exit"], record.get("aggregateEffects"), record["matched"], flush=True)
+
+inputs = [FIRST, pure, test, duplicate, unhandled]
+(HERE / "probes.json").write_text(json.dumps({
+    "cliSha256": hashlib.sha256(CLI.read_bytes()).hexdigest(),
+    "inputs": [{"path": str(p.relative_to(ROOT)), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in inputs],
+    "elapsedSeconds": time.monotonic() - start_all, "cases": records,
+}, ensure_ascii=False, indent=2) + "\n")

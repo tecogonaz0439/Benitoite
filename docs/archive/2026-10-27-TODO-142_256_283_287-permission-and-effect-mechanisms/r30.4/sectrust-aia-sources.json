@@ -1,0 +1,74 @@
+{
+  "recorded_at": "2026-10-29T07:33:39.457110+00:00",
+  "network_access_for_sources": false,
+  "sources": [
+    {
+      "source": "cargo-registry:ureq-3.4.2/src/tls/rustls.rs",
+      "bytes": 11864,
+      "sha256": "8c99ca8165723e36a6d19b8b6de79bf98d98654391422f1fa79b35bf71d568cd",
+      "observed": [
+        "RootCerts::PlatformVerifier"
+      ]
+    },
+    {
+      "source": "cargo-registry:rustls-platform-verifier-0.7.1/src/verification/apple.rs",
+      "bytes": 13189,
+      "sha256": "c874abb7dcb9b4542f8bddf51df0e3afaafd9ec710feb735c06db6d2988c5a70",
+      "observed": [
+        "verify_certificate",
+        "SecPolicy::create_ssl",
+        "SecTrust::create_with_certificates",
+        "evaluate_with_error"
+      ]
+    },
+    {
+      "source": "cargo-registry:rustls-platform-verifier-0.7.1/README.md",
+      "bytes": 17118,
+      "sha256": "91f290f98ddd8c363e516f9f5a90db7948fff4d573cae041d2678e5badef393c",
+      "observed": [
+        "Revocation support table"
+      ]
+    },
+    {
+      "source": "cargo-registry:security-framework-3.7.0/src/trust.rs",
+      "bytes": 14168,
+      "sha256": "fe9c95b698c01f579afd6e744b5b3d67fa2ff94299e869cd2c8f4b6b317def36",
+      "observed": [
+        "get_network_fetch_allowed",
+        "set_network_fetch_allowed",
+        "evaluate_with_error"
+      ]
+    },
+    {
+      "source": "macOS-sdk:System/Library/Frameworks/Security.framework/Headers/SecTrust.h",
+      "bytes": 42824,
+      "sha256": "2596ae0621bf36c7e5fa4468a4c5a70b29140048ed778f68d0a3d88828d14500",
+      "observed": [
+        {
+          "lines": "260-289",
+          "names": [
+            "SecTrustSetNetworkFetchAllowed",
+            "SecTrustGetNetworkFetchAllowed"
+          ]
+        },
+        {
+          "lines": "405-425",
+          "names": [
+            "SecTrustEvaluateWithError"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "r30.4:sectrust-aia.c",
+      "bytes": 2323,
+      "sha256": "9ddafbce8750e6b49c92ce4c054d94be0800bb74ec7dc241f5869bce1ed6635f"
+    },
+    {
+      "source": "r30.4:sectrust-aia.py",
+      "bytes": 4683,
+      "sha256": "c35733b40ea103ec85de4863a286129e592aa16220c2ae8ccf42aca364ea52b1"
+    }
+  ],
+  "target_temporary_leftovers": []
+}

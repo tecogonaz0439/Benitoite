@@ -1,0 +1,121 @@
+{
+  "section": "16.7",
+  "phase_seconds": {
+    "verify": 0.03586316700000225,
+    "cli": 0.33846825000000536
+  },
+  "measurements": {
+    "codegen-let-100": {
+      "before": {
+        "verify": [
+          0.017526583000005758
+        ],
+        "warmup": [
+          0.016925249999999892
+        ],
+        "cli": [
+          0.016782665999997448,
+          0.01743695899999409,
+          0.01760854100000131,
+          0.017111708000001613,
+          0.017136167000003866
+        ],
+        "control_cli": [
+          0.01528308299999992,
+          0.015689042000005315,
+          0.016014333000001102,
+          0.01568974999999284,
+          0.015945874999999887
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      },
+      "after": {
+        "verify": [
+          0.018171582999997327
+        ],
+        "warmup": [
+          0.017151166999994416
+        ],
+        "cli": [
+          0.017754334000002814,
+          0.01868991700000322,
+          0.01912812499999461,
+          0.017569832999996038,
+          0.017484249999995427
+        ],
+        "control_cli": [
+          0.016284500000011803,
+          0.01661754199999166,
+          0.01657204200000706,
+          0.016451832999990756,
+          0.016512292000001594
+        ],
+        "stages": [],
+        "probe_warmup": [],
+        "typeck": [],
+        "load_parse": [],
+        "reparse": [],
+        "resolve": [],
+        "rss": [],
+        "rss_bytes": [],
+        "alloc": []
+      }
+    }
+  },
+  "outputs": {
+    "codegen-let-100": {
+      "commands": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/codegen-let-100/shared-1a4cfb0a60f28681/main.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/a04cf45702395ea497db59b3294370cb7a6f1a38-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/inputs/codegen-let-100/shared-1a4cfb0a60f28681/main.bnt"
+        ]
+      },
+      "controls": {
+        "before": [
+          "<repo>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ],
+        "after": [
+          "<repo>/target/bench/builds/a04cf45702395ea497db59b3294370cb7a6f1a38-default/release/benitoite",
+          "run",
+          "--diagnostics=json",
+          "<repo>/target/bench/compare/empty.bnt"
+        ]
+      },
+      "verified": {
+        "before": {
+          "seconds": 0.017526583000005758,
+          "status": 0,
+          "stdout": "107\n",
+          "stderr": "",
+          "validation": "verified"
+        },
+        "after": {
+          "seconds": 0.018171582999997327,
+          "status": 0,
+          "stdout": "107\n",
+          "stderr": "",
+          "validation": "verified"
+        }
+      }
+    }
+  }
+}

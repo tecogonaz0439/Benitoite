@@ -1,0 +1,109 @@
+{
+  "accepted_selected_calls": 0,
+  "bodies": [
+    {
+      "calls": 0,
+      "definition": ".sample",
+      "metrics": {
+        "body_operations": 0,
+        "max_body_items": 0,
+        "max_whole_items": 0,
+        "stops": [],
+        "whole_operations": 0
+      },
+      "numbering_operations": 14803,
+      "occurrences": 5201,
+      "stopped": "None"
+    }
+  ],
+  "body_items_max": 0,
+  "body_operations_max": 0,
+  "candidates": [
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "lost_ranges": 0,
+      "name": "small",
+      "numbering_operations": 128,
+      "numbering_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 2048,
+      "numbering_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 14803,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "handlers-later-400",
+  "configuration": "release-default",
+  "definitions": 2,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 800,
+  "limits": {
+    "body": {
+      "items": 100000,
+      "operations": 1000000
+    },
+    "whole": {
+      "items": 10000000,
+      "operations": 100000000
+    }
+  },
+  "narrow_rejections": [],
+  "occurrences": 5201,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.000178375,
+  "sha256": "cfc7e1b396f0825e218bd387a04d539963c1ae4608f328aeaa063e2d756f2af5",
+  "source_bytes": 77982,
+  "typecheck_seconds": 1.384369,
+  "whole_items_max": 0,
+  "whole_operations_total": 0
+}

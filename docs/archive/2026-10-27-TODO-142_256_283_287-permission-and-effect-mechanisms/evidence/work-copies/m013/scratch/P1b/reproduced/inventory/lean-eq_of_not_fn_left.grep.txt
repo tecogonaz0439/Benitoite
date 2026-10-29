@@ -1,0 +1,12 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Basic.lean:94:theorem eq_of_not_fn_left {a t : Ty} (h : Ty.Le a t) (ha : ∀ names ps r ε, a ≠ .fn names ps r ε) : a = t := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Canonical.lean:225:      exact ⟨a, he, hw, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:161:      exact ⟨cd, hc, hts, hargs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:178:      exact ⟨a, he, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:196:      · exact Or.inl ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:197:      · exact Or.inr ⟨a, hl, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:322:      exact ⟨a, h1, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:461:      exact ⟨a, b, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:470:      exact ⟨a, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:480:      exact (hle.eq_of_not_fn_left (by intros; simp)).symm
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:490:      exact ⟨id, hi, hts, hvs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Release/Lemmas/Inversion.lean:500:      exact ⟨cl, τ, cd, hw, hc, hs, (hle.eq_of_not_fn_left (by intros; simp)).symm⟩

@@ -1,0 +1,106 @@
+{
+  "started": "2026-10-29T22:56:29.623871+00:00",
+  "config": "deny.toml",
+  "targets": [
+    {
+      "name": "workspace",
+      "manifest": "Cargo.toml",
+      "lock": "Cargo.lock",
+      "lock_sha256": "075ddfa31b648a04030efcbfb30365910dff6d8de62b0e903b57d28dc5e6324d",
+      "lock_sha256_after": "075ddfa31b648a04030efcbfb30365910dff6d8de62b0e903b57d28dc5e6324d",
+      "state": "unverified",
+      "reason": "failed to acquire advisory database lock: failed to obtain lock file '<home>/.cargo/advisory-dbs/db.lock': attempted to take an exclusive lock on a read-only path; missing or ambiguous completion summary",
+      "count": 0,
+      "ids": [],
+      "advisories": [],
+      "raw": {
+        "command": [
+          "cargo",
+          "deny",
+          "--format",
+          "json",
+          "--log-level",
+          "debug",
+          "--manifest-path",
+          "Cargo.toml",
+          "--config",
+          "deny.toml",
+          "--locked",
+          "check",
+          "advisories"
+        ],
+        "started": "2026-10-29T22:56:29.653260+00:00",
+        "finished": "2026-10-29T22:56:29.884607+00:00",
+        "exit": 1,
+        "error": null,
+        "stdout": "workspace.stdout",
+        "stderr": "workspace.stderr"
+      },
+      "databases": []
+    },
+    {
+      "name": "fuzz",
+      "manifest": "fuzz/Cargo.toml",
+      "lock": "fuzz/Cargo.lock",
+      "lock_sha256": "d38cf1d0837d41512c9bd5137cfe25fcd923d82fecb600bcef2c8e26c346330b",
+      "lock_sha256_after": "d38cf1d0837d41512c9bd5137cfe25fcd923d82fecb600bcef2c8e26c346330b",
+      "state": "unverified",
+      "reason": "failed to acquire advisory database lock: failed to obtain lock file '<home>/.cargo/advisory-dbs/db.lock': attempted to take an exclusive lock on a read-only path; missing or ambiguous completion summary",
+      "count": 0,
+      "ids": [],
+      "advisories": [],
+      "raw": {
+        "command": [
+          "cargo",
+          "deny",
+          "--format",
+          "json",
+          "--log-level",
+          "debug",
+          "--manifest-path",
+          "fuzz/Cargo.toml",
+          "--config",
+          "deny.toml",
+          "--locked",
+          "check",
+          "advisories"
+        ],
+        "started": "2026-10-29T22:56:29.885395+00:00",
+        "finished": "2026-10-29T22:56:30.228381+00:00",
+        "exit": 1,
+        "error": null,
+        "stdout": "fuzz.stdout",
+        "stderr": "fuzz.stderr"
+      },
+      "databases": []
+    }
+  ],
+  "exit": 0,
+  "config_sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+  "effective_config": "deny.toml",
+  "effective_config_sha256": "be3a44ae7ba8be1804238592020094f8c49b5e9e9ed2fc0f625d6d72f5ab5d31",
+  "version": {
+    "command": [
+      "cargo",
+      "deny",
+      "--version"
+    ],
+    "started": "2026-10-29T22:56:29.624330+00:00",
+    "finished": "2026-10-29T22:56:29.653119+00:00",
+    "exit": 0,
+    "error": null,
+    "stdout": "version.stdout",
+    "stderr": "version.stderr"
+  },
+  "cargo_deny": "cargo-deny 0.20.2",
+  "finished": "2026-10-29T22:56:30.228903+00:00",
+  "path_redaction": {
+    "applied": true,
+    "placeholders": [
+      "<repo>",
+      "<home>",
+      "<tmp>"
+    ],
+    "config_sha256": "before path redaction"
+  }
+}

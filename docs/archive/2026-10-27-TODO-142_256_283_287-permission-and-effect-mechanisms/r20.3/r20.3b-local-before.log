@@ -1,0 +1,20 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 1 test
+
+thread 'typeck::scope::local_tests::saved_result_ok_and_error_match_independent_scope_lower_records' (4996807) panicked at crates/benitoite/src/typeck/scope/local_tests.rs:53:5:
+assertion `left == right` failed: []
+  left: false
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::local_tests::saved_result_ok_and_error_match_independent_scope_lower_records ... FAILED
+
+failures:
+
+failures:
+    typeck::scope::local_tests::saved_result_ok_and_error_match_independent_scope_lower_records
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1403 filtered out; finished in 0.13s
+
+error: test failed, to rerun pass `-p benitoite --lib`

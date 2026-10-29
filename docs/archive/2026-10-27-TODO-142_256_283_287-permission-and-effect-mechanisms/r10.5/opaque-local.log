@@ -1,0 +1,55 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+cargo test: 3 errors, 1 warnings (1 crates)
+error[E0599]: no method named `suffix` found for enum `std::option::Option<T>` in the current scope
+   --> crates/benitoite/tests/scope_annotations.rs:77:28
+    |
+ 77 |         .map(|n| n.range().suffix())
+    |                            ^^^^^^ method not found in `std::option::Option<&benitoite::types::scope::Range>`
+    |
+note: the method `suffix` exists on the type `&benitoite::types::scope::Range`
+   --> crates/benitoite/src/types/scope.rs:522:5
+    |
+522 |     pub fn suffix(&self) -> String {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider using `Option::expect` to unwrap the `&benitoite::types::scope::Range` value, panicking if the value is an `Option::None`
+    |
+ 77 |         .map(|n| n.range().expect("REASON").suffix())
+    |                           +++++++++++++++++
+
+error[E0599]: no method named `suffix` found for enum `std::option::Option<T>` in the current scope
+   --> crates/benitoite/tests/scope_annotations.rs:151:50
+    |
+151 |     assert_eq!(callback.effects.names[0].range().suffix(), "[\"/data/**\"]");
+    |                                                  ^^^^^^ method not found in `std::option::Option<&benitoite::types::scope::Range>`
+    |
+note: the method `suffix` exists on the type `&benitoite::types::scope::Range`
+   --> crates/benitoite/src/types/scope.rs:522:5
+    |
+522 |     pub fn suffix(&self) -> String {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider using `Option::expect` to unwrap the `&benitoite::types::scope::Range` value, panicking if the value is an `Option::None`
+    |
+151 |     assert_eq!(callback.effects.names[0].range().expect("REASON").suffix(), "[\"/data/**\"]");
+    |                                                 +++++++++++++++++
+
+error[E0599]: no method named `suffix` found for enum `std::option::Option<T>` in the current scope
+   --> crates/benitoite/tests/scope_annotations.rs:374:18
+    |
+372 | /             signature(&program, "sample").effects.names[0]
+373 | |                 .range()
+374 | |                 .suffix(),
+    | |                 -^^^^^^ method not found in `std::option::Option<&benitoite::types::scope::Range>`
+    | |_________________|
+    |
+    |
+note: the method `suffix` exists on the type `&benitoite::types::scope::Range`
+   --> crates/benitoite/src/types/scope.rs:522:5
+    |
+522 |     pub fn suffix(&self) -> String {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider using `Option::expect` to unwrap the `&benitoite::types::scope::Range` value, panicking if the value is an `Option::None`
+    |
+373 |                 .range().expect("REASON")
+    |                         +++++++++++++++++
+
+warning: build failed, waiting for other jobs to finish...

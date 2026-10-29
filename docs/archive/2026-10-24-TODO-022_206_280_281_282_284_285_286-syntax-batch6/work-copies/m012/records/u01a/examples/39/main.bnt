@@ -1,0 +1,22 @@
+import Benitoite.Unofficial.Csv
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function scoreOf(row: Map[String, String]) -> Integer
+  return Option.andThen(o: Map.get(m: row, k: "score"), f: lambda(value) return Integer.parse(value)) |> Option.unwrapOr(fallback: 0)
+end function
+
+function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
+  bind text <- try File.readText("scores.csv") or die
+  bind rows <- try Csv.parseWithHeader(text) or die
+  bind passed <- List.filter(xs: rows, p: lambda(value) return scoreOf(value) >= 80)
+  bind output <- List.map(xs: passed, f: lambda(value)
+    return [Option.unwrapOr(o: Map.get(m: value, k: "name"), fallback: ""), Integer.toString(scoreOf(value))]
+  end lambda)
+  bind csv <- Csv.format(List.prepend(xs: output, x: ["name", "score"]))
+  bind _ <- try File.writeText(path: "passed.csv", text: csv) or die
+  Console.write(csv)
+  Console.write(Csv.format([["Bob, Jr.", "75"]]))
+  return ()
+end function

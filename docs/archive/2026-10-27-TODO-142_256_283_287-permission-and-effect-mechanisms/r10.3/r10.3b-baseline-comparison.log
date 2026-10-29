@@ -1,0 +1,5 @@
+$ python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.3/r10.3b-compare-diagnostics.py <temporary-baseline>/target/debug/benitoite
+Traceback (most recent call last):
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.3/r10.3b-compare-diagnostics.py", line 26, in <module>
+    assert proc.returncode == 1, (label, proc)
+AssertionError: ('B_WORK', CompletedProcess(args=['<temporary-baseline>/target/debug/benitoite', 'check', '--diagnostics=json', 'probe.bnt'], returncode=2, stdout='', stderr='{"kind":"check","severity":"error","code":"E0201","message":"expected a type, found `string`","primary":{"file":"probe.bnt","start":{"line":1,"column":17,"offset":16},"end":{"line":1,"column":23,"offset":22},"label":"unexpected `string`"},"secondary":[],"notes":[],"helps":[]}\n'))

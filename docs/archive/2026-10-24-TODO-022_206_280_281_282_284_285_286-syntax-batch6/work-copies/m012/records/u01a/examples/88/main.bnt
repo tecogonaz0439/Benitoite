@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.Range
+function main() -> Unit
+  bind value <- Range.CheckedInteger(minimum: 1, maximum: 10, value: 5)
+  return ()
+end function

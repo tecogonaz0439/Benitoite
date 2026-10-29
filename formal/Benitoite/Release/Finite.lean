@@ -15,7 +15,7 @@ mutual
   /-- 型を構造再帰で比較する。非計算的な選択を使うのは atomsCompareWith s だけである。 -/
   def tyCompareWith (s : List Atom) : Ty → Ty → Ordering
     | .base a, .base b => compare a.rank b.rank
-    | .opaque a, .opaque b => stringCompare a b
+    | .opaque a r, .opaque b r2 => (stringCompare a b).then (compare (Order.ixCode r) (Order.ixCode r2))
     | .data d as, .data e bs => (stringCompare d e).then (tysCompareWith s as bs)
     | .list a, .list b => tyCompareWith s a b
     | .fn ns as a e, .fn ms bs b f =>
@@ -75,7 +75,7 @@ mutual
   /-- 型のすべての子と、埋め込まれた効果を正規化する。 -/
   def Ty.normWith (s : List Atom) : Ty → Ty
     | .base b => .base b
-    | .opaque o => .opaque o
+    | .opaque o r => .opaque o r
     | .data d as => .data d (Ty.normTysWith s as)
     | .list a => .list (Ty.normWith s a)
     | .fn ns ps r e => .fn ns (Ty.normTysWith s ps) (Ty.normWith s r) (Eff.normWith s e)

@@ -1,0 +1,49 @@
+== wait-for-lock start 06:50:32
+== lock acquired 06:50:32 after 0s
+✔ [83/461] Built Benitoite.Release.Syntax (581ms)
+✔ [84/461] Built Benitoite.Surface.BuilderSyntax (331ms)
+✔ [85/461] Built Benitoite.Release.Syntax:c.o (308ms)
+✖ [87/461] Building Benitoite.Release.Subst (444ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Subst.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Subst.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Subst.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Subst.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Subst.setup.json --json
+error: Benitoite/Release/Subst.lean:52:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Subst.lean:105:69: Unknown constant `Benitoite.Release.Comp.substTyAt`
+error: Benitoite/Release/Subst.lean:107:66: Unknown constant `Benitoite.Release.Val.substTyAt`
+error: Benitoite/Release/Subst.lean:130:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Subst.lean:181:40: Invalid field `rename`: The environment does not contain `Benitoite.Release.Val.rename`, so it is not possible to project the field `rename` from an expression
+  σ (i - k)
+of type `Val`
+error: Benitoite/Release/Subst.lean:185:4: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+error: Benitoite/Release/Subst.lean:250:2: Unknown constant `Benitoite.Release.Comp.subst`
+error: Benitoite/Release/Subst.lean:253:2: Unknown constant `Benitoite.Release.Val.subst`
+✔ [204/461] Built Benitoite.Interval.Domain (553ms)
+✔ [206/461] Built Benitoite.Surface.FormatSpec (1.1s)
+✔ [370/461] Built Benitoite.Interval.Budget (678ms)
+✔ [459/461] Built Benitoite.Interval.BudgetExamples (260ms)
+Some required targets logged failures:
+- Benitoite.Release.Subst
+error: build failed
+        2.19 real         4.54 user         1.29 sys
+           763789312  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              335929  page reclaims
+                 130  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 318  voluntary context switches
+               26533  involuntary context switches
+          1442456247  instructions retired
+           527414554  cycles elapsed
+            29132096  peak memory footprint
+== exit 1

@@ -1,0 +1,154 @@
+{
+  "surface": {
+    "header": {
+      "eff": [],
+      "effParams": [],
+      "names": [
+        "value"
+      ],
+      "neffs": 0,
+      "params": [
+        {
+          "opaque": {
+            "ix": {
+              "fixed": "<contract>"
+            },
+            "name": "105:[]"
+          }
+        }
+      ],
+      "ret": {
+        "base": {
+          "name": "Unit"
+        }
+      },
+      "tparams": []
+    },
+    "body": {
+      "bind": {
+        "expr": {
+          "call": {
+            "args": [
+              {
+                "local": {
+                  "index": 0
+                }
+              }
+            ],
+            "callee": {
+              "primName": {
+                "effs": [],
+                "name": "Http.widenRequestIn",
+                "ranges": [
+                  "<contract>",
+                  "<contract>"
+                ],
+                "tys": []
+              }
+            },
+            "labels": [
+              "request"
+            ],
+            "positions": [
+              0
+            ]
+          }
+        },
+        "shadow": false,
+        "ty": {
+          "opaque": {
+            "ix": {
+              "fixed": "<contract>"
+            },
+            "name": "105:[]"
+          }
+        },
+        "rest": {
+          "last": {
+            "expr": "unit"
+          }
+        }
+      }
+    },
+    "dictParams": [],
+    "implementation": null,
+    "method": null,
+    "supers": []
+  },
+  "core": {
+    "header": {
+      "eff": [],
+      "effParams": [],
+      "names": [
+        "value"
+      ],
+      "neffs": 0,
+      "params": [
+        {
+          "opaque": {
+            "ix": {
+              "fixed": "<contract>"
+            },
+            "name": "105:[]"
+          }
+        }
+      ],
+      "ret": {
+        "base": {
+          "name": "Unit"
+        }
+      },
+      "tparams": []
+    },
+    "body": {
+      "letIn": {
+        "body": {
+          "ret": {
+            "value": {
+              "const": {
+                "value": "unit"
+              }
+            }
+          }
+        },
+        "bound": {
+          "letIn": {
+            "body": {
+              "app": {
+                "args": [
+                  {
+                    "var": {
+                      "index": 0
+                    }
+                  }
+                ],
+                "callee": {
+                  "prim": {
+                    "effs": [],
+                    "name": "Http.widenRequestIn",
+                    "ranges": [
+                      "<contract>",
+                      "<contract>"
+                    ],
+                    "tys": []
+                  }
+                }
+              }
+            },
+            "bound": {
+              "ret": {
+                "value": {
+                  "var": {
+                    "index": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "lambdaEffects": [],
+    "supers": []
+  }
+}

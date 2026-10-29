@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.IO.Console
+
+function inRange(n: Integer) -> Boolean
+  return n >= 0 and n <> 10 and not (n = 7)
+end function
+
+function main() -> Unit uses Console.Write
+  return Console.writeLine(match inRange(3) with
+    case true -> "yes"
+    case false -> "no"
+  end match)
+end function

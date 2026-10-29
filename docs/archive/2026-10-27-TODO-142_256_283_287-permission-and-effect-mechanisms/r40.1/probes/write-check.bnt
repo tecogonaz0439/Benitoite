@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(path: String) -> Result[Unit, IOError] uses File.Write["/data/**"]
+ bind checked: Result[Scope.PathIn["/data/**"], Scope.ScopeError] <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ return match checked with
+ case Result.Ok(value) -> File.writeTextIn(path: value, text: "x")
+ case Result.Error(_) -> Result.Ok(())
+ end match
+end function
+function main() -> Unit
+end function

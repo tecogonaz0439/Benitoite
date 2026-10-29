@@ -1,0 +1,30 @@
+@Benitoite.Models.Policy.KindCheck : {Kind : Type} →
+  Benitoite.Models.Policy.KindSet Kind → Benitoite.Models.Policy.KindSet Kind → Prop
+@Benitoite.Models.PermissionKinds.KindCheck : {Kind : Type} →
+  Benitoite.Models.PermissionKinds.KindSet Kind → Benitoite.Models.PermissionKinds.KindSet Kind → Prop
+@Benitoite.Models.Policy.traceKinds : {Kind Ev : Type} → (Ev → Kind) → List Ev → Benitoite.Models.Policy.KindSet Kind
+@Benitoite.Models.PermissionKinds.traceKinds : {Kind Ev : Type} →
+  (Ev → Kind) → List Ev → Benitoite.Models.PermissionKinds.KindSet Kind
+@Benitoite.Models.Policy.mem_traceKinds : ∀ {Kind Ev : Type} (kindOf : Ev → Kind) {tr : List Ev} {e : Ev},
+  e ∈ tr → Benitoite.Models.Policy.traceKinds kindOf tr (kindOf e)
+@Benitoite.Models.PermissionKinds.mem_traceKinds : ∀ {Kind Ev : Type} (kindOf : Ev → Kind) {tr : List Ev} {e : Ev},
+  e ∈ tr → Benitoite.Models.PermissionKinds.traceKinds kindOf tr (kindOf e)
+check-same-defs: ok
+        0.45 real         0.53 user         0.14 sys
+           453181440  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               38288  page reclaims
+                  14  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   3  signals received
+                  18  voluntary context switches
+                5730  involuntary context switches
+            39825684  instructions retired
+            22125493  cycles elapsed
+             1589632  peak memory footprint

@@ -1,0 +1,14 @@
+import Benitoite.Unofficial.Test.Property
+
+@test("integer addition agrees with multiplication")
+function addition() -> Result[Unit, String]
+  bind gen <- try Property.integer(low: -100, high: 100)
+  bind config <- Property.Config(seed: 17, trials: 100, size: 8, maxShrinks: 100, maxShrinkWork: 10000)
+  bind result <- Property.check(config: config, gen: gen, shrinker: Property.shrinkInteger(), property: lambda(value)
+    return if value + value = value * 2 then Result.Ok(()) else Result.Error("addition disagrees") end if
+  end lambda)
+  return match result with
+    case Result.Ok(_) -> Result.Ok(())
+    case Result.Error(failure) -> Result.Error(Property.formatFailure(failure: failure, show: lambda(value) return Integer.toString(value) end lambda))
+  end match
+end function

@@ -1,0 +1,94 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Model.lean:761:96: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:761:107: warning: This simp argument is unused:
+  context
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, secretSig]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:762:96: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:762:107: warning: This simp argument is unused:
+  context
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, secretSig]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:782:85: warning: This simp argument is unused:
+  publicSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, secretSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:782:96: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:805:73: warning: This simp argument is unused:
+  push
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, publicSig, secretSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:805:90: warning: This simp argument is unused:
+  secretSig
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, context]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Model.lean:805:101: warning: This simp argument is unused:
+  context
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [system, Flows, join, label, push, publicSig, secretSig]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'SF.noninterference' depends on axioms: [propext]
+'SF.TwoPoint.reject_explicit' depends on axioms: [propext]
+'SF.TwoPoint.reject_implicit' depends on axioms: [propext]
+'SF.Readers.destination_noninterference' depends on axioms: [propext]
+'SF.Readers.pattern_inclusion_gives_flow' depends on axioms: [propext, Quot.sound]
+'SF.Readers.intersection_not_single_pattern' depends on axioms: [propext, Quot.sound]
+'SF.Handlers.handled_noninterference' depends on axioms: [propext]
+'SF.Handlers.handled_ask_removed' depends on axioms: [propext]
+'SF.Handlers.Examples.no_public_reply_contract' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_argument_leak' depends on axioms: [propext]
+'SF.Handlers.Examples.reject_secret_call' depends on axioms: [propext]
+        1.04 real         1.40 user         0.29 sys
+           735756288  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47674  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+               11270  involuntary context switches
+         12023298079  instructions retired
+          5044316714  cycles elapsed
+           185884104  peak memory footprint
+== run-lean: exit 0, elapsed 5s, top-mem-peak 0MB 

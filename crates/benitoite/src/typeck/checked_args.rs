@@ -121,6 +121,7 @@ enum Target {
     Host,
     Path,
     Endpoint,
+    Request,
 }
 
 impl Target {
@@ -130,9 +131,37 @@ impl Target {
             ("Benitoite.Scope.checkHost", Self::Host),
             ("Benitoite.Scope.checkPath", Self::Path),
             ("Benitoite.Scope.checkEndpoint", Self::Endpoint),
+            ("Benitoite.Scope.checkPathIn", Self::Path),
+            ("Benitoite.Network.Http.checkRequestIn", Self::Request),
         ]
         .into_iter()
         .find_map(|(name, target)| consts::std_call(d, callee, name).then_some(target))
+    }
+
+    // 共通の判定の契約順（pattern、target、minimum、maximum、port）と、
+    // 各標準入口の公開引数の位置を分ける。要求の射影は文字列・ポートを取らない。
+    fn argument(self, call: &CallExpr, slot: usize) -> Option<&Expr> {
+        let parameters: &[Option<(usize, &str)>] = match self {
+            Self::Host => &[Some((0, "pattern")), Some((1, "host"))],
+            Self::Path => &[Some((0, "pattern")), Some((1, "path"))],
+            Self::Endpoint => &[
+                Some((0, "hostPattern")),
+                Some((1, "host")),
+                Some((2, "minimumPort")),
+                Some((3, "maximumPort")),
+                Some((4, "port")),
+            ],
+            // ClientRequest内部のURLは実行時のURL解析に委ねる。
+            Self::Request => &[
+                Some((0, "hostPattern")),
+                None,
+                Some((1, "minimumPort")),
+                Some((2, "maximumPort")),
+            ],
+            Self::Regex => return None,
+        };
+        let (position, name) = parameters.get(slot).copied().flatten()?;
+        consts::standard_argument(call, position, name)
     }
 }
 
@@ -163,16 +192,8 @@ fn known_integer(value: &ConstKnowledge) -> Option<i64> {
 }
 
 fn check_scope(d: &mut Decls<'_>, call: &CallExpr, target: Target, state: &mut CheckedArgsState) {
-    let names: &[&str] = match target {
-        Target::Host => &["pattern", "host"],
-        Target::Path => &["pattern", "path"],
-        Target::Endpoint => &["hostPattern", "host", "minimumPort", "maximumPort", "port"],
-        Target::Regex => return,
-    };
-    let mut arguments: Vec<_> = names
-        .iter()
-        .enumerate()
-        .filter_map(|(i, name)| consts::standard_argument(call, i, name).map(|expr| (i, expr)))
+    let mut arguments: Vec<_> = (0..5)
+        .filter_map(|i| target.argument(call, i).map(|expr| (i, expr)))
         .collect();
     arguments.sort_by_key(|(_, expr)| expr.span().start.0);
     let mut values: [ConstKnowledge; 5] = std::array::from_fn(|_| ConstKnowledge::Unknown);
@@ -190,12 +211,14 @@ fn check_scope(d: &mut Decls<'_>, call: &CallExpr, target: Target, state: &mut C
     let result = match target {
         Target::Host => checked_scope::check_host(pattern, input),
         Target::Path => checked_scope::check_path(pattern, input),
-        Target::Endpoint => checked_scope::check_endpoint(pattern, input, minimum, maximum, port),
+        Target::Endpoint | Target::Request => {
+            checked_scope::check_endpoint(pattern, input, minimum, maximum, port)
+        }
         Target::Regex => return,
     };
     // 位置は契約順に引き直す。取得の予算を消費したソース順とは別に保つ。
     if let Err(failure) = result {
-        scope_diagnostic(d, state, call, names, failure, &values);
+        scope_diagnostic(d, state, call, target, failure, &values);
     }
 }
 
@@ -203,7 +226,7 @@ fn scope_diagnostic(
     d: &mut Decls<'_>,
     state: &mut CheckedArgsState,
     call: &CallExpr,
-    names: &[&str],
+    target: Target,
     failure: checked_scope::Failure,
     values: &[ConstKnowledge; 5],
 ) {
@@ -232,10 +255,7 @@ fn scope_diagnostic(
         }
     }
     for index in related {
-        if let Some(argument) = names
-            .get(*index)
-            .and_then(|name| consts::standard_argument(call, *index, name))
-        {
+        if let Some(argument) = target.argument(call, *index) {
             diagnostic = diagnostic.secondary(argument.span(), "condition");
         }
     }

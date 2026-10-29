@@ -46,7 +46,8 @@ mutual
 関数型の効果の外延的等号を決定する手続きは要求しない。 -/
 def sameType : (a b : Ty) → Option (PLift (a = b))
   | .base a, .base b => if same : a = b then some ⟨by subst b; rfl⟩ else none
-  | .opaque a, .opaque b => if same : a = b then some ⟨by subst b; rfl⟩ else none
+  | .opaque a ra, .opaque b rb =>
+      if same : a = b ∧ ra = rb then some ⟨by obtain ⟨rfl, rfl⟩ := same; rfl⟩ else none
   | .list a, .list b => do
       let ⟨element⟩ ← sameType a b
       some ⟨by subst b; rfl⟩

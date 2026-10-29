@@ -1,0 +1,63 @@
+== wait-for-lock start 20:04:31
+== lock acquired 20:04:40 after 9s
+⚠ [35/414] Replayed Benitoite.Release.Typing
+warning: Benitoite/Release/Typing.lean:215:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [142/414] Building Benitoite.Release.Lemmas.OuterC (1.7s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/OuterC.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/OuterC.setup.json --json
+error: Benitoite/Release/Lemmas/OuterC.lean:38:36: don't know how to synthesize placeholder for argument `C0`
+context:
+P : Program
+B : Builtins
+hb : Builtins.Assumptions P B
+C1 C0 : List TParam
+b : PrimName
+s : PrimSig
+R : ScopeRange
+Q : NoFailCtx
+ts : List Ty
+es : List Eff
+hs : B.sig b = some s
+h : PrimitiveAdmissible C1 (s.inst R) Q ts es
+⊢ List TParam
+error: Benitoite/Release/Lemmas/OuterC.lean:38:11: failed to infer `have` declaration type
+error: Benitoite/Release/Lemmas/OuterC.lean:37:14: unsolved goals
+P : Program
+B : Builtins
+hb : Builtins.Assumptions P B
+C1 C0 : List TParam
+b : PrimName
+s : PrimSig
+R : ScopeRange
+Q : NoFailCtx
+ts : List Ty
+es : List Eff
+hs : B.sig b = some s
+h : PrimitiveAdmissible C1 (s.inst R) Q ts es
+⊢ (s.inst R).admits (C1 ++ C0) ts
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.OuterC
+error: build failed
+        1.75 real         1.87 user         0.23 sys
+           799178752  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               56711  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   4  voluntary context switches
+                4435  involuntary context switches
+          1332446602  instructions retired
+           495502192  cycles elapsed
+            21529704  peak memory footprint
+== exit 1

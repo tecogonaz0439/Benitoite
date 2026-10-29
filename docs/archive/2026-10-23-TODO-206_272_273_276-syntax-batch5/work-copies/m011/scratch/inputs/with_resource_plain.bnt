@@ -1,0 +1,6 @@
+function f() -> Unit
+handle
+with when = acquire("${n}") do () end with
+with case E.op() -> resume(())
+end handle
+end function

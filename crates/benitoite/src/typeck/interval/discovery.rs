@@ -338,7 +338,7 @@ impl<'ast> Discovery<'_, 'ast, '_> {
         self.list(i.segments.iter().map(|s| Some(Node::Expr(&s.expr))), fuel)?;
         let input = self.input;
         self.list(i.segments.iter().filter(|s| {
-        s.format.is_some() || input.interpolation_type(s.expr.id()).is_ok_and(|t| !matches!(t, crate::types::Ty::Con(crate::types::TyCon::Builtin(b), a) if *b == crate::types::builtin::BuiltinTypeId::STRING && a.is_empty()))
+        s.format.is_some() || input.interpolation_type(s.expr.id()).is_ok_and(|t| !matches!(t, crate::types::Ty::Con(crate::types::TyCon::Builtin(b), a, _) if *b == crate::types::builtin::BuiltinTypeId::STRING && a.is_empty()))
     }).map(|s| Some(Node::Synthetic(F::PrimName, Synthetic::InterpolationConverter, Origin { node: s.expr.id(), span: s.span }))), fuel)
     }
 

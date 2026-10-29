@@ -1,0 +1,32 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 5 tests
+test closure::stage_closure_input_keeps_ranges_through_methods_constants_and_forgetting ... ok
+test closure::scope_rejection_and_legacy_errors_leave_other_range_warnings_intact ... ok
+test closure::warning_candidates_do_not_change_scoped_type_acceptance ... ok
+
+thread 'closure::scope_exhaustion_preserves_range_warnings_and_unknown_acceptance' (5739023) panicked at crates/benitoite/tests/scoped_calls/closure.rs:47:9:
+assertion `left == right` failed
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test closure::scope_exhaustion_preserves_range_warnings_and_unknown_acceptance ... FAILED
+
+thread 'closure::range_budget_stop_does_not_erase_a_required_scope_selection' (5739022) panicked at crates/benitoite/tests/scoped_calls/closure.rs:131:5:
+IntervalAnalysis { coverage: Some, input_definitions: 1, unsupported_bodies: 1, body_budget_exceeded: 0, whole_budget_skipped: 0, unidentified_bodies: 0, phase_stops: IntervalPhaseStops { exceeded: IntervalBudgetStops { body_operations: 2, body_items: 0, whole_operations: 0, whole_items: 0 }, unidentified: IntervalBudgetStops { body_operations: 0, body_items: 0, whole_operations: 0, whole_items: 0 }, depth: 0, other: 0 }, usage: IntervalUsage { operations: 100001, saved_items: 36029, peak_items: 36546, max_body_operations: 100000, max_body_items: 36546 } }
+test closure::range_budget_stop_does_not_erase_a_required_scope_selection ... FAILED
+
+failures:
+
+failures:
+    closure::range_budget_stop_does_not_erase_a_required_scope_selection
+    closure::scope_exhaustion_preserves_range_warnings_and_unknown_acceptance
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.57s
+
+error: test failed, to rerun pass `-p benitoite --test scoped_calls`
+real 1.77
+user 2.60
+sys 0.34

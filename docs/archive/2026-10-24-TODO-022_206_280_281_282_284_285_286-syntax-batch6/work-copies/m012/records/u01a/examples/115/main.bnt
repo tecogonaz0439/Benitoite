@@ -1,0 +1,6 @@
+function main() -> Unit uses Log
+  if Log.enabled(Log.Level.Debug) then
+    Log.debug(message: "starting", attributes: [Log.attribute(key: "count", value: 3)], location: SourceLocation.here())
+  end if
+  Log.info(message: "ready", attributes: [], location: SourceLocation.here())
+end function

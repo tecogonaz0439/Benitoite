@@ -1,0 +1,11 @@
+function scalarHalf(c: Character) -> Integer
+  bind '\u{0}'..'\u{10ffff}' <- c
+  return match c with
+    case '\u{0}'..'\u{d7ff}' -> 0
+    case '\u{e000}'..'\u{10ffff}' -> 1
+  end match
+end function
+
+function main() -> Unit
+  bind _ <- scalarHalf('\u{e000}')
+end function

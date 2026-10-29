@@ -55,7 +55,7 @@ private def initialMaterials : Materials :=
     classes := classMaterials, impls := [], trustedFuns := [], trustedImpls := [] }
 
 /-- 裸の Result は、既存の本体の型の規則で許される。 -/
-theorem result_constructor_wf : Ty.WF 0 (.ctor (.data "Result")) := trivial
+theorem result_constructor_wf : Ty.WF 0 0 (.ctor (.data "Result")) := trivial
 
 /-- クラス引数に渡す空制約の型パラメータを、実際の組み込み表で満たす。 -/
 theorem result_constructor_sat :

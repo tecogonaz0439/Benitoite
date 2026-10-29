@@ -1,0 +1,463 @@
+{
+  "status": "passed",
+  "contractCounterparts": {
+    "status": "passed",
+    "cases": [
+      {
+        "name": "required-not-covered",
+        "matched": true,
+        "fields": {
+          "surface": [
+            "header",
+            "body",
+            "dictParams",
+            "implementation",
+            "method",
+            "supers"
+          ],
+          "core": [
+            "header",
+            "body",
+            "lambdaEffects",
+            "supers"
+          ]
+        },
+        "sourceSha256": "786e6c7dbeef3306eaa22c42170a5c063658826e4ac537e30aa62807b9312dcf",
+        "rustDefinition": "sample (fn:43)",
+        "independentDefinition": "fn:901"
+      },
+      {
+        "name": "required-unknown",
+        "matched": true,
+        "fields": {
+          "surface": [
+            "header",
+            "body",
+            "dictParams",
+            "implementation",
+            "method",
+            "supers"
+          ],
+          "core": [
+            "header",
+            "body",
+            "lambdaEffects",
+            "supers"
+          ]
+        },
+        "sourceSha256": "4932dd85c4fa19f63afcbab14d2d757955626d790dd1d8e2fc78e1c21b7330b0",
+        "rustDefinition": "sample (fn:43)",
+        "independentDefinition": "fn:901"
+      },
+      {
+        "name": "request-widen-rejected",
+        "matched": true,
+        "fields": {
+          "surface": [
+            "header",
+            "body",
+            "dictParams",
+            "implementation",
+            "method",
+            "supers"
+          ],
+          "core": [
+            "header",
+            "body",
+            "lambdaEffects",
+            "supers"
+          ]
+        },
+        "sourceSha256": "f77d2dad5ff9c223e36b722cc4e808e517ee2181d4f7fda22a393c5b80ad0dbd",
+        "rustDefinition": "sample (fn:43)",
+        "independentDefinition": "fn:901"
+      }
+    ],
+    "comparisons": 3,
+    "scope": "型と本体の全欄。契約・宣言同一性・lastBindのUnit展開を正規化。package/coverageViewは環境メタデータとして対象外"
+  },
+  "groups": 16,
+  "sourceRejections": 8,
+  "sourceOnlyRejections": [
+    {
+      "name": "path-widen-projection-rejected",
+      "rustCode": "E0519",
+      "rustReason": "unknownSource",
+      "requiredIndex": "top",
+      "comparison": "Rust実ソースの手書き拒否期待"
+    }
+  ],
+  "requiredIndependentExpectationComparisons": 3,
+  "requiredSameInputDirectComparisons": 0,
+  "typingRejectionComparisons": 4,
+  "independentAtomicUnionRejections": 1,
+  "acceptedCounterparts": 8,
+  "definitions": 26,
+  "nonTopRanges": 56,
+  "outcomes": [
+    {
+      "name": "required-not-covered",
+      "comparison": "required",
+      "lean": {
+        "ok": false,
+        "cover": {
+          "reason": "notCovered",
+          "key": {
+            "surfacePreorder": 0,
+            "definition": "fn:901"
+          }
+        }
+      },
+      "definitions": 1,
+      "nonTopRanges": 3,
+      "seconds": {
+        "desugarDiff": 0.021997874999999834,
+        "surfaceCheckAll": 0.021694207999999993,
+        "surfaceCheck": 0.0218266250000001
+      },
+      "rustReason": "notCovered",
+      "rustCode": "E0519",
+      "sourceKey": {
+        "definition": "sample",
+        "surfacePreorder": 0
+      },
+      "requiredIndex": {
+        "path": {
+          "tree": [
+            "data"
+          ]
+        }
+      },
+      "contract": {
+        "path": {
+          "exact": [
+            "data",
+            "a"
+          ]
+        }
+      }
+    },
+    {
+      "name": "required-unknown",
+      "comparison": "required",
+      "lean": {
+        "ok": false,
+        "cover": {
+          "reason": "unknownSource",
+          "key": {
+            "surfacePreorder": 0,
+            "definition": "fn:901"
+          }
+        }
+      },
+      "definitions": 1,
+      "nonTopRanges": 3,
+      "seconds": {
+        "desugarDiff": 0.02155858399999966,
+        "surfaceCheckAll": 0.02156266699999998,
+        "surfaceCheck": 0.021214375000000008
+      },
+      "rustReason": "unknownSource",
+      "rustCode": "E0519",
+      "sourceKey": {
+        "definition": "sample",
+        "surfacePreorder": 0
+      },
+      "requiredIndex": "top",
+      "contract": {
+        "path": {
+          "tree": [
+            "data"
+          ]
+        }
+      }
+    },
+    {
+      "name": "request-widen-rejected",
+      "comparison": "required",
+      "lean": {
+        "ok": false,
+        "cover": {
+          "reason": "unknownSource",
+          "key": {
+            "surfacePreorder": 0,
+            "definition": "fn:901"
+          }
+        }
+      },
+      "definitions": 1,
+      "nonTopRanges": 7,
+      "seconds": {
+        "desugarDiff": 0.02075041699999991,
+        "surfaceCheckAll": 0.020919750000000015,
+        "surfaceCheck": 0.021231667000000343
+      },
+      "rustReason": "unknownSource",
+      "rustCode": "E0519",
+      "sourceKey": {
+        "definition": "sample",
+        "surfacePreorder": 0
+      },
+      "requiredIndex": "top",
+      "contract": {
+        "endpoint": {
+          "host": {
+            "name": {
+              "exact": [
+                "api",
+                "example",
+                "com"
+              ]
+            }
+          },
+          "ports": {
+            "lo": 443,
+            "hi": 443
+          }
+        }
+      }
+    },
+    {
+      "name": "effect-not-covered",
+      "comparison": "typing",
+      "lean": {
+        "ok": false,
+        "error": {
+          "reason": "effect exceeds the allowed effect",
+          "path": [
+            0
+          ]
+        }
+      },
+      "definitions": 2,
+      "nonTopRanges": 4,
+      "seconds": {
+        "desugarDiff": 0.020457500000000017,
+        "surfaceCheckAll": 0.020920584000000186,
+        "surfaceCheck": 0.021105583000000205
+      },
+      "rustReason": "notCovered",
+      "rustCode": "E0519",
+      "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない"
+    },
+    {
+      "name": "effect-atomic",
+      "comparison": "typing",
+      "lean": {
+        "ok": false,
+        "error": {
+          "reason": "effect exceeds the allowed effect",
+          "path": [
+            0
+          ]
+        }
+      },
+      "definitions": 2,
+      "nonTopRanges": 6,
+      "seconds": {
+        "desugarDiff": 0.021067667000000068,
+        "surfaceCheckAll": 0.020826167000000062,
+        "surfaceCheck": 0.021199250000000003
+      },
+      "rustReason": "atomicCoverOnly",
+      "rustCode": "E0519",
+      "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない"
+    },
+    {
+      "name": "effect-top",
+      "comparison": "typing",
+      "lean": {
+        "ok": false,
+        "error": {
+          "reason": "effect exceeds the allowed effect",
+          "path": [
+            0
+          ]
+        }
+      },
+      "definitions": 2,
+      "nonTopRanges": 2,
+      "seconds": {
+        "desugarDiff": 0.020908625000000125,
+        "surfaceCheckAll": 0.021120332999999825,
+        "surfaceCheck": 0.02162304199999987
+      },
+      "rustReason": "unknownSource",
+      "rustCode": "E0519",
+      "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない",
+      "leanAtomReasonExpected": "unknownSource",
+      "leanAtomReasonObserved": null,
+      "reasonNote": "入口はtypingだけを報告する。原子の理由をcoverへ変換しない"
+    },
+    {
+      "name": "effect-top-exceeded",
+      "comparison": "typing",
+      "lean": {
+        "ok": false,
+        "error": {
+          "reason": "effect exceeds the allowed effect",
+          "path": [
+            0
+          ]
+        }
+      },
+      "definitions": 2,
+      "nonTopRanges": 2,
+      "seconds": {
+        "desugarDiff": 0.021696124999999622,
+        "surfaceCheckAll": 0.021520916999999695,
+        "surfaceCheck": 0.02185208300000019
+      },
+      "rustReason": "unknownSource",
+      "rustCode": "E0519",
+      "reasonComparison": "E0519と型付け拒否の一致。cover理由の直接一致とは数えない",
+      "leanAtomReasonExpected": "budgetExceeded",
+      "leanAtomReasonObserved": null,
+      "reasonNote": "入口はtypingだけを報告する。原子の理由をcoverへ変換しない",
+      "rustProvenance": {
+        "lastRunExceeded": true,
+        "numberingComplete": true,
+        "operations": 1536,
+        "stop": "Some(BudgetExceeded { scope: Body, resource: Items })"
+      },
+      "leanProvenance": {
+        "bodyOperationsLimit": 0,
+        "lastRunExceededByDefinition": true,
+        "atomFailureByDefinition": "budgetExceeded",
+        "atomFailureObserved": null
+      }
+    },
+    {
+      "name": "required-not-covered-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 1,
+      "nonTopRanges": 3,
+      "seconds": {
+        "desugarDiff": 0.02109679199999981,
+        "surfaceCheckAll": 0.02290170800000002,
+        "surfaceCheck": 0.023239583000000064
+      }
+    },
+    {
+      "name": "required-unknown-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 1,
+      "nonTopRanges": 0,
+      "seconds": {
+        "desugarDiff": 0.024038707999999964,
+        "surfaceCheckAll": 0.025395040999999896,
+        "surfaceCheck": 0.02681441600000012
+      }
+    },
+    {
+      "name": "request-widen-rejected-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 1,
+      "nonTopRanges": 0,
+      "seconds": {
+        "desugarDiff": 0.024623375000000003,
+        "surfaceCheckAll": 0.023732124999999993,
+        "surfaceCheck": 0.02293312500000022
+      }
+    },
+    {
+      "name": "effect-not-covered-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 2,
+      "nonTopRanges": 4,
+      "seconds": {
+        "desugarDiff": 0.024284750000000077,
+        "surfaceCheckAll": 0.023274792000000044,
+        "surfaceCheck": 0.022476415999999944
+      }
+    },
+    {
+      "name": "effect-atomic-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 2,
+      "nonTopRanges": 4,
+      "seconds": {
+        "desugarDiff": 0.02229020799999981,
+        "surfaceCheckAll": 0.024016791999999842,
+        "surfaceCheck": 0.022599207999999926
+      }
+    },
+    {
+      "name": "effect-top-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 2,
+      "nonTopRanges": 0,
+      "seconds": {
+        "desugarDiff": 0.022420458000000032,
+        "surfaceCheckAll": 0.023350165999999728,
+        "surfaceCheck": 0.02296408399999983
+      }
+    },
+    {
+      "name": "atomic-union-rejected",
+      "comparison": "typing",
+      "lean": {
+        "ok": false,
+        "error": {
+          "reason": "effect exceeds the allowed effect",
+          "path": [
+            0
+          ]
+        }
+      },
+      "definitions": 2,
+      "nonTopRanges": 6,
+      "seconds": {
+        "desugarDiff": 0.024149540999999886,
+        "surfaceCheckAll": 0.0240130409999999,
+        "surfaceCheck": 0.0244527080000001
+      }
+    },
+    {
+      "name": "atomic-left-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 2,
+      "nonTopRanges": 6,
+      "seconds": {
+        "desugarDiff": 0.024087375000000133,
+        "surfaceCheckAll": 0.023567125000000022,
+        "surfaceCheck": 0.02365925000000013
+      }
+    },
+    {
+      "name": "atomic-right-accepted",
+      "comparison": "accepted",
+      "lean": {
+        "ok": true
+      },
+      "definitions": 2,
+      "nonTopRanges": 6,
+      "seconds": {
+        "desugarDiff": 0.023357791999999655,
+        "surfaceCheckAll": 0.023004499999999872,
+        "surfaceCheck": 0.023777916000000232
+      }
+    }
+  ]
+}

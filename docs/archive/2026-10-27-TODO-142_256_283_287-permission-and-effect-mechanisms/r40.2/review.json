@@ -1,0 +1,135 @@
+{
+  "recordedAt": "2026-10-29T10:06:26.747529+00:00",
+  "head": "a2fd2b6abaaa6c11d0b8dcb480fc701710953edb",
+  "branch": "m013/r40.2",
+  "indexChanged": false,
+  "scopeViolations": [],
+  "fileHashes": {
+    "crates/benitoite/skill/SKILL.md": "7a8302bbeb4ee8b5bffcb4e4e18daa2b32056c5c12fec4884a4a36e7e67a7858",
+    "crates/benitoite/skill/references/common-mistakes.md": "d9aaf97958be8cc64880d17016f405f4d21c9e5f60c42b1923714bc435aec589",
+    "crates/benitoite/skill/references/diagnostics.md": "789f0a08a625ee6dc7018e084960ac6f077f99d172f3aab48afaff0bbdb4b102",
+    "crates/benitoite/skill/references/inspection.md": "e7f8d1c5ed658de542436bda3e451ee6e33d9819b65e4ee53232612d6d370d04",
+    "crates/benitoite/src/builtins/funcs/file.rs": "14f70b6530fb1d7e73629a7506ee1c3ce48869afcd4613205efb691f8e97cc95",
+    "crates/benitoite/src/cli/check_report.rs": "aa0bf4afae49a2a3b7b654091e63c2e8c0c1b9dd2af3910495a11368b6465651",
+    "crates/benitoite/src/cli/effect_limit.rs": "1589e2f7f3a5fea3cc4ba66576d49b52620d4498ccc7116979518e2462202e0d",
+    "crates/benitoite/src/cli/inspection.rs": "6f820d747a0f195814a2a51a6b1e5ea96725a1cf0ad2ef0c4ff29bb9fca9252c",
+    "crates/benitoite/src/cli/tools/test_runner/check_report.rs": "f394c513c6d7efa81b13c4f3ddf4b9719011d6bd7af8aedd93c311b146cd3f68",
+    "crates/benitoite/src/cli/tools/test_runner/docs.rs": "b6fe302e462f942a5d055c9f968796fb4ceccc35122d52e7250c3651c9d3280d",
+    "crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs": "6e9d2c3d2eca9be90dfe2069a180733f1370c8e791d80ea127ec03e9c0fa2014",
+    "crates/benitoite/src/diag/codes.rs": "29a64216fa202c3a699cb33678926093e7d9902d6108c09ff2e90b33ac390ff5",
+    "crates/benitoite/src/typeck/scoped_calls.rs": "93d2f6a3d8fd02b1b4b66acfa22c1397e125172f504cc4e4bfe73463f7dad755",
+    "crates/benitoite/tests/cli_process.rs": "72632bcf9d3ac640ddb3b690e7b2676ca638925c881e5ebc745339e8bb11ba2e",
+    "crates/benitoite/tests/cli_process/scoped_diagnostics.rs": "a97ea353f289af98fceadd104562cd64b871f2ecaaaea4c8f6bca48cd56e3159",
+    "crates/benitoite/tests/cli_process/scoped_reports.rs": "1d4c59314881b2c4ffff0f2a0241b4546738fccf353b58e8a4ced0c2d2df83d5",
+    "crates/benitoite/tests/test_command.rs": "eeec0e150ac48b7e9b1119b0c84e0d340b39d75ef85819e4077a46ca20f015ae",
+    "docs/design/02-impl/02-10-diagnostics.md": "13780ed80b8bed9f548e684e6572b1df89967d515bb53f54032ef69afd37861f",
+    "docs/design/06-tooling/06-01-cli.md": "4496fe899a4e2d513d57a981d83fc9c63d65a36809949d41e2dd8dabb9080b15",
+    "docs/design/06-tooling/06-04-test-runner.md": "724bc1ff494538bc43c18d9301d8aa9695d0c881a792f795ce68ed2ed9688bdd"
+  },
+  "lines": {
+    "crates/benitoite/skill/SKILL.md": {
+      "added": 2,
+      "deleted": 2
+    },
+    "crates/benitoite/skill/references/common-mistakes.md": {
+      "added": 1,
+      "deleted": 1
+    },
+    "crates/benitoite/skill/references/diagnostics.md": {
+      "added": 2,
+      "deleted": 1
+    },
+    "crates/benitoite/skill/references/inspection.md": {
+      "added": 5,
+      "deleted": 1
+    },
+    "crates/benitoite/src/builtins/funcs/file.rs": {
+      "added": 38,
+      "deleted": 29
+    },
+    "crates/benitoite/src/cli/check_report.rs": {
+      "added": 2,
+      "deleted": 7
+    },
+    "crates/benitoite/src/cli/effect_limit.rs": {
+      "added": 2,
+      "deleted": 0
+    },
+    "crates/benitoite/src/cli/inspection.rs": {
+      "added": 82,
+      "deleted": 5
+    },
+    "crates/benitoite/src/cli/tools/test_runner/check_report.rs": {
+      "added": 13,
+      "deleted": 17
+    },
+    "crates/benitoite/src/cli/tools/test_runner/docs.rs": {
+      "added": 4,
+      "deleted": 7
+    },
+    "crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs": {
+      "added": 1,
+      "deleted": 1
+    },
+    "crates/benitoite/src/diag/codes.rs": {
+      "added": 3,
+      "deleted": 2
+    },
+    "crates/benitoite/src/typeck/scoped_calls.rs": {
+      "added": 2,
+      "deleted": 2
+    },
+    "crates/benitoite/tests/cli_process.rs": {
+      "added": 30,
+      "deleted": 3
+    },
+    "crates/benitoite/tests/cli_process/scoped_diagnostics.rs": {
+      "added": 245,
+      "deleted": 0
+    },
+    "crates/benitoite/tests/test_command.rs": {
+      "added": 2,
+      "deleted": 2
+    },
+    "docs/design/02-impl/02-10-diagnostics.md": {
+      "added": 5,
+      "deleted": 1
+    },
+    "docs/design/06-tooling/06-01-cli.md": {
+      "added": 32,
+      "deleted": 4
+    },
+    "docs/design/06-tooling/06-04-test-runner.md": {
+      "added": 4,
+      "deleted": 0
+    },
+    "crates/benitoite/tests/cli_process/scoped_reports.rs": {
+      "added": 243,
+      "deleted": 0
+    }
+  },
+  "lineTotals": {
+    "production": {
+      "added": 147,
+      "deleted": 70
+    },
+    "tests": {
+      "added": 520,
+      "deleted": 5
+    },
+    "skill": {
+      "added": 10,
+      "deleted": 5
+    },
+    "design": {
+      "added": 41,
+      "deleted": 5
+    }
+  },
+  "review": "取りまとめの自己確認。独立レビューと受け入れは後続の取りまとめが行う。",
+  "finalCheckedAt": "2026-10-29T10:11:05.945306+00:00",
+  "testedFilesUnchanged": true,
+  "diffCheckExitCode": 0,
+  "maxRssMiB": 4472.734375,
+  "maxRssGiB": 4.3679046630859375
+}

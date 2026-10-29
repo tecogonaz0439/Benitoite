@@ -1,0 +1,38 @@
+$ cargo test -p benitoite --test scope_annotations
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0061]: this function takes 4 arguments but 3 arguments were supplied
+   --> crates/benitoite/tests/scope_annotations.rs:712:16
+    |
+712 |     let core = benitoite::ir::desugar::desugar(&program.asts, &program.resolved, &program.types);
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ------------- argument #1 of type `&ModuleTable` is missing
+    |
+note: function defined here
+   --> crates/benitoite/src/ir/desugar.rs:36:8
+    |
+ 36 | pub fn desugar(
+    |        ^^^^^^^
+help: provide the argument
+    |
+712 |     let core = benitoite::ir::desugar::desugar(/* &ModuleTable */, &program.asts, &program.resolved, &program.types);
+    |                                                +++++++++++++++++++
+
+error[E0308]: mismatched types
+   --> crates/benitoite/tests/scope_annotations.rs:713:49
+    |
+713 |     assert!(benitoite::ir::check::check_program(&core).is_empty());
+    |             ----------------------------------- ^^^^^ expected `&Program<Comp>`, found `&Result<Program<Comp>, InternalError>`
+    |             |
+    |             arguments to this function are incorrect
+    |
+    = note: expected reference `&Program<_>`
+               found reference `&std::result::Result<Program<_>, InternalError>`
+note: function defined here
+   --> crates/benitoite/src/ir/check.rs:27:8
+    |
+ 27 | pub fn check_program(program: &CoreProgram) -> Vec<CoreTypeError> {
+    |        ^^^^^^^^^^^^^
+
+Some errors have detailed explanations: E0061, E0308.
+For more information about an error, try `rustc --explain E0061`.
+error: could not compile `benitoite` (test "scope_annotations") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

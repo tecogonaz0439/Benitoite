@@ -1,0 +1,14 @@
+{
+  "id": "report-user-scope-rejected-test",
+  "command": [
+    "<repo>/target/release/benitoite",
+    "test",
+    "--check",
+    "--report=json",
+    "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/inputs/user-scope-rejected.bnt"
+  ],
+  "exit": 2,
+  "seconds": 0.006975334000000055,
+  "stdoutSha256": "fbe40ecf402c69d82ab759877d7150758114d1ba14560851a7b4036a598f6f45",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

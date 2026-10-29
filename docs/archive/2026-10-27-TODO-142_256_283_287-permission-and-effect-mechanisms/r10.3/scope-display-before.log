@@ -1,0 +1,21 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0063]: missing field `scope` in initializer of `syntax::ast::NamedType`
+   --> crates/benitoite/src/syntax/parser/types.rs:113:33
+    |
+113 |     Ok(Box::new(TypeExpr::Named(NamedType {
+    |                                 ^^^^^^^^^ missing `scope`
+
+error[E0063]: missing field `scope` in initializer of `syntax::ast::EffectRef`
+   --> crates/benitoite/src/syntax/parser/types.rs:276:22
+    |
+276 |         effects.push(EffectRef {
+    |                      ^^^^^^^^^ missing `scope`
+
+error[E0063]: missing field `scope` in initializer of `syntax::ast::EffectRef`
+   --> crates/benitoite/src/syntax/parser/types.rs:380:27
+    |
+380 |             Ok::<_, Fail>(EffectRef {
+    |                           ^^^^^^^^^ missing `scope`
+
+For more information about this error, try `rustc --explain E0063`.
+error: could not compile `benitoite` (lib test) due to 3 previous errors

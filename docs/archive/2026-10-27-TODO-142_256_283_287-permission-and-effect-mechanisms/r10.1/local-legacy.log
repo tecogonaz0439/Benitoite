@@ -1,0 +1,19 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.02s
+     Running tests/checked_args.rs (target/debug/deps/checked_args-4548f59f5fa349d7)
+
+running 2 tests
+test scope_direct_binding_boundary_origins_and_opaque_representation ... ok
+test scope_constants_follow_shared_runtime_contract_and_positions ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 6.32s
+
+     Running tests/runtime_builtins.rs (target/debug/deps/runtime_builtins-76dab913c43eb26d)
+
+running 1 test
+test scope_checked_values_preserve_inputs_and_runtime_errors ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.31s
+
+
+exit=0; outer_seconds=25.178

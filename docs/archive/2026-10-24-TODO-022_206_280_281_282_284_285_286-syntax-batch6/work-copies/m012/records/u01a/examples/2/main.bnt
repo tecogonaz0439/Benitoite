@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  let total = 1 + 2
+  return Console.writeLine(Integer.toString(total))
+end function

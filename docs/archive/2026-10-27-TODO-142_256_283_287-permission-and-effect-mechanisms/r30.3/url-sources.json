@@ -1,0 +1,78 @@
+{
+  "checked_date": "2026-10-29",
+  "sources": [
+    {
+      "source": "<cargo-registry>/ureq-3.4.2/src/unversioned/resolver.rs",
+      "bytes": 6264,
+      "sha256": "1f123ff6f7815b91bd505a285df0e792e7adf6711da800ca9cfa5d846bd1bc1e",
+      "inspected": [
+        "DefaultResolver::host_and_port",
+        "resolve",
+        "ToSocketAddrs"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/ureq-3.4.2/src/util.rs",
+      "bytes": 11846,
+      "sha256": "73967a482389a652161ca2182a9d3fc0e534f4cfead1e6c64453e751d08a2349",
+      "inspected": [
+        "SchemeExt::default_port",
+        "UriExt::ensure_valid_url"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/ureq-3.4.2/src/run.rs",
+      "bytes": 25183,
+      "sha256": "00e32150908f4cc02dab017c6b31643b2afcf2a37aa9eaf6ca9a54c65e318c51",
+      "inspected": [
+        "connect",
+        "ConnectionDetails",
+        "call.uri"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/ureq-3.4.2/src/agent.rs",
+      "bytes": 13048,
+      "sha256": "48e6b3c169bbdee1dd97347c1a6597c73f59fc8bc00e849c32fabfcbbc60e1f2",
+      "inspected": [
+        "Agent::run"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/http-1.5.0/src/uri/authority.rs",
+      "bytes": 22217,
+      "sha256": "5f4214714bcfe8db10f6806f02f7cdde673323a797ca7d31814e761f8d1ee646",
+      "inspected": [
+        "Authority::host",
+        "Authority::port",
+        "Authority::port_u16"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/http-1.5.0/src/uri/path.rs",
+      "bytes": 19587,
+      "sha256": "d69c30a915c83bb99f956da92d9a3cc16b754da43d1e940bd750676e9a7a5c7f",
+      "inspected": [
+        "fragment"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/ureq-proto-0.6.0/src/client/amended.rs",
+      "bytes": 9929,
+      "sha256": "69d6436feb538ad7ae123249b55dd52c0cc243d08f2968040313269eaecd686f",
+      "inspected": [
+        "analyze",
+        "Host"
+      ]
+    },
+    {
+      "source": "<cargo-registry>/ureq-proto-0.6.0/src/client/sendreq.rs",
+      "bytes": 8769,
+      "sha256": "d954ec3386d80cbc760d03d27d2d9fa564aa58ba98de50933b2532ebe92049b2",
+      "inspected": [
+        "Host"
+      ]
+    }
+  ],
+  "web_result": "RFC 9110 obtained; docs.rs fixed-version fetch unavailable; local locked sources inspected"
+}

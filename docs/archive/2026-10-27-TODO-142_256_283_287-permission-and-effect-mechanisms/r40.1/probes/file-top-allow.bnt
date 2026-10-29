@@ -1,0 +1,6 @@
+import Benitoite.Unofficial.IO.File
+function sample() -> Result[String, IOError] uses File.Read
+ return File.readText(path: "/data/a")
+end function
+function main() -> Unit
+end function

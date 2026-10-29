@@ -1,0 +1,15 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Range
+function sample(dynamic: String, x: Integer) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ match Range.checkInteger(minimum: 0, maximum: 0, value: x) with
+ case Result.Ok(checked) ->
+  bind zero <- Range.value(checked)
+  bind _ <- 1 div zero
+  ()
+ case Result.Error(_) -> ()
+ end match
+ return Scope.checkPathIn(pattern: dynamic, path: dynamic)
+end function
+function main() -> Unit
+ ()
+end function

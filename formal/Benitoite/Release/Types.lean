@@ -40,11 +40,11 @@ inductive TyCon where
 
 mutual
 /-- 型。01-12 の型に、初回リリース版の拡張が加える型を加えたもの。
-`tvar i` は番号 i の型パラメータ。`cont b t ε` は継続の型 `Cont(B → T ! ε)`。`dict cl τ` は辞書の型
+`opaque o ix` は範囲の位置 ix を持つ不透明型（旧の添字のない型は `Ty.opaqueTop o`）。`tvar i` は番号 i の型パラメータ。`cont b t ε` は継続の型 `Cont(B → T ! ε)`。`dict cl τ` は辞書の型
 `Dict[Cl, τ]`、`tapp i Ā` は型構成子を表す型パラメータの適用 `α[Ā]`、`ctor φ` は型構成子 φ である。 -/
 inductive Ty where
   | base (ι : BaseTy)
-  | opaque (o : OpaqueName)
+  | opaque (o : OpaqueName) (ix : Scope.Signature.Ix)
   | data (d : DataName) (args : List Ty)
   | list (a : Ty)
   | fn (names : List String) (params : List Ty) (ret : Ty) (eff : EffR)
@@ -66,6 +66,13 @@ inductive EffR where
 end
 
 abbrev Eff := EffR
+
+/-- 旧の添字のない不透明型（範囲の位置が Top）を作る明示の構築関数。`.opaque o Ix.top` と同じ項である。
+既定引数と暗黙の変換を置かない（`Release.Atom` の先頭のコメント）。 -/
+abbrev Ty.opaqueTop (o : OpaqueName) : Ty := .opaque o (.fixed .top)
+
+/-- `Ty.opaqueTop` は `Ix.top` を範囲の位置に持つ。 -/
+theorem Ty.opaqueTop_eq (o : OpaqueName) : Ty.opaqueTop o = .opaque o Scope.Signature.Ix.top := rfl
 
 namespace Eff
 

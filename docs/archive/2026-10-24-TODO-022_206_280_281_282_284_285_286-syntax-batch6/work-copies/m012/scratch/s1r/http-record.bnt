@@ -1,0 +1,9 @@
+import Benitoite.Unofficial.Network.Http
+function f(status: Integer) -> Http.Response
+  return Http.Response(status: status, headers: [], body: Bytes.empty())
+end function
+
+function main() -> Unit
+  bind _ <- f(700)
+  return ()
+end function

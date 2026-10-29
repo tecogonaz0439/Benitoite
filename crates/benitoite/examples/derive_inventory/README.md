@@ -1,4 +1,4 @@
-# Declaration inventory, version 3
+# Declaration inventory, version 4
 
 Build with `cargo build -p benitoite --example derive_inventory`, then run:
 
@@ -26,7 +26,7 @@ Configuration uses this schema:
 }
 ```
 
-`source` is relative to `--root`; `type` uses the resolved module name and record name, not an import alias or a compiler binding number. For JSON targets the virtual entry also imports `Benitoite.Unofficial.Json.Codec`, including its standard sources in the input hashes before generation. Property targets likewise import `Benitoite.Unofficial.Test.Property` and include its dependencies. The example imports all target modules and the modules of configured custom functions through a virtual entry under that root. The source must match the resolved declaration. Targets must be records; type parameters and recursive declarations are retained in version 3. Supported generation shapes are checked per feature by tools/derive, rather than rejected by this reader. All objects reject unknown and duplicate keys, including nested objects. Region names contain ASCII letters, digits, `_`, or `-`; target identities and regions within a source must be unique.
+`source` is relative to `--root`; `type` uses the resolved module name and record name, not an import alias or a compiler binding number. For JSON targets the virtual entry also imports `Benitoite.Unofficial.Json.Codec`, including its standard sources in the input hashes before generation. Property targets likewise import `Benitoite.Unofficial.Test.Property` and include its dependencies. The example imports all target modules and the modules of configured custom functions through a virtual entry under that root. The source must match the resolved declaration. Targets must be records; type parameters and recursive declarations are retained in version 4. Supported generation shapes are checked per feature by tools/derive, rather than rejected by this reader. All objects reject unknown and duplicate keys, including nested objects. Region names contain ASCII letters, digits, `_`, or `-`; target identities and regions within a source must be unique.
 
 A `fields` entry can specify `encode` with `decode`, optional `decodeMissing` with `decode`, or `gen` with `shrink`. Each value names an existing fully qualified function. A function outside the target module must be public. JSON and property sections are optional; when present they require both output function names. `json.keys` maps existing field names to distinct JSON keys. This reader exports custom signatures; generators must subsequently validate the signatures against their conversion or generator contracts.
 
@@ -42,7 +42,7 @@ On success, stdout contains exactly one JSON object:
 
 | Key | Contract |
 | --- | --- |
-| `version` | Integer `3`. Configuration remains version 1. |
+| `version` | Integer `4`. Configuration remains version 1. |
 | `configSha256` | Lowercase SHA-256 of the original config bytes, without normalization. |
 | `targets` | Config order. Each row contains `source`, `region`, `config`, resolved `type`, `module`, local `name`, declaration `span`, `public`, `package`, normalized `visibility`, `opaque`, `canConstruct`, `canInspect`, `typeParams`, ordered `fields`, `dependencies`, and `customFunctions`. |
 | `records` | Resolved name to record description, including imported and embedded declarations. Allows consumers to follow dependencies without resolving types again. |
@@ -70,10 +70,16 @@ The wire types are explicit tagged trees (unknown tags and keys are errors):
 ```text
 Kind = {tag: "value"} | {tag: "constructor", arity: positive integer}
 Head = {tag: "named", name: resolved name} | {tag: "parameter", index: integer}
-Type = {tag: "application", head: Head, arguments: [Type, ...]}
+Type = {tag: "application", head: Head, arguments: [Type, ...], ix: Index}
      | {tag: "parameter", index: integer}
      | {tag: "function", params: [{name, type: Type}, ...], returnType: Type, effects: Effects}
-Effects = {names: [{tag: "builtin" | "named", name}, ...], vars: [integer, ...], failures: [Type, ...]}
+Effects = {names: [{tag: "builtin" | "named", name, ix: Index}, ...], vars: [integer, ...], failures: [Type, ...]}
+Index = {fixed: Range} | {rvar: nonnegative integer}
+Range = "top" | {path: {exact: [component, ...]} | {tree: [component, ...]}}
+      | {host: Host} | {endpoint: {host: Host, ports: {lo: integer, hi: integer}}}
+Host = {name: {exact: [label, ...]} | {one: [label, ...]} | {many: [label, ...]}}
+     | {ip: {exact: {family: "v4" | "v6", bits: integer}}}
+     | {ip: {cidr: {family: "v4" | "v6", network: integer, prefixLen: integer}}}
 ```
 
 All names, including builtins, use canonical identities: `Benitoite.String.String`,
@@ -81,7 +87,7 @@ All names, including builtins, use canonical identities: `Benitoite.String.Strin
 such as Integer64 resolve to `Benitoite.Integer.Integer`. Types appear once in
 `types`, keyed by that identity, with `name`, `kind` (`builtin`, `data`, `record`,
 `external`), `arity`, declaring `module`, `visibility`, `public`, `package`,
-`opaque`, and `extensible`. A zero-argument application is a value type, while a
+`opaque`, `extensible`, and `rangeKind` (null, `path`, `host`, or `endpoint`). A zero-argument application is a value type, while a
 bare Head in an implementation is a type constructor. Aliases are expanded;
 recursive and parameterized records are represented without expanding fields.
 Rigid/recovery types must not be exported. The producer and consumer validate
@@ -126,11 +132,37 @@ still does not check bodies, including bodies generated earlier.
 A function `signature` contains ordered `params` (`name`, `type`), `returnType`,
 ordered `typeParams` (`name`, structured `kind`, `builtin`: null / `equality` /
 `key` / `ordered`), `effectParams`, ascending `noFail` indices, ordered
-`constraints` (`param`, resolved `class`), and `effects`. Nested function types
+`constraints` (`param`, resolved `class`), `effects`, ordered `rkinds` (`path`,
+`host`, or `endpoint`), `admission`, and `shape`. Nested function types
 use the enclosing signature's parameter indices, without new quantifiers.
-Effect names are sorted by canonical name, variables by number, and failures
+Effect atoms are sorted by canonical name and then index structure, variables by number, and failures
 by canonical JSON UTF-8 bytes, all deduplicated. Builtin effect names follow the
 builtin table (for example `State`, `IO.Console.Write`); IO.All is expanded.
 No Rust Debug/Serialize representation is part of this contract.
+
+Range indices use the existing exchange representation: Top is
+`{"fixed":"top"}`, a closed range is `{"fixed": Range}`, and a range variable
+is `{"rvar": 0}`. Parameter-headed applications always carry Top. Range variables
+refer to the enclosing signature's `rkinds`; record fields have no range
+quantifiers. Types without a range kind accept only Top. IP address bits and
+networks are full-width JSON integers, including IPv6; no precision is discarded.
+Closed ranges retain normalized path components, host labels/IP networks, and
+inclusive endpoint port bounds.
+
+`admission` is `"any"` or `{"covers":{"inner":i,"outer":j}}`. `shape` is
+`"untargeted"`, `{"topTargeted":{"kind":kind}}`, or
+`{"single":{"kind":kind,"position":i}}`. These preserve the collected standard
+signature's quantification, widening condition, and IO target information.
+Ordinary signatures have empty `rkinds`, `"any"`, and `"untargeted"`. The reader
+validates variable bounds/kinds and the collected range signature. Effect atoms
+with the same name but different indices remain distinct.
+
+Version 3 inventories are incompatible and must be recollected after rebuilding.
+Configuration remains version 1. The consumer's inventory/hash contracts are
+version 4; manifest, receipt and persistent-record envelopes remain version 3.
+Manifests and records carry those inventory/hash versions; receipts bind to the
+exact manifest digest and record hash.
+Old reviewed manifests are refused and old records require a fresh reviewed
+migration; the existing saved manifest bytes and SHA-256 are never rewritten.
 
 Exit status is 0 for an inventory, 1 for declaration/IO/target failures, and 2 for invalid arguments or config syntax/schema. Failures write an explanation to stderr and no inventory to stdout. This example does not generate or edit source files. JSON conversion, Property generation, managed regions, and regeneration checks are separate work.

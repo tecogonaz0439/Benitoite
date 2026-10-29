@@ -1,0 +1,7 @@
+== plan: level work against e17336ece84ceccc6fbba7e03f2319f44b45aaad (27 changed file(s))
+   [spec_tally] because of docs/design/00-overview/00-03-roadmap.md (estimate: seconds to a few min)
+      command: python3 tools/spec-coverage/spec_coverage.py --self-test
+      command: python3 tools/spec-coverage/spec_coverage.py
+   [spec_examples] because of docs/design/01-spec/01-06-type-system.md (estimate: target dependent)
+      command: cargo test -q -p benitoite --test spec_examples
+   later: stage checks named connections; change covers full regression; release checks the candidate

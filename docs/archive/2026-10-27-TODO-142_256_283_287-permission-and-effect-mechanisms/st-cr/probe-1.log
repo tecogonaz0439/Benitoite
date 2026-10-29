@@ -1,0 +1,39 @@
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:16:26: error: Ambiguous term
+  Program
+Possible interpretations:
+  Benitoite.Surface.Program : Type
+  
+  Benitoite.Release.Program : Type
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:26:31: error: Ambiguous term
+  Program
+Possible interpretations:
+  Benitoite.Surface.Program : Type
+  
+  Benitoite.Release.Program : Type
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:32:52: error(lean.unknownIdentifier): Unknown identifier `Scope.Domain.Target`
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:35:41: error(lean.unknownIdentifier): Unknown identifier `Scope.Domain.Target`
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:36:4: error(lean.unknownIdentifier): Unknown identifier `ScopeState.requestOk`
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:37:55: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.checked` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Inhabits.checked`
+  [apply] `Val.checked`
+  [apply] `Inhabits.below.checked`
+  [apply] `Benitoite.Scope.Inference.ScopeFact.checked`
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:39:36: error(lean.unknownIdentifier): Unknown identifier `Scope.Domain.Range`
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:46:57: error: unsolved goals
+⊢ ¬Ty.shift 0 0 (Ty.base BaseTy.string) = Ty.tvar 0
+'STCR.record_typed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'STCR.record_not_opaque' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'STCR.record_endpoint_ignored' depends on axioms: [propext, sorryAx]
+../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean:115:14: error(lean.unknownIdentifier): Unknown constant `record_requestOk_falls_back`
+'STCR.check_signature_opaque' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'STCR.open_type_changes' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'STCR.DataValue.rename_toVal' depends on axioms: [propext]
+'STCR.rename_toVals' depends on axioms: [propext]
+'STCR.DataValue.subst_toVal' depends on axioms: [propext]
+'STCR.subst_toVals' depends on axioms: [propext]
+'STCR.DataValue.substTy_toVal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.substTy_toVals' depends on axioms: [propext, Classical.choice, Quot.sound]
+        4.28 real         0.31 user         0.45 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,86 @@
+[
+  {
+    "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t4-400.bnt",
+    "sha256": "53e9746414ec9d089ae2ed3bcc4030e589a783595c061c309b0bd991bb1abfa2",
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t4-400.bnt"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.581667292,
+    "expected_reason": null,
+    "diagnostics": ""
+  },
+  {
+    "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t3-819.bnt",
+    "sha256": "c41f3880aead8eefb78e1b93c4cc9e07ed550063e935ac8e1c81423b1eee0224",
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t3-819.bnt"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.114600166,
+    "expected_reason": null,
+    "diagnostics": ""
+  },
+  {
+    "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t1.bnt",
+    "sha256": "0fcec09e7c7402c13a800af199e0c67e6460cfc29e17737663d2571e078a8b9b",
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t1.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.06614050000000005,
+    "expected_reason": "budgetExceeded",
+    "diagnostics": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0519\",\"message\":\"the range arguments of check `Scope.checkPathIn` do not cover the required scope (budgetExceeded)\",\"primary\":{\"file\":\"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t1.bnt\",\"start\":{\"line\":45,\"column\":9,\"offset\":1374},\"end\":{\"line\":45,\"column\":26,\"offset\":1391},\"label\":\"`Scope.checkPathIn` is not covered by `the required scope contract`\"},\"secondary\":[],\"notes\":[\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"Scope numbering for this definition exceeded the limit of 200000 events; all Scope rules in this definition require Top\",\"scope call: .sample; budget exceeded; surface preorder unavailable\"],\"helps\":[{\"message\":\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"edits\":[]},{\"message\":\"split this definition into smaller definitions, or reduce its size and shared constant expansion\",\"edits\":[]}]}\n"
+  },
+  {
+    "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t9-511.bnt",
+    "sha256": "7ec150ea37c4f17adde7e13555220063fa0743939842f8e4e59f82f9b4ac6320",
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t9-511.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.046687000000000034,
+    "expected_reason": "budgetExceeded",
+    "diagnostics": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0519\",\"message\":\"the range arguments of widening `Scope.widenPathIn` do not cover the required scope (budgetExceeded)\",\"primary\":{\"file\":\"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t9-511.bnt\",\"start\":{\"line\":517,\"column\":39,\"offset\":34856},\"end\":{\"line\":517,\"column\":56,\"offset\":34873},\"label\":\"`Scope.widenPathIn` is not covered by `the required scope contract`\"},\"secondary\":[],\"notes\":[\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"local Scope analysis exceeded the body items limit; provenance was forgotten while literal patterns remain readable\",\"scope call: .sample at surface preorder 2050\"],\"helps\":[{\"message\":\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"edits\":[]}]}\n"
+  },
+  {
+    "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t10c.bnt",
+    "sha256": "b9813c7564a04c094c67753becf01eeb83e3c700c3b8e6ebb35e08ec2bdeee72",
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t10c.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.029150750000000003,
+    "expected_reason": "unknownSource",
+    "diagnostics": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0519\",\"message\":\"the range arguments of widening `Scope.widenPathIn` do not cover the required scope (unknownSource)\",\"primary\":{\"file\":\"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t10c.bnt\",\"start\":{\"line\":7,\"column\":34,\"offset\":225},\"end\":{\"line\":7,\"column\":51,\"offset\":242},\"label\":\"`Scope.widenPathIn` is not covered by `the required scope contract`\"},\"secondary\":[],\"notes\":[\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"scope call: .sample at surface preorder 7\"],\"helps\":[{\"message\":\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"edits\":[]}]}\n"
+  },
+  {
+    "source": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t11.bnt",
+    "sha256": "eb8c4b5b897e4120b86c9f960fe7d0265d3489815951ef5af2c7d53bc1f84a45",
+    "command": [
+      "target/release/benitoite",
+      "check",
+      "--diagnostics=json",
+      "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t11.bnt"
+    ],
+    "exit": 2,
+    "elapsed_seconds": 0.03360437499999991,
+    "expected_reason": "unknownSource",
+    "diagnostics": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0519\",\"message\":\"the range arguments of widening `Scope.widenPathIn` do not cover the required scope (unknownSource)\",\"primary\":{\"file\":\"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r20.5/rv-probes/t11.bnt\",\"start\":{\"line\":3,\"column\":38,\"offset\":114},\"end\":{\"line\":3,\"column\":55,\"offset\":131},\"label\":\"`Scope.widenPathIn` is not covered by `the required scope contract`\"},\"secondary\":[],\"notes\":[\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"scope call: .sample at surface preorder 0\"],\"helps\":[{\"message\":\"the range arguments of this direct call must cover the ranges selected by the local Scope rule\",\"edits\":[]}]}\n"
+  }
+]

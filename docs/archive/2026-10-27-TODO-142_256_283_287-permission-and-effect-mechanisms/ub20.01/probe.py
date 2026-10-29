@@ -1,0 +1,92 @@
+"""UB20 の小入力を通常 CLI で検査し、相対パスの証拠を保存する。"""
+from pathlib import Path
+import hashlib
+import json
+import subprocess
+import time
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+CLI = ROOT / "target/ub20/debug/benitoite"
+INPUTS = HERE / "inputs"
+INPUTS.mkdir(exist_ok=True)
+
+SCOPE = "import Benitoite.Unofficial.Scope\n"
+FILE = "import Benitoite.Unofficial.IO.File\n"
+MAIN = "function main() -> Unit\n ()\nend function\n"
+REPORT = SCOPE + FILE + '''
+effect Report
+ function save(path: Scope.PathIn["/data/reports/**"]) -> Unit
+end effect
+function sink(path: Scope.PathIn["/data/reports/**"]) -> Unit uses File.Write["/data/reports/**"]
+ ()
+end function
+function transfer(path: Scope.PathIn["/data/reports/**"]) -> Unit uses File.Write["/data/reports/**"]
+ handle save(path) with
+ case save(p) ->
+  sink(p)
+  resume(())
+ end handle
+end function
+function main() -> Unit uses File.Write["/data/reports/**"]
+ handle () with
+ case save(p) ->
+  sink(p)
+  resume(())
+ end handle
+end function
+'''
+
+cases = [
+    ("fixed-argument", REPORT, []),
+    ("fixed-operation-value", REPORT.replace(" handle save(path) with", " bind send <- save\n handle send(path) with"), []),
+    ("fixed-argument-mismatch", REPORT.replace("function transfer(path: Scope.PathIn[\"/data/reports/**\"])", "function transfer(path: Scope.PathIn[\"/other/**\"])"), ["E0401"]),
+    ("fixed-clause-mismatch", REPORT.replace("function sink(path: Scope.PathIn[\"/data/reports/**\"])", "function sink(path: Scope.PathIn[\"/other/**\"])"), ["E0401", "E0401"]),
+    ("unhandled", "effect Report\n function save() -> Unit\nend effect\nfunction main() -> Unit uses Report\n save()\nend function\n", ["E0506"]),
+    ("unhandled-test", "effect Report\n function save() -> Unit\nend effect\n@test\nfunction sample() -> Unit uses Report\n save()\nend function\n" + MAIN, ["E0506"]),
+    ("user-range", "effect Write\n function save() -> Unit\nend effect\nfunction sample() -> Unit uses Write[\"/data/**\"]\n ()\nend function\n" + MAIN, ["E0513"]),
+    ("user-type", "effect Write\n function save() -> Unit\nend effect\nfunction sample() -> Unit uses Write[Integer]\n ()\nend function\n" + MAIN, ["E0513"]),
+    ("import-collision", FILE + "effect File\n function save() -> Unit\nend effect\n" + MAIN, ["E0305"]),
+    ("effect-module-collision", "import Collision\n" + MAIN, ["E0326"]),
+    ("builtin-attribute", '@builtin("Benitoite.Scope.checkPath")\nfunction fake() -> Unit\n' + MAIN, ["E0807"]),
+    ("standard-alias", "import Benitoite.Unofficial.Scope as S\nfunction main() -> Unit\n bind _ <- S.checkPath(pattern: \"bad\", path: \"/a\")\nend function\n", ["E0459"]),
+    ("fake-scope-alias", "import MockScope as Scope\nfunction main() -> Unit\n Scope.checkPath(pattern: \"bad\", path: \"/a\")\nend function\n", []),
+    ("fake-type-alias", "import MockScope as Scope\nfunction sample(path: Scope.PathIn[\"/a\"]) -> Unit\n ()\nend function\n" + MAIN, ["E0520"]),
+    ("distinct-operation", FILE + "effect Local\n function readText(path: String) -> Result[String, IOError]\nend effect\nfunction main() -> Unit uses File.Read\n bind _ <- handle File.readText(\"/data/a\") with\n case readText(path) -> resume(Result.Ok(\"local\"))\n end handle\n ()\nend function\n", []),
+    ("standard-effect-alias", "import Benitoite.Unofficial.IO.File as F\n" + MAIN, ["E0339"]),
+]
+distinct_source = next(source for name, source, _ in cases if name == "distinct-operation")
+cases.append(("distinct-operation-missing", distinct_source.replace("function main() -> Unit uses File.Read", "function main() -> Unit"), ["E0501"]))
+
+(INPUTS / "Collision.bnt").write_text('effect Collision\n function save() -> Unit\nend effect\n')
+(INPUTS / "MockScope.bnt").write_text('''public function checkPath(pattern: String, path: String) -> Unit
+ ()
+end function
+@opaque
+public record PathIn
+ path: String
+end record
+''')
+
+def invoke(path, args):
+    start = time.monotonic()
+    command = [str(CLI), *args, str(path.relative_to(ROOT))]
+    p = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+    clean = lambda s: s.replace(str(ROOT), "<wt>").replace(str(Path.home()), "<home>")
+    return {"command": ["target/ub20/debug/benitoite", *command[1:]],
+            "exit": p.returncode, "elapsedSeconds": time.monotonic() - start,
+            "stdout": clean(p.stdout), "stderr": clean(p.stderr)}
+
+records = []
+for name, source, codes in cases:
+    path = INPUTS / (name + ".bnt")
+    path.write_text(source)
+    record = invoke(path, ["check", "--report=json"])
+    report = json.loads(record["stdout"])
+    actual = [d["code"] for d in report["diagnostics"] if d.get("severity") == "error"]
+    record.update(name=name, inputSha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                  expectedCodes=codes, actualCodes=actual, expectedExit=2 if codes else 0)
+    record["matched"] = actual == codes and record["exit"] == record["expectedExit"]
+    records.append(record)
+    print(name, record["exit"], actual, record["matched"], flush=True)
+(HERE / "probes.json").write_text(json.dumps({"cliSha256": hashlib.sha256(CLI.read_bytes()).hexdigest(), "cases": records}, ensure_ascii=False, indent=2) + "\n")

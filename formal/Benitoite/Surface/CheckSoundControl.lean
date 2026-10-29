@@ -77,7 +77,7 @@ theorem lam_case {q names ps r eff body} : CaseSound q (.expr (.lam names ps r e
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
   exact ⟨.E_Lam ((namesWF_spec _ _).mp (require_ok hnames).1) ((lamBodyOk_spec _ _).mp (require_ok hexit).1)
-    (.B_Sub hb (Or.inl rfl) (acceptEff_sound hbAtoms he.2.2.1 heff) hbAtomsClean),
+    (.B_Sub hb (Or.inl rfl) (acceptEffCover_sound hbAtoms he.2.2.1 heff) hbAtomsClean),
     ⟨he.1, he.2.1, he.2.2.1⟩, emptyEff_atoms _⟩
 
 theorem ite_case {q cond yes no} : CaseSound q (.expr (.ite cond yes no)) := by
@@ -104,7 +104,7 @@ theorem ite_case {q cond yes no} : CaseSound q (.expr (.ite cond yes no)) := by
       (singleEffCheck_spec _ (union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2))).mp hSingle.2⟩
   refine ⟨?_, join_atoms ys.2.1 ns.2.1 hj, union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2)⟩
   rw [union_eq hcAtoms (union_atoms ys.2.2 ns.2.2), union_eq ys.2.2 ns.2.2] at hSafe ⊢
-  apply HasTypeQ.E_If hc (.B_Sub ys.1 hjoin.1 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj)) (.B_Sub ns.1 hjoin.2 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj))
+  apply HasTypeQ.E_If hc (.B_Sub ys.1 hjoin.1 (Eff.Covers.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj)) (.B_Sub ns.1 hjoin.2 (Eff.Covers.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj))
   exact hSafe
 
 theorem elseIf_case {q cond yes no} : CaseSound q (.expr (.elseIf cond yes no)) := by
@@ -132,8 +132,8 @@ theorem elseIf_case {q cond yes no} : CaseSound q (.expr (.elseIf cond yes no)) 
       (singleEffCheck_spec _ (union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2))).mp hSingle.2⟩
   refine ⟨?_, join_atoms ys.2.1 ns.2.1 hj, union_atoms hcAtoms (union_atoms ys.2.2 ns.2.2)⟩
   rw [union_eq hcAtoms (union_atoms ys.2.2 ns.2.2), union_eq ys.2.2 ns.2.2] at hSafe ⊢
-  apply HasTypeQ.E_ElseIf hc (.B_Sub ys.1 hjoin.1 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj))
-    (.E_Sub ns.1 hjoin.2 (Eff.Sub.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj)) ((isIf_spec _).mp (require_ok hisIf).1)
+  apply HasTypeQ.E_ElseIf hc (.B_Sub ys.1 hjoin.1 (Eff.Covers.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj))
+    (.E_Sub ns.1 hjoin.2 (Eff.Covers.refl _) (join_clean (join_atoms ys.2.1 ns.2.1 hj) hj)) ((isIf_spec _).mp (require_ok hisIf).1)
   exact hSafe
 
 theorem ifOnly_case {q cond yes} : CaseSound q (.expr (.ifOnly cond yes)) := by
@@ -229,18 +229,18 @@ theorem resume_case {q k e} : CaseSound q (.expr (.resume k e)) := by
       (fun _ _ _ _ h => ihe Δ _ _ _ _ _ _ _ _ _ hB hq he hΓ hR h) localAtoms.1 h
     obtain ⟨st, mid2, hget, h⟩ := checking_bind_ok h
     change (do
-      acceptEff q (child path 0) eff εe
+      acceptEffCover q (child path 0) eff εe
       pure (result, eff) : Checking Inferred) mid2 = .ok ((a, ε), s') at h
     obtain ⟨u, heff, h⟩ := checking_lift_bind_ok h
     obtain ⟨eq, _⟩ := checking_pure_ok h
     cases eq
-    exact ⟨.E_Resume localEq (.E_Sub heTyped (Or.inl rfl) (acceptEff_sound heAtoms localAtoms.2.2 heff) heAtomsClean),
+    exact ⟨.E_Resume localEq (.E_Sub heTyped (Or.inl rfl) (acceptEffCover_sound heAtoms localAtoms.2.2 heff) heAtomsClean),
       localAtoms.2.1, localAtoms.2.2⟩
 
 theorem clauses_nil_case {q} : CaseSound q (.clauses .nil) := by
   intro ih
   refine ⟨?_, clauseTypesAtoms q .nil⟩
-  intro Δ C Γ R path t ε s s' actual hB hq hc hΓ hR ht hε h
+  intro Δ C Γ R path εb t ε s s' actual hB hq hc hΓ hR hεb ht hε h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
   exact ⟨.nil, Eff.empty_sub _, emptyEff_atoms _⟩
@@ -250,15 +250,15 @@ theorem clauses_cons_case {q o n ntys body rest ndicts} :
   intro ih
   obtain ⟨ihb, ihr⟩ := clauses_case_ih ih
   refine ⟨?_, clauseTypesAtoms q _⟩
-  intro Δ C Γ R path t ε s s' actual hB hq hc hΓ hR ht hε h
+  intro Δ C Γ R path εp t ε s s' actual hB hq hc hΓ hR hεp ht hε h
   simp only [Clauses.AtomsIn] at hc
   obtain ⟨sg, hsg, h⟩ := checking_lift_bind_ok h
   obtain ⟨uNames, hnames, h⟩ := checking_lift_bind_ok h
   obtain ⟨u1, hn, h⟩ := checking_lift_bind_ok h
   obtain ⟨u2, hntys, h⟩ := checking_lift_bind_ok h
   have hvalid := lookup_valid hsg
-  have hwf : Eff.WF C.length ε := wfFails_sound hε hvalid
-  have sgAtoms := opSig_atoms hq.declarations hq.builtins (lookup_ok hsg)
+  have hwf : Eff.WF 0 C.length ε := wfFails_sound hε hvalid
+  have sgAtoms := opSigAt_atoms hq.declarations hq.builtins (by rw [← clauseOpSigIn_eq_opSigAt]; exact lookup_ok hsg)
   obtain ⟨εb, mid, hb, hbAtoms, h, hbAtomsClean⟩ := checking_accept_block_ok
     (fun _ _ _ _ h => ihb [] _ _ _ _ _ _ _ _ _ (BuilderInvariant.empty _ _ _) hq hc.1
       (clauseEnv_atoms sgAtoms.1 sgAtoms.2 ht hε hΓ) (returnAtoms_shift hR ntys) h)
@@ -268,12 +268,12 @@ theorem clauses_cons_case {q o n ntys body rest ndicts} :
     acceptEff q (child path 0) (shiftEff q.atoms ntys 0 ε) εb
     let εouter := substEffAt q.atoms 0 (List.replicate ntys (.base .unit)) [] εb
     acceptEff q (child path 0) ε εouter
-    let εs ← checkClausesR q .strict Δ C Γ R (child path 1) rest t ε
+    let εs ← checkClausesR q .strict Δ C Γ R (child path 1) εp rest t ε
     pure (union q εouter εs) : Checking Eff) mid2 = .ok (actual, s') at h
   obtain ⟨u3, heff, h⟩ := checking_lift_bind_ok h
   obtain ⟨u4, houter, h⟩ := checking_lift_bind_ok h
   obtain ⟨εr, mid', hr, h⟩ := checking_bind_ok h
-  have rs := ihr.1 Δ _ _ _ _ _ _ _ _ _ hB hq hc.2 hΓ hR ht hε hr
+  have rs := ihr.1 Δ _ _ _ _ _ _ _ _ _ _ hB hq hc.2 hΓ hR hεp ht hε hr
   have shiftedAtoms : (shiftEff q.atoms ntys 0 ε).AtomsIn q.atoms := by
     rw [shiftEff_eq ntys 0 ε hε]; exact Eff.shift_support ntys 0 ε hε
   have hbSub := acceptEff_sound hbAtoms shiftedAtoms heff
@@ -282,12 +282,12 @@ theorem clauses_cons_case {q o n ntys body rest ndicts} :
   have outerSub := acceptEff_sound outerAtoms hε houter
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
-  refine ⟨.cons (lookup_ok hsg) ((namesWF_spec _ _).mp (require_ok hnames).1)
+  refine ⟨.cons (by rw [← clauseOpSigIn_eq hεp o]; exact lookup_ok hsg) ((namesWF_spec _ _).mp (require_ok hnames).1)
     (by simpa using (require_ok hn).1) (by simpa using (require_ok hntys).1) hwf ?_ rs.1,
     ?_, union_atoms outerAtoms rs.2.2⟩
   · simpa only [shiftTy_eq ntys 0 t ht, shiftEff_eq ntys 0 ε hε,
       shiftEnv_eq ntys Γ (fun o ho t he => hΓ t (he ▸ ho)), shiftReturn_eq ntys R hR]
-      using (HasBlock.B_Sub hb (Or.inl rfl) hbSub hbAtomsClean)
+      using (HasBlock.B_Sub hb (Or.inl rfl) hbSub.covers hbAtomsClean)
   · rw [union_eq outerAtoms rs.2.2]
     constructor
     · intro x hx
@@ -309,7 +309,7 @@ theorem handle_case {q body cs} : CaseSound q (.expr (.handleE body cs)) := by
   have bs := ihb Δ _ _ _ _ _ _ _ _ _ hB hq he.1 hΓ hR hb
   obtain ⟨⟨t, st⟩, hinfer, h⟩ := checking_lift_bind_ok h
   have initialAtoms := diffEff_atoms (h := handled q.D.patternProgram q.B cs.skeleton) bs.2.2
-  have tAtoms := ihcs.2 Δ C Γ R (child path 1) t0 _ {} st t hB hq he.2 hΓ hR bs.2.1 initialAtoms (requests_atoms_nil _) hinfer
+  have tAtoms := ihcs.2 Δ C Γ R (child path 1) εbody t0 _ {} st t hB hq he.2 hΓ hR bs.2.1 initialAtoms (requests_atoms_nil _) hinfer
   obtain ⟨eff, mid', hfixed, h⟩ := checking_bind_ok h
   have effAtoms := fixedEffectsR_atoms initialAtoms
     (fun e s s' out heff hs => handlerStep_atoms hB hq he.2 hΓ hR tAtoms heff hs) hfixed
@@ -321,14 +321,14 @@ theorem handle_case {q body cs} : CaseSound q (.expr (.handleE body cs)) := by
   obtain ⟨saved, mid'', hget, h⟩ := checking_bind_ok h
   obtain ⟨u1, mid3, hmodify, h⟩ := checking_bind_ok h
   obtain ⟨actual, mid4, hcs, h⟩ := checking_bind_ok h
-  have css := ihcs.1 Δ _ _ _ _ _ _ _ _ _ hB hq he.2 hΓ hR tAtoms effAtoms hcs
+  have css := ihcs.1 Δ _ _ _ _ _ _ _ _ _ _ hB hq he.2 hΓ hR bs.2.2 tAtoms effAtoms hcs
   obtain ⟨u2, mid5, hrestore, h⟩ := checking_bind_ok h
   obtain ⟨u3, htype, h⟩ := checking_lift_bind_ok h
   obtain ⟨u4, heff, h⟩ := checking_lift_bind_ok h
   obtain ⟨eq, _⟩ := checking_pure_ok h
   cases eq
   exact ⟨.E_Handle (.B_Sub bs.1 (tyLe_sound bs.2.1 tAtoms (Bool.and_eq_true_iff.mp (require_ok htype).1).2)
-    (Eff.Sub.refl _) ((cleanTy_spec _ _ tAtoms).mp (Bool.and_eq_true_iff.mp (require_ok htype).1).1)) (acceptEff_handled_sound bs.2.2 effAtoms heff) css.1, tAtoms, effAtoms⟩
+    (Eff.Covers.refl _) ((cleanTy_spec _ _ tAtoms).mp (Bool.and_eq_true_iff.mp (require_ok htype).1).1)) (acceptEff_handled_sound bs.2.2 effAtoms heff) css.1, tAtoms, effAtoms⟩
 
 theorem list_length_one {α : Type} {xs : List α} (h : xs.length = 1) :
     ∃ x, xs = [x] := by

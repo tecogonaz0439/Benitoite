@@ -1,0 +1,73 @@
+$ cargo check -p benitoite --all-targets
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0599]: no method named `suffix` found for enum `std::option::Option<T>` in the current scope
+   --> crates/benitoite/tests/scope_annotations.rs:77:28
+    |
+ 77 |         .map(|n| n.range().suffix())
+    |                            ^^^^^^ method not found in `std::option::Option<&benitoite::types::scope::Range>`
+    |
+note: the method `suffix` exists on the type `&benitoite::types::scope::Range`
+   --> crates/benitoite/src/types/scope.rs:522:5
+    |
+522 |     pub fn suffix(&self) -> String {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider using `Option::expect` to unwrap the `&benitoite::types::scope::Range` value, panicking if the value is an `Option::None`
+    |
+ 77 |         .map(|n| n.range().expect("REASON").suffix())
+    |                           +++++++++++++++++
+
+error[E0599]: no method named `suffix` found for enum `std::option::Option<T>` in the current scope
+   --> crates/benitoite/tests/scope_annotations.rs:151:50
+    |
+151 |     assert_eq!(callback.effects.names[0].range().suffix(), "[\"/data/**\"]");
+    |                                                  ^^^^^^ method not found in `std::option::Option<&benitoite::types::scope::Range>`
+    |
+note: the method `suffix` exists on the type `&benitoite::types::scope::Range`
+   --> crates/benitoite/src/types/scope.rs:522:5
+    |
+522 |     pub fn suffix(&self) -> String {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider using `Option::expect` to unwrap the `&benitoite::types::scope::Range` value, panicking if the value is an `Option::None`
+    |
+151 |     assert_eq!(callback.effects.names[0].range().expect("REASON").suffix(), "[\"/data/**\"]");
+    |                                                 +++++++++++++++++
+
+error[E0599]: no method named `suffix` found for enum `std::option::Option<T>` in the current scope
+   --> crates/benitoite/tests/scope_annotations.rs:374:18
+    |
+372 | /             signature(&program, "sample").effects.names[0]
+373 | |                 .range()
+374 | |                 .suffix(),
+    | |                 -^^^^^^ method not found in `std::option::Option<&benitoite::types::scope::Range>`
+    | |_________________|
+    |
+    |
+note: the method `suffix` exists on the type `&benitoite::types::scope::Range`
+   --> crates/benitoite/src/types/scope.rs:522:5
+    |
+522 |     pub fn suffix(&self) -> String {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider using `Option::expect` to unwrap the `&benitoite::types::scope::Range` value, panicking if the value is an `Option::None`
+    |
+373 |                 .range().expect("REASON")
+    |                         +++++++++++++++++
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `benitoite` (test "scope_annotations") due to 3 previous errors
+warning: build failed, waiting for other jobs to finish...
+error[E0308]: mismatched types
+   --> crates/benitoite/tests/declarations.rs:611:63
+    |
+611 |         benitoite::types::EffectName::Builtin(_, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP
+    |                                                         --    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `RangeIndex`, found `&RangeIndex`
+    |                                                         |
+    |                                                         expected because this is `RangeIndex`
+    |
+help: consider removing the borrow
+    |
+611 -         benitoite::types::EffectName::Builtin(_, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP
+611 +         benitoite::types::EffectName::Builtin(_, ix) if ix == benitoite::types::builtin::RangeIndex::TOP
+    |
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `benitoite` (test "declarations") due to 1 previous error

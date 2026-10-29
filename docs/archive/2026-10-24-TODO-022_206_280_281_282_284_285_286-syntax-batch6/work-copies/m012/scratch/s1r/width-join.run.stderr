@@ -1,0 +1,10 @@
+runtime error[R0102]: integer overflow
+  --> work/m012/scratch/s1r/width-join.bnt:3:10
+   |
+ 3 |   return n + 100s8
+   |          ^^^^^^^^^
+   |
+   = note: call trace (innermost first):
+             f    at work/m012/scratch/s1r/width-join.bnt:7:13
+             main
+   = note: functions left by tail calls are not shown

@@ -4,20 +4,202 @@ use super::super::{
     context::{Body, ClauseContext, IArg, reason, substitute},
     infer::{Constraint, IEffect, IFnTy, ITy, ReasonKind},
 };
+use crate::base::BindingId;
 use crate::diag::{DiagBuilder, DiagCode};
 use crate::modules::ModuleKind;
 use crate::resolve::BindingKind;
 use crate::syntax::ast::HandleExpr;
 use crate::typeck::infer::IContract;
 use crate::types::builtin::BuiltinEffectId;
+use crate::types::scope::Range;
 use crate::types::{EffectName, EffectSet};
 use std::collections::BTreeMap;
+
+/// 選択の入力は保護本体の効果だけであり、前の推論の型変数は持ち越さない。
+#[derive(Clone, PartialEq, Eq)]
+pub(in crate::typeck) struct Selection {
+    ranges: BTreeMap<BindingId, Vec<Range>>,
+    handled: EffectSet,
+}
+
+pub(in crate::typeck) struct CheckedHandle<'a> {
+    expression: &'a HandleExpr,
+    body_effect: IEffect,
+    selected: Selection,
+}
+
+fn select(ctx: &Body<'_, '_>, e: &HandleExpr, body: &EffectSet) -> Selection {
+    let mut ranges = BTreeMap::new();
+    let mut seen = BTreeMap::new();
+    for clause in &e.clauses {
+        let Some(op) = ctx.decls.reference(clause.op.id).filter(|op| {
+            ctx.decls
+                .resolved
+                .bindings
+                .get(*op)
+                .is_some_and(|b| matches!(b.kind, BindingKind::Op { .. }))
+        }) else {
+            continue;
+        };
+        seen.insert(op, ());
+        if let Some(signature) = ctx.decls.out.range_signatures.get(op)
+            && signature.range_count() != 0
+            && let Some(scheme) = ctx.decls.out.decl_types.get(op)
+        {
+            ranges.insert(op, signature.clause_ranges(scheme, body));
+        }
+    }
+    let failure_op = ctx.decls.resolved.stdlib("Benitoite.Failure.raise");
+    let failure = failure_op.is_some_and(|op| seen.contains_key(&op));
+    let mut handled = EffectSet::empty();
+    for (_, effect) in ctx.decls.out.effects.iter() {
+        if !failure && !effect.ops.is_empty() && effect.ops.iter().all(|op| seen.contains_key(op)) {
+            handled.insert_name(effect.name.clone());
+            for atom in &body.names {
+                if same_name(atom, &effect.name) {
+                    handled.insert_name(atom.clone());
+                }
+            }
+        }
+    }
+    Selection { ranges, handled }
+}
+
+/// 全ての節からの制約も解いた後、暫定値との一致を必ず確認する。
+/// 関数の呼び出し元は不一致の選択だけを更新して本体を作り直す。
+/// それ以外の入口でも、不一致の推論結果を受理しない。
+pub(in crate::typeck) fn recheck(ctx: &mut Body<'_, '_>) {
+    let mut changed_at = None;
+    for checked in &ctx.checked_handlers {
+        let body = ctx.solver.finalize_effect(&checked.body_effect);
+        let selected = select(ctx, checked.expression, &body);
+        if selected != checked.selected {
+            changed_at.get_or_insert(checked.expression.span);
+            ctx.handler_revisions
+                .insert(checked.expression.id, selected);
+        }
+    }
+    if let Some(span) = changed_at {
+        ctx.diagnostic(
+            DiagBuilder::new(DiagCode::E0521)
+                .primary(span)
+                .help("annotation")
+                .build(),
+        );
+    }
+}
+
+/// 節の走査を後へ回す間も、書いた位置の局所と境界を保つ。
+pub(in crate::typeck) struct PendingHandle<'a> {
+    expression: &'a HandleExpr,
+    ty: ITy,
+    body_ty: ITy,
+    body_effect: IEffect,
+    clause_effect: IEffect,
+    environment: Environment,
+}
+
+impl PendingHandle<'_> {
+    pub(in crate::typeck) fn body_effect(&self) -> &IEffect {
+        &self.body_effect
+    }
+}
+
+struct Environment {
+    effect: IEffect,
+    ret: Option<ITy>,
+    clauses: Vec<ClauseContext>,
+    rigid_clauses: Vec<crate::base::NodeId>,
+    placeholder_boundary: bool,
+    return_owner: crate::typeck::context::ReturnOwner,
+    return_annotation: Option<crate::base::Span>,
+    die_message_boundary: bool,
+}
+impl Environment {
+    fn capture(ctx: &Body<'_, '_>) -> Self {
+        Self {
+            effect: ctx.effect.clone(),
+            ret: ctx.ret.clone(),
+            clauses: ctx.clauses.clone(),
+            rigid_clauses: ctx.solver.clause_context().to_vec(),
+            placeholder_boundary: ctx.placeholder_boundary,
+            return_owner: ctx.return_owner,
+            return_annotation: ctx.return_annotation,
+            die_message_boundary: ctx.die_message_boundary,
+        }
+    }
+    fn restore(self, ctx: &mut Body<'_, '_>) {
+        ctx.effect = self.effect;
+        ctx.ret = self.ret;
+        ctx.clauses = self.clauses;
+        ctx.solver.set_clause_context(self.rigid_clauses);
+        ctx.placeholder_boundary = self.placeholder_boundary;
+        ctx.return_owner = self.return_owner;
+        ctx.return_annotation = self.return_annotation;
+        ctx.die_message_boundary = self.die_message_boundary;
+    }
+}
 
 pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
     let ty = ctx.fresh_ty();
     let body_effect = ctx.fresh_effect();
     let clause_effect = ctx.fresh_effect();
     let body_ty = ctx.block_in(&e.body, body_effect.clone(), ctx.ret.clone());
+    let Some(expression) = ctx.decls.handler_syntax.get(e.id).copied() else {
+        ctx.diagnostic(crate::runtime::report::internal_diagnostic(
+            "check",
+            "handler syntax is missing",
+            None,
+            crate::runtime::report::FaultThread::Stage,
+        ));
+        return ITy::Error;
+    };
+    ctx.pending_handlers.push_back(PendingHandle {
+        expression,
+        ty: ty.clone(),
+        body_ty,
+        body_effect,
+        clause_effect,
+        environment: Environment::capture(ctx),
+    });
+    ty
+}
+
+/// 囲む本体の制約を使い切った後、暫定の添字で節を生成する。
+pub(in crate::typeck) fn finish_next(ctx: &mut Body<'_, '_>) -> bool {
+    let Some(pending) = ctx.pending_handlers.pop_front() else {
+        return false;
+    };
+    let saved = Environment::capture(ctx);
+    let mut waiting = std::mem::take(&mut ctx.pending_handlers);
+    pending.environment.restore(ctx);
+    finish(
+        ctx,
+        pending.expression,
+        pending.ty,
+        pending.body_ty,
+        pending.body_effect,
+        pending.clause_effect,
+    );
+    ctx.pending_handlers.append(&mut waiting);
+    saved.restore(ctx);
+    true
+}
+
+fn finish<'d>(
+    ctx: &mut Body<'_, 'd>,
+    e: &'d HandleExpr,
+    ty: ITy,
+    body_ty: ITy,
+    body_effect: IEffect,
+    clause_effect: IEffect,
+) {
+    let inferred_body = ctx.solver.finalize_effect(&body_effect);
+    let selected = ctx
+        .handler_overrides
+        .get(&e.id)
+        .cloned()
+        .unwrap_or_else(|| select(ctx, e, &inferred_body));
     ctx.add(Constraint::Flow {
         from: body_ty,
         to: ty.clone(),
@@ -48,10 +230,28 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                 .get(op)
                 .is_some_and(|b| matches!(b.kind, BindingKind::Op { .. }))
         });
-        let signature = op
-            .filter(|_| valid)
-            .and_then(|op| ctx.decls.out.decl_types.get(op))
-            .cloned();
+        let signature = op.filter(|_| valid).and_then(|op| {
+            if let Some(ranges) = ctx.decls.out.range_signatures.get(op)
+                && ranges.range_count() != 0
+            {
+                let scheme = ctx.decls.out.decl_types.get(op)?;
+                let closed = selected
+                    .ranges
+                    .get(&op)
+                    .and_then(|selection| ranges.instantiate(scheme, selection, true));
+                if closed.is_none() {
+                    ctx.diagnostic(crate::runtime::report::internal_diagnostic(
+                        "check",
+                        "handler signature scope instantiation failed",
+                        None,
+                        crate::runtime::report::FaultThread::Stage,
+                    ));
+                }
+                closed
+            } else {
+                ctx.signature_at_top(op)
+            }
+        });
         if !valid {
             let mut d = DiagBuilder::new(DiagCode::E0507)
                 .primary(clause.op.span)
@@ -69,13 +269,12 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
                 .and_then(|op| ctx.decls.resolved.bindings.get(op))
                 .and_then(|b| ctx.decls.modules.get(b.module))
                 .is_some_and(|m| matches!(m.kind, ModuleKind::Prelude | ModuleKind::Stdlib))
-                && op
-                    .and_then(|op| ctx.decls.out.decl_types.get(op))
-                    .is_some_and(|s| {
-                        s.effects
-                            .names
-                            .contains(&EffectName::Builtin(BuiltinEffectId::STATE))
-                    })
+                && op.and_then(|op| ctx.signature_at_top(op)).is_some_and(|s| {
+                    s.effects.names.contains(&EffectName::Builtin(
+                        BuiltinEffectId::STATE,
+                        crate::types::builtin::RangeIndex::TOP,
+                    ))
+                })
             {
                 d = d.note("state");
             }
@@ -200,12 +399,12 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
             reason: reason(clause.body.span, ReasonKind::HandleClause),
         });
     }
-    let mut handled = EffectSet::empty();
-    for (_, effect) in ctx.decls.out.effects.iter() {
-        if !failure && !effect.ops.is_empty() && effect.ops.iter().all(|op| seen.contains_key(op)) {
-            handled.insert_name(effect.name);
-        }
-    }
+    let handled = selected.handled.clone();
+    ctx.checked_handlers.push(CheckedHandle {
+        expression: e,
+        body_effect: body_effect.clone(),
+        selected,
+    });
     if failure {
         let rest = ctx.fresh_effect();
         ctx.solver.require_no_fail(rest.clone(), e.span);
@@ -213,17 +412,20 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
         let mut upper = rest.clone();
         upper.failures.push(error_ty);
         ctx.add(Constraint::EffSub {
+            relation: crate::typeck::infer::EffectRelation::Structural,
             sub: body_effect,
             sup: upper,
             reason: reason(e.span, ReasonKind::HandleBody),
         });
         ctx.add(Constraint::EffSub {
+            relation: crate::typeck::infer::EffectRelation::Structural,
             sub: rest,
             sup: ctx.effect.clone(),
             reason: reason(e.span, ReasonKind::HandleBody),
         });
     } else {
         ctx.add(Constraint::EffSub {
+            relation: crate::typeck::infer::EffectRelation::Structural,
             sub: body_effect,
             sup: IEffect {
                 failures: vec![],
@@ -234,10 +436,19 @@ pub(super) fn check(ctx: &mut Body<'_, '_>, e: &HandleExpr) -> ITy {
         });
     }
     ctx.add(Constraint::EffSub {
+        relation: crate::typeck::infer::EffectRelation::Structural,
         sub: clause_effect,
         sup: ctx.effect.clone(),
         reason: reason(e.span, ReasonKind::HandleClause),
     });
     ctx.handlers.insert(e.id, HandleInfo { clauses, handled });
-    ty
+}
+
+fn same_name(left: &EffectName, right: &EffectName) -> bool {
+    match (left, right) {
+        (EffectName::Builtin(left, _), EffectName::Builtin(right, _)) => left == right,
+        (EffectName::User(left, _), EffectName::User(right, _)) => left == right,
+        (EffectName::Builtin(_, _), EffectName::User(_, _))
+        | (EffectName::User(_, _), EffectName::Builtin(_, _)) => false,
+    }
 }

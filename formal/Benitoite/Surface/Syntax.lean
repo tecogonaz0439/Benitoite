@@ -311,7 +311,9 @@ mutual
     /-- 同表の第 2 行。dicts はメソッド自身の制約、params は辞書を除いた引数型。 -/
     | methName (dict : DictEv) (m : MethName) (tys : List Ty) (effs : List Eff)
         (dicts : List DictEv) (names : List String) (params : List Ty)
-    | primName (b : PrimName) (tys : List Ty) (effs : List Eff)
+    /-- 組み込みの関数の名前。`ranges` は型検査器が選んだ範囲の変数の具体化（範囲の変数のない項目では空の列。
+    設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
+    | primName (b : PrimName) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
     | opName (o : OpName) (tys : List Ty)
     /-- 辞書は操作名を解決した位置で選ぶ。params と names は公開の値引数だけ。 -/
     | opDicts (o : OpName) (tys : List Ty) (dicts : List DictEv)

@@ -1,0 +1,6 @@
+effect Ask
+ function ask() -> Integer
+end effect
+function main() -> Unit uses Ask
+ bind _ <- ask()
+end function

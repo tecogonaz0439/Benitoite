@@ -27,10 +27,11 @@ theorem desugar_typed {p : Program} {B : Builtins} {opPrim : OpPrim}
 /-- 性質 1 と Release.effect_soundness の組み合わせ。
 HasMain Eff.empty は main の形と純粋性を表層の宣言で検査する。
 開始状態は 01-12「エフェクトの名前と開始状態」の main[;]() である。
-IO と解放の事象を伴う遷移と、処理されない操作の呼び出しがない。 -/
+IO と解放の事象を伴う遷移と、処理されない操作の呼び出しがない。
+組み込みの関数の仮定は旧の条件 CoreAssumptions だけを求め、対象一致の条件を求めない。 -/
 theorem surface_effect_soundness {p : Program} {B : Builtins} {opPrim : OpPrim}
     (hwf : p.WellFormed) (hwt : p.WellTyped B opPrim)
-    (hb : B.Assumptions (desugarProgram opPrim p))
+    (hb : B.CoreAssumptions (desugarProgram opPrim p))
     (hmain : p.HasMain Eff.empty) :
     ∀ s, Steps (desugarProgram opPrim p) B
       (.run (.app (.fnRef "main" [] []) []) [] Store.empty) s →
@@ -38,5 +39,24 @@ theorem surface_effect_soundness {p : Program} {B : Builtins} {opPrim : OpPrim}
   obtain ⟨hwf', hwt', heffects⟩ := desugar_typed hwf hwt hb.sig_scoped
   obtain ⟨a, hm⟩ := main_typed (B := B) (op := opPrim) hwf hmain
   exact Release.effect_soundness hwf' hwt' heffects hb hm ⟨⟨trivial, trivial⟩, trivial⟩
+
+open Scope.Domain (Target) in
+/-- 表層の対象健全性。到達先の対象健全性（`Release.reachable_target_sound`）を性質 1（`desugar_typed`）の結論に当てる。
+表層のプログラムの main が許す上限 ε を宣言し（`HasMain ε`）、表層の整形式性と型付けを満たすなら、脱糖したプログラムの
+開始状態 `main[;]()` から到達した状態の IO の事象の観測の対象は、事象の操作の名前の ε の原子が許す（`Builtins.Allows`。
+表の `effKind` で種類を読む）。組み込みの関数の仮定は旧の条件 `CoreAssumptions` と対象一致の条件 `TargetAgreement` だけを
+求める。 -/
+theorem surface_target_sound {p : Program} {B : Builtins} {opPrim : OpPrim} {ε : Eff}
+    (hwf : p.WellFormed) (hwt : p.WellTyped B opPrim)
+    (hc : B.CoreAssumptions (desugarProgram opPrim p)) (ht : B.TargetAgreement (desugarProgram opPrim p))
+    (hmain : p.HasMain ε) {s s' : State} {b : PrimName} {ws : List Val} {o : Outcome} {obs : List Target}
+    (hsteps : Steps (desugarProgram opPrim p) B (.run (.app (.fnRef "main" [] []) []) [] Store.empty) s)
+    (hst : Step (desugarProgram opPrim p) B s (some (.io b ws o obs)) s') :
+    ∃ e l, B.sig b = some e ∧ e.opEff = some l ∧ ∀ t ∈ obs, B.Allows ε l t := by
+  obtain ⟨hwf', hwt', heffects⟩ := desugar_typed hwf hwt hc.sig_scoped
+  obtain ⟨d, a, -, hsub, hm⟩ := main_typed_eff (B := B) (op := opPrim) hwf hmain
+  obtain ⟨e, l, he, hl, hallow⟩ :=
+    Release.reachable_target_sound hwf' hwt' heffects hc ht hm ⟨⟨trivial, trivial⟩, trivial⟩ hsteps hst
+  exact ⟨e, l, he, hl, fun t htm => ((Eff.allows_substAt_nil 0 [] d.eff).mp (hallow t htm)).mono hsub⟩
 
 end Benitoite.Surface

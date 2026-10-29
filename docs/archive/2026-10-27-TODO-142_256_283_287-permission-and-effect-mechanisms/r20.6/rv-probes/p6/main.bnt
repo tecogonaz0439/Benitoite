@@ -1,0 +1,8 @@
+import Benitoite.Unofficial.Scope
+function holed(path: String) -> Result[Scope.PathIn["/data/**"], Scope.ScopeError]
+ bind f <- Scope.checkPathIn(pattern: "/data/**", path: _)
+ return f(path)
+end function
+function main() -> Unit
+ ()
+end function

@@ -1,0 +1,415 @@
+diff --git a/formal/Benitoite/Release/Assumptions.lean b/formal/Benitoite/Release/Assumptions.lean
+index 20744ab9..e22232c4 100644
+--- a/formal/Benitoite/Release/Assumptions.lean
++++ b/formal/Benitoite/Release/Assumptions.lean
+@@ -55,23 +55,23 @@ structure Builtins.Assumptions (P : Program) (B : Builtins) : Prop where
+   admits_local : ∀ b s C1 C0 ts, B.sig b = some s → (∀ t ∈ ts, Ty.WF 0 C1.length t) →
+     s.admits C1 ts → s.admits (C1 ++ C0) ts
+   /-- δ の型の保存（IO を行わない組み込みの関数）。 -/
+-  delta_typed : ∀ Ψ b s ts es ws, B.sig b = some s → s.kind = .pure →
++  delta_typed : ∀ Ψ b s rs ts es ws, B.sig b = some s → s.kind = .pure → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    ∃ o, B.delta b ts es ws = some o ∧ (∀ n, o ≠ .exit n) ∧ OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
++    HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
++    ∃ o, B.delta b ts es rs ws = some o ∧ (∀ n, o ≠ .exit n) ∧ OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+   /-- IO の応答の型。IO を行う関数の応答は値か `error(r)`、プロセスの終了の関数の応答は `exit(n)` か
+   `error(r)` である。 -/
+-  io_kind : ∀ b s ts es ws o, B.sig b = some s → B.ioResponse b ts es ws o →
++  io_kind : ∀ b s ts es rs ws o, B.sig b = some s → B.ioResponse b ts es rs ws o →
+     (s.kind = .io ∧ ∀ n, o ≠ .exit n) ∨ (s.kind = .exit ∧ ∀ v, o ≠ .val v)
+-  io_typed : ∀ Ψ b s ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
++  io_typed : ∀ Ψ b s rs ts es ws o, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    B.ioResponse b ts es ws o → OutcomeTy P B Ψ o (Ty.subst ts es s.ret)
++    HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
++    B.ioResponse b ts es rs ws o → OutcomeTy P B Ψ o (Ty.subst ts es (s.inst rs).ret)
+   /-- IO の応答の存在。 -/
+-  io_exists : ∀ Ψ b s ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
++  io_exists : ∀ Ψ b s rs ts es ws, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.RangeAdmissible b s rs →
+     ts.length = s.ntys → es.length = s.neffs → s.admits [] ts →
+-    HasTypeVs P B Ψ [] [] ws (s.params.map (Ty.subst ts es)) →
+-    ∃ o, B.ioResponse b ts es ws o
++    HasTypeVs P B Ψ [] [] ws ((s.inst rs).params.map (Ty.subst ts es)) →
++    ∃ o, B.ioResponse b ts es rs ws o
+   /-- IO を行う組み込みの関数は、組み込みのエフェクトの操作であり、型のエフェクトはそのエフェクトの
+   名前だけである。 -/
+   io_op : ∀ b s, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+diff --git a/formal/Benitoite/Release/RangeInst.lean b/formal/Benitoite/Release/RangeInst.lean
+index 6de028d5..fa955c78 100644
+--- a/formal/Benitoite/Release/RangeInst.lean
++++ b/formal/Benitoite/Release/RangeInst.lean
+@@ -65,19 +65,6 @@ end RangeInst
+ 
+ /-! ## 原子と効果の具体化 -/
+ 
+-/-- 原子の範囲の位置の具体化。行の原子は変えない。 -/
+-def Atom.instR (rs : List Scope.Domain.Range) : Atom → Atom
+-  | .name l ix => .name l (ix.inst rs)
+-  | .rho i => .rho i
+-
+-/-- 所属関数の具体化（原子ごとの具体化の像）。閉じた範囲の名前の原子は、同じ原子か、その範囲を与える範囲の変数の
+-原子があれば所属する。範囲の変数の原子は、具体化の列が短いときだけ残る。 -/
+-def Eff.instAtoms (rs : List Scope.Domain.Range) (a : Atom → Bool) : Atom → Bool
+-  | .name l (.fixed r) => a (.name l (.fixed r)) ||
+-      (List.range rs.length).any (fun i => a (.name l (.rvar i)) && decide (rs[i]? = some r))
+-  | .name l (.rvar i) => a (.name l (.rvar i)) && rs[i]?.isNone
+-  | .rho i => a (.rho i)
+-
+ @[simp] theorem Atom.instR_rho (rs : List Scope.Domain.Range) (i : Nat) : (Atom.rho i).instR rs = .rho i := rfl
+ 
+ @[simp] theorem Atom.instR_nil (x : Atom) : x.instR [] = x := by
+@@ -163,61 +150,12 @@ theorem Eff.instAtoms_of_wf_zero {a : Atom → Bool} (h : ∀ x, a x = true →
+ 
+ /-! ## 型と効果の具体化 -/
+ 
+-mutual
+-  /-- 正規化前の型の全ての範囲の位置（不透明型と効果の名前の原子）の具体化。 -/
+-  def Ty.rawInstR (rs : List Scope.Domain.Range) : Ty → Ty
+-    | .base b => .base b
+-    | .opaque o ix => .opaque o (ix.inst rs)
+-    | .data d as => .data d (Ty.rawInstRTys rs as)
+-    | .list a => .list (a.rawInstR rs)
+-    | .fn ns ps r e => .fn ns (Ty.rawInstRTys rs ps) (r.rawInstR rs) (Eff.rawInstR rs e)
+-    | .tvar i => .tvar i
+-    | .reference a => .reference (a.rawInstR rs)
+-    | .lazy a => .lazy (a.rawInstR rs)
+-    | .cont b t e => .cont (b.rawInstR rs) (t.rawInstR rs) (Eff.rawInstR rs e)
+-    | .map a b => .map (a.rawInstR rs) (b.rawInstR rs)
+-    | .set a => .set (a.rawInstR rs)
+-    | .bytes => .bytes
+-    | .dict cl a => .dict cl (a.rawInstR rs)
+-    | .tapp i as => .tapp i (Ty.rawInstRTys rs as)
+-    | .ctor c => .ctor c
+-  termination_by structural t => t
+-
+-  def Ty.rawInstRTys (rs : List Scope.Domain.Range) : List Ty → List Ty
+-    | [] => []
+-    | a :: as => a.rawInstR rs :: Ty.rawInstRTys rs as
+-  termination_by structural as => as
+-
+-  /-- 所属関数と Fail の型の具体化。 -/
+-  def Eff.rawInstR (rs : List Scope.Domain.Range) : Eff → Eff
+-    | .mk a fs => .mk (Eff.instAtoms rs a) (Ty.rawInstRTys rs fs)
+-  termination_by structural e => e
+-end
+-
+ @[simp] theorem Ty.rawInstRTys_eq_map (rs : List Scope.Domain.Range) (as : List Ty) :
+     Ty.rawInstRTys rs as = as.map (Ty.rawInstR rs) := by
+   induction as with
+   | nil => rfl
+   | cons a as ih => simp only [Ty.rawInstRTys, List.map_cons, ih]
+ 
+-/-- 公開する型の具体化は、生の具体化の後に正規化する（効果の Fail の列の並びと重複が変わりうるため）。 -/
+-noncomputable def Ty.instR (rs : List Scope.Domain.Range) (t : Ty) : Ty := (t.rawInstR rs).norm
+-
+-/-- 計算の最上位の効果の具体化。内側の型は正規化し、最上位の Fail の列の並びは保つ（計算の最上位の効果には
+-正規形を求めない。`Eff.WF`）。 -/
+-noncomputable def Eff.instR (rs : List Scope.Domain.Range) : Eff → Eff
+-  | .mk a fs => .mk (Eff.instAtoms rs a) (fs.map (Ty.instR rs))
+-
+-/-- 引数の型の具体化。最上位の対象の位置（不透明型）の範囲の位置だけを具体化する。 -/
+-def Ty.instTarget (rs : List Scope.Domain.Range) : Ty → Ty
+-  | .opaque o ix => .opaque o (ix.inst rs)
+-  | t => t
+-
+-/-- 署名の具体化 `s.inst rs`。引数は最上位の対象の位置だけを、結果と効果は全ての位置を具体化する。名前・型
+-パラメータ・制約・種類・範囲の変数の種類は変えない。 -/
+-noncomputable def PrimSig.inst (rs : List Scope.Domain.Range) (s : PrimSig) : PrimSig :=
+-  { s with params := s.params.map (Ty.instTarget rs), ret := s.ret.instR rs, eff := Eff.instR rs s.eff }
+-
+ @[simp] theorem PrimSig.inst_names (rs : List Scope.Domain.Range) (s : PrimSig) : (s.inst rs).names = s.names := rfl
+ @[simp] theorem PrimSig.inst_params (rs : List Scope.Domain.Range) (s : PrimSig) :
+     (s.inst rs).params = s.params.map (Ty.instTarget rs) := rfl
+@@ -822,14 +760,6 @@ theorem PrimSig.inst_wf_zero {s : PrimSig} (hs : s.ScopedRanges) (ht : s.TargetR
+ 
+ /-! ## 範囲の具体化の許容 -/
+ 
+-/-- 範囲の具体化の許容（問 4、RV-L00 軽7、RV-L10 中1）。採用定義 `Scope.Signature.RangeAdmissible`（範囲の変数
+-ごとの種類 `rkinds` に置けること。個数の一致を含む。整形式性と項目の制約）に、範囲の正規形を加える。項目の制約は
+-表のデータ `B.admitsR b` であり、全て Top の列はこの制約によらず許す。プログラムの型の注釈の範囲の正規形と整形式性は
+-解析器の側で扱い、ここでは条件にしない（問 4、設計書 07-04「形式化で仮定するもの」）。 -/
+-def Builtins.RangeAdmissible (B : Builtins) (b : PrimName) (s : PrimSig) (rs : List Scope.Domain.Range) : Prop :=
+-  Scope.Signature.RangeAdmissible s.rkinds (fun rs => (∀ r ∈ rs, r = .top) ∨ B.admitsR b rs) rs ∧
+-    ∀ r ∈ rs, r.Canonical
+-
+ namespace Builtins.RangeAdmissible
+ 
+ variable {B : Builtins} {b : PrimName} {s : PrimSig} {rs : List Scope.Domain.Range}
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index 4cce10f6..725ccd0e 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -174,55 +174,55 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State 
+       Step P B (.error rs (.guardF v arms next body :: k) σ) none (.error rs k σ)
+   | E_ExitPopGuard {n rs v arms next body k σ} :
+       Step P B (.exit n rs (.guardF v arms next body :: k) σ) none (.exit n rs k σ)
+-  | E_Prim {b ts es ws k σ s v} :
+-      B.sig b = some s → s.kind = .pure → B.delta b ts es ws = some (.val v) →
+-      Step P B (.run (.app (.prim b ts es) ws) k σ) none (.run (.ret v) k σ)
+-  | E_Err {b ts es ws k σ s r} :
+-      B.sig b = some s → s.kind = .pure → B.delta b ts es ws = some (.err r) →
+-      Step P B (.run (.app (.prim b ts es) ws) k σ) none (.error [r] k σ)
++  | E_Prim {b ts es rs ws k σ s v} :
++      B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.val v) →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) none (.run (.ret v) k σ)
++  | E_Err {b ts es rs ws k σ s r} :
++      B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.err r) →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) none (.error [r] k σ)
+   /-- E-IO。組み込みの操作 b は、継続に b の節を持つ `handle` の枠がないときにだけ、E-IO を使う。 -/
+-  | E_IO {b ts es ws k σ s v} :
++  | E_IO {b ts es rs ws k σ s v} :
+       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.val v) →
+-      Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.val v))) (.run (.ret v) k σ)
++      B.ioResponse b ts es rs ws (.val v) →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.val v))) (.run (.ret v) k σ)
+   /-- E-IOErr。プロセスの終了の関数の、引数が定義域の外のときの応答も `error(r)` である（01-12「プロセスの終了」）。 -/
+-  | E_IOErr {b ts es ws k σ s r} :
++  | E_IOErr {b ts es rs ws k σ s r} :
+       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.err r) →
+-      Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.err r))) (.error [r] k σ)
++      B.ioResponse b ts es rs ws (.err r) →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.err r))) (.error [r] k σ)
+   /-- E-Exit。終了状態を指定したプロセスの終了の関数にだけ使う。 -/
+-  | E_Exit {b ts es ws k σ s n} :
++  | E_Exit {b ts es rs ws k σ s n} :
+       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
+-      B.ioResponse b ts es ws (.exit n) →
+-      Step P B (.run (.app (.prim b ts es) ws) k σ) (some (.io b ws (.exit n))) (.exit n [] k σ)
++      B.ioResponse b ts es rs ws (.exit n) →
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) (some (.io b ws (.exit n))) (.exit n [] k σ)
+   -- ストア
+-  | E_RefNew {b ts es v k σ s l} :
++  | E_RefNew {b ts es rs v k σ s l} :
+       B.sig b = some s → s.kind = .refNew → σ l = none →
+-      Step P B (.run (.app (.prim b ts es) [v]) k σ) none (.run (.ret (.loc l)) k (σ.set l (.val v)))
+-  | E_RefGet {b ts es l k σ s v} :
++      Step P B (.run (.app (.prim b ts es rs) [v]) k σ) none (.run (.ret (.loc l)) k (σ.set l (.val v)))
++  | E_RefGet {b ts es rs l k σ s v} :
+       B.sig b = some s → s.kind = .refGet → σ l = some (.val v) →
+-      Step P B (.run (.app (.prim b ts es) [.loc l]) k σ) none (.run (.ret v) k σ)
+-  | E_RefSet {b ts es l v k σ s} :
++      Step P B (.run (.app (.prim b ts es rs) [.loc l]) k σ) none (.run (.ret v) k σ)
++  | E_RefSet {b ts es rs l v k σ s} :
+       B.sig b = some s → s.kind = .refSet →
+-      Step P B (.run (.app (.prim b ts es) [.loc l, v]) k σ) none
++      Step P B (.run (.app (.prim b ts es rs) [.loc l, v]) k σ) none
+         (.run (.ret (.const .unit)) k (σ.set l (.val v)))
+   /-- `Reference.update[A](ℓ, V)` は `let x ⇐ Reference.get[A](ℓ) in let y ⇐ V(x) in Reference.set[A](ℓ, y)`
+   と同じく遷移する。 -/
+-  | E_RefUpdate {b ts es l f k σ s} :
++  | E_RefUpdate {b ts es rs l f k σ s} :
+       B.sig b = some s → s.kind = .refUpdate →
+-      Step P B (.run (.app (.prim b ts es) [.loc l, f]) k σ) none
+-        (.run (.letIn (.app (.prim B.refGet ts []) [.loc l])
++      Step P B (.run (.app (.prim b ts es rs) [.loc l, f]) k σ) none
++        (.run (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
+                 (.letIn (.app (f.rename (· + 1)) [.var 0])
+-                  (.app (.prim B.refSet ts []) [.loc l, .var 0]))) k σ)
++                  (.app (.prim B.refSet ts [] []) [.loc l, .var 0]))) k σ)
+   | E_Lazy {m k σ l} :
+       σ l = none →
+       Step P B (.run (.lazyC m) k σ) none (.run (.ret (.loc l)) k (σ.set l (.thunk m)))
+-  | E_ForceDone {b ts es l k σ s v} :
++  | E_ForceDone {b ts es rs l k σ s v} :
+       B.sig b = some s → s.kind = .force → σ l = some (.done v) →
+-      Step P B (.run (.app (.prim b ts es) [.loc l]) k σ) none (.run (.ret v) k σ)
+-  | E_Force {b ts es l k σ s m} :
++      Step P B (.run (.app (.prim b ts es rs) [.loc l]) k σ) none (.run (.ret v) k σ)
++  | E_Force {b ts es rs l k σ s m} :
+       B.sig b = some s → s.kind = .force → σ l = some (.thunk m) →
+-      Step P B (.run (.app (.prim b ts es) [.loc l]) k σ) none (.run m (.update l :: k) σ)
++      Step P B (.run (.app (.prim b ts es rs) [.loc l]) k σ) none (.run m (.update l :: k) σ)
+   | E_Update {v l k σ} :
+       Step P B (.run (.ret v) (.update l :: k) σ) none (.run (.ret v) k (σ.set l (.done v)))
+   -- 関数の境界と `escape`
+@@ -284,10 +284,10 @@ inductive Step (P : Program) (B : Builtins) : State → Option Event → State 
+         (.run ((body.substTy [T] []).instantiate [v, .loc κ])
+           (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF [.fail E body]]))))
+   /-- E-Op（組み込みの操作）。継続に b の節を持つ `handle` の枠があるときは、E-IO の代わりに使う。 -/
+-  | E_OpPrim {b ts es ws k σ s k1 h k2 c κ} :
++  | E_OpPrim {b ts es rs ws k σ s k1 h k2 c κ} :
+       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+       SplitAt (.prim b) k k1 h k2 → findClause h (.prim b) = some c → σ κ = none →
+-      Step P B (.run (.app (.prim b ts es) ws) k σ) none
++      Step P B (.run (.app (.prim b ts es rs) ws) k σ) none
+         (.run ((c.body.substTy ts []).instantiate (ws ++ [.loc κ])) (.drop κ :: k2)
+           (σ.set κ (.cont (k1 ++ [.handleF h]))))
+   | E_Resume {κ v k σ k'} :
+@@ -336,7 +336,7 @@ def State.Final : State → Prop
+ /-! ## 遷移を計算する関数 -/
+ 
+ /-- IO の応答を選ぶ関数（段階 A と同じく、同じ入力には同じ応答を返す）。 -/
+-abbrev Oracle := PrimName → List Ty → List Eff → List Val → Outcome
++abbrev Oracle := PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Outcome
+ 
+ /-- 継続を、op を処理する最も内側の `handle` の枠で分ける。 -/
+ def splitHandler (o : OpRef) : Cont → Option (Cont × List Clause × Cont)
+@@ -412,13 +412,13 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
+           some (none, .run ((body.substTy [t] []).instantiate [v, .loc κ])
+             (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF [.fail e body]]))))
+       | _ => none
+-  | .run (.app (.prim b ts es) ws) k σ =>
++  | .run (.app (.prim b ts es rs) ws) k σ =>
+       match B.sig b with
+       | none => none
+       | some s =>
+           match s.kind, ws with
+           | .pure, _ =>
+-              match B.delta b ts es ws with
++              match B.delta b ts es rs ws with
+               | some (.val v) => some (none, .run (.ret v) k σ)
+               | some (.err r) => some (none, .error [r] k σ)
+               | _ => none
+@@ -432,7 +432,7 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
+                         (.drop κ :: k2) (σ.set κ (.cont (k1 ++ [.handleF h]))))
+                   | none => none
+               | none =>
+-                  match s.kind, oracle b ts es ws with
++                  match s.kind, oracle b ts es rs ws with
+                   | .io, .val v => some (some (.io b ws (.val v)), .run (.ret v) k σ)
+                   | _, .err r => some (some (.io b ws (.err r)), .error [r] k σ)
+                   | .exit, .exit n => some (some (.io b ws (.exit n)), .exit n [] k σ)
+@@ -446,9 +446,9 @@ def step (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option Er
+               | _ => none
+           | .refSet, [.loc l, v] => some (none, .run (.ret (.const .unit)) k (σ.set l (.val v)))
+           | .refUpdate, [.loc l, f] =>
+-              some (none, .run (.letIn (.app (.prim B.refGet ts []) [.loc l])
++              some (none, .run (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
+                 (.letIn (.app (f.rename (· + 1)) [.var 0])
+-                  (.app (.prim B.refSet ts []) [.loc l, .var 0]))) k σ)
++                  (.app (.prim B.refSet ts [] []) [.loc l, .var 0]))) k σ)
+           | .force, [.loc l] =>
+               match σ l with
+               | some (.done v) => some (none, .run (.ret v) k σ)
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index 69caa2c9..a437dab3 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -235,7 +235,8 @@ mutual
+     | var (i : Nat)
+     | const (c : Const)
+     | fnRef (f : FunName) (tys : List Ty) (effs : List Eff)
+-    | prim (b : PrimName) (tys : List Ty) (effs : List Eff)
++    /-- 組み込みの関数 `b[T̄; Ē; R̄]`。`rs` は具体化した範囲の列（問 5）。 -/
++    | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List Scope.Domain.Range)
+     | lam (names : List String) (params : List Ty) (body : Comp)
+     | con (c : ConName) (tys : List Ty) (args : List Val)
+     | list (elems : List Val)
+diff --git a/formal/Benitoite/Release/Theorems.lean b/formal/Benitoite/Release/Theorems.lean
+index 8130c01f..fa164a10 100644
+--- a/formal/Benitoite/Release/Theorems.lean
++++ b/formal/Benitoite/Release/Theorems.lean
+@@ -21,7 +21,7 @@ variable {P : Program} {B : Builtins}
+ /-- 型が付いた状態について、`step` が返す遷移は `Step` の遷移である。`oracle` と `rel` は、起こりうる応答が
+ あるときは、その一つを選ぶ。`fresh` は、有限なストアに中身のない場所を選ぶ。 -/
+ theorem step_sound (hb : B.Assumptions P) (oracle : Oracle) (rel : Val → Option ErrKind) (fresh : Store → Nat)
+-    (horacle : ∀ b ts es ws o, B.ioResponse b ts es ws o → B.ioResponse b ts es ws (oracle b ts es ws))
++    (horacle : ∀ b ts es rs ws o, B.ioResponse b ts es rs ws o → B.ioResponse b ts es rs ws (oracle b ts es rs ws))
+     (hrel : ∀ v r, B.releaseResponse v r → B.releaseResponse v (rel v))
+     (hfresh : ∀ σ : Store, (∃ n, ∀ l, n ≤ l → σ l = none) → σ (fresh σ) = none)
+     {s : State} {l : Option Event} {s' : State} :
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 454d5e47..895f7a00 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -1,5 +1,6 @@
+ import Benitoite.Release.Subst
+ import Benitoite.Release.NoFail
++import Benitoite.Release.RangeInstDef
+ 
+ /-!
+ # 型付け規則（段階 B）
+@@ -69,9 +70,9 @@ def PrimSig.nranges (s : PrimSig) : Nat := s.rkinds.length
+ structure Builtins where
+   sig : PrimName → Option PrimSig
+   /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（01-12「実行の規則」）。 -/
+-  delta : PrimName → List Ty → List Eff → List Val → Option Outcome
++  delta : PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Option Outcome
+   /-- IO を行う組み込みの関数の応答として起こりうるもの。 -/
+-  ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → Prop
++  ioResponse : PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Outcome → Prop
+   /-- 事象 `release(V)` の応答として起こりうるもの。`none` が `ok`、`some r` が `error(r)`。 -/
+   releaseResponse : Val → Option ErrKind → Prop
+   /-- リソースの型か。リソースの型の解放のエフェクト `rel(O_r)` は `{State}` である。 -/
+@@ -95,6 +96,26 @@ structure Builtins where
+   許さない（Top の列だけを許す）。 -/
+   admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
+ 
++/-! ## 署名の具体化と範囲の具体化の許容 -/
++
++/-- 署名の具体化 `s.inst rs`。引数は最上位の対象の位置だけを、結果と効果は全ての位置を具体化する。名前・型
++パラメータ・制約・種類・範囲の変数の種類は変えない。 -/
++noncomputable def PrimSig.inst (rs : List Scope.Domain.Range) (s : PrimSig) : PrimSig :=
++  { s with params := s.params.map (Ty.instTarget rs), ret := s.ret.instR rs, eff := Eff.instR rs s.eff }
++
++
++/-- 範囲の具体化の許容（問 4、RV-L00 軽7、RV-L10 中1）。採用定義 `Scope.Signature.RangeAdmissible`（範囲の変数
++ごとの種類 `rkinds` に置けること。個数の一致を含む。整形式性と項目の制約）に、範囲の正規形を加える。項目の制約は
++表のデータ `B.admitsR b` であり、全て Top の列はこの制約によらず許す。プログラムの型の注釈の範囲の正規形と整形式性は
++解析器の側で扱い、ここでは条件にしない（問 4、設計書 07-04「形式化で仮定するもの」）。 -/
++def Builtins.RangeAdmissible (B : Builtins) (b : PrimName) (s : PrimSig) (rs : List Scope.Domain.Range) : Prop :=
++  Scope.Signature.RangeAdmissible s.rkinds (fun rs => (∀ r ∈ rs, r = .top) ∨ B.admitsR b rs) rs ∧
++    ∀ r ∈ rs, r.Canonical
++
++
++/-- 署名の範囲の変数の個数の長さの Top の列。脱糖と節の型付けが使う具体化である（節の添字は Top）。 -/
++abbrev PrimSig.topRanges (s : PrimSig) : List Scope.Domain.Range := List.replicate s.nranges .top
++
+ def fnTy (names : List String) (params : List Ty) (ret : Ty) (eff : Eff) (ts : List Ty) (es : List Eff) : Ty :=
+   Ty.subst ts es (.fn names params ret eff)
+ 
+@@ -120,7 +141,9 @@ def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
+       match B.sig b with
+       | some s =>
+           match s.opEff with
+-          | some l => some ⟨s.tparams, s.names, s.params, s.ret, l⟩
++          | some l =>
++              let s' := s.inst s.topRanges
++              some ⟨s'.tparams, s'.names, s'.params, s'.ret, l⟩
+           | none => none
+       | none => none
+ 
+@@ -425,9 +448,11 @@ mutual
+         P.defs f = some d → NamesWF d.names d.params →
+         Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
+         HasTypeVQ P B Ψ Q C Γ (.fnRef f ts es) (fnTy d.names d.params d.ret d.eff ts es)
+-    | V_Prim {Γ b s ts es} :
+-        B.sig b = some s → NamesWF s.names s.params → PrimitiveAdmissible C s Q ts es →
+-        HasTypeVQ P B Ψ Q C Γ (.prim b ts es) (fnTy s.names s.params s.ret s.eff ts es)
++    | V_Prim {Γ b s rs ts es} :
++        B.sig b = some s → B.RangeAdmissible b s rs → NamesWF (s.inst rs).names (s.inst rs).params →
++        PrimitiveAdmissible C (s.inst rs) Q ts es →
++        HasTypeVQ P B Ψ Q C Γ (.prim b ts es rs)
++          (fnTy (s.inst rs).names (s.inst rs).params (s.inst rs).ret (s.inst rs).eff ts es)
+     | V_Op {Γ o od ts} :
+         P.ops o = some od → NamesWF od.names od.params → SatAll B C ts od.tparams →
+         HasTypeVQ P B Ψ Q C Γ (.op o ts) (fnTy od.names od.params od.ret (Eff.single od.eff) ts [])
+@@ -611,7 +636,7 @@ mutual
+     | .V_Var hi hc => exact .V_Var hi hc
+     | .V_Const => exact .V_Const
+     | .V_Fun hd hn ha => exact .V_Fun hd hn ha
+-    | .V_Prim hs hn ha => exact .V_Prim hs hn ha
++    | .V_Prim hs hr hn ha => exact .V_Prim hs hr hn ha
+     | .V_Op ho hn ha => exact .V_Op ho hn ha
+     | .V_Raise ht he => exact .V_Raise ht he
+     | .V_Lam hn hw hb => exact .V_Lam hn hw (by simpa only [hideBuilders_idem] using hb)
+diff --git a/formal/Benitoite/Release/WellFormed.lean b/formal/Benitoite/Release/WellFormed.lean
+index 1247dc51..113f8a91 100644
+--- a/formal/Benitoite/Release/WellFormed.lean
++++ b/formal/Benitoite/Release/WellFormed.lean
+@@ -103,8 +103,9 @@ def OpDecl.Scoped (od : OpDecl) : Prop :=
+ 範囲の変数のない項目で両者が一致する（`PrimSig.scoped_iff_scopedRanges`）。 -/
+ def PrimSig.Scoped (s : PrimSig) : Prop :=
+   NamesWF s.names s.params ∧
+-    Ty.VarsInList 0 s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn 0 s.ntys (· < s.neffs) s.ret ∧
+-    Eff.VarsIn 0 s.ntys (· < s.neffs) s.eff
++    Ty.VarsInList s.nranges s.ntys (· < s.neffs) s.params ∧ Ty.VarsIn s.nranges s.ntys (· < s.neffs) s.ret ∧
++    Eff.VarsIn s.nranges s.ntys (· < s.neffs) s.eff ∧
++    ∀ p ∈ s.params, (∃ o ix, p = .opaque o ix) ∨ Ty.VarsIn 0 s.ntys (· < s.neffs) p
+ 
+ /-- 組み込みの関数の型は、宣言した型パラメータとエフェクト変数と範囲の変数だけを使う。範囲の位置は署名の範囲の
+ 変数の個数 `s.nranges` の文脈で読み、範囲の変数の番号の上限を確かめる（問 18 の行 4）。範囲の変数を置く位置は

@@ -1,0 +1,7765 @@
+{
+ "final_vs_b0": {
+  "summary": {
+   "all": {
+    "files": 58,
+    "changed_existing": 210,
+    "removed": 2,
+    "statement_changed": 106,
+    "statement_changed_theorems": 40,
+    "statement_top_builder_only": 70,
+    "statement_top_builder_only_theorems": 28,
+    "body_only": 102,
+    "body_only_top_builder_only": 65,
+    "new_declarations": 50
+   },
+   "production": {
+    "files": 55,
+    "changed_existing": 190,
+    "removed": 2,
+    "statement_changed": 96,
+    "statement_changed_theorems": 34,
+    "statement_top_builder_only": 70,
+    "statement_top_builder_only_theorems": 28,
+    "body_only": 92,
+    "body_only_top_builder_only": 59,
+    "new_declarations": 45
+   },
+   "comparison_models": {
+    "files": 3,
+    "changed_existing": 20,
+    "removed": 0,
+    "statement_changed": 10,
+    "statement_changed_theorems": 6,
+    "statement_top_builder_only": 0,
+    "statement_top_builder_only_theorems": 0,
+    "body_only": 10,
+    "body_only_top_builder_only": 6,
+    "new_declarations": 5
+   }
+  },
+  "changed": [
+   {
+    "file": "Benitoite/Exchange/Builtins.lean",
+    "kind": "def",
+    "name": "BuiltinInput.effectOps",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Exchange/Builtins.lean",
+    "kind": "def",
+    "name": "BuiltinInput.isResource",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Atom.toRelease",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Ty.toRelease",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "fromTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Expr.toSurface",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Interval/SyntacticReachExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "kind": "def",
+    "name": "PrimSig.StoreShape",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "kind": "structure",
+    "name": "Builtins.Assumptions",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "EffName",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "def",
+    "name": "stateEff",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "def",
+    "name": "sampleDecls",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Coverage.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "def",
+    "name": "sig",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "def",
+    "name": "builtins",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Finite.lean",
+    "kind": "def",
+    "name": "tyCompareWith",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/BuilderTyping.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_bytes",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Canonical.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_boolean",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Canonical.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_ref",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Canonical.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_lazy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "handled_state",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.state_end",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_release",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_drop",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "def",
+    "name": "FramesOk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.prepend_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.drop_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+    "kind": "theorem",
+    "name": "ContTy.end_of_noHandler",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+    "kind": "theorem",
+    "name": "no_event",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/FailureBase.lean",
+    "kind": "theorem",
+    "name": "captureEff_state",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/FailureCont.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.inv_raise",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.inv_prim",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.inv_op",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeCQ.inv_use",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/OuterC.lean",
+    "kind": "theorem",
+    "name": "PrimitiveAdmissible.outer",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresBase.lean",
+    "kind": "theorem",
+    "name": "store_prim_inv",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresBase.lean",
+    "kind": "theorem",
+    "name": "refUpdate_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresMain.lean",
+    "kind": "theorem",
+    "name": "preservationE",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Preservation.lean",
+    "kind": "theorem",
+    "name": "inv_prim_app",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Preservation.lean",
+    "kind": "theorem",
+    "name": "inv_op_app",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_dict",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "no_unhandled_user",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "progress_io",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "progress_prim",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Regularity.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.wf",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/StepSound.lean",
+    "kind": "theorem",
+    "name": "step_soundE",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/TySubstMain.lean",
+    "kind": "theorem",
+    "name": "PrimitiveAdmissible.substTy",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/TySubstMain.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.substTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "def",
+    "name": "refGetSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "def",
+    "name": "refSetSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "theorem",
+    "name": "single_no_rho",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "theorem",
+    "name": "assumptions",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charsCode_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "code",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "code_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "TyCon.toTree_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "Ty.toTree",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "Ty.toTree_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "tyCompare",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "tyCompare_eq_treeCompare",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "inductive",
+    "name": "ContTy",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "def",
+    "name": "BuiltinOnly",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Syntax.lean",
+    "kind": "structure",
+    "name": "OpDecl",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Syntax.lean",
+    "kind": "structure",
+    "name": "Program",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "abbrev",
+    "name": "OpaqueName",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "structure",
+    "name": "PrimSig",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "PrimSig.ntys",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "structure",
+    "name": "Builtins",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "structure",
+    "name": "OpSig",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "effOps",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "handled",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeVQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeCQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/WellFormed.lean",
+    "kind": "def",
+    "name": "PrimSig.Scoped",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "embI",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "embII",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "wide",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "top",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "theorem",
+    "name": "wide_covers_top",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "theorem",
+    "name": "semCovers_not_eq",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "def",
+    "name": "code",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "theorem",
+    "name": "code_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "def",
+    "name": "pathInName",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "def",
+    "name": "readTextIn",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "Atom.ofRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "Atom.toRelease?",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Atom.toRelease_ofRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Atom.ofRelease_injective",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Atom.eq_ofRelease_of_toRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "liftAtoms",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "liftAtoms_ofRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "liftAtoms_scoped",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "Ty.ofReleaseOpaque",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Ty.ofReleaseOpaque_injective",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "signature",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "entries",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "stateInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "captureBoundaries",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "taskDecl",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "handleInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkDieExit",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkExprR",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckComputeControl.lean",
+    "kind": "theorem",
+    "name": "checkDieExit_contains",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckCounterexamples.lean",
+    "kind": "def",
+    "name": "input",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "errorTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "exitSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "resultEnv",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieGot",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "clauseEffectEnv",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "renderForms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "builtins",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "partialPair",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "calls",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "fancyInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "fancyBody",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieMaterials",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieRaw",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+    "kind": "theorem",
+    "name": "opName_case",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundControl.lean",
+    "kind": "theorem",
+    "name": "with_case",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundDie.lean",
+    "kind": "theorem",
+    "name": "checkDieExit_sound",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "PrimMaterial",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "BuiltinMaterial",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "def",
+    "name": "BuiltinMaterial.effectOps",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "def",
+    "name": "BuiltinMaterial.isResource",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "Materials",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "Names",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "ioEff",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "richTypes",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "q",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "theorem",
+    "name": "mainExpr_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "effectfulTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "dieExitSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "errorTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "theorem",
+    "name": "resultDie_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "def",
+    "name": "input",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "def",
+    "name": "ioBody",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "aTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "bTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "rawOther",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "row",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "substituted",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "substAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/CallHead.lean",
+    "kind": "theorem",
+    "name": "HasTypeQ.inv_opDicts",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Dict.lean",
+    "kind": "theorem",
+    "name": "op_dicts_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Dict.lean",
+    "kind": "theorem",
+    "name": "op_value_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Extensions.lean",
+    "kind": "theorem",
+    "name": "stringAdd_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "DieExitOk.app_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "dieFailure_typed",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "tryResultDie_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "tryOptionDie_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "kind": "theorem",
+    "name": "HasTypeQ.desugar",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "operation",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "emit_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "enabled_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "forwarded_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "console_remains_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "incomplete_handler_retains_log",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "programMaterials",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Syntax.lean",
+    "kind": "structure",
+    "name": "Declarations",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Syntax.lean",
+    "kind": "structure",
+    "name": "Program",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "def",
+    "name": "DieExitOk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "kind": "def",
+    "name": "q",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "kind": "def",
+    "name": "lazyWalk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   }
+  ],
+  "new": [
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "EffBase"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "inductive",
+    "name": "NameScope"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "structure",
+    "name": "EffName"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "EffName.top"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "digitBase"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "sepName"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "sepSeg"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "digitsCode"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "charDigits"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "scopeDigits"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "nameDigits"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "digitsCode_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charDigit_bound"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charDigits_bound"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charDigits_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "split_sep"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "sepSeg_not_mem"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "sepName_not_mem"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "segs_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "scopeDigits_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "nameDigits_bound"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "nameDigits_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "NameScope.toTree"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "NameScope.toTree_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "NameScope.rank"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "scopeCompare"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "scopeCompare_eq_treeCompare"
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "structure",
+    "name": "OpaqueName"
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "abbrev",
+    "name": "OpaqueName.top"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "Ty.withIndex"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "PrimSig.inst"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_top"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_eq_of_opEff_none"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_tparams"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_ntys"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_neffs"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_admits"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_kind"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_names"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_ret"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_opEff"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_eff_single"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.V_PrimTop"
+   },
+   {
+    "file": "Benitoite/Release/WellFormed.lean",
+    "kind": "theorem",
+    "name": "Ty.withIndex_varsIn"
+   },
+   {
+    "file": "Benitoite/Release/WellFormed.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_scoped"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "scopeII"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "scopeRel"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "atomII"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "atomRel?"
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "inductive",
+    "name": "OldAtom"
+   }
+  ]
+ },
+ "t15_vs_b0": {
+  "summary": {
+   "all": {
+    "files": 36,
+    "changed_existing": 70,
+    "removed": 2,
+    "statement_changed": 32,
+    "statement_changed_theorems": 9,
+    "statement_top_builder_only": 0,
+    "statement_top_builder_only_theorems": 0,
+    "body_only": 36,
+    "body_only_top_builder_only": 0,
+    "new_declarations": 28
+   },
+   "production": {
+    "files": 36,
+    "changed_existing": 70,
+    "removed": 2,
+    "statement_changed": 32,
+    "statement_changed_theorems": 9,
+    "statement_top_builder_only": 0,
+    "statement_top_builder_only_theorems": 0,
+    "body_only": 36,
+    "body_only_top_builder_only": 0,
+    "new_declarations": 28
+   },
+   "comparison_models": {
+    "files": 0,
+    "changed_existing": 0,
+    "removed": 0,
+    "statement_changed": 0,
+    "statement_changed_theorems": 0,
+    "statement_top_builder_only": 0,
+    "statement_top_builder_only_theorems": 0,
+    "body_only": 0,
+    "body_only_top_builder_only": 0,
+    "new_declarations": 0
+   }
+  },
+  "changed": [
+   {
+    "file": "Benitoite/Exchange/Builtins.lean",
+    "kind": "def",
+    "name": "BuiltinInput.effectOps",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Exchange/Builtins.lean",
+    "kind": "def",
+    "name": "BuiltinInput.isResource",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "fromTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "kind": "structure",
+    "name": "Builtins.Assumptions",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "EffName",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "def",
+    "name": "stateEff",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "def",
+    "name": "sig",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Finite.lean",
+    "kind": "def",
+    "name": "tyCompareWith",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/BuilderTyping.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_bytes",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Canonical.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_boolean",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Canonical.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_ref",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Canonical.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_lazy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_release",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "def",
+    "name": "FramesOk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.prepend_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+    "kind": "theorem",
+    "name": "ContTy.end_of_noHandler",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+    "kind": "theorem",
+    "name": "no_event",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/FailureCont.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.inv_raise",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.inv_prim",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeCQ.inv_use",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/OuterC.lean",
+    "kind": "theorem",
+    "name": "PrimitiveAdmissible.outer",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresBase.lean",
+    "kind": "theorem",
+    "name": "store_prim_inv",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresBase.lean",
+    "kind": "theorem",
+    "name": "refUpdate_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresMain.lean",
+    "kind": "theorem",
+    "name": "preservationE",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Preservation.lean",
+    "kind": "theorem",
+    "name": "inv_prim_app",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.canonical_dict",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "progress_io",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "progress_prim",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Regularity.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.wf",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/StepSound.lean",
+    "kind": "theorem",
+    "name": "step_soundE",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/TySubstMain.lean",
+    "kind": "theorem",
+    "name": "PrimitiveAdmissible.substTy",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/TySubstMain.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.substTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "theorem",
+    "name": "assumptions",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charsCode_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "code",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "code_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "TyCon.toTree_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "Ty.toTree",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "Ty.toTree_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "tyCompare",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "tyCompare_eq_treeCompare",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "inductive",
+    "name": "ContTy",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "def",
+    "name": "BuiltinOnly",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Syntax.lean",
+    "kind": "structure",
+    "name": "OpDecl",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Syntax.lean",
+    "kind": "structure",
+    "name": "Program",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "abbrev",
+    "name": "OpaqueName",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "structure",
+    "name": "PrimSig",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "PrimSig.ntys",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "structure",
+    "name": "Builtins",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "structure",
+    "name": "OpSig",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "effOps",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "handled",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeVQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeCQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/WellFormed.lean",
+    "kind": "def",
+    "name": "PrimSig.Scoped",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "signature",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkExprR",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "PrimMaterial",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "BuiltinMaterial",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "def",
+    "name": "BuiltinMaterial.effectOps",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "def",
+    "name": "BuiltinMaterial.isResource",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "Materials",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTables.lean",
+    "kind": "structure",
+    "name": "Names",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Extensions.lean",
+    "kind": "theorem",
+    "name": "stringAdd_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "DieExitOk.app_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "kind": "theorem",
+    "name": "HasTypeQ.desugar",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Syntax.lean",
+    "kind": "structure",
+    "name": "Declarations",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Syntax.lean",
+    "kind": "structure",
+    "name": "Program",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   }
+  ],
+  "new": [
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "EffBase"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "inductive",
+    "name": "NameScope"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "structure",
+    "name": "EffName"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "instance",
+    "name": "@anon"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "scopeChars"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "NameScope.toTree"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "NameScope.toTree_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "NameScope.rank"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "scopeCompare"
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "scopeCompare_eq_treeCompare"
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "structure",
+    "name": "OpaqueName"
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "instance",
+    "name": "@anon"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "Ty.withIndex"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "PrimSig.inst"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_top"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_eq_of_opEff_none"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_tparams"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_ntys"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_neffs"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_admits"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_kind"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_names"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_ret"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_opEff"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_eff_single"
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.V_PrimTop"
+   },
+   {
+    "file": "Benitoite/Release/WellFormed.lean",
+    "kind": "theorem",
+    "name": "Ty.withIndex_varsIn"
+   },
+   {
+    "file": "Benitoite/Release/WellFormed.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_scoped"
+   }
+  ]
+ },
+ "final_vs_t15": {
+  "summary": {
+   "all": {
+    "files": 41,
+    "changed_existing": 163,
+    "removed": 3,
+    "statement_changed": 85,
+    "statement_changed_theorems": 35,
+    "statement_top_builder_only": 66,
+    "statement_top_builder_only_theorems": 26,
+    "body_only": 75,
+    "body_only_top_builder_only": 65,
+    "new_declarations": 25
+   },
+   "production": {
+    "files": 38,
+    "changed_existing": 143,
+    "removed": 3,
+    "statement_changed": 75,
+    "statement_changed_theorems": 29,
+    "statement_top_builder_only": 66,
+    "statement_top_builder_only_theorems": 26,
+    "body_only": 65,
+    "body_only_top_builder_only": 59,
+    "new_declarations": 20
+   },
+   "comparison_models": {
+    "files": 3,
+    "changed_existing": 20,
+    "removed": 0,
+    "statement_changed": 10,
+    "statement_changed_theorems": 6,
+    "statement_top_builder_only": 0,
+    "statement_top_builder_only_theorems": 0,
+    "body_only": 10,
+    "body_only_top_builder_only": 6,
+    "new_declarations": 5
+   }
+  },
+  "changed": [
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Atom.toRelease",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Ty.toRelease",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Expr.toSurface",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Interval/SyntacticReachExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "kind": "def",
+    "name": "PrimSig.StoreShape",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "kind": "structure",
+    "name": "Builtins.Assumptions",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "structure",
+    "name": "EffName",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "instance",
+    "name": "@anon",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "def",
+    "name": "sampleDecls",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Coverage.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "def",
+    "name": "builtins",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "handled_state",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.state_end",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_release",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_drop",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "def",
+    "name": "FramesOk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.prepend_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.drop_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/FailureBase.lean",
+    "kind": "theorem",
+    "name": "captureEff_state",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeVQ.inv_op",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeCQ.inv_use",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresBase.lean",
+    "kind": "theorem",
+    "name": "refUpdate_typed",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Preservation.lean",
+    "kind": "theorem",
+    "name": "inv_op_app",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "no_unhandled_user",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "def",
+    "name": "refGetSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "def",
+    "name": "refSetSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "theorem",
+    "name": "single_no_rho",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charsCode_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "scopeChars",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "code",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "code_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "inductive",
+    "name": "ContTy",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "structure",
+    "name": "OpaqueName",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "instance",
+    "name": "@anon",
+    "removed": true
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "theorem",
+    "name": "PrimSig.inst_eff_single",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeVQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeCQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "embI",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "embII",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "wide",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "top",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "theorem",
+    "name": "wide_covers_top",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "theorem",
+    "name": "semCovers_not_eq",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "def",
+    "name": "code",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "theorem",
+    "name": "code_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "def",
+    "name": "pathInName",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "kind": "def",
+    "name": "readTextIn",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "Atom.ofRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "Atom.toRelease?",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Atom.toRelease_ofRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Atom.ofRelease_injective",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Atom.eq_ofRelease_of_toRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "liftAtoms",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "liftAtoms_ofRelease",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "liftAtoms_scoped",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "def",
+    "name": "Ty.ofReleaseOpaque",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "theorem",
+    "name": "Ty.ofReleaseOpaque_injective",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "entries",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "stateInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "captureBoundaries",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "taskDecl",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "handleInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkDieExit",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkExprR",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckComputeControl.lean",
+    "kind": "theorem",
+    "name": "checkDieExit_contains",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckCounterexamples.lean",
+    "kind": "def",
+    "name": "input",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "errorTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "exitSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "resultEnv",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieGot",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "clauseEffectEnv",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "renderForms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "builtins",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "partialPair",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "calls",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "fancyInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "fancyBody",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieMaterials",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieRaw",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+    "kind": "theorem",
+    "name": "opName_case",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundControl.lean",
+    "kind": "theorem",
+    "name": "with_case",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundDie.lean",
+    "kind": "theorem",
+    "name": "checkDieExit_sound",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "ioEff",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "richTypes",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "q",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "theorem",
+    "name": "mainExpr_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "effectfulTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "dieExitSig",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "errorTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "theorem",
+    "name": "resultDie_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "def",
+    "name": "input",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "def",
+    "name": "ioBody",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "aTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "bTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "rawOther",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "row",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "substituted",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "substAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/CallHead.lean",
+    "kind": "theorem",
+    "name": "HasTypeQ.inv_opDicts",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Dict.lean",
+    "kind": "theorem",
+    "name": "op_dicts_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Dict.lean",
+    "kind": "theorem",
+    "name": "op_value_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "DieExitOk.app_typed",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "dieFailure_typed",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "tryResultDie_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "kind": "theorem",
+    "name": "tryOptionDie_typed",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "kind": "theorem",
+    "name": "HasTypeQ.desugar",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "operation",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "emit_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "enabled_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "forwarded_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "console_remains_checked",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "theorem",
+    "name": "incomplete_handler_retains_log",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "programMaterials",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "def",
+    "name": "DieExitOk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "kind": "def",
+    "name": "q",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "kind": "def",
+    "name": "lazyWalk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   }
+  ],
+  "new": [
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "EffName.top"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "digitBase"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "sepName"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "sepSeg"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "digitsCode"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "charDigits"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "scopeDigits"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "nameDigits"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "digitsCode_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charDigit_bound"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charDigits_bound"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charDigits_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "split_sep"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "sepSeg_not_mem"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "sepName_not_mem"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "segs_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "scopeDigits_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "nameDigits_bound"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "nameDigits_injective"
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "abbrev",
+    "name": "OpaqueName.top"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "scopeII"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "scopeRel"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "atomII"
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "kind": "def",
+    "name": "atomRel?"
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "kind": "inductive",
+    "name": "OldAtom"
+   }
+  ]
+ },
+ "ci_vs_b0": {
+  "summary": {
+   "all": {
+    "files": 55,
+    "changed_existing": 119,
+    "removed": 0,
+    "statement_changed": 44,
+    "statement_changed_theorems": 25,
+    "statement_top_builder_only": 34,
+    "statement_top_builder_only_theorems": 17,
+    "body_only": 75,
+    "body_only_top_builder_only": 38,
+    "new_declarations": 12
+   },
+   "production": {
+    "files": 55,
+    "changed_existing": 119,
+    "removed": 0,
+    "statement_changed": 44,
+    "statement_changed_theorems": 25,
+    "statement_top_builder_only": 34,
+    "statement_top_builder_only_theorems": 17,
+    "body_only": 75,
+    "body_only_top_builder_only": 38,
+    "new_declarations": 12
+   },
+   "comparison_models": {
+    "files": 0,
+    "changed_existing": 0,
+    "removed": 0,
+    "statement_changed": 0,
+    "statement_changed_theorems": 0,
+    "statement_top_builder_only": 0,
+    "statement_top_builder_only_theorems": 0,
+    "body_only": 0,
+    "body_only_top_builder_only": 0,
+    "new_declarations": 0
+   }
+  },
+  "changed": [
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Atom.toRelease",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "Ty.toRelease",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "kind": "def",
+    "name": "fromTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Interval/Analyze.lean",
+    "kind": "def",
+    "name": "discoverBodies",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Interval/BudgetChildren.lean",
+    "kind": "def",
+    "name": "unknownChildren",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Interval/BudgetDiscover.lean",
+    "kind": "def",
+    "name": "expr",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Interval/EvalClosed.lean",
+    "kind": "def",
+    "name": "sameType",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "kind": "structure",
+    "name": "Builtins.Assumptions",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "def",
+    "name": "stateEff",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "inductive",
+    "name": "Atom",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "def",
+    "name": "summarizeTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "def",
+    "name": "satisfiesB",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "def",
+    "name": "sampleDecls",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/CoverageTypes.lean",
+    "kind": "def",
+    "name": "erase",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Effect.lean",
+    "kind": "def",
+    "name": "single",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Effect.lean",
+    "kind": "theorem",
+    "name": "mem_single",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Finite.lean",
+    "kind": "def",
+    "name": "tyCompareWith",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Finite.lean",
+    "kind": "def",
+    "name": "Ty.normWith",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Basic.lean",
+    "kind": "theorem",
+    "name": "substRho_name",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Closed.lean",
+    "kind": "theorem",
+    "name": "Ty.VarsIn.substAt",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.name_end",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "handled_state",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.state_end",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_release",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.inv_drop",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "def",
+    "name": "FramesOk",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.prepend_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "kind": "theorem",
+    "name": "ContTy.drop_releases",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+    "kind": "theorem",
+    "name": "ContTy.end_of_noHandler",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/EffectSound.lean",
+    "kind": "theorem",
+    "name": "no_event",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/FailureBase.lean",
+    "kind": "theorem",
+    "name": "captureEff_state",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "kind": "theorem",
+    "name": "HasTypeCQ.inv_use",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "kind": "theorem",
+    "name": "no_unhandled_user",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/NoFail.lean",
+    "kind": "def",
+    "name": "QTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/NoFail.lean",
+    "kind": "theorem",
+    "name": "NoFail.bind",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Normalize.lean",
+    "kind": "def",
+    "name": "Ty.norm",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Normalize.lean",
+    "kind": "def",
+    "name": "Ty.Legacy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Normalize.lean",
+    "kind": "def",
+    "name": "Ty.FailsLeOne",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "charsCode_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "code",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "code_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "Ty.rank",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "Ty.toTree",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "theorem",
+    "name": "Ty.toTree_injective",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Order/Types.lean",
+    "kind": "def",
+    "name": "tyCompare",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "inductive",
+    "name": "ContTy",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "kind": "def",
+    "name": "BuiltinOnly",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/SubstEnv.lean",
+    "kind": "theorem",
+    "name": "Eff.mem_substRho_rowImage",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Syntax.lean",
+    "kind": "def",
+    "name": "Const.type",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Release/TypeBounds.lean",
+    "kind": "def",
+    "name": "Ty.RawWF",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeComposition.lean",
+    "kind": "theorem",
+    "name": "Eff.mem_rawBind_rowImage",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeComposition.lean",
+    "kind": "theorem",
+    "name": "Eff.mem_bind",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeComposition.lean",
+    "kind": "theorem",
+    "name": "Eff.bind_comp_of_types",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeComposition.lean",
+    "kind": "theorem",
+    "name": "Eff.bind_ofAtoms_noRhos",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeRows.lean",
+    "kind": "def",
+    "name": "Ty.RowsIn",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeScopedSubst.lean",
+    "kind": "theorem",
+    "name": "Eff.substRho_true",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeScopedSubst.lean",
+    "kind": "theorem",
+    "name": "Eff.substRho_true_scoped",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeScopedSubst.lean",
+    "kind": "theorem",
+    "name": "Eff.substAt_name",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeShift.lean",
+    "kind": "def",
+    "name": "Ty.rawShift",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeShift.lean",
+    "kind": "def",
+    "name": "Ty.shift",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeSubst.lean",
+    "kind": "def",
+    "name": "Eff.substAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeSubst.lean",
+    "kind": "def",
+    "name": "Ty.rawBind",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeSubst.lean",
+    "kind": "def",
+    "name": "Ty.substAt",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeSubstLemmas.lean",
+    "kind": "theorem",
+    "name": "Eff.mem_substAtoms",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/TypeVariables.lean",
+    "kind": "def",
+    "name": "Ty.VarsIn",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "inductive",
+    "name": "Ty",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "abbrev",
+    "name": "Eff",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "handled",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "def",
+    "name": "Ty.WF",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeCQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/AdmissibleCheck.lean",
+    "kind": "def",
+    "name": "rowsEffCheck",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/AdmissibleCheck.lean",
+    "kind": "theorem",
+    "name": "rowsAtoms_spec",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "stateInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "def",
+    "name": "handleInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkDieExit",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "kind": "def",
+    "name": "checkExprR",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckComputeControl.lean",
+    "kind": "theorem",
+    "name": "checkDieExit_contains",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckCounterexamples.lean",
+    "kind": "def",
+    "name": "input",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "errorTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "dieAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "def",
+    "name": "fancyInput",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+    "kind": "theorem",
+    "name": "opName_case",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundDie.lean",
+    "kind": "theorem",
+    "name": "checkDieExit_sound",
+    "removed": false,
+    "stmt": true,
+    "body": true,
+    "stmt_top_only": true,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckSupport.lean",
+    "kind": "theorem",
+    "name": "singleEff_eq_contains",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckTools.lean",
+    "kind": "theorem",
+    "name": "singleEff_eq",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "richTypes",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "kind": "def",
+    "name": "q",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "theorem",
+    "name": "mainExpr_typed",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "kind": "def",
+    "name": "errorTy",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "def",
+    "name": "input",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "def",
+    "name": "ioBody",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "rawOther",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "row",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "substituted",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "def",
+    "name": "substAtoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ShiftClean.lean",
+    "kind": "theorem",
+    "name": "shift_clean",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "kind": "def",
+    "name": "atoms",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheck.lean",
+    "kind": "def",
+    "name": "qTyAt",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheck.lean",
+    "kind": "def",
+    "name": "noFailCheck",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "kind": "example",
+    "name": "@anon",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "kind": "inductive",
+    "name": "HasTypeQ",
+    "removed": false,
+    "stmt": true,
+    "body": false,
+    "stmt_top_only": true,
+    "body_top_only": false
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "kind": "def",
+    "name": "q",
+    "removed": false,
+    "stmt": false,
+    "body": true,
+    "stmt_top_only": false,
+    "body_top_only": true
+   }
+  ],
+  "new": [
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "inductive",
+    "name": "ScopeRange"
+   },
+   {
+    "file": "Benitoite/Release/Atom.lean",
+    "kind": "abbrev",
+    "name": "Atom.nameTop"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "tri"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "tri_lt"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "tri_eq_div"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "pairCode"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "pairCode_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "wordsCode"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "wordsCode_injective"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "def",
+    "name": "rangeCode"
+   },
+   {
+    "file": "Benitoite/Release/Order/Atoms.lean",
+    "kind": "theorem",
+    "name": "rangeCode_injective"
+   },
+   {
+    "file": "Benitoite/Release/Types.lean",
+    "kind": "abbrev",
+    "name": "Ty.opaqueTop"
+   }
+  ]
+ },
+ "breakage": {
+  "per_build": [
+   {
+    "build": "01",
+    "failed": 3,
+    "unchecked": 215,
+    "diagnostics": 44,
+    "files": 3,
+    "decls": 15,
+    "sorry": [
+     [
+      "Benitoite/Release/Order/Atoms.lean",
+      "theorem code_injective"
+     ],
+     [
+      "Benitoite/Release/Typing.lean",
+      "theorem hideBuilders_strengthen_val"
+     ],
+     [
+      "Benitoite/Scope/RepresentationExamplesI.lean",
+      "theorem code_injective"
+     ],
+     [
+      "Benitoite/Scope/RepresentationExamplesI.lean",
+      "theorem readTextIn_same_range"
+     ],
+     [
+      "Benitoite/Scope/RepresentationExamplesII.lean",
+      "theorem Atom.eq_ofRelease_of_toRelease"
+     ],
+     [
+      "Benitoite/Scope/RepresentationExamplesII.lean",
+      "theorem Atom.toRelease_scoped"
+     ],
+     [
+      "Benitoite/Scope/RepresentationExamplesII.lean",
+      "theorem Ty.ofReleaseOpaque_injective"
+     ]
+    ]
+   },
+   {
+    "build": "02",
+    "failed": 3,
+    "unchecked": 189,
+    "diagnostics": 8,
+    "files": 3,
+    "decls": 6,
+    "sorry": []
+   },
+   {
+    "build": "03",
+    "failed": 3,
+    "unchecked": 186,
+    "diagnostics": 15,
+    "files": 3,
+    "decls": 6,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/FailureBase.lean",
+      "theorem failure_drop"
+     ]
+    ]
+   },
+   {
+    "build": "04",
+    "failed": 2,
+    "unchecked": 178,
+    "diagnostics": 15,
+    "files": 2,
+    "decls": 8,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/ContLemmas.lean",
+      "theorem ContTy.framesOk"
+     ]
+    ]
+   },
+   {
+    "build": "05",
+    "failed": 5,
+    "unchecked": 99,
+    "diagnostics": 23,
+    "files": 5,
+    "decls": 7,
+    "sorry": [
+     [
+      "Benitoite/Surface/Typing.lean",
+      "theorem HasTypeQ.congrΔ"
+     ],
+     [
+      "Benitoite/Surface/Typing.lean",
+      "theorem HasTypeQ.of_builderFree"
+     ]
+    ]
+   },
+   {
+    "build": "06",
+    "failed": 9,
+    "unchecked": 74,
+    "diagnostics": 69,
+    "files": 9,
+    "decls": 30,
+    "sorry": [
+     [
+      "Benitoite/Scope/CompatExamples.lean",
+      "theorem semCovers_not_eq"
+     ],
+     [
+      "Benitoite/Scope/CompatExamples.lean",
+      "theorem top_canonical"
+     ],
+     [
+      "Benitoite/Scope/CompatExamples.lean",
+      "theorem top_covers_wide"
+     ],
+     [
+      "Benitoite/Scope/CompatExamples.lean",
+      "theorem wide_canonical"
+     ],
+     [
+      "Benitoite/Scope/CompatExamples.lean",
+      "theorem wide_covers_top"
+     ],
+     [
+      "Benitoite/Surface/Lemmas/CallHead.lean",
+      "theorem directCallee_typed"
+     ]
+    ]
+   },
+   {
+    "build": "07",
+    "failed": 7,
+    "unchecked": 69,
+    "diagnostics": 22,
+    "files": 7,
+    "decls": 8,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ],
+     [
+      "Benitoite/Release/Lemmas/Progress.lean",
+      "theorem progress_app"
+     ],
+     [
+      "Benitoite/Surface/Lemmas/CallHead.lean",
+      "theorem directCallee_typed"
+     ]
+    ]
+   },
+   {
+    "build": "08",
+    "failed": 7,
+    "unchecked": 47,
+    "diagnostics": 48,
+    "files": 7,
+    "decls": 35,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ],
+     [
+      "Benitoite/Release/Model.lean",
+      "example <example@327>"
+     ],
+     [
+      "Benitoite/Release/Model.lean",
+      "theorem assumptions"
+     ],
+     [
+      "Benitoite/Surface/CheckComputeControl.lean",
+      "theorem computes_tryOptionDie"
+     ],
+     [
+      "Benitoite/Surface/CheckComputeControl.lean",
+      "theorem computes_tryResultDie"
+     ]
+    ]
+   },
+   {
+    "build": "09",
+    "failed": 4,
+    "unchecked": 36,
+    "diagnostics": 17,
+    "files": 4,
+    "decls": 8,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ],
+     [
+      "Benitoite/Surface/CheckSoundDie.lean",
+      "theorem tryOptionDie_case"
+     ],
+     [
+      "Benitoite/Surface/CheckSoundDie.lean",
+      "theorem tryResultDie_case"
+     ]
+    ]
+   },
+   {
+    "build": "10",
+    "failed": 3,
+    "unchecked": 27,
+    "diagnostics": 19,
+    "files": 3,
+    "decls": 12,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ],
+     [
+      "Benitoite/Surface/Examples.lean",
+      "example <example@356>"
+     ],
+     [
+      "Benitoite/Surface/Examples.lean",
+      "theorem dieExit_ok"
+     ],
+     [
+      "Benitoite/Surface/Examples.lean",
+      "theorem dieSigs_scoped"
+     ]
+    ]
+   },
+   {
+    "build": "11",
+    "failed": 3,
+    "unchecked": 27,
+    "diagnostics": 7,
+    "files": 3,
+    "decls": 6,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ]
+    ]
+   },
+   {
+    "build": "12",
+    "failed": 5,
+    "unchecked": 2,
+    "diagnostics": 132,
+    "files": 5,
+    "decls": 83,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ],
+     [
+      "Benitoite/Surface/BuilderExamples.lean",
+      "example <example@256>"
+     ],
+     [
+      "Benitoite/Surface/CheckExamples.lean",
+      "example <example@170>"
+     ],
+     [
+      "Benitoite/Surface/CheckExamples.lean",
+      "example <example@182>"
+     ]
+    ]
+   },
+   {
+    "build": "13",
+    "failed": 1,
+    "unchecked": 1,
+    "diagnostics": 11,
+    "files": 1,
+    "decls": 9,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ]
+    ]
+   },
+   {
+    "build": "14",
+    "failed": 0,
+    "unchecked": 0,
+    "diagnostics": 0,
+    "files": 0,
+    "decls": 0,
+    "sorry": [
+     [
+      "Benitoite/Release/Lemmas/PresMain.lean",
+      "theorem preservationE"
+     ]
+    ]
+   }
+  ],
+  "unique_decls": 201,
+  "unique_files": 40,
+  "diagnostics_sum": 430,
+  "production": {
+   "decls": 183,
+   "files": 37,
+   "diagnostics": 367
+  },
+  "comparison_models": {
+   "decls": 18,
+   "files": 3,
+   "diagnostics": 63
+  },
+  "decls": [
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "decl": "def Atom.toRelease",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "decl": "def Expr.toSurface",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "decl": "def Ty.toRelease",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Exchange/Convert.lean",
+    "decl": "def validateClauses",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Interval/BudgetChildrenExamples.lean",
+    "decl": "def output",
+    "errors": 21
+   },
+   {
+    "file": "Benitoite/Interval/FlowExamples.lean",
+    "decl": "def signature",
+    "errors": 6
+   },
+   {
+    "file": "Benitoite/Interval/SyntacticReachExamples.lean",
+    "decl": "example <example@48>",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "decl": "def PrimSig.StoreShape",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Release/Assumptions.lean",
+    "decl": "structure Builtins.Assumptions",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "decl": "def sampleDecls",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "decl": "example <example@228>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/BuiltinTable.lean",
+    "decl": "example <example@238>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Coverage.lean",
+    "decl": "example <example@2246>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "decl": "def builtins",
+    "errors": 6
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "decl": "example <example@232>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Examples.lean",
+    "decl": "example <example@235>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "def FramesOk",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "theorem ContTy.drop_releases",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "theorem ContTy.inv_drop",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "theorem ContTy.inv_release",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "theorem ContTy.prepend_releases",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "theorem ContTy.state_end",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/ContLemmas.lean",
+    "decl": "theorem handled_state",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/FailureBase.lean",
+    "decl": "theorem captureEff_state",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "decl": "theorem HasTypeCQ.inv_use",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Inversion.lean",
+    "decl": "theorem HasTypeVQ.inv_op",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/PresBase.lean",
+    "decl": "theorem refUpdate_typed",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Preservation.lean",
+    "decl": "theorem inv_op_app",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Lemmas/Progress.lean",
+    "decl": "theorem no_unhandled_user",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "decl": "def refGetSig",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "decl": "def refSetSig",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "decl": "example <example@327>",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "decl": "theorem assumptions",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Model.lean",
+    "decl": "theorem single_no_rho",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Semantics.lean",
+    "decl": "inductive ContTy",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "decl": "inductive HasTypeCQ",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "decl": "inductive HasTypeVQ",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Release/Typing.lean",
+    "decl": "theorem PrimSig.inst_eff_single",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "decl": "def embII",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "decl": "def top",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "decl": "def wide",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "decl": "theorem no_eq_of_semCovers",
+    "errors": 12
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "decl": "theorem semCovers_not_eq",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Scope/CompatExamples.lean",
+    "decl": "theorem wide_covers_top",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "decl": "def code",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "decl": "def pathInName",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "decl": "def readTextIn",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "decl": "example <example@309>",
+    "errors": 28
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+    "decl": "theorem code_injective",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "def Atom.ofRelease",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "def Atom.toRelease?",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "def Ty.ofReleaseOpaque",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "theorem Atom.toRelease_ofRelease",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "theorem Ty.ofReleaseOpaque_injective",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "theorem lift_old_effect_excludes_scoped",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Scope/RepresentationExamplesII.lean",
+    "decl": "theorem lift_old_effect_keeps_top",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "def captureBoundaries",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "def entries",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "def handleInput",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "def stateInput",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "def taskDecl",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "example <example@116>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "example <example@162>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "example <example@172>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "example <example@217>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "example <example@224>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/BuilderExamples.lean",
+    "decl": "example <example@294>",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "decl": "def checkDieExit",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/Check.lean",
+    "decl": "def checkExprR",
+    "errors": 12
+   },
+   {
+    "file": "Benitoite/Surface/CheckComputeControl.lean",
+    "decl": "theorem checkDieExit_contains",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckCounterexamples.lean",
+    "decl": "def input",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def atoms",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def builtins",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def calls",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def clauseEffectEnv",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def dieAtoms",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def dieGot",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def dieMaterials",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def dieRaw",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def errorTy",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def exitSig",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def fancyBody",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def fancyInput",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def partialPair",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def renderForms",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "def resultEnv",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@178>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@187>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@196>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@198>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@208>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@214>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@219>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@223>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@225>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@228>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@260>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@270>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@272>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@305>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@311>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@320>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@324>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@32>",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@332>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@34>",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@387>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@391>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@398>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@499>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@502>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@504>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@516>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@518>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@583>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@586>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@604>",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@747>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@754>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@758>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@860>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@862>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@864>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckExamples.lean",
+    "decl": "example <example@866>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundBasicExpr.lean",
+    "decl": "theorem opName_case",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundControl.lean",
+    "decl": "theorem with_case",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckSoundDie.lean",
+    "decl": "theorem checkDieExit_sound",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "def atoms",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "def ioEff",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "def q",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "def richTypes",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@22>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@23>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@24>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@26>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@28>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@30>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@335>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@39>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@41>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@46>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@47>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@53>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@63>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@78>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/CheckToolsExamples.lean",
+    "decl": "example <example@83>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "def dieExitSig",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "def effectfulTy",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "def errorTy",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "example <example@441>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "example <example@485>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "theorem mainExpr_typed",
+    "errors": 9
+   },
+   {
+    "file": "Benitoite/Surface/Examples.lean",
+    "decl": "theorem resultDie_typed",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "decl": "def input",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "decl": "def ioBody",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "decl": "example <example@117>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FailureExamples.lean",
+    "decl": "example <example@121>",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def aTy",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def atoms",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def bTy",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def rawOther",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def row",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def substAtoms",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "def substituted",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@18>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@19>",
+    "errors": 8
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@23>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@25>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@26>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@35>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@36>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/FiniteExamples.lean",
+    "decl": "example <example@52>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/CallHead.lean",
+    "decl": "theorem HasTypeQ.inv_opDicts",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Dict.lean",
+    "decl": "theorem op_dicts_typed",
+    "errors": 3
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Dict.lean",
+    "decl": "theorem op_value_typed",
+    "errors": 5
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "decl": "theorem DieExitOk.app_typed",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "decl": "theorem dieFailure_typed",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "decl": "theorem tryOptionDie_typed",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/ReturnTry.lean",
+    "decl": "theorem tryResultDie_typed",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "decl": "example <example@302>",
+    "errors": 7
+   },
+   {
+    "file": "Benitoite/Surface/Lemmas/Typing.lean",
+    "decl": "theorem HasTypeQ.desugar",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "def atoms",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "def operation",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "def programMaterials",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem console_pure_rejected",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem console_remains_checked",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem emit_checked",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem enabled_checked",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem forwarded_checked",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem handled_checked",
+    "errors": 4
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem incomplete_handler_retains_log",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/LogExamples.lean",
+    "decl": "theorem program_checked",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "decl": "example <example@27>",
+    "errors": 2
+   },
+   {
+    "file": "Benitoite/Surface/NoFailCheckExamples.lean",
+    "decl": "example <example@48>",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "decl": "def DieExitOk",
+    "errors": 1
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "decl": "example <example@1153>",
+    "errors": 6
+   },
+   {
+    "file": "Benitoite/Surface/Typing.lean",
+    "decl": "inductive HasTypeQ",
+    "errors": 5
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "decl": "def changes",
+    "errors": 9
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "decl": "def lazyWalk",
+    "errors": 4
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "decl": "def prepared",
+    "errors": 1
+   },
+   {
+    "file": "SurfaceCheck/Validation.lean",
+    "decl": "def q",
+    "errors": 4
+   }
+  ]
+ },
+ "coercion_sites": {
+  "b0_old_spelling": {
+   "name_lit": {
+    "lines": 35,
+    "files": 13
+   },
+   "single_lit": {
+    "lines": 76,
+    "files": 10
+   },
+   "opaque_lit": {
+    "lines": 13,
+    "files": 7
+   },
+   "single_var": {
+    "lines": 47,
+    "files": 18
+   },
+   "stateEff": {
+    "lines": 53,
+    "files": 15
+   }
+  },
+  "final_old_spelling_remaining": {
+   "name_lit": {
+    "lines": 1,
+    "files": 1
+   },
+   "single_lit": {
+    "lines": 0,
+    "files": 0
+   },
+   "opaque_lit": {
+    "lines": 0,
+    "files": 0
+   },
+   "single_var": {
+    "lines": 4,
+    "files": 4
+   },
+   "stateEff": {
+    "lines": 53,
+    "files": 15
+   }
+  },
+  "final_explicit_top": {
+   "name_lit": {
+    "lines": 34,
+    "files": 12
+   },
+   "single_lit": {
+    "lines": 76,
+    "files": 10
+   },
+   "opaque_lit": {
+    "lines": 13,
+    "files": 7
+   },
+   "single_var": {
+    "lines": 44,
+    "files": 14
+   },
+   "stateEff": {
+    "lines": 47,
+    "files": 13
+   }
+  },
+  "final_explicit_top_all_files": {
+   "name_lit": {
+    "lines": 52,
+    "files": 14
+   },
+   "single_lit": {
+    "lines": 82,
+    "files": 12
+   },
+   "opaque_lit": {
+    "lines": 13,
+    "files": 7
+   },
+   "single_var": {
+    "lines": 44,
+    "files": 14
+   },
+   "stateEff": {
+    "lines": 47,
+    "files": 13
+   }
+  }
+ },
+ "explicit_top_added_vs_t15": {
+  "occurrences": 289,
+  "lines": 230,
+  "production_occurrences": 257,
+  "production_lines": 209,
+  "models_occurrences": 32,
+  "models_lines": 21,
+  "files": 38,
+  "production_files": 36,
+  "model_files": 2
+ }
+}

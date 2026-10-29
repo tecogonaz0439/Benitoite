@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  bind checked: Result[Scope.PathIn["/data/a"], Scope.ScopeError] <- Scope.checkPathIn(pattern: "/data/a", path: "/data/a")
+  match checked with
+    case Result.Ok(value) -> Console.writeLine(Scope.pathInValue(path: value))
+    case Result.Error(_) -> ()
+  end match
+end function

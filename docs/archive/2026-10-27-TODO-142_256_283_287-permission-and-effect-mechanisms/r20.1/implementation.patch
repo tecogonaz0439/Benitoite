@@ -1,0 +1,1807 @@
+diff --git a/crates/benitoite/src/typeck/context.rs b/crates/benitoite/src/typeck/context.rs
+index 65776b9d..bce31bce 100644
+--- a/crates/benitoite/src/typeck/context.rs
++++ b/crates/benitoite/src/typeck/context.rs
+@@ -592,6 +592,16 @@ impl<'a, 'd> Body<'a, 'd> {
+     }
+ 
+     pub fn finish(&mut self) {
++        // 入力の構造は型生成より前に収集済み。番号付けに必要な補間の
++        // 変換の有無だけを補い、型確定後の区間解析へ依存させない。
++        for (node, ty) in self.interp_types.iter() {
++            let ty = self.solver.zonk(ty);
++            if !matches!(ty, ITy::Var(_) | ITy::Error) {
++                let converter = !matches!(ty, ITy::Con(TyCon::Builtin(b), ref args, _) if b == crate::types::builtin::BuiltinTypeId::STRING && args.is_empty());
++                self.decls.scope_inputs.interpolation(node, converter);
++            }
++        }
++
+         if self
+             .diagnostics
+             .iter()
+diff --git a/crates/benitoite/src/typeck/decls.rs b/crates/benitoite/src/typeck/decls.rs
+index c1c9de0a..63fe79dd 100644
+--- a/crates/benitoite/src/typeck/decls.rs
++++ b/crates/benitoite/src/typeck/decls.rs
+@@ -35,6 +35,7 @@ pub(super) struct Decls<'a> {
+     pub out: TypeckOutput,
+     pub checked_args: super::checked_args::CheckedArgsState,
+     pub interval: super::interval::AnalysisState<'a>,
++    pub scope_inputs: super::scope::Inputs,
+     /// 宣言の検査を終えた後の本体間で共有する、読み取り専用の実装索引。
+     pub impl_index: Option<std::rc::Rc<super::traits::ImplTable>>,
+     pub const_origins: BindingMap<BTreeSet<BindingId>>,
+@@ -107,6 +108,7 @@ impl<'a> Decls<'a> {
+             out: TypeckOutput::default(),
+             checked_args: super::checked_args::CheckedArgsState::default(),
+             interval: super::interval::AnalysisState::new(asts, modules, resolved),
++            scope_inputs: super::scope::Inputs::default(),
+             impl_index: None,
+             const_origins: BindingMap::default(),
+             diagnostics: vec![],
+@@ -895,6 +897,8 @@ pub(super) fn check_recorded(
+     // 宣言中の補助検査には可変の集合を使い、本体へ入る直前にだけ固定する
+     // （設計書 02-05「型クラスの制約の解決」）。
+     d.impl_index = Some(super::traits::shared_table(&d));
++    d.scope_inputs =
++        super::scope::Inputs::collect(asts, modules, resolved, &d.out.decl_types, &d.out.impls);
+     super::consts::check(&mut d);
+     for ast in asts {
+         for top in &ast.decls {
+@@ -916,6 +920,7 @@ pub(super) fn check_recorded(
+             }
+         }
+     }
++    d.out.scope_inputs = std::mem::take(&mut d.scope_inputs).finish();
+     let tables = super::interval::input::InputTables {
+         resolved,
+         constants: &d.out.consts,
+diff --git a/crates/benitoite/src/typeck/interval/input.rs b/crates/benitoite/src/typeck/interval/input.rs
+index 019c5798..b0dcbf1b 100644
+--- a/crates/benitoite/src/typeck/interval/input.rs
++++ b/crates/benitoite/src/typeck/interval/input.rs
+@@ -2,10 +2,8 @@
+ //! （設計書 02-05「区間解析の内部入力」）。
+ 
+ use super::super::context::Body;
+-use crate::base::{BindingId, BindingMap, ModuleId, NodeId};
+-use crate::modules::ModuleTable;
++use crate::base::{BindingId, BindingMap, NodeId};
+ use crate::resolve::ResolveOutput;
+-use crate::syntax::ast::{Block, ConstDecl, FnDecl, Item, Module, Param};
+ use crate::types::{ConstValue, Scheme, Ty};
+ use std::collections::{BTreeMap, BTreeSet};
+ 
+@@ -36,152 +34,9 @@ pub(super) fn integer_literal(value: &ConstValue) -> Option<(super::domain::IntK
+     })
+ }
+ 
+-/// 定数の評価順・本体の検査完了順から独立した、元の定義の順。
+-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+-pub(in crate::typeck) struct SourceOrder {
+-    pub module: ModuleId,
+-    pub declaration: usize,
+-    pub method: Option<usize>,
+-}
+-
+-/// 定数の値は Surface.Block.last に包む。AST の複製や合成 NodeId は作らない。
+-#[derive(Clone, Copy, Debug)]
+-pub(in crate::typeck) enum BodySource<'ast> {
+-    Constant(&'ast ConstDecl),
+-    Function {
+-        declaration: &'ast FnDecl,
+-        body: &'ast Block,
+-    },
+-}
+-
+-impl<'ast> BodySource<'ast> {
+-    pub fn node(self) -> NodeId {
+-        match self {
+-            Self::Constant(c) => c.id,
+-            Self::Function { declaration, .. } => declaration.id,
+-        }
+-    }
+-
+-    pub fn params(self) -> &'ast [Param] {
+-        match self {
+-            Self::Constant(_) => &[],
+-            Self::Function { declaration, .. } => &declaration.params,
+-        }
+-    }
+-}
+-
+-/// 元 AST の定義一つ。impl のメソッドも kind は function とする。
+-#[derive(Clone, Debug)]
+-pub(in crate::typeck) struct Definition<'ast> {
+-    pub order: SourceOrder,
+-    pub binding: BindingId,
+-    pub name: String,
+-    pub source: BodySource<'ast>,
+-}
+-
+-/// 不正な入力は Top と区別する。予算による停止・未同定は番号付けの段で扱う。
+-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+-pub(in crate::typeck) enum InputError {
+-    InvalidBody,
+-    WrongBody,
+-    MissingBinding(NodeId),
+-    MissingModule(ModuleId),
+-    WrongModule(NodeId),
+-    MissingType(NodeId),
+-    InvalidType(NodeId),
+-}
+-
+-/// 型検査済みの対象を列挙するための候補。valid の判定は収集時に行う。
+-/// 外部宣言・trait の署名を含めず、検査用の生成関数は通常の Item::Fn として含む。
+-pub(in crate::typeck) fn definitions<'ast>(
+-    asts: &'ast [Module],
+-    modules: &'ast ModuleTable,
+-    resolved: &'ast ResolveOutput,
+-) -> impl Iterator<Item = Result<Definition<'ast>, InputError>> + 'ast {
+-    asts.iter().flat_map(move |ast| {
+-        ast.decls.iter().enumerate().flat_map(move |(index, top)| {
+-            let (single, methods) = match &top.item {
+-                Item::Const(c) => (Some(BodySource::Constant(c)), None),
+-                Item::Fn(f) => (
+-                    f.body.as_ref().map(|body| BodySource::Function {
+-                        declaration: f,
+-                        body,
+-                    }),
+-                    None,
+-                ),
+-                Item::Impl(i) => (None, Some(i.fns.as_slice())),
+-                Item::Data(_)
+-                | Item::Alias(_)
+-                | Item::ExternalType(_)
+-                | Item::Record(_)
+-                | Item::Trait(_)
+-                | Item::Effect(_)
+-                | Item::Error(_) => (None, None),
+-            };
+-            let methods = methods
+-                .into_iter()
+-                .flatten()
+-                .enumerate()
+-                .filter_map(|(method, f)| {
+-                    f.decl.body.as_ref().map(|body| {
+-                        (
+-                            Some(method),
+-                            BodySource::Function {
+-                                declaration: &f.decl,
+-                                body,
+-                            },
+-                        )
+-                    })
+-                });
+-            single
+-                .into_iter()
+-                .map(|source| (None, source))
+-                .chain(methods)
+-                .map(move |(method, source)| {
+-                    let node = source.node();
+-                    let binding = *resolved
+-                        .decls
+-                        .get(node)
+-                        .ok_or(InputError::MissingBinding(node))?;
+-                    let declaration = resolved
+-                        .bindings
+-                        .get(binding)
+-                        .ok_or(InputError::MissingBinding(node))?;
+-                    let module = declaration.module;
+-                    // AST 配列は ModuleId 順。別モジュールの回復値を受け入れない。
+-                    if usize::try_from(module.0)
+-                        .ok()
+-                        .and_then(|i| asts.get(i))
+-                        .map(|m| m.id)
+-                        != Some(ast.id)
+-                    {
+-                        return Err(InputError::WrongModule(node));
+-                    }
+-                    let module_name = modules
+-                        .get(module)
+-                        .ok_or(InputError::MissingModule(module))?
+-                        .name
+-                        .dotted();
+-                    let name = match method {
+-                        Some(method) => {
+-                            format!("{module_name}%impl:{index}:{method}:{}", declaration.name)
+-                        }
+-                        None => format!("{module_name}.{}", declaration.name),
+-                    };
+-                    Ok(Definition {
+-                        order: SourceOrder {
+-                            module,
+-                            declaration: index,
+-                            method,
+-                        },
+-                        binding,
+-                        name,
+-                        source,
+-                    })
+-                })
+-        })
+-    })
+-}
++pub(in crate::typeck) use super::super::source_input::{
++    BodySource, Definition, InputError, SourceOrder, definitions,
++};
+ 
+ /// solver と Body の可変参照を外へ持ち越さない、確定済みの型の写し。
+ pub(in crate::typeck) struct BodyInput<'ast> {
+diff --git a/crates/benitoite/src/typeck/mod.rs b/crates/benitoite/src/typeck/mod.rs
+index 2af50b00..73a4d910 100644
+--- a/crates/benitoite/src/typeck/mod.rs
++++ b/crates/benitoite/src/typeck/mod.rs
+@@ -140,6 +140,8 @@ pub struct BuilderOperation {
+ #[derive(Debug, Default)]
+ pub struct TypeckOutput {
+     pub(crate) interval: interval::Report,
++    /// 型確定前に収集した Scope の構造入力と先行順番号。
++    pub scope_inputs: ScopeInputs,
+     /// 第二級の値である構築器と直接操作。通常の Ty の表へ構築器を載せない。
+     pub builders: NodeMap<BuilderDecl>,
+     pub builder_ops: NodeMap<BuilderOperation>,
+@@ -238,6 +240,12 @@ pub use interval::{
+ mod limits;
+ mod pattern_ext;
+ mod records;
++mod scope;
++mod source_input;
++pub use scope::{
++    ScopeBodyInput, ScopeCall, ScopeDeclaration, ScopeEntry, ScopeInputStop, ScopeInputs, ScopeKey,
++    ScopeNumberedInput, ScopeOccurrence, ScopeOrigin, ScopeStatement,
++};
+ mod solve;
+ #[cfg(test)]
+ pub(crate) mod test_support;
+diff --git a/docs/design/01-spec/01-06-type-system.md b/docs/design/01-spec/01-06-type-system.md
+index 2ffb378f..0adaa2c4 100644
+--- a/docs/design/01-spec/01-06-type-system.md
++++ b/docs/design/01-spec/01-06-type-system.md
+@@ -56,6 +56,8 @@
+ 
+ 【決定】`Scope.checkPathIn` は、動的なパターンへの所属を検査し、成功時に同じパスを保持する `Scope.PathIn` を返す。現在、この入口の成功型と `Scope.pathInValue` の引数型の静的な範囲は Top である。`pathInValue` は保持した同じパスを `String` として返す。二つの入口は純粋であり、Top であっても実行時の検査を省かない。署名と失敗の条件は[標準ライブラリ](../03-interop/03-06-stdlib.md#scope)に従う。 `Http.checkRequestIn` と `Http.requestInValue` も純粋であり、現在の成功型と引数型の静的な範囲は Top である。要求の検査は同じ要求と実効の端点を保持し、射影は同じ要求のレコードを返す。Top でも動的な条件と端点の所属を検査し、失敗は通常の `Result` で返す。署名と失敗の分類は[ネットワークのモジュール](../03-interop/03-09-network.md#クライアント)に従う。
+ 
++これらの検査と射影の認定は、解決した標準の宣言に限る。import の別名で参照しても同じ宣言なら認定し、同じ綴りの利用者の関数にはこの認定を与えない。名前付き引数でも宣言の引数の位置を保ち、ソースに書いた順によって契約を変えない。
++
+ ### 名前を持つ関数型の適合と推論
+ 
+ 【決定】関数型どうしを比べるときは、個数と位置ごとの名前の一致を検査し、その後で引数型・戻り値型・エフェクトの規則を適用する。名前と宣言順を保持し、名前の alpha 変換は行わない。型パラメータの置き換え、型の別名の展開、エフェクトの包含でも名前を失わない。
+diff --git a/docs/design/01-spec/01-12-core-calculus.md b/docs/design/01-spec/01-12-core-calculus.md
+index 8d6fb0c9..e88dc9f0 100644
+--- a/docs/design/01-spec/01-12-core-calculus.md
++++ b/docs/design/01-spec/01-12-core-calculus.md
+@@ -2796,6 +2796,8 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点
+ 
+ 出現の番号は区間解析の先行順（「区間解析の対象構文の評価関係」の `surfacePreorder`・`childKey`）と同じ数え方とする。`advance key n` は番号に n を足し、`advance key 1 = childKey key []` である（`advance_one`）。子の番号は、親の番号に 1 と先行する子の部分木の大きさを足したものである。ラムダ・遅延・節の本体の出現も、区間解析の別本体の名前（「区間解析の本体の識別と元の出現の対応」）を使わず、囲む定義の番号で数える。
+ 
++Rust の入力との対応では、Scope の本体は `ScopeAccept.occurrences` と同じく `preorderBlock body` を番号 0 から数える。最初の文の右辺は番号 0 であり、文の始まりと右辺は同じ番号を持つ（`reachAt_occurrences`）。容器と専用の構築器の束縛自身は数えず、腕は guard、本体、残りの腕、節は宣言の順に辿る。区間解析が `bodyRoot` として付ける block 式の根は、この入力には付けない。区間解析側の根 0 と最初の右辺 1 の番号は保つ。
++
+ 引数の式の形 `argForm` と一段の式 `lowerArg key e` は次のとおりである。key は引数の式自身の番号である。
+ 
+ | 引数の式 | 形 | 一段の式 |
+diff --git a/docs/design/02-impl/02-05-typechecker.md b/docs/design/02-impl/02-05-typechecker.md
+index 2a0aeeb3..3ee82c5f 100644
+--- a/docs/design/02-impl/02-05-typechecker.md
++++ b/docs/design/02-impl/02-05-typechecker.md
+@@ -59,6 +59,26 @@
+ 
+ 【決定】標準の `SourceLocation.here()` は、パイプラインが名前解決後・型検査前に通常のLocationレコードと三つのリテラルへ展開する。型検査器はその通常レコードを検査し、位置のための型やエフェクトの規則を追加しない。展開された定数も既存の定数の検査と評価を通す。
+ 
++### Scope の必須判定の入力
++
++【決定】`typeck::scope` は、Scope の必須判定に使う本体の構造と、標準の直接呼び出しの同定、契約引数の位置、出現番号を保持する。宣言の検査の後、本体の型の生成より前に、AST・名前解決の結果・宣言の署名・実装の制約の情報から構造入力を取り出す。型確定後の区間解析の `BodyInput`、整数の区間、警告、観測は入力にしない。理由: 範囲の制約を作るための入力を、型を確定した後の警告の結果に依存させないためである。
++
++元定義の列挙と命名は `typeck::source_input` で区間解析と共有する。モジュール・宣言・実装内メソッドの順を保ち、関数と定数は `<module>.<name>`、メソッドは `<module>%impl:<宣言の0始まり位置>:<メソッドの0始まり位置>:<name>` で識別する。本体の鍵はこの識別名と番号 0 の組である。入口の束縛番号は Lean の `entryScope` と同じ `0..n-1` とし、次の番号を n とする。Rust の束縛との対応 `ScopeEntry.positions` は、その本体の辞書を前置した値引数の列を逆順にした de Bruijn の位置へ合わせる。最後の値引数が位置 0、辞書の位置は `None` である。関数は宣言の全辞書を含める。メソッドはメソッド自身の辞書と値の引数を含め、実装自身の辞書は実装の環境へ置く。この区別は、脱糖の `definition` と Lean の `MethodInput.names` に合わせる。定数の引数列は空である。
++
++標準の認定は、解決済みの所有元と宣言の束縛番号を照合する。規則の対象は Lean の `ruleDeclarations` の六宣言だけであり、読み込まれて登録済みの宣言を表へ入れる。現在の標準ソースで登録した対象は `Scope.checkPathIn`・`Scope.pathInValue`・`Http.checkRequestIn`・`Http.requestInValue` である。import の別名は元の宣言を指す場合に認め、同じ綴りの利用者の関数、旧 Scope の検査、間接呼び出し、穴のある部分適用には規則の同定を与えない。
++
++名前付き引数は、ソース順の各引数、その式の開始番号、契約位置を別に保存する。出現番号の走査は呼ぶ式、ソース順の引数の順であり、契約順の読み取りだけを対応表で並べ替える。契約の名前と位置は解決済みの標準署名に照合し、呼び出しの綴りやラベルの順から作らない。同じ定数の値式を複数の位置へ展開する場合も、元のノード番号から引数の出現番号を探し直さない。
++
++【決定】番号は Lean の `ScopeAccept.occurrences` と同じく `Interval.preorderBlock` を本体の鍵 0 から辿って付ける。最初の右辺は番号 0 であり、文の始まりの番号はその右辺と一致する。各式を先に数えてから宣言の欄の順の子を辿る。式の列・腕・節・文の並びの容器と、専用の構築器の束縛自身は数えない。腕は guard、本体、残りの腕、節は宣言の順に辿る。ラムダ・遅延・保護本体・節などの入れ子も囲む定義の番号を使う。途中停止した場合は取得済みの接頭辞と停止理由を保ち、後続を詰めて再開しない。
++
++Scope の入力には、区間解析が付ける合成した本体の block 式を置かない。区間解析の根 0 と最初の右辺 1 の番号、別本体の識別、警告と観測の入力は保つ。両入力が共有するのは、型に依存しない元定義の列挙と命名だけである。
++
++補間では、値の式を全て辿った後、必要な変換関数を宣言の順に数える。構造入力には変換の位置を先に保存し、`Body::finish` の冒頭で推論中の補間の型から変換の有無だけを補う。この補完は型表の全体の具体化と区間解析を呼ばない。未確定の変換を推測で省かず、その位置で入力の取得を止める。現在の型への具体化は四入口とも Top のままである。
++
++構造入力と補間の補助表は `TypeckOutput.scope_inputs` に保持する。定数の本体は一度だけ保存し、参照先を束縛番号で引く共有の構造とする。各 `ScopeBodyInput` はこの構造を共有し、`numbered()` でその本体を読むときにだけ `ScopeNumberedInput` の出現・文・呼び出しの番号を作る。const の展開は囲む本体の番号と深さを引き継ぎ、展開ごとに呼び出しと引数の対応を区別する。
++
++`contains_rules()` は、定数の参照先を含めて規則の対象の直接呼び出しがあるかを返す。定数の束縛番号の索引を引いて逆向きの参照表を作り、規則の存在を各参照辺へ一度ずつ伝える。全定義は保持し、規則のない本体の番号列を問い合わせない場合には定数の展開も行わない。理由: 長い定数の連鎖を全ての本体へ展開して保存すると、定義数に対して二乗の確保が必要になるためである。
++
+ ### 区間解析の範囲と保証
+ 
+ 【決定】区間解析（interval analysis）は、有界整数の正常値の集合を有限の閉区間で近似する補助解析である。型とエフェクトの規則に加える制約や、利用者が書く範囲付きの型は設けない。局所の束縛・比較・分岐を追い、予算内で確実と判定できた除数0・あふれ・シフト量の定義域外を警告にする。定数式の評価による既存の警告は、別の検出条件として保つ。警告してよい条件は[基本型の意味論](../01-spec/01-04-types-basic.md#前提)で定める。
+diff --git a/docs/design/02-impl/02-06-ir-and-lowering.md b/docs/design/02-impl/02-06-ir-and-lowering.md
+index 670506c4..9e7d7885 100644
+--- a/docs/design/02-impl/02-06-ir-and-lowering.md
++++ b/docs/design/02-impl/02-06-ir-and-lowering.md
+@@ -84,6 +84,8 @@
+ 
+ ### 脱糖
+ 
++Scope の必須判定の入力の本体名と出現番号は、表層の構文に付く識別である（[型検査器](02-05-typechecker.md#scope-の必須判定の入力)）。名前付き引数の出現はソース順に数え、契約位置は別の対応表で読む。コアへの移し替えで引数を契約順へ並べても、この出現番号をコアの節点番号へ付け直さない。関数と実装メソッドの本体名は共通の元定義の列挙で定め、入口の局所位置は辞書を前置した引数列を逆順にした de Bruijn の位置に対応する。現在の四つの検査・射影の署名は、前述の経路で Top へ具体化する。
++
+ 【決定】通常の呼び出しは、型検査の `CallPlan` を使う。呼ぶ式を先に、引数の式をソース順に `let` へ移し、保存した値の参照だけを対応する宣言位置へ置く。表の欠落、個数・挿入の不一致、位置の範囲外・重複・不足、ラベルと契約名の不一致は `InternalError` とする。表がないときにラベルを無視して位置指定として実行しない。部分適用では既存の生成ラムダの本体の内側で対応表を使う。パイプは既存の左辺を先に評価する規則を維持する。理由: 評価順と途中の停止を保ち、対応の検査を実行時へ持ち込まないためである。
+ 
+ 【決定】プレースホルダの引数は、生成ラムダのパラメータへの直接の値参照 `ArgPlan::Direct` と、固定式の計算 `ArgPlan::Evaluate` に分ける。ソース順に並べた計画から、Evaluate だけを `let` で束縛し、Direct はその値を使う。呼ぶ式の評価が必要な場合の束縛は固定式より先に残す。これらの計算はラムダの本体に置き、ラムダを呼ぶたびに一度ずつ評価する。最後に値の参照を宣言位置へ並べ替える。理由: 穴の参照だけの `let x ⇐ return arg` を除き、呼ぶ式と固定式の評価順・回数を保つためである。
+diff --git a/docs/design/07-quality/07-04-formal-semantics.md b/docs/design/07-quality/07-04-formal-semantics.md
+index deff2b50..718dff33 100644
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -464,6 +464,8 @@ Surface の読者が表せない外部型を含む元定義は、理由 `externa
+ 
+ ### 01-12 との対応
+ 
++Rust の Scope 入力は、`Surface.CheckAccept` の `bodyKey`・`entryScope`・`primResolve` と、`ScopeAccept.occurrences` の番号に対応させる。標準の所有元と宣言の同一性で六宣言だけを認定し、名前付き引数のソース順と契約位置を別に保持する。本体の最初の右辺を 0 とし、文の始まりにも同じ番号を使う。これは `Interval.preorderBlock` の走査であり、区間解析の `bodyRoot` の根 0 は含めない。関数と実装メソッドの命名は共通の変換を使い、入口の位置は、辞書引数を前置した引数列に `Release.binds` と同じ逆順の対応を付け、最後の値引数を位置 0 とする。メソッドでは `MethodInput.names` と同じくメソッド自身の辞書だけを前置し、実装自身の辞書を入口数に加えない。普通のソースから得る番号を、Lean の定義から手で数えた独立期待値と照合する。この入力の対応の照合は、Scope の局所解析や狭い契約の受理、Rust と Lean の全比較の完了を意味しない。入力と番号の実装は [型検査器](../02-impl/02-05-typechecker.md) に定める。
++
+ 【決定】`Interval.FixedDomain` とその独立例を既定の import に含め、01-12「区間解析の直接引数と固定の定義域」に写す。シフト量は七種と Byte の幅に応じて `[0,w−1]`、Byte では `[0,7]` の契約を使う。引数の正常区間と正常域の不交差から、標準束縛に付く EvalStandardAt の結果が failed outsideDomain であることを示す。固定域の規則は EvalStandard の定義にあり、Release の δ・Builtins.Assumptions・中心二命題の前提には追加しない。域内の引数でも他の失敗を許し、左シフトの捨てるビットを算術のあふれへ読み替えない。
+ 
+ 固定域の局所補題だけから引数式のソース順の評価や解析全体の健全性は結論しない。固定域の表層 call と W0404 は、前述のとおり中心二定理へ接続する。実ソース・VM との意味の一致は証明の対象に含めない。標準束縛表の正しさと実本体・VM との一致は A1 の信頼の範囲として比較で確認する対象であり、独立例の成功をその一致の証拠にしない。
+diff --git a/crates/benitoite/src/typeck/scope/input.rs b/crates/benitoite/src/typeck/scope/input.rs
+new file mode 100644
+--- /dev/null
++++ b/crates/benitoite/src/typeck/scope/input.rs
+@@ -0,0 +1,660 @@
++//! 解決済みの構文からの構造入力と先行順番号
++//! （設計書 02-05「Scope の必須判定の入力」）。
++
++use super::*;
++use crate::base::BindingMap;
++use crate::modules::{ModuleKind, ModuleTable};
++use crate::resolve::{BindingKind, ResolveOutput};
++use crate::syntax::ast::*;
++use crate::types::Scheme;
++use std::collections::{BTreeMap, BTreeSet};
++
++const MAX_INPUT_DEPTH: u32 = 4096;
++
++enum Event {
++    Depth(u32),
++    Expression(ScopeOrigin, Span),
++    Constant(BindingId, NodeId),
++    Converter(NodeId, Span, bool),
++    Statement(NodeId, NodeId),
++    Call(Box<ScopeCall>),
++    Argument {
++        call: usize,
++        source: usize,
++        node: NodeId,
++    },
++    Stop(ScopeInputStop),
++}
++
++pub(super) struct PendingBody {
++    body: ScopeNumberedInput,
++    constant: bool,
++    events: Vec<Event>,
++}
++
++pub(super) struct Structure {
++    bodies: Vec<PendingBody>,
++    constants: BTreeMap<BindingId, usize>,
++    converters: NodeMap<bool>,
++    rules: Vec<bool>,
++}
++
++impl std::fmt::Debug for Structure {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("ScopeStructure")
++            .field("bodies", &self.bodies.len())
++            .finish_non_exhaustive()
++    }
++}
++
++pub(super) fn finish(bodies: Vec<PendingBody>, converters: NodeMap<bool>) -> ScopeInputs {
++    let constants: BTreeMap<_, _> = bodies
++        .iter()
++        .enumerate()
++        .filter_map(|(i, b)| b.constant.then_some((b.body.binding, i)))
++        .collect();
++    // 定数の参照を共有したまま、規則の存在を逆向きに伝える。各辺は一度だけ辿る。
++    let mut rules: Vec<_> = bodies
++        .iter()
++        .map(|b| {
++            b.body.stopped.is_some()
++                || b.events
++                    .iter()
++                    .any(|e| matches!(e, Event::Call(_) | Event::Stop(_)))
++        })
++        .collect();
++    let mut users = vec![Vec::new(); bodies.len()];
++    for (index, body) in bodies.iter().enumerate() {
++        for event in &body.events {
++            if let Event::Constant(binding, _) = event
++                && let Some(target) = constants.get(binding)
++                && let Some(list) = users.get_mut(*target)
++            {
++                list.push(index);
++            }
++        }
++    }
++    let mut queue: std::collections::VecDeque<_> = rules
++        .iter()
++        .enumerate()
++        .filter_map(|(i, r)| r.then_some(i))
++        .collect();
++    while let Some(index) = queue.pop_front() {
++        for user in users.get(index).into_iter().flatten() {
++            if let Some(false) = rules.get(*user)
++                && let Some(rule) = rules.get_mut(*user)
++            {
++                *rule = true;
++                queue.push_back(*user);
++            }
++        }
++    }
++    let structure = std::sync::Arc::new(Structure {
++        bodies,
++        constants,
++        converters,
++        rules,
++    });
++    ScopeInputs {
++        bodies: structure
++            .bodies
++            .iter()
++            .enumerate()
++            .map(|(index, b)| ScopeBodyInput {
++                body_key: b.body.body_key.clone(),
++                binding: b.body.binding,
++                entry: b.body.entry.clone(),
++                structure: std::sync::Arc::clone(&structure),
++                index,
++            })
++            .collect(),
++    }
++}
++
++struct ReadFrame {
++    body: usize,
++    event: usize,
++    calls: Vec<usize>,
++    depth: u32,
++    offset: u32,
++}
++
++impl Structure {
++    pub fn contains_rules(&self, index: usize) -> bool {
++        self.rules.get(index).copied().unwrap_or(false)
++    }
++
++    pub fn number(&self, index: usize, mut body: ScopeNumberedInput) -> ScopeNumberedInput {
++        body.stopped = self.bodies.get(index).and_then(|b| b.body.stopped);
++        let mut next = 0_u64;
++        let mut stack = vec![ReadFrame {
++            body: index,
++            event: 0,
++            calls: Vec::new(),
++            depth: 0,
++            offset: 0,
++        }];
++        while let Some(frame) = stack.last_mut() {
++            let Some(event) = self
++                .bodies
++                .get(frame.body)
++                .and_then(|b| b.events.get(frame.event))
++            else {
++                stack.pop();
++                continue;
++            };
++            frame.event = frame.event.saturating_add(1);
++            let (origin, span) = match event {
++                Event::Depth(depth) => {
++                    frame.depth = *depth;
++                    if frame.offset.saturating_add(*depth) > MAX_INPUT_DEPTH {
++                        body.stopped = Some(ScopeInputStop::Depth);
++                        break;
++                    }
++                    continue;
++                }
++                Event::Expression(origin, span) => (*origin, *span),
++                Event::Constant(binding, node) => {
++                    let Some(index) = self.constants.get(binding) else {
++                        body.stopped = Some(ScopeInputStop::MissingInput(*node));
++                        break;
++                    };
++                    // 定数の参照は constE の子だけを展開し、定義自身の最初の文の印を含めない。
++                    let offset = frame.offset.saturating_add(frame.depth).saturating_add(1);
++                    stack.push(ReadFrame {
++                        body: *index,
++                        event: 1,
++                        calls: Vec::new(),
++                        depth: 0,
++                        offset,
++                    });
++                    continue;
++                }
++                Event::Converter(node, span, formatted) => {
++                    match if *formatted {
++                        Some(true)
++                    } else {
++                        self.converters.get(*node).copied()
++                    } {
++                        Some(true) => (ScopeOrigin::InterpolationConverter(*node), *span),
++                        Some(false) => continue,
++                        None => {
++                            body.stopped = Some(ScopeInputStop::PendingInterpolation(*node));
++                            break;
++                        }
++                    }
++                }
++                Event::Statement(statement, rhs) => {
++                    body.statements.push(ScopeStatement {
++                        statement: *statement,
++                        rhs: *rhs,
++                        preorder: next,
++                    });
++                    continue;
++                }
++                Event::Call(call) => {
++                    frame.calls.push(body.calls.len());
++                    let mut call = call.as_ref().clone();
++                    call.preorder = next;
++                    body.calls.push(call);
++                    continue;
++                }
++                Event::Argument { call, source, node } => {
++                    let Some(target) = frame.calls.get(*call).and_then(|i| body.calls.get_mut(*i))
++                    else {
++                        body.stopped = Some(ScopeInputStop::MissingInput(*node));
++                        break;
++                    };
++                    if target.argument_preorders.len() != *source {
++                        body.stopped = Some(ScopeInputStop::MissingInput(*node));
++                        break;
++                    }
++                    target.argument_preorders.push(next);
++                    continue;
++                }
++                Event::Stop(stop) => {
++                    body.stopped = Some(*stop);
++                    break;
++                }
++            };
++            let Some(after) = next.checked_add(1) else {
++                body.stopped = Some(ScopeInputStop::NumberOverflow);
++                break;
++            };
++            body.occurrences.push(ScopeOccurrence {
++                preorder: next,
++                origin,
++                span,
++            });
++            next = after;
++        }
++        body
++    }
++}
++
++enum Task<'a> {
++    Expr(&'a Expr),
++    Conditional(&'a IfExpr),
++    Block(&'a Block),
++    With(&'a WithExpr, usize),
++    Emit(Event),
++}
++
++struct Collector<'a> {
++    resolved: &'a ResolveOutput,
++    schemes: &'a BindingMap<Scheme>,
++    constants: &'a BTreeMap<BindingId, &'a ConstDecl>,
++    standard: &'a BTreeMap<BindingId, ScopeDeclaration>,
++    events: Vec<Event>,
++    stack: Vec<(Task<'a>, u32)>,
++    calls: usize,
++}
++
++impl<'a> Collector<'a> {
++    fn later(&mut self, task: Task<'a>, depth: u32) {
++        self.stack.push((task, depth.saturating_add(1)));
++    }
++
++    fn emit(&mut self, origin: ScopeOrigin, span: Span) {
++        self.events.push(Event::Expression(origin, span));
++    }
++
++    fn reference(&self, node: NodeId) -> Option<BindingId> {
++        self.resolved.refs.get(node).copied()
++    }
++
++    fn call(&self, call: &CallExpr) -> Option<ScopeCall> {
++        let Expr::Name(name) = call.callee.as_ref() else {
++            return None;
++        };
++        let binding = self.reference(name.id)?;
++        let declaration = *self.standard.get(&binding)?;
++        if self.resolved.builder_calls.get(call.id).is_some() {
++            return None;
++        }
++        let scheme = self.schemes.get(binding)?;
++        if call.args.len() != scheme.param_names.len() {
++            return None;
++        }
++        let mut arguments = Vec::new();
++        let mut source_to_contract = Vec::new();
++        let mut seen = BTreeSet::new();
++        for (source, arg) in call.args.iter().enumerate() {
++            arguments.push(arg.expr()?.id());
++            let position = match arg {
++                Arg::Named(arg) => scheme
++                    .param_names
++                    .iter()
++                    .position(|n| n == &arg.name.text)?,
++                Arg::Expr(_) | Arg::Placeholder(_) => source,
++            };
++            if !seen.insert(position) {
++                return None;
++            }
++            source_to_contract.push(position);
++        }
++        let contract_to_source = (0..arguments.len())
++            .map(|position| source_to_contract.iter().position(|p| *p == position))
++            .collect::<Option<Vec<_>>>()?;
++        Some(ScopeCall {
++            preorder: 0,
++            node: call.id,
++            declaration,
++            binding,
++            arguments,
++            argument_preorders: Vec::new(),
++            source_to_contract,
++            contract_to_source,
++        })
++    }
++
++    fn block(&mut self, block: &'a Block, depth: u32) {
++        for stmt in block.stmts.iter().rev() {
++            let (statement, rhs) = match stmt {
++                Stmt::Bind(b) if self.resolved.builder_binds.get(b.id).is_some() => continue,
++                Stmt::Bind(b) => (b.id, &b.value),
++                Stmt::Expr(e) => (e.id(), e),
++                Stmt::Error(e) => {
++                    self.later(
++                        Task::Emit(Event::Stop(ScopeInputStop::MissingInput(e.id))),
++                        depth,
++                    );
++                    continue;
++                }
++            };
++            self.later(Task::Expr(rhs), depth);
++            self.later(Task::Emit(Event::Statement(statement, rhs.id())), depth);
++        }
++    }
++
++    fn conditional(&mut self, conditional: &'a IfExpr, depth: u32) {
++        match &conditional.else_branch {
++            Some(ElseBranch::Block(b)) => self.later(Task::Block(b), depth),
++            Some(ElseBranch::If(e)) => self.later(Task::Conditional(e), depth),
++            None => (),
++        }
++        self.later(Task::Block(&conditional.then_block), depth);
++        self.later(Task::Expr(&conditional.cond), depth);
++    }
++
++    fn with(&mut self, source: &'a WithExpr, index: usize, depth: u32) {
++        let Some(bind) = source.binds.get(index) else {
++            self.events
++                .push(Event::Stop(ScopeInputStop::MissingInput(source.id)));
++            return;
++        };
++        if index != 0 {
++            self.emit(ScopeOrigin::WithBinding(bind.id), bind.span);
++        }
++        if index.saturating_add(1) < source.binds.len() {
++            self.later(Task::With(source, index.saturating_add(1)), depth);
++        } else {
++            self.later(Task::Block(&source.body), depth);
++        }
++        self.later(Task::Expr(&bind.value), depth);
++    }
++
++    fn expression(&mut self, expr: &'a Expr, depth: u32) {
++        let scope_call = if let Expr::Call(call) = expr
++            && let Some(call) = self.call(call)
++        {
++            let ordinal = self.calls;
++            self.calls = self.calls.saturating_add(1);
++            self.events.push(Event::Call(Box::new(call)));
++            Some(ordinal)
++        } else {
++            None
++        };
++        self.emit(ScopeOrigin::Expression(expr.id()), expr.span());
++        match expr {
++            Expr::Name(n) => {
++                if let Some(id) = self.reference(n.id)
++                    && self
++                        .resolved
++                        .bindings
++                        .get(id)
++                        .is_some_and(|b| matches!(b.kind, BindingKind::Const))
++                {
++                    if self.constants.contains_key(&id) {
++                        self.events.push(Event::Constant(id, n.id));
++                    } else {
++                        self.events
++                            .push(Event::Stop(ScopeInputStop::MissingInput(n.id)));
++                    }
++                }
++            }
++            Expr::Lit(_) | Expr::Unit(_) => (),
++            Expr::Paren(p) => self.later(Task::Expr(&p.inner), depth),
++            Expr::Call(c) => {
++                let builder_call = self.resolved.builder_calls.get(c.id);
++                let constructor = if let Expr::Name(n) = c.callee.as_ref() {
++                    self.reference(n.id)
++                        .and_then(|id| self.resolved.bindings.get(id))
++                        .is_some_and(|b| {
++                            matches!(b.kind, BindingKind::Ctor { .. } | BindingKind::Record)
++                        })
++                } else {
++                    false
++                };
++                let builder = builder_call.and_then(|b| b.builder);
++                for (source, arg) in c.args.iter().enumerate().rev() {
++                    if let Some(e) = arg.expr() {
++                        if matches!(e, Expr::Name(n) if builder.is_some_and(|b| self.reference(n.id) == Some(b.0)))
++                        {
++                            continue;
++                        }
++                        self.later(Task::Expr(e), depth);
++                        if let Some(call) = scope_call {
++                            self.later(
++                                Task::Emit(Event::Argument {
++                                    call,
++                                    source,
++                                    node: e.id(),
++                                }),
++                                depth,
++                            );
++                        }
++                    }
++                }
++                if builder_call.is_none() && !constructor {
++                    self.later(Task::Expr(&c.callee), depth);
++                }
++            }
++            Expr::Binary(b) => {
++                self.later(Task::Expr(&b.rhs), depth);
++                self.later(Task::Expr(&b.lhs), depth);
++            }
++            Expr::Pipe(p) => {
++                self.later(Task::Expr(&p.rhs), depth);
++                self.later(Task::Expr(&p.lhs), depth);
++            }
++            Expr::Unary(u) => {
++                if u.op == UnOp::Not || !matches!(u.operand.as_ref(), Expr::Lit(_)) {
++                    self.later(Task::Expr(&u.operand), depth);
++                }
++            }
++            Expr::Return(r) => self.later(Task::Expr(&r.value), depth),
++            Expr::Resume(r) => self.later(Task::Expr(&r.value), depth),
++            Expr::Record(r) => {
++                for field in r.fields.iter().rev() {
++                    self.later(Task::Expr(&field.value), depth);
++                }
++                if let Some(base) = &r.base {
++                    self.later(Task::Expr(base), depth);
++                }
++            }
++            Expr::List(l) => {
++                for element in l.elems.iter().rev() {
++                    match element {
++                        ListElem::Expr(e) => self.later(Task::Expr(e), depth),
++                        ListElem::Spread(s) => self.later(Task::Expr(&s.expr), depth),
++                    }
++                }
++                if l.elems.iter().any(|e| matches!(e, ListElem::Spread(_))) {
++                    self.later(
++                        Task::Emit(Event::Expression(
++                            ScopeOrigin::ListConcatenate(l.id),
++                            l.span,
++                        )),
++                        depth,
++                    );
++                }
++            }
++            Expr::Interp(i) => {
++                for segment in i.segments.iter().rev() {
++                    self.later(
++                        Task::Emit(Event::Converter(
++                            segment.expr.id(),
++                            segment.span,
++                            segment.format.is_some(),
++                        )),
++                        depth,
++                    );
++                }
++                for segment in i.segments.iter().rev() {
++                    self.later(Task::Expr(&segment.expr), depth);
++                }
++            }
++            Expr::Lambda(l) => self.later(Task::Block(&l.body), depth),
++            Expr::Lazy(l) => self.later(Task::Block(&l.body), depth),
++            Expr::Block(b) => self.later(Task::Block(&b.body), depth),
++            Expr::If(i) => self.conditional(i, depth),
++            Expr::Match(m) => {
++                for arm in m.arms.iter().rev() {
++                    self.later(Task::Block(&arm.body), depth);
++                    if let Some(guard) = &arm.guard {
++                        self.later(Task::Expr(guard), depth);
++                    }
++                }
++                self.later(Task::Expr(&m.scrutinee), depth);
++            }
++            Expr::Try(t) => {
++                if let TryAction::Die {
++                    message: Some(message),
++                    ..
++                } = &t.action
++                {
++                    self.later(Task::Expr(message), depth);
++                }
++                self.later(Task::Expr(&t.value), depth);
++            }
++            Expr::With(w) => self.with(w, 0, depth),
++            Expr::Handle(h) => {
++                for clause in h.clauses.iter().rev() {
++                    self.later(Task::Block(&clause.body), depth);
++                }
++                self.later(Task::Block(&h.body), depth);
++            }
++            Expr::Error(e) => self
++                .events
++                .push(Event::Stop(ScopeInputStop::MissingInput(e.id))),
++        }
++    }
++
++    fn run(mut self, task: Task<'a>) -> Vec<Event> {
++        self.stack.push((task, 0));
++        while let Some((task, depth)) = self.stack.pop() {
++            if depth > MAX_INPUT_DEPTH {
++                self.events.push(Event::Stop(ScopeInputStop::Depth));
++                break;
++            }
++            self.events.push(Event::Depth(depth));
++            match task {
++                Task::Expr(e) => self.expression(e, depth),
++                Task::Conditional(i) => {
++                    self.emit(ScopeOrigin::Conditional(i.id), i.span);
++                    self.conditional(i, depth);
++                }
++                Task::Block(b) => self.block(b, depth),
++                Task::With(w, index) => self.with(w, index, depth),
++                Task::Emit(e) => self.events.push(e),
++            }
++            if matches!(self.events.last(), Some(Event::Stop(_))) {
++                break;
++            }
++        }
++        self.events
++    }
++}
++
++fn standard_declarations(
++    modules: &ModuleTable,
++    resolved: &ResolveOutput,
++) -> BTreeMap<BindingId, ScopeDeclaration> {
++    use ScopeDeclaration::*;
++    [
++        ("Benitoite.Scope", CheckPath),
++        ("Benitoite.Network.Http", CheckRequest),
++        ("Benitoite.Scope", PathValue),
++        ("Benitoite.Network.Http", RequestValue),
++        ("Benitoite.Scope", WidenPath),
++        ("Benitoite.Network.Http", WidenRequest),
++    ]
++    .into_iter()
++    .filter_map(|(module_name, declaration)| {
++        let short = declaration.name().rsplit('.').next()?;
++        let binding = resolved.stdlib(&format!("{module_name}.{short}"))?;
++        let owner = resolved.bindings.get(binding)?;
++        let module = modules.get(owner.module)?;
++        (matches!(module.kind, ModuleKind::Prelude | ModuleKind::Stdlib)
++            && module.name.dotted() == module_name
++            && owner.name == short
++            && matches!(owner.kind, BindingKind::BuiltinFn(_)))
++        .then_some((binding, declaration))
++    })
++    .collect()
++}
++
++pub(super) fn collect(
++    asts: &[Module],
++    modules: &ModuleTable,
++    resolved: &ResolveOutput,
++    schemes: &BindingMap<Scheme>,
++    implementations: &NodeMap<crate::types::ImplDef>,
++) -> Vec<PendingBody> {
++    use crate::typeck::source_input::{BodySource, definitions};
++    let definitions: Vec<_> = definitions(asts, modules, resolved)
++        .filter_map(Result::ok)
++        .collect();
++    let constants = definitions
++        .iter()
++        .filter_map(|d| match d.source {
++            BodySource::Constant(c) => Some((d.binding, c)),
++            _ => None,
++        })
++        .collect();
++    let standard = standard_declarations(modules, resolved);
++    definitions
++        .iter()
++        .map(|d| {
++            let mut stopped = None;
++            let scheme = schemes.get(d.binding);
++            let captured = match resolved.bindings.get(d.binding).map(|b| b.kind) {
++                Some(BindingKind::ImplFn { impl_decl }) => implementations
++                    .get(impl_decl)
++                    .map(|i| i.class_constraints.len()),
++                Some(_) => Some(0),
++                None => None,
++            };
++            // 実装自身の辞書は捕捉環境であり、MethodInput.names の明示引数ではない。
++            // 脱糖がメソッド自身の辞書を取り出すのと同じ範囲を使う。
++            let dictionaries = scheme
++                .and_then(|s| captured.and_then(|n| s.class_constraints.len().checked_sub(n)))
++                .unwrap_or_else(|| {
++                    stopped = Some(ScopeInputStop::MissingInput(d.source.node()));
++                    0
++                });
++            let mut positions = vec![None; dictionaries];
++            positions.extend(
++                d.source
++                    .params()
++                    .iter()
++                    .map(|p| resolved.decls.get(p.id).copied()),
++            );
++            // binds は引数列を反転する。entryScope の idAt(0) は最後の値引数である。
++            positions.reverse();
++            let next_id = u64::try_from(positions.len()).unwrap_or_else(|_| {
++                stopped = Some(ScopeInputStop::NumberOverflow);
++                0
++            });
++            let body = ScopeNumberedInput {
++                body_key: ScopeKey {
++                    definition: d.name.clone(),
++                    surface_preorder: 0,
++                },
++                binding: d.binding,
++                entry: ScopeEntry {
++                    dictionaries,
++                    positions,
++                    next_id,
++                },
++                occurrences: Vec::new(),
++                statements: Vec::new(),
++                calls: Vec::new(),
++                stopped,
++            };
++            let collector = Collector {
++                resolved,
++                schemes,
++                constants: &constants,
++                standard: &standard,
++                events: Vec::new(),
++                stack: Vec::new(),
++                calls: 0,
++            };
++            let events = match d.source {
++                BodySource::Constant(c) => {
++                    let mut events = vec![Event::Statement(c.id, c.value.id())];
++                    events.extend(collector.run(Task::Expr(&c.value)));
++                    events
++                }
++                BodySource::Function { body, .. } => collector.run(Task::Block(body)),
++            };
++            PendingBody {
++                body,
++                constant: matches!(d.source, BodySource::Constant(_)),
++                events,
++            }
++        })
++        .collect()
++}
+diff --git a/crates/benitoite/src/typeck/scope/mod.rs b/crates/benitoite/src/typeck/scope/mod.rs
+new file mode 100644
+--- /dev/null
++++ b/crates/benitoite/src/typeck/scope/mod.rs
+@@ -0,0 +1,227 @@
++//! 型の確定から独立した Scope の必須判定の入力
++//! （設計書 02-05「Scope の必須判定の入力」）。
++//! 構造を先に収集し、番号付けだけに必要な補間の変換の有無を後から補う。
++
++mod input;
++#[cfg(test)]
++mod tests;
++
++use crate::base::{BindingId, NodeId, NodeMap, Span};
++
++/// Lean の ruleDeclarations が認定する標準宣言。
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum ScopeDeclaration {
++    /// パスの検査。
++    CheckPath,
++    /// 要求の検査。
++    CheckRequest,
++    /// パスの射影。
++    PathValue,
++    /// 要求の射影。
++    RequestValue,
++    /// パスの明示拡大。
++    WidenPath,
++    /// 要求の明示拡大。
++    WidenRequest,
++}
++
++impl ScopeDeclaration {
++    /// Lean の標準宣言の名前。
++    pub fn name(self) -> &'static str {
++        match self {
++            Self::CheckPath => "Scope.checkPathIn",
++            Self::CheckRequest => "Http.checkRequestIn",
++            Self::PathValue => "Scope.pathInValue",
++            Self::RequestValue => "Http.requestInValue",
++            Self::WidenPath => "Scope.widenPathIn",
++            Self::WidenRequest => "Http.widenRequestIn",
++        }
++    }
++}
++
++/// 定義の名前と表層の先行順番号の組。AST の NodeId と区別する。
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct ScopeKey {
++    /// モジュールを含む元定義名。入れ子も囲む定義名を保つ。
++    pub definition: String,
++    /// 本体の先頭の右辺は 0。
++    pub surface_preorder: u64,
++}
++
++/// 本体入口の束縛番号。Lean の de Bruijn の位置に Rust の束縛を対応させる。
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct ScopeEntry {
++    /// 明示的な辞書の引数の個数。メソッドが捕捉した実装自身の辞書は含めない。
++    pub dictionaries: usize,
++    /// entryScope.idAt(index) = index に対応する束縛。最後の値引数が位置 0、辞書は None。
++    pub positions: Vec<Option<BindingId>>,
++    /// 次に使う新しい束縛番号。
++    pub next_id: u64,
++}
++
++/// 表層への正規化で得る出現の由来。
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum ScopeOrigin {
++    /// 元の式。
++    Expression(NodeId),
++    /// else if の式。
++    Conditional(NodeId),
++    /// 複数の with を一つずつの with へ写した位置。
++    WithBinding(NodeId),
++    /// リストの展開が補う concatenate。
++    ListConcatenate(NodeId),
++    /// 文字列補間の変換関数。
++    InterpolationConverter(NodeId),
++}
++
++/// 番号を付けた一つの表層の式。容器や専用束縛には項目を作らない。
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct ScopeOccurrence {
++    /// 本体内の先行順番号。
++    pub preorder: u64,
++    /// 元の式または正規化で補う式の由来。
++    pub origin: ScopeOrigin,
++    /// 元ソースの位置。
++    pub span: Span,
++}
++
++/// 文の始まり。preorder は右辺の出現の番号と同じである。
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct ScopeStatement {
++    /// 元の文のノード番号。
++    pub statement: NodeId,
++    /// 右辺のノード番号。
++    pub rhs: NodeId,
++    /// 右辺の先行順番号。
++    pub preorder: u64,
++}
++
++/// 標準と同定された直接呼び出し。ソース順と契約順を別々に保つ。
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct ScopeCall {
++    /// 呼び出し式の先行順番号。
++    pub preorder: u64,
++    /// 呼び出し式のノード番号。
++    pub node: NodeId,
++    /// 所有元と宣言の同一性を確認した標準の宣言。
++    pub declaration: ScopeDeclaration,
++    /// 解決済みの標準宣言の束縛番号。
++    pub binding: BindingId,
++    /// ソース順の引数のノード番号。
++    pub arguments: Vec<NodeId>,
++    /// ソース順の引数自身の開始番号。停止時は取得できた接頭辞を保つ。
++    pub argument_preorders: Vec<u64>,
++    /// ソース順の各引数の契約内の位置。
++    pub source_to_contract: Vec<usize>,
++    /// 契約順の各引数がソースの何番目にあるか。
++    pub contract_to_source: Vec<usize>,
++}
++
++/// 入力の取得を止めた理由。未知の事実や Top の選択とは区別する。
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum ScopeInputStop {
++    /// 構文の深さが入力取得の上限を超えた。
++    Depth,
++    /// 番号を表現できない。
++    NumberOverflow,
++    /// 入力の参照・宣言・引数の対応が欠けている。
++    MissingInput(NodeId),
++    /// 補間の変換の有無がまだ決まっていない。
++    PendingInterpolation(NodeId),
++}
++
++/// 一つの本体を読み取り、番号を付けた入力。局所解析の結果や型の表を含まない。
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct ScopeNumberedInput {
++    /// 本体の入口の鍵。番号は常に 0。
++    pub body_key: ScopeKey,
++    /// 元定義の束縛番号。
++    pub binding: BindingId,
++    /// 辞書の引数を含む入口の束縛番号。
++    pub entry: ScopeEntry,
++    /// 取得できた出現の接頭辞。
++    pub occurrences: Vec<ScopeOccurrence>,
++    /// 文の始まりと右辺の同じ番号。
++    pub statements: Vec<ScopeStatement>,
++    /// 同定できた標準の直接呼び出し。
++    pub calls: Vec<ScopeCall>,
++    /// 未取得の理由。停止後の番号を詰め直さない。
++    pub stopped: Option<ScopeInputStop>,
++}
++
++/// 元定義一つの共有された構造入力。定数の参照先を本体ごとに複写しない。
++#[derive(Clone, Debug)]
++pub struct ScopeBodyInput {
++    /// 本体の入口の鍵。番号は常に 0。
++    pub body_key: ScopeKey,
++    /// 元定義の束縛番号。
++    pub binding: BindingId,
++    /// 明示的な辞書の引数と値引数の入口。
++    pub entry: ScopeEntry,
++    structure: std::sync::Arc<input::Structure>,
++    index: usize,
++}
++
++impl ScopeBodyInput {
++    /// 定数の参照先を含め、規則対象の直接呼び出しを含むかを共有表から読む。
++    /// 規則がない本体の自明な受理には番号列の展開を要しない。
++    /// 入力の取得が停止した本体も true として、規則がないとは判定しない。
++    pub fn contains_rules(&self) -> bool {
++        self.structure.contains_rules(self.index)
++    }
++
++    /// 比較・診断・後続の解析のために、この本体の番号付き入力を読み取る。
++    /// 定数を参照する各出現も、囲む定義の同じ先行順で展開する。
++    pub fn numbered(&self) -> ScopeNumberedInput {
++        self.structure.number(
++            self.index,
++            ScopeNumberedInput {
++                body_key: self.body_key.clone(),
++                binding: self.binding,
++                entry: self.entry.clone(),
++                occurrences: Vec::new(),
++                statements: Vec::new(),
++                calls: Vec::new(),
++                stopped: None,
++            },
++        )
++    }
++}
++
++/// 元ソースの順の入力。型検査の公開入口から後続へ渡す。
++#[derive(Clone, Debug, Default)]
++pub struct ScopeInputs {
++    /// 本体を持つ全ての定数・関数・実装メソッド。
++    pub bodies: Vec<ScopeBodyInput>,
++}
++
++/// 構造入力は宣言検査直後に作る。ここには推論後の型も警告も入らない。
++#[derive(Default)]
++pub(in crate::typeck) struct Inputs {
++    bodies: Vec<input::PendingBody>,
++    converters: NodeMap<bool>,
++}
++
++impl Inputs {
++    pub fn collect(
++        asts: &[crate::syntax::ast::Module],
++        modules: &crate::modules::ModuleTable,
++        resolved: &crate::resolve::ResolveOutput,
++        schemes: &crate::base::BindingMap<crate::types::Scheme>,
++        implementations: &crate::base::NodeMap<crate::types::ImplDef>,
++    ) -> Self {
++        Self {
++            bodies: input::collect(asts, modules, resolved, schemes, implementations),
++            converters: NodeMap::default(),
++        }
++    }
++
++    /// 補間の番号付けに必要な Boolean だけを保存する。finalize や区間解析を呼ばない。
++    pub fn interpolation(&mut self, node: NodeId, converter: bool) {
++        self.converters.insert(node, converter);
++    }
++
++    pub fn finish(self) -> ScopeInputs {
++        input::finish(self.bodies, self.converters)
++    }
++}
+diff --git a/crates/benitoite/src/typeck/scope/tests.rs b/crates/benitoite/src/typeck/scope/tests.rs
+new file mode 100644
+--- /dev/null
++++ b/crates/benitoite/src/typeck/scope/tests.rs
+@@ -0,0 +1,407 @@
++//! 型検査の公開入口が返す入力と、Lean の規則から手で数えた独立期待値。
++// 関門: 独立した契約は標準の同一性、引数の契約位置、先行順、入口の辞書位置である。
++// コンテナや穴を数える、名前付き引数を並べ替えて数える、入れ子を0へ戻す退行を捕まえる。
++// 既存の区間の検査は合成した本体根を数え、Scope の先頭右辺0を検査しない。
++// 読み込み・名前解決・型検査は本物を使い、テスト用の本番差し込み口を増やさない。
++#![allow(
++    clippy::unwrap_used,
++    clippy::expect_used,
++    clippy::panic,
++    clippy::indexing_slicing
++)]
++
++use super::*;
++
++fn check(source: &str) -> (crate::resolve::ResolveOutput, crate::typeck::TypeckOutput) {
++    let (_, resolved, out, diagnostics) =
++        crate::typeck::test_support::check_files(&[(".bnt", source)], false);
++    assert!(
++        !diagnostics.iter().any(crate::diag::Diagnostic::is_error),
++        "{diagnostics:#?}"
++    );
++    (resolved, out)
++}
++
++fn body(out: &crate::typeck::TypeckOutput, name: &str) -> ScopeNumberedInput {
++    let body = out
++        .scope_inputs
++        .bodies
++        .iter()
++        .find(|b| b.body_key.definition == name)
++        .unwrap_or_else(|| {
++            panic!(
++                "missing {name}, found {:?}",
++                out.scope_inputs
++                    .bodies
++                    .iter()
++                    .map(|b| &b.body_key.definition)
++                    .collect::<Vec<_>>()
++            )
++        });
++    let body = body.numbered();
++    assert_eq!(body.body_key.surface_preorder, 0);
++    assert_eq!(body.stopped, None);
++    body
++}
++
++#[test]
++fn source_preorder_keeps_nested_bodies_guards_and_named_arguments() {
++    let source = r#"import Benitoite.Unofficial.Scope
++function sample(path: String) -> Unit
++ bind checked <- Scope.checkPathIn(path: path, pattern: "/data/**")
++ bind f <- lambda(x: String) -> Unit
++  bind _ <- Scope.checkPathIn(pattern: "/tmp/**", path: x)
++  ()
++ end lambda
++ bind delayed <- lazy
++  Scope.checkPathIn(pattern: "/cache/**", path: path)
++ end lazy
++ bind _ <- match true with
++ case true if false -> Scope.checkPathIn(pattern: "/a/**", path: path)
++ case _ -> Scope.checkPathIn(pattern: "/b/**", path: path)
++ end match
++ ()
++end function
++"#;
++    let (resolved, out) = check(source);
++    let sample = body(&out, ".sample");
++    // 手計算: call0/callee1/path2/pattern3, lambda4/call5..8/unit9,
++    // lazy10/call11..14, match15/scrutinee16/guard17/call18..21/call22..25/unit26。
++    assert_eq!(sample.occurrences.len(), 27);
++    assert_eq!(
++        sample.calls.iter().map(|c| c.preorder).collect::<Vec<_>>(),
++        [0, 5, 11, 18, 22]
++    );
++    assert_eq!(
++        sample
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0, 4, 5, 9, 10, 11, 15, 18, 22, 26]
++    );
++    for statement in &sample.statements {
++        assert_eq!(
++            sample.occurrences[usize::try_from(statement.preorder).unwrap()].origin,
++            ScopeOrigin::Expression(statement.rhs)
++        );
++    }
++    let call = &sample.calls[0];
++    assert_eq!(
++        call.binding,
++        resolved.stdlib("Benitoite.Scope.checkPathIn").unwrap()
++    );
++    assert_eq!(call.declaration, ScopeDeclaration::CheckPath);
++    assert_eq!(call.argument_preorders, [2, 3]);
++    assert_eq!(call.source_to_contract, [1, 0]);
++    assert_eq!(call.contract_to_source, [1, 0]);
++    assert_eq!(sample.entry.dictionaries, 0);
++    assert_eq!(sample.entry.next_id, 1);
++}
++
++#[test]
++fn entry_scope_matches_explicit_function_and_method_arguments() {
++    let source = r#"import Benitoite.Unofficial.Scope
++trait Inspect[T]
++ function inspect[U: Inspect](value: T, other: U) -> Unit
++end trait
++implement[T: Inspect] Inspect[List[T]]
++ function inspect[U: Inspect](value: List[T], other: U) -> Unit
++  bind _ <- Scope.checkPathIn(pattern: "/data/**", path: "/data/a")
++  ()
++ end function
++end implement
++function constrained[T: Inspect](value: T) -> Unit
++ bind _ <- Scope.checkPathIn(pattern: "/tmp/**", path: "/tmp/a")
++ ()
++end function
++"#;
++    let (resolved, out) = check(source);
++    for (name, dictionaries, values, next) in
++        [("%impl:1:0:inspect", 1, 2, 3), (".constrained", 1, 1, 2)]
++    {
++        let input = body(&out, name);
++        assert_eq!(input.entry.dictionaries, dictionaries);
++        assert_eq!(input.entry.next_id, next);
++        assert_eq!(input.entry.positions.len(), dictionaries + values);
++        assert!(input.entry.positions[values..].iter().all(Option::is_none));
++        let value_names: Vec<_> = input.entry.positions[..values]
++            .iter()
++            .map(|b| resolved.bindings.get(b.unwrap()).unwrap().name.as_str())
++            .collect();
++        assert_eq!(
++            value_names,
++            if values == 2 {
++                vec!["other", "value"]
++            } else {
++                vec!["value"]
++            }
++        );
++        assert_eq!(
++            input.calls.iter().map(|c| c.preorder).collect::<Vec<_>>(),
++            [0]
++        );
++        assert_eq!(
++            input
++                .statements
++                .iter()
++                .map(|s| s.preorder)
++                .collect::<Vec<_>>(),
++            [0, 4]
++        );
++    }
++    assert!(
++        out.scope_inputs
++            .bodies
++            .iter()
++            .any(|b| b.body_key.definition.starts_with("Benitoite.")),
++        "standard bodies are included"
++    );
++}
++
++#[test]
++fn standard_identity_and_contract_order_use_resolved_declarations() {
++    let source = r#"import Benitoite.Unofficial.Scope
++import Benitoite.Unofficial.Network.Http
++function checkPathIn(pattern: String, path: String) -> String
++ return path
++end function
++function sample(request: Http.ClientRequest, path: Scope.PathIn, checked: Http.RequestIn) -> Unit
++ bind _ <- Http.checkRequestIn(request: request, maximumPort: 443, hostPattern: "api.example", minimumPort: 80)
++ bind _ <- Scope.pathInValue(path)
++ bind _ <- Http.requestInValue(checked)
++ bind _ <- Scope.checkPathIn(pattern: "/**", path: "/a")
++ bind _ <- checkPathIn(pattern: "/**", path: "/a")
++ bind _ <- Scope.checkPath(pattern: "/**", path: "/a")
++ bind indirect <- Scope.checkPathIn
++ bind _ <- indirect(pattern: "/**", path: "/a")
++ ()
++end function
++"#;
++    let (resolved, out) = check(source);
++    let input = body(&out, ".sample");
++    assert_eq!(
++        input
++            .calls
++            .iter()
++            .map(|c| (c.preorder, c.declaration))
++            .collect::<Vec<_>>(),
++        [
++            (0, ScopeDeclaration::CheckRequest),
++            (6, ScopeDeclaration::PathValue),
++            (9, ScopeDeclaration::RequestValue),
++            (12, ScopeDeclaration::CheckPath)
++        ]
++    );
++    assert_eq!(input.calls[0].argument_preorders, [2, 3, 4, 5]);
++    assert_eq!(input.calls[0].source_to_contract, [3, 2, 0, 1]);
++    assert_eq!(input.calls[0].contract_to_source, [2, 3, 1, 0]);
++    assert_eq!(
++        input.calls[0].binding,
++        resolved
++            .stdlib("Benitoite.Network.Http.checkRequestIn")
++            .unwrap()
++    );
++    assert_eq!(
++        input.calls[1].binding,
++        resolved.stdlib("Benitoite.Scope.pathInValue").unwrap()
++    );
++    assert_eq!(
++        input.calls[2].binding,
++        resolved
++            .stdlib("Benitoite.Network.Http.requestInValue")
++            .unwrap()
++    );
++    assert_eq!(
++        input
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0, 6, 9, 12, 16, 20, 24, 25, 29]
++    );
++    assert_eq!(input.occurrences.len(), 30);
++}
++
++#[test]
++fn normalization_counts_const_bodies_and_only_present_interpolation_converters() {
++    let source = r#"import Benitoite.Unofficial.Scope
++const number: Integer = 7
++const pattern: String = "/**"
++function sample(text: String) -> Unit
++ bind xs <- [1, ..[2], 3]
++ bind message <- "${text}:${number}"
++ bind _ <- Scope.checkPathIn(pattern: pattern, path: text)
++ bind _ <- Scope.checkPathIn(path: text, pattern: pattern)
++ ()
++end function
++"#;
++    let (_, out) = check(source);
++    let input = body(&out, ".sample");
++    // listSpread0/concat1/int2/list3/int4/int5; interpolation6/text7/const8/int9/converter10;
++    // call11/callee12/const13/pattern14/text15、call16/callee17/text18/const19/pattern20、unit21。
++    assert_eq!(
++        input
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0, 6, 11, 16, 21]
++    );
++    assert_eq!(input.calls[0].preorder, 11);
++    assert_eq!(input.occurrences.len(), 22);
++    assert_eq!(input.calls[0].argument_preorders, [13, 15]);
++    assert_eq!(input.calls[1].argument_preorders, [18, 19]);
++    assert_eq!(input.calls[1].source_to_contract, [1, 0]);
++    assert_eq!(input.occurrences[14].origin, input.occurrences[20].origin);
++    assert_ne!(
++        input.occurrences[14].preorder,
++        input.occurrences[20].preorder
++    );
++    assert!(matches!(
++        input.occurrences[1].origin,
++        ScopeOrigin::ListConcatenate(_)
++    ));
++    assert!(matches!(
++        input.occurrences[10].origin,
++        ScopeOrigin::InterpolationConverter(_)
++    ));
++    assert_eq!(
++        input
++            .occurrences
++            .iter()
++            .filter(|e| matches!(e.origin, ScopeOrigin::InterpolationConverter(_)))
++            .count(),
++        1
++    );
++    assert!(
++        out.scope_inputs
++            .bodies
++            .iter()
++            .find(|b| b.body_key.definition == ".sample")
++            .unwrap()
++            .contains_rules()
++    );
++    assert!(
++        !out.scope_inputs
++            .bodies
++            .iter()
++            .find(|b| b.body_key.definition == ".pattern")
++            .unwrap()
++            .contains_rules()
++    );
++    let constant = body(&out, ".number");
++    assert_eq!(constant.occurrences.len(), 1);
++    assert_eq!(constant.statements[0].preorder, 0);
++
++    // 全本体を列挙したまま、末尾一つだけを読む。根0、定数の子を一段ずつ進め、
++    // 深さ4096までの4097出現を残す。停止後に葉を詰めて補わない。
++    let mut chain = String::from("const d0: Integer = 0\n");
++    for index in 1..=4097 {
++        chain.push_str(&format!("const d{index}: Integer = d{}\n", index - 1));
++    }
++    // 長い入力は通常の公開パイプラインと同じ段ごとのスタックで検査する。
++    let checked = crate::pipeline::check_text(
++        "scope-chain.bnt",
++        chain.as_bytes(),
++        crate::pipeline::CheckOptions {
++            require_main: false,
++            deny_warnings: false,
++        },
++    );
++    assert_eq!(checked.error_count(), 0, "{:?}", checked.diagnostics);
++    let out = checked.program.unwrap().types;
++    let chain_bodies: Vec<_> = out
++        .scope_inputs
++        .bodies
++        .iter()
++        .filter(|b| b.body_key.definition.starts_with(".d"))
++        .collect();
++    assert_eq!(chain_bodies.len(), 4098);
++    let tail = chain_bodies.last().unwrap();
++    assert!(!tail.contains_rules());
++    let numbered = tail.numbered();
++    assert_eq!(numbered.stopped, Some(ScopeInputStop::Depth));
++    assert_eq!(numbered.occurrences.len(), 4097);
++    assert_eq!(numbered.occurrences.last().unwrap().preorder, 4096);
++}
++
++#[test]
++fn dedicated_bindings_and_handler_clauses_follow_surface_preorder() {
++    let source = r#"import Benitoite.StringBuilder
++import Benitoite.Unofficial.IO.Process
++effect E
++ function get() -> Integer
++ function other() -> Integer
++end effect
++function builder() -> String
++ bind b: StringBuilder <- StringBuilder.new()
++ StringBuilder.append(text: "a", builder: b)
++ return StringBuilder.copy(b)
++end function
++function resources() -> Unit uses State
++ with first = TaskGroup.open(), second = TaskGroup.open() do
++ ()
++ end with
++end function
++function handlers() -> Unit
++ bind n <- handle get() with
++ case get() -> resume(2)
++ case other() -> resume(3)
++ end handle
++ ()
++end function
++function partial() -> function(a: Integer) -> Integer
++ return Integer.minimum(a: _, b: -1)
++end function
++"#;
++    let (_, out) = check(source);
++    // 専用束縛は0個、append0/text1/return2/copy3。
++    let builder = body(&out, ".builder");
++    assert_eq!(builder.occurrences.len(), 4);
++    assert_eq!(
++        builder
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0, 2]
++    );
++    // with0/open-call1/callee2/with3/open-call4/callee5/unit6。
++    let resources = body(&out, ".resources");
++    assert_eq!(resources.occurrences.len(), 7);
++    assert_eq!(
++        resources
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0, 6]
++    );
++    assert!(matches!(
++        resources.occurrences[3].origin,
++        ScopeOrigin::WithBinding(_)
++    ));
++    // handle0/get-call1/callee2/最初の節resume3/int4/次の節resume5/int6/unit7。
++    let handlers = body(&out, ".handlers");
++    assert_eq!(handlers.occurrences.len(), 8);
++    assert_eq!(
++        handlers
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0, 1, 3, 5, 7]
++    );
++    // return0/partialCall1/callee2/negInt3。穴は0個、負のリテラルは子を持たない。
++    let partial = body(&out, ".partial");
++    assert_eq!(partial.occurrences.len(), 4);
++    assert_eq!(
++        partial
++            .statements
++            .iter()
++            .map(|s| s.preorder)
++            .collect::<Vec<_>>(),
++        [0]
++    );
++}
+diff --git a/crates/benitoite/src/typeck/source_input.rs b/crates/benitoite/src/typeck/source_input.rs
+new file mode 100644
+--- /dev/null
++++ b/crates/benitoite/src/typeck/source_input.rs
+@@ -0,0 +1,154 @@
++//! 型の確定に依存しない元定義の列挙と本体の識別
++//! （設計書 02-05「Scope の必須判定の入力」）。
++
++use crate::base::{BindingId, ModuleId, NodeId};
++use crate::modules::ModuleTable;
++use crate::resolve::ResolveOutput;
++use crate::syntax::ast::{Block, ConstDecl, FnDecl, Item, Module, Param};
++
++/// 定数の評価順・本体の検査完了順から独立した、元の定義の順。
++#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
++pub(in crate::typeck) struct SourceOrder {
++    pub module: ModuleId,
++    pub declaration: usize,
++    pub method: Option<usize>,
++}
++
++/// 定数の値は Surface.Block.last に包む。AST の複製や合成 NodeId は作らない。
++#[derive(Clone, Copy, Debug)]
++pub(in crate::typeck) enum BodySource<'ast> {
++    Constant(&'ast ConstDecl),
++    Function {
++        declaration: &'ast FnDecl,
++        body: &'ast Block,
++    },
++}
++
++impl<'ast> BodySource<'ast> {
++    pub fn node(self) -> NodeId {
++        match self {
++            Self::Constant(c) => c.id,
++            Self::Function { declaration, .. } => declaration.id,
++        }
++    }
++
++    pub fn params(self) -> &'ast [Param] {
++        match self {
++            Self::Constant(_) => &[],
++            Self::Function { declaration, .. } => &declaration.params,
++        }
++    }
++}
++
++/// 元 AST の定義一つ。impl のメソッドも kind は function とする。
++#[derive(Clone, Debug)]
++pub(in crate::typeck) struct Definition<'ast> {
++    pub order: SourceOrder,
++    pub binding: BindingId,
++    pub name: String,
++    pub source: BodySource<'ast>,
++}
++
++/// 不正な入力は Top と区別する。予算による停止・未同定は番号付けの段で扱う。
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub(in crate::typeck) enum InputError {
++    InvalidBody,
++    WrongBody,
++    MissingBinding(NodeId),
++    MissingModule(ModuleId),
++    WrongModule(NodeId),
++    MissingType(NodeId),
++    InvalidType(NodeId),
++}
++
++/// 型の確定を待たずに対象を列挙するための候補。有効性は利用側が検査する。
++/// 外部宣言・trait の署名を含めず、検査用の生成関数は通常の Item::Fn として含む。
++pub(in crate::typeck) fn definitions<'ast>(
++    asts: &'ast [Module],
++    modules: &'ast ModuleTable,
++    resolved: &'ast ResolveOutput,
++) -> impl Iterator<Item = Result<Definition<'ast>, InputError>> + 'ast {
++    asts.iter().flat_map(move |ast| {
++        ast.decls.iter().enumerate().flat_map(move |(index, top)| {
++            let (single, methods) = match &top.item {
++                Item::Const(c) => (Some(BodySource::Constant(c)), None),
++                Item::Fn(f) => (
++                    f.body.as_ref().map(|body| BodySource::Function {
++                        declaration: f,
++                        body,
++                    }),
++                    None,
++                ),
++                Item::Impl(i) => (None, Some(i.fns.as_slice())),
++                Item::Data(_)
++                | Item::Alias(_)
++                | Item::ExternalType(_)
++                | Item::Record(_)
++                | Item::Trait(_)
++                | Item::Effect(_)
++                | Item::Error(_) => (None, None),
++            };
++            let methods = methods
++                .into_iter()
++                .flatten()
++                .enumerate()
++                .filter_map(|(method, f)| {
++                    f.decl.body.as_ref().map(|body| {
++                        (
++                            Some(method),
++                            BodySource::Function {
++                                declaration: &f.decl,
++                                body,
++                            },
++                        )
++                    })
++                });
++            single
++                .into_iter()
++                .map(|source| (None, source))
++                .chain(methods)
++                .map(move |(method, source)| {
++                    let node = source.node();
++                    let binding = *resolved
++                        .decls
++                        .get(node)
++                        .ok_or(InputError::MissingBinding(node))?;
++                    let declaration = resolved
++                        .bindings
++                        .get(binding)
++                        .ok_or(InputError::MissingBinding(node))?;
++                    let module = declaration.module;
++                    // AST 配列は ModuleId 順。別モジュールの回復値を受け入れない。
++                    if usize::try_from(module.0)
++                        .ok()
++                        .and_then(|i| asts.get(i))
++                        .map(|m| m.id)
++                        != Some(ast.id)
++                    {
++                        return Err(InputError::WrongModule(node));
++                    }
++                    let module_name = modules
++                        .get(module)
++                        .ok_or(InputError::MissingModule(module))?
++                        .name
++                        .dotted();
++                    let name = match method {
++                        Some(method) => {
++                            format!("{module_name}%impl:{index}:{method}:{}", declaration.name)
++                        }
++                        None => format!("{module_name}.{}", declaration.name),
++                    };
++                    Ok(Definition {
++                        order: SourceOrder {
++                            module,
++                            declaration: index,
++                            method,
++                        },
++                        binding,
++                        name,
++                        source,
++                    })
++                })
++        })
++    })
++}

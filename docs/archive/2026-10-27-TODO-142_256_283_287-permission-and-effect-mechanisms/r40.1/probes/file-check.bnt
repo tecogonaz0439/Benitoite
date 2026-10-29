@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(path: String) -> Result[String, IOError] uses File.Read["/**"]
+ bind checked: Result[Scope.PathIn["/**"], Scope.ScopeError] <- Scope.checkPathIn(pattern: "/**", path: path)
+ return match checked with
+ case Result.Ok(checkedPath) -> File.readTextIn(path: checkedPath)
+ case Result.Error(_) -> Result.Ok("failed check")
+ end match
+end function
+function main() -> Unit
+end function

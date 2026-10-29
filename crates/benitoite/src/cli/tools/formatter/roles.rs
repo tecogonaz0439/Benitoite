@@ -51,6 +51,8 @@ pub struct RoleTable {
     pub roles: Vec<TokenRole>,
     /// トップレベルの宣言（import の宣言を含む）の範囲。ソースの順
     pub top: Vec<TopRange>,
+    /// 内部の空白も元のまま写す、不正な範囲引数の要素。ソース順で重複を含まない。
+    pub verbatim: Vec<Span>,
 }
 
 use crate::base::Span;

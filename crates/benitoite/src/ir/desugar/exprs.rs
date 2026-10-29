@@ -194,6 +194,14 @@ impl State<'_> {
                 n.id
             ))),
         }?;
+        if let ValKind::Builtin { ranges, .. } = &mut result.kind {
+            *ranges = self
+                .types
+                .call_ranges
+                .get(n.id)
+                .cloned()
+                .ok_or_else(|| error(format!("missing accepted call ranges for {:?}", n.id)))?;
+        }
         // 名前・型・エフェクトは検査済みの参照の型から保持する（設計書 02-05「出力」）。
         result.ty = self.ty(n.id)?;
         Ok(result)
@@ -941,7 +949,7 @@ impl State<'_> {
     #[inline(never)]
     fn list(&mut self, e: &ast::ListExpr) -> Result<Comp, InternalError> {
         let ty = self.ty(e.id)?;
-        let Ty::Con(TyCon::Builtin(b), types) = &ty else {
+        let Ty::Con(TyCon::Builtin(b), types, _) = &ty else {
             return Err(error("list type expected"));
         };
         if *b != BuiltinTypeId::LIST {
@@ -1083,7 +1091,7 @@ impl State<'_> {
         let adt = self.reference(e.id)?;
         let ty = self.ty(e.id)?;
         let tys = if let Some(base) = &e.base {
-            let Ty::Con(TyCon::Adt(a), tys) = self.ty(base.id())? else {
+            let Ty::Con(TyCon::Adt(a), tys, _) = self.ty(base.id())? else {
                 return Err(error("record base type expected"));
             };
             if a != adt {
@@ -1283,8 +1291,8 @@ fn value_types(args: &TypeArgs) -> Result<Vec<Ty>, InternalError> {
 }
 fn basic_id(ty: &Ty) -> Result<BuiltinTypeId, InternalError> {
     match ty {
-        Ty::Con(TyCon::Builtin(b), args) if args.is_empty() => Ok(*b),
-        Ty::Con(_, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
+        Ty::Con(TyCon::Builtin(b), args, _) if args.is_empty() => Ok(*b),
+        Ty::Con(_, _, _) | Ty::Fn(_) | Ty::Param(_) | Ty::App(_, _) | Ty::Rigid { .. } => {
             Err(error(format!("basic type expected: {ty:?}")))
         }
     }

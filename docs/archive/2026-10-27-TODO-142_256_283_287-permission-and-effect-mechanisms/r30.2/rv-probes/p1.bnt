@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function sample(a: Scope.PathIn["/data/a"], b: Scope.PathIn["/logs/b"]) -> Unit uses File.Write["/data/a"]
+ bind op <- File.writeTextIn
+ bind _ <- op(path: a, text: "x")
+ bind _ <- op(path: b, text: "y")
+ ()
+end function
+function main() -> Unit
+ ()
+end function

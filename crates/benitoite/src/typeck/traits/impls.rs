@@ -29,7 +29,9 @@ fn head_scheme(i: &ImplDef) -> Scheme {
 fn target_ty(i: &ImplDef) -> Ty {
     match &i.target {
         TypeArg::Ty(t) => t.clone(),
-        TypeArg::Head(TyHead::Con(c)) => Ty::Con(*c, vec![]),
+        TypeArg::Head(TyHead::Con(c)) => {
+            Ty::Con(*c, vec![], crate::types::builtin::RangeIndex::TOP)
+        }
         TypeArg::Head(TyHead::Param(i)) => Ty::App(*i, vec![]),
     }
 }
@@ -184,7 +186,7 @@ pub(super) fn check(d: &mut Decls<'_>) {
 fn check_shape(d: &mut Decls<'_>, source: &ImplDecl, i: &ImplDef) {
     let mut used = BTreeSet::new();
     let valid = match &i.target {
-        TypeArg::Ty(Ty::Con(_, args)) => args.iter().all(|t| {
+        TypeArg::Ty(Ty::Con(_, args, _)) => args.iter().all(|t| {
             if let Ty::Param(p) = t {
                 used.insert(*p)
             } else {

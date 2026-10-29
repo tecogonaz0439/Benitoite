@@ -1,0 +1,160 @@
+== wait-for-lock start 20:04:29
+== lock acquired 20:04:29 after 0s
+✔ [136/417] Built Benitoite.Release.Assumptions (373ms)
+✔ [138/417] Built Benitoite.Release.Lemmas.FailureBase (404ms)
+✖ [139/417] Building Benitoite.Release.Lemmas.ContLemmas (461ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/ContLemmas.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/ContLemmas.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/ContLemmas.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/ContLemmas.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/ContLemmas.setup.json --json
+error: Benitoite/Release/Lemmas/ContLemmas.lean:63:37: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:75:62: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:75:93: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:121:94: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:163:25: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:163:54: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:330:26: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:332:26: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:332:56: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+warning: Benitoite/Release/Lemmas/ContLemmas.lean:335:8: declaration uses `sorry`
+error: Benitoite/Release/Lemmas/ContLemmas.lean:393:27: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:395:28: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:395:57: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:414:67: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Release/Lemmas/ContLemmas.lean:414:96: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+✔ [140/417] Built Benitoite.Release.Examples (847ms)
+✔ [141/417] Built Benitoite.Release.Lemmas.Regularity (1.7s)
+✔ [144/417] Built Benitoite.Release.Lemmas.OuterC (1.7s)
+✔ [146/417] Built Benitoite.Release.Lemmas.SubstTyping (2.3s)
+✔ [148/417] Built Benitoite.Release.Lemmas.TySubst (360ms)
+✔ [152/417] Built Benitoite.Release.Lemmas.TySubst:c.o (98ms)
+✔ [153/417] Built Benitoite.Release.CoverageTypes (838ms)
+✔ [155/417] Built Benitoite.Release.Lemmas.TySubstMain (3.4s)
+✖ [172/417] Building Benitoite.Release.Coverage (4.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Coverage.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Coverage.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Coverage.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Coverage.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Coverage.setup.json --json
+error: Benitoite/Release/Coverage.lean:2249:44: Application type mismatch: The argument
+  "O"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Const.opaque "O"
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.ContLemmas
+- Benitoite.Release.Coverage
+error: build failed
+       11.55 real        26.24 user         2.54 sys
+          1064812544  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              582243  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  36  voluntary context switches
+               93134  involuntary context switches
+          1542305764  instructions retired
+           629530673  cycles elapsed
+            38438208  peak memory footprint
+== exit 1

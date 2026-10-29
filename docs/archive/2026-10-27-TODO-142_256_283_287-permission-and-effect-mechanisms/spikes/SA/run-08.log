@@ -1,0 +1,35 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+SA.lean:891:19: error(lean.unknownIdentifier): Unknown identifier `not_forall`
+SA.lean:891:31: error(lean.unknownIdentifier): Unknown identifier `not_implies`
+SA.lean:891:8: error: `simp` made no progress
+SA.lean:1076:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'norm', which is 'noncomputable'
+'SA.Maximal.eq_of_sub_of_sub' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SA.Maximal.norm_idem' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SA.Maximal.normAtomsWith_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SA.Maximal.norm_rawBind' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SA.Maximal.bind_comp' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SA.Maximal.bind_union' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SA.Maximal.union_empty_right_nested' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SA.Structural.mutual_sub_neq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SA.Structural.bind_comp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SA.Structural.bind_union' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SA.Structural.union_empty_right_nested' depends on axioms: [propext, Classical.choice, Quot.sound]
+        1.02 real         1.78 user         0.34 sys
+           742326272  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47881  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+               15462  involuntary context switches
+         13488728091  instructions retired
+          6165566435  cycles elapsed
+           188931600  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

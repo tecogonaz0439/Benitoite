@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.Failure
+import Benitoite.Unofficial.IO.Console
+
+function recovered() -> Integer
+  return handle Failure.raise(error: "bad") with
+    case Failure.raise(error) -> String.characterCount(error)
+  end handle
+end function
+
+function main() -> Unit uses Console.Write
+  Console.writeLine(Integer.toString(recovered()))
+end function

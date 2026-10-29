@@ -1,0 +1,287 @@
+{
+ "affected_modules": 249,
+ "checked_affected": 246,
+ "failed_modules": [
+  "Benitoite.Scope.RepresentationExamplesI",
+  "Benitoite.Scope.TopCompat"
+ ],
+ "error_diagnostics": 21,
+ "sorry_warnings_from_errors": 3,
+ "broken_declarations": 9,
+ "broken_files": 2,
+ "declarations": [
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "def liftAtoms",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "def ofRelease",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "def toRelease?",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "example <example@309>",
+   "errors": 5
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "theorem liftAtoms_ofRelease",
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "theorem liftAtoms_single",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "theorem toRelease_eq_some",
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "decl": "theorem toRelease_ofRelease",
+   "errors": 2
+  },
+  {
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "decl": "theorem lift_single",
+   "errors": 7
+  }
+ ],
+ "files": [
+  "Benitoite/Scope/RepresentationExamplesI.lean",
+  "Benitoite/Scope/TopCompat.lean"
+ ],
+ "unchecked_count": 3,
+ "unchecked": [
+  "Benitoite",
+  "Benitoite.Scope.CompatExamples",
+  "Benitoite.Scope.SwitchExamples"
+ ],
+ "diagnostics": [
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 237,
+   "col": 66,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 247,
+   "col": 23,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "Type mismatch"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 248,
+   "col": 14,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "Unknown identifier `h`"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 249,
+   "col": 47,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 249,
+   "col": 6,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "unsolved goals"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 243,
+   "col": 16,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "unsolved goals"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/TopCompat.lean",
+   "line": 252,
+   "col": 31,
+   "decl": "theorem lift_single",
+   "decl_line": 236,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 155,
+   "col": 4,
+   "decl": "def ofRelease",
+   "decl_line": 154,
+   "msg": "Type mismatch"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 160,
+   "col": 25,
+   "decl": "def toRelease?",
+   "decl_line": 159,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 165,
+   "col": 14,
+   "decl": "theorem toRelease_ofRelease",
+   "decl_line": 164,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 165,
+   "col": 14,
+   "decl": "theorem toRelease_ofRelease",
+   "decl_line": 164,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 175,
+   "col": 45,
+   "decl": "theorem toRelease_eq_some",
+   "decl_line": 171,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "warning",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 174,
+   "col": 38,
+   "decl": "theorem toRelease_eq_some",
+   "decl_line": 171,
+   "msg": "declaration uses `sorry`"
+  },
+  {
+   "kind": "warning",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 174,
+   "col": 50,
+   "decl": "theorem toRelease_eq_some",
+   "decl_line": 171,
+   "msg": "declaration uses `sorry`"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 209,
+   "col": 22,
+   "decl": "def liftAtoms",
+   "decl_line": 208,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 215,
+   "col": 14,
+   "decl": "theorem liftAtoms_ofRelease",
+   "decl_line": 213,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 215,
+   "col": 14,
+   "decl": "theorem liftAtoms_ofRelease",
+   "decl_line": 213,
+   "msg": "Tactic `rfl` failed: The left-hand side"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 234,
+   "col": 6,
+   "decl": "theorem liftAtoms_single",
+   "decl_line": 226,
+   "msg": "unsolved goals"
+  },
+  {
+   "kind": "warning",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 232,
+   "col": 17,
+   "decl": "theorem liftAtoms_single",
+   "decl_line": 226,
+   "msg": "declaration uses `sorry`"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 317,
+   "col": 0,
+   "decl": "example <example@309>",
+   "decl_line": 309,
+   "msg": "cannot evaluate code because 'Benitoite.Scope.RepresentationExamples.CandidateI.Atom.toRelease?' uses 'sorry' and/or con"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 318,
+   "col": 39,
+   "decl": "example <example@309>",
+   "decl_line": 309,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 318,
+   "col": 69,
+   "decl": "example <example@309>",
+   "decl_line": 309,
+   "msg": "Type mismatch"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 319,
+   "col": 0,
+   "decl": "example <example@309>",
+   "decl_line": 309,
+   "msg": "cannot evaluate code because 'Benitoite.Scope.RepresentationExamples.CandidateI.liftAtoms' uses 'sorry' and/or contains "
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Scope/RepresentationExamplesI.lean",
+   "line": 320,
+   "col": 0,
+   "decl": "example <example@309>",
+   "decl_line": 309,
+   "msg": "cannot evaluate code because 'Benitoite.Scope.RepresentationExamples.CandidateI.liftAtoms' uses 'sorry' and/or contains "
+  }
+ ]
+}

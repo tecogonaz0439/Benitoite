@@ -1,0 +1,59 @@
+== wait-for-lock start 18:14:56
+== lock acquired 18:14:56 after 0s
+✔ [66/410] Built Benitoite.Release.Syntax (567ms)
+✔ [68/410] Built Benitoite.Surface.BuilderSyntax (314ms)
+✔ [70/410] Built Benitoite.Release.Subst (526ms)
+✔ [71/410] Built Benitoite.Interval.Domain (538ms)
+✔ [74/410] Built Benitoite.Surface.BuilderLower (517ms)
+✔ [76/410] Built Benitoite.Release.SubstExamples (566ms)
+✔ [77/410] Built Benitoite.Release.Order.Shift (536ms)
+✔ [78/410] Built Benitoite.Release.LocalRef (562ms)
+✔ [80/410] Built Benitoite.Surface.FormatSpec (1.4s)
+✔ [82/410] Built Benitoite.Interval.Budget (1.0s)
+✔ [84/410] Built Benitoite.Interval.BudgetExamples (286ms)
+✖ [85/410] Building Benitoite.Release.Typing (1.4s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Typing.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.setup.json --json
+warning: Benitoite/Release/Typing.lean:126:12: Variable name `r` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _r
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+error: Benitoite/Release/Typing.lean:485:32: Application type mismatch: The argument
+  Ty.opaque o
+has type
+  ScopeRange → Ty
+but is expected to have type
+  Ty
+in the application
+  HasTypeVQ P B Ψ Q C Γ v (Ty.opaque o)
+error: Benitoite/Release/Typing.lean:486:52: Application type mismatch: The argument
+  Atom.name stateEff
+has type
+  ScopeRange → Atom
+but is expected to have type
+  Atom
+in the application
+  ε.mem (Atom.name stateEff)
+Some required targets logged failures:
+- Benitoite.Release.Typing
+error: build failed
+        2.63 real         7.19 user         3.08 sys
+           778846208  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              552784  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  35  voluntary context switches
+               35309  involuntary context switches
+          1376519966  instructions retired
+           549406099  cycles elapsed
+            27329760  peak memory footprint
+== exit 1

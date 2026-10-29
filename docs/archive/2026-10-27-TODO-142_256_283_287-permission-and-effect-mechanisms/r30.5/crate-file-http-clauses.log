@@ -1,0 +1,73 @@
+$ git grep -n -E case[[:space:]]+(File\.|Http\.) -- crates/benitoite
+crates/benitoite/skill/SKILL.md:207:    case File.readText(_) -> resume(Result.Ok("alpha\nbeta\n"))
+crates/benitoite/skill/references/idioms.md:766:    case File.readText(path) ->
+crates/benitoite/src/typeck/scope/measure.rs:199:const READ_CLAUSES: &str = r#"case File.readText(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:200: case File.openReader(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:201: case File.readLine(reader) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:202: case File.readBytes(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:203: case File.readTextIn(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:204: case File.readBytesIn(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:205: case File.readLines(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:206: case File.exists(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:207: case File.info(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:208: case File.listDirectory(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:209: case File.walk(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:210: case File.canonicalize(path) -> 0
+crates/benitoite/src/typeck/scope/measure.rs:211: case File.readChunk(reader, maximumBytes) -> 0"#;
+crates/benitoite/src/typeck/scope/measure.rs:220:        "case File.readText(path) -> 0"
+crates/benitoite/src/typeck/scoped_calls_tests.rs:238:            "function sample{generics}({params}) -> Integer uses IO.All{}\n return handle\n{body}\nwith\n case File.readText(captured) -> resume(Result.Ok(\"\"))\nend handle\nend function",
+crates/benitoite/src/typeck/scoped_calls_tests.rs:266:   case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:299:   case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:337:  case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:354:  case File.readText(captured) -> resume(Result.Ok(""))
+crates/benitoite/src/typeck/scoped_calls_tests.rs:372:  case File.readText(captured) ->
+crates/benitoite/src/typeck/scoped_calls_tests.rs:403:        "case File.readText(captured) -> resume(Result.Ok(\"\"))",
+crates/benitoite/src/typeck/scoped_calls_tests.rs:404:        "case File.readText(captured) ->\n    bind _: Scope.PathIn[\"/data/a\"] <- captured\n    resume(Result.Ok(\"\"))",
+crates/benitoite/testdata/acceptance/test_replaces_effects.bnt:49:    case File.writeText(path, text) ->
+crates/benitoite/testdata/handlers/c12-builtin-port.bnt:17:    case File.readText(path) ->
+crates/benitoite/testdata/handlers/first-release-port.bnt:13:    case File.readText(path) ->
+crates/benitoite/testdata/packages/todo-handler/main.bnt:13:    case File.readText(path) ->
+crates/benitoite/testdata/test/handler_replacement.bnt:15:    case File.readText(path) ->
+crates/benitoite/tests/runtime_builtins.rs:2124: case File.readTextIn(captured) ->
+crates/benitoite/tests/scope_annotations.rs:1171:            "match value with case Http.RequestIn(request: _) -> () end match",
+crates/benitoite/tests/scoped_calls.rs:462: case File.openReader(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:463: case File.readLine(reader) -> 0
+crates/benitoite/tests/scoped_calls.rs:464: case File.readBytes(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:465: case File.readTextIn(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:466: case File.readBytesIn(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:467: case File.readLines(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:468: case File.exists(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:469: case File.info(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:470: case File.listDirectory(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:471: case File.walk(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:472: case File.canonicalize(path) -> 0
+crates/benitoite/tests/scoped_calls.rs:473: case File.readChunk(reader, maximumBytes) -> 0"#;
+crates/benitoite/tests/scoped_calls.rs:504: case File.readText(path) -> {clause}
+crates/benitoite/tests/scoped_calls.rs:534:  case File.readText(path) -> 0
+crates/benitoite/tests/scoped_calls/file_io.rs:255:            "{IMPORTS}function sample(path: Scope.PathIn{index}) -> Result[String, IOError] uses File.Read{index}\n return handle File.readTextIn(path: path) with\n case File.readTextIn(captured) ->\n {clause}\n end handle\nend function"
+crates/benitoite/tests/scoped_calls/file_io.rs:297: case File.writeTextIn(captured, text) -> resume(accept(path: captured, text: text))
+crates/benitoite/tests/scoped_calls/file_io.rs:314: case File.writeTextIn(captured, text) ->
+crates/benitoite/tests/scoped_calls/file_io.rs:317: case File.writeText(path, text) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:318: case File.appendText(path, text) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:319: case File.writeBytes(path, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:320: case File.appendBytes(path, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:321: case File.appendTextIn(path, text) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:322: case File.writeBytesIn(path, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:323: case File.appendBytesIn(path, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:324: case File.createDirectory(path) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:325: case File.remove(path) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:326: case File.removeTree(path) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:327: case File.rename(from, to) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:328: case File.openWriter(path, mode) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:329: case File.write(writer, text) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:330: case File.writeLine(writer, text) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/file_io.rs:331: case File.writeChunk(writer, content) -> Result.Ok(())
+crates/benitoite/tests/scoped_calls/handler_selection.rs:29:  case File.readText(path) -> 0
+crates/benitoite/tests/scoped_calls/http_io.rs:232:            "{IMPORT}function sample(request: Http.RequestIn{index}) -> Result[Http.Response, NetworkError] uses Http.Connect{index}\n return handle Http.sendIn(request: request) with\n case Http.sendIn(captured) ->\n {clause}\n end handle\nend function"
+crates/benitoite/tests/scoped_calls/http_io.rs:246:            "{IMPORT}function sample(request: Http.ClientRequest) -> Result[Http.Response, NetworkError]{effect}\n return handle Http.send(request: request) with\n case Http.send(captured) -> Result.Ok(Http.text(status: 200, s: \"handled\"))\n end handle\nend function"
+crates/benitoite/tests/scoped_calls/http_io.rs:251:    let complete = old_only("").replace(" end handle", " case Http.sendIn(captured) -> Result.Ok(Http.text(status: 200, s: \"handled in\"))\n end handle");
+crates/benitoite/tests/scoped_calls/http_io.rs:263: case Http.sendIn(captured) -> resume(accept(request: captured))
+crates/benitoite/tests/scoped_calls/http_io.rs:281: case Http.sendIn(captured) ->
+crates/benitoite/tests/scoped_calls/http_io.rs:284: case Http.send(captured) -> Result.Ok(Http.text(status: 200, s: "old"))
+
+exit=0

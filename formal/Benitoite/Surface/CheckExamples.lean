@@ -1,5 +1,6 @@
 import Benitoite.Surface.CheckProgramSound
 import Benitoite.Release.Examples
+import Benitoite.Surface.PrimRange
 
 /-! 検査全体の公開入口と、実名付きの材料から型付けへの接続の評価例。
 対応する検査と保証の範囲は設計書 07-04「証明する性質」に従う。 -/
@@ -12,7 +13,7 @@ private def eInt (n : Integer64Literal) : Expr := .literal (.integer n)
 private def eTrue : Expr := .literal (.boolean true)
 private def eFalse : Expr := .literal (.boolean false)
 private def atoms : List Atom :=
-  [.name "State", .name "Console.Write", .name "A", .name "B"]
+  [.nameTop "State", .nameTop "Console.Write", .nameTop "A", .nameTop "B"]
 private def emptyDecls : Declarations := { funs := fun _ => none, cons := fun _ => none }
 private def input (D : Declarations := emptyDecls) : Input :=
   { D, B := Release.Examples.builtins, satDec := fun _ _ _ => true,
@@ -135,10 +136,10 @@ example : ([none, some (.literal (.string ""))] : List (Option Expr)).map (fun m
 section DieChecks
 
 private def strTy : Ty := .base .string
-private def errorTy : Ty := .opaque "Failure"
+private def errorTy : Ty := .opaqueTop "Failure"
 private def resultTy : Ty := .data "Result" [intTy, errorTy]
 private def optionTy : Ty := .data "Option" [intTy]
-private def dieAtoms : List Atom := [.name "Process.Exit", .name "A"]
+private def dieAtoms : List Atom := [.nameTop "Process.Exit", .nameTop "A"]
 private def showSig : MethSig :=
   { tparams := [], neffs := 0, names := ["x"], params := [.tvar 0], ret := strTy, eff := emptyEff }
 private def exitSig : PrimSig :=
@@ -211,7 +212,7 @@ example : ([{ exitSig with names := ["other"] }, { exitSig with params := [strTy
     List.replicate 4 (.error ⟨[], "die exit type mismatch"⟩) := by rfl
 example : dieRun { dieInput with admitsDec := fun _ _ _ => false } optionEnv (optionDie) =
     .error ⟨[], "die exit type arguments are not admitted"⟩ := by rfl
-example : dieRun { dieInput with atoms := [.name "A"] } optionEnv (optionDie) =
+example : dieRun { dieInput with atoms := [.nameTop "A"] } optionEnv (optionDie) =
     .error ⟨[], "Process.Exit effect is outside atoms"⟩ := by rfl
 
 -- 純粋性の失敗は説明自身の位置。return と resume は説明の遮蔽した境界で拒否する。
@@ -343,7 +344,7 @@ private def renderBuiltins : Builtins :=
     sig := fun b => if b == "intToString" then some {
       tparams := [], neffs := 0, names := ["value"], params := [intTy], ret := .base .string,
       eff := emptyEff, kind := .pure, opEff := none, admits := fun _ _ => True } else none
-    delta := fun b _ _ vs => match b, vs with
+    delta := fun b _ _ _ vs => match b, vs with
       | "intToString", [.const (.integer n)] => some (.val (.const (.string (toString n.toInt))))
       | _, _ => none }
 private def renderImpl (t : Ty) (body : Comp) : Release.ImplDecl :=
@@ -353,7 +354,7 @@ private def renderProgram : Release.Program :=
   { Release.Examples.program with
     ops := renderInput.D.ops, effects := renderInput.D.effects, classes := renderInput.D.classes,
     impls := fun i => match i with
-      | "ShowInt" => some (renderImpl intTy (.app (.prim "intToString" [] []) [.var 0]))
+      | "ShowInt" => some (renderImpl intTy (.app (.prim "intToString" [] [] []) [.var 0]))
       | "ShowString" => some (renderImpl (.base .string) (.ret (.var 0)))
       | _ => none }
 private noncomputable def renderResult (t : Ty) (impl : ImplName) (value : Val) : Option String :=
@@ -449,21 +450,21 @@ private def builtins : Builtins :=
           strTy emptyEff .pure)
       | "tagInt" => some (Release.Examples.sig [] ["value"] [intTy] strTy emptyEff .pure)
       | _ => renderBuiltins.sig b
-    delta := fun b ts es vs => match b, vs with
+    delta := fun b ts es rs vs => match b, vs with
       | "append", [.const (.string a), .const (.string b)] => some (.val (.const (.string (a ++ b))))
       | "tagInt", [.const (.integer n)] => some (.val (.const (.string ("tag" ++ toString n.toInt))))
-      | _, _ => renderBuiltins.delta b ts es vs
-    ioResponse := fun b ts es vs out => match b, vs with
-      | "first", [] => out = .val (.const (.integer ⟨7, by decide⟩))
-      | "second", [] => out = .val (.const (.integer ⟨9, by decide⟩))
-      | _, _ => renderBuiltins.ioResponse b ts es vs out
+      | _, _ => renderBuiltins.delta b ts es rs vs
+    ioResponse := fun b ts es vs out obs => match b, vs with
+      | "first", [] => out = .val (.const (.integer ⟨7, by decide⟩)) ∧ obs = []
+      | "second", [] => out = .val (.const (.integer ⟨9, by decide⟩)) ∧ obs = []
+      | _, _ => renderBuiltins.ioResponse b ts es vs out obs
     effects := fun e => if e == "B" then some ["first", "second"] else renderBuiltins.effects e }
 private def q : Input := { renderInput with D := declarations, B := builtins }
 private def env : List (Option Ty) :=
   [some (.dict "Fancy" intTy), some (.dict "Tag" intTy)]
 private def pairHead (ds : List DictEv := [.super (.local 0) "Show", .local 1]) : Expr :=
   .opDicts "pair" [intTy] ds ["first", "second"] [intTy, intTy]
-private def readArg (name : String) : Expr := .call (.primName name [] []) [] [] .nil
+private def readArg (name : String) : Expr := .call (.primName name [] [] []) [] [] .nil
 private def pairArgs : Exprs := .cons (readArg "second") (.cons (readArg "first") .nil)
 private def directCall : Expr := .call (pairHead) [some "second", some "first"] [1, 0] pairArgs
 private def partialPair : Expr :=
@@ -489,7 +490,7 @@ private def showValue (d : DictEv) (v : Expr) (method : String := "show") : Expr
 private def pairClause (depth : Nat := 1) (swapped : Bool := false) : Block :=
   .last (.resume 0 (.call
     (.lam ["unused"] [unitTy] strTy emptyEff
-      (.last (.returnE unitTy (.call (.primName "append" [] []) [some "left", some "right"] [0, 1]
+      (.last (.returnE unitTy (.call (.primName "append" [] [] []) [some "left", some "right"] [0, 1]
         (.cons (showValue (.clause ⟨2, 2, 2⟩ (if swapped then 1 else 0) depth) (.local 3))
           (.cons (showValue (.clause ⟨2, 2, 2⟩ 1 depth) (.local 2) "tag") .nil))))))
     [none] [0] (.cons .unit .nil)))
@@ -530,11 +531,11 @@ private def program : Release.Program :=
       | "TagInt" => some {
           tparams := [], dictParams := [], cls := "Tag", target := intTy,
           supers := fun _ => none,
-          methods := fun m => if m == "tag" then some (.app (.prim "tagInt" [] []) [.var 0]) else none }
+          methods := fun m => if m == "tag" then some (.app (.prim "tagInt" [] [] []) [.var 0]) else none }
       | _ => renderProgram.impls i }
 private def oracle : Oracle
-  | "first", _, _, _ => .val (.const (.integer ⟨7, by decide⟩))
-  | "second", _, _, _ => .val (.const (.integer ⟨9, by decide⟩))
+  | "first", _, _, _ => (.val (.const (.integer ⟨7, by decide⟩)), [])
+  | "second", _, _, _ => (.val (.const (.integer ⟨9, by decide⟩)), [])
   | b, ts, es, vs => Release.Examples.oracle b ts es vs
 
 -- 表示結果は辞書・値の配置を、事象列はソース順と一度だけの評価を観測する。
@@ -546,7 +547,7 @@ private noncomputable def result (e : Expr) : Option String × List PrimName :=
   let value := match s with
     | .run (.ret (.const (.string text))) [] _ => some text
     | _ => none
-  (value, events.filterMap fun ev => match ev with | .io b _ _ => some b | _ => none)
+  (value, events.filterMap fun ev => match ev with | .io b _ _ _ => some b | _ => none)
 
 example : calls.map result =
     [(some "7tag9", ["second", "first"]), (some "7tag9", ["second", "first"]),
@@ -557,7 +558,7 @@ example : calls.map result =
 private def fancyDecl : OpDecl :=
   { renderDecl with params := [.dict "Fancy" (.tvar 0), .tvar 0], dictParams := [("Fancy", 0)] }
 private def fancyInput : Input :=
-  { q with atoms := .name "R" :: q.atoms, D := { declarations with
+  { q with atoms := .nameTop "R" :: q.atoms, D := { declarations with
       ops := fun o => match o with
         | "fancy" => some fancyDecl
         | "render" => some { renderDecl with eff := "R" }
@@ -601,7 +602,7 @@ example : [false, true].map fancyResult = [some "7", some "7"] := by decide
 end OperationDictionaries
 
 -- リソースの State と、純粋な補間・直接の連結関数の契約。
-example : got (checkExpr (input) .strict [] [some (.opaque "File")] none .other []
+example : got (checkExpr (input) .strict [] [some (.opaqueTop "File")] none .other []
     (.withE "File" (.local 0) (.last (eInt ⟨1, by decide⟩)))) intTy (Eff.single "State") = true := by decide
 private def collectionBuiltins : Builtins :=
   { Release.Examples.builtins with sig := fun b => match b with
@@ -617,11 +618,11 @@ private def collectionInput : Input :=
     opPrim := CheckTables.makeOpPrim (fun op _ => match op with
       | .binary .add => some "addString" | _ => none) }
 example : got (checkExpr collectionInput .strict [] [] none .other []
-    (.listSpread intTy (.primName "concat" [] []) (.cons (eInt ⟨1, by decide⟩) .nil)
+    (.listSpread intTy (.primName "concat" [] [] []) (.cons (eInt ⟨1, by decide⟩) .nil)
       (.list intTy (.cons (eInt ⟨2, by decide⟩) .nil)) (.cons (eInt ⟨3, by decide⟩) .nil))) (.list intTy) = true := by decide
 example : got (checkExpr collectionInput .strict [] [] none .other []
     (.interpolation [.text "n=", .converted intTy] (.cons (eInt ⟨7, by decide⟩) .nil)
-      (.cons (.primName "toString" [] []) .nil))) (.base .string) = true := by decide
+      (.cons (.primName "toString" [] [] []) .nil))) (.base .string) = true := by decide
 
 namespace FormattedInterpolation
 
@@ -635,7 +636,7 @@ private def formatInput : Input :=
       sig := fun b => if b == "%Format.String" then some formatSig else collectionBuiltins.sig b } }
 private def value : Expr := .literal (.string "x")
 private def formatted : Expr := .interpolation [.formatted (.base .string) spec]
-  (.cons value .nil) (.cons (.primName "%Format.String" [] []) .nil)
+  (.cons value .nil) (.cons (.primName "%Format.String" [] [] []) .nil)
 
 -- Stringも固定シグネチャの整形を通り、型判断と検査器がともに受理する。
 example : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
@@ -646,9 +647,11 @@ example : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
   · exact .cons .E_Literal .nil
   · apply HasTypes.cons (ε := Eff.empty) (εs := Eff.empty) ?_ .nil
     have hhead : HasType emptyDecls formatInput.B formatInput.opPrim [] [] none .other
-        (.primName "%Format.String" [] [])
+        (.primName "%Format.String" [] [] [])
         (fnTy formatSig.names formatSig.params formatSig.ret formatSig.eff [] []) Eff.empty := by
-      apply HasType.E_Prim (s := formatSig) rfl
+      apply HasTypeQ.E_PrimNil (s := formatSig) rfl rfl
+        (PrimSig.inst_nil_of_canonical (by simp [formatSig, Release.Examples.sig, Ty.Canonical, Ty.norm])
+          (by simp [formatSig, Release.Examples.sig, Eff.fails, Eff.empty]))
       · simp [NamesWF, formatSig, Release.Examples.sig]
       · rfl
       · rfl
@@ -673,7 +676,7 @@ example : checkExpr formatInput .strict [] [] none .other [] formatted =
 -- 脱糖の期待値は符号化の関数を使わずに記す。省略精度は-1のままである。
 example : desugarExpr formatInput.opPrim .other formatted =
     .letIn (.ret (.const (.string "x")))
-      (.letIn (.app (.prim "%Format.String" [] [])
+      (.letIn (.app (.prim "%Format.String" [] [] [])
         [.var 0, .const (.integer ⟨7, by decide⟩), .const (.integer ⟨2, by decide⟩),
          .const (.integer ⟨0, by decide⟩), .const (.boolean false), .const (.boolean false),
          .const (.integer ⟨8, by decide⟩), .const (.integer ⟨-1, by decide⟩)])
@@ -683,17 +686,17 @@ example : desugarExpr formatInput.opPrim .other formatted =
 example : desugarExpr formatInput.opPrim .other
     (.interpolation [.formatted (.base .string) spec, .converted intTy, .stringExpr]
       (.cons (.local 0) (.cons (.local 1) (.cons (.local 2) .nil)))
-      (.cons (.primName "%Format.String" [] []) (.cons (.primName "toString" [] []) .nil))) =
+      (.cons (.primName "%Format.String" [] [] []) (.cons (.primName "toString" [] [] []) .nil))) =
     .letIn (.ret (.var 0))
       (.letIn (.ret (.var 2))
         (.letIn (.ret (.var 4))
-          (.letIn (.app (.prim "%Format.String" [] [])
+          (.letIn (.app (.prim "%Format.String" [] [] [])
             [.var 2, .const (.integer ⟨7, by decide⟩), .const (.integer ⟨2, by decide⟩),
              .const (.integer ⟨0, by decide⟩), .const (.boolean false), .const (.boolean false),
              .const (.integer ⟨8, by decide⟩), .const (.integer ⟨-1, by decide⟩)])
-            (.letIn (.app (.prim "toString" [] []) [.var 2])
-              (.letIn (.app (.prim "addString" [] []) [.var 1, .var 0])
-                (.app (.prim "addString" [] []) [.var 0, .var 3])))))) := by rfl
+            (.letIn (.app (.prim "toString" [] [] []) [.var 2])
+              (.letIn (.app (.prim "addString" [] [] []) [.var 1, .var 0])
+                (.app (.prim "addString" [] [] []) [.var 0, .var 3])))))) := by rfl
 
 -- 型別の値は局所変数から読み、判定器へ実際の固定シグネチャを渡す。
 -- 期待する受理集合をSupportedTypeやconverterTypeから生成しない。
@@ -702,7 +705,7 @@ private def typedInput (t : Ty) (s : PrimSig := formatSig) : Input :=
   let sg : PrimSig := { s with params := t :: s.params.tail }
   { formatInput with B := { formatInput.B with sig := fun b =>
       if b == "%Format.String" then Option.some sg else formatInput.B.sig b } }
-private def single (t : Ty) (s : FormatSpec) (head : Expr := .primName "%Format.String" [] []) : Expr :=
+private def single (t : Ty) (s : FormatSpec) (head : Expr := .primName "%Format.String" [] [] []) : Expr :=
   .interpolation [.formatted t s] (.cons (.local 0) .nil) (.cons head .nil)
 private def accepted : List (Ty × FormatSpec) :=
   [(.base .integer, { kind := .d }), (.base .integer8, { kind := .b, alternate := true }),
@@ -749,16 +752,16 @@ example : checkExpr (typedInput (.base .string) { formatSig with eff := Eff.sing
     .error ⟨[1, 0], "type is not included in the expected type"⟩ := by rfl
 
 -- 頭を得る式の効果も空でなければならないが、補間される値の効果は残す。
-private def printed : Expr := .call (.primName "print" [] []) [none] [0]
+private def printed : Expr := .call (.primName "print" [] [] []) [none] [0]
   (.cons (eInt ⟨1, by decide⟩) .nil)
 example : checkExpr formatInput .strict [] [some (.base .string)] none .other []
     (single (.base .string) spec
-      (.block (.seq printed (.last (.primName "%Format.String" [] []))))) =
+      (.block (.seq printed (.last (.primName "%Format.String" [] [] []))))) =
     .error ⟨[1], "effect exceeds the allowed effect"⟩ := by rfl
 example : got (checkExpr formatInput .strict [] [] none .other []
     (.interpolation [.formatted (.base .string) spec]
       (.cons (.block (.seq printed (.last value))) .nil)
-      (.cons (.primName "%Format.String" [] []) .nil)))
+      (.cons (.primName "%Format.String" [] [] []) .nil)))
     (.base .string) (Eff.single "Console.Write") = true := by decide
 
 -- 引数名・七定数型・結果型も固定シグネチャの一部である。
@@ -772,14 +775,14 @@ example : [ { formatSig with names := ["v", "kind", "align", "sign", "alternate"
       | _ => false) = true := by decide
 
 -- 式と頭は各一つ必要で、余分なものも受理しない。
-example : [(.nil, .cons (.primName "%Format.String" [] []) .nil),
-    (.cons value (.cons value .nil), .cons (.primName "%Format.String" [] []) .nil)].all
+example : [(.nil, .cons (.primName "%Format.String" [] [] []) .nil),
+    (.cons value (.cons value .nil), .cons (.primName "%Format.String" [] [] []) .nil)].all
     (fun (es, fs) => match checkExpr formatInput .strict [] [] none .other []
         (.interpolation [.formatted (.base .string) spec] es fs) with
       | .error ⟨[0], "argument count mismatch"⟩ => true
       | _ => false) = true := by decide
-example : [Exprs.nil, .cons (.primName "%Format.String" [] [])
-    (.cons (.primName "%Format.String" [] []) .nil)].all (fun fs =>
+example : [Exprs.nil, .cons (.primName "%Format.String" [] [] [])
+    (.cons (.primName "%Format.String" [] [] []) .nil)].all (fun fs =>
       match checkExpr formatInput .strict [] [] none .other []
           (.interpolation [.formatted (.base .string) spec] (.cons value .nil) fs) with
       | .error ⟨[1], "argument count mismatch"⟩ => true
@@ -789,7 +792,7 @@ example : [Exprs.nil, .cons (.primName "%Format.String" [] [])
 private def mixed : Expr := .interpolation
   [.text "[", .formatted (.base .string) spec, .converted intTy, .stringExpr]
   (.cons value (.cons (eInt ⟨7, by decide⟩) (.cons value .nil)))
-  (.cons (.primName "%Format.String" [] []) (.cons (.primName "toString" [] []) .nil))
+  (.cons (.primName "%Format.String" [] [] []) (.cons (.primName "toString" [] [] []) .nil))
 example : got (checkExpr formatInput .strict [] [] none .other [] mixed) (.base .string) =
     true := by decide
 example : checkExpr { formatInput with opPrim := fun _ _ => none }
@@ -945,7 +948,7 @@ private def outerFail : Eff := .mk (fun _ => false) [.tvar 0]
 private def polyClause : Clauses :=
   .cons (.user "A.poly") 0 1 (.last (.call (.local 1) [] [] .nil)) .nil
 example (mode : ResumeMode) :
-    checkClauses polyClauseInput mode [{}] [some (.fn [] [] unitTy outerFail)] none []
+    checkClauses polyClauseInput mode [{}] [some (.fn [] [] unitTy outerFail)] none [] Eff.empty
       polyClause unitTy outerFail = .ok outerFail := by
   cases mode <;> apply congrArg Except.ok
   all_goals apply Eff.ext_test

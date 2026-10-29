@@ -1,0 +1,23 @@
+$ cargo test --lib exchange_tests --test desugar_export --test coverage_export
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.99s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 2 tests
+test exchange_tests::die_exchange_keeps_operand_then_message_lambda_effects ... ok
+test exchange_tests::typed_try_exchange_matches_independent_corpus_ten ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1377 filtered out; finished in 1.16s
+
+     Running tests/coverage_export.rs (target/debug/deps/coverage_export-be47fe0bf2506abf)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.00s
+

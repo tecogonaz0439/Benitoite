@@ -7,7 +7,7 @@ import Benitoite.Release.BuiltinTable
 namespace Benitoite.Surface.CheckTools.Examples
 open Benitoite.Release
 
-private def atoms : List Atom := [.name "IO", .name "State", .rho 0, .rho 2]
+private def atoms : List Atom := [.nameTop "IO", .nameTop "State", .rho 0, .rho 2]
 private def intTy : Ty := .base .integer
 private def boolTy : Ty := .base .boolean
 private def ioEff : Eff := Eff.single "IO"
@@ -20,18 +20,18 @@ private def gotTypes (xs : Option (List Ty)) (ts : List Ty) : Bool :=
 -- エフェクトの包含、等しさ、原子を保持する構築。
 example : effSub atoms emptyEff ioEff = true := by decide
 example : effSub atoms ioEff emptyEff = false := by decide
-example : effEq atoms ioEff (singleEff atoms (.name "IO")) = true := by decide
+example : effEq atoms ioEff (singleEff atoms (.nameTop "IO")) = true := by decide
 example : effEq atoms ioEff rhoEff = false := by decide
 example : Eff.mem (singleEff atoms (.rho 0)) (.rho 0) := by decide
-example : Eff.test (singleEff atoms (.name "Unknown")) (.name "Unknown") = true := by decide
+example : Eff.test (singleEff atoms (.nameTop "Unknown")) (.nameTop "Unknown") = true := by decide
 example : Eff.mem (unionEff atoms ioEff rhoEff) (.rho 0) := by decide
-example : Eff.test (unionEff atoms ioEff (Eff.single "Unknown")) (.name "Unknown") = true := by decide
+example : Eff.test (unionEff atoms ioEff (Eff.single "Unknown")) (.nameTop "Unknown") = true := by decide
 example : Eff.test emptyEff (.rho 2) = false := rfl
-example : Eff.mem (Eff.substRho [ioEff] rhoEff) (.name "IO") := by decide
+example : Eff.mem (Eff.substRho [ioEff] rhoEff) (.nameTop "IO") := by decide
 example : Eff.mem (Eff.substRho [ioEff] (Eff.ofAtoms fun a => a == .rho 2)) (.rho 2) := by decide
 
 -- 型の全構成、並行した型リスト、外側だけのエフェクトの包含。
-private def richTypes : List Ty := [intTy, .opaque "O", .data "D" [intTy], .list intTy,
+private def richTypes : List Ty := [intTy, .opaqueTop "O", .data "D" [intTy], .list intTy,
   .fn ["value"] [intTy] boolTy ioEff, .tvar 1, .reference intTy, .lazy intTy,
   .cont intTy boolTy rhoEff, .map intTy boolTy, .set intTy, .bytes,
   .dict "Eq" intTy, .tapp 0 [intTy], .ctor (.data "D"), .ctor .list,
@@ -102,7 +102,7 @@ example : pipeValue (.call .unit [] [] .nil) = false := by decide
 example : pipeValue (.paren (.call .unit [] [] .nil)) = true := by decide
 example : isDirect (.funName "f" [] []) = true := by decide
 example : isDirect (.paren (.funName "f" [] [])) = false := by decide
-example : allDirect (.cons (.funName "f" [] []) (.cons (.primName "p" [] []) .nil)) = true := by decide
+example : allDirect (.cons (.funName "f" [] []) (.cons (.primName "p" [] [] []) .nil)) = true := by decide
 example : allDirect (.cons .unit .nil) = false := by decide
 example : interpAllowed [.text "", .stringExpr, .converted intTy, .converted (.base .decimal)] = true := by decide
 example : interpAllowed [.converted (.list intTy)] = false := by decide
@@ -201,7 +201,7 @@ private def stringAddSig : PrimSig :=
     kind := .pure, opEff := none }
 private def stringBuiltins : Builtins :=
   { sig := fun b => if b == "String.add" then some stringAddSig else none,
-    delta := fun _ _ _ _ => none, ioResponse := fun _ _ _ _ _ => False,
+    delta := fun _ _ _ _ _ => none, ioResponse := fun _ _ _ _ _ _ => False,
     releaseResponse := fun _ _ => False, isResource := fun _ => false,
     effects := fun _ => none, sat := fun _ _ _ => True, refGet := "get", refSet := "set" }
 private def stringOp : OpPrim
@@ -240,7 +240,7 @@ private def q : Input :=
         else none,
       classes := fun c => if c == "Combine" then some classDecl else none },
     B := stringBuiltins, satDec := fun _ _ _ => true, admitsDec := fun _ _ _ => true,
-    opPrim := stringOp, ctors := ctors, atoms := .name "Ask" :: atoms }
+    opPrim := stringOp, ctors := ctors, atoms := .nameTop "Ask" :: atoms }
 private def fn : Ty := .fn ["a", "b"] [intTy, boolTy] intTy emptyEff
 private def reversed : Exprs := .cons (.literal (.boolean true)) (.cons (.literal (.integer ⟨7, by decide⟩)) .nil)
 private def reversedHoles : HoleArgs := .hole (some "b") 1 boolTy (.hole (some "a") 0 intTy .nil)
@@ -388,7 +388,7 @@ example : got (checkExpr polyQ .strict [] [some (.dict "C" intTy)] none .other [
 example : (checkExpr polyQ .strict [] [some (.dict "C" intTy)] none .other []
     (.funDicts "poly" [intTy] [] [.local 0] ["other"] [intTy])).map (fun _ => ()) =
     .error ⟨[], "function contract annotation mismatch"⟩ := by rfl
-example : got (run [] (.primName "String.add" [] []))
+example : got (run [] (.primName "String.add" [] [] []))
     (.fn ["left", "right"] [.base .string, .base .string] (.base .string) emptyEff) = true := by rfl
 
 end Checker

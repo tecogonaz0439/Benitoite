@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/readers-routing.py", line 12, in <module>
+    CHECK['check_routing'](DIRECTORY, MANIFEST)
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 138, in check_routing
+    compare_routing(actual, read(MANIFEST.parent / manifest["routingManifest"]))
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 115, in compare_routing
+    require(actual[key] == entry, f"{key}: routing classification: {actual[key]} != {entry}")
+  File "<wt>/crates/benitoite/tests/desugar_export/check_named.py", line 23, in require
+    raise AssertionError(message)
+AssertionError: ('golden', 'testdata/modules/c11-no-main'): routing classification: {'group': 'golden', 'name': 'testdata/modules/c11-no-main', 'version': 15, 'excluded': ['entry: NoMainFile { dir: "<wt>/crates/benitoite/testdata/modules/c11-no-main" }'], 'scopes': {}, 'coverage': None} != {'group': 'golden', 'name': 'testdata/modules/c11-no-main', 'version': 15, 'excluded': ['entry: NoMainFile { dir: "<home>/src/Benitoite/crates/benitoite/testdata/modules/c11-no-main" }'], 'scopes': {}, 'coverage': None}
+real 14.59
+user 13.54
+sys 0.96

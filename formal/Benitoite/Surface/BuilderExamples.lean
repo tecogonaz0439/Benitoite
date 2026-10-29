@@ -11,7 +11,7 @@ private def intTy : Ty := .base .integer
 private def strTy : Ty := .base .string
 private def signature (kind : PrimKind) (ns : List String) (ps : List Ty) (ret : Ty)
     (eff : Eff := Eff.empty) (ts : List TParam := []) : PrimSig :=
-  ⟨ts, 0, ns, ps, ret, eff, fun _ _ => True, kind, none⟩
+  ⟨ts, 0, ns, ps, ret, eff, fun _ _ => True, kind, none, [], .untargeted⟩
 private def entries : List (String × PrimSig) :=
   [("new", signature .refNew ["value"] [.tvar 0] (.reference (.tvar 0)) (Eff.single stateEff) [{}]),
    ("get", signature .refGet ["reference"] [.reference (.tvar 0)] (.tvar 0) (Eff.single stateEff) [{}]),
@@ -80,7 +80,7 @@ private def nestedAppend : Expr := append
     (.seq (append (.literal (.string "x"))) (.last (.literal (.string "suffix"))))
     (.last (.literal (.string "unused"))))
 private def runtimeBuiltins (fail : Bool) : Builtins :=
-  { input.B with delta := fun n _ _ vs => match n, vs with
+  { input.B with delta := fun n _ _ _ vs => match n, vs with
       | "add", [.const (.string a), .const (.string b)] =>
           if fail then some (.err "TooLarge") else some (.val (.const (.string (a ++ b))))
       | _, _ => none }
@@ -99,7 +99,7 @@ private noncomputable def storedAfter (e : Expr) (fail : Bool) : Option (Bool ×
 example : storedAfter nestedAppend false = some (false, "oldxsuffix") := by decide
 -- 通常引数の計算が失敗したときは、専用セルを更新しない。
 -- 旧合成の組み込みは専用操作では呼ばないため、失敗する呼び出しを通常引数に置く。
-example : storedAfter (append (.call (.primName "add" [] []) [none, none] [0, 1]
+example : storedAfter (append (.call (.primName "add" [] [] []) [none, none] [0, 1]
     (.cons (.literal (.string "")) (.cons (.literal (.string "x")) .nil)))) true = some (true, "old") := by decide
 
 -- 宣言だけで終わる場合も、三種類とも Unit と空の効果を返す。
@@ -110,8 +110,8 @@ example : kinds.all (fun r => match checkedBlock (.builderBind r .empty) with
     | _ => false) = true := by decide
 
 -- 通常の Reference.get を引数で呼べば、構築器が純粋でも State は残る。
-private def stateInput : Input := { input with atoms := [.name stateEff] }
-private def referenceArg : Expr := .call (.primName "get" [strTy] []) [none] [0]
+private def stateInput : Input := { input with atoms := [.nameTop stateEff] }
+private def referenceArg : Expr := .call (.primName "get" [strTy] [] []) [none] [0]
   (.cons (.local 1) .nil)
 example : (match checkBlock stateInput .strict [] [some (.reference strTy)] none .other []
     (.builderBind .string (.last (.builderOp .append 0 (.cons referenceArg .nil) .string))) with
@@ -152,10 +152,10 @@ private def hiddenBuilder (r : Result α) : Bool := match r with
 private def captureBoundaries : List Expr :=
   [.lam [] [] strTy (Eff.single stateEff) (.last (.returnE strTy (copyAt 0))),
    .lazyE (.last (copyAt 0)),
-   .partialCall (.primName "add" [] []) ["left", "right"]
+   .partialCall (.primName "add" [] [] []) ["left", "right"]
      (.expr (some "left") 0 (copyAt 0) (.hole (some "right") 1 strTy .nil)) strTy (Eff.single stateEff),
    .partialCall (.ite (.literal (.boolean true))
-      (.seq (appendAt 0 "x") (.last (.primName "add" [] []))) (.last (.primName "add" [] [])))
+      (.seq (appendAt 0 "x") (.last (.primName "add" [] [] []))) (.last (.primName "add" [] [] [])))
      ["left", "right"] (.hole (some "left") 0 strTy (.hole (some "right") 1 strTy .nil))
      strTy (Eff.single stateEff)]
 example : captureBoundaries.all (fun e => hiddenBuilder (checkedBlock (declared (.last e)))) = true := by decide
@@ -177,7 +177,7 @@ example : hiddenBuilder (checkBlock taskInput .strict [] [] none .other []
 private def snapshotLambda : Block := declared
   (.bind .bind strTy (copyAt 0) (.last (.lam [] [] strTy Eff.empty (.last (.returnE strTy (.local 0))))))
 private def snapshotPartial : Block := declared
-  (.bind .bind strTy (copyAt 0) (.last (.partialCall (.primName "add" [] []) ["left", "right"]
+  (.bind .bind strTy (copyAt 0) (.last (.partialCall (.primName "add" [] [] []) ["left", "right"]
     (.expr (some "left") 0 (.local 0) (.hole (some "right") 1 strTy .nil)) strTy Eff.empty)))
 example : [snapshotLambda, snapshotPartial].all (fun b => (checkedBlock b).isOk) = true := by decide
 
@@ -206,7 +206,7 @@ private def handleInput : Input := { input with
   D := { decls with
     ops := Release.Examples.program.ops,
     effects := Release.Examples.program.effects },
-  atoms := [.name stateEff, .name "Ask"] }
+  atoms := [.nameTop stateEff, .nameTop "Ask"] }
 private def suspendedBody : Block := declared
   (.seq (appendAt 0 "before")
     (.discard (.call (.opName "ask" []) [] [] .nil)
@@ -291,10 +291,10 @@ private def blockAppend : Block := declared
 example : checkedBlock blockAppend = .ok (strTy, Eff.empty) := by rfl
 example : returnedText blockAppend = some "block" := by decide
 -- 通常の Reference の State は block の出口でも残る。
-example : (checkExpr { input with atoms := [.name stateEff] } .strict []
+example : (checkExpr { input with atoms := [.nameTop stateEff] } .strict []
     [some (.reference strTy)] none .other []
-    (.block (.last (.call (.primName "get" [strTy] []) [none] [0] (.cons (.local 0) .nil))))).map
-      (fun (t,e) => tyEq [.name stateEff] t strTy && effEq [.name stateEff] e (Eff.single stateEff)) =
+    (.block (.last (.call (.primName "get" [strTy] [] []) [none] [0] (.cons (.local 0) .nil))))).map
+      (fun (t,e) => tyEq [.nameTop stateEff] t strTy && effEq [.nameTop stateEff] e (Eff.single stateEff)) =
     .ok true := by rfl
 
 private def pickBody : Block :=

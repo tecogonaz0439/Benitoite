@@ -1,0 +1,33 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "c0a4673a4b6bd532e1ea2331a7f71105efdbd507",
+    "--only",
+    "tests_related,skill_generated,spec_tally",
+    "--test",
+    "reference_examples",
+    "--test",
+    "skill_docs",
+    "--test",
+    "skill_examples",
+    "--test",
+    "stdlib_doc_examples",
+    "--test",
+    "spec_examples"
+  ],
+  "timingCommand": [
+    "/usr/bin/time",
+    "-p",
+    "sh",
+    "-c",
+    "scripts/check.sh --level work --base c0a4673a4b6bd532e1ea2331a7f71105efdbd507 --only tests_related,skill_generated,spec_tally --test reference_examples --test skill_docs --test skill_examples --test stdlib_doc_examples --test spec_examples\ncheck_status=$?\nprintf '{\"checkExit\": %s}\\n' \"$check_status\" > docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/v10.2b/work-check-exit.json\nexit \"$check_status\""
+  ],
+  "startedUtc": "2026-10-29T18:34:56.858748+00:00",
+  "timeExit": 0,
+  "seconds": 23.498745875,
+  "rss": null,
+  "rssReason": "指定の time -p は RSS を報告しない"
+}

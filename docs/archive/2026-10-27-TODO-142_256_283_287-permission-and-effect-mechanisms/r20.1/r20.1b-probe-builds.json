@@ -1,0 +1,48 @@
+[
+  {
+    "commit": "6124775788579e60530f55fb85570f26ef7fa900",
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps",
+      "-o",
+      "target/r20.1-probe/r20.1b-6124775788579e60530f55fb85570f26ef7fa900",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/6124775788579e60530f55fb85570f26ef7fa900-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending"
+    ],
+    "exit": 1,
+    "wall_seconds": 0.322
+  },
+  {
+    "commit": "986e44b20d667a77f4153266652a4883108b3482",
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "-O",
+      "<wt>/tools/bench/compare/timing_probe.rs",
+      "--extern",
+      "benitoite=<wt>/target/bench/builds/986e44b20d667a77f4153266652a4883108b3482-default/release/libbenitoite.rlib",
+      "-L",
+      "dependency=<wt>/target/bench/builds/986e44b20d667a77f4153266652a4883108b3482-default/release/deps",
+      "-o",
+      "target/r20.1-probe/r20.1b-986e44b20d667a77f4153266652a4883108b3482",
+      "--extern",
+      "serde_json=<wt>/target/bench/builds/986e44b20d667a77f4153266652a4883108b3482-default/release/deps/libserde_json-8caac38b8bfac622.rlib",
+      "--cfg",
+      "benitoite_parser_pending",
+      "--cfg",
+      "benitoite_range_index",
+      "--cfg",
+      "benitoite_range_signatures"
+    ],
+    "exit": 1,
+    "wall_seconds": 0.309
+  }
+]

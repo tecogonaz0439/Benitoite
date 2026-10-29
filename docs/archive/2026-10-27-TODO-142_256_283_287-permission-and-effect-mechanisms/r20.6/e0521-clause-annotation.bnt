@@ -1,0 +1,8 @@
+effect Tick
+ function tick(n: Integer) -> Integer
+end effect
+function main() -> Unit
+ bind _ <- handle tick(1) with
+ case tick(n: Integer) -> resume(n)
+ end handle
+end function

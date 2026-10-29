@@ -1,0 +1,742 @@
+[
+  {
+    "file": "crates/benitoite/src/bytecode/codegen/tables.rs",
+    "line": 274,
+    "occurrence": 1,
+    "declaration": "fn operation",
+    "text": "EffectName::User(_) => op",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/bytecode/codegen/tables.rs",
+    "line": 279,
+    "occurrence": 1,
+    "declaration": "fn operation",
+    "text": "EffectName::Builtin(id) => {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/cli/inspection.rs",
+    "line": 72,
+    "occurrence": 1,
+    "declaration": "fn function_contract",
+    "text": "let EffectName::Builtin(id) = effect else {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/cli/inspection.rs",
+    "line": 94,
+    "occurrence": 1,
+    "declaration": "fn function_contract",
+    "text": "if let EffectName::Builtin(id) = effect {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 936,
+    "occurrence": 1,
+    "declaration": "fn use_comp",
+    "text": "eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 1326,
+    "occurrence": 1,
+    "declaration": "fn handle",
+    "text": "&& op.effect != EffectName::Builtin(BuiltinEffectId::STATE)",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 1665,
+    "occurrence": 1,
+    "declaration": "fn write",
+    "text": "effect(EffectName::Builtin(",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 1675,
+    "occurrence": 1,
+    "declaration": "fn state",
+    "text": "effect(EffectName::Builtin(BuiltinEffectId::STATE))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 2283,
+    "occurrence": 1,
+    "declaration": "fn op_program",
+    "text": "effect(EffectName::User(BindingId(42))),",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 2293,
+    "occurrence": 1,
+    "declaration": "fn op_program",
+    "text": "effect: EffectName::User(BindingId(42)),",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 2353,
+    "occurrence": 1,
+    "declaration": "fn handled_program",
+    "text": "handled: effect(EffectName::User(BindingId(42))),",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 2565,
+    "occurrence": 1,
+    "declaration": "fn handlers_resume_and_rigid_clause_parameters",
+    "text": "broken.defs[0].body.eff = effect(EffectName::User(BindingId(42)));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 2640,
+    "occurrence": 1,
+    "declaration": "fn continuations_are_hidden_by_lambda_and_lazy_but_visible_in_nested_handlers",
+    "text": "handled: effect(EffectName::User(BindingId(42))),",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/check.rs",
+    "line": 3667,
+    "occurrence": 1,
+    "declaration": "fn handled_effects_require_every_operation_and_never_include_state",
+    "text": "let effect_name = EffectName::User(BindingId(42));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/decision.rs",
+    "line": 3282,
+    "occurrence": 1,
+    "declaration": "fn handle",
+    "text": "names: vec![EffectName::User(BindingId(61))],",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/decision.rs",
+    "line": 3519,
+    "occurrence": 1,
+    "declaration": "fn generated_nodes_have_minimal_effects_types_and_match_origins",
+    "text": "names: vec![EffectName::Builtin(BuiltinEffectId(2))],",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/decision.rs",
+    "line": 3672,
+    "occurrence": 1,
+    "declaration": "fn non_match_nodes_metadata_methods_constants_and_nested_bodies_are_preserved",
+    "text": "effect: EffectName::User(BindingId(61)),",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/desugar/die_tests.rs",
+    "line": 210,
+    "occurrence": 1,
+    "declaration": "fn die_failure_core_has_one_message_then_one_cause_and_canonical_exit",
+    "text": "names: vec![EffectName::Builtin(",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/desugar/effects.rs",
+    "line": 432,
+    "occurrence": 1,
+    "declaration": "fn state_effect",
+    "text": "eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/ir/desugar/tests.rs",
+    "line": 858,
+    "occurrence": 1,
+    "declaration": "fn with_nested_releases_lazy_and_annotated_lambdas",
+    "text": "[EffectName::Builtin(BuiltinEffectId::STATE)]",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 185,
+    "occurrence": 1,
+    "declaration": "fn effect_name",
+    "text": "return Some(EffectName::Builtin(e));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 191,
+    "occurrence": 1,
+    "declaration": "fn effect_name",
+    "text": "return Some(EffectName::Builtin(e));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 194,
+    "occurrence": 1,
+    "declaration": "fn effect_name",
+    "text": "Some(EffectName::User(id))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 328,
+    "occurrence": 1,
+    "declaration": "fn declared_uses",
+    "text": "if name == EffectName::Builtin(BuiltinEffectId::IO_ALL) {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 334,
+    "occurrence": 1,
+    "declaration": "fn declared_uses",
+    "text": "atom.insert_name(EffectName::Builtin(BuiltinEffectId(i)));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 1183,
+    "occurrence": 1,
+    "declaration": "fn check_declarations",
+    "text": "let name = d.effect_name(binding).unwrap_or(EffectName::User(binding));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/decls.rs",
+    "line": 1420,
+    "occurrence": 1,
+    "declaration": "fn failure_declarations",
+    "text": "name: EffectName::User(effect),",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 107,
+    "occurrence": 1,
+    "declaration": "fn check_entries",
+    "text": ".map(EffectName::User);",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0593"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 113,
+    "occurrence": 1,
+    "declaration": "fn check_entries",
+    "text": "EffectName::User(id)",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 132,
+    "occurrence": 1,
+    "declaration": "fn check_entries",
+    "text": "EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 153,
+    "occurrence": 1,
+    "declaration": "fn check_entries",
+    "text": "EffectName::Builtin(_) | EffectName::User(_) => {}",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 153,
+    "occurrence": 2,
+    "declaration": "fn check_entries",
+    "text": "EffectName::Builtin(_) | EffectName::User(_) => {}",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 216,
+    "occurrence": 1,
+    "declaration": "fn check_body",
+    "text": ".map(|i| EffectName::Builtin(BuiltinEffectId(i)))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 259,
+    "occurrence": 1,
+    "declaration": "fn check_body",
+    "text": "== Some(EffectName::Builtin(BuiltinEffectId::IO_ALL))",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 348,
+    "occurrence": 1,
+    "declaration": "fn effect_name",
+    "text": "EffectName::Builtin(b) => {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/declarations.rs",
+    "line": 400,
+    "occurrence": 1,
+    "declaration": "fn effect_name",
+    "text": "EffectName::User(id) => {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/handle.rs",
+    "line": 77,
+    "occurrence": 1,
+    "declaration": "fn check",
+    "text": ".contains(&EffectName::Builtin(BuiltinEffectId::STATE))",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/mod.rs",
+    "line": 123,
+    "occurrence": 1,
+    "declaration": "fn try_expr",
+    "text": "names: vec![EffectName::Builtin(effect)],",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/mod.rs",
+    "line": 202,
+    "occurrence": 1,
+    "declaration": "fn with",
+    "text": "names: vec![EffectName::Builtin(BuiltinEffectId::STATE)],",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/tests.rs",
+    "line": 135,
+    "occurrence": 1,
+    "declaration": "fn specification_examples_and_output_tables",
+    "text": "assert_eq!(info.handled.names, [EffectName::User(binding(&r, \"Log\"))]);",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/effects/tests.rs",
+    "line": 1229,
+    "occurrence": 1,
+    "declaration": "fn die_uses_standard_show_and_exit_despite_local_names_and_aliases",
+    "text": ".any(|(_, effects)| effects.names.contains(&EffectName::Builtin(exit)))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/external.rs",
+    "line": 40,
+    "occurrence": 1,
+    "declaration": "fn check",
+    "text": "&& scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE)];",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/external.rs",
+    "line": 48,
+    "occurrence": 1,
+    "declaration": "fn check",
+    "text": "*name != EffectName::Builtin(BuiltinEffectId::STATE)",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/solve.rs",
+    "line": 2265,
+    "occurrence": 1,
+    "declaration": "fn solve_effects",
+    "text": "let name = if let Elem::Name(name @ EffectName::Builtin(b)) = elem",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/tests.rs",
+    "line": 1017,
+    "occurrence": 1,
+    "declaration": "fn effect_inference_names_and_stubs",
+    "text": "assert!(s.effects.names.contains(&EffectName::Builtin(",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/tests.rs",
+    "line": 1023,
+    "occurrence": 1,
+    "declaration": "fn effect_inference_names_and_stubs",
+    "text": ".contains(&EffectName::Builtin(BuiltinEffectId::IO_ALL))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/typeck/tests.rs",
+    "line": 1030,
+    "occurrence": 1,
+    "declaration": "fn effect_inference_names_and_stubs",
+    "text": "EffectName::User(id(&r, \"Write\"))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/builtin.rs",
+    "line": 517,
+    "occurrence": 1,
+    "declaration": "fn find_builtin_type",
+    "text": "/// 標準ライブラリのソースで宣言したエフェクトを `EffectName::Builtin` にするときに使う。",
+    "comment": true,
+    "class": "comment",
+    "diagnostics": []
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 773,
+    "occurrence": 1,
+    "declaration": "fn show_ty",
+    "text": ".contains(&EffectName::Builtin(BuiltinEffectId(i)))",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 781,
+    "occurrence": 1,
+    "declaration": "fn show_ty",
+    "text": "&& matches!(name, EffectName::Builtin(id) if id.def().is_some_and(|d| d.in_io_all))",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 786,
+    "occurrence": 1,
+    "declaration": "fn show_ty",
+    "text": "EffectName::Builtin(id) => {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 789,
+    "occurrence": 1,
+    "declaration": "fn show_ty",
+    "text": "EffectName::User(id) => names",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 890,
+    "occurrence": 1,
+    "declaration": "fn function_type_display_groups_all_io_effects_and_keeps_other_effects",
+    "text": "effects.insert_name(EffectName::Builtin(BuiltinEffectId(12)));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 915,
+    "occurrence": 1,
+    "declaration": "fn io_all_for_display",
+    "text": ".map(|(i, _)| EffectName::Builtin(BuiltinEffectId(u16::try_from(i).unwrap())))",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 939,
+    "occurrence": 1,
+    "declaration": "fn substitution_is_simultaneous_and_preserves_unbound_parameters",
+    "text": "let console = EffectName::Builtin(BuiltinEffectId(2));",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/src/types/mod.rs",
+    "line": 940,
+    "occurrence": 1,
+    "declaration": "fn substitution_is_simultaneous_and_preserves_unbound_parameters",
+    "text": "let state = EffectName::Builtin(BuiltinEffectId::STATE);",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/tests/declarations.rs",
+    "line": 611,
+    "occurrence": 1,
+    "declaration": "fn log_standard_declarations_and_effect_identity",
+    "text": "benitoite::types::EffectName::Builtin(_)",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": []
+  },
+  {
+    "file": "crates/benitoite/tests/desugar_export/builtins.rs",
+    "line": 298,
+    "occurrence": 1,
+    "declaration": "fn named_builtin_tables",
+    "text": "names: vec![EffectName::Builtin(id)],",
+    "comment": false,
+    "class": "mechanical",
+    "diagnostics": [
+      "E0061"
+    ]
+  },
+  {
+    "file": "crates/benitoite/tests/desugar_export/exchange.rs",
+    "line": 385,
+    "occurrence": 1,
+    "declaration": "fn eff",
+    "text": "EffectName::User(id) => format!(\"effect:{}\", id.0),",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/tests/desugar_export/exchange.rs",
+    "line": 386,
+    "occurrence": 1,
+    "declaration": "fn eff",
+    "text": "EffectName::Builtin(id) => {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/tests/desugar_export/exchange.rs",
+    "line": 2774,
+    "occurrence": 1,
+    "declaration": "fn named_operation_tables",
+    "text": "let EffectName::User(effect) = op.effect else {",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  },
+  {
+    "file": "crates/benitoite/tests/desugar_export/exchange.rs",
+    "line": 2796,
+    "occurrence": 1,
+    "declaration": "fn named_operation_tables",
+    "text": "let EffectName::User(id) = e.name else { return None; };",
+    "comment": false,
+    "class": "semantic",
+    "diagnostics": [
+      "E0023"
+    ]
+  }
+]

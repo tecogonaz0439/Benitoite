@@ -1,0 +1,8 @@
+function f(n: UnsignedInteger16) -> UnsignedInteger16
+  if n < 10u16 then return n - 20u16 else return 0u16 end if
+end function
+
+function main() -> Unit
+  bind _ <- f(1u16)
+  return ()
+end function

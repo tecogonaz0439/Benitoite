@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "rustc",
+    "--lib",
+    "--locked",
+    "-p",
+    "benitoite",
+    "--manifest-path",
+    "<wt>/Cargo.toml",
+    "--target-dir",
+    "<wt>/target",
+    "--",
+    "--emit=dep-info,metadata,link"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 28.243299875,
+  "maximum_resident_bytes": 3825729536
+}

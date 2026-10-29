@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.IO.Console
+
+function next(n: Integer) -> Integer
+  return n + 1
+end function
+
+function main() -> Unit uses Console.Write
+  bind doubled <- List.map(xs: [1, 2], f: lambda(value) return value * 2)
+  return Console.writeLine("${next(1)} ${String.join(xs: List.map(xs: doubled, f: lambda(value) return Integer.toString(value)), separator: ",")}")
+end function

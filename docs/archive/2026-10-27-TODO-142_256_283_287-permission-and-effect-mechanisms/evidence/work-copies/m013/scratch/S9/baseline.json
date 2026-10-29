@@ -1,0 +1,49 @@
+{
+  "head": {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "returncode": 0,
+    "stdout": "04c78e527e6c23c0be8a9dbce26f23d685a5e04d\n",
+    "stderr": ""
+  },
+  "branch": {
+    "command": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "returncode": 0,
+    "stdout": "san_benito\n",
+    "stderr": ""
+  },
+  "status": {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "source_diff": {
+    "command": [
+      "git",
+      "diff",
+      "--stat",
+      "3597b310",
+      "HEAD",
+      "--",
+      "docs/design",
+      "crates/benitoite/src",
+      "formal",
+      "scripts"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,126 @@
+{
+ "affected_modules": 243,
+ "checked_affected": 197,
+ "failed_modules": [
+  "Benitoite.Surface.Check"
+ ],
+ "error_diagnostics": 6,
+ "sorry_warnings_from_errors": 0,
+ "broken_declarations": 1,
+ "broken_files": 1,
+ "declarations": [
+  {
+   "file": "Benitoite/Surface/Check.lean",
+   "decl": "def checkExprR",
+   "errors": 6
+  }
+ ],
+ "files": [
+  "Benitoite/Surface/Check.lean"
+ ],
+ "unchecked_count": 46,
+ "unchecked": [
+  "Benitoite",
+  "Benitoite.Exchange.BuilderExamples",
+  "Benitoite.Exchange.Builtins",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Exchange.Convert",
+  "Benitoite.Exchange.FormatExamples",
+  "Benitoite.Exchange.IntegerExamples",
+  "Benitoite.Interval.Exchange",
+  "Benitoite.Interval.ExchangeExamples",
+  "Benitoite.Surface.BuilderExamples",
+  "Benitoite.Surface.CheckComputeAtoms",
+  "Benitoite.Surface.CheckComputeCalls",
+  "Benitoite.Surface.CheckComputeCases",
+  "Benitoite.Surface.CheckComputeControl",
+  "Benitoite.Surface.CheckComputePipe",
+  "Benitoite.Surface.CheckComputeSound",
+  "Benitoite.Surface.CheckCounterexamples",
+  "Benitoite.Surface.CheckDictSupport",
+  "Benitoite.Surface.CheckExamples",
+  "Benitoite.Surface.CheckInduction",
+  "Benitoite.Surface.CheckLemmas",
+  "Benitoite.Surface.CheckProgramSound",
+  "Benitoite.Surface.CheckSound",
+  "Benitoite.Surface.CheckSoundBasicExpr",
+  "Benitoite.Surface.CheckSoundCalls",
+  "Benitoite.Surface.CheckSoundCollections",
+  "Benitoite.Surface.CheckSoundControl",
+  "Benitoite.Surface.CheckSoundDicts",
+  "Benitoite.Surface.CheckSoundDie",
+  "Benitoite.Surface.CheckSoundSequence",
+  "Benitoite.Surface.CheckTables",
+  "Benitoite.Surface.CheckTablesSound",
+  "Benitoite.Surface.CheckToolsExamples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.LogExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "BuiltinCheck.Main",
+  "CoverageDiff.Main",
+  "CoverageProgramDiff.Main",
+  "DesugarDiff.Main",
+  "IntervalDiff.Main",
+  "SurfaceCheck.All",
+  "SurfaceCheck.Batch",
+  "SurfaceCheck.Main",
+  "SurfaceCheck.Validation",
+  "SurfaceCheck.Walk"
+ ],
+ "diagnostics": [
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Check.lean",
+   "line": 297,
+   "col": 75,
+   "decl": "def checkExprR",
+   "decl_line": 206,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Check.lean",
+   "line": 298,
+   "col": 77,
+   "decl": "def checkExprR",
+   "decl_line": 206,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Check.lean",
+   "line": 309,
+   "col": 75,
+   "decl": "def checkExprR",
+   "decl_line": 206,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Check.lean",
+   "line": 310,
+   "col": 87,
+   "decl": "def checkExprR",
+   "decl_line": 206,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Check.lean",
+   "line": 601,
+   "col": 50,
+   "decl": "def checkExprR",
+   "decl_line": 206,
+   "msg": "Application type mismatch: The argument"
+  },
+  {
+   "kind": "error",
+   "file": "Benitoite/Surface/Check.lean",
+   "line": 602,
+   "col": 61,
+   "decl": "def checkExprR",
+   "decl_line": 206,
+   "msg": "Application type mismatch: The argument"
+  }
+ ]
+}

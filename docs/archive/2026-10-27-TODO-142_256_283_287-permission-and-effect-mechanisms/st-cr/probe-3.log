@@ -1,0 +1,38 @@
+'STCR.record_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.record_not_opaque' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.record_endpoint_ignored' depends on axioms: [propext]
+'STCR.record_requestOk_falls_back' depends on axioms: [propext]
+'STCR.check_signature_opaque' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.open_type_changes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.DataValue.rename_toVal' depends on axioms: [propext]
+'STCR.rename_toVals' depends on axioms: [propext]
+'STCR.DataValue.subst_toVal' depends on axioms: [propext]
+'STCR.subst_toVals' depends on axioms: [propext]
+'STCR.DataValue.substTy_toVal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'STCR.substTy_toVals' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Val.checkedRequest (t : Scope.Domain.Target) (req : Const) : Val
+Benitoite.Release.HasTypeVQ.V_CheckedRequest {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : List (Option Ty)} {o : OpaqueName} {R : Scope.Domain.Range} {t : Scope.Domain.Target}
+  {c : Const} {n : OpaqueName} :
+  B.valKind o = some t.kind →
+    R.Mem t →
+      B.valContent o = some n →
+        c.type = Ty.opaqueTop n →
+          HasTypeVQ P B Ψ Q C Γ (Val.checkedRequest t c) (Ty.opaque o (Scope.Signature.Ix.fixed R))
+def Benitoite.Surface.ScopeSound.reqEndpoint : (Const → Option Scope.Domain.Target) →
+  Val → Option Scope.Domain.Endpoint :=
+fun reqTarget x =>
+  match x with
+  | Val.const c =>
+    match reqTarget c with
+    | some (Scope.Domain.Target.endpoint e) => some e
+    | x => none
+  | x => none
+def Benitoite.Release.TargetTable.clientRequestTy : Ty :=
+Ty.opaqueTop "Http.ClientRequest"
+
+command: cd formal && lake env lean -M 12288 ../docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/st-cr/Probe.lean
+exit: 0
+wall_seconds: 0.408
+RUSAGE_CHILDREN.ru_maxrss: 786579456 (macOS bytes)
+maximum_rss_MiB: 750.141

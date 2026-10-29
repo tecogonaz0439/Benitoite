@@ -19,7 +19,7 @@ Lean の定義・定理・前提・結論・公理、本番 Rust、型・署名�
 
 ## 保存済み K1 への適用
 
-[saved.py](saved.py) は3回目の三出力先 `target/{interval,desugar,coverage}-diff/x05a-k1-run3-20261027` を読み、追加の変異試行だけを `target/x05t-check/saved-run2/` へ保存した。元の全12,063成果物のハッシュと ZIP の SHA-256 を前後で照合し、不変だった（[元の記録の保持](original-preserved.json)）。元 ZIP は `work/m012/records/x05a-run3-k1-records.zip`、SHA-256 `6986e19acfa40abad5507cca1583c7240f417ee96504b58b4ddd4da0e8e4aa9e` であり、書き換えず、削除していない。
+[saved.py](saved.py) は3回目の三出力先 `target/{interval,desugar,coverage}-diff/x05a-k1-run3-20261027` を読み、追加の変異試行だけを `target/x05t-check/saved-run2/` へ保存した。元の全12,063成果物のハッシュと ZIP の SHA-256 を前後で照合し、不変だった（[元の記録の保持](original-preserved.json)）。元 ZIP は [x05a-run3-k1-records.zip の索引とハッシュ](../work-copies/README.md#f475)、SHA-256 `6986e19acfa40abad5507cca1583c7240f417ee96504b58b4ddd4da0e8e4aa9e` であり、書き換えず、削除していない。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 [新しい counts の根拠](counts.json)は次のとおりである。新しい sourceEvidence 以外の counts の全欄は元の最終 manifest と一致した。非 Top の独立入力には Bottom を含む。型を取得できない入力はこの根拠へ加えず、除外した本体の独立入力も加えない。
 
@@ -89,7 +89,7 @@ return の返す区間は交換・比較していない。正常な継続の Bot
 
 環境は Rust/Cargo 1.98.1・Lean 4.34.1・Lake 5.0.0-src+5045d00・elan 4.2.4・Python 3.9.6・macOS 27.0.1 / arm64 である。Lean/Lake の版は `formal/` で取得し、版の表記の誤りを転記していない。
 
-局所試行の生の記録は [bundle.py](bundle.py) で `work/m012/records/x05t-local-records.zip`（gitignore）へ保存し、全項目を読み戻した。[索引](local-records-index.json)は全ファイルの SHA-256 を持つ。223ファイル・31,980,217バイトを 1,741,431バイトへ保存し、ZIP の SHA-256 は `3c31fb6314d00be544baa8a324ec74421779b2d452bb5fa070172931c63ee7f5` である。
+局所試行の生の記録は [bundle.py](bundle.py) で [x05t-local-records.zip の索引とハッシュ](../work-copies/README.md#f477)（gitignore）へ保存し、全項目を読み戻した。[索引](local-records-index.json)は全ファイルの SHA-256 を持つ。223ファイル・31,980,217バイトを 1,741,431バイトへ保存し、ZIP の SHA-256 は `3c31fb6314d00be544baa8a324ec74421779b2d452bb5fa070172931c63ee7f5` である。 追記（2026-10-28）: 生の記録の元は git の外に置き、同日に取りまとめが削除する予定である（この作業では未削除）。大きさと SHA-256 は[保管対応表](../work-copies/README.md#分類と元の対応)に残す。
 
 引用の判断者は X05T 担当、日付は2026-10-27である。新しい counts・負例・警告照合を保存済み入力へ適用した結果と、短い Rust の書き出しの assert の結果を報告する。元の入力・解析結果・実行ファイルを改変せずに確認した範囲だけを引用する。比較器の関係状態は変わったので、元の K1 が現在の全体を実行済みであるとは主張しない。RV-X05-response の判断どおり、S-X は3回目 K1 と本枝の追加照合を合わせて取りまとめが確認し、最終関係状態の K2 全体は Z01b で実行する。
 

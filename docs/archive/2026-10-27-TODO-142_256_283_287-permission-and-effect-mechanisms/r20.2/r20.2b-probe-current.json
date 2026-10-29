@@ -1,0 +1,25 @@
+{
+  "command": [
+    "rustc",
+    "--edition=2024",
+    "-O",
+    "<wt>/tools/bench/compare/timing_probe.rs",
+    "--extern",
+    "benitoite=<wt>/target/debug/libbenitoite.rlib",
+    "--extern",
+    "serde_json=<wt>/target/debug/deps/libserde_json-025fd2838c13a08a.rlib",
+    "-L",
+    "dependency=<wt>/target/debug/deps",
+    "-o",
+    "<wt>/target/r20.2b-probe/current/timing-probe",
+    "--cfg",
+    "benitoite_parser_pending",
+    "--cfg",
+    "benitoite_range_index",
+    "--cfg",
+    "benitoite_range_signatures"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 1.470146707999998,
+  "maximum_resident_bytes": 3825729536
+}

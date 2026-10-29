@@ -1,0 +1,61 @@
+{
+  "fixed_before_execution": "2026-10-29T18:58:46.979756+00:00",
+  "provenance": "50個・200個の元入力は r20.4/ と改造内の rv-probes/ で見つからなかったため、RV-R20.4 の再確認の説明と r20.4/rv-probes/scoped_calls.rs.txt の形から再構成した。protected の宣言は公開版間の比較のため Top の File.Read とした。",
+  "inputs": [
+    {
+      "path": "handlers-50-0012.bnt",
+      "handlers": 50,
+      "file_read_clauses": 11,
+      "bytes": 29935,
+      "sha256": "493ac0f4c1dc96fbce043f40818974bec0a0a2325599496c882824400f099cf1"
+    },
+    {
+      "path": "handlers-50-current.bnt",
+      "handlers": 50,
+      "file_read_clauses": 13,
+      "bytes": 33785,
+      "sha256": "ce4926e849ff0de740c7ed49bf4475a16e49d44d2b0536479b76ad2cd0abf57d"
+    },
+    {
+      "path": "handlers-200-0012.bnt",
+      "handlers": 200,
+      "file_read_clauses": 11,
+      "bytes": 119336,
+      "sha256": "8486d7ffba47570b88cc0ebb26def137a58da03df1a7a72cf2c383add5ead72f"
+    },
+    {
+      "path": "handlers-200-current.bnt",
+      "handlers": 200,
+      "file_read_clauses": 13,
+      "bytes": 134736,
+      "sha256": "e77cc33fa67874637021ebe9e3be8a94a08fd89b09cce123f6b5b97726c1871c"
+    }
+  ],
+  "expectations": [
+    {
+      "cli": "target/v10.2b/benitoite-0012",
+      "input_suffix": "0012",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "reason": "公開0.0.12に既存の11操作すべての節がある。後のtick節からlambdaを呼んでもFile.Readは処理されると予想する。"
+    },
+    {
+      "cli": "target/debug/benitoite",
+      "input_suffix": "current",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "reason": "現在の13操作すべての節がある。最終の保護本体の効果で完全性が確認される。"
+    },
+    {
+      "cli": "target/debug/benitoite",
+      "input_suffix": "0012",
+      "exit": 2,
+      "diagnostic_codes": [
+        "E0501"
+      ],
+      "reason": "追加されたreadTextIn/readBytesInの節がない部分ハンドラなので、File.Readが残る。H21の誤拒否とは区別する。"
+    }
+  ]
+}

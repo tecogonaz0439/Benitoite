@@ -1,0 +1,507 @@
+{
+  "cases_before": 249,
+  "cases_after": 249,
+  "identical": false,
+  "accepted_before": 81,
+  "rejected_before": 168,
+  "differences": [
+    {
+      "input": "crates/benitoite/testdata/effects/c11-handler-incomplete.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-handler-pure.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-high-impact-missing.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-high-impact.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-lazy-effect.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-lazy-pure.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-lazy-return.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-nonoperation.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-reference-equality.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-resume-outside.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-resume-type.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-state-no-cascade.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-taskgroup-outside-with.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-try-not-result.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-unhandled-main.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/c11-with-not-resource.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/choose_example.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/choose_io_violation.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/effect_var_rigid.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/f04_resources.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/f2-lazy-failure.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/f2-unconstrained-rest.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/first-release-cells.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/first-release-try.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/first-release-with.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/lambda_effect_inferred.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/lambda_uses_violation.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/list_element_order.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/map_with_io.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/map_with_io_pure_violation.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/outermost_only.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/p1-duplicate-failure.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/pure_calls_io.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/r41-task-state-required.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/run_all_subsumption.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/effects/widen_result.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/c12-builtin-port.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/c12-discard-reader.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/c12-nested-forward.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/c12-non-tail-resume.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/c12-resume-twice.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/c12-tail-deep.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f04_log.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-ambiguous.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-arguments-extra.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-arguments-missing.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-arguments-ordinary.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-annotation.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-effects.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-else-if.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-expected-type.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-function-value.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-if.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-partial.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-pipe.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-join-result-type.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-mixed.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-builtin-value.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-call.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-dictionary-value.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-expected-accept.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-instantiation.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-method-value.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-nofail-signature.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-resume.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f1-typed-failure.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/f2-result-conversion.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/first-release-log.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/first-release-parse-all.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/first-release-port.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-captured-local.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-clause-local.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-closure.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-deferred-alias.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-early-return.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-effect-confusion.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-nested-escape.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-outer-type-param.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-result.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/secf1-value-confusion.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/todo178-placeholder-resume-error.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/todo190-guard-local-handler.bnt",
+      "options": [
+        "--report=json"
+      ]
+    },
+    {
+      "input": "crates/benitoite/testdata/handlers/todo190-guard-resume.bnt",
+      "options": [
+        "--report=json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.30s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'exchange::atom_order::tests::exports_effect_atoms_in_lean_code_order' (7593027) panicked at crates/benitoite/tests/desugar_export/atom_order.rs:47:13:
+assertion `left == right` failed
+  left: Array [Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("ab")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("b")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("ba")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("あ"), String("x")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"tree": Array [String("a")]}}}, "value": String("IO.File.Read")}}]
+ right: Array [Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"tree": Array [String("a")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("b")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("あ"), String("x")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("ba")]}}}, "value": String("IO.File.Read")}}, Object {"name": Object {"ix": Object {"fixed": Object {"path": Object {"exact": Array [String("ab")]}}}, "value": String("IO.File.Read")}}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test exchange::atom_order::tests::exports_effect_atoms_in_lean_code_order ... FAILED
+
+failures:
+
+failures:
+    exchange::atom_order::tests::exports_effect_atoms_in_lean_code_order
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 45 filtered out; finished in 0.09s
+
+error: test failed, to rerun pass `--test desugar_export`

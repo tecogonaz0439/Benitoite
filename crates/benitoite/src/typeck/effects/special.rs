@@ -52,7 +52,7 @@ pub(super) fn solve(ctx: &mut Body<'_, '_>, final_pass: bool) {
                 Constraint::Resource { ty, reason }
                     if !ctx.solver.contains_error(&ty)
                         && !matches!(ctx.solver.zonk(&ty),
-                        ITy::Con(TyCon::Builtin(b), _) if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource)) =>
+                        ITy::Con(TyCon::Builtin(b), _, _) if b.def().is_some_and(|d| d.class == BuiltinTypeClass::Resource)) =>
                 {
                     ctx.diagnostic(
                         DiagBuilder::new(DiagCode::E0443)
@@ -113,13 +113,13 @@ fn solve_try(
         return;
     }
     let (kind, con, args) = match ctx.solver.zonk(target) {
-        ITy::Con(TyCon::Adt(id), args)
+        ITy::Con(TyCon::Adt(id), args, _)
             if Some(id) == ctx.decls.resolved.stdlib("Benitoite.Result.Result")
                 && args.len() == 2 =>
         {
             (TryKind::Result, TyCon::Adt(id), args)
         }
-        ITy::Con(TyCon::Adt(id), args)
+        ITy::Con(TyCon::Adt(id), args, _)
             if Some(id) == ctx.decls.resolved.stdlib("Benitoite.Option.Option")
                 && args.len() == 1 =>
         {
@@ -169,7 +169,7 @@ fn solve_try(
     };
     let current_ret = ctx.solver.zonk(ret);
     if !matches!(&current_ret, ITy::Var(_))
-        && !matches!(&current_ret, ITy::Con(c, a) if *c == con && a.len() == args.len())
+        && !matches!(&current_ret, ITy::Con(c, a, _) if *c == con && a.len() == args.len())
     {
         let [target_name, return_name] = ctx.show_types([target, ret]);
         let d = DiagBuilder::new(DiagCode::E0441)
@@ -191,13 +191,13 @@ fn solve_try(
     // 変数の範囲を引き継ぐ。節内のラムダが剛な型を返せるようにする（01-12 の Δ）。
     let beta = match &current_ret {
         ITy::Var(v) => ctx.solver.fresh_ty_like(*v),
-        ITy::Con(_, returned) => returned.first().cloned().unwrap_or(ITy::Error),
+        ITy::Con(_, returned, _) => returned.first().cloned().unwrap_or(ITy::Error),
         ITy::Fn(_) | ITy::Param(_) | ITy::App(..) | ITy::Rigid { .. } | ITy::Error => ITy::Error,
     };
     let mut wanted = vec![beta];
     if let Some(error) = args.get(1) {
         wanted.push(error.clone());
-        if let ITy::Con(_, returned) = &current_ret
+        if let ITy::Con(_, returned, _) = &current_ret
             && let Some(expected) = returned.get(1)
             && ctx.solver.equal(expected, error, r).is_err()
         {
@@ -213,7 +213,11 @@ fn solve_try(
             return;
         }
     }
-    if ctx.unify(ret, &ITy::Con(con, wanted), r) {
+    if ctx.unify(
+        ret,
+        &ITy::Con(con, wanted, crate::types::builtin::RangeIndex::TOP),
+        r,
+    ) {
         ctx.try_kinds.insert(node, (kind, action.clone()));
     }
 }

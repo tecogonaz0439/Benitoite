@@ -1,0 +1,50 @@
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:14:theorem Qsig.varsIn_scoped {nt ne : Nat} {ps : List Ty} {ret : Ty} {e : Eff}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:16:    (he : Eff.VarsIn nt (· < ne) e) : ∀ i, Qsig ps ret e i → i < ne :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:17:  Qsig.scoped (Ty.VarsInList.rows ps hp) (Ty.VarsIn.rows ret hr) (Eff.VarsIn.rows e he)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:54:/-- 行パラメータのない組み込みでは Qsig も空であり、行の像は不要である。 -/
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:61:  have hqs := Qsig.varsIn_scoped hs.2.1 hs.2.2.1 hs.2.2.2
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Admissible.lean:69:  have hqs := Qsig.varsIn_scoped hs.2.1 hs.2.2.1 hs.2.2.2
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Lemmas/Inversion.lean:77:      Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:35:def Qsig (ps : List Ty) (ret : Ty) (e : Eff) : NoFailCtx :=
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:80:theorem Qsig.scoped {pe : Nat → Prop} {ps : List Ty} {ret : Ty} {e : Eff}
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/NoFail.lean:82:    ∀ i, Qsig ps ret e i → pe i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:182:  sourceQ : ∀ i, Qsig s.params s.ret s.eff i → i < es.length
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:183:  noFailRows : RowTransport (Qsig s.params s.ret s.eff) Q es
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:189:  (∀ i, Qsig ms.params ms.ret ms.eff i → i < es.length) ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:190:  RowTransport (Qsig ms.params ms.ret ms.eff) Q es
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:388:        Admissible B C d.tparams d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:614:    HasTypeCQ P B StoreTy.empty (Qsig d.params d.ret d.eff) d.tparams (binds d.params) (some d.ret) d.body d.ret d.eff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Release/Typing.lean:630:      HasTypeCQ P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (ms.tparams ++ id.tparams)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:91:    Admissible B C tps ne (Qsig ps ret e) (NoFailCtxOf caller) ts es e := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:105:  · simpa only [hn] using Qsig.scoped hps hret heff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:131:  · simpa only [hn] using Qsig.scoped hps hret heff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/AdmissibleCheck.lean:156:  · simpa only [hn] using Qsig.scoped hps hret heff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckInduction.lean:323:  have hqs : NoFailCtxOf (signatureQ d.neffs d.params d.ret d.eff) = Qsig d.params d.ret d.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/CheckSoundDicts.lean:183:    have hqs : NoFailCtxOf (signatureQ ms.neffs ms.params ms.ret ms.eff) = Qsig ms.params ms.ret ms.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:189:          have hq : Qsig mainDef.params mainDef.ret mainDef.eff = Qempty := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:191:            simp [mainDef, Qsig, QTys, QTy, QEff, Qempty, Eff.empty]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:192:          change HasBlockQ _ _ _ (Qsig mainDef.params mainDef.ret mainDef.eff) [] _ _ _ _ _ _ _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:218:          have hq : Qsig chooseSig.params chooseSig.ret chooseSig.eff = Qempty := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:220:            simp [chooseSig, Qsig, QTys, QTy, QEff, Qempty, Eff.empty]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:221:          change HasBlockQ _ _ _ (Qsig chooseSig.params chooseSig.ret chooseSig.eff) [] _ _ _ _ _ _ _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Examples.lean:224:            Ty.shift, intTy, Eff.substAt_empty, binds, Qsig, QTys, QTy, QEff, Qempty, Eff.empty] using ht
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:82:      Admissible B C d.tparams d.neffs (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/CallHead.lean:94:      Admissible B C d.tparams d.neffs (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff ∧
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/NoFailSignature.lean:23:    Qsig (d.dictTys ++ d.params) d.ret d.eff = Qsig d.params d.ret d.eff := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/NoFailSignature.lean:26:  simp only [Qsig, QTys.append_iff, d.dictTys_noQ, false_or]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Program.lean:83:      change HasTypeCQ _ _ _ (Qsig (d.dictTys ++ d.params) d.ret d.eff) _ _ _ _ _ _
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Program.lean:154:      · have hq := Qsig.varsIn_scoped hsc.1 hsc.2.1 hsc.2.2.1
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Program.lean:157:        have hq := Qsig.varsIn_scoped hsc.1 hsc.2.1 hsc.2.2.1
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Lemmas/Program.lean:158:        have hi' : Qsig d.params d.ret d.eff i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:76:    NoFailCtxOf (signatureQ ne ps r e) i ↔ i < ne ∧ Qsig ps r e i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:79:      qTyAt_spec, qTysAt_spec, qEffAt_spec, Qsig]
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:86:    NoFailCtxOf (signatureQ ne ps r e) i ↔ Qsig ps r e i := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheck.lean:88:  exact ⟨And.right, fun hi => ⟨Qsig.scoped hp hr he i hi, hi⟩⟩
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheckExamples.lean:38:example : ¬ RowTransport (Qsig [] unitTy failAndRow) Qempty [failString] := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/NoFailCheckExamples.lean:40:  have hq : Qsig [] unitTy failAndRow 0 := by
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:107:          (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:117:          (Qsig (d.dictTys ++ d.params) d.ret d.eff) Q ts es d.eff →
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1049:    HasBlockQ D B opPrim (Qsig d.params d.ret d.eff) [] d.tparams (binds (d.dictTys ++ d.params)) (some d.ret) .tail d.body d.ret d.eff
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1059:      HasBlockQ (D.withView (views m)) B opPrim (Qsig ms.params ms.ret ms.eff) [] (ms.tparams ++ id.tparams)
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1191:            · intro i hi; simp [Qsig, QTys, QTy, QEff, Qempty, combineSig, intTy, boolTy, Eff.empty] at hi
+04c78e527e6c23c0be8a9dbce26f23d685a5e04d:formal/Benitoite/Surface/Typing.lean:1192:            · intro i hi; simp [Qsig, QTys, QTy, QEff, Qempty, combineSig, intTy, boolTy, Eff.empty] at hi)

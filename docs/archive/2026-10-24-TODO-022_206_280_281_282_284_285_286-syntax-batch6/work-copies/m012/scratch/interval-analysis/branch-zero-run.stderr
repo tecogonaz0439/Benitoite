@@ -1,0 +1,10 @@
+runtime error[R0101]: division by zero
+  --> work/m012/scratch/interval-analysis/branch-zero.bnt:2:24
+   |
+ 2 |   return if x = 0 then 10 div x else 10 end if
+   |                        ^^^^^^^^
+   |
+   = note: call trace (innermost first):
+             f    at work/m012/scratch/interval-analysis/branch-zero.bnt:5:13
+             main
+   = note: functions left by tail calls are not shown

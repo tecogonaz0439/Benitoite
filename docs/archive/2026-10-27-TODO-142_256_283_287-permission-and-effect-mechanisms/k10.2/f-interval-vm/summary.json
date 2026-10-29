@@ -1,0 +1,214 @@
+{
+  "real_source_groups": [
+    {
+      "input_group": "identity",
+      "inputs": 24,
+      "comparedBodies": "198",
+      "informativeBodies": "195",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    },
+    {
+      "input_group": "vm/original",
+      "inputs": 1,
+      "comparedBodies": "39",
+      "informativeBodies": "39",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    },
+    {
+      "input_group": "vm/instrumented",
+      "inputs": 1,
+      "comparedBodies": "39",
+      "informativeBodies": "39",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    },
+    {
+      "input_group": "vm/range/original",
+      "inputs": 1,
+      "comparedBodies": "46",
+      "informativeBodies": "46",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    },
+    {
+      "input_group": "vm/range/instrumented",
+      "inputs": 1,
+      "comparedBodies": "46",
+      "informativeBodies": "46",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    },
+    {
+      "input_group": "vm/shifts/original",
+      "inputs": 1,
+      "comparedBodies": "108",
+      "informativeBodies": "108",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    },
+    {
+      "input_group": "vm/shifts/instrumented",
+      "inputs": 1,
+      "comparedBodies": "108",
+      "informativeBodies": "108",
+      "depthExcluded": "0",
+      "phaseDepth": "0",
+      "incompleteDiscovery": [],
+      "notStartedDefinitions": [],
+      "unproducedBodies": [],
+      "rustLeanMatched": true
+    }
+  ],
+  "all_compared_bodies": 584,
+  "calls": 237,
+  "profiles": [
+    "base",
+    "flow",
+    "width",
+    "range",
+    "domain"
+  ],
+  "initial_profile_definitions": [
+    8,
+    9,
+    41,
+    7,
+    108
+  ],
+  "vm/vm-summary.json": {
+    "kind": "interval-vm-comparison",
+    "compared": 39,
+    "excluded": 0,
+    "operations": 80,
+    "markerFailureExcluded": "R0201",
+    "negativeCases": [
+      "instrumentationStructure",
+      "unknownInSkippedBranch",
+      "reach",
+      "value",
+      "failurePosition"
+    ]
+  },
+  "vm/range/range-vm-summary.json": {
+    "kind": "interval-range-vm-comparison",
+    "compared": 37,
+    "evaluationExcluded": 0,
+    "selectedOut": [
+      {
+        "definition": ".unrelated",
+        "reason": "parameterOrGeneralCall"
+      },
+      {
+        "definition": ".unrelatedCaller",
+        "reason": "parameterOrGeneralCall"
+      },
+      {
+        "definition": ".threeFields",
+        "reason": "observationOnly"
+      },
+      {
+        "definition": ".lowerFields",
+        "reason": "observationOnly"
+      },
+      {
+        "definition": ".upperFields",
+        "reason": "observationOnly"
+      },
+      {
+        "definition": ".singletonFields",
+        "reason": "observationOnly"
+      },
+      {
+        "definition": ".integerMinFields",
+        "reason": "observationOnly"
+      },
+      {
+        "definition": ".integerMaxFields",
+        "reason": "observationOnly"
+      },
+      {
+        "definition": ".unrelatedOnlyOk",
+        "reason": "parameterOrGeneralCall"
+      }
+    ],
+    "operations": 96,
+    "selectedOperations": 80,
+    "independentObservations": [
+      {
+        "definition": ".unrelatedCaller",
+        "value": "105"
+      }
+    ],
+    "negativeCases": [
+      "unidentifiedRangeCall",
+      "resultConstructor",
+      "minimum",
+      "maximum",
+      "value",
+      "reversedPriority"
+    ]
+  },
+  "vm/shifts/shift-vm-summary.json": {
+    "kind": "interval-shift-vm-comparison",
+    "declarations": 27,
+    "vmRuns": 108,
+    "compared": 46,
+    "independentOnly": 62,
+    "evaluationExcluded": {
+      "unknownFailure": 46,
+      "notClosedOrFuel": 16
+    },
+    "wrapperDeclarations": 7,
+    "wrapperOutsideRuns": 14,
+    "operations": 108,
+    "negativeCases": [
+      "value",
+      "reach",
+      "failureCode",
+      "failureFile",
+      "failurePosition",
+      "wrapperPosition",
+      "unidentifiedShift"
+    ]
+  },
+  "source-summary.json": {
+    "readerInputs": 195,
+    "readerOccurrences": 1381,
+    "sourceTargets": 227,
+    "arithmeticKinds": 81,
+    "shiftDeclarations": 27,
+    "shiftHeads": {
+      "primName": 40,
+      "funName": 14
+    },
+    "syntheticRoots": 195,
+    "analyzedProbeBodies": 0,
+    "acceptedPointBodies": 1
+  }
+}

@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+ ()
+end function
+function apply[A, B, effect E](f: function(path: A) -> B uses E, x: A) -> B uses E
+ return f(path: x)
+end function
+function sample(b: Scope.PathIn["/logs/b"]) -> Result[String, IOError] uses File.Read["/logs/b"]
+ return apply(f: File.readTextIn, x: b)
+end function

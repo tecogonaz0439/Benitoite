@@ -1,0 +1,3841 @@
+{
+  "version": 15,
+  "operators": [],
+  "annotations": {
+    "tailMatch": [
+      0,
+      0
+    ]
+  },
+  "inputs": [
+    {
+      "group": "golden",
+      "name": "range-paths",
+      "excluded": [],
+      "dataTypes": [
+        {
+          "name": "Result",
+          "typeName": "Result",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "result"
+        },
+        {
+          "name": "Http.RequestCheckError",
+          "typeName": "Http.RequestCheckError",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Pair",
+          "typeName": "Pair",
+          "isRecord": true,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Http.ClientRequest",
+          "typeName": "Http.ClientRequest",
+          "isRecord": true,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "ordinary"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "1Def (fn:1)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "/data/**"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "/data/**"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "2Def (fn:2)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data",
+                                      "a"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data",
+                                    "a"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "/data/**"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "/data/**"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data",
+                                            "a"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "3Def (fn:3)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "local": {
+                              "index": 1
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "4Def (fn:4)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              "top"
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "local": {
+                              "index": 1
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      "top"
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "5Def (fn:5)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "p"
+                  ],
+                  "params": [
+                    {
+                      "opaque": {
+                        "name": "101:[]",
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data",
+                                "a"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        {
+                          "opaque": {
+                            "name": "103:[]",
+                            "ix": {
+                              "fixed": "top"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "File.Write",
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "last": {
+                    "expr": {
+                      "returnE": {
+                        "ret": {
+                          "data": {
+                            "name": "Result",
+                            "args": [
+                              {
+                                "base": {
+                                  "name": "Unit"
+                                }
+                              },
+                              {
+                                "opaque": {
+                                  "name": "103:[]",
+                                  "ix": {
+                                    "fixed": "top"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "inner": {
+                          "call": {
+                            "callee": {
+                              "primName": {
+                                "name": "File.writeTextIn",
+                                "tys": [],
+                                "effs": [],
+                                "ranges": [
+                                  {
+                                    "path": {
+                                      "tree": [
+                                        "data",
+                                        "a"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "labels": [
+                              "path",
+                              "text"
+                            ],
+                            "positions": [
+                              0,
+                              1
+                            ],
+                            "args": [
+                              {
+                                "local": {
+                                  "index": 0
+                                }
+                              },
+                              {
+                                "literal": {
+                                  "value": {
+                                    "string": {
+                                      "value": "x"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "p"
+                  ],
+                  "params": [
+                    {
+                      "opaque": {
+                        "name": "101:[]",
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data",
+                                "a"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "data": {
+                      "name": "Result",
+                      "args": [
+                        {
+                          "base": {
+                            "name": "Unit"
+                          }
+                        },
+                        {
+                          "opaque": {
+                            "name": "103:[]",
+                            "ix": {
+                              "fixed": "top"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "eff": [
+                    {
+                      "name": {
+                        "value": "File.Write",
+                        "ix": {
+                          "fixed": {
+                            "path": {
+                              "tree": [
+                                "data"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "ret": {
+                        "value": {
+                          "var": {
+                            "index": 0
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "x"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "app": {
+                            "callee": {
+                              "prim": {
+                                "name": "File.writeTextIn",
+                                "tys": [],
+                                "effs": [],
+                                "ranges": [
+                                  {
+                                    "path": {
+                                      "tree": [
+                                        "data",
+                                        "a"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "args": [
+                              {
+                                "var": {
+                                  "index": 1
+                                }
+                              },
+                              {
+                                "var": {
+                                  "index": 0
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "6Def (fn:6)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "105:[]",
+                              "ix": {
+                                "fixed": {
+                                  "endpoint": {
+                                    "host": {
+                                      "name": {
+                                        "exact": [
+                                          "api",
+                                          "example",
+                                          "com"
+                                        ]
+                                      }
+                                    },
+                                    "ports": {
+                                      "lo": 443,
+                                      "hi": 443
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "data": {
+                              "name": "Http.RequestCheckError",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Http.checkRequestIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "name": {
+                                      "exact": [
+                                        "api",
+                                        "example",
+                                        "com"
+                                      ]
+                                    }
+                                  },
+                                  "ports": {
+                                    "lo": 443,
+                                    "hi": 443
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "hostPattern",
+                          "minimumPort",
+                          "maximumPort",
+                          "request"
+                        ],
+                        "positions": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "api.example.com"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "api.example.com"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 443
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 443
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "letIn": {
+                                    "bound": {
+                                      "ret": {
+                                        "value": {
+                                          "var": {
+                                            "index": 3
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "prim": {
+                                            "name": "Http.checkRequestIn",
+                                            "tys": [],
+                                            "effs": [],
+                                            "ranges": [
+                                              {
+                                                "endpoint": {
+                                                  "host": {
+                                                    "name": {
+                                                      "exact": [
+                                                        "api",
+                                                        "example",
+                                                        "com"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "ports": {
+                                                    "lo": 443,
+                                                    "hi": 443
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 2
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 1
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "7Def (fn:7)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "105:[]",
+                              "ix": {
+                                "fixed": {
+                                  "endpoint": {
+                                    "host": {
+                                      "name": {
+                                        "exact": [
+                                          "api",
+                                          "example",
+                                          "com"
+                                        ]
+                                      }
+                                    },
+                                    "ports": {
+                                      "lo": 443,
+                                      "hi": 443
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "data": {
+                              "name": "Http.RequestCheckError",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Http.checkRequestIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "name": {
+                                      "exact": [
+                                        "api",
+                                        "example",
+                                        "com"
+                                      ]
+                                    }
+                                  },
+                                  "ports": {
+                                    "lo": 443,
+                                    "hi": 443
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "hostPattern",
+                          "minimumPort",
+                          "maximumPort",
+                          "request"
+                        ],
+                        "positions": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "api.example.com"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 444
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "api.example.com"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 443
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 444
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "letIn": {
+                                    "bound": {
+                                      "ret": {
+                                        "value": {
+                                          "var": {
+                                            "index": 3
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "prim": {
+                                            "name": "Http.checkRequestIn",
+                                            "tys": [],
+                                            "effs": [],
+                                            "ranges": [
+                                              {
+                                                "endpoint": {
+                                                  "host": {
+                                                    "name": {
+                                                      "exact": [
+                                                        "api",
+                                                        "example",
+                                                        "com"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "ports": {
+                                                    "lo": 443,
+                                                    "hi": 443
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 2
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 1
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "8Def (fn:8)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "105:[]",
+                              "ix": {
+                                "fixed": {
+                                  "endpoint": {
+                                    "host": {
+                                      "ip": {
+                                        "cidr": {
+                                          "family": "v4",
+                                          "network": 3232235776,
+                                          "prefixLen": 24
+                                        }
+                                      }
+                                    },
+                                    "ports": {
+                                      "lo": 443,
+                                      "hi": 443
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "data": {
+                              "name": "Http.RequestCheckError",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Http.checkRequestIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "ip": {
+                                      "cidr": {
+                                        "family": "v4",
+                                        "network": 3232235776,
+                                        "prefixLen": 24
+                                      }
+                                    }
+                                  },
+                                  "ports": {
+                                    "lo": 443,
+                                    "hi": 443
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "hostPattern",
+                          "minimumPort",
+                          "maximumPort",
+                          "request"
+                        ],
+                        "positions": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "192.168.1.0/24"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "192.168.1.0/24"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 443
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 443
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "letIn": {
+                                    "bound": {
+                                      "ret": {
+                                        "value": {
+                                          "var": {
+                                            "index": 3
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "prim": {
+                                            "name": "Http.checkRequestIn",
+                                            "tys": [],
+                                            "effs": [],
+                                            "ranges": [
+                                              {
+                                                "endpoint": {
+                                                  "host": {
+                                                    "ip": {
+                                                      "cidr": {
+                                                        "family": "v4",
+                                                        "network": 3232235776,
+                                                        "prefixLen": 24
+                                                      }
+                                                    }
+                                                  },
+                                                  "ports": {
+                                                    "lo": 443,
+                                                    "hi": 443
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 2
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 1
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "9Def (fn:9)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "105:[]",
+                              "ix": {
+                                "fixed": {
+                                  "endpoint": {
+                                    "host": {
+                                      "name": {
+                                        "exact": [
+                                          "api",
+                                          "example",
+                                          "com"
+                                        ]
+                                      }
+                                    },
+                                    "ports": {
+                                      "lo": 80,
+                                      "hi": 443
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "data": {
+                              "name": "Http.RequestCheckError",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Http.checkRequestIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "name": {
+                                      "exact": [
+                                        "api",
+                                        "example",
+                                        "com"
+                                      ]
+                                    }
+                                  },
+                                  "ports": {
+                                    "lo": 80,
+                                    "hi": 443
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "hostPattern",
+                          "minimumPort",
+                          "maximumPort",
+                          "request"
+                        ],
+                        "positions": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "api.example.com"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 80
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "api.example.com"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 443
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 80
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "letIn": {
+                                    "bound": {
+                                      "ret": {
+                                        "value": {
+                                          "var": {
+                                            "index": 3
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "prim": {
+                                            "name": "Http.checkRequestIn",
+                                            "tys": [],
+                                            "effs": [],
+                                            "ranges": [
+                                              {
+                                                "endpoint": {
+                                                  "host": {
+                                                    "name": {
+                                                      "exact": [
+                                                        "api",
+                                                        "example",
+                                                        "com"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "ports": {
+                                                    "lo": 80,
+                                                    "hi": 443
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 2
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 1
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "10Def (fn:10)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "105:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          },
+                          {
+                            "data": {
+                              "name": "Http.RequestCheckError",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Http.checkRequestIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              "top"
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "hostPattern",
+                          "minimumPort",
+                          "maximumPort",
+                          "request"
+                        ],
+                        "positions": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "api.example.com"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 80
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "api.example.com"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 443
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 80
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "letIn": {
+                                    "bound": {
+                                      "ret": {
+                                        "value": {
+                                          "var": {
+                                            "index": 3
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "prim": {
+                                            "name": "Http.checkRequestIn",
+                                            "tys": [],
+                                            "effs": [],
+                                            "ranges": [
+                                              "top"
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 2
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 1
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "11Def (fn:11)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "105:[]",
+                              "ix": {
+                                "fixed": {
+                                  "endpoint": {
+                                    "host": {
+                                      "name": {
+                                        "exact": [
+                                          "api",
+                                          "example",
+                                          "com"
+                                        ]
+                                      }
+                                    },
+                                    "ports": {
+                                      "lo": 80,
+                                      "hi": 443
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "data": {
+                              "name": "Http.RequestCheckError",
+                              "args": []
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Http.checkRequestIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "endpoint": {
+                                  "host": {
+                                    "name": {
+                                      "exact": [
+                                        "api",
+                                        "example",
+                                        "com"
+                                      ]
+                                    }
+                                  },
+                                  "ports": {
+                                    "lo": 80,
+                                    "hi": 443
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "hostPattern",
+                          "minimumPort",
+                          "maximumPort",
+                          "request"
+                        ],
+                        "positions": [
+                          0,
+                          1,
+                          2,
+                          3
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "api.example.com"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 80
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "literal": {
+                              "value": {
+                                "integer": {
+                                  "value": 443
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "req"
+                  ],
+                  "params": [
+                    {
+                      "data": {
+                        "name": "Http.ClientRequest",
+                        "args": []
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "api.example.com"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "const": {
+                                    "value": {
+                                      "integer": {
+                                        "value": 80
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "letIn": {
+                                "bound": {
+                                  "ret": {
+                                    "value": {
+                                      "const": {
+                                        "value": {
+                                          "integer": {
+                                            "value": 443
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "body": {
+                                  "letIn": {
+                                    "bound": {
+                                      "ret": {
+                                        "value": {
+                                          "var": {
+                                            "index": 3
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "body": {
+                                      "app": {
+                                        "callee": {
+                                          "prim": {
+                                            "name": "Http.checkRequestIn",
+                                            "tys": [],
+                                            "effs": [],
+                                            "ranges": [
+                                              {
+                                                "endpoint": {
+                                                  "host": {
+                                                    "name": {
+                                                      "exact": [
+                                                        "api",
+                                                        "example",
+                                                        "com"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "ports": {
+                                                    "lo": 80,
+                                                    "hi": 443
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "args": [
+                                          {
+                                            "var": {
+                                              "index": 3
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 2
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 1
+                                            }
+                                          },
+                                          {
+                                            "var": {
+                                              "index": 0
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "constants": [],
+      "ops": [],
+      "effects": [],
+      "primOps": [],
+      "classes": [],
+      "impls": [],
+      "scopeAcceptance": {
+        "patterns": [
+          {
+            "text": "/data/**",
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            }
+          }
+        ],
+        "hosts": [
+          {
+            "text": "api.example.com",
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            }
+          },
+          {
+            "text": "192.168.1.0/24",
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            }
+          }
+        ],
+        "limits": {
+          "body": {
+            "operations": 1000,
+            "items": 1000
+          },
+          "whole": {
+            "operations": 10000,
+            "items": 10000
+          }
+        }
+      }
+    },
+    {
+      "group": "golden",
+      "name": "range-budget",
+      "excluded": [],
+      "dataTypes": [
+        {
+          "name": "Result",
+          "typeName": "Result",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "result"
+        },
+        {
+          "name": "Http.RequestCheckError",
+          "typeName": "Http.RequestCheckError",
+          "isRecord": false,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Pair",
+          "typeName": "Pair",
+          "isRecord": true,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "ordinary"
+        },
+        {
+          "name": "Http.ClientRequest",
+          "typeName": "Http.ClientRequest",
+          "isRecord": true,
+          "extensible": false,
+          "package": "stdlib",
+          "builtin": "ordinary"
+        }
+      ],
+      "definitions": [
+        {
+          "name": "21Def (fn:21)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "local": {
+                              "index": 1
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "22Def (fn:22)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              "top"
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "local": {
+                              "index": 1
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "pattern",
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    },
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "var": {
+                                "index": 1
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      "top"
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        },
+        {
+          "name": "23Def (fn:23)",
+          "scope": {
+            "inScope": {
+              "surface": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "bind": {
+                    "shadow": false,
+                    "ty": {
+                      "data": {
+                        "name": "Result",
+                        "args": [
+                          {
+                            "opaque": {
+                              "name": "101:[]",
+                              "ix": {
+                                "fixed": {
+                                  "path": {
+                                    "tree": [
+                                      "data"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "opaque": {
+                              "name": "102:[]",
+                              "ix": {
+                                "fixed": "top"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "expr": {
+                      "call": {
+                        "callee": {
+                          "primName": {
+                            "name": "Scope.checkPathIn",
+                            "tys": [],
+                            "effs": [],
+                            "ranges": [
+                              {
+                                "path": {
+                                  "tree": [
+                                    "data"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "labels": [
+                          "pattern",
+                          "path"
+                        ],
+                        "positions": [
+                          0,
+                          1
+                        ],
+                        "args": [
+                          {
+                            "literal": {
+                              "value": {
+                                "string": {
+                                  "value": "/data/**"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "local": {
+                              "index": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "rest": {
+                      "last": {
+                        "expr": "unit"
+                      }
+                    }
+                  }
+                },
+                "dictParams": [],
+                "implementation": null,
+                "method": null,
+                "supers": [],
+                "coverageView": [],
+                "package": "author"
+              },
+              "core": {
+                "header": {
+                  "tparams": [],
+                  "neffs": 0,
+                  "effParams": [],
+                  "names": [
+                    "raw"
+                  ],
+                  "params": [
+                    {
+                      "base": {
+                        "name": "String"
+                      }
+                    }
+                  ],
+                  "ret": {
+                    "base": {
+                      "name": "Unit"
+                    }
+                  },
+                  "eff": []
+                },
+                "body": {
+                  "letIn": {
+                    "bound": {
+                      "letIn": {
+                        "bound": {
+                          "ret": {
+                            "value": {
+                              "const": {
+                                "value": {
+                                  "string": {
+                                    "value": "/data/**"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "body": {
+                          "letIn": {
+                            "bound": {
+                              "ret": {
+                                "value": {
+                                  "var": {
+                                    "index": 1
+                                  }
+                                }
+                              }
+                            },
+                            "body": {
+                              "app": {
+                                "callee": {
+                                  "prim": {
+                                    "name": "Scope.checkPathIn",
+                                    "tys": [],
+                                    "effs": [],
+                                    "ranges": [
+                                      {
+                                        "path": {
+                                          "tree": [
+                                            "data"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "args": [
+                                  {
+                                    "var": {
+                                      "index": 1
+                                    }
+                                  },
+                                  {
+                                    "var": {
+                                      "index": 0
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "ret": {
+                        "value": {
+                          "const": {
+                            "value": "unit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "lambdaEffects": [],
+                "supers": []
+              }
+            }
+          }
+        }
+      ],
+      "constants": [],
+      "ops": [],
+      "effects": [],
+      "primOps": [],
+      "classes": [],
+      "impls": [],
+      "scopeAcceptance": {
+        "patterns": [
+          {
+            "text": "/data/**",
+            "range": {
+              "path": {
+                "tree": [
+                  "data"
+                ]
+              }
+            }
+          }
+        ],
+        "hosts": [
+          {
+            "text": "api.example.com",
+            "pattern": {
+              "name": {
+                "exact": [
+                  "api",
+                  "example",
+                  "com"
+                ]
+              }
+            }
+          },
+          {
+            "text": "192.168.1.0/24",
+            "pattern": {
+              "ip": {
+                "cidr": {
+                  "family": "v4",
+                  "network": 3232235776,
+                  "prefixLen": 24
+                }
+              }
+            }
+          }
+        ],
+        "limits": {
+          "body": {
+            "operations": 0,
+            "items": 0
+          },
+          "whole": {
+            "operations": 0,
+            "items": 0
+          }
+        }
+      }
+    }
+  ]
+}

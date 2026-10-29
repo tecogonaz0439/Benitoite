@@ -1,0 +1,220 @@
+全参照（コメントを含む）: 35 files, 147 lines
+formal/Benitoite/Release/CoverageTypes.lean:128: | checkedRequest =>
+formal/Benitoite/Release/CoverageTypes.lean:132: exact .checkedRequest
+formal/Benitoite/Release/Lemmas/BuilderTyping.lean:53: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:40: | .V_CheckedRequest _ _ _ _ => exact .checkedRequest
+formal/Benitoite/Release/Lemmas/Canonical.lean:93: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:126: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:162: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:230: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Canonical.lean:426: | .const _, .checkedRequest _ _ | .con _ _, .checkedRequest _ _ => simp [Pat.matchVal] at hm
+formal/Benitoite/Release/Lemmas/Closed.lean:169: | .checkedRequest _ _, _ => by simp [Val.substTyAt, Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:292: | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:384: | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:477: | .checkedRequest _ _, _ => by simp [Val.rename, Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:609: | .checkedRequest _ _, _ => by simp [Val.subst, Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Dict.lean:247: | .checkedRequest _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+formal/Benitoite/Release/Lemmas/FailureCont.lean:244: | .V_CheckedRequest .. => cases heq
+formal/Benitoite/Release/Lemmas/Inversion.lean:28: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:46: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:63: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:82: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:100: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:120: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:140: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:167: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:185: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:203: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:469: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:479: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:489: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:503: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:511: V-Checked と同じ。保持する要求は、表のデータ `valContent` が名前 o に与える型の名前 n の、範囲が Top の不透明型の
+formal/Benitoite/Release/Lemmas/Inversion.lean:513: theorem HasTypeVQ.inv_checkedRequest {C Γ v T t c} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .checkedRequest t c) :
+formal/Benitoite/Release/Lemmas/Inversion.lean:514: ∃ o R n, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some n ∧
+formal/Benitoite/Release/Lemmas/Inversion.lean:518: | .V_CheckedRequest hk hm hc ht => cases hv; exact ⟨_, _, _, rfl, hk, hm, hc, ht⟩
+formal/Benitoite/Release/Lemmas/Inversion.lean:520: obtain ⟨o, R, n, rfl, hk, hm, hc, ht⟩ := inv_checkedRequest h hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:527: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:538: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Irrelevant.lean:94: | .V_CheckedRequest _ _ _ _ => rfl
+formal/Benitoite/Release/Lemmas/Membership.lean:35: theorem HasTypeVQ.not_checkedRequest_of_noValKind (hB : B.NoValKind) {Ψ C Γ t c T} :
+formal/Benitoite/Release/Lemmas/Membership.lean:36: ¬ HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) T := by
+formal/Benitoite/Release/Lemmas/Membership.lean:38: obtain ⟨o, _, _, _, hk, _⟩ := h.inv_checkedRequest rfl
+formal/Benitoite/Release/Lemmas/Membership.lean:42: /-- 値が保持する要求の型の名前を持たない表（`valContent` が全て `none`。L40.3b の前の表と、`ModelTargets` の表）では、
+formal/Benitoite/Release/Lemmas/Membership.lean:44: def Builtins.NoValContent (B : Builtins) : Prop := ∀ o, B.valContent o = none
+formal/Benitoite/Release/Lemmas/Membership.lean:46: theorem HasTypeVQ.not_checkedRequest_of_noValContent (hB : B.NoValContent) {Ψ C Γ t c T} :
+formal/Benitoite/Release/Lemmas/Membership.lean:47: ¬ HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) T := by
+formal/Benitoite/Release/Lemmas/Membership.lean:49: obtain ⟨o, _, _, _, _, _, hc, _⟩ := h.inv_checkedRequest rfl
+formal/Benitoite/Release/Lemmas/Membership.lean:60: · exact absurd h (HasTypeVQ.not_checkedRequest_of_noValKind hB)
+formal/Benitoite/Release/Lemmas/Membership.lean:88: (∃ R t c, ix = .fixed R ∧ v = .checkedRequest t c) := by
+formal/Benitoite/Release/Lemmas/Membership.lean:96: | checkedRequest => intro ha; cases ha; exact .inr (.inr ⟨_, _, _, rfl, rfl⟩)
+formal/Benitoite/Release/Lemmas/Membership.lean:101: · exact .checkedRequest
+formal/Benitoite/Release/Lemmas/Membership.lean:150: ∀ v, Inhabits P (.opaque o ix) v → (∀ t c, v ≠ .checkedRequest t c) → ∃ p ∈ ps, (p.matchVal v).isSome := by
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:38: theorem HasTypeVQ.checkedRequest_iff {Ψ C Γ t c T} :
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:39: HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) T ↔
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:40: ∃ o R n, T = .opaque o (.fixed R) ∧ B.valKind o = some t.kind ∧ R.Mem t ∧ B.valContent o = some n ∧
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:43: · intro h; exact h.inv_checkedRequest rfl
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:44: · rintro ⟨o, R, n, rfl, hk, hm, hc, ht⟩; exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:47: theorem HasTypeVQ.checkedRequest_widen {Ψ C Γ t c o R R'}
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:48: (h : HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))) (hs : R.Sub R') :
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:49: HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R')) := by
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:50: obtain ⟨o', R0, n, hT, hk, hm, hc, ht⟩ := h.inv_checkedRequest rfl
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:52: exact .V_CheckedRequest hk (hs t hm) hc ht
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:73: (∃ t R c n, v = .checkedRequest t c ∧ ix = .fixed R ∧ B.valKind o = some t.kind ∧ R.Mem t ∧
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:74: B.valContent o = some n ∧ c.type = .opaqueTop n) := by
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:87: | checkedRequest t c =>
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:88: obtain ⟨o', R, n, hT, hk, hm, hc, ht⟩ := h.inv_checkedRequest rfl
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:132: · exact h.checkedRequest_widen hs
+formal/Benitoite/Release/Lemmas/Names.lean:32: | .checkedRequest _ _ => True
+formal/Benitoite/Release/Lemmas/Names.lean:87: | .checkedRequest _ _ => True
+formal/Benitoite/Release/Lemmas/Names.lean:157: | .V_CheckedRequest _ _ _ _ => trivial
+formal/Benitoite/Release/Lemmas/Names.lean:256: | .checkedRequest _ _ => by
+formal/Benitoite/Release/Lemmas/NoFailContext.lean:31: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/OuterC.lean:84: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/PresBase.lean:45: | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Progress.lean:37: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Progress.lean:99: | .checkedRequest _ _, _, _, h => by obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Regularity.lean:202: | .V_CheckedRequest _ _ _ _ => simp [Ty.WF]
+formal/Benitoite/Release/Lemmas/Rename.lean:210: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/Rename.lean:361: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/Rename.lean:468: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/StoreLemmas.lean:130: | .V_CheckedRequest _ _ _ _ => intro b t ε e; cases e
+formal/Benitoite/Release/Lemmas/SubstTyping.lean:46: | .checkedRequest _ _ => rfl
+formal/Benitoite/Release/Lemmas/SubstTyping.lean:226: | .V_CheckedRequest hk hm hc ht => simp only [Val.subst]; exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/TySubstMain.lean:132: | .checkedRequest, t, hu => by
+formal/Benitoite/Release/Lemmas/TySubstMain.lean:138: exact .checkedRequest
+formal/Benitoite/Release/Lemmas/TySubstMain.lean:697: | .V_CheckedRequest hk hm hc ht => simp only [Val.substTyAt, Ty.substAt]; exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/LocalScope.lean:30: | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
+formal/Benitoite/Release/LocalScope.lean:90: | .V_CheckedRequest _ _ _ _ => trivial
+formal/Benitoite/Release/Model.lean:394: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/ModelHttp.lean:12: `Val.checkedRequest t req`（`t` は実効の endpoint の対象、`req` は要求の不透明型 `Http.ClientRequest` の定数）であり、
+formal/Benitoite/Release/ModelHttp.lean:47: /-- 要求の型の名前（`TargetTable.valContent` が `Http.RequestIn` に与える名前）。 -/
+formal/Benitoite/Release/ModelHttp.lean:69: `Ok(checkedRequest(t, req))` を返す。要求から endpoint を得られなければ `InvalidUrl`、そのほかは `Scope` の誤りを返す。 -/
+formal/Benitoite/Release/ModelHttp.lean:78: if t.kind = .endpoint ∧ q.Mem t ∧ r.Mem t then .val (.con "Ok" (checkTys r) [.checkedRequest t req])
+formal/Benitoite/Release/ModelHttp.lean:85: | [.checkedRequest _ req] => .val (.const req)
+formal/Benitoite/Release/ModelHttp.lean:125: valContent := TargetTable.valContent
+formal/Benitoite/Release/ModelHttp.lean:262: (HasTypeVQ.V_CheckedRequest (P := P) (B := builtins hostPat reqTarget) (Ψ := Ψ) (Q := Qempty)
+formal/Benitoite/Release/ModelHttp.lean:276: w = .checkedRequest t req ∧ t.kind = .endpoint ∧ q.Mem t ∧ r.Mem t := by
+formal/Benitoite/Release/ModelHttp.lean:305: obtain ⟨o, R, n, hT, -, -, hc, ht⟩ := h1.inv_checkedRequest rfl
+formal/Benitoite/Release/ModelHttp.lean:308: simp only [builtins, TargetTable.valContent, Option.some.injEq] at hc
+formal/Benitoite/Release/ModelHttp.lean:480: （`valContent` は既定の全て `none`）、検査済みの要求の値はそれらの表でどの型も持たない
+formal/Benitoite/Release/ModelHttp.lean:481: （`HasTypeVQ.not_checkedRequest_of_noValContent`）。 -/
+formal/Benitoite/Release/ModelHttp.lean:499: ∃ t, w = .checkedRequest t req ∧ reqTarget req = some t ∧ r.Mem t ∧
+formal/Benitoite/Release/ModelHttp.lean:540: def checkedReq : Val := .checkedRequest apiT req
+formal/Benitoite/Release/ModelHttp.lean:543: `Ok(checkedRequest(api.example.com:443, req))` を返す。 -/
+formal/Benitoite/Release/ModelHttp.lean:572: ∃ t, checkedReq = .checkedRequest t req ∧ reqTarget req = some t ∧ apiRange.Mem t ∧
+formal/Benitoite/Release/ModelHttp.lean:634: .V_CheckedRequest (n := clientRequest) rfl (by decide) rfl rfl
+formal/Benitoite/Release/ModelHttp.lean:640: obtain ⟨o, R, n, hT, -, hm, -, -⟩ := h.inv_checkedRequest rfl
+formal/Benitoite/Release/ModelTargets.lean:118: | .checkedRequest t _ :: _ => [t]
+formal/Benitoite/Release/ModelTargets.lean:521: | .checkedRequest t _ :: _ => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
+formal/Benitoite/Release/Subst.lean:68: | .checkedRequest t c => .checkedRequest t c
+formal/Benitoite/Release/Subst.lean:147: | .checkedRequest t c => .checkedRequest t c
+formal/Benitoite/Release/Subst.lean:204: | .checkedRequest t c => .checkedRequest t c
+formal/Benitoite/Release/Syntax.lean:267: | checkedRequest (t : Scope.Domain.Target) (req : Const)
+formal/Benitoite/Release/TargetTable.lean:28: `Val.checkedRequest t req`（実効の endpoint の対象 t と、要求の不透明型の定数 req）であり、表のデータ `valContent` は
+formal/Benitoite/Release/TargetTable.lean:134: def valContent : OpaqueName → Option OpaqueName
+formal/Benitoite/Release/TargetTable.lean:167: valContent := valContent
+formal/Benitoite/Release/TargetTable.lean:251: example : valContent "Http.RequestIn" = some "Http.ClientRequest" ∧ valContent "Scope.PathIn" = none :=
+formal/Benitoite/Release/Typing.lean:75: | .checkedRequest t _ => some t
+formal/Benitoite/Release/Typing.lean:113: valContent : OpaqueName → Option OpaqueName := fun _ => none
+formal/Benitoite/Release/Typing.lean:454: | checkedRequest {o R t c} : Inhabits P (.opaque o (.fixed R)) (.checkedRequest t c)
+formal/Benitoite/Release/Typing.lean:585: 名前（表のデータ `valContent`）が n のとき、保持する要求は型 `n`（範囲が Top の不透明型）の定数である
+formal/Benitoite/Release/Typing.lean:587: | V_CheckedRequest {Γ o R t c n} :
+formal/Benitoite/Release/Typing.lean:588: B.valKind o = some t.kind → R.Mem t → B.valContent o = some n → c.type = .opaqueTop n →
+formal/Benitoite/Release/Typing.lean:589: HasTypeVQ P B Ψ Q C Γ (.checkedRequest t c) (.opaque o (.fixed R))
+formal/Benitoite/Release/Typing.lean:744: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/WellFormed.lean:43: | .checkedRequest _ _ => True
+formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:50: | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
+formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:114: | .V_CheckedRequest _ _ _ _ => simp only [Val.Reads]
+formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean:85: | .var .. | .const .. | .fnRef .. | .prim .. | .op .. | .raise .. | .loc .. | .bytesV .. | .checked .. | .checkedRequest .. => True
+formal/Benitoite/Surface/Lemmas/PatternSupport.lean:46: | .checkedRequest => exact .checkedRequest
+formal/Benitoite/Surface/ScopeSound.lean:243: (hc : ∀ t c, v = .checkedRequest t c → ∃ n, B.valContent name = some n ∧ c.type = .opaqueTop n) :
+formal/Benitoite/Surface/ScopeSound.lean:255: 位置は任意）を持てば、v が検査済みの要求の値のとき、保持する要求は `valContent name` が与える型の定数である
+formal/Benitoite/Surface/ScopeSound.lean:256: （V-CheckedRequest の逆転 `HasTypeVQ.inv_checkedRequest`）。検査済みの対象の値と他の値では `hc` は空に成り立つ。 -/
+formal/Benitoite/Surface/ScopeSound.lean:272: obtain ⟨o, R, n, hT', -, -, hn, hc⟩ := hv.inv_checkedRequest hvc
+formal/Benitoite/Surface/ScopeSound.lean:405: ∃ t req, w = .checkedRequest t req ∧ vs[3]? = some (.const req) ∧ reqTarget req = some t := by
+formal/Benitoite/Surface/ScopeSound.lean:455: が `Ok(w)` を返すなら、w は渡された要求 req をそのまま保持する検査済みの要求の値 `checkedRequest t req` であり、実効の
+formal/Benitoite/Surface/ScopeSound.lean:469: ∃ R t req, w = .checkedRequest t req ∧ reqTarget req = some t ∧ t.kind = .endpoint ∧ R.Mem t ∧
+formal/Benitoite/Surface/ScopeSound.lean:609: δ は、具体化した範囲 r が実効の endpoint を含むときだけ、渡された要求を保持する `Ok(checkedRequest(t, req))` を返す。
+formal/Benitoite/Surface/ScopeSound.lean:618: if r.Mem v.toTarget then .val (.con "Ok" (ModelHttp.checkTys r) [.checkedRequest v.toTarget req])
+formal/Benitoite/Surface/ScopeSoundExamples.lean:129: (found : env'[0]? = some (some v)) (hv : ∀ t c, v ≠ .checkedRequest t c) {P : Release.Program} {Ψ : StoreTy} :
+formal/Benitoite/Surface/ScopeSoundExamples.lean:184: [.checkedRequest (.endpoint ⟨inside, port443⟩) (.opaque "Http.ClientRequest" 1)]) := by
+formal/Benitoite/Surface/ScopeState.lean:14: `Val.checkedRequest t req`。`Val.target?` が対象を返す値）であり、対象の種類が由来の種類に合い、対象が由来の
+formal/Benitoite/Surface/ScopeState.lean:123: (hc : ∀ c, v = .checkedRequest t c → ∃ n, B.valContent name = some n ∧ c.type = .opaqueTop n) :
+formal/Benitoite/Surface/ScopeState.lean:130: | checkedRequest t' c =>
+formal/Benitoite/Surface/ScopeState.lean:134: exact .V_CheckedRequest hk hm hn hct
+formal/Benitoite/Surface/ScopeState.lean:142: (hc : ∀ t c, v = .checkedRequest t c → ∃ n, B.valContent name = some n ∧ c.type = .opaqueTop n) :
+formal/Benitoite/Surface/ScopeState.lean:210: (hc : ∀ t c, v = .checkedRequest t c → ∃ n, B.valContent name = some n ∧ c.type = .opaqueTop n) :
+formal/Benitoite/Surface/ScopeState.lean:281: | [_, _, _, .const req], t => .checkedRequest t req
+
+型付けの明示的な場合: 16 files, 35 lines
+formal/Benitoite/Release/Lemmas/Canonical.lean:40: | .V_CheckedRequest _ _ _ _ => exact .checkedRequest
+formal/Benitoite/Release/Lemmas/Canonical.lean:230: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/FailureCont.lean:244: | .V_CheckedRequest .. => cases heq
+formal/Benitoite/Release/Lemmas/Inversion.lean:28: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:46: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:63: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:82: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:100: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:120: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:140: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:167: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:185: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:203: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:469: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:479: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:489: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:503: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:518: | .V_CheckedRequest hk hm hc ht => cases hv; exact ⟨_, _, _, rfl, hk, hm, hc, ht⟩
+formal/Benitoite/Release/Lemmas/Inversion.lean:527: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Inversion.lean:538: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Lemmas/Irrelevant.lean:94: | .V_CheckedRequest _ _ _ _ => rfl
+formal/Benitoite/Release/Lemmas/Names.lean:157: | .V_CheckedRequest _ _ _ _ => trivial
+formal/Benitoite/Release/Lemmas/NoFailContext.lean:31: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/OuterC.lean:84: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/Regularity.lean:202: | .V_CheckedRequest _ _ _ _ => simp [Ty.WF]
+formal/Benitoite/Release/Lemmas/Rename.lean:210: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/Rename.lean:361: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/Rename.lean:468: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/StoreLemmas.lean:130: | .V_CheckedRequest _ _ _ _ => intro b t ε e; cases e
+formal/Benitoite/Release/Lemmas/SubstTyping.lean:226: | .V_CheckedRequest hk hm hc ht => simp only [Val.subst]; exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/Lemmas/TySubstMain.lean:697: | .V_CheckedRequest hk hm hc ht => simp only [Val.substTyAt, Ty.substAt]; exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Release/LocalScope.lean:90: | .V_CheckedRequest _ _ _ _ => trivial
+formal/Benitoite/Release/Model.lean:394: | .V_CheckedRequest .. => cases hv
+formal/Benitoite/Release/Typing.lean:744: | .V_CheckedRequest hk hm hc ht => exact .V_CheckedRequest hk hm hc ht
+formal/Benitoite/Surface/Lemmas/BuilderCapture.lean:114: | .V_CheckedRequest _ _ _ _ => simp only [Val.Reads]
+
+値の明示的な場合・構成子の宣言: 19 files, 32 lines
+formal/Benitoite/Release/CoverageTypes.lean:128: | checkedRequest =>
+formal/Benitoite/Release/Lemmas/BuilderTyping.lean:53: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:93: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:126: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Canonical.lean:162: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Closed.lean:169: | .checkedRequest _ _, _ => by simp [Val.substTyAt, Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:292: | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:384: | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:477: | .checkedRequest _ _, _ => by simp [Val.rename, Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Closed.lean:609: | .checkedRequest _ _, _ => by simp [Val.subst, Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Dict.lean:247: | .checkedRequest _ _, _, _, _, _, h, _, _ => by simp [Val.superStep] at h
+formal/Benitoite/Release/Lemmas/Membership.lean:96: | checkedRequest => intro ha; cases ha; exact .inr (.inr ⟨_, _, _, rfl, rfl⟩)
+formal/Benitoite/Release/Lemmas/MembershipBase.lean:87: | checkedRequest t c =>
+formal/Benitoite/Release/Lemmas/Names.lean:32: | .checkedRequest _ _ => True
+formal/Benitoite/Release/Lemmas/Names.lean:87: | .checkedRequest _ _ => True
+formal/Benitoite/Release/Lemmas/Names.lean:256: | .checkedRequest _ _ => by
+formal/Benitoite/Release/Lemmas/PresBase.lean:45: | .checkedRequest _ _, _ => by simp [Val.VarsIn]
+formal/Benitoite/Release/Lemmas/Progress.lean:37: | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/Progress.lean:99: | .checkedRequest _ _, _, _, h => by obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
+formal/Benitoite/Release/Lemmas/SubstTyping.lean:46: | .checkedRequest _ _ => rfl
+formal/Benitoite/Release/Lemmas/TySubstMain.lean:132: | .checkedRequest, t, hu => by
+formal/Benitoite/Release/ModelTargets.lean:118: | .checkedRequest t _ :: _ => [t]
+formal/Benitoite/Release/ModelTargets.lean:521: | .checkedRequest t _ :: _ => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
+formal/Benitoite/Release/Subst.lean:68: | .checkedRequest t c => .checkedRequest t c
+formal/Benitoite/Release/Subst.lean:147: | .checkedRequest t c => .checkedRequest t c
+formal/Benitoite/Release/Subst.lean:204: | .checkedRequest t c => .checkedRequest t c
+formal/Benitoite/Release/Syntax.lean:267: | checkedRequest (t : Scope.Domain.Target) (req : Const)
+formal/Benitoite/Release/Typing.lean:75: | .checkedRequest t _ => some t
+formal/Benitoite/Release/Typing.lean:454: | checkedRequest {o R t c} : Inhabits P (.opaque o (.fixed R)) (.checkedRequest t c)
+formal/Benitoite/Release/WellFormed.lean:43: | .checkedRequest _ _ => True
+formal/Benitoite/Surface/Lemmas/PatternSupport.lean:46: | .checkedRequest => exact .checkedRequest
+formal/Benitoite/Surface/ScopeState.lean:130: | checkedRequest t' c =>
+

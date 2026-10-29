@@ -1,0 +1,1186 @@
+== wait-for-lock start 20:06:54
+== lock acquired 20:09:03 after 129s
+⚠ [114/417] Replayed Benitoite.Interval.Flow
+warning: Benitoite/Interval/Flow.lean:681:62: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Interval/Flow.lean:969:48: This simp argument is unused:
+  Pattern.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.toCore, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:65: This simp argument is unused:
+  Pattern.toCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:969:81: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [widthPatternMatch, PatternLocals, Pattern.binders, Pattern.toCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Flow.lean:1246:2: Try `simp at possible` instead of `simpa using possible`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [120/417] Replayed Benitoite.Interval.Sound
+warning: Benitoite/Interval/Sound.lean:782:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:31: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:784:49: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [comparisonKindAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:792:34: This simp argument is unused:
+  comparisonKindAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [WidthBinary.op, Comparison.ofBinOp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:33: This simp argument is unused:
+  baseNeg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [IntKind.ofType, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:927:42: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [baseNeg, IntKind.min, min64]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1213:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:31: This simp argument is unused:
+  Bool.false_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, false_or, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:51: This simp argument is unused:
+  false_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, target, or_true, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1224:69: This simp argument is unused:
+  or_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [WidthBinary.op, Bool.false_eq_true, false_or, target, ↓reduceIte, baseThen, hl, hr, baseOwnKind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1243:84: This simp argument is unused:
+  truth
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [WidthBinary.op, recognized, notAdd, notSub, notMul, notDiv, baseThen, hl, hr, baseOwnKind, baseBoolean,
+    baseEmpty, BaseApprox.Contains]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1758:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:1765:47: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [baseKindArm, matchKindArmEnv, entry]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2044:30: This simp argument is unused:
+  targetOperationAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AbstractEnv.standardAt, standards, apiAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2090:56: This simp argument is unused:
+  standardCallHead
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [targetOperationAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:2251:75: This simp argument is unused:
+  IntKind.type
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [arithmeticOperationAt, IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:87: This simp argument is unused:
+  baseKindArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, matchKindArmEnv, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:100: This simp argument is unused:
+  matchKindArmEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, baseArm, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/Sound.lean:3753:117: This simp argument is unused:
+  baseArm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [analyzeBaseArms, analyzeBaseKindArms, baseKindArm, matchKindArmEnv, baseEmpty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [128/417] Replayed Benitoite.Interval.RangeBorrowed
+warning: Benitoite/Interval/RangeBorrowed.lean:204:27: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [noArgs, hl, hp, ne_eq, not_true_eq_false, false_or, ↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:207:24: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/RangeBorrowed.lean:208:62: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [rule, ha]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [131/417] Replayed Benitoite.Interval.BudgetRange
+warning: Benitoite/Interval/BudgetRange.lean:367:27: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:367:34: This simp argument is unused:
+  Option.bind_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:19: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Option.bind_some]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:369:26: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [found]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:373:51: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:379:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:385:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:29: This simp argument is unused:
+  false_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [↓reduceIte]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:392:40: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all only [false_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:29: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:36: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:413:42: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:21: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:28: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:415:34: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:419:53: This simp argument is unused:
+  rule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:35: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:45: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:423:51: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:27: This simp argument is unused:
+  hMinimum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:37: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:425:43: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hMinimum, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:427:72: This simp argument is unused:
+  hMaximum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:530:23: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:532:15: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:35: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:42: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:587:48: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:27: This simp argument is unused:
+  known
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:34: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:589:40: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [known, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:596:23: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:599:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:25: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:33: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:602:39: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:17: This simp argument is unused:
+  hKnown
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:25: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:604:31: This simp argument is unused:
+  Option.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hKnown, bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:614:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:621:15: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:664:35: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetRange.lean:666:27: This simp argument is unused:
+  hOrigin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, Option.bind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [133/417] Replayed Benitoite.Interval.BudgetAnalyze
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:23: This simp argument is unused:
+  binarySupported
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [IntKind.ofType]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:107:40: This simp argument is unused:
+  IntKind.ofType
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [binarySupported]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetAnalyze.lean:182:19: Variable name `labels` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _labels
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [137/417] Replayed Benitoite.Interval.SyntacticReach
+warning: Benitoite/Interval/SyntacticReach.lean:83:28: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:85:30: This simp argument is unused:
+  concreteRule
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [UnknownAt, Unsupported, Unmodeled, classify]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/SyntacticReach.lean:156:154: This simp argument is unused:
+  List.append_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [syntacticReachChildren, List.map_append, syntacticReachExpr_sources, syntacticReachBlock_sources,
+    syntacticReachArms_sources, syntacticReachExprs_sources, outsideSyntacticReach_sources, surfacePreorder,
+    List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [138/417] Replayed Benitoite.Interval.BudgetNormal
+warning: Benitoite/Interval/BudgetNormal.lean:84:36: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [widthLiteral, bounded]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:472:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: Benitoite/Interval/BudgetNormal.lean:493:57: This simp argument is unused:
+  exprsChildren
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fieldAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetNormal.lean:1328:0: unused `termination_by`, function is not recursive
+⚠ [140/417] Replayed Benitoite.Interval.BudgetSound
+warning: Benitoite/Interval/BudgetSound.lean:425:31: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:425:60: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [surfaceSize, surfacePreorder, List.length_cons, List.length_append, arguments_preorder_length,
+    Nat.add_assoc, Nat.add_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:639:105: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Interval/BudgetSound.lean:727:27: This simp argument is unused:
+  KeyWithin
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [TraceKeys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [144/417] Replayed Benitoite.Interval.BudgetCallReach
+warning: Benitoite/Interval/BudgetCallReach.lean:384:26: This simp argument is unused:
+  exprsTables_sources
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [CallReach.children, childrenTables, append_sources, exprTables_sources, blockTables_sources,
+    armListTables_sources, outside, surfacePreorder, List.tail_cons]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✖ [279/417] Building Benitoite.Interval.FlowExamples (595ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Interval/FlowExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/FlowExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/FlowExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Interval/FlowExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Interval/FlowExamples.setup.json --json
+error: Benitoite/Interval/FlowExamples.lean:124:14: Application type mismatch: The argument
+  "Example.Resource"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Expr.withE "Example.Resource"
+error: Benitoite/Interval/FlowExamples.lean:108:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+✔ [280/417] Built Benitoite.Release.Lemmas.Preservation (636ms)
+✖ [281/417] Building Benitoite.Interval.BudgetChildrenExamples (609ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Interval/BudgetChildrenExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetChildrenExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/BudgetChildrenExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Interval/BudgetChildrenExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Interval/BudgetChildrenExamples.setup.json --json
+error: Benitoite/Interval/BudgetChildrenExamples.lean:107:59: Type mismatch
+  "Example.Resource"
+has type
+  String
+but is expected to have type
+  OpaqueName
+error: Benitoite/Interval/BudgetChildrenExamples.lean:99:23: Application type mismatch: The argument
+  "Example.Resource"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Expr.withE "Example.Resource"
+error: Benitoite/Interval/BudgetChildrenExamples.lean:97:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Interval/BudgetChildrenExamples.lean:130:51: Application type mismatch: The argument
+  "Example.Resource"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Expr.withE "Example.Resource"
+error: Benitoite/Interval/BudgetChildrenExamples.lean:129:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Interval/BudgetChildrenExamples.lean:139:23: Application type mismatch: The argument
+  "Example.Resource"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Expr.withE "Example.Resource"
+error: Benitoite/Interval/BudgetChildrenExamples.lean:138:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+✖ [282/417] Building Benitoite.Interval.SyntacticReachExamples (604ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Interval/SyntacticReachExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/SyntacticReachExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Interval/SyntacticReachExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Interval/SyntacticReachExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Interval/SyntacticReachExamples.setup.json --json
+error: Benitoite/Interval/SyntacticReachExamples.lean:49:20: Application type mismatch: The argument
+  "Example.Resource"
+has type
+  String
+but is expected to have type
+  OpaqueName
+in the application
+  Expr.withE "Example.Resource"
+✖ [283/417] Building Benitoite.Release.Lemmas.PresBase (410ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/PresBase.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresBase.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresBase.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/PresBase.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/PresBase.setup.json --json
+error: Benitoite/Release/Lemmas/PresBase.lean:220:32: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+✔ [296/417] Built Benitoite.Surface.Typing (10s)
+✔ [298/417] Built Benitoite.Surface.Lemmas.DictSupport (387ms)
+✔ [299/417] Built Benitoite.Surface.FiniteTools (1.2s)
+✔ [301/417] Built Benitoite.Surface.CheckTools (398ms)
+✔ [302/417] Built Benitoite.Surface.CheckTools:c.o (87ms)
+✔ [303/417] Built Benitoite.Surface.FinitePredicates (644ms)
+✔ [304/417] Built Benitoite.Surface.NoFailCheck (491ms)
+✔ [305/417] Built Benitoite.Surface.FinitePredicates:c.o (241ms)
+✖ [307/417] Building Benitoite.Surface.FiniteExamples (402ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/FiniteExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/FiniteExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/FiniteExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/FiniteExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/FiniteExamples.setup.json --json
+error: Benitoite/Surface/FiniteExamples.lean:10:53: Application type mismatch: The argument
+  "a"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "a"
+error: Benitoite/Surface/FiniteExamples.lean:11:53: Application type mismatch: The argument
+  "b"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "b"
+error: Benitoite/Surface/FiniteExamples.lean:12:40: Application type mismatch: The argument
+  "b"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "b"
+error: Benitoite/Surface/FiniteExamples.lean:12:51: Application type mismatch: The argument
+  "a"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "a"
+error: Benitoite/Surface/FiniteExamples.lean:14:56: Application type mismatch: The argument
+  "irrelevant"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "irrelevant"
+error: Benitoite/Surface/FiniteExamples.lean:18:64: Type mismatch
+  rfl
+has type
+  ?m.3 = ?m.3
+but is expected to have type
+  effEq atoms (Eff.normWith atoms raw) sorted = true
+error: Benitoite/Surface/FiniteExamples.lean:19:23: Application type mismatch: The argument
+  "a"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "a"
+error: Benitoite/Surface/FiniteExamples.lean:19:34: Application type mismatch: The argument
+  "b"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "b"
+error: Benitoite/Surface/FiniteExamples.lean:19:45: Application type mismatch: The argument
+  "b"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "b"
+error: Benitoite/Surface/FiniteExamples.lean:19:56: Application type mismatch: The argument
+  "unused"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "unused"
+error: Benitoite/Surface/FiniteExamples.lean:20:25: Application type mismatch: The argument
+  "a"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "a"
+error: Benitoite/Surface/FiniteExamples.lean:20:36: Application type mismatch: The argument
+  "b"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "b"
+error: Benitoite/Surface/FiniteExamples.lean:20:47: Application type mismatch: The argument
+  "b"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "b"
+error: Benitoite/Surface/FiniteExamples.lean:20:58: Application type mismatch: The argument
+  "unused"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "unused"
+error: Benitoite/Surface/FiniteExamples.lean:23:45: Type mismatch
+  rfl
+has type
+  ?m.3 = ?m.3
+but is expected to have type
+  effEq atoms raw rawOther = true
+error: Benitoite/Surface/FiniteExamples.lean:25:85: Application type mismatch: The argument
+  rfl
+has type
+  ?m.9 = ?m.9
+but is expected to have type
+  canonicalEff atoms sorted = true
+in the application
+  ⟨?m.7, rfl⟩
+error: Benitoite/Surface/FiniteExamples.lean:26:83: Application type mismatch: The argument
+  rfl
+has type
+  ?m.9 = ?m.9
+but is expected to have type
+  effSub atoms sorted raw = true
+in the application
+  ⟨?m.7, rfl⟩
+error: Benitoite/Surface/FiniteExamples.lean:29:50: Application type mismatch: The argument
+  "state"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "state"
+error: Benitoite/Surface/FiniteExamples.lean:31:28: Application type mismatch: The argument
+  "state"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "state"
+error: Benitoite/Surface/FiniteExamples.lean:32:45: Application type mismatch: The argument
+  "state"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "state"
+error: Benitoite/Surface/FiniteExamples.lean:32:68: Application type mismatch: The argument
+  "a"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "a"
+error: Benitoite/Surface/FiniteExamples.lean:35:94: Type mismatch
+  rfl
+has type
+  ?m.9 = ?m.9
+but is expected to have type
+  tyEq substAtoms (substTyAt substAtoms 0 [aTy] [row] template) substituted = true
+error: Benitoite/Surface/FiniteExamples.lean:37:58: Application type mismatch: The argument
+  "a"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "a"
+error: Benitoite/Surface/FiniteExamples.lean:52:44: Application type mismatch: The argument
+  "outside"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "outside"
+error: Benitoite/Surface/FiniteExamples.lean:52:73: Application type mismatch: The argument
+  "outside"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "outside"
+✖ [308/417] Building Benitoite.Surface.NoFailCheckExamples (332ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/NoFailCheckExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/NoFailCheckExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/NoFailCheckExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/NoFailCheckExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/NoFailCheckExamples.setup.json --json
+error: Benitoite/Surface/NoFailCheckExamples.lean:31:30: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Surface/NoFailCheckExamples.lean:31:62: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+error: Benitoite/Surface/NoFailCheckExamples.lean:48:36: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single stateEff
+✔ [309/417] Built Benitoite.Surface.SingleFailCheck (629ms)
+✔ [311/417] Built Benitoite.Surface.CheckPredicates (1.0s)
+✔ [313/417] Built Benitoite.Surface.CheckPatterns (663ms)
+✔ [314/417] Built Benitoite.Surface.AdmissibleCheck (573ms)
+✔ [317/417] Built Benitoite.Surface.Lemmas.Invariants (6.2s)
+✔ [318/417] Built Benitoite.Surface.Lemmas.SubstClean (345ms)
+✔ [319/417] Built Benitoite.Surface.Lemmas.Sequence (531ms)
+✔ [320/417] Built Benitoite.Surface.Lemmas.ScopedSupport (458ms)
+✔ [321/417] Built Benitoite.Surface.Lemmas.PatternSupport (483ms)
+✖ [322/417] Building Benitoite.Scope.CompatExamples (450ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Scope/CompatExamples.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Scope/CompatExamples.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Scope/CompatExamples.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Scope/CompatExamples.c --setup <wt>/formal/.lake/build/ir/Benitoite/Scope/CompatExamples.setup.json --json
+error: Benitoite/Scope/CompatExamples.lean:78:15: Type mismatch
+  RepresentationExamples.CandidateII.Atom.ofRelease
+has type
+  RepresentationExamples.CandidateII.OldAtom → RepresentationExamples.CandidateII.Atom
+but is expected to have type
+  Atom → RepresentationExamples.CandidateII.Atom
+error: Benitoite/Scope/CompatExamples.lean:79:16: Type mismatch
+  RepresentationExamples.CandidateII.Atom.toRelease?
+has type
+  RepresentationExamples.CandidateII.Atom → Option RepresentationExamples.CandidateII.OldAtom
+but is expected to have type
+  RepresentationExamples.CandidateII.Atom → Option Atom
+error: Benitoite/Scope/CompatExamples.lean:349:45: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  RepresentationExamples.CandidateI.Atom.name "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:349:76: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  RepresentationExamples.CandidateI.Atom.name "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:352:44: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  RepresentationExamples.CandidateI.Atom.name "File.Read"
+warning: Benitoite/Scope/CompatExamples.lean:355:50: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:354:8: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:358:50: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:357:8: declaration uses `sorry`
+error: Benitoite/Scope/CompatExamples.lean:362:16: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  RepresentationExamples.CandidateI.Atom.name "File.Read"
+warning: Benitoite/Scope/CompatExamples.lean:362:53: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:363:23: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:368:36: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:368:41: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:366:8: declaration uses `sorry`
+error: Benitoite/Scope/CompatExamples.lean:376:58: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  RepresentationExamples.CandidateI.Atom.name "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:378:23: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  RepresentationExamples.CandidateI.Atom.name "File.Read"
+warning: Benitoite/Scope/CompatExamples.lean:377:10: declaration uses `sorry`
+warning: Benitoite/Scope/CompatExamples.lean:377:16: declaration uses `sorry`
+error: Benitoite/Scope/CompatExamples.lean:392:30: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:392:57: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  CandidateI.Atom.name "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:392:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/CompatExamples.lean:394:31: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:394:58: Application type mismatch: The argument
+  "File.Read"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  CandidateI.Atom.name "File.Read"
+error: Benitoite/Scope/CompatExamples.lean:394:0: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/CompatExamples.lean:396:31: Application type mismatch: The argument
+  "File.Write"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "File.Write"
+error: Benitoite/Scope/CompatExamples.lean:396:0: cannot evaluate code because 'Benitoite.Scope.CompatExamples.embII' uses 'sorry' and/or contains errors
+error: Benitoite/Scope/CompatExamples.lean:398:32: Application type mismatch: The argument
+  "File.Write"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Eff.single "File.Write"
+error: Benitoite/Scope/CompatExamples.lean:398:0: cannot evaluate code because 'Benitoite.Scope.CompatExamples.embII' uses 'sorry' and/or contains errors
+✔ [323/417] Built Benitoite.Surface.Lemmas.ExtensionsScoped (575ms)
+✔ [324/417] Built Benitoite.Surface.Lemmas.Calls (615ms)
+✔ [325/417] Built Benitoite.Surface.CheckSupport (3.4s)
+✔ [326/417] Built Benitoite.Surface.Lemmas.Patterns (598ms)
+✔ [329/417] Built Benitoite.Surface.BuilderCheck (314ms)
+✖ [331/417] Building Benitoite.Surface.Lemmas.CallHead (575ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/Lemmas/CallHead.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/CallHead.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/CallHead.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/Lemmas/CallHead.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/Lemmas/CallHead.setup.json --json
+error: Benitoite/Surface/Lemmas/CallHead.lean:117:63: Application type mismatch: The argument
+  d.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single d.eff
+error: Benitoite/Surface/Lemmas/CallHead.lean:129:63: Application type mismatch: The argument
+  d.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Eff.single d.eff
+warning: Benitoite/Surface/Lemmas/CallHead.lean:188:8: declaration uses `sorry`
+✖ [347/417] Building Benitoite.Surface.Check (1.2s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/Check.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Check.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Check.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/Check.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/Check.setup.json --json
+error: Benitoite/Surface/Check.lean:161:79: Application type mismatch: The argument
+  "Process.Exit"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "Process.Exit"
+error: Benitoite/Surface/Check.lean:164:65: Application type mismatch: The argument
+  "Process.Exit"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "Process.Exit"
+error: Benitoite/Surface/Check.lean:297:82: Application type mismatch: The argument
+  od.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name od.eff
+error: Benitoite/Surface/Check.lean:298:84: Application type mismatch: The argument
+  od.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name od.eff
+error: Benitoite/Surface/Check.lean:309:82: Application type mismatch: The argument
+  od.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name od.eff
+error: Benitoite/Surface/Check.lean:310:94: Application type mismatch: The argument
+  od.eff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name od.eff
+error: Benitoite/Surface/Check.lean:580:57: Application type mismatch: The argument
+  "Process.Exit"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "Process.Exit"
+error: Benitoite/Surface/Check.lean:596:57: Application type mismatch: The argument
+  "Process.Exit"
+has type
+  String
+but is expected to have type
+  EffName
+in the application
+  Atom.name "Process.Exit"
+error: Benitoite/Surface/Check.lean:601:78: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+error: Benitoite/Surface/Check.lean:604:66: Application type mismatch: The argument
+  stateEff
+has type
+  EffBase
+but is expected to have type
+  EffName
+in the application
+  Atom.name stateEff
+Some required targets logged failures:
+- Benitoite.Interval.FlowExamples
+- Benitoite.Interval.BudgetChildrenExamples
+- Benitoite.Interval.SyntacticReachExamples
+- Benitoite.Release.Lemmas.PresBase
+- Benitoite.Surface.FiniteExamples
+- Benitoite.Surface.NoFailCheckExamples
+- Benitoite.Scope.CompatExamples
+- Benitoite.Surface.Lemmas.CallHead
+- Benitoite.Surface.Check
+error: build failed
+       20.23 real        41.47 user         6.12 sys
+          1305313280  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1533934  page reclaims
+                   1  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 106  voluntary context switches
+               78887  involuntary context switches
+          2291559641  instructions retired
+          1017495760  cycles elapsed
+            46220560  peak memory footprint
+== exit 1

@@ -1,0 +1,172 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Static.lean:118:17: error: Application type mismatch: The argument
+  (Γ i).snd
+has type
+  L
+but is expected to have type
+  L✝
+in the application
+  O.visible (Γ i).snd
+Static.lean:121:40: error: Application type mismatch: The argument
+  ev.fst
+has type
+  D
+but is expected to have type
+  D✝
+in the application
+  S.sink ev.fst
+Static.lean:125:8: warning: declaration uses `sorry`
+Static.lean:123:8: warning: declaration uses `sorry`
+Static.lean:129:54: error: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  h
+has type `O.visible (S.join a b) = true` which has no fields.
+Static.lean:133:54: error: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  h
+has type `O.visible (S.join a b) = true` which has no fields.
+Static.lean:143:8: warning: declaration uses `sorry`
+Static.lean:151:8: warning: declaration uses `sorry`
+Static.lean:176:34: error: don't know how to synthesize placeholder
+context:
+L✝ D✝ : Type
+S : System L✝ D✝
+O : Observer S
+Γ : Ctx L✝
+pc : L✝
+c : Cmd D✝
+Γ✝ : Ctx L✝
+pc✝ : L✝
+d✝ : D✝
+e✝ : Expr
+t✝ : Base
+a✝ : EType Γ✝ e✝ t✝
+hf : S.flows (S.join pc✝ (label S Γ✝ e✝)) (S.sink d✝)
+hp : O.visible pc✝ = false
+ρ : Env
+⊢ D✝
+Static.lean:220:14: error: unsolved goals
+case send.false
+L✝ D✝ : Type
+S : System L✝ D✝
+O : Observer S
+Γ✝ : Ctx L✝
+pc✝ : L✝
+c : Cmd D✝
+Γ : Ctx L✝
+pc : L✝
+d : D✝
+e : Expr
+t : Base
+he : EType Γ e t
+hf : S.flows (S.join pc (label S Γ e)) (S.sink d)
+ρ σ : Env
+h : LowEq O Γ ρ σ
+hd : O.visible (S.sink d) = false
+⊢ List.filter (fun ev => O.visible (S.sink (sorry ()))) [(d, eval e ρ)] =
+    List.filter (fun ev => O.visible (S.sink (sorry ()))) [(d, eval e σ)]
+Static.lean:220:28: warning: declaration uses `sorry`
+Static.lean:220:37: warning: This simp argument is unused:
+  hd
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [run, observe]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Static.lean:229:11: error: expected token
+Static.lean:230:10: error: unexpected identifier; expected 'instance'
+Static.lean:233:4: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public`
+  Level
+is not of the form `C ...` or `... → C ...` where C is a constant
+Static.lean:236:38: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public`
+  Level
+is not of the form `C ...` or `... → C ...` where C is a constant
+Static.lean:236:52: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.secret`
+  Level
+is not of the form `C ...` or `... → C ...` where C is a constant
+Static.lean:243:12: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public`
+  Level
+is not of the form `C ...` or `... → C ...` where C is a constant
+Static.lean:246:46: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public`
+  Level
+is not of the form `C ...` or `... → C ...` where C is a constant
+Static.lean:246:66: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.secret`
+  Level
+is not of the form `C ...` or `... → C ...` where C is a constant
+Static.lean:248:21: error: don't know how to synthesize implicit argument `L`
+  @Observer ?m.3 Dest system
+context:
+⊢ Type
+
+Note: Because this declaration's type has been explicitly provided, all parameter types and holes (e.g., `_`) in its header are resolved before its body is processed; information from the declaration body cannot be used to infer what these values should be
+Static.lean:248:30: error: don't know how to synthesize implicit argument `Level`
+  @system ?m.3
+context:
+⊢ Type
+
+Note: Because this declaration's type has been explicitly provided, all parameter types and holes (e.g., `_`) in its header are resolved before its body is processed; information from the declaration body cannot be used to infer what these values should be
+Static.lean:249:27: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public` could not be determined
+Static.lean:251:32: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.13
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+a b : ?m.13
+⊢ (system.join a b == ?m.15 (system.join a b)) = (a == ?m.10 && b == ?m.10)
+Static.lean:257:27: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.secret` could not be determined
+Static.lean:257:52: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public` could not be determined
+Static.lean:264:49: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public` could not be determined
+Static.lean:267:14: error: unsolved goals
+case send
+t✝ : Base
+a✝ : EType context (Expr.var 0) t✝
+hf : True
+⊢ False
+Static.lean:267:23: warning: declaration uses `sorry`
+Static.lean:267:31: warning: declaration uses `sorry`
+Static.lean:267:38: warning: declaration uses `sorry`
+Static.lean:267:51: warning: declaration uses `sorry`
+Static.lean:269:49: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public` could not be determined
+Static.lean:274:18: error: unsolved goals
+case ite.send
+a✝² : EType context (Expr.var 0) Base.boolean
+a✝¹ :
+  Typed system context (system.join sorry (label system context (Expr.var 0)))
+    (Cmd.send Dest.console (Expr.lit (Value.integer 0)))
+t✝ : Base
+a✝ : EType context (Expr.lit (Value.integer 1)) t✝
+hf : True
+⊢ False
+Static.lean:281:49: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.public` could not be determined
+Static.lean:289:65: error: don't know how to synthesize implicit argument `Level`
+  @context ?m.17
+context:
+ρ σ : Env
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+Static.lean:292:33: error(lean.unknownIdentifier): Unknown identifier `safeProgram_typed`
+Static.lean:299:0: warning: declaration uses `sorry`
+Static.lean:299:0: error: cannot evaluate code because 'SF.TwoPoint.publicObserver' uses 'sorry' and/or contains errors
+Static.lean:300:0: warning: declaration uses `sorry`
+Static.lean:300:0: error: cannot evaluate code because 'SF.TwoPoint.publicObserver' uses 'sorry' and/or contains errors
+'SF.noninterference' depends on axioms: [propext, sorryAx]
+Static.lean:305:14: error(lean.unknownIdentifier): Unknown constant `TwoPoint.reject_explicit`
+Static.lean:306:14: error(lean.unknownIdentifier): Unknown constant `TwoPoint.reject_implicit`
+        0.81 real         0.70 user         0.24 sys
+           698089472  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               45065  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 598  voluntary context switches
+                3416  involuntary context switches
+          7049381242  instructions retired
+          2887573417  cycles elapsed
+           149249384  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

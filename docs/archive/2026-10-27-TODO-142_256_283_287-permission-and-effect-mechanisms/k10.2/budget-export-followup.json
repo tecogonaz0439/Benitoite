@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "desugar_export",
+    "range_budget::export_range_budget_sources",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "returncode": 0,
+  "outerSeconds": 2.901288291,
+  "maxRssBytesAuxiliary": 706707456
+}

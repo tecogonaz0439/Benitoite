@@ -1,0 +1,5 @@
+import Benitoite.Unofficial.IO.Console
+function main() -> Unit uses Console.Write
+  Console.writeLine("[" + String.displayWidthPadStart(s: "猫", width: 4) + "]")
+  Console.writeLine("[" + String.displayWidthPadEndCJK(s: "·", width: 4) + "]")
+end function

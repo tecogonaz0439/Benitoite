@@ -14,7 +14,7 @@ namespace Benitoite.Release
 theorem Eff.substRho_true {es : List Eff} {ε : Eff} {a : Atom} :
     Eff.mem (Eff.substRho es ε) a ↔
       ((match a with
-        | .name l => Eff.mem ε (.name l)
+        | .name l r => Eff.mem ε (.name l r)
         | .rho k => es.length ≤ k ∧ Eff.mem ε (.rho k)) ∨
        ∃ i e, es[i]? = some e ∧ Eff.mem ε (.rho i) ∧ Eff.mem e a) := by
   rw [Eff.substRho_eq_bind, Eff.bind, Eff.mem_norm, Eff.mem_rawBind]
@@ -23,12 +23,14 @@ theorem Eff.substRho_true {es : List Eff} {ε : Eff} {a : Atom} :
 theorem Eff.substRho_true_scoped {es : List Eff} {ε : Eff} (h : Eff.RhosIn (· < es.length) ε)
     {a : Atom} :
     Eff.mem (Eff.substRho es ε) a ↔
-      ((∃ l, a = .name l ∧ Eff.mem ε (.name l)) ∨
+      ((∃ l r, a = .name l r ∧ Eff.mem ε (.name l r)) ∨
         ∃ i e, es[i]? = some e ∧ Eff.mem ε (.rho i) ∧ Eff.mem e a) := by
   rw [Eff.substRho_true]
   apply or_congr _ Iff.rfl
   cases a with
-  | name l => simp
+  | name l r =>
+    simp
+    exact ⟨fun hm => ⟨l, r, ⟨rfl, rfl⟩, hm⟩, fun ⟨_, _, ⟨he, hr⟩, hm⟩ => he ▸ hr ▸ hm⟩
   | rho k =>
     simp only [reduceCtorEq, false_and, exists_false, iff_false, not_and]
     intro hk hε
@@ -47,7 +49,7 @@ theorem Eff.substRho_comp {es es' : List Eff} {ε : Eff} (h : Eff.RhosIn (· < e
 
 /-- 閉じた型への代入は、型内部の正規形を含めて恒等である。 -/
 theorem Ty.substAt_of_closed {c : Nat} (ts : List Ty) (es : List Eff)
-    (a : Ty) (h : Ty.VarsIn c (fun _ => False) a) : a.substAt c ts es = a := by
+    (a : Ty) (h : Ty.VarsIn 0 c (fun _ => False) a) : a.substAt c ts es = a := by
   rw [Ty.substAt_eq_bind]
   have hc : Ty.bind (SubstEnv.at c ts es) a = Ty.bind SubstEnv.identity a := by
     apply Ty.bind_congr_scoped (n := c)
@@ -58,7 +60,7 @@ theorem Ty.substAt_of_closed {c : Nat} (ts : List Ty) (es : List Eff)
   rw [hc, Ty.bind_identity, (Ty.VarsIn.wf a h).canonical a]
 
 theorem Ty.substAtList_of_closed {c : Nat} (ts : List Ty) (es : List Eff)
-    (as : List Ty) (h : Ty.VarsInList c (fun _ => False) as) :
+    (as : List Ty) (h : Ty.VarsInList 0 c (fun _ => False) as) :
     as.map (Ty.substAt c ts es) = as := by
   calc
     _ = as.map id := List.map_congr_left (fun a ha =>
@@ -67,7 +69,7 @@ theorem Ty.substAtList_of_closed {c : Nat} (ts : List Ty) (es : List Eff)
 
 /-- 型と行の像を同時に置き換える、宣言の範囲での合成。 -/
 theorem Ty.subst_comp {ts : List Ty} {es : List Eff} (c : Nat) (ts' : List Ty) (es' : List Eff)
-    (a : Ty) (h : Ty.VarsIn ts.length (· < es.length) a) :
+    (a : Ty) (h : Ty.VarsIn 0 ts.length (· < es.length) a) :
     Ty.substAt c ts' es' (Ty.subst ts es a) =
       Ty.subst (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) a := by
   simp only [Ty.subst, Ty.substAt_eq_bind]
@@ -89,7 +91,7 @@ theorem Ty.subst_comp {ts : List Ty} {es : List Eff} (c : Nat) (ts' : List Ty) (
     rfl
 
 theorem Ty.subst_comp_list {ts : List Ty} {es : List Eff} (c : Nat) (ts' : List Ty) (es' : List Eff)
-    (as : List Ty) (h : Ty.VarsInList ts.length (· < es.length) as) :
+    (as : List Ty) (h : Ty.VarsInList 0 ts.length (· < es.length) as) :
     (as.map (Ty.subst ts es)).map (Ty.substAt c ts' es') =
       as.map (Ty.subst (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es'))) := by
   simp only [List.map_map]
@@ -97,7 +99,7 @@ theorem Ty.subst_comp_list {ts : List Ty} {es : List Eff} (c : Nat) (ts' : List 
 
 /-- cutoff より内側の像は、閉じた型を用いると移動なしに読める。 -/
 theorem SubstEnv.at_type_closed (c : Nat) (ts : List Ty) (es : List Eff)
-    (hts : ∀ t ∈ ts, Ty.WF 0 t) (i : Nat) :
+    (hts : ∀ t ∈ ts, Ty.WF 0 0 t) (i : Nat) :
     (SubstEnv.at c ts es).types i =
       if i < c then .tvar i
       else if hi : i - c < ts.length then ts[i - c]
@@ -113,7 +115,7 @@ theorem SubstEnv.at_type_closed (c : Nat) (ts : List Ty) (es : List Eff)
 
 /-- 型の像は、移動と cutoff 付き代入を入れ替えても一致する。 -/
 theorem SubstEnv.shift_at_types {c k : Nat} {ts : List Ty} (es : List Eff)
-    (hts : ∀ t ∈ ts, Ty.WF 0 t) :
+    (hts : ∀ t ∈ ts, Ty.WF 0 0 t) :
     ((SubstEnv.shift k 0).compose (SubstEnv.at (c + k) ts es)).types =
       ((SubstEnv.at c ts es).compose (SubstEnv.shift k 0)).types := by
   funext i
@@ -137,7 +139,7 @@ theorem SubstEnv.shift_at_types {c k : Nat} {ts : List Ty} (es : List Eff)
 
 /-- 閉じた行の型の像も、移動と代入の入れ替えで一致する。 -/
 theorem Eff.shift_at_rowImages {c k : Nat} {ts : List Ty} (es : List Eff)
-    (hes : ∀ e ∈ es, Eff.WF 0 e) (i : Nat) :
+    (hes : ∀ e ∈ es, Eff.WF 0 0 e) (i : Nat) :
     Eff.rowImage ((SubstEnv.shift k 0).compose (SubstEnv.at (c + k) ts es)).rows i =
       Eff.rowImage ((SubstEnv.at c ts es).compose (SubstEnv.shift k 0)).rows i := by
   rw [Eff.rowImage_compose, Eff.rowImage_compose]
@@ -159,7 +161,7 @@ theorem Eff.shift_at_rowImages {c k : Nat} {ts : List Ty} (es : List Eff)
 
 /-- 移動と代入の交換。行の像内部の型も閉じていることを要求する。 -/
 theorem Ty.shift_substAt {c k : Nat} {ts : List Ty} (es : List Eff)
-    (hts : ∀ t ∈ ts, Ty.WF 0 t) (hes : ∀ e ∈ es, Eff.WF 0 e) (a : Ty) :
+    (hts : ∀ t ∈ ts, Ty.WF 0 0 t) (hes : ∀ e ∈ es, Eff.WF 0 0 e) (a : Ty) :
     (a.shift k 0).substAt (c + k) ts es = (a.substAt c ts es).shift k 0 := by
   simp only [Ty.shift_eq_bind, Ty.substAt_eq_bind, Ty.bind_comp]
   apply Ty.bind_congr_rows
@@ -182,7 +184,7 @@ theorem Eff.substAt_fails (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff) :
       Ty.normTys_append, Eff.atoms, SubstEnv.at, Ty.substTysAt_eq_rawBindTys]
 
 /-- 型の変数が cutoff より内側なら、型の列だけの代入は恒等である。 -/
-theorem Ty.substAt_nil_of_wf {c : Nat} (ts : List Ty) (a : Ty) (h : Ty.WF c a) :
+theorem Ty.substAt_nil_of_wf {c : Nat} (ts : List Ty) (a : Ty) (h : Ty.WF 0 c a) :
     a.substAt c ts [] = a := by
   rw [Ty.substAt_eq_bind]
   have hc : Ty.bind (SubstEnv.at c ts []) a = Ty.bind SubstEnv.identity a := by
@@ -193,7 +195,7 @@ theorem Ty.substAt_nil_of_wf {c : Nat} (ts : List Ty) (a : Ty) (h : Ty.WF c a) :
     · exact Ty.RowsIn.mono (fun _ _ => rfl) a (Ty.rowsIn_true a)
   rw [hc, Ty.bind_identity, h.canonical a]
 
-theorem Ty.substAtList_nil_of_wf {c : Nat} (ts : List Ty) (as : List Ty) (h : Ty.WFList c as) :
+theorem Ty.substAtList_nil_of_wf {c : Nat} (ts : List Ty) (as : List Ty) (h : Ty.WFList 0 c as) :
     as.map (Ty.substAt c ts []) = as := by
   calc
     _ = as.map id := List.map_congr_left (fun a ha => Ty.substAt_nil_of_wf ts a (Ty.WFList.iff.mp h a ha))
@@ -215,7 +217,7 @@ theorem Eff.substRho_union (es : List Eff) (e f : Eff) :
 
 /-- 型の像だけの代入は、閉じた Fail 型と正規形の最上位の効果を保つ。 -/
 theorem Eff.substAt_nil_of_wf {c : Nat} (ts : List Ty) (e : Eff)
-    (h : Eff.WF c e) (hc : Eff.Canonical e) : Eff.substAt c ts [] e = e := by
+    (h : Eff.WF 0 c e) (hc : Eff.Canonical e) : Eff.substAt c ts [] e = e := by
   have he : Eff.bind (SubstEnv.at c ts []) e = Eff.bind SubstEnv.identity e := by
     apply Eff.bind_congr_scoped (n := c)
     · intro i hi
@@ -227,7 +229,7 @@ theorem Eff.substAt_nil_of_wf {c : Nat} (ts : List Ty) (e : Eff)
 
 /-- 型と行の像を同時に置き換える、宣言の範囲での合成。 -/
 theorem Eff.substAt_comp {ts : List Ty} {es : List Eff} (c : Nat) (ts' : List Ty) (es' : List Eff)
-    (a : Eff) (h : Eff.VarsIn ts.length (· < es.length) a) :
+    (a : Eff) (h : Eff.VarsIn 0 ts.length (· < es.length) a) :
     Eff.substAt c ts' es' (Eff.substAt 0 ts es a) =
       Eff.substAt 0 (ts.map (Ty.substAt c ts' es')) (es.map (Eff.substAt c ts' es')) a := by
   change Eff.bind (SubstEnv.at c ts' es') (Eff.bind (SubstEnv.at 0 ts es) a) =
@@ -263,13 +265,28 @@ theorem Eff.substAt_single (c : Nat) (ts : List Ty) (es : List Eff) (l : EffName
   Eff.bind_ofAtoms_noRhos (SubstEnv.at c ts es) _ (fun _ => rfl)
 
 /-- 効果に含まれる名前は、型と行の同時代入後にも残る。 -/
-theorem Eff.substAt_name {c ts es e l} (h : Eff.mem e (.name l)) :
-    Eff.mem (Eff.substAt c ts es e) (.name l) :=
-  (Eff.mem_bind (SubstEnv.at c ts es) e (.name l)).mpr (Or.inl ⟨l, rfl, h⟩)
+theorem Eff.substAt_name {c ts es e l r} (h : Eff.mem e (.name l r)) :
+    Eff.mem (Eff.substAt c ts es e) (.name l r) :=
+  (Eff.mem_bind (SubstEnv.at c ts es) e (.name l r)).mpr (Or.inl ⟨l, r, rfl, h⟩)
+
+/-- 型と行の同時代入は不透明型の範囲の位置を変えない。 -/
+@[simp] theorem Ty.substAt_opaque (c : Nat) (ts : List Ty) (es : List Eff) (o : OpaqueName)
+    (r : Scope.Signature.Ix) : (Ty.opaque o r).substAt c ts es = .opaque o r := by
+  simp [Ty.substAt]
+
+/-- 型の変数の移動は不透明型の範囲の位置を変えない。 -/
+@[simp] theorem Ty.shift_opaque (k c : Nat) (o : OpaqueName) (r : Scope.Signature.Ix) :
+    (Ty.opaque o r).shift k c = .opaque o r := by
+  simp [Ty.shift]
+
+/-- 一般の代入は不透明型の範囲の位置を変えない。 -/
+@[simp] theorem Ty.bind_opaque (θ : SubstEnv) (o : OpaqueName) (r : Scope.Signature.Ix) :
+    (Ty.opaque o r).bind θ = .opaque o r := by
+  simp [Ty.bind, Ty.rawBind, Ty.norm]
 
 /-- Fail 型を持つ効果も、移動と型・行代入の交換を満たす。 -/
 theorem Eff.shift_substAt {c k : Nat} {ts : List Ty} (es : List Eff)
-    (hts : ∀ t ∈ ts, Ty.WF 0 t) (hes : ∀ e ∈ es, Eff.WF 0 e) (e : Eff) :
+    (hts : ∀ t ∈ ts, Ty.WF 0 0 t) (hes : ∀ e ∈ es, Eff.WF 0 0 e) (e : Eff) :
     Eff.substAt (c + k) ts es (Eff.shift k 0 e) = Eff.shift k 0 (Eff.substAt c ts es e) := by
   have hshift : ∀ e : Eff, Eff.shift k 0 e = Eff.bind (SubstEnv.shift k 0) e := by
     intro e

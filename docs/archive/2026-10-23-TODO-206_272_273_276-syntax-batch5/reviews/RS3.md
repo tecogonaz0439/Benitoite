@@ -1,7 +1,7 @@
 # RS3: S3 の調べと判断の案（エフェクトを宣言する語）のレビュー
 
 - 対象: `study/effect-keyword.md`、`study/effect-keyword-questions.md`（Codex、S3）
-- 前提: [README](../README.md) の「設計者の決定（2026-10-23）」（覆さない）、`work/m011/S3-prompt.md`、`work/m011/common.md`、`study/file-effects.md` の 2.3・4・6 節
+- 前提: [README](../README.md) の「設計者の決定（2026-10-23）」（覆さない）、[S3-prompt.md の保管方針](../work-copies/README.md#f006)、[common.md の保管方針](../work-copies/README.md#f007)、`study/file-effects.md` の 2.3・4・6 節 依頼文・実行の運用記録は git の外に置き、保管していない。結果とレビューはこのアーカイブ内の記録を正とする。
 - 開始版: `a0d652c0`（ブランチ `san_benito`）
 - レビュー日: 2026-10-23。外部資料の確認日も 2026-10-23 である。
 - 行った確認: 設計書・ソースの読み取り、`rg` による候補の語の抜き取り検索、一次資料の取得（WebFetch と curl）。ビルド・テスト・CLI の実行・LLM を呼ぶ評価は行っていない。
@@ -92,7 +92,7 @@
 
 - 指摘 3 の、識別子に戻した `uses` が次の行の注釈で別の文として区切られるかどうかは、机上の推定である。改造で旧 uses を識別子に戻す案を採るなら、移行の診断の再現テストで確かめる。
 - 指摘 4 の、長さの違いでどれだけのゴールデンの表示・整形が変わるかは、移行の試行をしないと分からない。
-- Delphi の [Programs and Units](https://docwiki.embarcadero.com/RADStudio/Athens/en/Programs_and_Units_%28Delphi%29) は、WebFetch では 403、curl では Cloudflare の確認の頁が返り、本文を確かめられなかった。検索の要約では「プログラムの uses 節が直接依存する unit を挙げる」ことは支えられたが、「カンマ区切り」は確かめていない。Free Pascal の例が同じ形を示しているので、3 節の論旨は変わらない。S3 の作業記録（`work/m011/S3-log*.txt`）には、Delphi・Verse・PHP・Pony の頁を開いた跡が明示されていない（空の `web search:` の行が多い）。Verse と PHP は本レビューで確かめた。Pony・Austral・Dafny・SPARK・Eff・Frank・Links・Effekt の細部（Effekt の `/ {}` の文脈的な読み、Eff の README の記述など）は確かめていない。
+- Delphi の [Programs and Units](https://docwiki.embarcadero.com/RADStudio/Athens/en/Programs_and_Units_%28Delphi%29) は、WebFetch では 403、curl では Cloudflare の確認の頁が返り、本文を確かめられなかった。検索の要約では「プログラムの uses 節が直接依存する unit を挙げる」ことは支えられたが、「カンマ区切り」は確かめていない。Free Pascal の例が同じ形を示しているので、3 節の論旨は変わらない。S3 の作業記録（[S3-log*.txt の保管方針](../work-copies/README.md#分類と元の対応)）には、Delphi・Verse・PHP・Pony の頁を開いた跡が明示されていない（空の `web search:` の行が多い）。Verse と PHP は本レビューで確かめた。Pony・Austral・Dafny・SPARK・Eff・Frank・Links・Effekt の細部（Effekt の `/ {}` の文脈的な読み、Eff の README の記述など）は確かめていない。 依頼文・実行の運用記録は git の外に置き、保管していない。結果とレビューはこのアーカイブ内の記録を正とする。
 
 ## 候補の比較についての所見
 

@@ -1,0 +1,36 @@
+== wait-for-lock start 18:01:04
+== lock acquired 18:01:04 after 0s
+✔ [77/410] Built Benitoite.Release.NoFail (555ms)
+✔ [78/410] Built Benitoite.Release.NoFail:c.o (217ms)
+✔ [79/410] Built Benitoite.Release.Finite (1.0s)
+✔ [80/410] Built Benitoite.Release.Finite:c.o (561ms)
+✖ [81/410] Building Benitoite.Release.Typing (1.2s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Typing.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Typing.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Typing.setup.json --json
+error: Benitoite/Release/Typing.lean:125:2: Missing cases:
+(Atom.name _ (ScopeRange.pathExact _))
+error: Benitoite/Release/Typing.lean:137:4: Missing cases:
+(Ty.opaque _ (ScopeRange.pathExact _))
+✔ [284/410] Built Benitoite.Release.FiniteSupport (1.8s)
+✔ [286/410] Built Benitoite.Surface.SingleFail (241ms)
+Some required targets logged failures:
+- Benitoite.Release.Typing
+error: build failed
+        3.15 real         5.63 user         0.91 sys
+           774586368  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              249651  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  20  voluntary context switches
+               17876  involuntary context switches
+          1298241000  instructions retired
+           478762541  cycles elapsed
+            24806552  peak memory footprint
+== exit 1

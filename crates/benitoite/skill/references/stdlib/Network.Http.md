@@ -6,6 +6,7 @@ Refer to its declarations as `Http.<name>`, for example `Http.Listen`.
 
 HTTP/1.1 servers without TLS and clients for http and https URLs.
 The resource types `Listener` and `Exchange` are built in.
+`RequestIn` is a built-in opaque type. Its optional host and port scope is one invariant endpoint index; the bare type has the unrestricted scope.
 The server has no limit on the number of connections or the time a client may take to send a request.
 Listen on 127.0.0.1, or put the server behind a reverse proxy; do not expose it to the internet directly.
 
@@ -30,6 +31,10 @@ Listening for connections, accepting requests, and responding.
 public effect Connect
   /// Sends the request and returns the response, including 4xx and 5xx responses.
   function send(request: ClientRequest) -> Result[Response, NetworkError]
+  /// Sends the same checked request to its retained endpoint. Returns 3xx responses without following redirects and does not use environment proxies.
+  /// An explicit Host header must name the same effective host and port as the URI; a malformed or different Host returns NetworkErrorKind.InvalidInput.
+  /// Protocol and communication failures are NetworkError, separate from the pure check's RequestCheckError.
+  function sendIn(request: RequestIn) -> Result[Response, NetworkError]
 end effect
 ```
 
@@ -68,6 +73,36 @@ end record
 ```
 
 A request sent by a client, made with `Http.clientRequest` and changed with record update.
+
+```benitoite
+public data RequestCheckError
+  InvalidUrl(String)
+  Scope(Scope.ScopeError)
+end data
+```
+
+URL failures are separate from invalid host patterns, endpoint forms, port bounds, and membership failures.
+
+```benitoite
+public function checkRequestIn(hostPattern: String, minimumPort: Integer, maximumPort: Integer, request: ClientRequest) -> Result[RequestIn, RequestCheckError]
+```
+
+Checks the URL's effective host and port against the dynamic condition and retains the same request.
+Only http and https are accepted; omitted ports mean 80 and 443 respectively.
+Known direct host and port conditions determine the static scope; otherwise the static scope is unrestricted.
+Known invalid parts of a direct call are rejected even if other arguments are dynamic. This pure check does not authorize IO or resolve DNS.
+
+```benitoite
+public function requestInValue(request: RequestIn) -> ClientRequest
+```
+
+Returns the same five-field record retained by checkRequestIn. Updating that record does not change the checked value; a changed URL requires another check.
+
+```benitoite
+public function widenRequestIn(request: RequestIn) -> RequestIn
+```
+
+Explicitly widens the static scope to the annotated return scope when it covers the input scope. Retains the same request record and effective endpoint.
 
 ```benitoite
 public function requestOf(exchange: Exchange) -> Request

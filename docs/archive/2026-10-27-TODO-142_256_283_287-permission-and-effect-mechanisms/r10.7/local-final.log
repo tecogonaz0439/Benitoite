@@ -1,0 +1,44 @@
+$ cargo test --lib desugar_export --test desugar_export --test coverage_export
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+warning: unused import: `scope_tables::scope_tables_smoke`
+  --> crates/benitoite/src/../tests/desugar_export/exchange.rs:25:9
+   |
+25 | pub use scope_tables::scope_tables_smoke;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `EXPECTED` is never used
+  --> crates/benitoite/src/../tests/desugar_export/scope_tables.rs:10:7
+   |
+10 | const EXPECTED: &str = include_str!("scope-tables-expected.json");
+   |       ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `opaque` is never used
+   --> crates/benitoite/src/../tests/desugar_export/scope_tables.rs:252:4
+    |
+252 | fn opaque(name: &str, range: &Value) -> Value {
+    |    ^^^^^^
+
+warning: function `header` is never used
+   --> crates/benitoite/src/../tests/desugar_export/scope_tables.rs:255:4
+    |
+255 | fn header(param: Value, ret: Value, name: &str) -> Value {
+    |    ^^^^^^
+
+warning: function `widen_definition` is never used
+   --> crates/benitoite/src/../tests/desugar_export/scope_tables.rs:258:4
+    |
+258 | fn widen_definition(
+    |    ^^^^^^^^^^^^^^^^
+
+warning: function `scope_tables_smoke` is never used
+   --> crates/benitoite/src/../tests/desugar_export/scope_tables.rs:280:8
+    |
+280 | pub fn scope_tables_smoke(output: &std::path::Path) {
+    |        ^^^^^^^^^^^^^^^^^^
+
+error: `benitoite` (lib test) generated 6 warnings (run `cargo fix --lib -p benitoite --tests` to apply 1 suggestion)
+error: warnings are denied by `build.warnings` configuration

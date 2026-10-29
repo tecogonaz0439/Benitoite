@@ -1,0 +1,41 @@
+$ cargo test -p benitoite --test scope_annotations
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.43s
+     Running tests/scope_annotations.rs (target/debug/deps/scope_annotations-656be2b899c02d58)
+
+running 9 tests
+test unclosed_scopes_stop_at_the_next_unexpected_token ... FAILED
+test malformed_type_arguments_keep_the_original_syntax_diagnostic ... ok
+test scope_shorthand_preserves_atoms_and_source_elements ... ok
+test shorthand_reports_name_resolution_errors_and_repairs_once ... FAILED
+test value_type_scope_misuse_and_unrecoverable_syntax_are_rejected ... ok
+test scoped_function_types_and_failure_arguments_survive_instantiation ... ok
+test duplicate_atoms_report_both_original_elements ... ok
+test invalid_scopes_are_rejected_by_the_argument_contract ... ok
+test port_arguments_use_integer_literal_values_and_widths ... ok
+
+failures:
+
+---- unclosed_scopes_stop_at_the_next_unexpected_token stdout ----
+
+thread 'unclosed_scopes_stop_at_the_next_unexpected_token' (2734796) panicked at crates/benitoite/tests/scope_annotations.rs:473:9:
+assertion `left == right` failed
+  left: "expected a type, found a string literal"
+ right: "expected `,` or `]`, found `]`"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- shorthand_reports_name_resolution_errors_and_repairs_once stdout ----
+
+thread 'shorthand_reports_name_resolution_errors_and_repairs_once' (2734795) panicked at crates/benitoite/tests/scope_annotations.rs:496:9:
+assertion `left == right` failed
+  left: "E0209"
+ right: "E0316"
+
+
+failures:
+    shorthand_reports_name_resolution_errors_and_repairs_once
+    unclosed_scopes_stop_at_the_next_unexpected_token
+
+test result: FAILED. 7 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.33s
+
+error: test failed, to rerun pass `-p benitoite --test scope_annotations`

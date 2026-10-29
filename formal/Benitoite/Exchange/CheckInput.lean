@@ -1,5 +1,6 @@
 import Benitoite.Surface.CheckTables
 import Benitoite.Exchange.Builtins
+import Benitoite.Exchange.Observe
 
 /-! 契約名とソース順を保持する独立した交換の入口。
 設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
@@ -65,6 +66,12 @@ structure Prepared where
   implNames : Bool
   /-- JSON に本体がない定義を成功扱いせず、準備の失敗として返す。 -/
   outside : List (String × List String)
+  /-- 交換の原子の一覧（`atomsFor`）。検査器の原子の集合はこの一覧の像である。 -/
+  atoms : Eff
+  atoms_eq : input.atoms = atoms.filterMap Atom.toRelease
+  /-- 必須の判定の受理の入力（L50.2）。新版は入力の `scopeAcceptance` から作り、旧版は規則のない受理の入力
+  （旧の像）である（`ScopeAcceptanceEntry.acceptInput`）。 -/
+  accept : Benitoite.Surface.CheckAccept.AcceptInput
 
 /-- rho の明示使用だけでなく、宣言された未使用の引数も含める。 -/
 partial def maxEffArgs : Json → Nat
@@ -74,12 +81,19 @@ partial def maxEffArgs : Json → Nat
     xs.toArray.foldl (fun n (_,v) => max n (maxEffArgs v)) own
   | _ => 0
 
+/-- 交換の原子の一覧。入力・組み込みの表（署名の範囲の変数の原子を含む）・標準ライブラリの宣言に現れる原子と、
+組み込みの呼び出しの範囲の列で署名の原子を具体化した原子（`instAtoms`）を含める。検査器は具体化の像の原子が
+この集合にあることを求め（`instClosed`）、書き出しはこの集合を候補にする（`Prepared.writeEffNames`）。 -/
 def atomsFor (input : Input) (b : BuiltinInput) (s : StdlibInput)
     (operators : List OperatorEntry) : Eff :=
   let json := toJson [toJson input, toJson b, toJson s, toJson operators]
-  ((collectAtoms json) ++ [Atom.name "State"] ++
-    ((input.effects ++ b.effects).map fun e => Atom.name e.name) ++
-    (input.ops.map fun o => Atom.name o.eff) ++
+  let instantiated := (collectPrimRanges (toJson input)).flatMap fun (n, rs) =>
+    match b.prims.find? (·.name == n) with
+    | some p => instAtoms (collectAtoms (toJson p)) rs
+    | none => []
+  ((collectAtoms json) ++ [Atom.name "State" .top] ++
+    ((input.effects ++ b.effects).map fun e => Atom.name e.name .top) ++
+    (input.ops.map fun o => Atom.name o.eff .top) ++ instantiated ++
     ((List.range (maxEffArgs json)).map Atom.rho)).eraseDups
 
 def uniqueKeys (xs : List (String × α)) : Bool :=
@@ -184,10 +198,39 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
     fun p => do return (p.name, ← p.toMaterial)
   if !uniqueKeys raw then throw "duplicate primitive name"
   let S ← b.summaryTable
-  let entries := primEntries S raw
-  let B := builtins S entries b.toBuiltinMaterial
-  let q := m.input B (Benitoite.Release.satB S) (admitsDec S entries)
-    (makeOpPrim atoms operators) (atoms.filterMap Atom.toRelease)
+  -- 範囲の変数の種類と IO の形を表の項目から署名へ入れる。
+  let entries := (primEntries S raw).map fun e => match b.prims.find? (·.name == e.name) with
+    | some p => { e with signature := p.withRanges e.signature }
+    | none => e
+  let B := b.withTableData (builtins S entries b.toBuiltinMaterial)
+  let q := { m.input B (Benitoite.Release.satB S) (admitsDec S entries)
+    (makeOpPrim atoms operators) (atoms.filterMap Atom.toRelease) with
+    admitsRDec := AdmitsEntry.admitsRDec b.admitsR }
+  -- 必須の判定の受理の入力。旧版の入力は null（規則のない受理の入力）。
+  let scope : Option ScopeAcceptanceEntry ←
+    if input.scopeAcceptance == Json.null then pure none else some <$> fromJson? input.scopeAcceptance
+  -- 実装のメソッドの本体の鍵は、その本体の定義の名前（関数の鍵と同じ変換）とする。
+  let methodNames ← (input.definitions.filterMap fun d => match d.scope with
+    | .inScope s _ => do return (← s.implementation, ← s.method, d.name)
+    | _ => none).mapM fun (i, mn, n) => do return (i, mn, ← functionKey n)
+  let base := ScopeAcceptanceEntry.acceptInput scope
+  let accept := { base with methodKey := fun i mn =>
+    ((methodNames.find? fun (a, b, _) => a == i && b == mn).map (·.2.2)).getD (base.methodKey i mn) }
   return ⟨m, q, constructorsOk m, recordChecks.all id,
-    implNamesOk m m.names.methods m.names.supers, outside⟩
+    implNamesOk m m.names.methods m.names.supers, outside, atoms, rfl, accept⟩
+
+/-- 準備した入力の効果の書き出し（名前と行の原子）。書き出しの一覧は交換の原子の一覧、候補は検査器の原子の
+集合 `q.atoms` である（RV-L40 軽6）。 -/
+def Prepared.writeEffNames (p : Prepared) (e : Benitoite.Release.Eff) : Except String Eff :=
+  fromEffNames p.atoms e p.input.atoms
+
+/-- 検査器の不変条件 `AtomsIn q.atoms` を満たす効果は、この経路で必ず書き出せ、書き出した原子の列を読むと元の
+効果の所属に戻る（黙った欠落がない）。 -/
+theorem Prepared.writeEffNames_complete (p : Prepared) {e : Benitoite.Release.Eff}
+    (he : Benitoite.Release.Eff.AtomsIn p.input.atoms e) :
+    p.writeEffNames e = .ok (writeAtoms p.atoms e.test) ∧
+      Eff.readAtoms (writeAtoms p.atoms e.test) = e.test := by
+  have h : ∀ a, Benitoite.Release.Eff.test e a = true → a ∈ p.atoms.filterMap Atom.toRelease :=
+    fun a ha => p.atoms_eq ▸ support_of_atomsIn he a ha
+  exact ⟨fromEffNames_ok _ h, readAtoms_writeAtoms _ _ h⟩
 end Benitoite.Exchange.CheckInput

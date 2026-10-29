@@ -21,7 +21,7 @@ mutual
     modify fun s => { s with nodes := s.nodes.push ⟨path,e,expected⟩ }
     match e with
     | .constE t a => return .constE t (← walkExpr q R .other (child path 0) (some t) a)
-    | .primName n _ _ =>
+    | .primName n _ _ _ =>
       modify fun s => { s with prims := n :: s.prims }; return e
     | .paren a => return .paren (← walkExpr q R p (child path 0) expected a)
     | .block b => return .block (← walkBlock q R p (child path 0) expected b)

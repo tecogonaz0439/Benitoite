@@ -1,0 +1,816 @@
+{
+  "higher-0-0": {
+    "before": {
+      "seconds": 0.014054542000010883,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015091415999989977,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001915167,\"reparse\":0.001467583,\"resolve\":0.000935416,\"typeck\":0.005290292}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.013816083000008916,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "higher-1-0": {
+    "before": {
+      "seconds": 0.014718208000005006,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015828458000001433,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001979792,\"reparse\":0.001499375,\"resolve\":0.000952042,\"typeck\":0.006128625}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014789875000005281,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "classes-0": {
+    "before": {
+      "seconds": 0.018417624999997884,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.022471624999994333,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002622833,\"reparse\":0.002206,\"resolve\":0.001279417,\"typeck\":0.010189375}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.019893416999991587,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "higher-0-300": {
+    "before": {
+      "seconds": 0.02967558400000314,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.031852499999999395,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00280875,\"reparse\":0.002217208,\"resolve\":0.001180125,\"typeck\":0.019405166}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.03022604100000592,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "higher-1-300": {
+    "before": {
+      "seconds": 0.03234712500000114,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.033955582999993794,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002740041,\"reparse\":0.002233916,\"resolve\":0.001186292,\"typeck\":0.021740458}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.03295624999999802,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "classes-300": {
+    "before": {
+      "seconds": 0.03827712499999336,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.041861083000000576,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003750333,\"reparse\":0.003184625,\"resolve\":0.002219958,\"typeck\":0.026046625}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.038655750000003763,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "depth-0-8": {
+    "before": {
+      "seconds": 0.015497709000001691,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.01646433300000183,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001972416,\"reparse\":0.001500625,\"resolve\":0.000957458,\"typeck\":0.006709833}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015354958999992618,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "depth-1-8": {
+    "before": {
+      "seconds": 0.015305333000000587,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.017113042000005407,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.0019815,\"reparse\":0.001508917,\"resolve\":0.000986042,\"typeck\":0.006976375}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015587875000008466,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "f1-nofail-call": {
+    "before": {
+      "seconds": 0.014670332999997981,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0515\",\"message\":\"cannot establish that the remaining effects exclude Failure.Fail\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/f1-nofail-call/shared-08c3a971718fd73d/main.bnt\",\"start\":{\"line\":9,\"column\":9,\"offset\":391},\"end\":{\"line\":9,\"column\":20,\"offset\":402},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"declare Failure.Fail in the callback signature, handle failures inside the callback, or move the handle boundary\",\"edits\":[]}]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.016270457999993937,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.001971,\"reparse\":0.001506459,\"resolve\":0.000969875,\"typeck\":0.006402958}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014553082999995581,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0515\",\"message\":\"cannot establish that the remaining effects exclude Failure.Fail\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/f1-nofail-call/shared-08c3a971718fd73d/main.bnt\",\"start\":{\"line\":9,\"column\":9,\"offset\":391},\"end\":{\"line\":9,\"column\":20,\"offset\":402},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"declare Failure.Fail in the callback signature, handle failures inside the callback, or move the handle boundary\",\"edits\":[]}]}\n",
+      "validation": "verified"
+    }
+  },
+  "f1-join-effects": {
+    "before": {
+      "seconds": 0.014641707999999198,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0514\",\"message\":\"incompatible failure types `String` and `Integer` in one effect set\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/f1-join-effects/shared-78490a96392a57de/main.bnt\",\"start\":{\"line\":5,\"column\":9,\"offset\":169},\"end\":{\"line\":5,\"column\":33,\"offset\":193},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"convert errors explicitly in a failure clause before joining effects\",\"edits\":[]}]}\n",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.01652912499999104,
+        "status": 0,
+        "stdout": "{\"errors\":1,\"load_parse\":0.00197525,\"reparse\":0.001553833,\"resolve\":0.001035,\"typeck\":0.006692292}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015583415999998351,
+      "status": 2,
+      "stdout": "",
+      "stderr": "{\"kind\":\"check\",\"severity\":\"error\",\"code\":\"E0514\",\"message\":\"incompatible failure types `String` and `Integer` in one effect set\",\"primary\":{\"file\":\"<repo>/target/bench/compare/inputs/f1-join-effects/shared-78490a96392a57de/main.bnt\",\"start\":{\"line\":5,\"column\":9,\"offset\":169},\"end\":{\"line\":5,\"column\":33,\"offset\":193},\"label\":\"\"},\"secondary\":[],\"notes\":[],\"helps\":[{\"message\":\"convert errors explicitly in a failure clause before joining effects\",\"edits\":[]}]}\n",
+      "validation": "verified"
+    }
+  },
+  "control-16.3": {
+    "before": {
+      "seconds": 0.013761750000000461,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015166000000007784,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001949042,\"reparse\":0.001461792,\"resolve\":0.000928791,\"typeck\":0.005322917}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.013775375000008694,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-bind-64": {
+    "before": {
+      "seconds": 0.014109042000001182,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015005707999989681,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001946458,\"reparse\":0.001485958,\"resolve\":0.000937917,\"typeck\":0.005344167}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014146040999989395,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-bind-256": {
+    "before": {
+      "seconds": 0.0143319169999927,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015987167000005797,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002005583,\"reparse\":0.001571834,\"resolve\":0.001110416,\"typeck\":0.005727958}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01432087499999568,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-add-64": {
+    "before": {
+      "seconds": 0.013773290999992582,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.014862292000003663,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001904541,\"reparse\":0.001470583,\"resolve\":0.00095325,\"typeck\":0.005324458}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.013669832999994469,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-add-256": {
+    "before": {
+      "seconds": 0.014723291999999333,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.016708124999993856,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001943167,\"reparse\":0.001533916,\"resolve\":0.000952584,\"typeck\":0.007027667}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015618041999999832,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-flow-64": {
+    "before": {
+      "seconds": 0.014415249999998991,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.016128082999998128,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002107916,\"reparse\":0.001612792,\"resolve\":0.000993667,\"typeck\":0.006210042}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014666083000008712,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-flow-256": {
+    "before": {
+      "seconds": 0.017375958000002356,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.019408208000001537,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002395,\"reparse\":0.001912333,\"resolve\":0.001180083,\"typeck\":0.008166625}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.017633916999997723,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-range-0": {
+    "before": {
+      "seconds": 0.01921316699998954,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.021592249999997648,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002703167,\"reparse\":0.002134209,\"resolve\":0.001304083,\"typeck\":0.009467167}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.019243333999995116,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-range-64": {
+    "before": {
+      "seconds": 0.024041040999989605,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.026420416000007663,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003069708,\"reparse\":0.002451459,\"resolve\":0.001497375,\"typeck\":0.013201541}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.02399324999998953,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-range-256": {
+    "before": {
+      "seconds": 0.037293082999994454,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.0397340420000063,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.004012208,\"reparse\":0.003546375,\"resolve\":0.002078083,\"typeck\":0.023954875}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.037493499999996516,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-http-0": {
+    "before": {
+      "seconds": 0.019772750000001338,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.022070458000001736,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002718375,\"reparse\":0.002136333,\"resolve\":0.001348208,\"typeck\":0.009859917}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.019943666999992615,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-http-64": {
+    "before": {
+      "seconds": 0.022998583000003237,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.025017750000003502,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00302725,\"reparse\":0.002465291,\"resolve\":0.001508292,\"typeck\":0.012334167}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.02454229199999247,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-http-256": {
+    "before": {
+      "seconds": 0.031249667000011527,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.03379433399999243,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.003969375,\"reparse\":0.003388541,\"resolve\":0.002075875,\"typeck\":0.017994584}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.031193042000012383,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer8-64": {
+    "before": {
+      "seconds": 0.014711249999990628,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015806916999991927,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002020417,\"reparse\":0.001526542,\"resolve\":0.000952208,\"typeck\":0.006005334}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014406583000010187,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer8-256": {
+    "before": {
+      "seconds": 0.01668333300000313,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.018853875000004905,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002282791,\"reparse\":0.0018425,\"resolve\":0.001044416,\"typeck\":0.008380625}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.017321457999997847,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer16-64": {
+    "before": {
+      "seconds": 0.01425500000000568,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015700709000000757,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00198225,\"reparse\":0.001554208,\"resolve\":0.000933416,\"typeck\":0.00597575}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014612165999992044,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer16-256": {
+    "before": {
+      "seconds": 0.0174323749999985,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.019384500000001026,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002291208,\"reparse\":0.0018375,\"resolve\":0.001027125,\"typeck\":0.008386125}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01790520800000195,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer32-64": {
+    "before": {
+      "seconds": 0.014748582999999371,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.0159058750000014,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002023542,\"reparse\":0.001660291,\"resolve\":0.000969583,\"typeck\":0.006019834}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015363542000002894,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer32-256": {
+    "before": {
+      "seconds": 0.017919583000008288,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.019343792000000803,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002297834,\"reparse\":0.001831541,\"resolve\":0.001056834,\"typeck\":0.00837075}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.018566625000005388,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer64-64": {
+    "before": {
+      "seconds": 0.014901457999997092,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.01620483399999273,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.00200475,\"reparse\":0.001557541,\"resolve\":0.000975625,\"typeck\":0.0060805}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014996916000001193,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-Integer64-256": {
+    "before": {
+      "seconds": 0.01756633400000851,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.019176749999999743,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002319291,\"reparse\":0.001851541,\"resolve\":0.001034083,\"typeck\":0.0084}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01774995899999965,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-UnsignedInteger16-64": {
+    "before": {
+      "seconds": 0.014277457999995136,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015707958999996663,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002008417,\"reparse\":0.0015225,\"resolve\":0.000913416,\"typeck\":0.005945791}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014870583999993414,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-UnsignedInteger16-256": {
+    "before": {
+      "seconds": 0.016908916999994972,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.0187757500000032,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002256083,\"reparse\":0.001811208,\"resolve\":0.001039208,\"typeck\":0.008133625}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01763712500000736,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-UnsignedInteger32-64": {
+    "before": {
+      "seconds": 0.014502416999988554,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.015917458000004103,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002057708,\"reparse\":0.001542959,\"resolve\":0.000928584,\"typeck\":0.005936667}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.015151833999993869,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-UnsignedInteger32-256": {
+    "before": {
+      "seconds": 0.017386209000008535,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.018841375000008043,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002335709,\"reparse\":0.001811541,\"resolve\":0.001060459,\"typeck\":0.008112459}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.01757879199999479,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-UnsignedInteger64-64": {
+    "before": {
+      "seconds": 0.014641417000007095,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.0158572079999999,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.001991,\"reparse\":0.001543541,\"resolve\":0.000935667,\"typeck\":0.005883875}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.014497417000001178,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  },
+  "interval-width-UnsignedInteger64-256": {
+    "before": {
+      "seconds": 0.016764874999992685,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified",
+      "probe_verified": {
+        "seconds": 0.018748750000000314,
+        "status": 0,
+        "stdout": "{\"errors\":0,\"load_parse\":0.002261041,\"reparse\":0.001806625,\"resolve\":0.001019875,\"typeck\":0.008085375}\n",
+        "stderr": ""
+      }
+    },
+    "after": {
+      "seconds": 0.017356082999995692,
+      "status": 0,
+      "stdout": "",
+      "stderr": "",
+      "validation": "verified"
+    }
+  }
+}

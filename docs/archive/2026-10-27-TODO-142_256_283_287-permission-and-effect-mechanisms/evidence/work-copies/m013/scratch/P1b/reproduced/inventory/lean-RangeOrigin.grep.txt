@@ -1,0 +1,44 @@
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:93:def rangeOrigin (env : AbstractEnv) (input : EvalInput) : Scan (Option RangeOrigin) := frame fun _ => do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:118:def rangeResultSource (env : AbstractEnv) (input : EvalInput) : Scan (Option RangeOrigin) :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:192:def rangeMatch (env : AbstractEnv) (input : EvalInput) (arms : Arms) : Scan (Option RangeOrigin) := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:207:def rangeChecked (state : RangeState) (index : Nat) : Scan (Option RangeOrigin) := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/BudgetRange.lean:540:    | none => simpa only [bind, Option.bind] using agrees_pure (none : Option RangeOrigin)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Examples.lean:901:    let origin : RangeOrigin := ⟨names, key 1, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Examples.lean:927:    let origin : RangeOrigin := ⟨names, key 1, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:236:theorem range_result_at_models {env : ConcreteEnv} {origin : RangeOrigin} {binding : StandardBinding}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:256:theorem range_result_ok_models {origin : RangeOrigin} {result payload : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:278:theorem range_checked_models_mem {origin : RangeOrigin} {value : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:308:def rangeCallOrigin (env : AbstractEnv) (input : EvalInput) : Option RangeOrigin := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:327:theorem range_call_origin_table {env : AbstractEnv} {input : EvalInput} {origin : RangeOrigin}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:362:    {input : EvalInput} {origin : RangeOrigin}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:415:    (input : EvalInput) : Option RangeOrigin :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:433:def rangeBindOk (state : RangeState) (origin : RangeOrigin) : RangeState :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:437:def rangeCheckedOrigin (state : RangeState) (index : Nat) : Option RangeOrigin := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:446:    (origin : RangeOrigin) (result : ConcreteValue) : Prop :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:455:    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {result : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:522:    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {result : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:563:    {origin : RangeOrigin} {result : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:647:theorem range_result_not_other (origin : RangeOrigin) (type notInteger notBoolean notUnit) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:655:theorem range_ok_payload_models {origin : RangeOrigin} {result payload : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:693:theorem range_bind_ok_valid {state : RangeState} (valid : state.Valid) (origin : RangeOrigin) :
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:698:    {origin : RangeOrigin} (atId : state.scope.idAt index = some actual)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:769:    (input : EvalInput) : Option RangeOrigin := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:826:    {input : EvalInput} {origin : RangeOrigin}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:850:    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {index : Nat}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:900:    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1045:    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {owner index payload outcome}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1215:    {env : ConcreteEnv} {input : EvalInput} {origin : RangeOrigin} {result payload : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1242:def rangeMatchAt (env : AbstractEnv) (input : EvalInput) (arms : Arms) : Option RangeOrigin := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1286:theorem range_result_models_type {origin : RangeOrigin} {value : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1296:theorem range_result_models_viewable {origin : RangeOrigin} {value : ConcreteValue}
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1516:    let origin : RangeOrigin := ⟨names, ⟨"Example.project", 0⟩, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1597:    let origin : RangeOrigin := ⟨names, key, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1619:      ∀ origin : RangeOrigin, ¬ origin.ResultModels result := by
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1626:    let origin : RangeOrigin := ⟨names, key, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/Range.lean:1647:  let origin : RangeOrigin := ⟨names, key, ⟨0, by decide⟩, ⟨10, by decide⟩⟩
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeBorrowed.lean:164:def borrowRangeOrigin (env : AbstractEnv) (input : EvalInput) : Option RangeOrigin := do
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:52:structure RangeOrigin where
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:60:def RangeOrigin.ResultModels (origin : RangeOrigin) (result : ConcreteValue) : Prop :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:69:def RangeOrigin.CheckedModels (origin : RangeOrigin) (value : ConcreteValue) : Prop :=
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:76:  | result (origin : RangeOrigin)
+80d1eeadcc9dc386560e0e2890c6da3ef518a1c5:formal/Benitoite/Interval/RangeState.lean:77:  | checked (origin : RangeOrigin) (bindingId : Nat)

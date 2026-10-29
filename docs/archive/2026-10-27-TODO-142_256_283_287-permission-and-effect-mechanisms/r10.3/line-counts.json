@@ -1,0 +1,135 @@
+{
+  "summary": {
+    "production": {
+      "added": 578,
+      "removed": 63
+    },
+    "test": {
+      "added": 635,
+      "removed": 0
+    }
+  },
+  "files": [
+    {
+      "path": "crates/benitoite/src/cli/inspection.rs",
+      "added": 7,
+      "removed": 7,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/cli/tools/formatter/roles/walk.rs",
+      "added": 26,
+      "removed": 2,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/diag/codes.rs",
+      "added": 8,
+      "removed": 2,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/ir/check.rs",
+      "added": 23,
+      "removed": 0,
+      "kind": "test"
+    },
+    {
+      "path": "crates/benitoite/src/resolve/lookup.rs",
+      "added": 1,
+      "removed": 5,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/resolve/mod.rs",
+      "added": 4,
+      "removed": 0,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/resolve/text.rs",
+      "added": 8,
+      "removed": 0,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/resolve/walk.rs",
+      "added": 3,
+      "removed": 1,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/syntax/ast.rs",
+      "added": 42,
+      "removed": 0,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/syntax/parser/mod.rs",
+      "added": 2,
+      "removed": 0,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/syntax/parser/types.rs",
+      "added": 124,
+      "removed": 37,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/typeck/decls.rs",
+      "added": 16,
+      "removed": 2,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/typeck/effects/declarations.rs",
+      "added": 34,
+      "removed": 4,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/types/scope.rs",
+      "added": 6,
+      "removed": 3,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/types/scope/tests.rs",
+      "added": 25,
+      "removed": 0,
+      "kind": "test"
+    },
+    {
+      "path": "crates/benitoite/tests/cli_process.rs",
+      "added": 79,
+      "removed": 0,
+      "kind": "test"
+    },
+    {
+      "path": "crates/benitoite/tests/fmt_command.rs",
+      "added": 96,
+      "removed": 0,
+      "kind": "test"
+    },
+    {
+      "path": "crates/benitoite/src/syntax/parser/scope.rs",
+      "added": 117,
+      "removed": 0,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/src/resolve/scope.rs",
+      "added": 180,
+      "removed": 0,
+      "kind": "production"
+    },
+    {
+      "path": "crates/benitoite/tests/scope_annotations.rs",
+      "added": 412,
+      "removed": 0,
+      "kind": "test"
+    }
+  ],
+  "note": "ir/check.rsの差分は全て新規テスト。types/scope/tests.rsもテスト。"
+}

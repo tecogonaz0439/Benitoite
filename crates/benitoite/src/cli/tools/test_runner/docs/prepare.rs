@@ -159,7 +159,12 @@ pub(super) fn prepare_examples(
                     .decl_types
                     .get(contract.binding)
                     .ok_or_else(|| internal("doc main scheme missing"))?;
-                let kind = if scheme.ret == Ty::Con(TyCon::Builtin(BuiltinTy::UNIT), vec![]) {
+                let kind = if scheme.ret
+                    == Ty::Con(
+                        TyCon::Builtin(BuiltinTy::UNIT),
+                        vec![],
+                        crate::types::builtin::RangeIndex::TOP,
+                    ) {
                     MainKind::Unit
                 } else {
                     MainKind::Result
@@ -224,7 +229,7 @@ pub(super) fn prepare_examples(
             }
         } else if expectation_matched {
             tests = json!([]);
-            effects = Some(BTreeSet::new());
+            effects = Some(EffectSummary::default());
         }
         // 検査したASTは段のスレッド内で破棄し、実行用の成果物だけを渡す。
         checked.program = None;

@@ -1,0 +1,31 @@
+import Benitoite
+
+#print axioms Benitoite.Release.Event.obs_io
+#print axioms Benitoite.Release.Event.obs_release
+#print axioms Benitoite.Release.Eff.allows_union_other_name
+#print axioms Benitoite.Release.step_target_sound
+#print axioms Benitoite.Release.step_target_sound_of_assumptions
+#print axioms Benitoite.Release.step_target_sound_event
+#print axioms Benitoite.Release.StateTyE.clause_allows
+#print axioms Benitoite.Release.StateTyE.opPrim_clause_allows
+#print axioms Benitoite.Release.TargetStepExamples.ioState_typedE
+#print axioms Benitoite.Release.TargetStepExamples.ioState_target_sound
+#print axioms Benitoite.Release.TargetStepExamples.sIO_target_sound
+#print axioms Benitoite.Release.TargetStepExamples.inv_prim_app_eff
+#print axioms Benitoite.Release.TargetStepExamples.s1_split
+#print axioms Benitoite.Release.TargetStepExamples.s1_find
+#print axioms Benitoite.Release.TargetStepExamples.s1_clause_allows_log
+#print axioms Benitoite.Release.TargetStepExamples.s1_captured_allows
+#print axioms Benitoite.Release.TargetStepExamples.readBound_allows_read_passwd
+#print axioms Benitoite.Release.TargetStepExamples.readBound_exists_name_allows_passwd
+#print axioms Benitoite.Release.TargetStepExamples.readBound_not_allows_write_passwd
+#print axioms Benitoite.Release.TargetStepExamples.no_write_event_passwd
+#print axioms Benitoite.Release.TargetStepExamples.ioState_readBound_typed
+#print axioms Benitoite.Release.TargetStepExamples.ioState_readBound_allows
+#print axioms Benitoite.Release.progress
+#print axioms Benitoite.Release.preservation
+#print axioms Benitoite.Release.effect_soundness
+#print axioms Benitoite.Release.effect_soundness_noLamNames
+#print axioms Benitoite.Release.step_sound
+#print axioms Benitoite.Surface.desugar_typed
+#print axioms Benitoite.Surface.surface_effect_soundness

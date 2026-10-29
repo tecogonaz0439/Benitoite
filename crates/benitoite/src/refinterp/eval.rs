@@ -261,8 +261,10 @@ impl<'p> Machine<'p> {
                 Rc::new(Values { items: vec![] }),
             )),
             ValKind::External { .. } => Err(fault("external function used as a value")),
-            ValKind::Builtin { id, info, .. } => Ok(function(
-                FunctionCode::Builtin(*id, *info),
+            ValKind::Builtin {
+                id, info, ranges, ..
+            } => Ok(function(
+                FunctionCode::Builtin(*id, *info, Rc::from(ranges.clone())),
                 vec![],
                 Rc::new(Values { items: vec![] }),
             )),
@@ -670,7 +672,7 @@ impl<'p> Machine<'p> {
                 let Value::Func(closure) = func else {
                     return Err(fault("application of non-function"));
                 };
-                match closure.code {
+                match closure.code.clone() {
                     FunctionCode::TopFn(id) => self.enter_def(
                         *self
                             .index
@@ -703,8 +705,8 @@ impl<'p> Machine<'p> {
                     FunctionCode::Op(op) => self
                         .operation(op, dicts.into_iter().chain(args).collect())?
                         .ok_or_else(|| fault("unhandled user operation")),
-                    FunctionCode::Builtin(id, info) => {
-                        self.builtin(id, info, args, origin, exit_report, io)
+                    FunctionCode::Builtin(id, info, ranges) => {
+                        self.builtin((id, info, &ranges), args, origin, exit_report, io)
                     }
                 }
             }
@@ -905,8 +907,11 @@ impl<'p> Machine<'p> {
     }
     fn builtin(
         &mut self,
-        id: crate::builtins::BuiltinId,
-        info: BuiltinInfo,
+        (id, info, ranges): (
+            crate::builtins::BuiltinId,
+            BuiltinInfo,
+            &[crate::types::scope::Range],
+        ),
         args: Vec<Value>,
         origin: Span,
         exit_report: Option<ExitReportValues>,
@@ -1006,16 +1011,21 @@ impl<'p> Machine<'p> {
                     let mut state = resources::State {
                         resources: Rc::clone(&self.bridge.resources),
                     };
-                    Ok(match self.bridge.call(id, &args, io, Some(&mut state)) {
-                        BuiltinOutcome::Done(v) => State::Return(v),
-                        BuiltinOutcome::Stopped(s) => error(s, Some(origin)),
-                        BuiltinOutcome::Exited(n) => {
-                            State::Exit(n, if n == 1 { die_failure } else { None }, vec![])
-                        }
-                        BuiltinOutcome::Unsupported(name) => {
-                            State::End(RefOutcome::Unsupported(name))
-                        }
-                    })
+                    Ok(
+                        match self
+                            .bridge
+                            .call_scoped(id, ranges, &args, io, Some(&mut state))
+                        {
+                            BuiltinOutcome::Done(v) => State::Return(v),
+                            BuiltinOutcome::Stopped(s) => error(s, Some(origin)),
+                            BuiltinOutcome::Exited(n) => {
+                                State::Exit(n, if n == 1 { die_failure } else { None }, vec![])
+                            }
+                            BuiltinOutcome::Unsupported(name) => {
+                                State::End(RefOutcome::Unsupported(name))
+                            }
+                        },
+                    )
                 }
             },
         }

@@ -13,37 +13,40 @@ namespace Benitoite.Release
 abbrev Eff.RhosIn (pe : Nat → Prop) (e : Eff) : Prop := Eff.RowsIn pe e
 
 mutual
-  /-- 項に書ける型の変数の範囲。継続の型は含まない。 -/
-  def Ty.VarsIn (n : Nat) (pe : Nat → Prop) : Ty → Prop
-    | .base _ | .opaque _ | .bytes | .ctor _ => True
-    | .data _ args => Ty.VarsInList n pe args
-    | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.VarsIn n pe a
+  /-- 項に書ける型の変数の範囲。継続の型は含まない。不透明型と効果の名前の原子の範囲の位置は、範囲の変数の番号が
+  `nr` より小さい（`Scope.Signature.Ix.WF nr`）。プログラムの宣言と項は `nr = 0` で読み、範囲の変数を置かせない
+  （問 3 の P1）。組み込みの署名（`PrimSig.Scoped`）も、範囲の変数の個数を署名に持たせる前は `nr = 0` で読む。 -/
+  def Ty.VarsIn (nr n : Nat) (pe : Nat → Prop) : Ty → Prop
+    | .base _ | .bytes | .ctor _ => True
+    | .opaque _ ix => ix.WF nr
+    | .data _ args => Ty.VarsInList nr n pe args
+    | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.VarsIn nr n pe a
     | .fn names params ret eff =>
-        NamesWF names params ∧ Ty.VarsInList n pe params ∧ Ty.VarsIn n pe ret ∧
-          Eff.VarsIn n pe eff ∧ Eff.Canonical eff
+        NamesWF names params ∧ Ty.VarsInList nr n pe params ∧ Ty.VarsIn nr n pe ret ∧
+          Eff.VarsIn nr n pe eff ∧ Eff.Canonical eff
     | .tvar i => i < n
     | .cont _ _ _ => False
-    | .map a b => Ty.VarsIn n pe a ∧ Ty.VarsIn n pe b
-    | .tapp i args => i < n ∧ Ty.VarsInList n pe args
+    | .map a b => Ty.VarsIn nr n pe a ∧ Ty.VarsIn nr n pe b
+    | .tapp i args => i < n ∧ Ty.VarsInList nr n pe args
 
-  def Ty.VarsInList (n : Nat) (pe : Nat → Prop) : List Ty → Prop
+  def Ty.VarsInList (nr n : Nat) (pe : Nat → Prop) : List Ty → Prop
     | [] => True
-    | a :: as => Ty.VarsIn n pe a ∧ Ty.VarsInList n pe as
+    | a :: as => Ty.VarsIn nr n pe a ∧ Ty.VarsInList nr n pe as
 
-  /-- 最上位の効果の変数の範囲。最上位の Canonical は求めない。 -/
-  def Eff.VarsIn (n : Nat) (pe : Nat → Prop) : Eff → Prop
-    | .mk a fs => (∀ i, a (.rho i) = true → pe i) ∧ Ty.VarsInList n pe fs
+  /-- 最上位の効果の変数の範囲。最上位の Canonical は求めない。名前の原子の範囲の位置は `Atom.WF nr` を満たす。 -/
+  def Eff.VarsIn (nr n : Nat) (pe : Nat → Prop) : Eff → Prop
+    | .mk a fs => (∀ i, a (.rho i) = true → pe i) ∧ Ty.VarsInList nr n pe fs ∧ ∀ x, a x = true → x.WF nr
 end
 
-theorem Ty.VarsInList.iff {n : Nat} {pe : Nat → Prop} {as : List Ty} :
-    Ty.VarsInList n pe as ↔ ∀ a ∈ as, a.VarsIn n pe := by
+theorem Ty.VarsInList.iff {nr : Nat} {n : Nat} {pe : Nat → Prop} {as : List Ty} :
+    Ty.VarsInList nr n pe as ↔ ∀ a ∈ as, a.VarsIn nr n pe := by
   induction as with
   | nil => simp [Ty.VarsInList]
   | cons a as ih => simp [Ty.VarsInList, ih]
 
 mutual
   /-- 変数の範囲の検査から、型の整形式と内部の正規形が得られる。 -/
-  theorem Ty.VarsIn.wf {n pe} (t : Ty) (h : t.VarsIn n pe) : Ty.WF n t := by
+  theorem Ty.VarsIn.wf {nr : Nat} {n pe} (t : Ty) (h : t.VarsIn nr n pe) : Ty.WF nr n t := by
     cases t <;> simp only [Ty.VarsIn] at h <;> simp only [Ty.WF]
     all_goals first
       | trivial
@@ -56,18 +59,18 @@ mutual
     case map a b => exact ⟨Ty.VarsIn.wf a h.1, Ty.VarsIn.wf b h.2⟩
     case tapp i as => exact ⟨h.1, Ty.VarsInList.wf as h.2⟩
 
-  theorem Ty.VarsInList.wf {n pe} (ts : List Ty) (h : Ty.VarsInList n pe ts) : Ty.WFList n ts := by
+  theorem Ty.VarsInList.wf {nr : Nat} {n pe} (ts : List Ty) (h : Ty.VarsInList nr n pe ts) : Ty.WFList nr n ts := by
     cases ts with
     | nil => trivial
     | cons t ts => exact ⟨Ty.VarsIn.wf t h.1, Ty.VarsInList.wf ts h.2⟩
 
-  theorem Eff.VarsIn.wf {n pe} (e : Eff) (h : Eff.VarsIn n pe e) : Eff.WF n e := by
+  theorem Eff.VarsIn.wf {nr : Nat} {n pe} (e : Eff) (h : Eff.VarsIn nr n pe e) : Eff.WF nr n e := by
     cases e with
-    | mk a fs => exact Ty.VarsInList.wf fs h.2
+    | mk a fs => exact Ty.VarsInList.wf fs h.2.1
 end
 
 mutual
-  theorem Ty.VarsIn.rows {n pe} (t : Ty) (h : t.VarsIn n pe) : t.RowsIn pe := by
+  theorem Ty.VarsIn.rows {nr : Nat} {n pe} (t : Ty) (h : t.VarsIn nr n pe) : t.RowsIn pe := by
     cases t <;> simp only [Ty.VarsIn] at h <;> simp only [Ty.RowsIn]
     all_goals first
       | trivial
@@ -79,14 +82,14 @@ mutual
     case map a b => exact ⟨Ty.VarsIn.rows a h.1, Ty.VarsIn.rows b h.2⟩
     case tapp i as => exact Ty.VarsInList.rows as h.2
 
-  theorem Ty.VarsInList.rows {n pe} (ts : List Ty) (h : Ty.VarsInList n pe ts) : Ty.RowsInList pe ts := by
+  theorem Ty.VarsInList.rows {nr : Nat} {n pe} (ts : List Ty) (h : Ty.VarsInList nr n pe ts) : Ty.RowsInList pe ts := by
     cases ts with
     | nil => trivial
     | cons t ts => exact ⟨Ty.VarsIn.rows t h.1, Ty.VarsInList.rows ts h.2⟩
 
-  theorem Eff.VarsIn.rows {n pe} (e : Eff) (h : Eff.VarsIn n pe e) : Eff.RhosIn pe e := by
+  theorem Eff.VarsIn.rows {nr : Nat} {n pe} (e : Eff) (h : Eff.VarsIn nr n pe e) : Eff.RhosIn pe e := by
     cases e with
-    | mk a fs => exact ⟨h.1, Ty.VarsInList.rows fs h.2⟩
+    | mk a fs => exact ⟨h.1, Ty.VarsInList.rows fs h.2.1⟩
 end
 
 /-- 再帰的な範囲条件から、最外の行の範囲も得られる。 -/
@@ -99,8 +102,8 @@ theorem Eff.RhosIn.mono {pe pf : Nat → Prop} (hp : ∀ i, pe i → pf i) {e : 
     (h : Eff.RhosIn pe e) : Eff.RhosIn pf e := Eff.RowsIn.mono hp e h
 
 mutual
-  theorem Ty.VarsIn.mono {n m : Nat} {pe pf : Nat → Prop} (hn : n ≤ m)
-      (hp : ∀ i, pe i → pf i) (t : Ty) (h : t.VarsIn n pe) : t.VarsIn m pf := by
+  theorem Ty.VarsIn.mono {nr : Nat} {n m : Nat} {pe pf : Nat → Prop} (hn : n ≤ m)
+      (hp : ∀ i, pe i → pf i) (t : Ty) (h : t.VarsIn nr n pe) : t.VarsIn nr m pf := by
     cases t <;> simp only [Ty.VarsIn] at h ⊢
     all_goals first
       | trivial
@@ -114,45 +117,45 @@ mutual
     case map a b => exact ⟨Ty.VarsIn.mono hn hp a h.1, Ty.VarsIn.mono hn hp b h.2⟩
     case tapp i as => exact ⟨by omega, Ty.VarsInList.mono hn hp as h.2⟩
 
-  theorem Ty.VarsInList.mono {n m : Nat} {pe pf : Nat → Prop} (hn : n ≤ m)
-      (hp : ∀ i, pe i → pf i) (ts : List Ty) (h : Ty.VarsInList n pe ts) : Ty.VarsInList m pf ts := by
+  theorem Ty.VarsInList.mono {nr : Nat} {n m : Nat} {pe pf : Nat → Prop} (hn : n ≤ m)
+      (hp : ∀ i, pe i → pf i) (ts : List Ty) (h : Ty.VarsInList nr n pe ts) : Ty.VarsInList nr m pf ts := by
     cases ts with
     | nil => trivial
     | cons t ts => exact ⟨Ty.VarsIn.mono hn hp t h.1, Ty.VarsInList.mono hn hp ts h.2⟩
 
-  theorem Eff.VarsIn.mono {n m : Nat} {pe pf : Nat → Prop} (hn : n ≤ m)
-      (hp : ∀ i, pe i → pf i) (e : Eff) (h : Eff.VarsIn n pe e) : Eff.VarsIn m pf e := by
+  theorem Eff.VarsIn.mono {nr : Nat} {n m : Nat} {pe pf : Nat → Prop} (hn : n ≤ m)
+      (hp : ∀ i, pe i → pf i) (e : Eff) (h : Eff.VarsIn nr n pe e) : Eff.VarsIn nr m pf e := by
     cases e with
-    | mk a fs => exact ⟨fun i hi => hp i (h.1 i hi), Ty.VarsInList.mono hn hp fs h.2⟩
+    | mk a fs => exact ⟨fun i hi => hp i (h.1 i hi), Ty.VarsInList.mono hn hp fs h.2.1, h.2.2⟩
 end
 
 /-- 型内部の正規形を既に検査した場合、正規化は変数の範囲も保つ。 -/
-theorem Ty.norm_VarsIn {n pe} (t : Ty) (h : t.VarsIn n pe) : t.norm.VarsIn n pe := by
+theorem Ty.norm_VarsIn {nr : Nat} {n pe} (t : Ty) (h : t.VarsIn nr n pe) : t.norm.VarsIn nr n pe := by
   rw [(Ty.VarsIn.wf t h).canonical t]
   exact h
 
 /-- 最上位の Fail 列の整列と重複除去も、変数の範囲を保つ。 -/
-theorem Eff.norm_VarsIn {n pe} (e : Eff) (h : Eff.VarsIn n pe e) : Eff.VarsIn n pe (Eff.norm e) := by
+theorem Eff.norm_VarsIn {nr : Nat} {n pe} (e : Eff) (h : Eff.VarsIn nr n pe e) : Eff.VarsIn nr n pe (Eff.norm e) := by
   cases e with
   | mk a fs =>
-    refine ⟨h.1, Ty.VarsInList.iff.mpr ?_⟩
+    refine ⟨h.1, Ty.VarsInList.iff.mpr ?_, h.2.2⟩
     intro t ht
     obtain ⟨x, hx, rfl⟩ := List.mem_map.mp (show t ∈ fs.map Ty.norm from by
       simpa only [Ty.normTys_eq_map] using Order.mem_sortUnique.mp ht)
-    exact Ty.norm_VarsIn x (Ty.VarsInList.iff.mp h.2 x hx)
+    exact Ty.norm_VarsIn x (Ty.VarsInList.iff.mp h.2.1 x hx)
 
 /-- 項の行引数は Fail 内部の型変数の範囲も持つ。 -/
-def Eff.VarsInList (n : Nat) (pe : Nat → Prop) : List Eff → Prop
+def Eff.VarsInList (nr n : Nat) (pe : Nat → Prop) : List Eff → Prop
   | [] => True
-  | e :: es => Eff.VarsIn n pe e ∧ Eff.VarsInList n pe es
+  | e :: es => Eff.VarsIn nr n pe e ∧ Eff.VarsInList nr n pe es
 
-theorem Eff.VarsInList.iff {n pe es} : Eff.VarsInList n pe es ↔ ∀ e ∈ es, Eff.VarsIn n pe e := by
+theorem Eff.VarsInList.iff {nr : Nat} {n pe es} : Eff.VarsInList nr n pe es ↔ ∀ e ∈ es, Eff.VarsIn nr n pe e := by
   induction es with
   | nil => simp [Eff.VarsInList]
   | cons e es ih => simp [Eff.VarsInList, ih]
 
-theorem Eff.VarsInList.mono {n m pe pf} (hn : n ≤ m) (hp : ∀ i, pe i → pf i)
-    (es : List Eff) (h : Eff.VarsInList n pe es) : Eff.VarsInList m pf es := by
+theorem Eff.VarsInList.mono {nr : Nat} {n m pe pf} (hn : n ≤ m) (hp : ∀ i, pe i → pf i)
+    (es : List Eff) (h : Eff.VarsInList nr n pe es) : Eff.VarsInList nr m pf es := by
   apply Eff.VarsInList.iff.mpr
   intro e he
   exact Eff.VarsIn.mono hn hp e (Eff.VarsInList.iff.mp h e he)

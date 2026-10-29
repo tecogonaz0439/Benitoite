@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function load(path: String) -> Result[String, IOError] uses File.Read
+  return Result.Ok(try File.readText(path) or return)
+end function
+
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try load("input.txt") or die("could not read input.txt")
+  Console.write(text)
+end function

@@ -1,0 +1,12 @@
+error[E0330]: `limited` is not public in `Trait`
+  --> v4.bnt:3:19
+   |
+ 3 |   bind x <- Trait.limited("a")
+   |                   ^^^^^^^ not public
+   |
+  ::: <benitoite>/Trait.bnt:99:10
+   |
+99 | function limited(text: String) -> String
+   |          ------- declared here
+
+error: could not run v4.bnt due to 1 previous error

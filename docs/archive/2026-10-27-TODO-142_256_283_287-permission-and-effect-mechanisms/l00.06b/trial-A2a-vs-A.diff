@@ -1,0 +1,259 @@
+diff -ruN A/formal/Benitoite/Release/Lemmas/FailureBase.lean formal/Benitoite/Release/Lemmas/FailureBase.lean
+--- A/formal/Benitoite/Release/Lemmas/FailureBase.lean	2026-10-27 20:25:29
++++ formal/Benitoite/Release/Lemmas/FailureBase.lean	2026-10-27 20:30:11
+@@ -18,6 +18,12 @@
+   subst o
+   cases h
+ 
++/-- L00.06b の試行 A2: 節の添字で具体化した操作の型を持つ識別子も Fail ではない。 -/
++theorem opSigAt_ne_fail {S o sg} (h : opSigAt P B S o = some sg) : o ≠ .fail := by
++  intro heq
++  subst o
++  cases h
++
+ /-- 通常節の型付けは Fail を捕捉しない。 -/
+ theorem HasTypeClausesQ.no_failure {Δl : LocalCtx} {Ψ Q C Γ R h t ec}
+     (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec Δl) : handles h .fail = false := by
+@@ -26,7 +32,7 @@
+   | .cons hs _ _ _ _ _ ht =>
+     have ih := HasTypeClausesQ.no_failure ht
+     simp only [handles, List.any_cons, Clause.op, Bool.or_eq_false_iff]
+-    exact ⟨by simpa using opSig_ne_fail hs, ih⟩
++    exact ⟨by simpa using opSigAt_ne_fail hs, ih⟩
+ 
+ /-- Fail 節はちょうど一つであり、そのエラー型が注釈と一致する。 -/
+ theorem HasFailureClause.shape {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+diff -ruN A/formal/Benitoite/Release/Lemmas/PresHelpers.lean formal/Benitoite/Release/Lemmas/PresHelpers.lean
+--- A/formal/Benitoite/Release/Lemmas/PresHelpers.lean	2026-10-27 20:25:29
++++ formal/Benitoite/Release/Lemmas/PresHelpers.lean	2026-10-27 20:30:11
+@@ -121,7 +121,7 @@
+ 
+ theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
+     (hc : findClause hs o = some c) :
+-    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
++    ∃ S sg, opSigAt P B S o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF C.length ε ∧
+       HasTypeC P B Ψ (sg.tparams ++ C)
+         (some (.cont sg.ret (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε)) :: (binds sg.params ++ shiftEnv c.ntys Γ))
+         (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε) := by
+@@ -135,7 +135,7 @@
+         subst hc
+         have : o' = o := by simpa [Clause.op] using heq
+         subst this
+-        exact ⟨_, hsg, hn, hk, hew, hbody.store (hideBuilders_sub _)⟩
++        exact ⟨_, _, hsg, hn, hk, hew, hbody.store (hideBuilders_sub _)⟩
+       · exact HasTypeClausesQ.find hrest hc
+ 
+ theorem findClause_op {hs : List Clause} {o c} (h : findClause hs o = some c) : c.op = o := by
+diff -ruN A/formal/Benitoite/Release/Lemmas/Preservation.lean formal/Benitoite/Release/Lemmas/Preservation.lean
+--- A/formal/Benitoite/Release/Lemmas/Preservation.lean	2026-10-27 20:25:29
++++ formal/Benitoite/Release/Lemmas/Preservation.lean	2026-10-27 20:30:11
+@@ -129,8 +129,20 @@
+     have hn := opSig_ne_fail hsg
+     exact ContTy.selected_ordinary hk hn ⟨rfl, hhandles, hno⟩)
+   have hRh : ∀ x, Rh = some x → Ty.WF 0 x := hk2.R_wf (fun x hx => by cases hx)
+-  obtain ⟨sg', hsg', harity, hntys, hew, hbody⟩ := hcl.find hc
+-  rw [hsg] at hsg'; cases hsg'
++  obtain ⟨S, sg2, hsg2, harity, hntys, hew, hbody⟩ := hcl.find hc
++  -- L00.06b の試行 A2（案 (i)）: 節は添字 S で具体化した操作の型で型付けされる。型パラメータ・結果は旧と同じで、
++  -- 引数型は対象の位置だけが違いうる。
++  obtain ⟨htp, _, hret, _, hpar⟩ := opSigAt_rel hsg hsg2
++  have hsat2 : SatAll B [] ts sg2.tparams := htp ▸ hsat
++  have hle2 : Ty.Le (Ty.subst ts [] sg2.ret) a := hret ▸ hle
++  have hargs2 : HasTypeVs P B Ψ [] [] ws (sg2.params.map (Ty.subst ts [])) := by
++    rcases hpar with hp | ⟨hS, p, o', hp⟩
++    · rw [hp]; exact hargs
++    · -- 未解決の義務: 呼び出しの引数は旧の（Top の）署名の型を持つ（`inv_prim_app`）。節は S ≠ Top の範囲の
++      -- 不透明型 `opaque o' S` を対象の位置に求める。閉じた値の範囲付きの所属の規則と、呼び出しの範囲 R が S に
++      -- 覆われること（保護本体の効果から S を選ぶ規則）がないと渡せない。
++      sorry
++  clear hsat hle hargs
+   -- 節の本体の型：Γ = [] なので環境のずらしは消え、T と Rh は閉じているのでずらしで変わらない。
+   have hshT : t.shift c.ntys 0 = t := Ty.shift_of_wf _ _ htw
+   have hshR : Rh.map (Ty.shift c.ntys 0) = Rh := by
+@@ -142,9 +154,9 @@
+   rw [hshT, hshR, hshE] at hbody
+   simp only [shiftEnv, List.map_nil, List.append_nil] at hbody
+   -- 型引数の置き換え（01-12 の E-Op の θ = [T̄/ᾱ]。01-12「型パラメータの組み込みの制約」）。
+-  have hsc := opSig_scoped hwf hb hsg
++  have hsc := opSigAt_scoped hwf hb hsg2
+   have hθ := HasTypeCQ.substTy (c := 0) hwf hb hbody (Nat.zero_le _) hts (by simp)
+-    (by simpa using hsat) (StoreFix.of_wf hΨwf ts) (RowTransport.refl Qempty)
++    (by simpa using hsat2) (StoreFix.of_wf hΨwf ts) (RowTransport.refl Qempty)
+   simp only [List.take_zero, envSubst, List.map_cons, Option.map_some, Ty.substAt] at hθ
+   have htθ : t.substAt 0 ts [] = t := Ty.substAt_nil_of_wf ts t htw
+   have hRθ : Rh.map (Ty.substAt 0 ts []) = Rh := by
+@@ -158,14 +170,14 @@
+     cases h' : Ψ κ with
+     | none => rfl
+     | some x => exact absurd hκ (hσ.2.2.1 _ _ h')
+-  have hlen : ts.length = sg.tparams.length := hsat.1
+-  have hretw : Ty.WF 0 (Ty.subst ts [] sg.ret) :=
++  have hlen : ts.length = sg2.tparams.length := hsat2.1
++  have hretw : Ty.WF 0 (Ty.subst ts [] sg2.ret) :=
+     Ty.subst_wf0 [] hts (by simp) (by rw [hlen]; exact Ty.VarsIn.wf _ hsc.2.2)
+-  have hparw : ∀ y ∈ sg.params.map (Ty.subst ts []), Ty.WF 0 y := by
++  have hparw : ∀ y ∈ sg2.params.map (Ty.subst ts []), Ty.WF 0 y := by
+     intro y hy
+     obtain ⟨z, hz, rfl⟩ := List.mem_map.mp hy
+     exact Ty.subst_wf0 [] hts (by simp) (by rw [hlen]; exact Ty.VarsIn.wf _ (varsInList_mem hsc.2.1 hz))
+-  let x : LocTy := .cont (Ty.subst ts [] sg.ret) t (Eff.norm εc) Rh
++  let x : LocTy := .cont (Ty.subst ts [] sg2.ret) t (Eff.norm εc) Rh
+   have hxwf : x.WF := ⟨hretw, htw, hRh, Eff.norm_WF εc hew, Eff.norm_idem εc⟩
+   have hsub' : StoreTy.Sub Ψ (Ψ.set κ x) := StoreTy.set_sub (Or.inl hΨκ)
+   have hΨ'κ : (Ψ.set κ x) κ = some x := by simp [StoreTy.set]
+@@ -175,18 +187,18 @@
+   · -- ストア
+     refine hσ.set hxwf (Or.inl hΨκ) ?_
+     refine ⟨_, _, _, _, hΨ'κ, ⟨k1, h, rfl⟩, R, ε, ?_⟩
+-    have hcell := (ContTy.K_Sub hk1 hle).resume_append ⟨k1, h, rfl⟩ (Ty.Le.refl t)
++    have hcell := (ContTy.K_Sub hk1 hle2).resume_append ⟨k1, h, rfl⟩ (Ty.Le.refl t)
+       (ContTy.K_Empty (Eff.Sub.refl (Eff.norm εc)) htw) (Eff.sub_norm_self εc)
+     simpa only [List.append_nil] using hcell.store hsub'
+   · -- 計算
+     have hθ' := hθ.store hsub'
+     simp only [Comp.substTy]
+-    rw [show some (Ty.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)) ::
+-          binds (sg.params.map (Ty.substAt 0 ts [])) =
+-        binds (sg.params.map (Ty.substAt 0 ts []) ++ [.cont (Ty.substAt 0 ts [] sg.ret) t (Eff.norm εc)]) by
++    rw [show some (Ty.cont (Ty.substAt 0 ts [] sg2.ret) t (Eff.norm εc)) ::
++          binds (sg2.params.map (Ty.substAt 0 ts [])) =
++        binds (sg2.params.map (Ty.substAt 0 ts []) ++ [.cont (Ty.substAt 0 ts [] sg2.ret) t (Eff.norm εc)]) by
+         rw [binds_snoc]] at hθ'
+     refine hθ'.instantiate (InstOk.snoc ?_ ⟨_, _, _, κ, rfl, ⟨hretw, htw, Eff.norm_WF εc hew, Eff.norm_idem εc⟩, rfl, hΨ'κ, hRh⟩)
+-    exact InstOk.of_values hb (hargs.store hsub') hparw hwsc
++    exact InstOk.of_values hb (hargs2.store hsub') hparw hwsc
+   · exact .K_Drop hΨ'κ (fun h' => hsub.1 _ ((Eff.mem_norm εc _).mp h')) (hk2.store hsub')
+   · -- 計算が閉じていること
+     have hmem : c ∈ h := List.mem_of_find?_eq_some hc
+@@ -197,7 +209,7 @@
+     · have := Comp.VarsIn.substTyAt (c := 0) [] (fun u hu => varsInList_mem htsc hu) (by simp) c.body
+         (by simpa using hb')
+       exact this
+-    · have hwlen := hargs.length_eq
++    · have hwlen := hargs2.length_eq
+       simp only [List.length_map] at hwlen
+       simp only [List.length_append, List.length_cons, List.length_nil]
+       omega
+diff -ruN A/formal/Benitoite/Release/Lemmas/TySubstMain.lean formal/Benitoite/Release/Lemmas/TySubstMain.lean
+--- A/formal/Benitoite/Release/Lemmas/TySubstMain.lean	2026-10-27 20:25:29
++++ formal/Benitoite/Release/Lemmas/TySubstMain.lean	2026-10-27 20:30:11
+@@ -366,6 +366,33 @@
+         · cases h
+       · cases h
+ 
++/-- L00.06b の試行 A2（案 (i)）: 節の添字で具体化した操作の型も、型パラメータだけを使う。 -/
++theorem opSigAt_scoped (hwf : P.WellFormed) (hb : B.Assumptions P) {S o sg} (h : opSigAt P B S o = some sg) :
++    NamesWF sg.names sg.params ∧
++    Ty.VarsInList sg.tparams.length (fun _ => False) sg.params ∧
++      Ty.VarsIn sg.tparams.length (fun _ => False) sg.ret := by
++  cases o with
++  | fail => cases h
++  | user o => exact opSig_scoped hwf hb (o := .user o) h
++  | prim b =>
++      simp only [opSigAt] at h
++      split at h
++      · rename_i s hs
++        split at h
++        · rename_i l hl
++          simp only [Option.some.injEq] at h
++          subst h
++          have hio := hb.opEff_io _ _ _ hs hl
++          obtain ⟨_, _, _, _, hne, _, _⟩ := hb.io_op _ _ hs hio
++          have hsc := PrimSig.inst_scoped S (hb.sig_scoped _ _ hs)
++          unfold PrimSig.Scoped at hsc
++          simp only [PrimSig.inst_names, PrimSig.inst_ntys, PrimSig.inst_neffs, PrimSig.inst_ret] at hsc
++          rw [hne] at hsc
++          exact ⟨hsc.1, Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.1,
++            Ty.VarsIn.mono (Nat.le_refl _) (fun i hi => by omega) _ hsc.2.2.1⟩
++        · cases h
++      · cases h
++
+ theorem unguardedPats_substTy (c : Nat) (ts : List Ty) (es : List Eff) (arms : List Arm) :
+     unguardedPats (Arm.substTyAtList c ts es arms) = unguardedPats arms := by
+   induction arms with
+@@ -837,7 +864,7 @@
+           apply Eff.substAt_wf es' (fun t ht => (hts t ht).1) hes' ε
+           rw [hsat.1]
+           exact Eff.WF.mono (by simp; omega) ε hew) ?_ (HasTypeClausesQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
+-        have hsc := opSig_scoped hwf hb hsg
++        have hsc := opSigAt_scoped hwf hb hsg
+         have hc' : c + k ≤ (sg.tparams ++ C).length := by simp; omega
+         have hdrop : (sg.tparams ++ C).drop (c + k) = C.drop c := by
+           rw [hk, Nat.add_comm]; simp [List.drop_append]
+diff -ruN A/formal/Benitoite/Release/Typing.lean formal/Benitoite/Release/Typing.lean
+--- A/formal/Benitoite/Release/Typing.lean	2026-10-27 20:25:29
++++ formal/Benitoite/Release/Typing.lean	2026-10-27 20:30:11
+@@ -195,6 +195,50 @@
+           | none => none
+       | none => none
+ 
++/-- L00.06b の試行 A2（案 (i)）: 節の添字 S で具体化した操作の型。組み込みの操作の引数型は表の署名を S で具体化した
++もの、それ以外は `opSig` と同じである。結果・型パラメータ・引数名・エフェクトの名前は S によらない。 -/
++def opSigAt (P : Program) (B : Builtins) (S : ScopeRange) (o : OpRef) : Option OpSig :=
++  match o with
++  | .prim b =>
++      match B.sig b with
++      | some s =>
++          match s.opEff with
++          | some l => some ⟨s.tparams, s.names, (s.inst S).params, s.ret, l⟩
++          | none => none
++      | none => none
++  | o => opSig P B o
++
++/-- L00.06b の試行 A2: Top の節の添字は旧の操作の型である。 -/
++theorem opSigAt_top (P : Program) (B : Builtins) (o : OpRef) : opSigAt P B .top o = opSig P B o := by
++  cases o <;> simp [opSigAt, opSig]
++
++/-- L00.06b の試行 A2: 節の添字で具体化した操作の型は、引数型の対象の位置だけが旧の操作の型と違いうる。 -/
++theorem opSigAt_rel {P : Program} {B : Builtins} {S : ScopeRange} {o : OpRef} {sg sg' : OpSig}
++    (h : opSig P B o = some sg) (h' : opSigAt P B S o = some sg') :
++    sg'.tparams = sg.tparams ∧ sg'.names = sg.names ∧ sg'.ret = sg.ret ∧ sg'.eff = sg.eff ∧
++      (sg'.params = sg.params ∨
++        (S ≠ .top ∧ ∃ (p : Nat) (o' : OpaqueName), sg'.params[p]? = some (Ty.opaque o' S))) := by
++  cases o with
++  | fail => cases h
++  | user o =>
++      simp only [opSigAt] at h'
++      rw [h] at h'; cases h'
++      exact ⟨rfl, rfl, rfl, rfl, Or.inl rfl⟩
++  | prim b =>
++      cases hs : B.sig b with
++      | none => simp [opSig, hs] at h
++      | some s =>
++          cases hl : s.opEff with
++          | none => simp [opSig, hs, hl] at h
++          | some l =>
++              simp only [opSig, hs, hl, Option.some.injEq] at h
++              simp only [opSigAt, hs, hl, Option.some.injEq] at h'
++              subst h h'
++              refine ⟨rfl, rfl, rfl, rfl, ?_⟩
++              rcases s.inst_cases S with he | ⟨hS, p, o', hp⟩
++              · left; simp [he]
++              · right; exact ⟨hS, p, o', hp⟩
++
+ /-- 操作の辞書数。組み込みの操作は辞書を持たない。 -/
+ def opDictCount (P : Program) : OpRef → Nat
+   | .user o => ((P.ops o).map fun d => d.dictParams.length).getD 0
+@@ -623,8 +667,8 @@
+   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+       StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+     | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
+-    | cons {Δ Γ R o n k body cs t ε sg} :
+-        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
++    | cons {Δ Γ R o n k body cs t ε sg S} :
++        opSigAt P B S o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF C.length ε →
+         HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
+           (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
+           (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) [] →
+diff -ruN A/formal/Benitoite/Surface/Lemmas/Typing.lean formal/Benitoite/Surface/Lemmas/Typing.lean
+--- A/formal/Benitoite/Surface/Lemmas/Typing.lean	2026-10-27 20:25:29
++++ formal/Benitoite/Surface/Lemmas/Typing.lean	2026-10-27 20:30:11
+@@ -888,7 +888,7 @@
+     match h with
+     | .nil => exact .nil
+     | .cons (ntys := ntys) (sg := sg) hop hnames hn hntys hw hb hs =>
+-        refine .cons (by exact hop) hnames hn.2 hntys hw ?_ (HasClausesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR ht)
++        refine .cons (S := .top) (by rw [opSigAt_top]; exact hop) hnames hn.2 hntys hw ?_ (HasClausesQ.desugar hAlign hΔ hwf hsig hs sc.2 hΓ hR ht)
+         have hlen : (sg.tparams ++ C).length = C.length + ntys := by
+           simp only [List.length_append]; omega
+         have hsg := opSig_clean hwf hsig hop

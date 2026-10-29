@@ -1,0 +1,13 @@
+IF20.06: 不存在の照合。終了1はrgの一致なしであり、検査失敗とは扱わない。
+宣言の全一覧とbuiltins/funcs/mod.rsのPARTSも読み合わせた。
+
+command: rg -n -i 'keystore|keychain|keyring|fromKeystore|Secret\.prompt|Secret\.Read|effect Secret|oauth|credential' crates/benitoite/src --glob '!**/tests/**' --glob '!**/tests.rs' --glob '!**/*tests.rs'
+exit: 1
+stdout:
+stderr:
+
+command: rg -n 'setEnvironment|removeEnvironment|set_var|remove_var|env_clear' crates/benitoite/src --glob '!**/tests/**' --glob '!**/tests.rs' --glob '!**/*tests.rs'
+exit: 1
+stdout:
+stderr:
+

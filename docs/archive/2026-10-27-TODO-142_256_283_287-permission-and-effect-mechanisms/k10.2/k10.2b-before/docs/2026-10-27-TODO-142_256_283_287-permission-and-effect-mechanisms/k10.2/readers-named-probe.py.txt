@@ -1,0 +1,50 @@
+"""保存した実入力で、候補除外の非Topの条件の正例と拒否を再現する。"""
+import json
+from pathlib import Path
+import runpy
+import shutil
+
+ROOT = Path(__file__).resolve().parents[3]
+HERE = Path(__file__).resolve().parent
+CHECK = runpy.run_path(str(ROOT / 'crates/benitoite/tests/desugar_export/check_named.py'))
+MANIFEST = json.loads(CHECK['MANIFEST'].read_text())
+ENTRY = next(e for e in MANIFEST['named'] if e['stem'] == 'named-declarations')
+POSITIVE = HERE / 'readers-named'
+CHECK['check_named'](POSITIVE, ENTRY, MANIFEST['namedVersions'])
+for tool in ('desugarDiff', 'surfaceCheckAll'):
+    assert json.loads((POSITIVE / f'named-declarations-{tool}-report.json').read_text())['nonTopRanges'] == 17
+NEGATIVE = ROOT / 'target/k10.2-readers-negative'
+NEGATIVE.mkdir(parents=True, exist_ok=True)
+for name in ('builtins', 'stdlib'):
+    shutil.copyfile(POSITIVE / f'named-declarations-{name}.json',
+                    NEGATIVE / f'named-declarations-{name}.json')
+
+
+def to_top(value):
+    if isinstance(value, list):
+        return [to_top(v) for v in value]
+    if not isinstance(value, dict):
+        return value
+    result = {k: to_top(v) for k, v in value.items()}
+    if 'ix' in result and 'fixed' in result['ix']:
+        result['ix'] = {'fixed': 'top'}
+    if 'ranges' in result:
+        result['ranges'] = ['top'] * len(result['ranges'])
+    return result
+
+
+changed = to_top(json.loads((POSITIVE / 'named-declarations-corpus.json').read_text()))
+changed['inputs'][0]['candidates'] = [
+    {'name': {'value': 'IO.File.Read', 'ix': {'fixed': {'path': {'tree': ['data']}}}}}]
+(NEGATIVE / 'named-declarations-corpus.json').write_text(json.dumps(changed))
+try:
+    CHECK['check_named'](NEGATIVE, ENTRY, MANIFEST['namedVersions'])
+except AssertionError as error:
+    assert 'all-Top range comparison' in str(error), str(error)
+else:
+    raise AssertionError('candidate-only nonTop did not fail')
+# 改造前のmanifest相当では、候補だけの非Topでも型・脱糖の比較は通る。
+CHECK['check_named'](NEGATIVE, {**ENTRY, 'rangeComparison': False}, MANIFEST['namedVersions'])
+for tool in ('desugarDiff', 'surfaceCheckAll'):
+    assert json.loads((NEGATIVE / f'named-declarations-{tool}-report.json').read_text())['nonTopRanges'] == 1
+print('five definitions and nonTop17 match; candidate-only nonTop is rejected; old guard would accept nonTop1')

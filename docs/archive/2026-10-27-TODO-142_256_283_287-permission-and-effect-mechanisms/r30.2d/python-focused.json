@@ -1,0 +1,33 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "tools/derive/test_derive.py",
+    "Management.test_v4_reader_and_semantic_hash_contract",
+    "Management.test_range_inventory_validation_hashing_and_custom_refusal",
+    "FileEffects.test_inventory_file_uses_and_original_byte_boundary"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 2.411703958,
+  "maxrss_raw": 199983104,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 190.71875,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 2.436359167,
+  "recorded_at": "2026-10-29T06:13:51.024469+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.2d/run-record.py",
+    "--child",
+    "python-focused",
+    "python3",
+    "-B",
+    "tools/derive/test_derive.py",
+    "Management.test_v4_reader_and_semantic_hash_contract",
+    "Management.test_range_inventory_validation_hashing_and_custom_refusal",
+    "FileEffects.test_inventory_file_uses_and_original_byte_boundary"
+  ]
+}

@@ -1,4 +1,4 @@
-//! 外部生成へ解決済みの宣言を version 3 の JSON で渡す（設計書 03-06「外部生成の宣言情報」）。
+//! 外部生成へ解決済みの宣言を version 4 の JSON で渡す（設計書 03-06「外部生成の宣言情報」）。
 #[path = "derive_inventory/mod.rs"]
 mod derive_inventory;
 
@@ -34,7 +34,13 @@ fn main() {
         }
     };
     match derive_inventory::inventory(std::path::Path::new(&root), &config, &bytes) {
-        Ok(value) => println!("{value}"),
+        Ok(value) => match derive_inventory::to_string(&value) {
+            Ok(output) => println!("{output}"),
+            Err(error) => {
+                eprintln!("{error}");
+                std::process::exit(1);
+            }
+        },
         Err(error) => {
             eprintln!("{error}");
             std::process::exit(1);

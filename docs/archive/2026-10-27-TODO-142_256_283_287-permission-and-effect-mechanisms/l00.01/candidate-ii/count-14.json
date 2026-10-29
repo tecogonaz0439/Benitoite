@@ -1,0 +1,42 @@
+{
+ "log": "build-14-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Release.Model"
+ ],
+ "unchecked_modules_count": 4,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Surface.Examples"
+ ],
+ "error_diagnostics": 8,
+ "error_files": [
+  "Benitoite/Release/Model.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "example <example@327>",
+   "line": 327,
+   "errors": 3
+  },
+  {
+   "file": "Benitoite/Release/Model.lean",
+   "decl": "theorem assumptions",
+   "line": 61,
+   "errors": 5
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Lemmas/PresMain.lean",
+   "theorem preservationE"
+  ],
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

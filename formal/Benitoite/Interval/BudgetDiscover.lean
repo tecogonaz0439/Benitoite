@@ -156,10 +156,10 @@ def expr : Nat → AbstractEnv → Expr → Discovery Unit
     | .constE _ child => expr fuel (clearLocals env) child
     | .withE owner child body =>
       expr fuel env child
-      let inner ← scan (BudgetScan.push env (topSlot (some (.opaque owner))))
+      let inner ← scan (BudgetScan.push env (topSlot (some (.opaqueTop owner))))
       block fuel inner body
     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
     | .negFloat32 _ | .unit => pure ()

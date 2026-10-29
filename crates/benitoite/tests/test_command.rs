@@ -1438,14 +1438,14 @@ fn check_does_not_run_user_code_or_write_result_lines() {
 fn check_report_and_execution_select_the_same_entries_and_functions() {
     use serde_json::{Value, json};
     let dir = Directory::new("selection-parity");
-    dir.write("suite/package.bnt", "language \"0.0.12\"\n");
+    dir.write("suite/package.bnt", "language \"0.0.13\"\n");
     dir.write("suite/Lib/Text.bnt", "public function message() -> String\n  return \"hello\"\nend function\n@test\nfunction libTest() -> Unit\nend function\n");
     dir.write("suite/tests.bnt", "import Lib.Text\n@test\nfunction usesLib() -> Unit uses Assert.Check\n  Assert.equal(actual: Text.message(), expected: \"hello\")\nend function\n");
     dir.write(
         "suite/none.bnt",
         "function helper() -> Unit\nend function\n",
     );
-    dir.write("suite/deps/package.bnt", "language \"0.0.12\"\n");
+    dir.write("suite/deps/package.bnt", "language \"0.0.13\"\n");
     dir.write(
         "suite/deps/tests.bnt",
         "@test\nfunction packageTest() -> Unit\nend function\n",
@@ -1953,7 +1953,7 @@ fn result_lines_escape_file_names_only_in_text_output() {
 #[test]
 fn directory_walk_skips_settings_and_nested_package_roots() {
     let dir = Directory::new("package-roots");
-    dir.write("package.bnt", "language \"0.0.12\"\n");
+    dir.write("package.bnt", "language \"0.0.13\"\n");
     dir.write(
         "tests.bnt",
         "@test\nfunction rootTest() -> Unit\n()\nend function\n",
@@ -1964,7 +1964,7 @@ fn directory_walk_skips_settings_and_nested_package_roots() {
     );
     dir.write(
         "deps/textkit/package.bnt",
-        "language \"0.0.12\"\npackage Textkit\nend package\n",
+        "language \"0.0.13\"\npackage Textkit\nend package\n",
     );
     dir.write(
         "deps/textkit/tests.bnt",
@@ -2101,7 +2101,7 @@ fn check_report_preserves_contracts_descriptions_locations_and_source_identity()
         assert_eq!(tests[2]["description"], "description");
         assert_eq!(
             tests[0]["effects"],
-            json!({"basis":"declaredUpperBound","expanded":["Assert.Check"]})
+            json!({"basis":"declaredUpperBound","expanded":["Assert.Check"],"bounds":[{"name":"Assert.Check","scope":{"kind":"all"}}]})
         );
         assert_eq!(tests[1]["effects"]["expanded"], json!([]));
         assert_eq!(
@@ -2129,7 +2129,7 @@ fn check_report_preserves_contracts_descriptions_locations_and_source_identity()
     }
     assert_eq!(
         report["aggregateEffects"],
-        json!({"basis":"declaredUpperBound","expanded":["Assert.Check","Clock.Time","Console.Read","Console.Write","File.Read","File.Write","Process.Environment","Process.Exit","Process.Run","Random.Generate","State"]})
+        json!({"basis":"declaredUpperBound","expanded":["Assert.Check","Clock.Time","Console.Read","Console.Write","File.Read","File.Write","Process.Environment","Process.Exit","Process.Run","Random.Generate","State"],"bounds":[{"name": "Assert.Check", "scope": {"kind": "all"}}, {"name": "Clock.Time", "scope": {"kind": "all"}}, {"name": "Console.Read", "scope": {"kind": "all"}}, {"name": "Console.Write", "scope": {"kind": "all"}}, {"name": "File.Read", "scope": {"kind": "all"}}, {"name": "File.Write", "scope": {"kind": "all"}}, {"name": "Process.Environment", "scope": {"kind": "all"}}, {"name": "Process.Exit", "scope": {"kind": "all"}}, {"name": "Process.Run", "scope": {"kind": "all"}}, {"name": "Random.Generate", "scope": {"kind": "all"}}, {"name": "State", "scope": {"kind": "all"}}]})
     );
     assert_eq!(report["diagnostics"].as_array().unwrap().len(), 2);
     for diagnostic in report["diagnostics"].as_array().unwrap() {
@@ -2884,7 +2884,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     let dir = Directory::new("doc-environment");
     dir.write(
         "deps/words/package.bnt",
-        "language \"0.0.12\"\npackage Words\nend package\n",
+        "language \"0.0.13\"\npackage Words\nend package\n",
     );
     let imported_doc = documentation(
         " test",
@@ -2899,7 +2899,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
         " test",
         "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n",
         None,
-    ) + "language \"0.0.12\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
+    ) + "language \"0.0.13\"\ndependency Words\n  path \"deps/words\"\nend dependency\n";
     let file = dir.write("Docs.bnt", &source);
     let out = run(&dir, &["--doc", "--diagnostics=json", &file]);
     assert_eq!(out.exit, 0, "{} {}", out.stdout, out.stderr);
@@ -2908,7 +2908,7 @@ fn doc_inherits_headers_and_directory_root_without_recursing_into_imported_docs(
     // ディレクトリ選択の共通の根とpackage.bntの依存も引き継ぐ。
     dir.write(
         "package.bnt",
-        "language \"0.0.12\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
+        "language \"0.0.13\"\ndependency Words\n  path \"deps/words\"\nend dependency\n",
     );
     fs::remove_file(&file).unwrap();
     dir.write("nested/Docs.bnt", &documentation(" test", "import Words.Word\n@test\nfunction number() -> Unit uses Assert.Check\n  Assert.equal(actual: Word.number(), expected: 7)\nend function\n", None));

@@ -23,7 +23,7 @@ mutual
     | .V_Var hi _ => subst hΓ; simp at hi
     | .V_Const => exact .const
     | .V_Fun _ hnames _ => rw [fnTy_eq]; exact .fn
-    | .V_Prim _ hnames _ => rw [fnTy_eq]; exact .fn
+    | .V_Prim _ hrs hnames _ => rw [fnTy_eq]; exact .fn
     | .V_Op _ hnames _ => rw [fnTy_eq]; exact .fn
     | .V_Raise _ _ => exact .fn
     | .V_Lam hnames hw _ => exact .fn
@@ -36,6 +36,8 @@ mutual
     | .V_Bytes => exact .bytes
     | .V_Dict _ _ _ => exact .dict
     | .V_Super _ _ _ => exact .dict
+    | .V_Checked _ _ => exact .checked
+    | .V_CheckedRequest _ _ _ _ => exact .checkedRequest
     | .V_Sub h hle hw =>
         rcases hle with rfl | ⟨_, _, _, _, _, _, rfl, _⟩
         · exact HasTypeVQ.inhabits' h hΓ
@@ -70,8 +72,8 @@ theorem HasTypeVQ.canonical_boolean {Ψ C v} (h : HasTypeVQ P B Ψ Q C [] v (.ba
   | fnRef f ts es =>
       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | prim b ts es =>
-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+  | prim b ts es rs =>
+      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
@@ -87,6 +89,8 @@ theorem HasTypeVQ.canonical_boolean {Ψ C v} (h : HasTypeVQ P B Ψ Q C [] v (.ba
   | mapV ks vs => obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+  | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
+  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
   | loc l => rcases h.inv_loc rfl with ⟨_, _, h'⟩ | ⟨_, _, h'⟩ <;> simp at h'
@@ -101,8 +105,8 @@ theorem HasTypeVQ.canonical_ref {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.refe
   | fnRef f ts es =>
       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | prim b ts es =>
-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+  | prim b ts es rs =>
+      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
@@ -118,6 +122,8 @@ theorem HasTypeVQ.canonical_ref {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.refe
   | mapV ks vs => obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+  | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
+  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
   | loc l =>
@@ -135,8 +141,8 @@ theorem HasTypeVQ.canonical_lazy {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.laz
   | fnRef f ts es =>
       obtain ⟨_, _, _, _, _, hle⟩ := h.inv_fnRef rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
-  | prim b ts es =>
-      obtain ⟨_, _, _, _, _, _, hle⟩ := h.inv_prim rfl
+  | prim b ts es rs =>
+      obtain ⟨_, _, _, _, _, _, _, hle⟩ := h.inv_prim rfl
       rw [fnTy_eq] at hle; have := hle.eq_of_not_fn hnf; simp at this
   | op o ts =>
       obtain ⟨_, _, _, _, hle⟩ := h.inv_op rfl
@@ -152,6 +158,8 @@ theorem HasTypeVQ.canonical_lazy {Ψ C v a} (h : HasTypeVQ P B Ψ Q C [] v (.laz
   | mapV ks vs => obtain ⟨_, _, h'⟩ := h.inv_mapV rfl; simp at h'
   | setV _ => obtain ⟨_, h'⟩ := h.inv_setV rfl; simp at h'
   | bytesV _ => have h' := h.inv_bytesV rfl; simp at h'
+  | checked _ => obtain ⟨_, _, h', -, -⟩ := h.inv_checked rfl; simp at h'
+  | checkedRequest _ _ => obtain ⟨_, _, _, h', -, -, -, -⟩ := h.inv_checkedRequest rfl; simp at h'
   | dict _ _ _ => obtain ⟨_, _, _, _, h'⟩ := h.inv_dict rfl; simp at h'
   | super _ _ => obtain ⟨_, _, _, _, _, _, h'⟩ := h.inv_super rfl; simp at h'
   | loc l =>
@@ -217,8 +225,9 @@ theorem HasTypeEachQ.toVs {Ψ C Γ vs a} (h : HasTypeEachQ P B Ψ Q C Γ vs a) :
 
 /-- 空のリストでも、要素の型の正しさは V-List から得られる。 -/
 theorem HasTypeVQ.inv_list_wf {C Γ v T elems} (h : HasTypeVQ P B Ψ Q C Γ v T) (hv : v = .list elems) :
-    ∃ a, HasTypeEachQ P B Ψ Q C Γ elems a ∧ Ty.WF C.length a ∧ T = .list a := by
+    ∃ a, HasTypeEachQ P B Ψ Q C Γ elems a ∧ Ty.WF 0 C.length a ∧ T = .list a := by
   match h with
+  | .V_CheckedRequest .. => cases hv
   | .V_List h hw => cases hv; exact ⟨_, h, hw, rfl⟩
   | .V_Sub h hle hw =>
       obtain ⟨a, he, hw, rfl⟩ := inv_list_wf h hv
@@ -408,12 +417,13 @@ mutual
                       | some r => cases r <;> simpa only [List.append_assoc] using (hb.append hmids).append ha
             · rw [ite_eq_right hlen] at hm; cases hm
         | _ => simp [Pat.matchVal] at hm
-    | .const _, .var _ | .const _, .fnRef _ _ _ | .const _, .prim _ _ _ | .const _, .lam _ _ _
+    | .const _, .var _ | .const _, .fnRef _ _ _ | .const _, .prim _ _ _ _ | .const _, .lam _ _ _
     | .const _, .con _ _ _ | .const _, .list _ | .const _, .op _ _ | .const _, .raise _ _ | .const _, .loc _ =>
         simp [Pat.matchVal] at hm
-    | .con _ _, .var _ | .con _ _, .const _ | .con _ _, .fnRef _ _ _ | .con _ _, .prim _ _ _
+    | .con _ _, .var _ | .con _ _, .const _ | .con _ _, .fnRef _ _ _ | .con _ _, .prim _ _ _ _
     | .con _ _, .lam _ _ _ | .con _ _, .list _ | .con _ _, .op _ _ | .con _ _, .raise _ _ | .con _ _, .loc _ =>
         simp [Pat.matchVal] at hm
+    | .const _, .checkedRequest _ _ | .con _ _, .checkedRequest _ _ => simp [Pat.matchVal] at hm
 
   theorem Pat.matchList_closed {ps vs ws} (hv : Val.VarsInList 0 (fun _ => True) vs)
       (hm : Pat.matchList ps vs = some ws) : Val.VarsInList 0 (fun _ => True) ws := by

@@ -1,0 +1,8 @@
+effect Report
+ function log(text: String) -> Unit
+end effect
+function main() -> Unit
+ handle log("test") with
+ case log(text) -> resume(())
+ end handle
+end function

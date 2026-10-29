@@ -1,0 +1,20 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function tryOne(path: String) -> Unit uses File.Write["<probes>/allowed/**"], Console.Write
+ bind checked <- Scope.checkPathIn(pattern: "<probes>/allowed/**", path: path)
+ match checked with
+ case Result.Ok(p) ->
+  bind r <- File.writeTextIn(path: p, text: "x")
+  Console.writeLine("ok ${path} ${Result.isOk(r)}")
+ case Result.Error(e) -> Console.writeLine("rejected ${path}")
+ end match
+end function
+function main() -> Unit uses File.Write["<probes>/allowed/**"], Console.Write
+ tryOne(path: "<probes>/allowed/../outside1.txt")
+ tryOne(path: "<probes>/allowed/./in.txt")
+ tryOne(path: "<probes>/allowed//in2.txt")
+ tryOne(path: "allowed/rel.txt")
+ tryOne(path: "<probes>/allowed/sub/../../outside2.txt")
+ tryOne(path: "<probes>/allowed/in3.txt")
+end function

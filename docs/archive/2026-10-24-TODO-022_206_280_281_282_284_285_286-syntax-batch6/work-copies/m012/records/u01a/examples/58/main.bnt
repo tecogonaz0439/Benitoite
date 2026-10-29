@@ -1,0 +1,29 @@
+import Benitoite.Unofficial.IO.Console
+
+record Person
+  name: String
+  age: Integer
+end record
+
+function describe(p: Person) -> String
+  bind group <- match Person.age(p) < 20 with
+    case true -> "young"
+    case false -> "adult"
+  end match
+  return "${Person.name(p)} (${group})"
+end function
+
+function main() -> Unit uses Console.Write
+  bind ada <- Person(name: "Ada", age: 36)
+  bind older <- Person(..ada, age: Person.age(ada) + 1)
+  Console.writeLine(describe(older))
+  Console.writeLine("${7 div 2} ${7 mod 2} ${Float.toString(7.0 / 2.0)}")
+  Console.writeLine("${-7 div 2} ${-7 mod 2} ${Integer.floorDivide(a: -7, b: 2)} ${Integer.floorModulo(a: -7, b: 2)}")
+  bind label <- match Person.age(older) with
+    case 0..19 -> "teen or child"
+    case n if n >= 65 -> "senior"
+    case otherAge -> "working age"
+  end match
+  Console.writeLine(label)
+  return ()
+end function

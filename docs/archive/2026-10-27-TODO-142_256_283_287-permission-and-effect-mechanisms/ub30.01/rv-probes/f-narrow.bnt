@@ -1,0 +1,31 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.IO.File
+
+effect Audit
+ function log(path: Scope.PathIn["/srv/audit/**"], line: String) -> Unit
+ function flush() -> Unit
+end effect
+
+function work(path: Scope.PathIn["/srv/audit/**"]) -> Unit uses Audit
+ log(path: path, line: "a")
+ flush()
+end function
+
+function main() -> Unit uses File.Write["/srv/audit/sub/**"]
+ bind r: Result[Scope.PathIn["/srv/audit/**"], Scope.ScopeError] <- Scope.checkPathIn(pattern: "/srv/audit/**", path: "/srv/audit/x")
+ match r with
+ case Result.Ok(p) ->
+  handle work(p) with
+  case log(q, line) ->
+   bind _ <- File.writeTextIn(path: q, text: line)
+   resume(())
+  case flush() -> resume(())
+  end handle
+ case Result.Error(_) -> ()
+ end match
+end function
+
+@test
+function t() -> Unit uses File.Write["/srv/audit/sub/**"]
+ main()
+end function

@@ -1,0 +1,133 @@
+formal/Benitoite/Exchange/Builtins.lean
+    def BuiltinInput.effectOps
+    def BuiltinInput.isResource
+formal/Benitoite/Exchange/Convert.lean
+    def fromTy
+formal/Benitoite/Release/Assumptions.lean
+    structure Builtins.Assumptions
+formal/Benitoite/Release/Atom.lean
+    abbrev EffBase
+    def stateEff
+    inductive NameScope
+    instance @28
+    structure EffName
+formal/Benitoite/Release/Examples.lean
+    def sig
+formal/Benitoite/Release/Finite.lean
+    def tyCompareWith
+formal/Benitoite/Release/Lemmas/BuilderTyping.lean
+    theorem HasTypeVQ.canonical_bytes
+formal/Benitoite/Release/Lemmas/Canonical.lean
+    theorem HasTypeVQ.canonical_boolean
+    theorem HasTypeVQ.canonical_lazy
+    theorem HasTypeVQ.canonical_ref
+formal/Benitoite/Release/Lemmas/ContLemmas.lean
+    def FramesOk
+    theorem ContTy.inv_release
+    theorem ContTy.prepend_releases
+formal/Benitoite/Release/Lemmas/EffectSound.lean
+    theorem ContTy.end_of_noHandler
+    theorem no_event
+formal/Benitoite/Release/Lemmas/FailureCont.lean
+    theorem HasTypeVQ.inv_raise
+formal/Benitoite/Release/Lemmas/Inversion.lean
+    theorem HasTypeCQ.inv_use
+    theorem HasTypeVQ.inv_prim
+formal/Benitoite/Release/Lemmas/OuterC.lean
+    theorem PrimitiveAdmissible.outer
+formal/Benitoite/Release/Lemmas/PresBase.lean
+    theorem refUpdate_typed
+    theorem store_prim_inv
+formal/Benitoite/Release/Lemmas/PresMain.lean
+    theorem preservationE
+formal/Benitoite/Release/Lemmas/Preservation.lean
+    theorem inv_prim_app
+formal/Benitoite/Release/Lemmas/Progress.lean
+    theorem HasTypeVQ.canonical_dict
+    theorem progress_io
+    theorem progress_prim
+formal/Benitoite/Release/Lemmas/Regularity.lean
+    theorem HasTypeVQ.wf
+formal/Benitoite/Release/Lemmas/StepSound.lean
+    theorem step_soundE
+formal/Benitoite/Release/Lemmas/TySubstMain.lean
+    theorem HasTypeVQ.substTy
+    theorem PrimitiveAdmissible.substTy
+formal/Benitoite/Release/Model.lean
+    example @327
+    theorem assumptions
+formal/Benitoite/Release/Order/Atoms.lean
+    def code
+    def scopeChars
+    theorem charsCode_injective
+    theorem code_injective
+formal/Benitoite/Release/Order/Types.lean
+    def NameScope.rank
+    def NameScope.toTree
+    def Ty.toTree
+    def scopeCompare
+    def tyCompare
+    theorem NameScope.toTree_injective
+    theorem Ty.toTree_injective
+    theorem TyCon.toTree_injective
+    theorem scopeCompare_eq_treeCompare
+    theorem tyCompare_eq_treeCompare
+formal/Benitoite/Release/Semantics.lean
+    def BuiltinOnly
+    inductive ContTy
+formal/Benitoite/Release/Syntax.lean
+    structure OpDecl
+    structure Program
+formal/Benitoite/Release/Types.lean
+    instance @31
+    structure OpaqueName
+formal/Benitoite/Release/Typing.lean
+    def PrimSig.inst
+    def PrimSig.ntys
+    def Ty.withIndex
+    def effOps
+    def handled
+    inductive HasTypeCQ
+    inductive HasTypeVQ
+    structure Builtins
+    structure OpSig
+    structure PrimSig
+    theorem HasTypeVQ.V_PrimTop
+    theorem PrimSig.inst_admits
+    theorem PrimSig.inst_eff_single
+    theorem PrimSig.inst_eq_of_opEff_none
+    theorem PrimSig.inst_kind
+    theorem PrimSig.inst_names
+    theorem PrimSig.inst_neffs
+    theorem PrimSig.inst_ntys
+    theorem PrimSig.inst_opEff
+    theorem PrimSig.inst_ret
+    theorem PrimSig.inst_top
+    theorem PrimSig.inst_tparams
+    theorem hideBuilders_strengthen_each
+formal/Benitoite/Release/WellFormed.lean
+    def PrimSig.Scoped
+    theorem PrimSig.inst_scoped
+    theorem Ty.withIndex_varsIn
+formal/Benitoite/Surface/BuilderExamples.lean
+    def signature
+formal/Benitoite/Surface/Check.lean
+    def checkExprR
+formal/Benitoite/Surface/CheckTables.lean
+    def BuiltinMaterial.effectOps
+    def BuiltinMaterial.isResource
+    structure BuiltinMaterial
+    structure Materials
+    structure Names
+    structure PrimMaterial
+formal/Benitoite/Surface/Lemmas/Extensions.lean
+    theorem stringAdd_typed
+formal/Benitoite/Surface/Lemmas/ReturnTry.lean
+    theorem DieExitOk.app_typed
+formal/Benitoite/Surface/Lemmas/Typing.lean
+    theorem HasTypeQ.desugar
+formal/Benitoite/Surface/Syntax.lean
+    structure Declarations
+    structure Program
+formal/Benitoite/Surface/Typing.lean
+    inductive HasTypeQ

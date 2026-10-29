@@ -103,7 +103,11 @@ fn format_type_matrix_and_locations() {
             .unwrap();
         assert_eq!(
             out.interp_types.get(expr.id()),
-            Some(&Ty::Con(TyCon::Builtin(ty), vec![]))
+            Some(&Ty::Con(
+                TyCon::Builtin(ty),
+                vec![],
+                crate::types::builtin::RangeIndex::TOP
+            ))
         );
         assert_eq!(
             out.expr_types.get(expr.id()),

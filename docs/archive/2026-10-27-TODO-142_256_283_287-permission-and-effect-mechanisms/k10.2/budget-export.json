@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/usr/bin/time",
+    "-p",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "desugar_export",
+    "range_budget::export_range_budget_sources",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "BENITOITE_DESUGAR_DIFF_DIR": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/k10.2/budget-output",
+  "startedUtc": "2026-10-29T12:18:52.910513+00:00",
+  "returncode": 101,
+  "outerSeconds": 2.338653375,
+  "maxRssBytesAuxiliary": 704593920
+}

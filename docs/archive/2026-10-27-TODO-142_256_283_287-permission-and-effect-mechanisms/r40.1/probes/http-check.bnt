@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.Network.Http
+function sample(request: Http.ClientRequest) -> Result[Http.Response, NetworkError] uses Http.Connect["api.example", 443]
+ bind checked: Result[Http.RequestIn["api.example", 443], Http.RequestCheckError] <- Http.checkRequestIn(hostPattern: "api.example", minimumPort: 443, maximumPort: 443, request: request)
+ return match checked with
+ case Result.Ok(value) -> Http.sendIn(request: value)
+ case Result.Error(_) -> Result.Ok(Http.text(status: 400, s: "failed check"))
+ end match
+end function
+function main() -> Unit
+end function

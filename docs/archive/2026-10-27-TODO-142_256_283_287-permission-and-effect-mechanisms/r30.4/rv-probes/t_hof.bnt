@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Network.Http
+import Benitoite.Unofficial.IO.Console
+function apply(f: function(request: Http.RequestIn) -> Result[Http.Response, NetworkError] uses Http.Connect, r: Http.RequestIn) -> Result[Http.Response, NetworkError] uses Http.Connect
+ return f(request: r)
+end function
+function go(r: Http.RequestIn) -> Result[Http.Response, NetworkError] uses Http.Connect["127.0.0.1", 18411]
+ return apply(f: Http.sendIn, r: r)
+end function
+function main() -> Unit
+ ()
+end function

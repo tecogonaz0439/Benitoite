@@ -1,0 +1,18 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+function main() -> Unit uses File.Read, File.Write, Console.Write, Process.Exit
+  bind lines <- try File.readLines("input.txt") or die
+  bind total <- List.fold(xs: lines, initial: 0, f: lambda(acc, value)
+    return match String.split(s: value, separator: " ") with
+      case [_, count] -> acc + Option.unwrapOr(o: Integer.parse(count), fallback: 0)
+      case otherFields -> acc
+    end match
+  end lambda)
+  bind report <- "lines: ${List.length(lines)}\ntotal: ${total}\n"
+  bind _ <- try File.writeText(path: "report.txt", text: report) or die
+  bind _ <- try File.appendText(path: "report.txt", text: "done\n") or die
+  Console.write(try File.readText("report.txt") or die)
+  return ()
+end function

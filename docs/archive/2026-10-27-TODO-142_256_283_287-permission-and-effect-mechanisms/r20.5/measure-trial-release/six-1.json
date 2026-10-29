@@ -1,0 +1,40 @@
+{
+  "accepted_selected_calls": 10,
+  "bodies": [
+    {
+      "calls": 10,
+      "definition": ".sample0",
+      "metrics": {
+        "body_operations": 35,
+        "max_body_items": 4,
+        "max_whole_items": 4,
+        "stops": [],
+        "whole_operations": 35
+      },
+      "occurrences": 55,
+      "stopped": "None"
+    }
+  ],
+  "case": "six-1",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handlers": 0,
+  "limits": "ScopeLimits { body: ScopeCap { operations: 1000000, items: 100000 }, whole: ScopeCap { operations: 100000000, items: 10000000 } }",
+  "narrow_rejections": [
+    "PathValue:17:UnknownSource",
+    "CheckPath:20:UnknownSource",
+    "CheckRequest:26:NotCovered",
+    "RequestValue:34:NotCovered",
+    "WidenRequest:37:NotCovered",
+    "RequestValue:43:UnknownSource",
+    "CheckRequest:46:NotCovered"
+  ],
+  "occurrences": 55,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_seconds": 0.00008225,
+  "sha256": "95a303751bb3ba3d2c251536ef6241818d7c9b1d2df6c7d8c52b17edfb65e4c7",
+  "source_bytes": 1178,
+  "typecheck_seconds": 0.024808166
+}

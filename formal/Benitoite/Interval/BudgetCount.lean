@@ -20,7 +20,7 @@ def countExpr (source : Expr) : Scan Nat := forNumbering fun _ => frame fun _ =>
   tick .numbering
   let count ← match source with
     | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
-    | .primName _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
+    | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _
     | .negFloat32 _ | .unit => pure 0

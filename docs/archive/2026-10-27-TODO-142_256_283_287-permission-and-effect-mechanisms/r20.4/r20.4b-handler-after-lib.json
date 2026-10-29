@@ -1,0 +1,23 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--lib",
+    "scoped_calls_tests",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-28T23:34:20.136498+00:00",
+  "finished_utc": "2026-10-28T23:34:39.413369+00:00",
+  "command_exit": 101,
+  "outer_seconds": 19.276297834,
+  "maxrss_raw": 4863721472,
+  "maxrss_unit": "bytes",
+  "maxrss_bytes": 4863721472,
+  "maxrss_mib": 4638.40625,
+  "maxrss_gib": 4.529693603515625,
+  "maxrss_method": "getrusage(RUSAGE_CHILDREN); fresh wrapper; maximum child RSS, not sum"
+}

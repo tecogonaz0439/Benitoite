@@ -144,6 +144,19 @@ IO を行う関数の振る舞いと IO の失敗は[エフェクト](../01-spec
 | `File.rename(from, to)` | `function(from: String, to: String) -> Result[Unit, IOError] uses File.Write` | `from` を `to` に移す。`to` にファイルがあれば置き換える |
 | `File.copy(from, to)` | `function(from: String, to: String) -> Result[Unit, IOError] uses File.Read, File.Write` | 普通のファイル `from` の内容を `to` に写す。`to` があれば置き換える |
 
+【決定】検査済みのパスを受け取る操作は次のとおりである。表の R は、対象の引数の型から決まる同じ範囲を表す。利用者が範囲変数 R を宣言する構文ではない。File は署名のために Scope を import するが、File と Scope だけの利用では Trait を読み込まない（[標準ライブラリ](03-06-stdlib.md#scope)）。
+
+| 操作 | 型 | 振る舞い |
+|---|---|---|
+| `File.readTextIn(path)` | `function(path: Scope.PathIn[R]) -> Result[String, IOError] uses File.Read[R]` | 保持したパスの内容全体を文字列として読む |
+| `File.readBytesIn(path)` | `function(path: Scope.PathIn[R]) -> Result[Bytes, IOError] uses File.Read[R]` | 保持したパスの内容全体を、文字コードを解釈せずに読む |
+| `File.writeTextIn(path, text)` | `function(path: Scope.PathIn[R], text: String) -> Result[Unit, IOError] uses File.Write[R]` | 保持したパスのファイルを作るか置き換え、内容を `text` にする |
+| `File.appendTextIn(path, text)` | `function(path: Scope.PathIn[R], text: String) -> Result[Unit, IOError] uses File.Write[R]` | 保持したパスの末尾に `text` を加える。ファイルがなければ作る |
+| `File.writeBytesIn(path, content)` | `function(path: Scope.PathIn[R], content: Bytes) -> Result[Unit, IOError] uses File.Write[R]` | 保持したパスのファイルを作るか置き換え、内容を `content` にする |
+| `File.appendBytesIn(path, content)` | `function(path: Scope.PathIn[R], content: Bytes) -> Result[Unit, IOError] uses File.Write[R]` | 保持したパスの末尾に `content` を加える。ファイルがなければ作る |
+
+【決定】六操作は `Scope.checkPathIn` が成功値に保持したパスを使い、読み取り・書き込み・追記と失敗の扱いは、対応する文字列の入口と同じである。例えば `readTextIn` は不正な UTF-8 を `IOErrorKind.InvalidUTF8` として返す。IO の失敗を `Scope.ScopeError` へ変換しない。範囲の所属はパス文字列についての静的な上限であり、実パス・シンボリックリンクの解決先・特殊ファイルを隔離する機構ではない。
+
 ```text
 record Info
   kind: EntryKind

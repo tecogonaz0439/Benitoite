@@ -1,0 +1,596 @@
+diff --git a/crates/benitoite/tests/desugar_export.rs b/crates/benitoite/tests/desugar_export.rs
+index 1d2d8b11..4e050995 100644
+--- a/crates/benitoite/tests/desugar_export.rs
++++ b/crates/benitoite/tests/desugar_export.rs
+@@ -21,6 +21,8 @@ pub mod generator;
+ mod interval;
+ #[path = "desugar_export/named.rs"]
+ mod named;
++#[path = "desugar_export/scope_tables.rs"]
++mod scope_tables;
+ 
+ #[path = "operation_dictionaries/mod.rs"]
+ mod operation_dictionaries;
+@@ -168,7 +170,7 @@ fn export_width_smoke() {
+     write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
+     fs::write(
+         output.join("coverage.json"),
+-        exchange::to_vec(&json!({"version":6,"inputs":coverage_inputs})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":coverage_inputs})).unwrap(),
+     )
+     .unwrap();
+     // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
+@@ -351,7 +353,7 @@ fn write_exchange(
+     stdlib_inputs: Vec<Value>,
+     annotations: std::collections::BTreeMap<String, [usize; 2]>,
+ ) -> Value {
+-    let corpus = json!({"version":14,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
++    let corpus = json!({"version":15,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+     fs::write(
+         output.join("corpus.json"),
+         exchange::to_vec(&corpus).unwrap(),
+@@ -360,12 +362,12 @@ fn write_exchange(
+     // 新しい契約名を型表にも保持する。
+     fs::write(
+         output.join("builtins.json"),
+-        exchange::to_vec(&json!({"version":6,"inputs":builtin_inputs})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":builtin_inputs})).unwrap(),
+     )
+     .unwrap();
+     fs::write(
+         output.join("stdlib-decls.json"),
+-        exchange::to_vec(&json!({"version":6,"inputs":stdlib_inputs})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":stdlib_inputs})).unwrap(),
+     )
+     .unwrap();
+     corpus
+@@ -455,19 +457,19 @@ impl CorpusStream {
+         self.intervals.finish();
+         self.inputs.finish(
+             &output.join(format!("{stem}-corpus.json")),
+-            json!({"version":14,"operators":exchange::operators(),"annotations":self.annotations}),
++            json!({"version":15,"operators":exchange::operators(),"annotations":self.annotations}),
+         );
+         self.builtins.finish(
+             &output.join(format!("{stem}-builtins.json")),
+-            json!({"version":6}),
++            json!({"version":7}),
+         );
+         self.declarations.finish(
+             &output.join(format!("{stem}-stdlib.json")),
+-            json!({"version":6}),
++            json!({"version":7}),
+         );
+         self.coverage.finish(
+             &output.join(format!("{stem}-coverage.json")),
+-            json!({"version":6}),
++            json!({"version":7}),
+         );
+     }
+ }
+@@ -803,7 +805,7 @@ fn export_named_types_smoke() {
+     );
+     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
+     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
+-    let corpus = json!({"version":14,"operators":exchange::operators(),
++    let corpus = json!({"version":15,"operators":exchange::operators(),
+         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
+     fs::write(
+         output.join("named-types-corpus.json"),
+@@ -850,7 +852,7 @@ fn export_named_declarations_smoke() {
+     let mut input = named::input("named-declarations", definitions);
+     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
+     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
+-    let corpus = json!({"version":14,"operators":exchange::operators(),
++    let corpus = json!({"version":15,"operators":exchange::operators(),
+         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
+     fs::write(
+         output.join("named-declarations-corpus.json"),
+@@ -860,7 +862,7 @@ fn export_named_declarations_smoke() {
+     named::write_tables(&output, "named-declarations", &p, &corpus["inputs"][0]);
+ }
+ 
+-// 関門: 実ソースの辞書の全呼び出しを12/4の五形式へ渡す。
++// 関門: 実ソースの辞書の全呼び出しを15/7の五形式へ渡す。
+ // 対象外と空の比較は失敗にし、独立したLeanの六入口が結果を照合する。
+ #[test]
+ fn export_batch2_op() {
+@@ -965,7 +967,7 @@ fn write_batch2(output: &Path, export: named::Export) {
+         annotations,
+     );
+     fs::rename(output.join("stdlib-decls.json"), output.join("stdlib.json")).unwrap();
+-    let coverage = json!({"version":6,"inputs":export.coverage});
++    let coverage = json!({"version":7,"inputs":export.coverage});
+     fs::write(
+         output.join("coverage-program.json"),
+         exchange::to_vec(&coverage).unwrap(),
+@@ -1033,7 +1035,7 @@ fn write_batch2_coverage(output: &Path, ty: &benitoite::types::Ty, ty_json: Valu
+     ];
+     fs::write(
+         output.join("coverage.json"),
+-        exchange::to_vec(&json!({"version":6,"seedXor":0,"randomCases":0,
++        exchange::to_vec(&json!({"version":7,"seedXor":0,"randomCases":0,
+         "boundaryCases":cases.len(),"kinds":{},"cases":cases}))
+         .unwrap(),
+     )
+@@ -1188,3 +1190,9 @@ end function
+     let (ty, ty_json) = coverage_type.unwrap();
+     write_batch2_coverage(&output, &ty, ty_json);
+ }
++
++// 関門: 独立した署名・表の期待値と、小入力の二つの Lean 入口との交換を守る。
++#[test]
++fn export_scope_tables_smoke() {
++    scope_tables::scope_tables_smoke(&export_directory("scope-tables"));
++}
+diff --git a/crates/benitoite/tests/desugar_export/builtins.rs b/crates/benitoite/tests/desugar_export/builtins.rs
+index 90732cc6..8ecacfe7 100644
+--- a/crates/benitoite/tests/desugar_export/builtins.rs
++++ b/crates/benitoite/tests/desugar_export/builtins.rs
+@@ -167,6 +167,7 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
+     let mut used = BTreeSet::new();
+     used_prims(input, &mut used);
+     let mut prims = Vec::new();
++    let mut range_signatures = Vec::new();
+     let mut state_pure = Vec::new();
+     let mut supplemental_prims = Vec::new();
+     let mut surface = Surface::new(p, None, Vec::new());
+@@ -220,25 +221,6 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
+             | table::EntryKind::Format { .. }
+             | table::EntryKind::Interpolation { .. } => table::builtin_scheme(id).unwrap(),
+         };
+-        // operation_tables と同じ番号順。prim の tys の番号を入れ替えない。
+-        let tparams: Vec<_> = scheme
+-            .type_params
+-            .iter()
+-            .map(|t| {
+-                let equality = matches!(
+-                    t.builtin,
+-                    Some(types::BuiltinConstraint::Equality | types::BuiltinConstraint::Key)
+-                );
+-                json!({"equality":equality,"key":t.builtin == Some(types::BuiltinConstraint::Key),
+-                "ordered":t.builtin == Some(types::BuiltinConstraint::Ordered)})
+-            })
+-            .collect();
+-        let mut unconvertible = BTreeSet::new();
+-        scheme
+-            .params
+-            .iter()
+-            .for_each(|t| opaque_arguments(t, &mut unconvertible));
+-        opaque_arguments(&scheme.ret, &mut unconvertible);
+         let kind = match decl.name {
+             "Reference.new" => "refNew",
+             "Reference.get" => "refGet",
+@@ -249,6 +231,9 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
+             _ if entry == table::EntryKind::EffectOp => "io",
+             _ => "pure",
+         };
++        let ranges = table::builtin_range_signature(id).unwrap();
++        assert!(ranges.signature_valid(&scheme, entry == table::EntryKind::EffectOp));
++        surface.range_bound = Some(ranges.range_count());
+         let op_eff = if entry == table::EntryKind::EffectOp {
+             assert_eq!(decl.capability, Capability::Io);
+             assert!(scheme.effect_params.is_empty());
+@@ -262,27 +247,15 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
+         if decl.capability == Capability::State && kind == "pure" {
+             state_pure.push(decl.name);
+         }
+-        let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
+-        let eff_params: Vec<_> = scheme
+-            .effect_params
+-            .iter()
+-            .enumerate()
+-            .map(|(i, _)| json!({"noFail":scheme.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))}))
+-            .collect();
+-        let mut prim = json!({"name":decl.name,"tparams":tparams,"neffs":scheme.effect_params.len(),"effParams":eff_params,
+-            "params":params,"ret":surface.ty(&scheme.ret),"eff":surface.eff(&scheme.effects),
+-            "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
+-            "unconvertibleTypes":unconvertible});
+-        assert_eq!(
+-            scheme
+-                .param_names
+-                .iter()
+-                .collect::<std::collections::BTreeSet<_>>()
+-                .len(),
+-            scheme.params.len()
++        let prim = export_prim(
++            &mut surface,
++            decl.name,
++            &scheme,
++            &ranges,
++            kind,
++            op_eff.as_deref(),
+         );
+-        assert_eq!(scheme.param_names.len(), scheme.params.len());
+-        prim["names"] = json!(scheme.param_names);
++        range_signatures.push((decl.name.to_owned(), ranges));
+         prims.push(prim);
+     }
+     let effects: Vec<_> = BUILTIN_EFFECTS
+@@ -374,9 +347,21 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
+         "unsupported builtin/data declaration: {:?}",
+         surface.outside
+     );
+-    json!({"group":input["group"],"name":input["name"],"prims":prims,"effects":effects,
++    let mut output = json!({"group":input["group"],"name":input["name"],"prims":prims,"effects":effects,
+         "resources":resources,"dataDecls":data_decls,"summaries":summaries,"statePure":state_pure,
+-        "supplementalData":supplemental_data,"supplementalPrims":supplemental_prims})
++        "supplementalData":supplemental_data,"supplementalPrims":supplemental_prims});
++    // ClientRequest は現在レコードであり、ここでは同じ識別番号だけを保存する。
++    // 不透明な要求のモデルとの表現の接続を完了したとは数えない（設計書 07-04「交換の形式の版」）。
++    let request = stdlib
++        .resolved
++        .stdlib("Benitoite.Network.Http.ClientRequest")
++        .map(|id| format!("{}:[]", names[&id].0));
++    let data = scope_export::table_data(&range_signatures, request);
++    output
++        .as_object_mut()
++        .unwrap()
++        .extend(data.as_object().unwrap().clone());
++    output
+ }
+ 
+ fn builtin_data(p: &CheckedProgram, id: BindingId) -> &'static str {
+@@ -388,3 +373,51 @@ fn builtin_data(p: &CheckedProgram, id: BindingId) -> &'static str {
+         "ordinary"
+     }
+ }
++
++/// 一署名の範囲変数を個数で制限し、項へ漏らさないために署名の内部だけで書く。
++pub(crate) fn export_prim(
++    surface: &mut Surface<'_>,
++    name: &str,
++    scheme: &Scheme,
++    ranges: &types::signature::RangeSignature,
++    kind: &str,
++    op_eff: Option<&str>,
++) -> Value {
++    assert!(
++        ranges.signature_valid(scheme, kind == "io"),
++        "invalid table signature: {name}"
++    );
++    assert!(surface.range_bound.is_none() || surface.range_bound == Some(ranges.range_count()));
++    surface.range_bound = Some(ranges.range_count());
++    // operation_tables と同じ番号順。prim の tys の番号を入れ替えない。
++    let tparams: Vec<_> = scheme
++        .type_params
++        .iter()
++        .map(|t| {
++            let equality = matches!(
++                t.builtin,
++                Some(types::BuiltinConstraint::Equality | types::BuiltinConstraint::Key)
++            );
++            json!({"equality":equality,"key":t.builtin == Some(types::BuiltinConstraint::Key),
++                "ordered":t.builtin == Some(types::BuiltinConstraint::Ordered)})
++        })
++        .collect();
++    let mut unconvertible = BTreeSet::new();
++    scheme
++        .params
++        .iter()
++        .for_each(|t| opaque_arguments(t, &mut unconvertible));
++    opaque_arguments(&scheme.ret, &mut unconvertible);
++
++    let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
++    let eff_params: Vec<_> = scheme.effect_params.iter().enumerate().map(|(i, _)|
++        json!({"noFail":scheme.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))})).collect();
++    let prim = json!({"name":name,"tparams":tparams,"neffs":scheme.effect_params.len(),"effParams":eff_params,
++        "params":params,"ret":surface.ty(&scheme.ret),"eff":surface.eff(&scheme.effects),
++        "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
++        "unconvertibleTypes":unconvertible,"names":scheme.param_names,
++        "rkinds":ranges.kinds.iter().map(|k| scope_export::kind(*k)).collect::<Vec<_>>(),
++        "shape":scope_export::shape(ranges.shape)});
++    surface.range_bound = None;
++    prim
++}
+diff --git a/crates/benitoite/tests/desugar_export/exchange.rs b/crates/benitoite/tests/desugar_export/exchange.rs
+index ede27550..affc294b 100644
+--- a/crates/benitoite/tests/desugar_export/exchange.rs
++++ b/crates/benitoite/tests/desugar_export/exchange.rs
+@@ -15,9 +15,12 @@ use serde_json::{Value, json};
+ use std::collections::{BTreeMap, BTreeSet};
+ 
+ #[path = "builtins.rs"]
+-mod builtin_export;
++pub(super) mod builtin_export;
+ pub use builtin_export::{complete_stdlib, named_builtin_tables};
+ 
++#[path = "scope.rs"]
++pub(super) mod scope_export;
++
+ #[path = "builders.rs"]
+ mod builder_export;
+ 
+@@ -35,7 +38,14 @@ impl Serialize for ExchangeJson<'_> {
+             Value::Object(object) => {
+                 let mut output = serializer.serialize_map(Some(object.len()))?;
+                 for (key, value) in object {
+-                    if key == "mantissa"
++                    if matches!(key.as_str(), "bits" | "network")
++                        && let Value::String(value) = value
++                    {
++                        let number = value
++                            .parse::<u128>()
++                            .map_err(serde_core::ser::Error::custom)?;
++                        output.serialize_entry(key, &number)?;
++                    } else if key == "mantissa"
+                         && let Value::String(value) = value
+                     {
+                         let number = value
+@@ -346,22 +356,24 @@ pub struct CoverageExport {
+     pub bindings: Vec<Value>,
+ }
+ 
+-struct Surface<'a> {
++pub(super) struct Surface<'a> {
+     p: &'a CheckedProgram,
+     coverage: CoverageExport,
+     constants: Option<&'a ConstantTable>,
+     constant_references: BTreeSet<BindingId>,
+     closed_constant: bool,
+-    outside: BTreeSet<String>,
++    pub(super) outside: BTreeSet<String>,
+     return_ty: Option<Ty>,
+     clause_types: Vec<(NodeId, usize)>,
+     type_order: Vec<usize>,
+     // [対象箇所数, 元の注釈が R と異なる箇所数]。対象外の関数も含む。
+     annotations: BTreeMap<&'static str, [usize; 2]>,
+     record_origins: bool,
++    // Some は型表の一署名の内部だけ。項と通常の型では rvar を拒否する。
++    range_bound: Option<usize>,
+ }
+ impl Surface<'_> {
+-    fn new(p: &CheckedProgram, ret: Option<Ty>, type_order: Vec<usize>) -> Surface<'_> {
++    pub(super) fn new(p: &CheckedProgram, ret: Option<Ty>, type_order: Vec<usize>) -> Surface<'_> {
+         Surface {
+             p,
+             coverage: CoverageExport::default(),
+@@ -374,34 +386,22 @@ impl Surface<'_> {
+             type_order,
+             annotations: BTreeMap::new(),
+             record_origins: false,
++            range_bound: None,
+         }
+     }
+-    fn eff(&mut self, e: &EffectSet) -> Value {
++    pub(super) fn eff(&mut self, e: &EffectSet) -> Value {
+         let mut atoms: Vec<Value> = e
+             .names
+             .iter()
+             .map(|n| {
+-                assert_eq!(
+-                    n.index(),
+-                    &benitoite::types::builtin::RangeIndex::TOP,
+-                    "scoped atom requires the new exchange format"
+-                );
+                 let name = match n {
+                     EffectName::User(id, _) => format!("effect:{}", id.0),
+-                    EffectName::Builtin(id, _) => {
+-                        let d = id.def().unwrap();
+-                        // die の型規則が指定する標準の原子名へ揃える。型・効果・
+-                        // 組み込みの表を同じ名前で交換する（07-04「01-12 との対応」）。
+-                        if d.module == ["IO", "Process"] && d.name == "Exit" {
+-                            "Process.Exit".to_owned()
+-                        } else if d.module.is_empty() {
+-                            d.name.to_owned()
+-                        } else {
+-                            format!("{}.{}", d.module.join("."), d.name)
+-                        }
+-                    }
++                    EffectName::Builtin(id, _) => scope_export::effect_name(*id),
+                 };
+-                tagged("name", json!({"value":name}))
++                tagged(
++                    "name",
++                    json!({"value":name,"ix":scope_export::index(n.index(), self.range_bound)}),
++                )
+             })
+             .collect();
+         atoms.extend(e.vars.iter().map(|i| tagged("rho", json!({"index":i.0}))));
+@@ -527,7 +527,7 @@ impl Surface<'_> {
+         self.outside.insert(name.to_owned());
+         json!("unit")
+     }
+-    fn ty(&mut self, ty: &Ty) -> Value {
++    pub(super) fn ty(&mut self, ty: &Ty) -> Value {
+         match ty {
+             Ty::Param(index) => tagged("tvar", json!({"index":self.type_index(*index)})),
+             Ty::App(i, ts) => {
+@@ -569,12 +569,15 @@ impl Surface<'_> {
+                 tagged("fn", fields)
+             }
+             Ty::Con(con, args, ix) => {
+-                assert_eq!(
+-                    *ix,
+-                    benitoite::types::builtin::RangeIndex::TOP,
+-                    "scoped type in legacy exchange"
+-                );
+                 let args: Vec<_> = args.iter().map(|t| self.ty(t)).collect();
++                if !matches!(con, TyCon::Builtin(id) if id.def().is_some_and(|d| matches!(d.class, BuiltinTypeClass::Opaque | BuiltinTypeClass::Resource)))
++                {
++                    assert_eq!(
++                        *ix,
++                        benitoite::types::builtin::RangeIndex::TOP,
++                        "nonopaque range index"
++                    );
++                }
+                 match con {
+                     TyCon::External(_) => self.outside("external type"),
+                     TyCon::Adt(id) => tagged("data", json!({"name":data_name(*id),"args":args})),
+@@ -598,7 +601,7 @@ impl Surface<'_> {
+                             // Task などは Release の O[A] に対応する一意な中身を見せない型名。
+                             _ => tagged(
+                                 "opaque",
+-                                json!({"name":format!("{}:{}",id.0,serde_json::to_string(&args).unwrap())}),
++                                json!({"name":format!("{}:{}",id.0,serde_json::to_string(&args).unwrap()),"ix":scope_export::index(ix, self.range_bound)}),
+                             ),
+                         }
+                     }
+diff --git a/crates/benitoite/tests/desugar_export/lib.rs b/crates/benitoite/tests/desugar_export/lib.rs
+index 59c056fc..aeb40fad 100644
+--- a/crates/benitoite/tests/desugar_export/lib.rs
++++ b/crates/benitoite/tests/desugar_export/lib.rs
+@@ -28,6 +28,24 @@ fn rename(value: &mut Value, names: &BTreeMap<String, String>) {
+     }
+ }
+ 
++// corpus 10 の名前の原子は、範囲を持たない旧形式の意味どおり明示 Top にする。
++// 固定入力は変更せず、現在の出力との比較に必要な表現だけを合わせる。
++fn legacy_atom_tops(value: &mut Value) {
++    match value {
++        Value::Object(fields) => {
++            if let Some(Value::Object(atom)) = fields.get_mut("name")
++                && atom.len() == 1
++                && atom.get("value").is_some_and(Value::is_string)
++            {
++                atom.insert("ix".into(), json!({"fixed":"top"}));
++            }
++            fields.values_mut().for_each(legacy_atom_tops);
++        }
++        Value::Array(values) => values.iter_mut().for_each(legacy_atom_tops),
++        Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
++    }
++}
++
+ // 関門: Die の辞書・標準参照・説明と独立した期待コアへの投影を守る。
+ // 本番 parser は拒否を保つため、統合入力にはこの分岐へ達する入力がない。
+ // 既存の cfg(test) の解析入口を使い、本番の API やフラグは加えない。
+@@ -127,7 +145,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
+         let path = directory.join("corpus.json");
+         stream.finish(
+             &path,
+-            json!({"version":13,"operators":exchange::operators()}),
++            json!({"version":15,"operators":exchange::operators()}),
+         );
+         let written: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+         std::fs::remove_file(path).unwrap();
+@@ -198,6 +216,7 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
+         let mut actual = actual.clone();
+         rename(&mut actual, &names);
+         let mut expected = fixture["inputs"][0]["definitions"][index]["scope"]["inScope"].clone();
++        legacy_atom_tops(&mut expected);
+         // 旧版の独立入力の意味を保ち、新版の必須の空の行条件だけを補う。
+         for layer in ["surface", "core"] {
+             assert_eq!(expected[layer]["header"]["neffs"], 0);
+@@ -274,7 +293,7 @@ end function
+     let definitions = exchange::named_definitions(&p, &core);
+     assert_eq!(definitions.len(), 1);
+     let scope = &definitions[0]["scope"]["inScope"];
+-    let expected = json!([[{"name":{"value":"State"}}], [{"name":{"value":"Process.Exit"}}]]);
++    let expected = json!([[{"name":{"value":"State","ix":{"fixed":"top"}}}], [{"name":{"value":"Process.Exit","ix":{"fixed":"top"}}}]]);
+     assert_eq!(scope["core"]["lambdaEffects"], expected);
+     let expression = &scope["surface"]["body"]["last"]["expr"]["returnE"]["inner"]["tryOptionDie"];
+     for (part, effect) in [("inner", &expected[0]), ("message", &expected[1])] {
+diff --git a/crates/benitoite/tests/desugar_export/named.rs b/crates/benitoite/tests/desugar_export/named.rs
+index 35d651d9..ab09252b 100644
+--- a/crates/benitoite/tests/desugar_export/named.rs
++++ b/crates/benitoite/tests/desugar_export/named.rs
+@@ -27,10 +27,10 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
+     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
+     fs::write(
+         output.join(format!("{stem}-builtins.json")),
+-        exchange::to_vec(&json!({"version":6,"inputs":[table]})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":[table]})).unwrap(),
+     )
+     .unwrap();
+-    let stdlib = json!({"version":6,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
++    let stdlib = json!({"version":7,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+     fs::write(
+         output.join(format!("{stem}-stdlib.json")),
+         exchange::to_vec(&stdlib).unwrap(),
+@@ -55,13 +55,13 @@ fn write_named(
+     }
+     fs::write(
+         output.join(format!("{stem}-corpus.json")),
+-        exchange::to_vec(&json!({"version":14,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
++        exchange::to_vec(&json!({"version":15,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+             .unwrap(),
+     )
+     .unwrap();
+     fs::write(
+         output.join(format!("{stem}-builtins.json")),
+-        exchange::to_vec(&json!({"version":6,"inputs":tables})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":tables})).unwrap(),
+     )
+     .unwrap();
+     let stdlib = inputs
+@@ -70,12 +70,12 @@ fn write_named(
+         .collect::<Vec<_>>();
+     fs::write(
+         output.join(format!("{stem}-stdlib.json")),
+-        exchange::to_vec(&json!({"version":6,"inputs":stdlib})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":stdlib})).unwrap(),
+     )
+     .unwrap();
+     fs::write(
+         output.join(format!("{stem}-coverage.json")),
+-        exchange::to_vec(&json!({"version":6,"inputs":coverage})).unwrap(),
++        exchange::to_vec(&json!({"version":7,"inputs":coverage})).unwrap(),
+     )
+     .unwrap();
+ }
+@@ -420,7 +420,7 @@ impl Export {
+         write_named(output, stem, self.inputs, self.tables, self.coverage);
+         fs::write(
+             output.join(format!("{stem}-stdlib.json")),
+-            exchange::to_vec(&json!({"version":6,"inputs":self.declarations})).unwrap(),
++            exchange::to_vec(&json!({"version":7,"inputs":self.declarations})).unwrap(),
+         )
+         .unwrap();
+     }
+diff --git a/docs/design/00-overview/00-04-glossary.md b/docs/design/00-overview/00-04-glossary.md
+index efe9bdcf..fa3ae39c 100644
+--- a/docs/design/00-overview/00-04-glossary.md
++++ b/docs/design/00-overview/00-04-glossary.md
+@@ -153,13 +153,13 @@
+ | 範囲引数 | scope argument | 標準の範囲付きのエフェクトの対象、または `Scope.PathIn`・`Http.RequestIn` の添字を指定する、角括弧内の閉じたパターン。型引数と区別する | [構文](../01-spec/01-02-syntax.md#エフェクトの宣言とハンドラ初回リリース版)、[エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
+ | エフェクトの原子 | effect atom | 一つのエフェクトの名前と範囲の組。名前と正規化後の範囲で同一性を判定する | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
+ | 範囲付きのエフェクト | — | 操作の対象の範囲を名前とともに表すエフェクト。`File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組の範囲を持つ。範囲は静的な注釈であり、実行時の権限を与えない | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
+-| 範囲、閉じた範囲 | range | 操作の対象の集合を表す静的な情報。範囲変数を含まず、Top、パスの完全一致か木、ホスト名・IP とポートの組を表す | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#操作の対象の範囲の領域と被覆) |
++| 範囲、閉じた範囲 | range | 操作の対象の集合を表す静的な情報。範囲変数を含まず、Top、パスの完全一致か木、ホスト名・IP とポートの組を表す。範囲のパターン（区間）とは別の概念である。診断と CLI の英語では scope と書く | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#操作の対象の範囲の領域と被覆) |
+ | Top | top | 操作の対象を静的に絞らない範囲。範囲の省略は Top を表し、Top を覆うのは Top だけである。具体的なパターンがその種類の全対象を含む場合も、Top と同一視しない | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数) |
+-| 範囲の添字 | — | エフェクトの原子か名前の型が持つ、範囲を表す位置の内容。閉じた範囲と、標準署名の内部の範囲変数を区別する。範囲付きの値型では、添字が異なれば別の型である | [型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)、[型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現) |
++| 範囲の添字 | — | エフェクトの原子か名前の型が持つ、範囲を表す位置の内容。閉じた範囲と、標準署名の内部の範囲変数を区別する。範囲付きの値型では、添字が異なれば別の型である。「範囲の位置」は形式化の写しで同じ概念に使う表記である | [型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型)、[型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現) |
+ | 範囲変数、範囲の変数 | range variable | 標準署名の内部で、具体化する範囲を番号で表す変数。利用者は宣言できず、確定したプログラムの型と項には残せない。「範囲の変数」は、形式化の写しで同じ概念に使う表記である | [型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#表記) |
+ | 範囲付きの値型 | — | 対象の範囲を不変の添字として持つ、認定された不透明標準型。`Scope.PathIn` と `Http.RequestIn` だけを認定し、裸の型は Top を持つ | [型システム](../01-spec/01-06-type-system.md#範囲付きの不透明標準型) |
+ | 被覆 | — | 範囲では、内側の一範囲の全対象を外側の一範囲に含められると判定する関係。Top を覆うのは Top だけである。名前を持つエフェクトの原子では、同じ名前の一原子が必要な一原子を覆うこと。複数の原子の和では一原子を覆わない。効果集合の行と Fail の型は構造上の所属で調べる | [エフェクト](../01-spec/01-07-effects.md#閉じた範囲引数)、[型システム](../01-spec/01-06-type-system.md#エフェクトの包含) |
+-| 構造上の包含 | — | エフェクトの集合の各原子と Fail の型が、同一の要素として外側の集合に属すること。名前と範囲が異なる原子を被覆によって同一視せず、被覆とは区別する | [型検査器](../02-impl/02-05-typechecker.md#型とエフェクトの表現)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#エフェクトの名前と開始状態) |
++| 構造上の包含 | — | エフェクトの集合の各原子と Fail の型が、同一の要素として外側の集合に属すること。名前と範囲が異なる原子を被覆によって同一視せず、被覆とは区別する | [型システム](../01-spec/01-06-type-system.md#エフェクトの包含)、[型検査器](../02-impl/02-05-typechecker.md#制約の種類)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md#エフェクトの名前と開始状態) |
+ | 許可の関係 | — | 形式化において、効果の上限が操作の名前と対象の組を許すことを表す関係 `Eff.Allows`。名前に対象の種類を与える関数と、同じ名前の閉じた範囲への対象の所属を使う。種類を持たない名前と範囲変数の原子は何も許さない。実行時の権限制御とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#エフェクトの名前と開始状態) |
+ | 契約、権限 | contract, permission | 契約は、関数の型とエフェクトの注釈が表す、関数が受け取るもの・返すもの・行いうる操作の約束。権限は、利用者が実行を許可する操作の範囲 | [目的と設計原則](00-01-goals.md)、[全体像](00-02-architecture.md) |
+ | 実行時の権限制御 | — | 実行の途中で、利用者が許可していない操作を処理系が拒否し、実行時エラーにすること。エフェクトの静的な追跡とは別の機構である。初回リリース版には含めない | [目的と設計原則](00-01-goals.md)、[セキュリティモデル](../07-quality/07-01-security-model.md) |
+diff --git a/docs/design/01-spec/01-07-effects.md b/docs/design/01-spec/01-07-effects.md
+index 7932e98f..0bfc8459 100644
+--- a/docs/design/01-spec/01-07-effects.md
++++ b/docs/design/01-spec/01-07-effects.md
+@@ -22,7 +22,7 @@
+ 
+ ### 閉じた範囲引数
+ 
+-【決定】標準の `File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組の範囲を取る。利用者のエフェクト、`IO.All`、`State` とその他の対象を持たない名前には範囲引数を書けず、全対象の範囲（Top）だけを使う。範囲は静的な注釈であり、実行時の権限を与えない。
++【決定】標準の `File.Read`・`File.Write`・`Http.Connect` は、操作の対象の範囲を名前とともに表す範囲付きのエフェクトである。`File.Read`・`File.Write` はパス、`Http.Connect` はホストとポートの組の範囲を取る。利用者のエフェクト、`IO.All`、`State` とその他の対象を持たない名前には範囲引数を書けず、全対象の範囲（Top）だけを使う。範囲は静的な注釈であり、実行時の権限を与えない。
+ 
+ 【決定】パスは正規化済みの絶対パスの完全一致か、`/data/**` のような木とする。木は幹の `/data` 自身も含む。`.`・`..`・空の要素・部分のワイルドカードを拒否する。ホスト名は完全一致・`*.example.com`・`**.example.com` とし、ASCII の大文字を小文字へそろえる。後二つは幹自身を含まない。ホストには正規形の IPv4・IPv6 と CIDR も使える。IPv4 は四つの十進要素とし、0 以外の先頭の0を拒否する。四つの全数字ラベルの不正をホスト名として読み直さない。
+ 
+diff --git a/docs/design/07-quality/07-04-formal-semantics.md b/docs/design/07-quality/07-04-formal-semantics.md
+index dd302268..2874442e 100644
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -369,7 +369,7 @@ Rust のソース照合の判定は、本体の所属と型表の `@extensible`
+ 
+ 【決定】脱糖の入口 `desugarDiff` の書き出しの候補は、型表から作らず、corpus の原子の一覧のままとする。理由: 脱糖の比較は corpus の表層と期待のコアだけを読み、型表を入口の引数に加えると Rust の書き出しと比較の手順の引数が変わる。一方、脱糖は新しい原子を作らず、範囲を項の範囲の列にだけ書くので、候補を型表の原子まで広げても書き出しの結果は変わらない。具体化した範囲の原子を書く経路（検査器の入力）は、型表から作る候補 `q.atoms` を使う（`Prepared.writeEffNames_complete`）。
+ 
+-Rust の書き出しは corpus 14・sidecar 6 のままであり、六つの入口は旧版を明示の Top と規則のない受理の入力で読んで比べる。範囲の Lean の側の独立入力（`formal/tests/test_range_exchange.py`）は、corpus 15・sidecar 7 の手書きの入力を六入口と `intervalDiff` へ渡し、原子の種類別（パス・endpoint のホスト名と IP）、Top でない範囲、拒否と理由（`notCovered`・`unknownSource`・`budgetExceeded`）、予算の停止による由来の忘却、被覆だけの効果の上限の受理、入力の検査の拒否を確かめる。全て Top だけの入力や空の入力の一致を成功に数えない。`desugarDiff` と `surfaceCheckAll` の報告は、入力の Top でない範囲の数（`nonTopRanges`。`Exchange/Version.lean` の `countNonTopRanges`）を書き、範囲を全て Top にした入力では 0 と報告する。`atomicCoverOnly` は効果の上限の原子の受理（`acceptAtom`）の理由であり、型検査器の入口は効果の上限の拒否を型付けの誤りとして報告するので、この独立入力には現れない（`Surface/ScopeAcceptExamples.lean` で確かめる）。Rust との全比較は行っていない（Rust は未接続）。
++Rust の共通の書き出しは、署名の範囲変数・効果の原子・不透明型・表データを corpus 15・sidecar 7 へ切り替えている。署名の範囲変数は `rkinds` の個数で検査し、項には書かない。本番の `scopeAcceptance`・`limits`、呼び出しの範囲の列、区間の Surface 15 は未接続であり、途中の本番出力を Lean が読める完成した入力とは数えない。R10.7 のテスト専用の小入力による `builtinCheck` と `desugarDiff` の局所照合は全比較と区別する。R10.7 の取り込みから K10.3 の接続完了までは `scripts/check-formal.sh` の全比較が失敗する状態であり、この期間の成功は引用しない。K10.1 で残る欄と全書き出し元の版を照合し、K10.3 の末尾から全比較の成功を必須に戻す。範囲の Lean の側の独立入力（`formal/tests/test_range_exchange.py`）は、corpus 15・sidecar 7 の手書きの入力を六入口と `intervalDiff` へ渡し、原子の種類別（パス・endpoint のホスト名と IP）、Top でない範囲、拒否と理由（`notCovered`・`unknownSource`・`budgetExceeded`）、予算の停止による由来の忘却、被覆だけの効果の上限の受理、入力の検査の拒否を確かめる。全て Top だけの入力や空の入力の一致を成功に数えない。`desugarDiff` と `surfaceCheckAll` の報告は、入力の Top でない範囲の数（`nonTopRanges`。`Exchange/Version.lean` の `countNonTopRanges`）を書き、範囲を全て Top にした入力では 0 と報告する。`atomicCoverOnly` は効果の上限の原子の受理（`acceptAtom`）の理由であり、型検査器の入口は効果の上限の拒否を型付けの誤りとして報告するので、この独立入力には現れない（`Surface/ScopeAcceptExamples.lean` で確かめる）。Rust との全比較は行っていない（Rust は未接続）。
+ 
+ ### 区間解析の独立交換の読者
+ 
+@@ -740,7 +740,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の
+ | ファイル単位のエフェクトの宣言（docs/todo の TODO-206 の追加部分） | 対象外 | 名前解決と宣言収集で、直下の関数の最外側の効果行を合併する前処理である。成功した入力は合併済みの Scheme と NoFail を既存の型付き表層へ渡し、型付け・脱糖・主な定理の前提と結論を変えない。元位置の表は診断と編集用であり、形式化の入力の意味に加えない。整形器は元の AST を使い、移行の inventory は個別の原文・ファイルの宣言の原文と位置・検査済みの上限を分けて保持する。これらの整形・編集の処理も形式化の対象外である |
+ | 表示の幅の六関数と算法（docs/todo の TODO-272） | 対象外 | Unicode 17.0.0 の既定・CJK の文字列の幅、制御文字の境界、空白による埋め合わせとサイズ検査は、組み込みの δ の実装である。通常の純粋な関数宣言として既存の型付き表層へ渡し、型付け・脱糖の規則を変えない。両モードの独立した幅と内容の期待値、動的な幅の論理上限による拒否、VM と参照評価の比較で検査する |
+ | 書式付き補間の交換14/6と書式化の頭の宣言照合 | 対象外（六つの交換CLIでの独立比較） | corpus 14はsidecar 6へ対応し、corpus 8〜13とsidecar 2〜5の意味を保つ。`Exchange.FormatSpec` は必須の七欄と省略のnullを入出力し、`InterpPart.formatted` は妥当性と型との適合・個数・頭の直接性を検査する。頭の型・純粋性は既存の表層検査で確認し、名前と型の対応はConvert、組み込み表への登録は段階 E2 の入口の準備、名前と固定シグネチャは組み込み表の読み取りで照合する。`formal/tests/test_batch5_exchange.py` は29定義の期待コアと網羅性各1件を独立入力で比較し、旧版へ新構成を混ぜると再生成を求める。`Exchange.FormatExamples` は精度省略と明示0の書き戻しを既定ビルドで確認する。Rust出力の独立表層・コアとの照合と六入口の全比較は「書式付き補間の交換形式」に従う。JSON変換とδの算法は証明しない |
+-| 交換の形式の版（範囲・範囲の位置・範囲の列・署名と表のデータの読み書き、corpus 15・sidecar 7） | 対象外（交換の読み書き。全域の部分の補題と既定ビルドの例）。Rust は未接続 | 「交換の形式の版」のとおり。範囲の符号化の往復、旧版の節点の明示の Top への対応、名前と行の原子の書き出しの往復と欠落の拒否、検査器の原子の集合を候補にした書き出しの完全性、表の `admitsR` の判定の健全性を `Exchange/Range.lean`・`Exchange/Convert.lean`・`Exchange/Builtins.lean`・`Exchange/CheckInput.lean` で証明し、`Exchange/RangeExamples.lean` で読み書きの例を確かめる。観測・拒否の理由・必須の判定の入力の読み書き、観測の許可の判定、範囲の入力の検査の一つの節点の健全性を `Exchange/Observe.lean` で示し、`Exchange/ObserveExamples.lean` で例を確かめる。JSON の全体を辿る変換は証明しない。範囲の独立入力は `formal/tests/test_range_exchange.py` |
++| 交換の形式の版（範囲・範囲の位置・範囲の列・署名と表のデータの読み書き、corpus 15・sidecar 7） | 対象外（交換の読み書き。全域の部分の補題と既定ビルドの例）。Rust は未接続 | 「交換の形式の版」のとおり。範囲の符号化の往復、旧版の節点の明示の Top への対応、名前と行の原子の書き出しの往復と欠落の拒否、検査器の原子の集合を候補にした書き出しの完全性、表の `admitsR` の判定の健全性を `Exchange/Range.lean`・`Exchange/Convert.lean`・`Exchange/Builtins.lean`・`Exchange/CheckInput.lean` で証明し、`Exchange/RangeExamples.lean` で読み書きの例を確かめる。観測・拒否の理由・必須の判定の入力の読み書き、観測の許可の判定、範囲の入力の検査の一つの節点の健全性を `Exchange/Observe.lean` で示し、`Exchange/ObserveExamples.lean` で例を確かめる。JSON の全体を辿る変換は証明しない。Rust の署名・原子・表データの書き出しとテスト専用入力の局所照合は接続したが、本番の必須欄と全比較は未接続である。範囲の独立入力は `formal/tests/test_range_exchange.py` |
+ | 交換13/5の独立入力と旧版の拒否 | 対象外（六つの交換CLIでの独立比較） | corpus 8〜13とsidecar 2〜5の読者、13→5・11/12→4・9/10→3・8→2の対応を検査する。45定義と網羅性6/3件を手書きの期待へ比較し、版12の構築器は再生成を求める。範囲外の整数は期待コアや未使用の定数も入口で拒否する。JSON変換を主定理へ含めない。Rustとの六入口の全比較は2026-10-21の `scripts/check-formal.sh`（`76ed2d5e`、2回目、終了0）で確認した |
+ | 幅付きの数の交換形式の読み込みと比較 | 対象外 | 【決定】`Benitoite.Exchange` は `Integer64`・`Float64`・`UnsignedInteger8`・`UnsignedInteger` を、それぞれ `Integer`・`Float`・`Byte`・`UnsignedInteger64` として読み替える。比較の前に `canonicalJson` で基本型の名前を正規化する。符号なしの負の値と、32 ビットの範囲を超える `Float32` のビット列を拒否する。理由: 別名を使った出力の比較を可能にし、不正な値を読み替えで受理することを防ぐためである。交換用の変換と比較は証明の対象にしない |
+ | 宣言由来の診断と型名・整数の警告 | 対象外 | 宣言・束縛・型の部分の依存、偽診断の保留と根の無効化、同名の別宣言の修飾、標準束縛と幅による警告の選択は Rust の診断の実装であり、形式化した型付け・脱糖の規則を変えない。包んだ値・演算子・再束縛・部分パターン・try の成功型の原因と独立した誤りを、公開の型検査で照合する。同名型の根と依存、Fail の内側、整数各幅の境界と未知の被除数、別名と間接呼び出しの対照を検査し、代表の JSON・テキストと --deny-warnings を CLI で確認する |

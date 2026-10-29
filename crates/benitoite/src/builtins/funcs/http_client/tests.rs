@@ -37,7 +37,7 @@ fn resolver_io_becomes_host_not_found_and_timeout_is_preserved() {
         reason: ureq::Timeout::Resolve,
     };
     for timed_out in [false, true] {
-        let error = NetworkResolver(FailedResolver(timed_out))
+        let error = NetworkResolver(FailedResolver(timed_out), None)
             .resolve(&uri, &config, timeout)
             .unwrap_err();
         if timed_out {
@@ -47,7 +47,7 @@ fn resolver_io_becomes_host_not_found_and_timeout_is_preserved() {
             ));
         }
         Heap::new(HeapConfig::default()).epoch(|ctx| {
-            let result = complete(ctx, Err(classify(error, &[]))).unwrap();
+            let result = complete(ctx, Err(classify(error, &[])), send::DECL.name).unwrap();
             assert_eq!(
                 network_kind(ctx, result),
                 if timed_out {
@@ -191,12 +191,17 @@ fn configured_network_faults_return_without_worker() {
 fn missing_cpu_features_return_other_with_names() {
     Heap::new(HeapConfig::default()).epoch(|ctx| {
         let failure = tls_failure(&["aes", "pmull"]).unwrap();
-        let result = complete(ctx, Err(failure)).unwrap();
+        let result = complete(ctx, Err(failure), send::DECL.name).unwrap();
         assert_eq!(network_kind(ctx, result), tags::NETWORK_ERROR_KIND_OTHER);
         let error = payload(ctx, result, tags::RESULT_ERROR);
         let reason = ctx.str(ctx.field(error, 0).unwrap()).unwrap();
         assert!(reason.contains("aes") && reason.contains("pmull"));
-        let redirected = complete(ctx, Err(classify(ureq::Error::TlsRequired, &["aes"]))).unwrap();
+        let redirected = complete(
+            ctx,
+            Err(classify(ureq::Error::TlsRequired, &["aes"])),
+            send::DECL.name,
+        )
+        .unwrap();
         assert_eq!(
             network_kind(ctx, redirected),
             tags::NETWORK_ERROR_KIND_OTHER
@@ -216,7 +221,7 @@ fn body_limit_reads_at_most_one_extra_byte_and_stops() {
     let failure = read_limited(&mut reader, 4, &[]).unwrap_err();
     assert_eq!(reader.position(), 5);
     Heap::new(HeapConfig::default()).epoch(|ctx| {
-        assert!(matches!(complete(ctx, Err(failure)), Err(Stop::Resource(ResourceError::InputTooLarge { function, unit: SizeUnit::Bytes, limit: 4 })) if function == send::DECL.name));
+        assert!(matches!(complete(ctx, Err(failure), send::DECL.name), Err(Stop::Resource(ResourceError::InputTooLarge { function, unit: SizeUnit::Bytes, limit: 4 })) if function == send::DECL.name));
     });
 }
 
@@ -229,7 +234,12 @@ fn wrapped_certificate_failure_is_other_not_invalid_http_data() {
         rustls::Error::InvalidCertificate(rustls::CertificateError::UnknownIssuer),
     );
     Heap::new(HeapConfig::default()).epoch(|ctx| {
-        let result = complete(ctx, Err(classify(ureq::Error::from(error), &[]))).unwrap();
+        let result = complete(
+            ctx,
+            Err(classify(ureq::Error::from(error), &[])),
+            send::DECL.name,
+        )
+        .unwrap();
         assert_eq!(network_kind(ctx, result), tags::NETWORK_ERROR_KIND_OTHER);
     });
 }

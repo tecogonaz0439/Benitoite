@@ -1,0 +1,41 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "network_faults",
+    "get_send_and_send_in_expose_all_four_fault_kinds_through_run_and_cli",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "check_exit_code": 0,
+  "child_wall_seconds": 4.802075040999999,
+  "maxrss_raw": 1374961664,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 1311.265625,
+  "measured": "getrusage(RUSAGE_CHILDREN); 子孫の最大値、合計ではない",
+  "outer_exit_code": 0,
+  "outer_wall_seconds": 4.825821083,
+  "recorded_at": "2026-10-29T07:31:21.338194+00:00",
+  "time_command": [
+    "/usr/bin/time",
+    "-p",
+    "python3",
+    "r30.4/run-record.py",
+    "--child",
+    "ports",
+    "cargo",
+    "test",
+    "-p",
+    "benitoite",
+    "--test",
+    "network_faults",
+    "get_send_and_send_in_expose_all_four_fault_kinds_through_run_and_cli",
+    "--",
+    "--exact",
+    "--nocapture"
+  ]
+}

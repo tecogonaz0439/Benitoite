@@ -1,0 +1,25 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.61s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'scope_tables::exports_all_unused_operations_from_complete_stdlib' (4087314) panicked at crates/benitoite/tests/desugar_export/builtins.rs:79:5:
+assertion `left == right` failed: complete stdlib: [Diagnostic { kind: Check, severity: Error, code: Some(E0201), message: "expected a type, found `message`", primary: Some(Label { span: Span { file: FileId(54), start: BytePos(2477), end: BytePos(2484) }, text: "unexpected `message`" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }, Diagnostic { kind: Check, severity: Error, code: Some(E0201), message: "expected a type, found `error`", primary: Some(Label { span: Span { file: FileId(54), start: BytePos(2502), end: BytePos(2507) }, text: "unexpected `error`" }), secondary: [], notes: [], helps: [], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: 2
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test scope_tables::exports_all_unused_operations_from_complete_stdlib ... FAILED
+
+failures:
+
+failures:
+    scope_tables::exports_all_unused_operations_from_complete_stdlib
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.11s
+
+error: test failed, to rerun pass `--test desugar_export`
+command_exit=101
+real 9.74
+user 16.23
+sys 1.68

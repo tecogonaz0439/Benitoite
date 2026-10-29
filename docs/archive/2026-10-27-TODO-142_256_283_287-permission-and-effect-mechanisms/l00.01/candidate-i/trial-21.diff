@@ -1,0 +1,679 @@
+diff --git a/formal/Benitoite/Release/Atom.lean b/formal/Benitoite/Release/Atom.lean
+index 52da9050..920384fb 100644
+--- a/formal/Benitoite/Release/Atom.lean
++++ b/formal/Benitoite/Release/Atom.lean
+@@ -14,10 +14,20 @@ abbrev EffName := String
+ /-- 状態を扱う組み込みの関数と解放のエフェクト `State`（01-07「可変のセル（初回リリース版）」）。 -/
+ def stateEff : EffName := "State"
+ 
+-/-- エフェクトの原子。01-12 の `e ::= L | ρ`。 -/
++/-- 比較の試行（L00.01 の案 (i)）: 原子と標準値型が持つ閉じた範囲。`top` は旧の名前だけの原子と
++同じ種類の全対象を表し、`pathExact` は解析済みのパスの要素列の完全一致を表す。 -/
++inductive ScopeRange where
++  | top
++  | pathExact (stem : List String)
++  deriving DecidableEq, Repr
++
++/-- エフェクトの原子。01-12 の `e ::= L | ρ`。比較の試行で名前の原子に範囲の引数を加えた。 -/
+ inductive Atom where
+-  | name (l : EffName)
++  | name (l : EffName) (r : ScopeRange)
+   | rho (i : Nat)
+   deriving DecidableEq, Repr
+ 
++/-- 比較の試行: 旧の名前だけの原子を Top の範囲で作る構築関数。 -/
++abbrev Atom.nameTop (l : EffName) : Atom := .name l .top
++
+ end Benitoite.Release
+diff --git a/formal/Benitoite/Release/BuiltinTable.lean b/formal/Benitoite/Release/BuiltinTable.lean
+index bdbd8cec..9aa9f133 100644
+--- a/formal/Benitoite/Release/BuiltinTable.lean
++++ b/formal/Benitoite/Release/BuiltinTable.lean
+@@ -55,7 +55,7 @@ mutual
+             let s := if key then d.key else d.eq
+             if s.always then ⟨true, []⟩
+             else summarizeArgs S key (some s.dependsOn) 0 ts
+-    | .fn _ _ _ _ | .opaque _ | .reference _ | .lazy _ | .tapp _ _
++    | .fn _ _ _ _ | .opaque _ _ | .reference _ | .lazy _ | .tapp _ _
+       | .cont _ _ _ | .dict _ _ | .ctor _ => ⟨!key, []⟩
+ 
+   /-- 番号を数えながら依存する型引数を辿る。none は全引数を選ぶ。
+@@ -110,7 +110,7 @@ mutual
+             s.eq.dependsOn.all (· < ts.length) && satArgs S C false s.eq.dependsOn 0 ts &&
+             (!key || (!s.key.always && s.key.dependsOn.all (· < ts.length) &&
+               satArgs S C true s.key.dependsOn 0 ts))
+-    | .fn _ _ _ _ | .opaque _ | .reference _ | .lazy _ | .cont _ _ _
++    | .fn _ _ _ _ | .opaque _ _ | .reference _ | .lazy _ | .cont _ _ _
+       | .dict _ _ | .ctor _ | .tapp _ _ => false
+ 
+   /-- 欠けた依存の位置は呼び出し元で拒否し、ここでは要素に直接再帰する。 -/
+diff --git a/formal/Benitoite/Release/CoverageTypes.lean b/formal/Benitoite/Release/CoverageTypes.lean
+index 889c0ade..7df42be2 100644
+--- a/formal/Benitoite/Release/CoverageTypes.lean
++++ b/formal/Benitoite/Release/CoverageTypes.lean
+@@ -11,7 +11,7 @@ namespace Benitoite.Release.Coverage
+ mutual
+   def erase : Ty → Ty
+     | .base b => .base b
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d ts => .data d (eraseTys ts)
+     | .list a => .list (erase a)
+     | .fn ns ps r _ => .fn ns (eraseTys ps) (erase r) Eff.empty
+diff --git a/formal/Benitoite/Release/Effect.lean b/formal/Benitoite/Release/Effect.lean
+index 57342bc5..1aa0160d 100644
+--- a/formal/Benitoite/Release/Effect.lean
++++ b/formal/Benitoite/Release/Effect.lean
+@@ -15,7 +15,7 @@ open Benitoite.Release.Order
+ def empty : Eff := .mk (fun _ => false) []
+ 
+ /-- 名前一つの効果。 -/
+-def single (l : EffName) : Eff := ofAtoms (fun a => a == .name l)
++def single (l : EffName) : Eff := ofAtoms (fun a => a == .nameTop l)
+ 
+ /-- 行一つの効果。 -/
+ def row (i : Nat) : Eff := ofAtoms (fun a => a == .rho i)
+@@ -32,7 +32,7 @@ noncomputable def union (e f : Eff) : Eff := norm (.mk (fun a => test e a || tes
+ 
+ theorem mem_empty (a : Atom) : mem empty a ↔ False := by simp [mem, test, atoms, empty]
+ 
+-theorem mem_single (l : EffName) (a : Atom) : mem (single l) a ↔ a = .name l := by
++theorem mem_single (l : EffName) (a : Atom) : mem (single l) a ↔ a = .nameTop l := by
+   simp [mem, test, single, ofAtoms, atoms]
+ 
+ theorem mem_row (i : Nat) (a : Atom) : mem (row i) a ↔ a = .rho i := by
+diff --git a/formal/Benitoite/Release/Finite.lean b/formal/Benitoite/Release/Finite.lean
+index aac725c5..9d2df2bb 100644
+--- a/formal/Benitoite/Release/Finite.lean
++++ b/formal/Benitoite/Release/Finite.lean
+@@ -15,7 +15,7 @@ mutual
+   /-- 型を構造再帰で比較する。非計算的な選択を使うのは atomsCompareWith s だけである。 -/
+   def tyCompareWith (s : List Atom) : Ty → Ty → Ordering
+     | .base a, .base b => compare a.rank b.rank
+-    | .opaque a, .opaque b => stringCompare a b
++    | .opaque a r, .opaque b r2 => (stringCompare a b).then (compare (Atom.rangeCode r) (Atom.rangeCode r2))
+     | .data d as, .data e bs => (stringCompare d e).then (tysCompareWith s as bs)
+     | .list a, .list b => tyCompareWith s a b
+     | .fn ns as a e, .fn ms bs b f =>
+@@ -75,7 +75,7 @@ mutual
+   /-- 型のすべての子と、埋め込まれた効果を正規化する。 -/
+   def Ty.normWith (s : List Atom) : Ty → Ty
+     | .base b => .base b
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d as => .data d (Ty.normTysWith s as)
+     | .list a => .list (Ty.normWith s a)
+     | .fn ns ps r e => .fn ns (Ty.normTysWith s ps) (Ty.normWith s r) (Eff.normWith s e)
+diff --git a/formal/Benitoite/Release/Lemmas/Closed.lean b/formal/Benitoite/Release/Lemmas/Closed.lean
+index f2e0fbee..96ec6b02 100644
+--- a/formal/Benitoite/Release/Lemmas/Closed.lean
++++ b/formal/Benitoite/Release/Lemmas/Closed.lean
+@@ -31,7 +31,7 @@ mutual
+   theorem Ty.VarsIn.substAt {c : Nat} {ts : List Ty} (es : List Eff) (hts : ∀ u ∈ ts, TyOK 0 u) (hes : ∀ e ∈ es, Eff.VarsIn 0 (fun _ => True) e) :
+       (a : Ty) → TyOK (c + ts.length) a → TyOK c (a.substAt c ts es)
+     | .base _, _ => by simp [Ty.substAt, Ty.VarsIn]
+-    | .opaque _, _ => by simp [Ty.substAt, Ty.VarsIn]
++    | .opaque _ _, _ => by simp [Ty.substAt, Ty.VarsIn]
+     | .data _ args, h => by
+         simp only [Ty.VarsIn] at h; simp only [Ty.substAt, Ty.substTysAt_eq_map, Ty.VarsIn]
+         exact Ty.VarsInList.substAt es hts hes args h
+diff --git a/formal/Benitoite/Release/NoFail.lean b/formal/Benitoite/Release/NoFail.lean
+index 5c6c0001..35f2c092 100644
+--- a/formal/Benitoite/Release/NoFail.lean
++++ b/formal/Benitoite/Release/NoFail.lean
+@@ -18,7 +18,7 @@ def QLe (Q Q' : NoFailCtx) : Prop := ∀ i, Q i → Q' i
+ mutual
+   /-- 型内部の全署名の、明示の Fail と並ぶ行。 -/
+   def QTy : Ty → NoFailCtx
+-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => Qempty
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => Qempty
+     | .data _ as | .tapp _ as => QTys as
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => QTy a
+     | .map a b => fun i => QTy a i ∨ QTy b i
+@@ -190,7 +190,7 @@ theorem NoFail.bind {Qs Qt : NoFailCtx} {e : Eff} (θ : SubstEnv)
+     · exact h.not_memFail x hx
+     · exact (hr i (h.2 i hi)).not_memFail t hit
+   · intro j hj
+-    rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, hl, _⟩ | ⟨i, hi, hij⟩
++    rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, r, hl, _⟩ | ⟨i, hi, hij⟩
+     · cases hl
+     · exact (hr i (h.2 i hi)).2 j hij
+ 
+diff --git a/formal/Benitoite/Release/Normalize.lean b/formal/Benitoite/Release/Normalize.lean
+index b4eb5c7b..a9068ed8 100644
+--- a/formal/Benitoite/Release/Normalize.lean
++++ b/formal/Benitoite/Release/Normalize.lean
+@@ -15,7 +15,7 @@ mutual
+   /-- 型のすべての子と、埋め込まれた効果を正規化する。 -/
+   noncomputable def Ty.norm : Ty → Ty
+     | .base b => .base b
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d as => .data d (Ty.normTys as)
+     | .list a => .list a.norm
+     | .fn ns ps r e => .fn ns (Ty.normTys ps) r.norm (Eff.norm e)
+@@ -106,7 +106,7 @@ theorem Eff.norm_memFail (e : Eff) (t : Ty) : e.norm.memFail t ↔ e.memFail t :
+ mutual
+   /-- Fail のない旧型は、効果の支持の有限性によらず保持する。 -/
+   def Ty.Legacy : Ty → Prop
+-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => True
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => True
+     | .data _ as | .tapp _ as => Ty.LegacyTys as
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.Legacy
+     | .fn _ ps r e => Ty.LegacyTys ps ∧ r.Legacy ∧ Eff.Legacy e
+@@ -151,7 +151,7 @@ end
+ mutual
+   /-- すべての深さで Fail の列が高々一要素である。 -/
+   def Ty.FailsLeOne : Ty → Prop
+-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => True
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => True
+     | .data _ as | .tapp _ as => Ty.FailsLeOneTys as
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.FailsLeOne
+     | .fn _ ps r e => Ty.FailsLeOneTys ps ∧ r.FailsLeOne ∧ Eff.FailsLeOne e
+diff --git a/formal/Benitoite/Release/Order/Atoms.lean b/formal/Benitoite/Release/Order/Atoms.lean
+index 2240d56a..e2f9ca04 100644
+--- a/formal/Benitoite/Release/Order/Atoms.lean
++++ b/formal/Benitoite/Release/Order/Atoms.lean
+@@ -46,23 +46,88 @@ private theorem charsCode_injective {cs ds : List Char} (h : charsCode cs = char
+         omega
+       exact congrArg (c :: ·) (ih ht)
+ 
+-/-- 名前は偶数、行変数は奇数へ写す。 -/
++/-- 三角数。対の符号の単射性を線形の算術で示すために再帰で定める。 -/
++def tri : Nat → Nat
++  | 0 => 0
++  | n + 1 => tri n + n + 1
++
++private theorem tri_lt {n m : Nat} (h : n < m) : tri n + n < tri m := by
++  induction m with
++  | zero => omega
++  | succ m ih =>
++    simp only [tri]
++    by_cases hm : n = m
++    · subst hm; omega
++    · have := ih (by omega); omega
++
++/-- 三角数の閉じた形。定義の計算をカーネルの多倍長の演算に任せるために使う。 -/
++private theorem tri_eq_div (n : Nat) : tri n = n * (n + 1) / 2 := by
++  induction n with
++  | zero => rfl
++  | succ n ih =>
++    simp only [tri, ih]
++    have : (n + 1) * (n + 1 + 1) = n * (n + 1) + 2 * (n + 1) := by
++      simp only [Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul]; omega
++    rw [this, Nat.add_mul_div_left _ _ (by decide)]
++    omega
++
++/-- Cantor の対の符号。閉じた形で書き、具体の計算で再帰を展開しない。 -/
++def pairCode (a b : Nat) : Nat := (a + b) * (a + b + 1) / 2 + a
++
++theorem pairCode_injective {a b c d : Nat} (h : pairCode a b = pairCode c d) : a = c ∧ b = d := by
++  simp only [pairCode, ← tri_eq_div] at h
++  have hs : a + b = c + d := by
++    by_cases h1 : a + b < c + d
++    · have := tri_lt h1; omega
++    · by_cases h2 : c + d < a + b
++      · have := tri_lt h2; omega
++      · omega
++  rw [hs] at h
++  omega
++
++/-- 文字列の列の符号。 -/
++def wordsCode : List String → Nat
++  | [] => 0
++  | x :: xs => pairCode (charsCode x.toList) (wordsCode xs) + 1
++
++private theorem wordsCode_injective {xs ys : List String} (h : wordsCode xs = wordsCode ys) : xs = ys := by
++  induction xs generalizing ys with
++  | nil => cases ys <;> simp_all [wordsCode]
++  | cons x xs ih =>
++    cases ys with
++    | nil => simp [wordsCode] at h
++    | cons y ys =>
++      have hp := pairCode_injective (show pairCode (charsCode x.toList) (wordsCode xs) =
++        pairCode (charsCode y.toList) (wordsCode ys) by simp only [wordsCode] at h; omega)
++      rw [String.toList_inj.mp (charsCode_injective hp.1), ih hp.2]
++
++/-- 範囲の符号。 -/
++def rangeCode : ScopeRange → Nat
++  | .top => 0
++  | .pathExact stem => wordsCode stem + 1
++
++theorem rangeCode_injective {r s : ScopeRange} (h : rangeCode r = rangeCode s) : r = s := by
++  cases r <;> cases s <;> simp_all [rangeCode]
++  exact wordsCode_injective h
++
++/-- 名前は偶数、行変数は奇数へ写す。名前と範囲は対の符号で一つの数にする。 -/
+ def code : Atom → Nat
+-  | .name s => 2 * charsCode s.toList
++  | .name s r => 2 * pairCode (charsCode s.toList) (rangeCode r)
+   | .rho i => 2 * i + 1
+ 
+ /-- 符号の一致から原子の一致を導く。 -/
+ theorem code_injective {a b : Atom} (h : code a = code b) : a = b := by
+   cases a with
+-  | name s =>
++  | name s r =>
+     cases b with
+-    | name t =>
+-      have hc : charsCode s.toList = charsCode t.toList := by simp only [code] at h; omega
+-      exact congrArg Atom.name (String.toList_inj.mp (charsCode_injective hc))
++    | name t q =>
++      have hp := pairCode_injective (show pairCode (charsCode s.toList) (rangeCode r) =
++        pairCode (charsCode t.toList) (rangeCode q) by simp only [code] at h; omega)
++      rw [String.toList_inj.mp (charsCode_injective hp.1), rangeCode_injective hp.2]
+     | rho i => simp only [code] at h; omega
+   | rho i =>
+     cases b with
+-    | name s => simp only [code] at h; omega
++    | name s r => simp only [code] at h; omega
+     | rho j => have : i = j := by simp only [code] at h; omega
+                exact congrArg Atom.rho this
+ 
+diff --git a/formal/Benitoite/Release/Order/Types.lean b/formal/Benitoite/Release/Order/Types.lean
+index 3100f5de..3523d068 100644
+--- a/formal/Benitoite/Release/Order/Types.lean
++++ b/formal/Benitoite/Release/Order/Types.lean
+@@ -32,7 +32,7 @@ def TyCon.rank : TyCon → Nat
+ 
+ /-- 型の順位。同じ構成子の中では、欄を宣言順に比較する。 -/
+ def Ty.rank : Ty → Nat
+-  | .base _ => 0 | .opaque _ => 1 | .data _ _ => 2 | .list _ => 3
++  | .base _ => 0 | .opaque _ _ => 1 | .data _ _ => 2 | .list _ => 3
+   | .fn _ _ _ _ => 4 | .tvar _ => 5 | .reference _ => 6 | .lazy _ => 7
+   | .cont _ _ _ => 8 | .map _ _ => 9 | .set _ => 10 | .bytes => 11
+   | .dict _ _ => 12 | .tapp _ _ => 13 | .ctor _ => 14
+@@ -50,7 +50,7 @@ mutual
+   /-- 欄の境界を子の木で区切り、名前・引数・結果・潜在効果をすべて保持する。 -/
+   def Ty.toTree : Ty → Tree Label
+     | .base b => .node (.rank 0) [.node (.nat b.rank) []]
+-    | .opaque o => .node (.rank 1) [.node (.text o) []]
++    | .opaque o r => .node (.rank 1) [.node (.text o) [], .node (.nat (Atom.rangeCode r)) []]
+     | .data d args => .node (.rank 2) [.node (.text d) [], .node (.rank 0) (Ty.toTrees args)]
+     | .list a => .node (.rank 3) [a.toTree]
+     | .fn names params ret eff => .node (.rank 4)
+@@ -87,7 +87,6 @@ mutual
+     all_goals first
+       | contradiction
+       | exact congrArg Ty.base (BaseTy.rank_injective h)
+-      | exact congrArg Ty.opaque h
+       | exact congrArg Ty.list (Ty.toTree_injective h)
+       | exact congrArg Ty.tvar h
+       | exact congrArg Ty.reference (Ty.toTree_injective h)
+@@ -96,6 +95,9 @@ mutual
+       | exact congrArg Ty.ctor (TyCon.toTree_injective h)
+       | rfl
+       | skip
++    case opaque.opaque =>
++      obtain ⟨rfl, h⟩ := h
++      rw [Atom.rangeCode_injective h]
+     case data.data =>
+       obtain ⟨rfl, h⟩ := h
+       exact congrArg (Ty.data _) (Ty.toTrees_injective h)
+@@ -159,7 +161,7 @@ mutual
+   /-- 型を構造再帰で比較する。非計算的な選択を使うのは atomsCompare だけである。 -/
+   noncomputable def tyCompare : Ty → Ty → Ordering
+     | .base a, .base b => compare a.rank b.rank
+-    | .opaque a, .opaque b => stringCompare a b
++    | .opaque a r, .opaque b q => (stringCompare a b).then (compare (Atom.rangeCode r) (Atom.rangeCode q))
+     | .data d as, .data e bs => (stringCompare d e).then (tysCompare as bs)
+     | .list a, .list b => tyCompare a b
+     | .fn ns as a e, .fn ms bs b f =>
+diff --git a/formal/Benitoite/Release/SubstEnv.lean b/formal/Benitoite/Release/SubstEnv.lean
+index fbe593f8..b9574650 100644
+--- a/formal/Benitoite/Release/SubstEnv.lean
++++ b/formal/Benitoite/Release/SubstEnv.lean
+@@ -28,7 +28,7 @@ theorem Eff.substRho_eq_bind (es : List Eff) (e : Eff) :
+ /-- 有限の置換列の外も含む行の像による、代入後の所属の特徴付け。 -/
+ theorem Eff.mem_substRho_rowImage (es : List Eff) (e : Eff) (a : Atom) :
+     Eff.mem (Eff.substRho es e) a ↔
+-      (∃ l, a = .name l ∧ Eff.mem e (.name l)) ∨
++      (∃ l r, a = .name l r ∧ Eff.mem e (.name l r)) ∨
+       ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage es i) a := by
+   rw [Eff.substRho_eq_bind]
+   exact Eff.mem_bind (SubstEnv.rowsOnly es) e a
+diff --git a/formal/Benitoite/Release/Syntax.lean b/formal/Benitoite/Release/Syntax.lean
+index 11560da6..e2dd37ce 100644
+--- a/formal/Benitoite/Release/Syntax.lean
++++ b/formal/Benitoite/Release/Syntax.lean
+@@ -171,7 +171,7 @@ def Const.type : Const → Ty
+   | .unit => .base .unit
+   | .byte _ => .base .byte
+   | .decimal _ _ => .base .decimal
+-  | .opaque o _ => .opaque o
++  | .opaque o _ => .opaqueTop o
+   | .integer8 _ => .base .integer8
+   | .integer16 _ => .base .integer16
+   | .integer32 _ => .base .integer32
+diff --git a/formal/Benitoite/Release/TypeBounds.lean b/formal/Benitoite/Release/TypeBounds.lean
+index d4fb0aff..fc437db0 100644
+--- a/formal/Benitoite/Release/TypeBounds.lean
++++ b/formal/Benitoite/Release/TypeBounds.lean
+@@ -16,7 +16,7 @@ open Order
+ mutual
+   /-- 正規形の条件を除いた、型変数の範囲と契約名の条件。 -/
+   def Ty.RawWF (n : Nat) : Ty → Prop
+-    | .base _ | .opaque _ | .bytes | .ctor _ => True
++    | .base _ | .opaque _ _ | .bytes | .ctor _ => True
+     | .data _ as => Ty.RawWFList n as
+     | .tapp i as => i < n ∧ Ty.RawWFList n as
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.RawWF n
+diff --git a/formal/Benitoite/Release/TypeComposition.lean b/formal/Benitoite/Release/TypeComposition.lean
+index 302c46bd..bea11901 100644
+--- a/formal/Benitoite/Release/TypeComposition.lean
++++ b/formal/Benitoite/Release/TypeComposition.lean
+@@ -12,16 +12,16 @@ namespace Benitoite.Release
+ /-- 有限の置換列の外も含めた、代入後の原子の所属。 -/
+ theorem Eff.mem_rawBind_rowImage (θ : SubstEnv) (e : Eff) (a : Atom) :
+     Eff.mem (Eff.rawBind θ e) a ↔
+-      (∃ l, a = .name l ∧ Eff.mem e (.name l)) ∨
++      (∃ l r, a = .name l r ∧ Eff.mem e (.name l r)) ∨
+       ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage θ.rows i) a := by
+   rw [Eff.mem_rawBind, Eff.mem_substAtoms]
+   constructor
+   · rintro (h | ⟨i, f, hf, hi, ha⟩)
+     · cases a with
+-      | name l => exact Or.inl ⟨l, rfl, h⟩
++      | name l r => exact Or.inl ⟨l, r, rfl, h⟩
+       | rho i => exact Or.inr ⟨i, h.2, by simp [rowImage, List.getElem?_eq_none h.1, mem_row]⟩
+     · exact Or.inr ⟨i, hi, by simpa [rowImage, hf] using ha⟩
+-  · rintro (⟨l, rfl, hl⟩ | ⟨i, hi, ha⟩)
++  · rintro (⟨l, r, rfl, hl⟩ | ⟨i, hi, ha⟩)
+     · exact Or.inl hl
+     · cases hf : θ.rows[i]? with
+       | none =>
+@@ -132,7 +132,7 @@ theorem Eff.substRho_congr_rows (es fs : List Eff) (e : Eff)
+ /-- 最上位の正規化は原子の所属を変えない。 -/
+ theorem Eff.mem_bind (θ : SubstEnv) (e : Eff) (a : Atom) :
+     Eff.mem (Eff.bind θ e) a ↔
+-      (∃ l, a = .name l ∧ Eff.mem e (.name l)) ∨
++      (∃ l r, a = .name l r ∧ Eff.mem e (.name l r)) ∨
+       ∃ i, Eff.mem e (.rho i) ∧ Eff.mem (Eff.rowImage θ.rows i) a := by
+   exact (Eff.mem_norm _ _).trans (Eff.mem_rawBind_rowImage θ e a)
+ 
+@@ -223,11 +223,11 @@ theorem Eff.bind_comp_of_types (θ φ : SubstEnv) (e : Eff)
+   all_goals constructor
+   · intro a ha
+     rw [Eff.mem_bind] at ha ⊢
+-    rcases ha with ⟨l, rfl, hl⟩ | ⟨j, hj, ha⟩
+-    · rcases (Eff.mem_bind θ e (.name l)).mp hl with ⟨l', he, hl'⟩ | ⟨i, hi, hia⟩
+-      · cases he; exact Or.inl ⟨l, rfl, hl'⟩
+-      · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.mem_bind]; exact Or.inl ⟨l, rfl, hia⟩⟩
+-    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, he, _⟩ | ⟨i, hi, hij⟩
++    rcases ha with ⟨l, r, rfl, hl⟩ | ⟨j, hj, ha⟩
++    · rcases (Eff.mem_bind θ e (.name l r)).mp hl with ⟨l', r', he, hl'⟩ | ⟨i, hi, hia⟩
++      · cases he; exact Or.inl ⟨l, r, rfl, hl'⟩
++      · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.mem_bind]; exact Or.inl ⟨l, r, rfl, hia⟩⟩
++    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, r, he, _⟩ | ⟨i, hi, hij⟩
+       · cases he
+       · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.mem_bind]; exact Or.inr ⟨j, hij, ha⟩⟩
+   · intro t ha
+@@ -237,16 +237,16 @@ theorem Eff.bind_comp_of_types (θ φ : SubstEnv) (e : Eff)
+       · exact Or.inl ⟨y, hy, (ht y hy).symm.trans ((congrArg (Ty.bind φ) hyx).trans
+           ((Ty.bind_norm φ x).trans hxt))⟩
+       · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.memFail_bind]; exact Or.inl ⟨x, hix, hxt⟩⟩
+-    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, he, _⟩ | ⟨i, hi, hij⟩
++    · rcases (Eff.mem_bind θ e (.rho j)).mp hj with ⟨l, r, he, _⟩ | ⟨i, hi, hij⟩
+       · cases he
+       · exact Or.inr ⟨i, hi, by rw [Eff.rowImage_compose, Eff.memFail_bind]; exact Or.inr ⟨j, hij, htj⟩⟩
+   · intro a ha
+     rw [Eff.mem_bind] at ha ⊢
+-    rcases ha with ⟨l, rfl, hl⟩ | ⟨i, hi, ha⟩
+-    · exact Or.inl ⟨l, rfl, (Eff.mem_bind θ e (.name l)).mpr (Or.inl ⟨l, rfl, hl⟩)⟩
++    rcases ha with ⟨l, r, rfl, hl⟩ | ⟨i, hi, ha⟩
++    · exact Or.inl ⟨l, r, rfl, (Eff.mem_bind θ e (.name l r)).mpr (Or.inl ⟨l, r, rfl, hl⟩)⟩
+     · rw [Eff.rowImage_compose, Eff.mem_bind] at ha
+-      rcases ha with ⟨l, rfl, hl⟩ | ⟨j, hij, hja⟩
+-      · exact Or.inl ⟨l, rfl, (Eff.mem_bind θ e (.name l)).mpr (Or.inr ⟨i, hi, hl⟩)⟩
++      rcases ha with ⟨l, r, rfl, hl⟩ | ⟨j, hij, hja⟩
++      · exact Or.inl ⟨l, r, rfl, (Eff.mem_bind θ e (.name l r)).mpr (Or.inr ⟨i, hi, hl⟩)⟩
+       · exact Or.inr ⟨j, (Eff.mem_bind θ e (.rho j)).mpr (Or.inr ⟨i, hi, hij⟩), hja⟩
+   · intro t ha
+     rw [Eff.memFail_bind] at ha ⊢
+@@ -355,7 +355,9 @@ theorem Eff.bind_ofAtoms_noRhos (θ : SubstEnv) (a : Atom → Bool) (h : ∀ i,
+   · intro x
+     rw [Eff.mem_bind]
+     cases x with
+-    | name l => simp [Eff.mem, Eff.test, Eff.atoms, h]
++    | name l r =>
++      simp [Eff.mem, Eff.test, Eff.atoms, h]
++      exact ⟨fun ⟨_, _, ⟨he, hr⟩, hm⟩ => he ▸ hr ▸ hm, fun hm => ⟨l, r, ⟨rfl, rfl⟩, hm⟩⟩
+     | rho i => simp [Eff.mem, Eff.test, Eff.atoms, h]
+   · have hf : List.filter (fun i => a (.rho i)) (List.range θ.rows.length) = [] := by
+       apply List.filter_eq_nil_iff.mpr
+diff --git a/formal/Benitoite/Release/TypeRows.lean b/formal/Benitoite/Release/TypeRows.lean
+index a81ed1df..1d3190db 100644
+--- a/formal/Benitoite/Release/TypeRows.lean
++++ b/formal/Benitoite/Release/TypeRows.lean
+@@ -12,7 +12,7 @@ namespace Benitoite.Release
+ mutual
+   /-- 型の中に再帰的に現れるすべての行が条件を満たす。 -/
+   def Ty.RowsIn (pe : Nat → Prop) : Ty → Prop
+-    | .base _ | .opaque _ | .bytes | .ctor _ | .tvar _ => True
++    | .base _ | .opaque _ _ | .bytes | .ctor _ | .tvar _ => True
+     | .data _ as | .tapp _ as => Ty.RowsInList pe as
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => a.RowsIn pe
+     | .fn _ ps r e => Ty.RowsInList pe ps ∧ r.RowsIn pe ∧ Eff.RowsIn pe e
+diff --git a/formal/Benitoite/Release/TypeScopedSubst.lean b/formal/Benitoite/Release/TypeScopedSubst.lean
+index 10b6c066..55420c43 100644
+--- a/formal/Benitoite/Release/TypeScopedSubst.lean
++++ b/formal/Benitoite/Release/TypeScopedSubst.lean
+@@ -14,7 +14,7 @@ namespace Benitoite.Release
+ theorem Eff.substRho_true {es : List Eff} {ε : Eff} {a : Atom} :
+     Eff.mem (Eff.substRho es ε) a ↔
+       ((match a with
+-        | .name l => Eff.mem ε (.name l)
++        | .name l r => Eff.mem ε (.name l r)
+         | .rho k => es.length ≤ k ∧ Eff.mem ε (.rho k)) ∨
+        ∃ i e, es[i]? = some e ∧ Eff.mem ε (.rho i) ∧ Eff.mem e a) := by
+   rw [Eff.substRho_eq_bind, Eff.bind, Eff.mem_norm, Eff.mem_rawBind]
+@@ -23,12 +23,14 @@ theorem Eff.substRho_true {es : List Eff} {ε : Eff} {a : Atom} :
+ theorem Eff.substRho_true_scoped {es : List Eff} {ε : Eff} (h : Eff.RhosIn (· < es.length) ε)
+     {a : Atom} :
+     Eff.mem (Eff.substRho es ε) a ↔
+-      ((∃ l, a = .name l ∧ Eff.mem ε (.name l)) ∨
++      ((∃ l r, a = .name l r ∧ Eff.mem ε (.name l r)) ∨
+         ∃ i e, es[i]? = some e ∧ Eff.mem ε (.rho i) ∧ Eff.mem e a) := by
+   rw [Eff.substRho_true]
+   apply or_congr _ Iff.rfl
+   cases a with
+-  | name l => simp
++  | name l r =>
++    simp
++    exact ⟨fun hm => ⟨l, r, ⟨rfl, rfl⟩, hm⟩, fun ⟨_, _, ⟨he, hr⟩, hm⟩ => he ▸ hr ▸ hm⟩
+   | rho k =>
+     simp only [reduceCtorEq, false_and, exists_false, iff_false, not_and]
+     intro hk hε
+@@ -263,9 +265,9 @@ theorem Eff.substAt_single (c : Nat) (ts : List Ty) (es : List Eff) (l : EffName
+   Eff.bind_ofAtoms_noRhos (SubstEnv.at c ts es) _ (fun _ => rfl)
+ 
+ /-- 効果に含まれる名前は、型と行の同時代入後にも残る。 -/
+-theorem Eff.substAt_name {c ts es e l} (h : Eff.mem e (.name l)) :
+-    Eff.mem (Eff.substAt c ts es e) (.name l) :=
+-  (Eff.mem_bind (SubstEnv.at c ts es) e (.name l)).mpr (Or.inl ⟨l, rfl, h⟩)
++theorem Eff.substAt_name {c ts es e l r} (h : Eff.mem e (.name l r)) :
++    Eff.mem (Eff.substAt c ts es e) (.name l r) :=
++  (Eff.mem_bind (SubstEnv.at c ts es) e (.name l r)).mpr (Or.inl ⟨l, r, rfl, h⟩)
+ 
+ /-- Fail 型を持つ効果も、移動と型・行代入の交換を満たす。 -/
+ theorem Eff.shift_substAt {c k : Nat} {ts : List Ty} (es : List Eff)
+diff --git a/formal/Benitoite/Release/TypeShift.lean b/formal/Benitoite/Release/TypeShift.lean
+index 8ff04e36..aa3b31c3 100644
+--- a/formal/Benitoite/Release/TypeShift.lean
++++ b/formal/Benitoite/Release/TypeShift.lean
+@@ -15,7 +15,7 @@ mutual
+   /-- 正規化前の型の変数移動。 -/
+   def Ty.rawShift (k c : Nat) : Ty → Ty
+     | .base b => .base b
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d as => .data d (Ty.rawShiftTys k c as)
+     | .list a => .list (a.rawShift k c)
+     | .fn ns ps r e => .fn ns (Ty.rawShiftTys k c ps) (r.rawShift k c) (Eff.rawShift k c e)
+@@ -121,7 +121,7 @@ mutual
+   /-- 型の変数の番号を、`c` 以上のものだけ `k` ずらす。 -/
+   noncomputable def Ty.shift (k c : Nat) : Ty → Ty
+     | .base ι => .base ι
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d args => .data d (Ty.shiftTys k c args)
+     | .list a => .list (Ty.shift k c a)
+     | .fn names params ret eff => .fn names (Ty.shiftTys k c params) (Ty.shift k c ret) (Eff.shift k c eff)
+diff --git a/formal/Benitoite/Release/TypeSubst.lean b/formal/Benitoite/Release/TypeSubst.lean
+index 8ed2f5c3..5c0a9ac6 100644
+--- a/formal/Benitoite/Release/TypeSubst.lean
++++ b/formal/Benitoite/Release/TypeSubst.lean
+@@ -44,7 +44,7 @@ def SubstEnv.shift (k c : Nat) : SubstEnv :=
+ /-- 行の原子の置換は型を含まない。 -/
+ def Eff.substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
+   let kept := match x with
+-    | .name l => a (.name l)
++    | .name l r => a (.name l r)
+     | .rho i => if i < es.length then false else a (.rho i)
+   kept || (List.range es.length).any (fun i =>
+     a (.rho i) && match es[i]? with
+@@ -80,7 +80,7 @@ mutual
+   /-- 正規化前の型への同時代入。 -/
+   def Ty.rawBind (θ : SubstEnv) : Ty → Ty
+     | .base b => .base b
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d as => .data d (Ty.rawBindTys θ as)
+     | .list a => .list (Ty.rawBind θ a)
+     | .fn ns ps r e => .fn ns (Ty.rawBindTys θ ps) (Ty.rawBind θ r) (Eff.rawBind θ e)
+@@ -132,7 +132,7 @@ mutual
+   /-- 型と行を同時に置き換える。再帰するのは入力の型だけであり、挿入した像には再適用しない。 -/
+   noncomputable def Ty.substAt (c : Nat) (ts : List Ty) (es : List Eff) : Ty → Ty
+     | .base ι => .base ι
+-    | .opaque o => .opaque o
++    | .opaque o r => .opaque o r
+     | .data d args => .data d (Ty.substTysAt c ts es args)
+     | .list a => .list (Ty.substAt c ts es a)
+     | .fn names params ret eff =>
+diff --git a/formal/Benitoite/Release/TypeSubstLemmas.lean b/formal/Benitoite/Release/TypeSubstLemmas.lean
+index e38826ca..442c919b 100644
+--- a/formal/Benitoite/Release/TypeSubstLemmas.lean
++++ b/formal/Benitoite/Release/TypeSubstLemmas.lean
+@@ -87,7 +87,7 @@ theorem Eff.memFail_rawBind (θ : SubstEnv) (e : Eff) (t : Ty) :
+ theorem Eff.mem_substAtoms (es : List Eff) (e : Eff) (a : Atom) :
+     Eff.substAtoms es e.atoms a = true ↔
+       (match a with
+-        | .name l => Eff.mem e (.name l)
++        | .name l r => Eff.mem e (.name l r)
+         | .rho i => es.length ≤ i ∧ Eff.mem e (.rho i)) ∨
+       ∃ i f, es[i]? = some f ∧ Eff.mem e (.rho i) ∧ Eff.mem f a := by
+   simp only [Eff.substAtoms, Bool.or_eq_true, List.any_eq_true, List.mem_range, Bool.and_eq_true]
+diff --git a/formal/Benitoite/Release/TypeVariables.lean b/formal/Benitoite/Release/TypeVariables.lean
+index 1f72a0f3..3952611c 100644
+--- a/formal/Benitoite/Release/TypeVariables.lean
++++ b/formal/Benitoite/Release/TypeVariables.lean
+@@ -15,7 +15,7 @@ abbrev Eff.RhosIn (pe : Nat → Prop) (e : Eff) : Prop := Eff.RowsIn pe e
+ mutual
+   /-- 項に書ける型の変数の範囲。継続の型は含まない。 -/
+   def Ty.VarsIn (n : Nat) (pe : Nat → Prop) : Ty → Prop
+-    | .base _ | .opaque _ | .bytes | .ctor _ => True
++    | .base _ | .opaque _ _ | .bytes | .ctor _ => True
+     | .data _ args => Ty.VarsInList n pe args
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.VarsIn n pe a
+     | .fn names params ret eff =>
+diff --git a/formal/Benitoite/Release/Types.lean b/formal/Benitoite/Release/Types.lean
+index 76f0625b..8438b324 100644
+--- a/formal/Benitoite/Release/Types.lean
++++ b/formal/Benitoite/Release/Types.lean
+@@ -44,7 +44,7 @@ mutual
+ `Dict[Cl, τ]`、`tapp i Ā` は型構成子を表す型パラメータの適用 `α[Ā]`、`ctor φ` は型構成子 φ である。 -/
+ inductive Ty where
+   | base (ι : BaseTy)
+-  | opaque (o : OpaqueName)
++  | opaque (o : OpaqueName) (r : ScopeRange)
+   | data (d : DataName) (args : List Ty)
+   | list (a : Ty)
+   | fn (names : List String) (params : List Ty) (ret : Ty) (eff : EffR)
+@@ -67,6 +67,9 @@ end
+ 
+ abbrev Eff := EffR
+ 
++/-- 比較の試行: 旧の範囲なしの不透明型を Top の範囲で作る構築関数。 -/
++abbrev Ty.opaqueTop (o : OpaqueName) : Ty := .opaque o .top
++
+ namespace Eff
+ 
+ /-- 名前と行の所属関数。 -/
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index 2f070c89..b7d2f0df 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -123,7 +123,7 @@ def handles (h : List Clause) (o : OpRef) : Bool := h.any (fun c => c.op == o)
+ /-- `handled(H)`。一つ以上の操作を持ち、そのすべての操作の節を H が持つエフェクトの集合。 -/
+ def handled (P : Program) (B : Builtins) (h : List Clause) : Eff := Eff.ofAtoms fun a =>
+   match a with
+-  | .name l =>
++  | .name l r =>
+       match effOps P B l with
+       | some (o :: os) => (o :: os).all (handles h)
+       | _ => false
+@@ -135,7 +135,7 @@ mutual
+   /-- 型の中の型の変数の番号が `n` より小さい（その位置で束縛された型の変数だけを使う）。 -/
+   def Ty.WF (n : Nat) : Ty → Prop
+     | .base _ => True
+-    | .opaque _ => True
++    | .opaque _ _ => True
+     | .data _ args => Ty.WFList n args
+     | .list a => Ty.WF n a
+     | .fn names params ret e => NamesWF names params ∧ Ty.WFList n params ∧ Ty.WF n ret ∧ Eff.WF n e ∧ Eff.Canonical e
+diff --git a/formal/Benitoite/Surface/AdmissibleCheck.lean b/formal/Benitoite/Surface/AdmissibleCheck.lean
+index ede3c7f8..6a5f8652 100644
+--- a/formal/Benitoite/Surface/AdmissibleCheck.lean
++++ b/formal/Benitoite/Surface/AdmissibleCheck.lean
+@@ -24,14 +24,14 @@ mutual
+     | t :: ts => rowsTyCheck atoms ne t && rowsTysCheck atoms ne ts
+   def rowsEffCheck (atoms : List Atom) (ne : Nat) : Eff → Bool
+     | .mk a fs => atoms.all (fun x => match x with
+-        | .name _ => true
++        | .name _ _ => true
+         | .rho i => !a (.rho i) || decide (i < ne)) && rowsTysCheck atoms ne fs
+ end
+ 
+ private theorem rowsAtoms_spec {atoms : List Atom} {a : Atom → Bool} {ne : Nat}
+     (ha : ∀ x, a x = true → x ∈ atoms) :
+     atoms.all (fun x => match x with
+-      | .name _ => true
++      | .name _ _ => true
+       | .rho i => !a (.rho i) || decide (i < ne)) = true ↔
+       ∀ i, a (.rho i) = true → i < ne := by
+   rw [List.all_eq_true]
+diff --git a/formal/Benitoite/Surface/Lemmas/ShiftClean.lean b/formal/Benitoite/Surface/Lemmas/ShiftClean.lean
+index 8a235965..39c37616 100644
+--- a/formal/Benitoite/Surface/Lemmas/ShiftClean.lean
++++ b/formal/Benitoite/Surface/Lemmas/ShiftClean.lean
+@@ -8,7 +8,7 @@ mutual
+   theorem shift_clean {n : Nat} (ntys : Nat) :
+       (a : Ty) → TyOK n a → TyOK (n + ntys) (a.shift ntys 0)
+     | .base _, _ => by simp [Ty.shift, TyOK, Ty.VarsIn]
+-    | .opaque _, _ => by simp [Ty.shift, TyOK, Ty.VarsIn]
++    | .opaque _ _, _ => by simp [Ty.shift, TyOK, Ty.VarsIn]
+     | .data _ args, h => by
+         simp only [Ty.shift, Ty.shiftTys_eq_map, TyOK, Ty.VarsIn] at h ⊢
+         exact shiftList_clean ntys args h
+diff --git a/formal/Benitoite/Surface/NoFailCheck.lean b/formal/Benitoite/Surface/NoFailCheck.lean
+index c3904afa..63d05fb0 100644
+--- a/formal/Benitoite/Surface/NoFailCheck.lean
++++ b/formal/Benitoite/Surface/NoFailCheck.lean
+@@ -21,7 +21,7 @@ def NoFailCtxOf (q : List Bool) : NoFailCtx := fun i => q[i]?.getD false = true
+ 
+ mutual
+   def qTyAt (i : Nat) : Ty → Bool
+-    | .base _ | .opaque _ | .tvar _ | .bytes | .ctor _ => false
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => false
+     | .data _ as | .tapp _ as => qTysAt i as
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => qTyAt i a
+     | .map a b => qTyAt i a || qTyAt i b
+@@ -41,7 +41,7 @@ def signatureQ (ne : Nat) (ps : List Ty) (ret : Ty) (e : Eff) : List Bool :=
+ /-- 型内部の潜在効果を再検査せず、最外の Fail と行を判定する。 -/
+ def noFailCheck (atoms : List Atom) (q : List Bool) (e : Eff) : Bool :=
+   e.fails.isEmpty && atoms.all (fun a => match a with
+-    | .name _ => true
++    | .name _ _ => true
+     | .rho i => !e.test (.rho i) || q[i]?.getD false)
+ 
+ /-- Qcallee の全行について、caller の Q で行の像を検査する。 -/

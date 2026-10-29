@@ -9,6 +9,11 @@
 //! （設計書 07-03「前提」）。
 // テストの失敗は panic で表す（AGENTS.md「実装の規約」の「`#[allow]` を書いてよい箇所」）。
 
+#[path = "cli_process/scoped_diagnostics.rs"]
+mod scoped_diagnostics;
+#[path = "cli_process/scoped_reports.rs"]
+mod scoped_reports;
+
 use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -76,7 +81,7 @@ fn file_effects_reach_main_reports_and_limit_origins() {
     assert_eq!(report["complete"], true);
     assert_eq!(
         report["targets"][0]["main"]["effects"],
-        json!({"basis":"declaredUpperBound", "expanded":["Console.Write","Log"]})
+        json!({"basis":"declaredUpperBound", "expanded":["Console.Write","Log"], "bounds":[{"name":"Console.Write","scope":{"kind":"all"}},{"name":"Log","scope":{"kind":"all"}}]})
     );
     assert_eq!(
         report["aggregateEffects"]["expanded"],
@@ -150,6 +155,89 @@ fn file_effects_reach_main_reports_and_limit_origins() {
     assert_eq!(origins.len(), 1);
     assert_eq!(origins[0]["start"]["offset"], 5);
     assert_eq!(origins[0]["end"]["offset"], 11);
+}
+
+// 関門: 範囲付きの宣言をCLIの所有する契約へ写す際に内部エラーにしない。
+// 型検査だけでは届かない報告・名前だけの上限の照合を、通常のCLIで対にする。
+#[test]
+fn scoped_contracts_reach_reports_and_name_limits() {
+    use serde_json::{Value, json};
+    for file in [false, true] {
+        let directory = TestDirectory::new();
+        let uses = "uses File.Write[\"/data/**\", \"/backup/**\"], Http.Connect[\"192.168.1.0/24\", 443..445]";
+        let source = format!(
+            "import Benitoite.Unofficial.IO.File\nimport Benitoite.Unofficial.Network.Http\n{}function main() -> Unit{}\nend function\n@test\nfunction verifies() -> Unit{}\nend function\n",
+            if file {
+                format!("{uses}\n")
+            } else {
+                String::new()
+            },
+            if file {
+                String::new()
+            } else {
+                format!(" {uses}")
+            },
+            if file {
+                String::new()
+            } else {
+                format!(" {uses}")
+            },
+        );
+        let script = directory.write("scoped-contracts.bnt", &source);
+        let expected = json!({"basis":"declaredUpperBound", "expanded":["File.Write", "Http.Connect"],
+        "bounds": [
+            {"name":"File.Write","scope":{"kind":"pathTree","path":"/backup"}},
+            {"name":"File.Write","scope":{"kind":"pathTree","path":"/data"}},
+            {"name":"Http.Connect","scope":{"kind":"endpoint","host":{"kind":"cidr","family":"v4","address":"192.168.1.0","prefixLength":24},"ports":{"minimum":443,"maximum":445}}}
+        ]});
+        for options in [
+            vec!["check", "--report=json"],
+            vec!["test", "--check", "--report=json"],
+        ] {
+            let output = command().args(&options).arg(&script).output().unwrap();
+            assert_eq!(exit_code(&output), 0, "{options:?}: {output:?}");
+            assert!(output.stderr.is_empty(), "{output:?}");
+            let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+            assert_eq!(report["status"], "ok");
+            assert_eq!(report["aggregateEffects"], expected);
+            let contract = if options[0] == "check" {
+                &report["targets"][0]["main"]["effects"]
+            } else {
+                &report["targets"][0]["tests"][0]["effects"]
+            };
+            assert_eq!(contract, &expected);
+        }
+        for mode in ["check", "run", "test"] {
+            let output = command().arg(mode).arg(&script).output().unwrap();
+            assert_eq!(exit_code(&output), 0, "{mode}: {output:?}");
+            assert!(output.stderr.is_empty(), "{output:?}");
+        }
+        for mode in ["run", "test"] {
+            for (allowed, expected_exit) in [("File.Write,Http.Connect", 0), ("Http.Connect", 2)] {
+                let output = command()
+                    .args([
+                        mode,
+                        "--diagnostics=json",
+                        &format!("--allow-effects={allowed}"),
+                    ])
+                    .arg(&script)
+                    .output()
+                    .unwrap();
+                assert_eq!(exit_code(&output), expected_exit, "{mode}: {output:?}");
+                if expected_exit == 0 {
+                    assert!(output.stderr.is_empty(), "{output:?}");
+                } else {
+                    let diagnostic: Value = serde_json::from_slice(&output.stderr).unwrap();
+                    assert_eq!(diagnostic["code"], "E0512");
+                    assert_eq!(diagnostic["notes"][0], "effects not allowed: File.Write");
+                    assert_eq!(
+                        !diagnostic["secondary"].as_array().unwrap().is_empty(),
+                        file
+                    );
+                }
+            }
+        }
+    }
 }
 
 // 作成時の関門: 宣言上限の包含と拒否時の非実行を、本物の CLI・ファイル・出力で守る。
@@ -777,7 +865,7 @@ fn main_check_reports_sources_without_execution() {
         ("bom", Some(b"\xef\xbb\xbf// source\nfunction main() -> Unit\nend function\n"), Some(&[]), "absent", None, false, &[]),
         ("dependency-package", Some(b"import Tk.Helper\nfunction main() -> Unit\nend function\n"), Some(&[]), "present", None, true, &[
             ("package.bnt", b"// root config\ndependency Tk\n    path \"deps/kit\"\nend dependency\n"),
-            ("deps/kit/package.bnt", b"language \"0.0.12\"\npackage Kit\nend package\n"),
+            ("deps/kit/package.bnt", b"language \"0.0.13\"\npackage Kit\nend package\n"),
             ("deps/kit/Helper.bnt", b"import Benitoite.Unofficial.IO.Process\npublic function unused() -> Unit\n    bind action <- Process.shell\nend function\n"),
         ]),
     ]);
@@ -785,7 +873,28 @@ fn main_check_reports_sources_without_execution() {
 
 // 既存必須欄の厳密な比較は保ち、追加欄の値は報告の集計の表で検査する。
 fn report_without_interval_extension(report: &serde_json::Value) -> serde_json::Value {
+    fn strip_bounds(value: &mut serde_json::Value) {
+        match value {
+            serde_json::Value::Object(fields) => {
+                fields.remove("bounds");
+                for value in fields.values_mut() {
+                    strip_bounds(value);
+                }
+            }
+            serde_json::Value::Array(values) => {
+                for value in values {
+                    strip_bounds(value);
+                }
+            }
+            serde_json::Value::Null
+            | serde_json::Value::Bool(_)
+            | serde_json::Value::Number(_)
+            | serde_json::Value::String(_) => {}
+        }
+    }
     let mut legacy = report.clone();
+    // 任意欄を読まない旧受け手の必須欄の契約を保つ。bounds は専用の表で確かめる。
+    strip_bounds(&mut legacy);
     assert!(
         legacy
             .as_object_mut()

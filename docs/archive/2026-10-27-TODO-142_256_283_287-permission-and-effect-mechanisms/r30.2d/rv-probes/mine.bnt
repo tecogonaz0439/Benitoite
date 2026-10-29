@@ -1,0 +1,32 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.Scope as S
+import Benitoite.Unofficial.IO.Console
+
+function emit(error: S.ScopeError) -> Unit uses Console.Write
+  bind t <- Trait.Show.show(error)
+  Console.writeLine("${String.byteLength(t)} ${t}")
+end function
+
+function host(p: String, h: String) -> Unit uses Console.Write
+  match S.checkHost(pattern: p, host: h) with
+    case Result.Error(e) -> emit(e)
+    case Result.Ok(_) -> Console.writeLine("ok")
+  end match
+end function
+
+function main() -> Unit uses Console.Write
+  emit(S.ScopeError.InvalidTarget(String.repeat(s: "\"", n: 999), "r"))
+  emit(S.ScopeError.InvalidTarget(String.repeat(s: "\"", n: 1000), "r"))
+  emit(S.ScopeError.OutsideScope(String.repeat(s: "あ", n: 1366), String.repeat(s: "😀", n: 1024)))
+  emit(S.ScopeError.OutsideScope(String.repeat(s: "あ", n: 1365) + "x", "y"))
+  emit(S.ScopeError.InvalidPattern("a" + String.repeat(s: "😀", n: 1023) + "bcd", "\u{7f}\u{1b}"))
+  emit(S.ScopeError.InvalidPattern(String.repeat(s: "\u{1}", n: 400), String.repeat(s: "\u{1}", n: 333)))
+  emit(S.ScopeError.InvalidPortRange(-9223372036854775808, 9223372036854775807))
+  emit(S.ScopeError.PortOutsideScope(1, 2, -3))
+  host(p: "*.example.com", h: "evil.com")
+  host(p: "[bad", h: "x")
+  host(p: "10.0.0.0/8", h: "::1")
+  bind xs <- [S.ScopeError.InvalidPort(7), S.ScopeError.InvalidPort(8)]
+  Console.writeLine(Trait.Show.show(xs))
+  Console.writeLine(Trait.Show.show(Option.Some(S.ScopeError.InvalidPort(9))))
+end function

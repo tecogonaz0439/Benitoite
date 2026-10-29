@@ -199,13 +199,13 @@ def ArmsComputes (q : Input) (arms : Arms) : Prop :=
     ComputesIn q (Eff.AtomsIn q.atoms) (checkArmsR q mode Δ C Γ R p path arms a b)
 
 def ClausesComputes (q : Input) (cs : Clauses) : Prop :=
-  ∀ mode Δ C Γ R path t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+  ∀ mode Δ C Γ R path εb t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
-    ComputesIn q (Eff.AtomsIn q.atoms) (checkClausesR q mode Δ C Γ R path cs t ε)
+    ComputesIn q (Eff.AtomsIn q.atoms) (checkClausesR q mode Δ C Γ R path εb cs t ε)
 
 def ClauseTypesComputes (q : Input) (cs : Clauses) : Prop :=
-  ∀ Δ C Γ R path t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
+  ∀ Δ C Γ R path εb t ε, q.Sound → cs.AtomsIn q.atoms → Env.AtomsIn q.atoms Γ →
     ReturnAtoms q.atoms R → BuilderInvariant q C Γ Δ → t.AtomsIn q.atoms → ε.AtomsIn q.atoms →
-    ComputesIn q (Ty.AtomsIn q.atoms) (inferClauseTypesR q Δ C Γ R path cs t ε)
+    ComputesIn q (Ty.AtomsIn q.atoms) (inferClauseTypesR q Δ C Γ R path εb cs t ε)
 
 end Benitoite.Surface.Check

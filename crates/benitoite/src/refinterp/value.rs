@@ -49,11 +49,11 @@ pub(super) struct Values {
 }
 
 /// 関数の本体の識別。この識別からコア IR の本体を引く。
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub(super) enum FunctionCode {
     Body(BodyId),
     TopFn(BindingId),
-    Builtin(BuiltinId, BuiltinInfo),
+    Builtin(BuiltinId, BuiltinInfo, Rc<[crate::types::scope::Range]>),
     Op(BindingId),
 }
 

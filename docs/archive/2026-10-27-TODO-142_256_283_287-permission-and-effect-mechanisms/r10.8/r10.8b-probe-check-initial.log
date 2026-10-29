@@ -1,0 +1,7 @@
+$ env PYTHONPYCACHEPREFIX=target/bench/pycache python3 docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.8/r10.8b-check-probe.py
+build default/before: 612477578857 (cached)
+build default/after: f5821c672d22 (cached)
+Traceback (most recent call last):
+  File "<wt>/docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r10.8/r10.8b-check-probe.py", line 30, in <module>
+    result = execute(probe_command(case, record, entries[case.id, state]), 30)
+KeyError: ('bridge-nodes-4', 'before')

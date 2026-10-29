@@ -1,0 +1,270 @@
+commit 40716323b01488d179d8568353034537f25869a5
+Author: tecogonaz <tecogonaz@kusugami-lab.net>
+Date:   Thu Oct 29 18:49:57 2026 +0900
+
+    Explain scope diagnostics and their repairs (R40.1)
+    
+    - Reword E0513 to say scope arguments are rejected too, E0520 to say
+      only one scope is allowed, and E0519 by reason and entry: name the
+      annotated contract (requiredUpperBound) and the scope the local rule
+      selected (knownUpperBound), use "scope arguments" throughout, and
+      offer repairs that keep or deliberately enlarge the contract.
+    - For unknown provenance, move nested calls to the right-hand side of
+      bind; for narrow parameters and handler clause parameters, pass the
+      value unchanged to a scoped entry, widen in the caller, or make the
+      parameter unscoped with the caller widening; tested with callers.
+    - Distinguish numbering stops from local analysis overflow, move the
+      rvar display fragment to types::text, align E0401 ScopeResult with
+      expected/found, keep RequestCheckError without Show, and update
+      01-07, 02-05, 02-10 and the bundled Skill.
+    - Record the results, the reviewer's inputs and the review RV-R40.1
+      (fixed in R40.1b).
+    
+    Scope の診断と直し方を説明する（R40.1）
+    
+    - E0513 は範囲引数も拒否すること、E0520 は一つの範囲だけを許すことを示すよう直し、
+      E0519 を理由と入口ごとに直した。注釈した契約（requiredUpperBound）と局所の規則が
+      選んだ範囲（knownUpperBound）を名指しし、語を scope arguments にそろえ、契約を
+      保つ直し方と意図して広げる直し方を示す。
+    - 由来が未知のときは入れ子の呼び出しを bind の右辺へ出す。狭い引数とハンドラの節の
+      引数は、範囲付きの入口へそのまま渡すか、呼び出し元で拡大するか、引数を範囲なしに
+      して呼び出し元で拡大する。呼び出し元を含めて確かめた。
+    - 番号付けの停止と局所解析の超過を分け、rvar の表示の断片を types::text へ移し、
+      E0401 ScopeResult の expected と found をそろえ、RequestCheckError に Show を足さず、
+      01-07・02-05・02-10 と同梱の Skill を更新した。
+    - 結果、レビューアの入力、レビュー RV-R40.1 を記録した（R40.1b で直した）。
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01NXBYfHP5iaKgzDUK8t95XW
+
+diff --git a/crates/benitoite/src/diag/codes.rs b/crates/benitoite/src/diag/codes.rs
+index 0535399b..d46bdce5 100644
+--- a/crates/benitoite/src/diag/codes.rs
++++ b/crates/benitoite/src/diag/codes.rs
+@@ -631,6 +631,7 @@ diag_codes! {
+          clause: "the clause of `{operation}`",
+          expanded: "the expanded expected type is `{expanded}`",
+          because_call_arg: "argument {index} must match the parameter type of the called function",
++         because_scope_result: "the result of this scope check or widening must match its annotated or inferred type",
+          because_if_branches: "the branches of `if` must have compatible types",
+          because_if_no_else: "`if` without `else` must have type `Unit`",
+          because_condition: "a condition must have type `Boolean`",
+@@ -950,7 +951,7 @@ diag_codes! {
+          review: "review the required effects before changing --allow-effects"]
+         "The declared atomic effects of the checked function (main or a test) exceed the set passed to --allow-effects. Nothing is started. Review the required effects before changing the allowed set. This is a static check, not runtime permission control or an OS sandbox.";
+ 
+-    E0513 Check "invalid type arguments for effect `{name}` (expected {count})" ""
++    E0513 Check "invalid type or scope arguments for effect `{name}` (expected type argument count: {count}; scope arguments are not allowed)" ""
+         []
+         "Only the standard Failure.Fail takes exactly one value type argument. Standard File.Read, File.Write and Http.Connect take closed scope arguments; other effects take no arguments.";
+     E0514 Check "incompatible failure types `{expected}` and `{found}` in one effect set" ""
+@@ -971,28 +972,34 @@ diag_codes! {
+         "A failure handle contains exactly one Failure.raise clause.";
+ 
+     E0519 Check "effect `{effect}` is not covered by one surrounding atom ({reason})" "`{effect}` is not covered by `{expected}`"
+-        [scope_check: "the range arguments of check `{effect}` do not cover the required scope ({reason})",
+-         scope_projection: "the range arguments of projection `{effect}` do not cover the required scope ({reason})",
+-         scope_widen: "the range arguments of widening `{effect}` do not cover the required scope ({reason})",
+-         scope_rule: "the range arguments of this direct call must cover the ranges selected by the local Scope rule",
++        [scope_check: "the scope arguments of the annotated contract for check `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})",
++         scope_projection: "the scope arguments of the annotated contract for projection `{effect}` (requiredUpperBound) do not cover the scope selected by the local Scope rule (knownUpperBound) ({reason})",
++         scope_widen: "the scope arguments of the annotated contract for widening `{effect}` (requiredUpperBound) do not satisfy scope coverage for the locally selected source (knownUpperBound) and the destination ({reason})",
++         scope_rule: "the scope arguments of the annotated contract (requiredUpperBound) must cover the scope selected by the local Scope rule for this call (knownUpperBound); for widening, the destination must also cover the source contract",
+          scope_numbering: "Scope numbering for this definition exceeded the limit of {numberingLimit} events; all Scope rules in this definition require Top",
+-         scope_budget: "local Scope analysis exceeded the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable",
+-         atomic: "two or more closed surrounding atoms have the same name, but no one atom covers the required scope; coverage by their union is not checked",
+-         uncovered: "no one surrounding atom of the same name covers the required scope",
+-         unknown: "the required scope is Top (all targets); only a surrounding Top atom of the same name covers it",
++         scope_budget: "the final pass of local Scope analysis still exceeds the {budgetScope} {budgetResource} limit; provenance was forgotten while literal patterns remain readable",
++         atomic: "two or more closed surrounding atoms (requiredUpperBound) have the same name, but no one atom covers the incoming scope (knownUpperBound); coverage by their union is not checked",
++         uncovered: "no one surrounding atom of the same name (requiredUpperBound) covers the incoming scope (knownUpperBound)",
++         unknown: "the incoming scope (knownUpperBound) is Top (all targets); only a surrounding Top atom of the same name in requiredUpperBound covers it",
+          declared: "declared here",
+          scope_numbering_help: "split this definition into smaller definitions, or reduce its size and shared constant expansion",
+-         scopes: "declare a surrounding scope that covers the required scope in one atom, or use a callee with a narrower scope",
+-         top: "declare the same effect without scope arguments to allow Top, or use a callee whose declared scope is covered by the surrounding effects"]
++         scopes: "to keep the surrounding contract, use a callee or entry whose declared scope is covered by one surrounding atom; to permit a broader scope, explicitly enlarge the surrounding `uses` annotation to cover the incoming scope in one atom",
++         top: "to keep a bounded contract, use a scoped entry such as `File.readTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
++         top_write: "to keep a bounded contract, use a scoped entry such as `File.writeTextIn` after `Scope.checkPathIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
++         top_endpoint: "to keep a bounded contract, use `Http.sendIn` after `Http.checkRequestIn`, and annotate the checked result with a scope covered by that contract, or narrow the callee's `uses` annotation; to permit all targets, declare the same effect without scope arguments in the surrounding `uses` annotation",
++         scope_unknown: "If the call is nested in an expression, move it to the right-hand side of `bind` and use that name. If the value is a parameter or handler clause parameter with only a narrow type annotation, `bind` alone does not establish provenance. To keep the narrow contract, do not project or widen it here: pass it unchanged to a scoped entry that accepts the same narrow type, such as `File.readTextIn`, or widen it in the caller where the checked value is bound and declare the parameter with the wider type. To accept all targets instead, remove the parameter's scope arguments; callers must then widen to the unscoped type with `Scope.widenPathIn` or `Http.widenRequestIn`. Widening a Top input also requires a result without scope arguments. For a handler clause parameter, using Top also requires the protected body to select Top and may require a broader `uses` annotation.",
++         scope_check_unknown: "to keep a bounded contract, pass literal or statically known constant check conditions and annotate the checked result with a covered scope; to allow an unknown condition, use a result type without scope arguments (Top)",
++         scope_coverage: "to keep the contract, change the check conditions so that the annotated result scope covers them; for widening, choose a destination that covers the source; to permit a broader scope, explicitly enlarge the annotation",
++         scope_budget_help: "split this definition into smaller definitions to retain local provenance (this helps only if the check conditions or checked values are statically known after splitting); alternatively, remove scope arguments from the annotation to allow Top"]
+         "An atom of the same name exists in the surrounding effects, but none covers the required scope. Scope coverage is checked at function and lambda bodies, calls, resume arguments and outer function-type effect flow. Type equality, failure types and row membership remain structural.";
+ 
+     E0520 Check "invalid scope arguments for `{name}` (expected {expectedScopeKind})" "invalid scope argument"
+         [found: "found: {found}"]
+-        "Scope arguments must be nonempty closed literal patterns of the kind required by the resolved standard name. File effects take path strings; Http.Connect takes complete host/port pairs. Expressions, interpolation and constant references are not scope arguments.";
++        "Scope arguments must be nonempty closed literal patterns of the kind required by the resolved standard name. File effects take path strings; Http.Connect takes complete host/port pairs. Scope.PathIn takes exactly one path string literal; Http.RequestIn takes exactly one host/port literal pair. Expressions, interpolation and constant references are not scope arguments.";
+ 
+-    E0521 Check "cannot stabilize the scope indices selected for this handle" "handler scope index selection did not stabilize"
++    E0521 Check "cannot determine consistent scopes for this handler" "the selected scopes still disagree with the effects of the protected body"
+         [annotation: "make the function types and effects of callbacks used by the protected body explicit, or simplify the handler dependencies"]
+-        "The selected handler scope indices and handled atoms must agree with the final inferred effects of the protected body. Function inference is retried at most as many times as there are handles in the function; a result that still disagrees is rejected. Handler clause parameters do not accept type annotations.";
++        "The scopes selected for a handler must agree with the final inferred effects of the protected body. The function is checked again at most as many times as there are handles in it; a result that still disagrees is rejected. Handler clause parameters do not accept type annotations.";
+ 
+     // ---- E06: パターン ----
+     E0601 Check "`match` does not cover every value" "`{witness}` is not matched"
+diff --git a/crates/benitoite/src/typeck/solve.rs b/crates/benitoite/src/typeck/solve.rs
+index 03cab38e..206d1244 100644
+--- a/crates/benitoite/src/typeck/solve.rs
++++ b/crates/benitoite/src/typeck/solve.rs
+@@ -7,7 +7,7 @@ use crate::base::{NodeId, Span};
+ use crate::diag::{DiagBuilder, DiagCode, Diagnostic, Edit};
+ use crate::resolve::ResolveOutput;
+ use crate::syntax::ast::BinOp;
+-use crate::types::builtin::{BuiltinTypeClass, BuiltinTypeId as B};
++use crate::types::builtin::{BuiltinEffectId, BuiltinTypeClass, BuiltinTypeId as B};
+ use crate::types::*;
+ use std::cell::RefCell;
+ use std::collections::{BTreeMap, BTreeSet, HashSet};
+@@ -1089,7 +1089,13 @@ impl Solver {
+         escaped: Option<Escape>,
+         effect_mismatch: bool,
+     ) {
+-        let (expected, found) = types;
++        // ScopeResult の補助制約は (生成した成功型, 注釈で決まった型) の順である。
++        // 型の解決順は保ち、E0401 の表示だけを通常の (注釈, 値) にそろえる。
++        let (expected, found) = if code == DiagCode::E0401 && r.kind == ReasonKind::ScopeResult {
++            (types.1, types.0)
++        } else {
++            types
++        };
+         if r.kind == ReasonKind::LambdaReturn
+             && ctx
+                 .lambda_body_ends
+@@ -1209,6 +1215,7 @@ impl Solver {
+                     d = d.arg("index", index.to_string());
+                     Some("because_call_arg")
+                 }
++                ReasonKind::ScopeResult => Some("because_scope_result"),
+                 ReasonKind::IfCondition | ReasonKind::MatchGuard => Some("because_condition"),
+                 ReasonKind::IfBranches => Some("because_if_branches"),
+                 ReasonKind::IfNoElse => Some("because_if_no_else"),
+@@ -2476,41 +2483,81 @@ impl Solver {
+                     {
+                         // Top は由来を認定しない。閉じた原子では和の被覆を判定せず、
+                         // 同名の閉じた上限が複数あることを理由に示す（設計書 01-07「閉じた範囲引数」）。
+-                        let (reason, note, help) =
+-                            if atom.index() == &crate::types::builtin::RangeIndex::TOP {
+-                                (super::text::UNKNOWN_SOURCE, "unknown", "top")
+-                            } else if atom.index().range().is_some()
+-                                && same_named
+-                                    .iter()
+-                                    .filter(|candidate| {
+-                                        candidate.index().range().is_some_and(|range| {
+-                                            range != &crate::types::scope::Range::Top
+-                                        })
+-                                    })
+-                                    .count()
+-                                    >= 2
+-                            {
+-                                (super::text::ATOMIC_COVER_ONLY, "atomic", "scopes")
+-                            } else {
+-                                (super::text::NOT_COVERED, "uncovered", "scopes")
++                        let (reason, note, help) = if atom.index()
++                            == &crate::types::builtin::RangeIndex::TOP
++                        {
++                            let help = match atom {
++                                EffectName::Builtin(BuiltinEffectId::HTTP_CONNECT, _) => {
++                                    "top_endpoint"
++                                }
++                                EffectName::Builtin(BuiltinEffectId::FILE_WRITE, _) => "top_write",
++                                EffectName::Builtin(..) | EffectName::User(..) => "top",
+                             };
++                            (super::text::UNKNOWN_SOURCE, "unknown", help)
++                        } else if atom.index().range().is_some()
++                            && same_named
++                                .iter()
++                                .filter(|candidate| {
++                                    candidate.index().range().is_some_and(|range| {
++                                        range != &crate::types::scope::Range::Top
++                                    })
++                                })
++                                .count()
++                                >= 2
++                        {
++                            (super::text::ATOMIC_COVER_ONLY, "atomic", "scopes")
++                        } else {
++                            (super::text::NOT_COVERED, "uncovered", "scopes")
++                        };
+                         let name = super::effects::effect_name(ctx, atom, Some(ctx.module));
++                        let mut declared_spans = Vec::new();
++                        if r.kind == ReasonKind::FnUses
++                            && let Some(effective) = ctx
++                                .owner
++                                .and_then(|owner| ctx.decls.binding(owner))
++                                .and_then(|binding| ctx.decls.out.effective_effects.get(binding))
++                        {
++                            for origin in &effective.origins {
++                                if origin
++                                    .effects
++                                    .names
++                                    .iter()
++                                    .any(|name| same_named.contains(&name))
++                                    && !declared_spans.contains(&origin.span)
++                                {
++                                    declared_spans.push(origin.span);
++                                }
++                            }
++                        }
++                        if declared_spans.is_empty() {
++                            declared_spans.push(r.related.unwrap_or(r.span));
++                        }
+                         let expected = same_named
+                             .into_iter()
+                             .map(|n| super::effects::effect_name(ctx, n, Some(ctx.module)))
+                             .collect::<Vec<_>>()
+                             .join(", ");
+-                        ctx.diagnostic(
+-                            DiagBuilder::new(DiagCode::E0519)
+-                                .arg("effect", name)
+-                                .arg("expected", expected)
+-                                .arg("reason", reason)
+-                                .primary(origin)
+-                                .secondary(r.span, "declared")
+-                                .note(note)
+-                                .help(help)
+-                                .build(),
+-                        );
++                        let mut builder = DiagBuilder::new(DiagCode::E0519)
++                            .arg("effect", &name)
++                            .arg("expected", &expected)
++                            .arg("reason", reason)
++                            .primary(origin)
++                            .note(note)
++                            .help(help);
++                        for span in declared_spans {
++                            builder = builder.secondary(span, "declared");
++                        }
++                        let mut diagnostic = builder.build();
++                        for (key, value) in [
++                            (super::text::SCOPE_REASON, reason),
++                            (super::text::SCOPE_REQUIRED_UPPER_BOUND, expected.as_str()),
++                            (super::text::SCOPE_KNOWN_UPPER_BOUND, name.as_str()),
++                            (super::text::SCOPE_UNCOVERED_ATOM, name.as_str()),
++                            (super::text::SCOPE_SOURCE, super::text::SCOPE_EFFECT_SOURCE),
++                        ] {
++                            diagnostic.notes.push(super::text::scope_field(key, value));
++                        }
++                        ctx.diagnostic(diagnostic);
+                     }
+                     if pair.is_some() {
+                         break;
+@@ -2578,6 +2625,7 @@ fn missing_effect(ctx: &mut Body<'_, '_>, r: &Reason, name: &str, origin: Span)
+         }
+         ReasonKind::MatchGuard => super::pattern_ext::effect_failure(ctx, r, name, origin),
+         ReasonKind::CallArg { .. }
++        | ReasonKind::ScopeResult
+         | ReasonKind::Call
+         | ReasonKind::IfCondition
+         | ReasonKind::IfBranches
+@@ -2713,6 +2761,7 @@ fn op_text(r: &ReasonKind) -> String {
+         }
+         ReasonKind::BuiltinParam { name } | ReasonKind::ParamBound { name } => name.clone(),
+         ReasonKind::CallArg { .. }
++        | ReasonKind::ScopeResult
+         | ReasonKind::Call
+         | ReasonKind::IfCondition
+         | ReasonKind::IfBranches

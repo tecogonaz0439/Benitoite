@@ -1,0 +1,44 @@
+Effect.lean:718:4: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Effect.lean:718:4: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Effect.lean:834:8: warning: This simp argument is unused:
+  and_or_left
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [memFail_bind, memFail_union, mem_union, or_and_right, exists_or]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Effect.lean:849:2: error: unsolved goals
+case ht
+θ : Env
+i t : Nat
+⊢ t ∈ (bind θ (mk (fun a => decide (a = Atom.rho i)) [])).2 ↔ t ∈ (rowImage θ.rows i).2
+Effect.lean:852:10: warning: This simp argument is unused:
+  memFail_bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [row, ofList, memFail, fails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        0.86 real         1.56 user         0.29 sys
+           734248960  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               47200  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+               11103  involuntary context switches
+         11328550867  instructions retired
+          5346825806  cycles elapsed
+           181132768  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

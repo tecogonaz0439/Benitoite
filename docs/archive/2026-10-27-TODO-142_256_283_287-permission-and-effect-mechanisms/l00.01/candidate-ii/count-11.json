@@ -1,0 +1,49 @@
+{
+ "log": "build-11-trial.log",
+ "modules_in_default_closure": 267,
+ "failed_modules": [
+  "Benitoite.Release.Lemmas.PresMain",
+  "Benitoite.Surface.BuilderExamples"
+ ],
+ "unchecked_modules_count": 13,
+ "unchecked_modules": [
+  "Benitoite",
+  "Benitoite.Release.BuilderExamples",
+  "Benitoite.Release.FailureExamples",
+  "Benitoite.Release.Lemmas.EffectSound",
+  "Benitoite.Release.Lemmas.LocalInvariant",
+  "Benitoite.Release.Lemmas.Progress",
+  "Benitoite.Release.Lemmas.StepSound",
+  "Benitoite.Release.Model",
+  "Benitoite.Release.Theorems",
+  "Benitoite.Surface.Examples",
+  "Benitoite.Surface.FailureExamples",
+  "Benitoite.Surface.Monad2Examples",
+  "Benitoite.Surface.Theorems"
+ ],
+ "error_diagnostics": 2,
+ "error_files": [
+  "Benitoite/Release/Lemmas/PresMain.lean",
+  "Benitoite/Surface/BuilderExamples.lean"
+ ],
+ "error_declarations": [
+  {
+   "file": "Benitoite/Release/Lemmas/PresMain.lean",
+   "decl": "theorem preservationE",
+   "line": 18,
+   "errors": 1
+  },
+  {
+   "file": "Benitoite/Surface/BuilderExamples.lean",
+   "decl": "def signature",
+   "line": 12,
+   "errors": 1
+  }
+ ],
+ "sorry_warnings": [
+  [
+   "Benitoite/Release/Order/Atoms.lean",
+   "theorem code_injective"
+  ]
+ ]
+}

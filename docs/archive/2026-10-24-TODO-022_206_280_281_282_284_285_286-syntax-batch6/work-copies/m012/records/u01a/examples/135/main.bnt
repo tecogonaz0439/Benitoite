@@ -1,0 +1,17 @@
+import Benitoite.Trait
+import Benitoite.Unofficial.Range
+import Benitoite.Unofficial.IO.Console
+
+function main() -> Unit uses Console.Write
+  match Range.checkInteger(minimum: 0, maximum: 10, value: 10) with
+    case Result.Ok(checked) ->
+      Console.writeLine(Integer.toString(Range.minimum(checked)))
+      Console.writeLine(Integer.toString(Range.maximum(checked)))
+      Console.writeLine(Integer.toString(Range.value(checked)))
+    case Result.Error(error) -> Console.writeLine(Trait.Show.show(error))
+  end match
+  match Range.checkInteger(minimum: 0, maximum: 10, value: 11) with
+    case Result.Ok(_) -> Console.writeLine("unexpected success")
+    case Result.Error(error) -> Console.writeLine(Trait.Show.show(error))
+  end match
+end function

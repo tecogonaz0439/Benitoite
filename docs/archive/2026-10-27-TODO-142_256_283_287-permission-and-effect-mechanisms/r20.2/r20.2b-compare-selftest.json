@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "PYTHONPYCACHEPREFIX=target/bench/pycache",
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/bench/compare",
+    "-p",
+    "test_*.py"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 95.235993708,
+  "maximum_resident_bytes": 2947317760,
+  "maximum_resident_mib": 2810.78125,
+  "rss_method": "macOS getrusage(RUSAGE_CHILDREN).ru_maxrss; 子の最大値",
+  "stdout_log": "r20.2b-compare-selftest.log"
+}

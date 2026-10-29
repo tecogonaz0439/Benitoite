@@ -1,0 +1,128 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.41s
+     Running unittests src/lib.rs (target/debug/deps/benitoite-81c2c2cf772f4aa1)
+
+running 7 tests
+
+thread 'typeck::scope::local_tests::bodies_clear_facts_preserve_positions_and_restore_the_outer_state' (4576611) panicked at crates/benitoite/src/typeck/scope/local_tests.rs:23:5:
+[
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0332,
+        ),
+        message: "the module `Failure` is not imported",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        942,
+                    ),
+                    end: BytePos(
+                        949,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "add `import Benitoite.Unofficial.Failure` at the start of the file",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                0,
+                            ),
+                            end: BytePos(
+                                0,
+                            ),
+                        },
+                        replacement: "import Benitoite.Unofficial.Failure\n",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+    Diagnostic {
+        kind: Check,
+        severity: Error,
+        code: Some(
+            E0332,
+        ),
+        message: "the module `Failure` is not imported",
+        primary: Some(
+            Label {
+                span: Span {
+                    file: FileId(
+                        0,
+                    ),
+                    start: BytePos(
+                        987,
+                    ),
+                    end: BytePos(
+                        994,
+                    ),
+                },
+                text: "",
+            },
+        ),
+        secondary: [],
+        notes: [],
+        helps: [
+            Help {
+                message: "add `import Benitoite.Unofficial.Failure` at the start of the file",
+                edits: [
+                    Edit {
+                        span: Span {
+                            file: FileId(
+                                0,
+                            ),
+                            start: BytePos(
+                                0,
+                            ),
+                            end: BytePos(
+                                0,
+                            ),
+                        },
+                        replacement: "import Benitoite.Unofficial.Failure\n",
+                    },
+                ],
+            },
+        ],
+        trace: None,
+        task_origins: [],
+        waiting: [],
+        backtrace: None,
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test typeck::scope::local_tests::bodies_clear_facts_preserve_positions_and_restore_the_outer_state ... FAILED
+test typeck::scope::local_tests::checks_read_only_literals_and_direct_const_chains_with_typed_integers ... ok
+test typeck::scope::local_tests::request_ok_keeps_its_own_origin_and_projection_has_no_result_fact ... ok
+test typeck::scope::local_tests::try_direct_match_wrapping_and_unvisited_expressions_do_not_gain_facts ... ok
+test typeck::scope::local_tests::joins_forget_only_the_value_and_keep_outer_facts_and_positions ... ok
+test typeck::scope::local_tests::saved_result_ok_and_error_match_independent_scope_lower_records ... ok
+test typeck::scope::local_tests::direct_projections_distinguish_instances_aliases_rewrap_and_unknown_calls ... ok
+
+failures:
+
+failures:
+    typeck::scope::local_tests::bodies_clear_facts_preserve_positions_and_restore_the_outer_state
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 1389 filtered out; finished in 0.19s
+
+error: test failed, to rerun pass `-p benitoite --lib`

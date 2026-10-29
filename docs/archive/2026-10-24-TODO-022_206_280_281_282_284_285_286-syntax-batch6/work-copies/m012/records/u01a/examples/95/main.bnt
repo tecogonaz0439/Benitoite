@@ -1,0 +1,12 @@
+import Benitoite.Unofficial.Test.Property
+@test
+function propertyExample() -> Unit uses Assert.Check
+  bind config <- Property.Config(seed: 42, trials: 3, size: 4, maxShrinks: 10, maxShrinkWork: 20)
+  bind result <- Property.check(config: config, gen: Property.constant(7), shrinker: Property.shrinkInteger(), property: lambda(value)
+    return if value = 7 then Result.Ok(()) else Result.Error("expected seven") end if
+  end lambda)
+  match result with
+    case Result.Ok(_) -> return ()
+    case Result.Error(_) -> Assert.fail("property failed")
+  end match
+end function

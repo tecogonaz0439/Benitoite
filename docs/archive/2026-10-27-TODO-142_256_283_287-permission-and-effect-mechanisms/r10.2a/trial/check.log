@@ -1,0 +1,1186 @@
+    Checking benitoite v0.0.12 (<wt>/crates/benitoite)
+error[E0204]: the trait `Copy` cannot be implemented for this type
+  --> crates/benitoite/src/typeck/solve.rs:53:6
+   |
+52 | #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+   |                 ---- in this derive macro expansion
+53 | enum Elem {
+   |      ^^^^
+54 |     Name(EffectName),
+   |          ---------- this field does not implement `Copy`
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/bytecode/codegen/tables.rs:274:30
+    |
+274 |             EffectName::User(_) => op
+    |                              ^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:46:10
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+274 |             EffectName::User(_, _) => op
+    |                               +++
+help: use `..` to ignore all fields
+    |
+274 -             EffectName::User(_) => op
+274 +             EffectName::User(..) => op
+    |
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/bytecode/codegen/tables.rs:279:33
+    |
+279 |             EffectName::Builtin(id) => {
+    |                                 ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:44:13
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+279 |             EffectName::Builtin(id, _) => {
+    |                                   +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+  --> crates/benitoite/src/cli/inspection.rs:72:37
+   |
+72 |             let EffectName::Builtin(id) = effect else {
+   |                                     ^^ expected 2 fields, found 1
+   |
+  ::: crates/benitoite/src/types/mod.rs:44:13
+   |
+44 |     Builtin(BuiltinEffectId, scope::Range),
+   |             ---------------  ------------ tuple variant has 2 fields
+   |
+help: use `_` to explicitly ignore each field
+   |
+72 |             let EffectName::Builtin(id, _) = effect else {
+   |                                       +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+  --> crates/benitoite/src/cli/inspection.rs:94:48
+   |
+94 |                     if let EffectName::Builtin(id) = effect {
+   |                                                ^^ expected 2 fields, found 1
+   |
+  ::: crates/benitoite/src/types/mod.rs:44:13
+   |
+44 |     Builtin(BuiltinEffectId, scope::Range),
+   |             ---------------  ------------ tuple variant has 2 fields
+   |
+help: use `_` to explicitly ignore each field
+   |
+94 |                     if let EffectName::Builtin(id, _) = effect {
+   |                                                  +++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/ir/check.rs:936:25
+    |
+936 |         eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));
+    |                         ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+936 |         eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */));
+    |                                                                   +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:1326:33
+     |
+1326 |                 && op.effect != EffectName::Builtin(BuiltinEffectId::STATE)
+     |                                 ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+1326 |                 && op.effect != EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */)
+     |                                                                           +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/ir/desugar/effects.rs:432:21
+    |
+432 |     eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE));
+    |                     ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+432 |     eff.insert_name(EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */));
+    |                                                               +++++++++++++++++++++++++++
+
+error[E0277]: the trait bound `types::EffectName: Copy` is not satisfied
+    --> crates/benitoite/src/ir/desugar/effects.rs:447:14
+     |
+ 447 |             .copied()
+     |              ^^^^^^ unsatisfied trait bound
+     |
+help: the trait `Copy` is not implemented for `types::EffectName`
+    --> crates/benitoite/src/types/mod.rs:42:1
+     |
+  42 | pub enum EffectName {
+     | ^^^^^^^^^^^^^^^^^^^
+note: required by a bound in `copied`
+    --> <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/iter/traits/iterator.rs:3513:12
+     |
+3511 |     fn copied<'a, T>(self) -> Copied<Self>
+     |        ------ required by a bound in this associated function
+3512 |     where
+3513 |         T: Copy + 'a,
+     |            ^^^^ required by this bound in `Iterator::copied`
+
+error[E0599]: the method `collect` exists for struct `Copied<Filter<Iter<'_, EffectName>, {closure@effects.rs:446:21}>>`, but its trait bounds were not satisfied
+   --> crates/benitoite/src/ir/desugar/effects.rs:448:14
+    |
+443 |           names: eff
+    |  ________________-
+444 | |             .names
+445 | |             .iter()
+446 | |             .filter(|n| !removed.names.contains(n))
+447 | |             .copied()
+448 | |             .collect(),
+    | |             -^^^^^^^ method cannot be called due to unsatisfied trait bounds
+    | |_____________|
+    |
+    |
+   ::: <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/iter/adapters/copied.rs:19:1
+    |
+ 19 |   pub struct Copied<I> {
+    |   -------------------- doesn't satisfy `_: Iterator`
+    |
+    = note: the following trait bounds were not satisfied:
+            `Copied<Filter<std::slice::Iter<'_, types::EffectName>, {closure@crates/benitoite/src/ir/desugar/effects.rs:446:21: 446:24}>>: Iterator`
+            which is required by `&mut Copied<Filter<std::slice::Iter<'_, types::EffectName>, {closure@crates/benitoite/src/ir/desugar/effects.rs:446:21: 446:24}>>: Iterator`
+    = note: the full name for the type has been written to '<wt>/target/debug/deps/benitoite-a901ef6d7dbd67da.long-type-9608921748642844786.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/decls.rs:185:25
+    |
+185 |             return Some(EffectName::Builtin(e));
+    |                         ^^^^^^^^^^^^^^^^^^^--- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+185 |             return Some(EffectName::Builtin(e, /* types::scope::Range */));
+    |                                              +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/decls.rs:191:29
+    |
+191 |                 return Some(EffectName::Builtin(e));
+    |                             ^^^^^^^^^^^^^^^^^^^--- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+191 |                 return Some(EffectName::Builtin(e, /* types::scope::Range */));
+    |                                                  +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/decls.rs:194:14
+    |
+194 |         Some(EffectName::User(id))
+    |              ^^^^^^^^^^^^^^^^---- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:46:5
+    |
+ 46 |     User(BindingId, scope::Range),
+    |     ^^^^
+help: provide the argument
+    |
+194 |         Some(EffectName::User(id, /* types::scope::Range */))
+    |                                 +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/decls.rs:328:32
+    |
+328 |                     if name == EffectName::Builtin(BuiltinEffectId::IO_ALL) {
+    |                                ^^^^^^^^^^^^^^^^^^^------------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+328 |                     if name == EffectName::Builtin(BuiltinEffectId::IO_ALL, /* types::scope::Range */) {
+    |                                                                           +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/decls.rs:334:50
+    |
+334 | ...                   atom.insert_name(EffectName::Builtin(BuiltinEffectId(i)));
+    |                                        ^^^^^^^^^^^^^^^^^^^-------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+334 |                                 atom.insert_name(EffectName::Builtin(BuiltinEffectId(i), /* types::scope::Range */));
+    |                                                                                        +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/typeck/decls.rs:1183:65
+     |
+1183 |                     let name = d.effect_name(binding).unwrap_or(EffectName::User(binding));
+     |                                                                 ^^^^^^^^^^^^^^^^--------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+1183 |                     let name = d.effect_name(binding).unwrap_or(EffectName::User(binding, /* types::scope::Range */));
+     |                                                                                         +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/typeck/decls.rs:1420:19
+     |
+1420 |             name: EffectName::User(effect),
+     |                   ^^^^^^^^^^^^^^^^-------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+1420 |             name: EffectName::User(effect, /* types::scope::Range */),
+     |                                          +++++++++++++++++++++++++++
+
+error[E0593]: function is expected to take 1 argument, but it takes 2 arguments
+    --> crates/benitoite/src/typeck/effects/declarations.rs:107:26
+     |
+ 107 |                     .map(EffectName::User);
+     |                      --- ^^^^^^^^^^^^^^^^ expected function that takes 1 argument
+     |                      |
+     |                      required by a bound introduced by this call
+     |
+    ::: crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ---- takes 2 arguments
+     |
+note: required by a bound in `std::option::Option::<T>::map`
+    --> <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs:1160:12
+     |
+1158 |     pub const fn map<U, F>(self, f: F) -> Option<U>
+     |                  --- required by a bound in this associated function
+1159 |     where
+1160 |         F: [const] FnOnce(T) -> U + [const] Destruct,
+     |            ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Option::<T>::map`
+
+error[E0277]: the trait bound `types::EffectName: Copy` is not satisfied
+    --> crates/benitoite/src/typeck/effects/declarations.rs:108:57
+     |
+ 108 |                 for name in origin.effects.names.iter().copied().chain(failure) {
+     |                                                         ^^^^^^ unsatisfied trait bound
+     |
+help: the trait `Copy` is not implemented for `types::EffectName`
+    --> crates/benitoite/src/types/mod.rs:42:1
+     |
+  42 | pub enum EffectName {
+     | ^^^^^^^^^^^^^^^^^^^
+note: required by a bound in `copied`
+    --> <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/iter/traits/iterator.rs:3513:12
+     |
+3511 |     fn copied<'a, T>(self) -> Copied<Self>
+     |        ------ required by a bound in this associated function
+3512 |     where
+3513 |         T: Copy + 'a,
+     |            ^^^^ required by this bound in `Iterator::copied`
+
+error[E0599]: `Copied<std::slice::Iter<'_, types::EffectName>>` is not an iterator
+   --> crates/benitoite/src/typeck/effects/declarations.rs:108:66
+    |
+108 |                 for name in origin.effects.names.iter().copied().chain(failure) {
+    |                                                                  ^^^^^ `Copied<std::slice::Iter<'_, types::EffectName>>` is not an iterator
+    |
+   ::: <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/iter/adapters/copied.rs:19:1
+    |
+ 19 | pub struct Copied<I> {
+    | -------------------- doesn't satisfy `_: Iterator`
+    |
+    = note: the following trait bounds were not satisfied:
+            `Copied<std::slice::Iter<'_, types::EffectName>>: Iterator`
+            which is required by `&mut Copied<std::slice::Iter<'_, types::EffectName>>: Iterator`
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/typeck/effects/declarations.rs:113:42
+    |
+113 |                         EffectName::User(id)
+    |                                          ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:46:10
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+113 |                         EffectName::User(id, _)
+    |                                            +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/typeck/effects/declarations.rs:132:45
+    |
+132 |                         EffectName::Builtin(b) if main && b != BuiltinEffectId::IO_ALL => {
+    |                                             ^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:44:13
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+132 |                         EffectName::Builtin(b, _) if main && b != BuiltinEffectId::IO_ALL => {
+    |                                              +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/typeck/effects/declarations.rs:153:45
+    |
+153 |                         EffectName::Builtin(_) | EffectName::User(_) => {}
+    |                                             ^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:44:13
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+153 |                         EffectName::Builtin(_, _) | EffectName::User(_) => {}
+    |                                              +++
+help: use `..` to ignore all fields
+    |
+153 -                         EffectName::Builtin(_) | EffectName::User(_) => {}
+153 +                         EffectName::Builtin(..) | EffectName::User(_) => {}
+    |
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/typeck/effects/declarations.rs:153:67
+    |
+153 |                         EffectName::Builtin(_) | EffectName::User(_) => {}
+    |                                                                   ^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:46:10
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+153 |                         EffectName::Builtin(_) | EffectName::User(_, _) => {}
+    |                                                                    +++
+help: use `..` to ignore all fields
+    |
+153 -                         EffectName::Builtin(_) | EffectName::User(_) => {}
+153 +                         EffectName::Builtin(_) | EffectName::User(..) => {}
+    |
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/effects/declarations.rs:216:30
+    |
+216 |                     .map(|i| EffectName::Builtin(BuiltinEffectId(i)))
+    |                              ^^^^^^^^^^^^^^^^^^^-------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+216 |                     .map(|i| EffectName::Builtin(BuiltinEffectId(i), /* types::scope::Range */))
+    |                                                                    +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/effects/declarations.rs:259:21
+    |
+259 |             == Some(EffectName::Builtin(BuiltinEffectId::IO_ALL))
+    |                     ^^^^^^^^^^^^^^^^^^^------------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+259 |             == Some(EffectName::Builtin(BuiltinEffectId::IO_ALL, /* types::scope::Range */))
+    |                                                                +++++++++++++++++++++++++++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/typeck/effects/declarations.rs:348:29
+    |
+348 |         EffectName::Builtin(b) => {
+    |                             ^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:44:13
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+348 |         EffectName::Builtin(b, _) => {
+    |                              +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/typeck/effects/declarations.rs:400:26
+    |
+400 |         EffectName::User(id) => {
+    |                          ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:46:10
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+400 |         EffectName::User(id, _) => {
+    |                            +++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+  --> crates/benitoite/src/typeck/effects/handle.rs:77:40
+   |
+77 | ...                   .contains(&EffectName::Builtin(BuiltinEffectId::STATE))
+   |                                  ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+   |
+note: tuple variant defined here
+  --> crates/benitoite/src/types/mod.rs:44:5
+   |
+44 |     Builtin(BuiltinEffectId, scope::Range),
+   |     ^^^^^^^
+help: provide the argument
+   |
+77 |                             .contains(&EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */))
+   |                                                                                  +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/effects/mod.rs:123:33
+    |
+123 |                     names: vec![EffectName::Builtin(effect)],
+    |                                 ^^^^^^^^^^^^^^^^^^^-------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+123 |                     names: vec![EffectName::Builtin(effect, /* types::scope::Range */)],
+    |                                                           +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/effects/mod.rs:202:25
+    |
+202 |             names: vec![EffectName::Builtin(BuiltinEffectId::STATE)],
+    |                         ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+202 |             names: vec![EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */)],
+    |                                                                   +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+  --> crates/benitoite/src/typeck/external.rs:40:56
+   |
+40 |                 && scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE)];
+   |                                                        ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+   |
+note: tuple variant defined here
+  --> crates/benitoite/src/types/mod.rs:44:5
+   |
+44 |     Builtin(BuiltinEffectId, scope::Range),
+   |     ^^^^^^^
+help: provide the argument
+   |
+40 |                 && scheme.effects.names.as_slice() == [EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */)];
+   |                                                                                                  +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+  --> crates/benitoite/src/typeck/external.rs:48:46
+   |
+48 | ...                   *name != EffectName::Builtin(BuiltinEffectId::STATE)
+   |                                ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+   |
+note: tuple variant defined here
+  --> crates/benitoite/src/types/mod.rs:44:5
+   |
+44 |     Builtin(BuiltinEffectId, scope::Range),
+   |     ^^^^^^^
+help: provide the argument
+   |
+48 |                                     *name != EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */)
+   |                                                                                        +++++++++++++++++++++++++++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+    --> crates/benitoite/src/typeck/solve.rs:2265:73
+     |
+2265 |                 let name = if let Elem::Name(name @ EffectName::Builtin(b)) = elem
+     |                                                                         ^ expected 2 fields, found 1
+     |
+    ::: crates/benitoite/src/types/mod.rs:44:13
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |             ---------------  ------------ tuple variant has 2 fields
+     |
+help: use `_` to explicitly ignore each field
+     |
+2265 |                 let name = if let Elem::Name(name @ EffectName::Builtin(b, _)) = elem
+     |                                                                          +++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/types/mod.rs:773:44
+    |
+773 | ...                   .contains(&EffectName::Builtin(BuiltinEffectId(i)))
+    |                                  ^^^^^^^^^^^^^^^^^^^-------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+773 |                                 .contains(&EffectName::Builtin(BuiltinEffectId(i), /* types::scope::Range */))
+    |                                                                                  +++++++++++++++++++++++++++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/types/mod.rs:781:63
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+...
+781 |                         && matches!(name, EffectName::Builtin(id) if id.def().is_some_and(|d| d.in_io_all))
+    |                                                               ^^ expected 2 fields, found 1
+    |
+help: use `_` to explicitly ignore each field
+    |
+781 |                         && matches!(name, EffectName::Builtin(id, _) if id.def().is_some_and(|d| d.in_io_all))
+    |                                                                 +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/types/mod.rs:786:45
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+...
+786 |                         EffectName::Builtin(id) => {
+    |                                             ^^ expected 2 fields, found 1
+    |
+help: use `_` to explicitly ignore each field
+    |
+786 |                         EffectName::Builtin(id, _) => {
+    |                                               +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/types/mod.rs:789:42
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+...
+789 |                         EffectName::User(id) => names
+    |                                          ^^ expected 2 fields, found 1
+    |
+help: use `_` to explicitly ignore each field
+    |
+789 |                         EffectName::User(id, _) => names
+    |                                            +++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:1665:16
+     |
+1665 |           effect(EffectName::Builtin(
+     |  ________________^^^^^^^^^^^^^^^^^^^-
+1666 | |             find_builtin_effect(&["IO", "Console"], "Write").unwrap(),
+1667 | |         ))
+     | |_________- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+1665 -         effect(EffectName::Builtin(
+1666 -             find_builtin_effect(&["IO", "Console"], "Write").unwrap(),
+1667 -         ))
+1665 +         effect(EffectName::Builtin(find_builtin_effect(&["IO", "Console"], "Write").unwrap(), /* types::scope::Range */))
+     |
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:1675:16
+     |
+1675 |         effect(EffectName::Builtin(BuiltinEffectId::STATE))
+     |                ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+1675 |         effect(EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */))
+     |                                                          +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:2283:20
+     |
+2283 |             effect(EffectName::User(BindingId(42))),
+     |                    ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+2283 |             effect(EffectName::User(BindingId(42), /* types::scope::Range */)),
+     |                                                  +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:2293:21
+     |
+2293 |             effect: EffectName::User(BindingId(42)),
+     |                     ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+2293 |             effect: EffectName::User(BindingId(42), /* types::scope::Range */),
+     |                                                   +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:2353:29
+     |
+2353 |             handled: effect(EffectName::User(BindingId(42))),
+     |                             ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+2353 |             handled: effect(EffectName::User(BindingId(42), /* types::scope::Range */)),
+     |                                                           +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:2565:42
+     |
+2565 |         broken.defs[0].body.eff = effect(EffectName::User(BindingId(42)));
+     |                                          ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+2565 |         broken.defs[0].body.eff = effect(EffectName::User(BindingId(42), /* types::scope::Range */));
+     |                                                                        +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:2640:29
+     |
+2640 |             handled: effect(EffectName::User(BindingId(42))),
+     |                             ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+2640 |             handled: effect(EffectName::User(BindingId(42), /* types::scope::Range */)),
+     |                                                           +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/check.rs:3667:27
+     |
+3667 |         let effect_name = EffectName::User(BindingId(42));
+     |                           ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+3667 |         let effect_name = EffectName::User(BindingId(42), /* types::scope::Range */);
+     |                                                         +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/decision.rs:3282:33
+     |
+3282 |                     names: vec![EffectName::User(BindingId(61))],
+     |                                 ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+3282 |                     names: vec![EffectName::User(BindingId(61), /* types::scope::Range */)],
+     |                                                               +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/decision.rs:3519:25
+     |
+3519 |             names: vec![EffectName::Builtin(BuiltinEffectId(2))],
+     |                         ^^^^^^^^^^^^^^^^^^^-------------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+3519 |             names: vec![EffectName::Builtin(BuiltinEffectId(2), /* types::scope::Range */)],
+     |                                                               +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/ir/decision.rs:3672:21
+     |
+3672 |             effect: EffectName::User(BindingId(61)),
+     |                     ^^^^^^^^^^^^^^^^--------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+3672 |             effect: EffectName::User(BindingId(61), /* types::scope::Range */),
+     |                                                   +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/ir/desugar/die_tests.rs:210:29
+    |
+210 |                   names: vec![EffectName::Builtin(
+    |  _____________________________^^^^^^^^^^^^^^^^^^^-
+211 | |                     crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap(),
+212 | |                 )],
+    | |_________________- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+210 -                 names: vec![EffectName::Builtin(
+211 -                     crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap(),
+212 -                 )],
+210 +                 names: vec![EffectName::Builtin(crate::types::builtin::find_builtin_effect(&["IO", "Process"], "Exit").unwrap(), /* types::scope::Range */)],
+    |
+
+error[E0599]: the method `collect` exists for struct `Copied<Filter<Iter<'_, EffectName>, {closure@effects.rs:446:21}>>`, but its trait bounds were not satisfied
+   --> crates/benitoite/src/ir/desugar/effects.rs:448:14
+    |
+443 |           names: eff
+    |  ________________-
+444 | |             .names
+445 | |             .iter()
+446 | |             .filter(|n| !removed.names.contains(n))
+447 | |             .copied()
+448 | |             .collect(),
+    | |             -^^^^^^^ method cannot be called due to unsatisfied trait bounds
+    | |_____________|
+    |
+    |
+   ::: <home>/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/iter/adapters/copied.rs:19:1
+    |
+ 19 |   pub struct Copied<I> {
+    |   -------------------- doesn't satisfy `_: Iterator`
+    |
+    = note: the following trait bounds were not satisfied:
+            `Copied<Filter<std::slice::Iter<'_, types::EffectName>, {closure@crates/benitoite/src/ir/desugar/effects.rs:446:21: 446:24}>>: Iterator`
+            which is required by `&mut Copied<Filter<std::slice::Iter<'_, types::EffectName>, {closure@crates/benitoite/src/ir/desugar/effects.rs:446:21: 446:24}>>: Iterator`
+    = note: the full name for the type has been written to '<wt>/target/debug/deps/benitoite-71509703b100cbda.long-type-3502502557328209806.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/ir/desugar/tests.rs:858:10
+    |
+858 |         [EffectName::Builtin(BuiltinEffectId::STATE)]
+    |          ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+858 |         [EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */)]
+    |                                                    +++++++++++++++++++++++++++
+
+error[E0507]: cannot move out of `effect.name` which is behind a shared reference
+   --> crates/benitoite/src/ir/desugar/decls.rs:111:25
+    |
+111 |                 effect: effect.name,
+    |                         ^^^^^^^^^^^ move occurs because `effect.name` has type `types::EffectName`, which does not implement the `Copy` trait
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+111 |                 effect: effect.name.clone(),
+    |                                    ++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/typeck/effects/tests.rs:135:37
+    |
+135 |     assert_eq!(info.handled.names, [EffectName::User(binding(&r, "Log"))]);
+    |                                     ^^^^^^^^^^^^^^^^-------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:46:5
+    |
+ 46 |     User(BindingId, scope::Range),
+    |     ^^^^
+help: provide the argument
+    |
+135 |     assert_eq!(info.handled.names, [EffectName::User(binding(&r, "Log"), /* types::scope::Range */)]);
+    |                                                                        +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/typeck/effects/tests.rs:1229:57
+     |
+1229 |             .any(|(_, effects)| effects.names.contains(&EffectName::Builtin(exit)))
+     |                                                         ^^^^^^^^^^^^^^^^^^^------ argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+1229 |             .any(|(_, effects)| effects.names.contains(&EffectName::Builtin(exit, /* types::scope::Range */)))
+     |                                                                                 +++++++++++++++++++++++++++
+
+error[E0507]: cannot move out of `*n` which is behind a shared reference
+   --> crates/benitoite/src/typeck/effects/declarations.rs:329:35
+    |
+329 |         .map(|n| effect_name(ctx, *n, module))
+    |                                   ^^ move occurs because `*n` has type `types::EffectName`, which does not implement the `Copy` trait
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+329 -         .map(|n| effect_name(ctx, *n, module))
+329 +         .map(|n| effect_name(ctx, n.clone(), module))
+    |
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/typeck/tests.rs:1017:39
+     |
+1017 |       assert!(s.effects.names.contains(&EffectName::Builtin(
+     |  _______________________________________^^^^^^^^^^^^^^^^^^^-
+1018 | |         crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap()
+1019 | |     )));
+     | |_____- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+1017 -     assert!(s.effects.names.contains(&EffectName::Builtin(
+1018 -         crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap()
+1019 -     )));
+1017 +     assert!(s.effects.names.contains(&EffectName::Builtin(crate::types::builtin::find_builtin_effect(&["IO", "Console"], "Write").unwrap(), /* types::scope::Range */)));
+     |
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/typeck/tests.rs:1023:24
+     |
+1023 |             .contains(&EffectName::Builtin(BuiltinEffectId::IO_ALL))
+     |                        ^^^^^^^^^^^^^^^^^^^------------------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:44:5
+     |
+  44 |     Builtin(BuiltinEffectId, scope::Range),
+     |     ^^^^^^^
+help: provide the argument
+     |
+1023 |             .contains(&EffectName::Builtin(BuiltinEffectId::IO_ALL, /* types::scope::Range */))
+     |                                                                   +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+    --> crates/benitoite/src/typeck/tests.rs:1030:9
+     |
+1030 |         EffectName::User(id(&r, "Write"))
+     |         ^^^^^^^^^^^^^^^^----------------- argument #2 of type `types::scope::Range` is missing
+     |
+note: tuple variant defined here
+    --> crates/benitoite/src/types/mod.rs:46:5
+     |
+  46 |     User(BindingId, scope::Range),
+     |     ^^^^
+help: provide the argument
+     |
+1030 |         EffectName::User(id(&r, "Write"), /* types::scope::Range */)
+     |                                         +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/types/mod.rs:890:29
+    |
+890 |         effects.insert_name(EffectName::Builtin(BuiltinEffectId(12)));
+    |                             ^^^^^^^^^^^^^^^^^^^--------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+890 |         effects.insert_name(EffectName::Builtin(BuiltinEffectId(12), /* types::scope::Range */));
+    |                                                                    +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/types/mod.rs:915:31
+    |
+915 |                 .map(|(i, _)| EffectName::Builtin(BuiltinEffectId(u16::try_from(i).unwrap())))
+    |                               ^^^^^^^^^^^^^^^^^^^-------------------------------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+915 |                 .map(|(i, _)| EffectName::Builtin(BuiltinEffectId(u16::try_from(i).unwrap()), /* types::scope::Range */))
+    |                                                                                             +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/types/mod.rs:939:23
+    |
+939 |         let console = EffectName::Builtin(BuiltinEffectId(2));
+    |                       ^^^^^^^^^^^^^^^^^^^-------------------- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+939 |         let console = EffectName::Builtin(BuiltinEffectId(2), /* types::scope::Range */);
+    |                                                             +++++++++++++++++++++++++++
+
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/types/mod.rs:940:21
+    |
+940 |         let state = EffectName::Builtin(BuiltinEffectId::STATE);
+    |                     ^^^^^^^^^^^^^^^^^^^------------------------ argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+940 |         let state = EffectName::Builtin(BuiltinEffectId::STATE, /* types::scope::Range */);
+    |                                                               +++++++++++++++++++++++++++
+
+error[E0507]: cannot move out of `*e` which is behind a shared reference
+    --> crates/benitoite/src/typeck/solve.rs:2398:29
+     |
+2398 |         .map(|e| Elem::Name(*e))
+     |                             ^^ move occurs because `*e` has type `types::EffectName`, which does not implement the `Copy` trait
+     |
+help: consider cloning the value if the performance cost is acceptable
+     |
+2398 -         .map(|e| Elem::Name(*e))
+2398 +         .map(|e| Elem::Name(e.clone()))
+     |
+
+error[E0507]: cannot move out of `*n` which is behind a shared reference
+   --> crates/benitoite/src/types/mod.rs:117:29
+    |
+117 |             out.insert_name(*n);
+    |                             ^^ move occurs because `*n` has type `types::EffectName`, which does not implement the `Copy` trait
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+117 -             out.insert_name(*n);
+117 +             out.insert_name(n.clone());
+    |
+
+Some errors have detailed explanations: E0023, E0061, E0204, E0277, E0507, E0593, E0599.
+For more information about an error, try `rustc --explain E0023`.
+error: could not compile `benitoite` (lib) due to 42 previous errors
+warning: build failed, waiting for other jobs to finish...
+error[E0061]: this enum variant takes 2 arguments but 1 argument was supplied
+   --> crates/benitoite/src/../tests/desugar_export/builtins.rs:298:29
+    |
+298 |                 names: vec![EffectName::Builtin(id)],
+    |                             ^^^^^^^^^^^^^^^^^^^---- argument #2 of type `types::scope::Range` is missing
+    |
+note: tuple variant defined here
+   --> crates/benitoite/src/types/mod.rs:44:5
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |     ^^^^^^^
+help: provide the argument
+    |
+298 |                 names: vec![EffectName::Builtin(id, /* types::scope::Range */)],
+    |                                                   +++++++++++++++++++++++++++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/../tests/desugar_export/exchange.rs:385:38
+    |
+385 |                     EffectName::User(id) => format!("effect:{}", id.0),
+    |                                      ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:46:10
+    |
+ 46 |     User(BindingId, scope::Range),
+    |          ---------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+385 |                     EffectName::User(id, _) => format!("effect:{}", id.0),
+    |                                        +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+   --> crates/benitoite/src/../tests/desugar_export/exchange.rs:386:41
+    |
+386 |                     EffectName::Builtin(id) => {
+    |                                         ^^ expected 2 fields, found 1
+    |
+   ::: crates/benitoite/src/types/mod.rs:44:13
+    |
+ 44 |     Builtin(BuiltinEffectId, scope::Range),
+    |             ---------------  ------------ tuple variant has 2 fields
+    |
+help: use `_` to explicitly ignore each field
+    |
+386 |                     EffectName::Builtin(id, _) => {
+    |                                           +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+    --> crates/benitoite/src/../tests/desugar_export/exchange.rs:2774:34
+     |
+2774 |             let EffectName::User(effect) = op.effect else {
+     |                                  ^^^^^^ expected 2 fields, found 1
+     |
+    ::: crates/benitoite/src/types/mod.rs:46:10
+     |
+  46 |     User(BindingId, scope::Range),
+     |          ---------  ------------ tuple variant has 2 fields
+     |
+help: use `_` to explicitly ignore each field
+     |
+2774 |             let EffectName::User(effect, _) = op.effect else {
+     |                                        +++
+
+error[E0023]: this pattern has 1 field, but the corresponding tuple variant has 2 fields
+    --> crates/benitoite/src/../tests/desugar_export/exchange.rs:2796:30
+     |
+2796 |         let EffectName::User(id) = e.name else { return None; };
+     |                              ^^ expected 2 fields, found 1
+     |
+    ::: crates/benitoite/src/types/mod.rs:46:10
+     |
+  46 |     User(BindingId, scope::Range),
+     |          ---------  ------------ tuple variant has 2 fields
+     |
+help: use `_` to explicitly ignore each field
+     |
+2796 |         let EffectName::User(id, _) = e.name else { return None; };
+     |                                +++
+
+error[E0507]: cannot move out of a shared reference
+   --> crates/benitoite/src/ir/desugar/tests.rs:902:15
+    |
+902 |       let log = types
+    |  _______________^
+903 | |         .effects
+904 | |         .iter()
+905 | |         .find(|(_, e)| e.display_name == "Log")
+906 | |         .unwrap()
+907 | |         .1
+908 | |         .name;
+    | |_____________^ move occurs because value has type `types::EffectName`, which does not implement the `Copy` trait
+    |
+help: consider borrowing here
+    |
+902 |     let log = &types
+    |               +
+help: consider cloning the value if the performance cost is acceptable
+    |
+908 |         .name.clone();
+    |              ++++++++
+
+error: could not compile `benitoite` (lib test) due to 70 previous errors
+real 10.63
+user 15.54
+sys 0.68

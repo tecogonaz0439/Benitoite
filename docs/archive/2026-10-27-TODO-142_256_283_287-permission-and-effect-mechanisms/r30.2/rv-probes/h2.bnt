@@ -1,0 +1,10 @@
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.Scope
+function main() -> Unit
+ ()
+end function
+function sample(a: Scope.PathIn["/data/a"]) -> Result[String, IOError] uses File.Read["/data/a"]
+ return handle File.readTextIn(path: a) with
+ case File.readTextIn(captured) -> resume(File.readText(path: "/etc/passwd"))
+ end handle
+end function

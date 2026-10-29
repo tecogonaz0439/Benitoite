@@ -1,0 +1,253 @@
+{
+  "accepted_selected_calls": 100,
+  "bodies": [
+    {
+      "calls": 100,
+      "definition": ".sample",
+      "metrics": {
+        "body_operations": 350,
+        "max_body_items": 4,
+        "max_whole_items": 4,
+        "stops": [],
+        "whole_operations": 350
+      },
+      "numbering_and_local_seconds": 0.000081667,
+      "numbering_candidates": [
+        {
+          "events": 1503,
+          "limit": 100000,
+          "numbering_seconds_median": 8.875e-6,
+          "samples_seconds": [
+            8.625e-6,
+            8.667e-6,
+            8.875e-6,
+            8.916e-6,
+            9.25e-6
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 1503,
+          "limit": 200000,
+          "numbering_seconds_median": 8.916e-6,
+          "samples_seconds": [
+            8.834e-6,
+            8.875e-6,
+            8.916e-6,
+            8.958e-6,
+            9.084e-6
+          ],
+          "stopped": "None"
+        },
+        {
+          "events": 1503,
+          "limit": 300000,
+          "numbering_seconds_median": 8.625e-6,
+          "samples_seconds": [
+            8.583e-6,
+            8.625e-6,
+            8.625e-6,
+            8.625e-6,
+            8.708e-6
+          ],
+          "stopped": "None"
+        }
+      ],
+      "numbering_operations": 1503,
+      "occurrences": 561,
+      "stopped": "None"
+    }
+  ],
+  "body_items_max": 4,
+  "body_operations_max": 350,
+  "candidates": [
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 8,
+          "operations": 128
+        },
+        "whole": {
+          "items": 32,
+          "operations": 512
+        }
+      },
+      "local_stopped": "Some(BudgetExceeded { scope: Body, resource: Operations })",
+      "lost_ranges": 25,
+      "name": "small",
+      "numbering_operations": 1503,
+      "numbering_stopped": "None",
+      "rejections": [
+        "WidenRequest:206:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(206), node: NodeId(404), reason: BudgetExceeded })",
+        "PathValue:231:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(231), node: NodeId(453), reason: BudgetExceeded })",
+        "WidenPath:234:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(234), node: NodeId(459), reason: BudgetExceeded })",
+        "RequestValue:259:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(259), node: NodeId(506), reason: BudgetExceeded })",
+        "WidenRequest:262:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(262), node: NodeId(512), reason: BudgetExceeded })",
+        "PathValue:287:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(287), node: NodeId(561), reason: BudgetExceeded })",
+        "WidenPath:290:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(290), node: NodeId(567), reason: BudgetExceeded })",
+        "RequestValue:315:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(315), node: NodeId(614), reason: BudgetExceeded })",
+        "WidenRequest:318:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(318), node: NodeId(620), reason: BudgetExceeded })",
+        "PathValue:343:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(343), node: NodeId(669), reason: BudgetExceeded })",
+        "WidenPath:346:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(346), node: NodeId(675), reason: BudgetExceeded })",
+        "RequestValue:371:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(371), node: NodeId(722), reason: BudgetExceeded })",
+        "WidenRequest:374:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(374), node: NodeId(728), reason: BudgetExceeded })",
+        "PathValue:399:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(399), node: NodeId(777), reason: BudgetExceeded })",
+        "WidenPath:402:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(402), node: NodeId(783), reason: BudgetExceeded })",
+        "RequestValue:427:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(427), node: NodeId(830), reason: BudgetExceeded })",
+        "WidenRequest:430:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(430), node: NodeId(836), reason: BudgetExceeded })",
+        "PathValue:455:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(455), node: NodeId(885), reason: BudgetExceeded })",
+        "WidenPath:458:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(458), node: NodeId(891), reason: BudgetExceeded })",
+        "RequestValue:483:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(483), node: NodeId(938), reason: BudgetExceeded })",
+        "WidenRequest:486:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(486), node: NodeId(944), reason: BudgetExceeded })",
+        "PathValue:511:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(511), node: NodeId(993), reason: BudgetExceeded })",
+        "WidenPath:514:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(514), node: NodeId(999), reason: BudgetExceeded })",
+        "RequestValue:539:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(539), node: NodeId(1046), reason: BudgetExceeded })",
+        "WidenRequest:542:Rejected(ScopeRejection { definition: \".sample\", preorder: Some(542), node: NodeId(1052), reason: BudgetExceeded })"
+      ],
+      "stops": [
+        {
+          "preorder": 203,
+          "reason": "BudgetExceeded { scope: Body, resource: Operations }"
+        }
+      ]
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 128,
+          "operations": 2048
+        },
+        "whole": {
+          "items": 512,
+          "operations": 8192
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "middle",
+      "numbering_operations": 1503,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    },
+    {
+      "definition": ".sample",
+      "limits": {
+        "body": {
+          "items": 512,
+          "operations": 16384
+        },
+        "whole": {
+          "items": 2048,
+          "operations": 65536
+        }
+      },
+      "local_stopped": "None",
+      "lost_ranges": 0,
+      "name": "large",
+      "numbering_operations": 1503,
+      "numbering_stopped": "None",
+      "rejections": [],
+      "stops": []
+    }
+  ],
+  "case": "dense-10",
+  "configuration": "release-default",
+  "definitions": 1,
+  "exit": 0,
+  "handler_reinferences": 0,
+  "handlers": 0,
+  "limits": {
+    "body": {
+      "items": 100000,
+      "operations": 1000000
+    },
+    "whole": {
+      "items": 10000000,
+      "operations": 100000000
+    }
+  },
+  "narrow_rejections": [
+    "PathValue:18:UnknownSource",
+    "CheckPath:21:UnknownSource",
+    "CheckRequest:27:NotCovered",
+    "RequestValue:35:NotCovered",
+    "WidenRequest:38:NotCovered",
+    "RequestValue:44:UnknownSource",
+    "CheckRequest:47:NotCovered",
+    "PathValue:74:UnknownSource",
+    "CheckPath:77:UnknownSource",
+    "CheckRequest:83:NotCovered",
+    "RequestValue:91:NotCovered",
+    "WidenRequest:94:NotCovered",
+    "RequestValue:100:UnknownSource",
+    "CheckRequest:103:NotCovered",
+    "PathValue:130:UnknownSource",
+    "CheckPath:133:UnknownSource",
+    "CheckRequest:139:NotCovered",
+    "RequestValue:147:NotCovered",
+    "WidenRequest:150:NotCovered",
+    "RequestValue:156:UnknownSource",
+    "CheckRequest:159:NotCovered",
+    "PathValue:186:UnknownSource",
+    "CheckPath:189:UnknownSource",
+    "CheckRequest:195:NotCovered",
+    "RequestValue:203:NotCovered",
+    "WidenRequest:206:NotCovered",
+    "RequestValue:212:UnknownSource",
+    "CheckRequest:215:NotCovered",
+    "PathValue:242:UnknownSource",
+    "CheckPath:245:UnknownSource",
+    "CheckRequest:251:NotCovered",
+    "RequestValue:259:NotCovered",
+    "WidenRequest:262:NotCovered",
+    "RequestValue:268:UnknownSource",
+    "CheckRequest:271:NotCovered",
+    "PathValue:298:UnknownSource",
+    "CheckPath:301:UnknownSource",
+    "CheckRequest:307:NotCovered",
+    "RequestValue:315:NotCovered",
+    "WidenRequest:318:NotCovered",
+    "RequestValue:324:UnknownSource",
+    "CheckRequest:327:NotCovered",
+    "PathValue:354:UnknownSource",
+    "CheckPath:357:UnknownSource",
+    "CheckRequest:363:NotCovered",
+    "RequestValue:371:NotCovered",
+    "WidenRequest:374:NotCovered",
+    "RequestValue:380:UnknownSource",
+    "CheckRequest:383:NotCovered",
+    "PathValue:410:UnknownSource",
+    "CheckPath:413:UnknownSource",
+    "CheckRequest:419:NotCovered",
+    "RequestValue:427:NotCovered",
+    "WidenRequest:430:NotCovered",
+    "RequestValue:436:UnknownSource",
+    "CheckRequest:439:NotCovered",
+    "PathValue:466:UnknownSource",
+    "CheckPath:469:UnknownSource",
+    "CheckRequest:475:NotCovered",
+    "RequestValue:483:NotCovered",
+    "WidenRequest:486:NotCovered",
+    "RequestValue:492:UnknownSource",
+    "CheckRequest:495:NotCovered",
+    "PathValue:522:UnknownSource",
+    "CheckPath:525:UnknownSource",
+    "CheckRequest:531:NotCovered",
+    "RequestValue:539:NotCovered",
+    "WidenRequest:542:NotCovered",
+    "RequestValue:548:UnknownSource",
+    "CheckRequest:551:NotCovered"
+  ],
+  "occurrences": 561,
+  "rss_kib_after": null,
+  "rss_method": "ps RSS after input in KiB; null means unavailable in sandbox; outer per-input runner records process high-water mark",
+  "scope_analysis_and_candidates_seconds": 0.000632875,
+  "sha256": "f3c43b7d8e0e3d56eceaf2eaef640fe1597d70c0333bc2cf7651c45d92625aba",
+  "source_bytes": 10385,
+  "typecheck_seconds": 0.019530667,
+  "whole_items_max": 4,
+  "whole_operations_total": 350
+}

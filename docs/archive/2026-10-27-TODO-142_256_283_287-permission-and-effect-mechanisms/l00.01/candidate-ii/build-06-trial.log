@@ -1,0 +1,143 @@
+== wait-for-lock start 18:01:35
+== lock acquired 18:01:35 after 0s
+⚠ [20/410] Replayed Benitoite.Release.Order.Atoms
+warning: Benitoite/Release/Order/Atoms.lean:55:8: declaration uses `sorry`
+✔ [85/410] Built Benitoite.Release.Typing (1.4s)
+✔ [87/410] Built Benitoite.Release.LocalTyping (375ms)
+✔ [89/410] Built Benitoite.Release.BuilderContents (387ms)
+✔ [91/410] Built Benitoite.Release.TypeRegularity (553ms)
+✔ [93/410] Built Benitoite.Release.BuiltinTable (688ms)
+✔ [95/410] Built Benitoite.Release.BuilderExec (499ms)
+✔ [96/410] Built Benitoite.Release.Lemmas.Basic (336ms)
+✔ [99/410] Built Benitoite.Release.TypeBounds (686ms)
+✔ [101/410] Built Benitoite.Release.SubstEnv (667ms)
+✔ [103/410] Built Benitoite.Release.TypeCongruence (747ms)
+✔ [105/410] Built Benitoite.Release.TypeVariables (1.0s)
+✔ [107/410] Built Benitoite.Release.TypeScopedSubst (593ms)
+✔ [109/410] Built Benitoite.Release.WellFormed (618ms)
+✔ [111/410] Built Benitoite.Release.FailureEffects (743ms)
+✔ [112/410] Built Benitoite.Release.Lemmas.TyLemmas (809ms)
+✔ [113/410] Built Benitoite.Release.Admissible (777ms)
+✔ [116/410] Built Benitoite.Release.LocalScope (4.4s)
+✔ [117/410] Built Benitoite.Release.Semantics (2.1s)
+✔ [119/410] Built Benitoite.Release.Assumptions (446ms)
+✔ [121/410] Built Benitoite.Release.Examples (1.8s)
+✔ [122/410] Built Benitoite.Release.Lemmas.Rename (9.7s)
+✔ [123/410] Built Benitoite.Release.Lemmas.Names (7.7s)
+✔ [125/410] Built Benitoite.Release.Lemmas.Closed (7.1s)
+✔ [127/410] Built Benitoite.Surface.Lemmas.ScopedRename (421ms)
+✔ [128/410] Built Benitoite.Release.Lemmas.VariableBind (569ms)
+✔ [129/410] Built Benitoite.Surface.Lemmas.ShiftClean (1.1s)
+✔ [130/410] Built Benitoite.Release.Lemmas.NoFailContext (1.0s)
+✔ [132/410] Built Benitoite.Release.Lemmas.Irrelevant (2.8s)
+✔ [133/410] Built Benitoite.Release.Lemmas.Inversion (12s)
+✔ [135/410] Built Benitoite.Release.Lemmas.FailureBase (377ms)
+✔ [136/410] Built Benitoite.Release.Lemmas.ContLemmas (449ms)
+✔ [137/410] Built Benitoite.Release.Lemmas.Regularity (1.8s)
+✔ [139/410] Built Benitoite.Release.Lemmas.OuterC (2.2s)
+✔ [141/410] Built Benitoite.Release.Lemmas.SubstTyping (2.5s)
+✔ [143/410] Built Benitoite.Release.Lemmas.TySubst (393ms)
+✔ [144/410] Built Benitoite.Release.Lemmas.TySubst:c.o (119ms)
+✔ [145/410] Built Benitoite.Release.Lemmas.StoreLemmas (699ms)
+✔ [146/410] Built Benitoite.Release.CoverageTypes (1.1s)
+✔ [148/410] Built Benitoite.Release.Lemmas.PresHelpers (531ms)
+✖ [149/410] Building Benitoite.Release.Lemmas.FailureCont (6.4s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/FailureCont.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/FailureCont.setup.json --json
+error: Benitoite/Release/Lemmas/FailureCont.lean:250:0: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+✔ [150/410] Built Benitoite.Release.Lemmas.BuilderStore (635ms)
+✖ [151/410] Building Benitoite.Release.Lemmas.TySubstMain (3.7s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/Lemmas/TySubstMain.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/Lemmas/TySubstMain.setup.json --json
+error: Benitoite/Release/Lemmas/TySubstMain.lean:544:12: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Ty.substAt ?c ?ts' ?es' (fnTy ?m.2009 s✝.params s✝.ret s✝.eff ?m.2017 ?m.2018)
+in the target expression
+  HasTypeVQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ)
+    (Val.prim b✝ (List.map (Ty.substAt c ts' es') ts✝) (List.map (Eff.substAt c ts' es') es✝))
+    (Ty.substAt c ts' es' (fnTy (s✝.inst R✝).names (s✝.inst R✝).params (s✝.inst R✝).ret (s✝.inst R✝).eff ts✝ es✝))
+
+Q : NoFailCtx
+P : Program
+B : Builtins
+hwf : P.WellFormed
+hb : Builtins.Assumptions P B
+Q' : NoFailCtx
+Ψ : StoreTy
+C : List TParam
+Γ : List (Option Ty)
+v : Val
+a : Ty
+ts' : List Ty
+es' : List Eff
+c : Nat
+h : HasTypeVQ P B Ψ Q C Γ v a
+hc : c ≤ C.length
+hts : ClosedArgs ts'
+hes' : ∀ (e : Eff), e ∈ es' → Eff.WF 0 e
+hsat : SatAll B [] ts' (List.drop c C)
+hΨ : StoreFix Ψ ts' es'
+hrow : RowTransport Q Q' es'
+htc : (List.take c C).length = c
+transportWF : ∀ {x : Ty}, Ty.WF C.length x → Ty.WF (List.take c C).length (Ty.substAt c ts' es' x)
+hCsplit : C = List.take c C ++ List.drop c C
+b✝ : PrimName
+s✝ : PrimSig
+R✝ : NameScope
+ts✝ : List Ty
+es✝ : List Eff
+hs : B.sig b✝ = some s✝
+hnames : NamesWF (s✝.inst R✝).names (s✝.inst R✝).params
+had : PrimitiveAdmissible C (s✝.inst R✝) Q ts✝ es✝
+hsc :
+  NamesWF s✝.names s✝.params ∧
+    Ty.VarsInList s✝.ntys (fun x => x < s✝.neffs) s✝.params ∧
+      Ty.VarsIn s✝.ntys (fun x => x < s✝.neffs) s✝.ret ∧ Eff.VarsIn s✝.ntys (fun x => x < s✝.neffs) s✝.eff
+⊢ HasTypeVQ P B Ψ Q' (List.take c C) (envSubst c ts' es' Γ)
+    (Val.prim b✝ (List.map (Ty.substAt c ts' es') ts✝) (List.map (Eff.substAt c ts' es') es✝))
+    (Ty.substAt c ts' es' (fnTy (s✝.inst R✝).names (s✝.inst R✝).params (s✝.inst R✝).ret (s✝.inst R✝).eff ts✝ es✝))
+error: Benitoite/Release/Lemmas/TySubstMain.lean:544:45: Application type mismatch: The argument
+  had.rowCount
+has type
+  es✝.length = (s✝.inst R✝).neffs
+but is expected to have type
+  List.length ?m.2018 = s✝.neffs
+in the application
+  fnTy_substAt hsc.right ?m.2024 had.rowCount
+✔ [167/410] Built Benitoite.Release.Coverage (4.7s)
+✔ [170/410] Built Benitoite.Release.CoverageShow (884ms)
+✖ [172/410] Building Benitoite.Surface.Syntax (1.1s)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Surface/Syntax.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Syntax.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Surface/Syntax.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Surface/Syntax.c --setup <wt>/formal/.lake/build/ir/Benitoite/Surface/Syntax.setup.json --json
+error: Benitoite/Surface/Syntax.lean:551:15: Type mismatch
+  D.effects
+has type
+  EffName → Option (List OpName)
+but is expected to have type
+  EffBase → Option (List OpName)
+✔ [407/410] Built Benitoite.Release.CoverageExtension (4.4s)
+✔ [408/410] Built Benitoite.Release.CoverageIntegerExamples (598ms)
+Some required targets logged failures:
+- Benitoite.Release.Lemmas.FailureCont
+- Benitoite.Release.Lemmas.TySubstMain
+- Benitoite.Surface.Syntax
+error: build failed
+       32.54 real       141.23 user        11.16 sys
+          1726136320  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             2359424  page reclaims
+                 111  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 131  voluntary context switches
+              309206  involuntary context switches
+          2369585652  instructions retired
+          1213035855  cycles elapsed
+            58131752  peak memory footprint
+== exit 1

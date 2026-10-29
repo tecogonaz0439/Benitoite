@@ -1,7 +1,9 @@
 {
-  "corpusVersion": 13,
-  "sidecarVersion": 5,
+  "corpusVersion": 15,
+  "sidecarVersion": 7,
   "profiles": {
+    "k3": {"inputs": {"scope": 5}, "definitions": 5, "surfaceChecks": 5, "coverageCases": 1, "programCoverageCases": 0},
+    "k4": {"inputs": {"range": 7}, "definitions": 7, "surfaceChecks": 7, "coverageCases": 1, "programCoverageCases": 1},
     "t3": {"inputs": {"higher-order": 3, "super-paths": 3, "failure": 3}, "definitions": 9, "surfaceChecks": 9, "coverageCases": 1, "programCoverageCases": 1},
     "m1": {"inputs": {"binary-minimal": 4, "result": 13, "user-result": 14}, "definitions": 31, "surfaceChecks": 26, "coverageCases": 1, "programCoverageCases": 7},
     "g2": {"inputs": {"log-standard": 11}, "definitions": 11, "surfaceChecks": 11, "coverageCases": 1, "programCoverageCases": 1},

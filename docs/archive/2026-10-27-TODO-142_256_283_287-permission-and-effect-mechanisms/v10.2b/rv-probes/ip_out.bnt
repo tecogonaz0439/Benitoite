@@ -1,0 +1,7 @@
+import Benitoite.Unofficial.Scope
+import Benitoite.Unofficial.Network.Http
+
+function main() -> Unit
+  bind x <- Scope.checkHost(pattern: "192.168.1.0/24", host: "192.168.2.5")
+  ()
+end function

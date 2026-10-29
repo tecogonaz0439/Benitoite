@@ -1,0 +1,24 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "356c9e35633fb8cd479c1737281b1b9342d097b3"
+  ],
+  "wrapper": [
+    "/usr/bin/time",
+    "-p",
+    "/bin/sh",
+    "-c"
+  ],
+  "cwd": "<wt>",
+  "started_utc": "2026-10-29T06:21:16.242689+00:00",
+  "finished_utc": "2026-10-29T06:28:44.232323+00:00",
+  "command_exit": 1,
+  "outer_seconds": 447.9895535,
+  "maxrss_raw": 2267365376,
+  "maxrss_unit": "bytes",
+  "maxrss_mib": 2162.328125,
+  "maxrss_method": "macOS getrusage(RUSAGE_CHILDREN); maximum descendant, not concurrent sum"
+}

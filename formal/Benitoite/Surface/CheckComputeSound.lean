@@ -186,17 +186,17 @@ theorem inferClauseTypesR_computes (q : Input) (cs : Clauses) : ClauseTypesCompu
   (nodeComputes q (.clauses cs)).2
 
 /-- 反復の各stepは空の要求から検査するので、外側の状態の支持を要求しない。 -/
-theorem handlerStep_atoms {q Δ C Γ R path cs t e out s s'}
+theorem handlerStep_atoms {q Δ C Γ R path εb cs t e out s s'}
     (hB : BuilderInvariant q C Γ Δ) (hq : q.Sound) (hc : cs.AtomsIn q.atoms) (hΓ : Env.AtomsIn q.atoms Γ)
     (hR : ReturnAtoms q.atoms R) (ht : t.AtomsIn q.atoms) (he : e.AtomsIn q.atoms)
     (h : (do
-      let (actual, st) ← (checkClausesR q .relaxed Δ C Γ R path cs t e).run {}
+      let (actual, st) ← (checkClausesR q .relaxed Δ C Γ R path εb cs t e).run {}
       modify fun outer => { outer with requests := outer.requests ++
         (st.requests.filter (fun r => !(clauseKeys Γ.length cs).contains r.1)) }
       pure (union q actual (requestedEffect q (clauseKeys Γ.length cs) st.requests)) : Checking Eff)
         s = .ok (out, s')) : out.AtomsIn q.atoms := by
   obtain ⟨⟨actual, st⟩, hcs, h⟩ := checking_lift_bind_ok h
-  have hs := (checkClausesR_computes q cs .relaxed Δ C Γ R path t e hq hc hΓ hR hB ht he)
+  have hs := (checkClausesR_computes q cs .relaxed Δ C Γ R path εb t e hq hc hΓ hR hB ht he)
     {} st actual (requests_atoms_nil _) hcs
   obtain ⟨u, mid, hu, h⟩ := checking_bind_ok h
   have eq := (checking_pure_ok h).1

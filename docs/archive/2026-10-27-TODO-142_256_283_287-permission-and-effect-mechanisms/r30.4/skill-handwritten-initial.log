@@ -1,0 +1,20 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.61s
+     Running tests/skill_examples.rs (target/debug/deps/skill_examples-78abf7303726bbb4)
+
+running 1 test
+
+thread 'code_examples_in_hand_written_documents_behave_as_written' (6812155) panicked at crates/benitoite/tests/skill_examples.rs:34:5:
+1 of 63 examples failed:
+skill/references/idioms.md:558: check: expected no diagnostics, got exit 2, stderr "error[E0414]: no `main` function\n   = help: define `function main() -> Unit` in the file where execution starts\n\nerror: could not check <tmp>/benitoite-doc-example-53037-16/main.bnt due to 1 previous error\n"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test code_examples_in_hand_written_documents_behave_as_written ... FAILED
+
+failures:
+
+failures:
+    code_examples_in_hand_written_documents_behave_as_written
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 4.83s
+
+error: test failed, to rerun pass `-p benitoite --test skill_examples`

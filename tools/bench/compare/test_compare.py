@@ -174,6 +174,40 @@ class PersistentCacheTests(unittest.TestCase):
             again=build_all({'renamed':'a'*40},cache=cache)['renamed']
             self.assertTrue(again['reused'])
             self.assertEqual(calls.call_count,count)
+            # 宣言元が変われば、CLI を再利用しても probe は作り直す。
+            types = Path(again['archive'])/'crates/benitoite/src/types/mod.rs'
+            types.parent.mkdir(parents=True)
+            for declaration, indexed in [('Con(TyCon, Vec<Ty>)', False),
+                                          ('Con(TyCon, Vec<Ty>, builtin::RangeIndex)', True)]:
+                types.write_text('pub enum Ty {\n    ' + declaration + ',\n}\n')
+                changed = build_all({'x':'a'*40},cache=cache)['x']
+                self.assertTrue(changed['reused'])
+                self.assertEqual(calls.call_count, count + 1)
+                self.assertEqual(changed['probe_api']['range_index'], indexed)
+                self.assertEqual('benitoite_range_index' in changed['probe_command'], indexed)
+                self.assertNotEqual(again['probe_api']['types_sha256'], changed['probe_api']['types_sha256'])
+                self.assertNotEqual(again['probe_key'], changed['probe_key'])
+                again = changed
+                count = calls.call_count
+            core_ir = Path(again['archive'])/'crates/benitoite/src/ir/core_ir.rs'
+            core_ir.parent.mkdir(parents=True)
+            for declaration, signatures in [
+                    ('pub struct Program<C> {\n    pub defs: Vec<C>,\n}\n', False),
+                    ('pub struct Other {\n    pub range_signatures: Map,\n}\n'
+                     'pub struct Program<C> {\n    pub defs: Vec<C>,\n}\n', False),
+                    ('pub struct Program<C> {\n    pub range_signatures: Map,\n}\n', True),
+                    ('pub struct Program<C> {\n    pub defs: Vec<C>,\n}\n', False)]:
+                with self.subTest(declaration=declaration):
+                    core_ir.write_text(declaration)
+                    changed = build_all({'x':'a'*40},cache=cache)['x']
+                    self.assertTrue(changed['reused'])
+                    self.assertEqual(calls.call_count, count + 1)
+                    self.assertEqual(changed['probe_api']['range_signatures'], signatures)
+                    self.assertEqual('benitoite_range_signatures' in changed['probe_command'], signatures)
+                    self.assertNotEqual(again['probe_api']['core_ir_sha256'], changed['probe_api']['core_ir_sha256'])
+                    self.assertNotEqual(again['probe_key'], changed['probe_key'])
+                    again = changed
+                    count = calls.call_count
             Path(again['binary']).write_bytes(b'tampered')
             self.assertFalse(build_all({'x':'a'*40},cache=cache)['x']['reused'])
             self.assertGreater(calls.call_count,count)
@@ -458,13 +492,15 @@ class CommonProbeCompilationTests(unittest.TestCase):
         from run import execute, probe_command, stage_values
         from scenarios import select_tier
         baseline = 'c31e64b03d2810343e1779926bea4ebc958b6164'
+        start = '6124775788579e60530f55fb85570f26ef7fa900'
         head = git('rev-parse','HEAD').decode().strip()
-        records = build_all(dict(before=baseline,after=head))
+        records = build_all(dict(before=baseline,start=start,after=head))
         for state, record in records.items():
             self.assertIn('probe', record, (state, record.get('probe_unavailable')))
             self.assertTrue(Path(record['probe']).is_file())
             self.assertIn('conversion_unit', record['bridge_sources'])
         cases = [c for c in select_tier(corpus(True), 'short', quick=True) if c.command == 'probe']
+        cases.append(next(c for c in corpus(False) if c.id == 'bridge-shared-8'))
         configure(cases, {s: dict(timing_probe=bool(b.get('probe'))) for s, b in records.items()})
         with tempfile.TemporaryDirectory() as tmp:
             _, entries = materialize(Path(tmp), cases)

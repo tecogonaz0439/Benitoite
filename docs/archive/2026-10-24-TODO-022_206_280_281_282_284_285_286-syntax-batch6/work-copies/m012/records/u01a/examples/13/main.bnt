@@ -1,0 +1,10 @@
+function first(xs: List[Integer]) -> Option[Integer]
+  return match xs with
+    case [] -> None
+    case [x, ..] -> Some(x)
+  end match
+end function
+
+function main() -> Unit
+  return ()
+end function

@@ -1,0 +1,138 @@
+{
+  "exportedDictionaryCount": 0,
+  "exportedHeaderNames": [
+    "value"
+  ],
+  "exportedMethod": {
+    "annotations": {},
+    "name": "Inspect[List[T]].inspect (fn:45)",
+    "scope": {
+      "inScope": {
+        "core": {
+          "body": {
+            "letIn": {
+              "body": {
+                "ret": {
+                  "value": {
+                    "const": {
+                      "value": "unit"
+                    }
+                  }
+                }
+              },
+              "bound": {
+                "ret": {
+                  "value": {
+                    "var": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "header": {
+            "eff": [],
+            "effParams": [],
+            "names": [
+              "value"
+            ],
+            "neffs": 0,
+            "params": [
+              {
+                "list": {
+                  "elem": {
+                    "tvar": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "base": {
+                "name": "Unit"
+              }
+            },
+            "tparams": [
+              [
+                false,
+                false
+              ]
+            ]
+          },
+          "lambdaEffects": [],
+          "supers": []
+        },
+        "surface": {
+          "body": {
+            "discard": {
+              "expr": {
+                "local": {
+                  "index": 0
+                }
+              },
+              "rest": {
+                "last": {
+                  "expr": "unit"
+                }
+              }
+            }
+          },
+          "dictParams": [],
+          "header": {
+            "eff": [],
+            "effParams": [],
+            "names": [
+              "value"
+            ],
+            "neffs": 0,
+            "params": [
+              {
+                "list": {
+                  "elem": {
+                    "tvar": {
+                      "index": 0
+                    }
+                  }
+                }
+              }
+            ],
+            "ret": {
+              "base": {
+                "name": "Unit"
+              }
+            },
+            "tparams": [
+              [
+                false,
+                false
+              ]
+            ]
+          },
+          "implementation": "impl:22",
+          "method": "meth:44",
+          "package": "root",
+          "supers": []
+        }
+      }
+    }
+  },
+  "implClassConstraints": 1,
+  "implNode": 22,
+  "leanMethodInputNameCount": 1,
+  "schemeClassConstraints": 1,
+  "schemeValueParams": 1,
+  "scopeBodyKey": {
+    "definition": "%impl:1:0:inspect",
+    "surfacePreorder": 0
+  },
+  "scopeEntry": {
+    "dictionaries": 1,
+    "nextId": 2,
+    "positions": [
+      null,
+      564
+    ]
+  }
+}

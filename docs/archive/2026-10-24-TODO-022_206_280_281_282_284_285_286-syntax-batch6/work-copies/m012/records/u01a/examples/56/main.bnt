@@ -1,0 +1,8 @@
+import Pure
+import Benitoite.Unofficial.IO.Console
+uses Console.Write, Log
+
+function main() -> Unit
+  bind values <- List.map(xs: [3], f: Pure.double)
+  Console.writeLine(Integer.toString(List.fold(xs: values, initial: 0, f: lambda(acc, value) return acc + value)))
+end function

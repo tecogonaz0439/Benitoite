@@ -1,0 +1,48 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Model.lean:335:9: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`
+Model.lean:339:9: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`
+Model.lean:344:8: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mpr`
+Model.lean:357:9: error(lean.unknownIdentifier): Unknown constant `Bool.or_eq_true.mp`
+Model.lean:357:36: error: Tactic `rcases` failed: `x✝ : ?m.6` is not an inductive datatype
+Model.lean:383:61: error: unsolved goals
+o d : String
+⊢ (o == d) = decide (o = d)
+Model.lean:408:2: error: Type mismatch: After simplification, term
+  hd
+ has type
+  @Eq Bool (singleton api d) true
+but is expected to have type
+  @Eq Bool (credential d) true
+Model.lean:415:6: error: Type mismatch: After simplification, term
+  hf
+ has type
+  Flows (join bottom credential) (singleton logs)
+but is expected to have type
+  Flows credential (singleton logs)
+Model.lean:507:2: error: Dependent elimination failed: Failed to solve equation
+  "logs" = "api"
+'SF.noninterference' depends on axioms: [propext]
+'SF.TwoPoint.reject_explicit' depends on axioms: [propext]
+'SF.TwoPoint.reject_implicit' depends on axioms: [propext]
+'SF.Readers.destination_noninterference' depends on axioms: [propext]
+'SF.Readers.pattern_inclusion_gives_flow' depends on axioms: [propext, Quot.sound]
+'SF.Readers.intersection_not_single_pattern' depends on axioms: [sorryAx]
+        0.76 real         0.83 user         0.26 sys
+           713424896  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               46173  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   1  voluntary context switches
+                7443  involuntary context switches
+          8142603608  instructions retired
+          3287924002  cycles elapsed
+           163585480  peak memory footprint
+== run-lean: exit 1, elapsed 5s, top-mem-peak 0MB 

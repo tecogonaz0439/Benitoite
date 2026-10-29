@@ -182,9 +182,53 @@ theorem effSub_support_independent {s u a b}
     (effSub_spec ha hb).trans (effSub_spec ha' hb').symm
   cases hs : effSub s a b <;> cases hu : effSub u a b <;> simp_all
 
+/-- 被覆による効果の包含の判定（`b` が `a` を覆う。L50.2）。支持の各原子 x が `a` に属するなら、`b` に属する支持の
+原子のどれか一つが x を覆う（判断 5 の一原子の被覆。Top を覆うのは Top だけで、和では覆わない）。Fail の型は
+`effSub` と同じく構造上の所属で比べる。 -/
+def effCovers (s : List Atom) (a b : Eff) : Bool :=
+  (s.all fun x => !Eff.test a x || s.any fun y => Eff.test b y && y.covers? x) &&
+    a.fails.all (fun t => b.fails.any fun u => tyEq s (t.normWith s) (u.normWith s))
+
+theorem effCovers_sound_of_fails {s a b} (ha : Eff.Support (· ∈ s) a) (hb : Ty.SupportList (· ∈ s) b.fails)
+    (h : effCovers s a b = true) : Eff.Covers b a := by
+  rw [Eff.support_iff] at ha
+  obtain ⟨hn, hf⟩ := Bool.and_eq_true_iff.mp h
+  constructor
+  · intro x hx
+    have := List.all_eq_true.mp hn x (ha.1 x hx)
+    simp only [Eff.mem] at hx
+    simp only [hx, Bool.not_true, Bool.false_or] at this
+    obtain ⟨y, _, hy⟩ := List.any_eq_true.mp this
+    obtain ⟨hby, hc⟩ := Bool.and_eq_true_iff.mp hy
+    exact ⟨y, hby, (Atom.covers?_spec y x).mp hc⟩
+  · rintro t ⟨u, hu, hut⟩
+    obtain ⟨v, hv, hvu⟩ := List.any_eq_true.mp (List.all_eq_true.mp hf u hu)
+    have huS := Ty.SupportList.iff.mp ha.2 u hu
+    have hvS := Ty.SupportList.iff.mp hb v hv
+    rw [Ty.normWith_eq_norm s u huS, Ty.normWith_eq_norm s v hvS] at hvu
+    have heq := tyEq_sound (Ty.norm_support u huS) (Ty.norm_support v hvS) hvu
+    exact ⟨v, hv, heq.symm.trans hut⟩
+
+theorem effCovers_sound {s a b} (ha : Eff.Support (· ∈ s) a) (hb : Eff.Support (· ∈ s) b)
+    (h : effCovers s a b = true) : Eff.Covers b a :=
+  effCovers_sound_of_fails ha ((Eff.support_iff b).mp hb).2 h
+
+/-- 構造上の包含が判定で成り立てば、被覆の判定も成り立つ（被覆は構造上の包含より広い）。 -/
+theorem effCovers_of_effSub {s a b} (h : effSub s a b = true) : effCovers s a b = true := by
+  obtain ⟨hn, hf⟩ := Bool.and_eq_true_iff.mp h
+  refine Bool.and_eq_true_iff.mpr ⟨List.all_eq_true.mpr fun x hx => ?_, hf⟩
+  have := List.all_eq_true.mp hn x hx
+  cases hax : Eff.test a x
+  · rfl
+  · simp only [hax, Bool.not_true, Bool.false_or] at this ⊢
+    exact List.any_eq_true.mpr ⟨x, hx, by
+      simp only [this, Bool.true_and]
+      exact (Atom.covers?_spec x x).mpr (Atom.Covers.refl x)⟩
+
+/-- 関数の型の潜在効果は被覆で比べる（L40.6c の `Ty.Le` と同じ。L50.2）。 -/
 def tyLe (s : List Atom) (a b : Ty) : Bool :=
   match a, b with
-  | .fn ns ps r e, .fn ms qs t f => (ns == ms) && tysEq s ps qs && tyEq s r t && effSub s e f
+  | .fn ns ps r e, .fn ms qs t f => (ns == ms) && tysEq s ps qs && tyEq s r t && effCovers s e f
   | _, _ => tyEq s a b
 
 theorem tyLe_sound {s a b} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (· ∈ s) b)
@@ -197,7 +241,7 @@ theorem tyLe_sound {s a b} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (· �
   have hp := (tysEq_spec ha.1 hb.1).mp hp
   have hr := tyEq_sound ha.2.1 hb.2.1 hr
   subst ms; subst qs; subst t
-  exact Or.inr ⟨ns, ps, r, e, f, rfl, rfl, effSub_sound ha.2.2 hb.2.2 he⟩
+  exact Or.inr ⟨ns, ps, r, e, f, rfl, rfl, effCovers_sound ha.2.2 hb.2.2 he⟩
 
 def tyJoin (s : List Atom) (a b : Ty) : Option Ty :=
   match a, b with
@@ -220,12 +264,8 @@ theorem tyJoin_sound {s a b j} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (
   subst ms; subst qs; subst t; subst j
   rw [unionEff_eq ha.2.2 hb.2.2]
   constructor
-  · exact Or.inr ⟨ns, ps, r, e, Eff.union e f, rfl, rfl,
-      ⟨fun a h => (Eff.mem_union _ _ a).mpr (Or.inl h),
-        fun t h => (Eff.memFail_union _ _ t).mpr (Or.inl h)⟩⟩
-  · exact Or.inr ⟨ns, ps, r, f, Eff.union e f, rfl, rfl,
-      ⟨fun a h => (Eff.mem_union _ _ a).mpr (Or.inr h),
-        fun t h => (Eff.memFail_union _ _ t).mpr (Or.inr h)⟩⟩
+  · exact Or.inr ⟨ns, ps, r, e, Eff.union e f, rfl, rfl, Eff.union_covers_left e f⟩
+  · exact Or.inr ⟨ns, ps, r, f, Eff.union e f, rfl, rfl, Eff.union_covers_right e f⟩
 
 theorem tyJoin_support {s a b j} (ha : Ty.Support (· ∈ s) a) (hb : Ty.Support (· ∈ s) b)
     (h : tyJoin s a b = some j) : Ty.Support (· ∈ s) j := by

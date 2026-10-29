@@ -1,0 +1,60 @@
+######## PermissionKinds
+== grep -nE 'sorry' pm30/lean-PermissionKinds.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm30/lean-PermissionKinds.log
+status=1
+== lines with 'depends on axioms'
+status=1
+== theorem count
+26
+== def count
+13
+== inductive count
+2
+== structure count
+0
+== structure fields
+== other declaration keywords (abbrev/instance/opaque/axiom/lemma)
+status=1
+== #print axioms count
+41
+== 'does not depend on any axioms' count
+41
+== declared names (short) without a #print axioms line
+== #print axioms lines whose short name is not declared
+== tactic sorry/admit/decide in source (word match, excluding #print lines)
+status=1
+######## Policy
+== grep -nE 'sorry' pm30/lean-Policy.log
+status=1
+== grep -nE 'sorryAx|error|warning' pm30/lean-Policy.log
+status=1
+== lines with 'depends on axioms'
+status=1
+== theorem count
+56
+== def count
+18
+== inductive count
+3
+== structure count
+1
+== structure fields
+64:  kinds : KindSet Kind
+66:  allow : Kind → Target → Prop
+68:  deny : Kind → Target → Prop
+== other declaration keywords (abbrev/instance/opaque/axiom/lemma)
+status=1
+== #print axioms count
+81
+== 'does not depend on any axioms' count
+81
+== declared names (short) without a #print axioms line
+== #print axioms lines whose short name is not declared
+== tactic sorry/admit/decide in source (word match, excluding #print lines)
+status=1
+######## SHA-256
+82f4bc45b7e7f05253246c132881c6b2ff1cc17ba7236e223a3ede0b36e199e6  models/PermissionKinds.lean
+e130f656c28673aa716783493f382be846a8f2a19113abd8da5c70c70765a4f2  models/Policy.lean
+92723e0dbcd75e38702357c4c3f0835b8cc751046e0a3a7195d33e3803c7659f  models/check-same-defs.sh
+c39833a4b3f511b038484805d29dc378d1d24415e89424866ef5df1430ac135e  models/same-defs-tail.lean

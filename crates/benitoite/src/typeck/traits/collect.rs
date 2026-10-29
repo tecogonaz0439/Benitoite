@@ -270,7 +270,7 @@ fn collect_impl(d: &mut Decls<'_>, i: &ImplDecl, module: ModuleId) {
         target
     };
     let target_con = match &target {
-        TypeArg::Ty(Ty::Con(c, _)) | TypeArg::Head(TyHead::Con(c)) => *c,
+        TypeArg::Ty(Ty::Con(c, _, _)) | TypeArg::Head(TyHead::Con(c)) => *c,
         TypeArg::Ty(_) | TypeArg::Head(TyHead::Param(_)) => {
             TyCon::Builtin(crate::types::builtin::BuiltinTypeId::UNIT)
         }
@@ -342,7 +342,7 @@ pub(super) fn has_param(t: &Ty, p: u32) -> bool {
     match t {
         Ty::Param(i) => *i == p,
         Ty::App(i, a) => *i == p || a.iter().any(|t| has_param(t, p)),
-        Ty::Con(_, a) => a.iter().any(|t| has_param(t, p)),
+        Ty::Con(_, a, _) => a.iter().any(|t| has_param(t, p)),
         Ty::Fn(f) => f.params.iter().any(|t| has_param(t, p)) || has_param(&f.ret, p),
         Ty::Rigid { .. } => false,
     }

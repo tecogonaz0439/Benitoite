@@ -1,0 +1,17 @@
+$ git grep -n -E 'Ty::Con|EffectName::|RangeIndex' -- tools crates/benitoite/examples
+crates/benitoite/examples/derive_inventory/mod.rs:115:            Ty::Con(con, args, _) => {
+crates/benitoite/examples/derive_inventory/schema.rs:53:            Ty::Con(con, args, ix) => {
+crates/benitoite/examples/derive_inventory/schema.rs:54:                if *ix != benitoite::types::builtin::RangeIndex::TOP {
+crates/benitoite/examples/derive_inventory/schema.rs:112:            EffectName::Builtin(id, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP => {
+crates/benitoite/examples/derive_inventory/schema.rs:116:            EffectName::User(id, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP => Ok(json!({"tag":"named","name":self.name(*id)})),
+crates/benitoite/examples/derive_inventory/schema.rs:117:            EffectName::Builtin(..) | EffectName::User(..) => Err(text::INVALID_SCHEMA.into()),
+crates/benitoite/examples/derive_inventory/schema.rs:288:                    ret: Ty::Con(
+crates/benitoite/examples/derive_inventory/schema.rs:291:                        benitoite::types::builtin::RangeIndex::TOP,
+crates/benitoite/examples/try_actions_inventory.rs:36:            EffectName::Builtin(id, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP => {
+crates/benitoite/examples/try_actions_inventory.rs:39:            EffectName::User(id, ix) if ix == &benitoite::types::builtin::RangeIndex::TOP => {
+crates/benitoite/examples/try_actions_inventory.rs:42:            EffectName::Builtin(..) | EffectName::User(..) => return None,
+crates/benitoite/examples/try_actions_inventory.rs:301:                    Ty::Con(..) | Ty::Fn(_) | Ty::Param(_) | Ty::App(..) | Ty::Rigid { .. } => None,
+tools/bench/compare/timing_probe.rs:70:    let ty = Ty::Con(
+tools/bench/compare/timing_probe.rs:73:        types::builtin::RangeIndex::TOP,
+tools/bench/compare/timing_probe.rs:181:                ty: Ty::Con(
+tools/bench/compare/timing_probe.rs:184:                    types::builtin::RangeIndex::TOP,

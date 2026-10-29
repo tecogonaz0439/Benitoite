@@ -1,0 +1,8 @@
+request-error-match.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0338","message":"pattern variable `error` hides a local name","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-error-match.bnt","start":{"line":7,"column":36,"offset":277},"end":{"line":7,"column":41,"offset":282},"label":""},"secondary":[{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-error-match.bnt","start":{"line":4,"column":19,"offset":116},"end":{"line":4,"column":24,"offset":121},"label":"`error` is bound here"}],"notes":[],"helps":[{"message":"choose another name","edits":[]}]}
+
+request-error-show.bnt: exit 2
+{"kind":"check","severity":"error","code":"E0705","message":"`RequestCheckError` does not implement `Show`","primary":{"file":"docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.1/probes/request-error-show.bnt","start":{"line":5,"column":9,"offset":165},"end":{"line":5,"column":24,"offset":180},"label":"`Show` is required here"},"secondary":[],"notes":[],"helps":[]}
+
+修正: 内側の束縛名を scopeError にし E0338 を除く。
+request-error-match.bnt: exit 0

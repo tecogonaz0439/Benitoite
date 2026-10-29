@@ -1,0 +1,24 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.98s
+     Running tests/desugar_export.rs (target/debug/deps/desugar_export-81fb3336ac52aef4)
+
+running 1 test
+
+thread 'range_budget::export_range_budget_sources' (7738326) panicked at crates/benitoite/tests/desugar_export/range_budget.rs:101:13:
+assertion `left == right` failed: last-run-exceeded
+  left: 4
+ right: 6
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test range_budget::export_range_budget_sources ... FAILED
+
+failures:
+
+failures:
+    range_budget::export_range_budget_sources
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 48 filtered out; finished in 0.38s
+
+error: test failed, to rerun pass `-p benitoite --test desugar_export`
+real 2.33
+user 1.85
+sys 0.63

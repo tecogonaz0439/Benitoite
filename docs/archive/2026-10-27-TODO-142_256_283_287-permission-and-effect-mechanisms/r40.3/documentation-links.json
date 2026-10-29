@@ -1,0 +1,669 @@
+{
+  "checked": 166,
+  "links": [
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../07-quality/07-01-security-model.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-01-cli.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../01-spec/01-02-syntax.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../02-impl/02-10-diagnostics.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../02-impl/02-05-typechecker.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../05-platform/05-01-distribution.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../03-interop/03-07-io-modules.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../02-impl/02-02-source-and-spans.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../02-impl/02-10-diagnostics.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-01-cli.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-01-cli.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../00-overview/00-03-roadmap.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-01-cli.md#main-の非実行の検査報告"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-01-cli.md#実行前のエフェクト上限の照合"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-01-cli.md#区間解析の追加報告"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../02-impl/02-05-typechecker.md#区間解析の範囲と保証"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../07-quality/07-04-formal-semantics.md#区間解析の対象構文の評価関係"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "06-09-packages.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../01-spec/01-07-effects.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../07-quality/07-01-security-model.md"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../03-interop/03-06-stdlib.md#外部生成の宣言情報"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../03-interop/03-06-stdlib.md#外部生成の管理と照合"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../03-interop/03-08-text-and-data.md#レコードのproperty生成器"
+    },
+    {
+      "from": "docs/design/06-tooling/06-06-agent-skills.md",
+      "target": "../00-overview/00-03-roadmap.md"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#explaining-local-interval-warnings"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "#before-running"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "#before-running"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "#tests"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "#before-running"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/inspection.md#local-interval-analysis"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#explaining-local-interval-warnings"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/inspection.md"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#running-external-commands"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/common-mistakes.md#keywords-as-names"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#records-and-data-types"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#program-shape-and-error-handling"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#file-level-effects-and-pure-helpers"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#file-and-json-log-sinks"
+    },
+    {
+      "from": "crates/benitoite/skill/SKILL.md",
+      "target": "references/idioms.md#concrete-and-generic-containers"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#program-shape-and-error-handling"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#calls-callback-contracts-holes-and-pipes"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#reading-and-writing-files"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#json"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#csv"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#running-external-commands"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#command-line-arguments-and-environment-variables"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#http"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#collections"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#concrete-and-generic-containers"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#records-and-data-types"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#writing-tests"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#static-interpolation-formats"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#numeric-widths-and-conversions"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#explaining-local-interval-warnings"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#wasm-external-functions-and-wit-types"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#file-and-json-log-sinks"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "#http-values-are-not-tracked"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "inspection.md"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "inspection.md#local-interval-analysis"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "stdlib/Range.md"
+    },
+    {
+      "from": "crates/benitoite/skill/references/idioms.md",
+      "target": "stdlib/Network.Http.md"
+    },
+    {
+      "from": "crates/benitoite/skill/references/inspection.md",
+      "target": "idioms.md#explaining-local-interval-warnings"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "start-state.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "inputs/handled-scoped-write.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-check.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "gen-skill.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "gen-skill.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "embedded-skill.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "pinned-reference.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff.sha256"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-check-reports/"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-check-initial.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-check-initial-reports/"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "initial-inputs/"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "input-corrections.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-check.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-final.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-after-work.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "compare-selftest.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "compare-selftest.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "compare-selftest-time.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "probe-builds.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "../r40/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "short-summary.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-dry-run.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage-dry-run.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "local-user-io.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "local-user-io.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "local-resource.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "local-resource.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "gen-skill.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "gen-skill.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-initial.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-initial.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-final.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-final.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "compare-selftest.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "compare-selftest.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "format.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "format.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-dry-run.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-dry-run.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-time.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage-dry-run.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage-dry-run.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage-time.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-after-work.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "handoff-after-work.log"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-counts.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "stage-counts.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "../../design/07-quality/07-03-compiler-testing.md#結果の保存と引用"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-inputs.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "work-inputs.patch"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "final-inputs.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "measurement-tools.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "run-record-at-checks.py"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "redaction.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "verify-delivery.py"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "verification.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/results.md",
+      "target": "../r40/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/pure.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/top.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/non-top.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/redundant.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/handled-user-pure.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/handled-scoped-write.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/not-covered.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/atomic-cover-only.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/unknown-source.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/budget-exceeded.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/show-rejected.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/projection-repaired.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/show-match.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/user-unhandled.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/user-scope-rejected.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/read-complete.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/read-partial.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/read-missing-upper.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/write-complete.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/write-partial.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/write-missing-upper.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/connect-complete.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/connect-partial.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/connect-missing-upper.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40.3/handoff.md",
+      "target": "inputs/doc-error.bnt"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.1/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.2/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.3/results.md#検査の確定値と時間"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.3/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../plan-r10-r40.md#義務の一覧と枝の対応表"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.3/handoff.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.3/results.md#検査の確定値と時間"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.3/short-summary.json"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../../../tools/bench/results/2026-10-29-cadd0d81-m013-r40-1/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../../../tools/bench/results/2026-10-29-10101dac-m013-r40-2/results.md"
+    },
+    {
+      "from": "docs/2026-10-27-TODO-142_256_283_287-permission-and-effect-mechanisms/r40/results.md",
+      "target": "../r40.3/handoff.md"
+    }
+  ]
+}

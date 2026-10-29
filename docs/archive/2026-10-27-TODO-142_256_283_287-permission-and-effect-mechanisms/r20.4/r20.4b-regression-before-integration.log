@@ -1,0 +1,52 @@
+    Blocking waiting for file lock on build directory
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 42.24s
+     Running tests/scoped_calls.rs (target/debug/deps/scoped_calls-03ec6188ee2c8c47)
+
+running 1 test
+
+thread 'handlers_remove_complete_names_and_keep_clause_io_at_its_own_scope' (5290571) panicked at crates/benitoite/tests/scoped_calls.rs:531:5:
+assertion `left == right` failed: late atom from later clause: import Benitoite.Unofficial.IO.File
+effect Tick
+ function tick() -> Integer
+end effect
+function protected() -> Integer uses File.Read["/data/a"]
+ return 1
+end function
+function sample() -> Integer
+ bind run <- lambda(f)
+  return handle
+   f()
+  with
+  case File.readText(path) -> 0
+  
+ case File.openReader(path) -> 0
+ case File.readLine(reader) -> 0
+ case File.readBytes(path) -> 0
+ case File.readLines(path) -> 0
+ case File.exists(path) -> 0
+ case File.info(path) -> 0
+ case File.listDirectory(path) -> 0
+ case File.walk(path) -> 0
+ case File.canonicalize(path) -> 0
+ case File.readChunk(reader, maximumBytes) -> 0
+  end handle
+ end lambda
+ return handle tick() with
+ case tick() -> resume(run(protected))
+ end handle
+end function
+[Diagnostic { kind: Check, severity: Error, code: Some(E0501), message: "this function performs `File.Read[\"/data/a\"]` but does not declare it", primary: Some(Label { span: Span { file: FileId(0), start: BytePos(696), end: BytePos(705) }, text: "`File.Read[\"/data/a\"]` happens here" }), secondary: [Label { span: Span { file: FileId(0), start: BytePos(177), end: BytePos(183) }, text: "declared here" }], notes: [], helps: [Help { message: "add `uses File.Read[\"/data/a\"]` to the signature, or move this call to a function that uses `File.Read[\"/data/a\"]`", edits: [] }], trace: None, task_origins: [], waiting: [], backtrace: None }]
+  left: ["E0501"]
+ right: []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test handlers_remove_complete_names_and_keep_clause_io_at_its_own_scope ... FAILED
+
+failures:
+
+failures:
+    handlers_remove_complete_names_and_keep_clause_io_at_its_own_scope
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.37s
+
+error: test failed, to rerun pass `-p benitoite --test scoped_calls`

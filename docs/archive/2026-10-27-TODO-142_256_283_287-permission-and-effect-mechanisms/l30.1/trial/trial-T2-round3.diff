@@ -1,0 +1,781 @@
+diff --git a/formal/Benitoite/Release/Lemmas/ContLemmas.lean b/formal/Benitoite/Release/Lemmas/ContLemmas.lean
+index de0f58ac..44228385 100644
+--- a/formal/Benitoite/Release/Lemmas/ContLemmas.lean
++++ b/formal/Benitoite/Release/Lemmas/ContLemmas.lean
+@@ -24,7 +24,7 @@ theorem ContTy.store {Ψ Ψ' R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε
+   | K_Mark _ hw ih => exact .K_Mark ih hw
+   | K_Update hl _ ih => exact .K_Update (hΨ _ _ hl) ih
+   | K_Release hv hr hs _ ih => exact .K_Release (hv.store hΨ) hr hs ih
+-  | K_Handle _ hs hc hw ih => exact .K_Handle ih hs (hc.store (hideBuilders_mono hΨ)) hw
++  | K_Handle _ hs hb hc hw ih => exact .K_Handle ih hs hb (hc.store (hideBuilders_mono hΨ)) hw
+   | K_Handle_Fail _ hr hn hc he hw ih => exact .K_Handle_Fail ih hr hn (hc.store (hideBuilders_mono hΨ)) he hw
+   | K_Drop hl hs _ ih => exact .K_Drop (hΨ _ _ hl) hs ih
+   | K_Guard hm hs hp hb _ ih => exact .K_Guard (hm.store hΨ) hs hp (hb.store hΨ) ih
+@@ -42,8 +42,9 @@ theorem ContTy.name_end {Ψ R ε k a b ε0 Re l} (h : ContTy P B Ψ R ε k a b 
+   | K_Mark _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+   | K_Update _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+   | K_Release _ _ _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+-  | @K_Handle R ε εc hs k t b ε0 Re _ hsub _ _ ih =>
++  | @K_Handle R ε εc εb hs k t b ε0 Re _ hsub hbh _ _ ih =>
+       have hh := hno hs (by simp)
++      have hl := hbh.1 _ hl
+       rw [Eff.mem_union] at hl
+       have hl' := hl.resolve_right (fun hm => by
+         change Eff.test (handled P B hs) (.nameTop l) = true at hm
+@@ -70,8 +71,9 @@ theorem ContTy.name_end_ix {Ψ R ε k a b ε0 Re l r} (h : ContTy P B Ψ R ε k
+   | K_Mark _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+   | K_Update _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+   | K_Release _ _ _ _ ih => exact ih hl (fun hs hm => hno hs (by simp [hm]))
+-  | @K_Handle R ε εc hs k t b ε0 Re _ hsub _ _ ih =>
++  | @K_Handle R ε εc εb hs k t b ε0 Re _ hsub hbh _ _ ih =>
+       have hh := hno hs (by simp)
++      have hl := hbh.1 _ hl
+       rw [Eff.mem_union] at hl
+       have hl' := hl.resolve_right (fun hm => by
+         change Eff.test (handled P B hs) (.name l r) = true at hm
+@@ -96,7 +98,7 @@ theorem ContTy.mono_end {Ψ R ε k a b ε0 ε0' Re} (h : ContTy P B Ψ R ε k a
+   | K_Mark _ hw ih => exact .K_Mark (ih hs) hw
+   | K_Update hl _ ih => exact .K_Update hl (ih hs)
+   | K_Release hv hr h1 _ ih => exact .K_Release hv hr h1 (ih hs)
+-  | K_Handle _ h1 hc hw ih => exact .K_Handle (ih hs) h1 hc hw
++  | K_Handle _ h1 hb hc hw ih => exact .K_Handle (ih hs) h1 hb hc hw
+   | K_Handle_Fail _ hr hn hc he hw ih => exact .K_Handle_Fail (ih hs) hr hn hc he hw
+   | K_Drop hl h1 _ ih => exact .K_Drop hl h1 (ih hs)
+   | K_Guard hm h1 hp hb _ ih => exact .K_Guard hm h1 hp hb (ih hs)
+@@ -174,11 +176,12 @@ theorem ContTy.inv_release {Ψ R ε v k a b ε0 Re}
+ 
+ theorem ContTy.inv_handle {Ψ R ε hs k a b ε0 Re}
+     (h : ContTy P B Ψ R ε (.handleF hs :: k) a b ε0 Re) (ho : handles hs .fail = false) :
+-    ∃ t εb εc, Ty.Le a t ∧ ε = Eff.union εc (handled P B hs) ∧ ContTy P B Ψ R εb k t b ε0 Re ∧
+-      Eff.Sub εc εb ∧ HasTypeClauses P B Ψ [] [] R hs t εc ∧ Ty.WF 0 0 t := by
++    ∃ t εb εc, Ty.Le a t ∧ Eff.Sub ε (Eff.union εc (handled P B hs)) ∧ ContTy P B Ψ R εb k t b ε0 Re ∧
++      Eff.Sub εc εb ∧ HasTypeClauses P B Ψ [] [] R ε hs t εc ∧ Ty.WF 0 0 t := by
+   generalize hk : (Frame.handleF hs :: k) = k0 at h
+   induction h with
+-  | K_Handle hrest hsub hc hw _ => cases hk; exact ⟨_, _, _, Ty.Le.refl _, rfl, hrest, hsub, hc.store (hideBuilders_sub _), hw⟩
++  | K_Handle hrest hsub hbh hc hw _ =>
++      cases hk; exact ⟨_, _, _, Ty.Le.refl _, hbh, hrest, hsub, hc.store (hideBuilders_sub _), hw⟩
+   | K_Handle_Fail _ _ _ hc _ _ _ =>
+       cases hk
+       rw [hc.handles] at ho
+@@ -194,7 +197,7 @@ theorem ContTy.inv_handle_tail {Ψ R ε hs k a b ε0 Re}
+     ∃ t εb, Ty.Le a t ∧ ContTy P B Ψ R εb k t b ε0 Re ∧ Ty.WF 0 0 t := by
+   generalize hk : (Frame.handleF hs :: k) = k0 at h
+   induction h with
+-  | K_Handle ht _ _ hw _ | K_Handle_Fail ht _ _ _ _ hw _ =>
++  | K_Handle ht _ _ _ hw _ | K_Handle_Fail ht _ _ _ _ hw _ =>
+       cases hk
+       exact ⟨_, _, Ty.Le.refl _, ht, hw⟩
+   | K_Sub _ hl ih =>
+@@ -257,14 +260,14 @@ theorem ContTy.resume_append {Ψ R ε k' b t εκ Rκ} (hcell : ContTy P B Ψ R
+   | K_Mark hrest hw ih => exact .K_Mark (ih (hend.tail' (by intro _ h; cases h)) hle hk hsub) hw
+   | K_Update hl hrest ih => exact .K_Update hl (ih (hend.tail' (by intro _ h; cases h)) hle hk hsub)
+   | K_Release hv hr hs hrest ih => exact .K_Release hv hr hs (ih (hend.tail' (by intro _ h; cases h)) hle hk hsub)
+-  | @K_Handle R' ε' εc hs k0 t0 b0 ε0' Re' hrest hsc hc hw ih =>
++  | @K_Handle R' ε' εc εb hs k0 t0 b0 ε0' Re' hrest hsc hbh hc hw ih =>
+       by_cases hn' : k0 = []
+       · subst hn'
+         obtain ⟨hle0, hs0, hR, _⟩ := hrest.inv_nil
+         subst hR
+         simp only [List.cons_append, List.nil_append]
+-        exact .K_Handle (.K_Sub hk (hle0.trans hle)) (hsc.trans (hs0.trans hsub)) hc hw
+-      · exact .K_Handle (ih (hend.tail hn') hle hk hsub) hsc hc hw
++        exact .K_Handle (.K_Sub hk (hle0.trans hle)) (hsc.trans (hs0.trans hsub)) hbh hc hw
++      · exact .K_Handle (ih (hend.tail hn') hle hk hsub) hsc hbh hc hw
+   | @K_Handle_Fail R' ε' ec Rest E hs k0 t0 b0 ε0' Re' hrest hr hn hc he hw ih =>
+       by_cases hn' : k0 = []
+       · subst hn'
+@@ -281,77 +284,96 @@ theorem ContTy.resume_append {Ψ R ε k' b t εκ Rκ} (hcell : ContTy P B Ψ R
+ 
+ /-! ## E-Op：継続を `handle` の枠で分ける -/
+ 
++/-- 継続を、操作を処理する `handle` の枠で分ける。枠の穴の効果 εh（保護本体の効果。節の添字はここから選ぶ）は、
++枠より内側の継続が処理しない名前の原子を、継続の先頭の効果 ε から同じ範囲の位置のまま受け取る（L30.1）。 -/
+ theorem ContTy.split {Ψ R ε a b E Re hs k2 k1}
+     (h : ContTy P B Ψ R ε (k1 ++ .handleF hs :: k2) a b E Re)
+     (ho : handles hs .fail = false) :
+-    ∃ t εb εc Rh, ContTy P B Ψ R ε (k1 ++ [.handleF hs]) a t εc Rh ∧ ContTy P B Ψ Rh εb k2 t b E Re ∧
+-      Eff.Sub εc εb ∧ HasTypeClauses P B Ψ [] [] Rh hs t εc ∧ Ty.WF 0 0 t := by
++    ∃ t εh εb εc Rh, ContTy P B Ψ R ε (k1 ++ [.handleF hs]) a t εc Rh ∧ ContTy P B Ψ Rh εb k2 t b E Re ∧
++      Eff.Sub εc εb ∧ HasTypeClauses P B Ψ [] [] Rh εh hs t εc ∧ Ty.WF 0 0 t ∧
++      ∀ l r, Eff.mem ε (.name l r) →
++        (∀ hs', Frame.handleF hs' ∈ k1 → Eff.test (handled P B hs') (.nameTop l) = false) →
++        Eff.mem εh (.name l r) := by
+   generalize heq : (k1 ++ Frame.handleF hs :: k2) = k0 at h
+   induction h generalizing k1 with
+   | K_Empty _ _ => cases k1 <;> simp at heq
+   | K_Sub _ hle ih =>
+-      obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-      exact ⟨t, εb, εc, Rh, .K_Sub h1 hle, h2, h3, h4, h5⟩
++      obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++      exact ⟨t, εh, εb, εc, Rh, .K_Sub h1 hle, h2, h3, h4, h5, h6⟩
+   | K_Let hn hw hsub _ ih =>
+       cases k1 with
+       | nil => cases heq
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Let hn hw hsub h1, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          exact ⟨t, εh, εb, εc, Rh, .K_Let hn hw hsub h1, h2, h3, h4, h5,
++            fun l r hm hno => h6 l r hm (fun hs' hin => hno hs' (by simp [hin]))⟩
+   | K_Mark _ hw ih =>
+       cases k1 with
+       | nil => cases heq
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Mark h1 hw, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          exact ⟨t, εh, εb, εc, Rh, .K_Mark h1 hw, h2, h3, h4, h5,
++            fun l r hm hno => h6 l r hm (fun hs' hin => hno hs' (by simp [hin]))⟩
+   | K_Update hl _ ih =>
+       cases k1 with
+       | nil => cases heq
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Update hl h1, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          exact ⟨t, εh, εb, εc, Rh, .K_Update hl h1, h2, h3, h4, h5,
++            fun l r hm hno => h6 l r hm (fun hs' hin => hno hs' (by simp [hin]))⟩
+   | K_Release hv hr hst _ ih =>
+       cases k1 with
+       | nil => cases heq
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Release hv hr hst h1, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          exact ⟨t, εh, εb, εc, Rh, .K_Release hv hr hst h1, h2, h3, h4, h5,
++            fun l r hm hno => h6 l r hm (fun hs' hin => hno hs' (by simp [hin]))⟩
+   | K_Drop hl hsub _ ih =>
+       cases k1 with
+       | nil => cases heq
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Drop hl hsub h1, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          exact ⟨t, εh, εb, εc, Rh, .K_Drop hl hsub h1, h2, h3, h4, h5,
++            fun l r hm hno => h6 l r hm (fun hs' hin => hno hs' (by simp [hin]))⟩
+   | K_Guard hm hsub hp hb _ ih =>
+       cases k1 with
+       | nil => cases heq
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Guard hm hsub hp hb h1, h2, h3, h4, h5⟩
+-  | K_Handle ht hsub hc hw ih =>
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, -⟩ := ih heq
++          exact ⟨t, εh, εb, εc, Rh, .K_Guard hm hsub hp hb h1, h2, h3, h4, h5,
++            fun l r hm _ => by simp [Eff.mem, Eff.test, Eff.atoms, Eff.empty] at hm⟩
++  | @K_Handle R0 ε0 εc0 εb0 hs0 k0 t0 b0 E0 Re0 ht hsub hbh hc hw ih =>
+       cases k1 with
+       | nil =>
+           simp only [List.nil_append, List.cons.injEq, Frame.handleF.injEq] at heq
+           obtain ⟨rfl, rfl⟩ := heq
+-          exact ⟨_, _, _, _, .K_Handle (.K_Empty (Eff.Sub.refl _) hw) (Eff.Sub.refl _) hc hw,
+-            ht, hsub, hc.store (hideBuilders_sub _), hw⟩
++          exact ⟨_, _, _, _, _, .K_Handle (.K_Empty (Eff.Sub.refl _) hw) (Eff.Sub.refl _) hbh hc hw,
++            ht, hsub, hc.store (hideBuilders_sub _), hw, fun l r hm _ => hm⟩
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Handle h1 hsub hc hw, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          refine ⟨t, εh, εb, εc, Rh, .K_Handle h1 hsub hbh hc hw, h2, h3, h4, h5, fun l r hm hno => ?_⟩
++          have hh := hno hs0 (by simp)
++          have hm' := hbh.1 _ hm
++          rw [Eff.mem_union] at hm'
++          have hm'' := hm'.resolve_right (fun hx => by
++            change Eff.test (handled P B hs0) (.name l r) = true at hx
++            rw [handled_name, hh] at hx
++            cases hx)
++          exact h6 l r (hsub.1 _ hm'') (fun hs' hin => hno hs' (by simp [hin]))
+   | K_Handle_Fail ht hr hn hc he hw ih =>
+       cases k1 with
+       | nil =>
+@@ -362,8 +384,11 @@ theorem ContTy.split {Ψ R ε a b E Re hs k2 k1}
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          obtain ⟨t, εb, εc, Rh, h1, h2, h3, h4, h5⟩ := ih heq
+-          exact ⟨t, εb, εc, Rh, .K_Handle_Fail h1 hr hn hc he hw, h2, h3, h4, h5⟩
++          obtain ⟨t, εh, εb, εc, Rh, h1, h2, h3, h4, h5, h6⟩ := ih heq
++          refine ⟨t, εh, εb, εc, Rh, .K_Handle_Fail h1 hr hn hc he hw, h2, h3, h4, h5, fun l r hm hno => ?_⟩
++          have ha : Eff.mem _ (.name l r) := (Eff.mem_union _ _ _).mp hm |>.resolve_left (by
++            simp [Eff.mem, Eff.test, Eff.singleFail, Eff.atoms])
++          exact h6 l r (hr.1 _ ha) (fun hs' hin => hno hs' (by simp [hin]))
+ 
+ /-! ## `releases(K')` の型付け -/
+ 
+@@ -396,7 +421,7 @@ theorem ContTy.framesOk (hdecl : P.EffectsOk B) (hb : B.CoreAssumptions P) {Ψ R
+       intro f hf; rcases List.mem_cons.mp hf with rfl | hf
+       · exact ⟨⟨_, hv, hr⟩, hrest.state_end hdecl hb hs⟩
+       · exact ih f hf
+-  | K_Handle _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih =>
++  | K_Handle _ _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih =>
+       intro f hf; rcases List.mem_cons.mp hf with rfl | hf
+       · trivial
+       · exact ih f hf
+diff --git a/formal/Benitoite/Release/Lemmas/FailureBase.lean b/formal/Benitoite/Release/Lemmas/FailureBase.lean
+index e9956236..77d4b407 100644
+--- a/formal/Benitoite/Release/Lemmas/FailureBase.lean
++++ b/formal/Benitoite/Release/Lemmas/FailureBase.lean
+@@ -19,14 +19,14 @@ theorem opSig_ne_fail {o sg} (h : opSig P B o = some sg) : o ≠ .fail := by
+   cases h
+ 
+ /-- 通常節の型付けは Fail を捕捉しない。 -/
+-theorem HasTypeClausesQ.no_failure {Δl : LocalCtx} {Ψ Q C Γ R h t ec}
+-    (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ec Δl) : handles h .fail = false := by
++theorem HasTypeClausesQ.no_failure {Δl : LocalCtx} {Ψ Q C Γ R εb h t ec}
++    (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ec Δl) : handles h .fail = false := by
+   match hc with
+   | .nil => rfl
+   | .cons hs _ _ _ _ _ ht =>
+     have ih := HasTypeClausesQ.no_failure ht
+     simp only [handles, List.any_cons, Clause.op, Bool.or_eq_false_iff]
+-    exact ⟨by simpa using opSig_ne_fail hs, ih⟩
++    exact ⟨by simpa using hs.ne_fail, ih⟩
+ 
+ /-- Fail 節はちょうど一つであり、そのエラー型が注釈と一致する。 -/
+ theorem HasFailureClause.shape {Δl : LocalCtx} {Ψ Q C Γ E R h t ec}
+diff --git a/formal/Benitoite/Release/Lemmas/FailureCont.lean b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+index 48df391e..aec7ef27 100644
+--- a/formal/Benitoite/Release/Lemmas/FailureCont.lean
++++ b/formal/Benitoite/Release/Lemmas/FailureCont.lean
+@@ -19,7 +19,7 @@ theorem ContTy.handler_kind {Ψ R ε k a b ε0 Re hs}
+   induction hk with
+   | K_Empty => simp at hm
+   | K_Sub _ _ ih => exact ih hm
+-  | K_Handle _ _ hc _ ih =>
++  | K_Handle _ _ _ hc _ ih =>
+       rcases List.mem_cons.mp hm with heq | hm
+       · cases heq; exact Or.inl hc.no_failure
+       · exact ih hm
+@@ -51,8 +51,8 @@ theorem ContTy.fail_end {Ψ R ε k a b ε0 Re E}
+   | K_Empty hs _ => exact hs.2 _ he
+   | K_Let _ _ _ _ ih | K_Mark _ _ ih | K_Update _ _ ih | K_Release _ _ _ _ ih
+   | K_Drop _ _ _ ih => exact ih (fun hs hm => hno hs (by simp [hm])) he
+-  | K_Handle _ hs _ _ ih =>
+-      have hh := (Eff.memFail_union _ _ _).mp he
++  | K_Handle _ hs hbh _ _ ih =>
++      have hh := (Eff.memFail_union _ _ _).mp (hbh.2 _ he)
+       have hh' := hh.resolve_right ((handled_noFail P B _).not_memFail E)
+       exact ih (fun hs hm => hno hs (by simp [hm])) (hs.2 _ hh')
+   | K_Handle_Fail _ _ _ hc _ _ _ =>
+@@ -111,7 +111,7 @@ theorem ContTy.failure_prefix {Ψ R ein k1 E body k2 a b Eb Re E'}
+           obtain ⟨rfl, heq⟩ := heq
+           exact ih (fun hs hm => hno hs (by simp [hm])) he heq
+   | K_Guard => exact ((Eff.memFail_empty E').mp he).elim
+-  | K_Handle _ hs hc _ ih =>
++  | K_Handle _ hs hbh hc _ ih =>
+       cases k1 with
+       | nil =>
+           simp only [List.nil_append, List.cons.injEq, Frame.handleF.injEq] at heq
+@@ -121,7 +121,7 @@ theorem ContTy.failure_prefix {Ψ R ein k1 E body k2 a b Eb Re E'}
+       | cons f k1 =>
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+-          have he' := ((Eff.memFail_union _ _ _).mp he).resolve_right ((handled_noFail P B _).not_memFail E')
++          have he' := ((Eff.memFail_union _ _ _).mp (hbh.2 _ he)).resolve_right ((handled_noFail P B _).not_memFail E')
+           exact ih (fun hs hm => hno hs (by simp [hm])) (hs.2 _ he') heq
+   | K_Handle_Fail ht hr hn hc hec hw ih =>
+       cases k1 with
+@@ -200,7 +200,7 @@ theorem ContTy.split_failure {Ψ R ein k1 E body k2 a b Eb Re}
+           obtain ⟨rfl, heq⟩ := heq
+           obtain ⟨t, Rh, eout, Rest, ec, hc, hnf, hre, he, htw, ht, hsave⟩ := ih heq
+           exact ⟨t, Rh, eout, Rest, ec, hc, hnf, hre, he, htw, ht, .K_Guard hm hsub hp hb hsave⟩
+-  | K_Handle ht hs hc hw ih =>
++  | K_Handle ht hs hbh hc hw ih =>
+       cases k1 with
+       | nil =>
+           simp only [List.nil_append, List.cons.injEq, Frame.handleF.injEq] at heq
+@@ -211,7 +211,7 @@ theorem ContTy.split_failure {Ψ R ein k1 E body k2 a b Eb Re}
+           simp only [List.cons_append, List.cons.injEq] at heq
+           obtain ⟨rfl, heq⟩ := heq
+           obtain ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, hsave⟩ := ih heq
+-          exact ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, .K_Handle hsave hs hc hw⟩
++          exact ⟨t, Rh, eout, Rest, ec, hcl, hn, hr, he, htw, ht, .K_Handle hsave hs hbh hc hw⟩
+   | K_Handle_Fail ht hr hn hc he hw ih =>
+       cases k1 with
+       | nil =>
+diff --git a/formal/Benitoite/Release/Lemmas/Inversion.lean b/formal/Benitoite/Release/Lemmas/Inversion.lean
+index cf277965..89e7c729 100644
+--- a/formal/Benitoite/Release/Lemmas/Inversion.lean
++++ b/formal/Benitoite/Release/Lemmas/Inversion.lean
+@@ -379,7 +379,7 @@ theorem HasTypeCQ.inv_use {Δl : LocalCtx} {C Γ R m' T ε v m} (h : HasTypeCQ P
+ theorem HasTypeCQ.inv_handle {Δl : LocalCtx} {C Γ R m' T ε m h} (hh : HasTypeCQ P B Ψ Q C Γ R m' T ε Δl)
+     (hm : m' = .handle m h) (ho : handles h .fail = false) :
+     ∃ t εm ε', HasTypeCQ P B Ψ Q C Γ R m t εm Δl ∧ Eff.Sub εm (Eff.union ε' (handled P B h)) ∧
+-      HasTypeClausesQ P B Ψ Q C Γ R h t ε' Δl ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
++      HasTypeClausesQ P B Ψ Q C Γ R εm h t ε' Δl ∧ Ty.Le t T ∧ Eff.Sub ε' ε := by
+   match hh with
+   | .C_Handle h1 hs hc => cases hm; exact ⟨_, _, _, h1, hs, hc, Ty.Le.refl _, Eff.Sub.refl _⟩
+   | .C_Handle_Fail _ _ _ hc =>
+diff --git a/formal/Benitoite/Release/Lemmas/Irrelevant.lean b/formal/Benitoite/Release/Lemmas/Irrelevant.lean
+index a8a31e30..49039b3c 100644
+--- a/formal/Benitoite/Release/Lemmas/Irrelevant.lean
++++ b/formal/Benitoite/Release/Lemmas/Irrelevant.lean
+@@ -154,8 +154,8 @@ mutual
+       simp only [Arm.substList, HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hg hs'.hide (by simpa [hp.2.1] using hL.extend δ.length),
+         HasTypeCQ.subst_congr (ρ := upLocalSubst (Arm.bindersOf alts) ρ) (η := upLocalSubst (Arm.bindersOf alts) η) hm hs' (by simpa [hp.2.1] using hL.extend δ.length), HasTypeArmsQ.subst_congr (ρ := ρ) (η := η) ht hs hL]
+ 
+-  theorem HasTypeClausesQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R cs t e σ τ}
+-      (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) (hs : SubstAgree Γ σ τ)
++  theorem HasTypeClausesQ.subst_congr {Δl : LocalCtx} {ρ η : Nat → LocalRef} {P B Ψ C Γ R εb cs t e σ τ}
++      (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t e Δl) (hs : SubstAgree Γ σ τ)
+       (hL : LocalSubstAgree Δl ρ η := by exact LocalSubstAgree.empty _ _) :
+       Clause.substList σ cs ρ = Clause.substList τ cs η := by
+     match h with
+diff --git a/formal/Benitoite/Release/Lemmas/LocalInvariant.lean b/formal/Benitoite/Release/Lemmas/LocalInvariant.lean
+index 9c783798..afbc7972 100644
+--- a/formal/Benitoite/Release/Lemmas/LocalInvariant.lean
++++ b/formal/Benitoite/Release/Lemmas/LocalInvariant.lean
+@@ -57,7 +57,7 @@ theorem ContTy.localRefs {P B Ψ R ε k a b ε0 Re places}
+       rcases List.mem_cons.mp hf with rfl | hf
+       · exact builder_value_no_free_local hv
+       · exact ih f hf
+-  | K_Handle _ _ hc _ ih =>
++  | K_Handle _ _ _ hc _ ih =>
+       intro f hf
+       rcases List.mem_cons.mp hf with rfl | hf
+       · exact hc.localRefs (.nil _) (.hidden _ _)
+diff --git a/formal/Benitoite/Release/Lemmas/Names.lean b/formal/Benitoite/Release/Lemmas/Names.lean
+index b065f417..ac46b7a4 100644
+--- a/formal/Benitoite/Release/Lemmas/Names.lean
++++ b/formal/Benitoite/Release/Lemmas/Names.lean
+@@ -194,7 +194,7 @@ mutual
+     | .plain _ hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
+     | .guarded _ hg hm hs => exact ⟨HasTypeCQ.lambdaNamesWF hg, HasTypeCQ.lambdaNamesWF hm, HasTypeArmsQ.lambdaNamesWF hs⟩
+ 
+-  theorem HasTypeClausesQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl) :
++  theorem HasTypeClausesQ.lambdaNamesWF {Δl : LocalCtx} {Ψ C Γ R εb cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl) :
+       Clause.LambdaNamesWFList cs := by
+     match h with
+     | .nil => trivial
+diff --git a/formal/Benitoite/Release/Lemmas/NoFailContext.lean b/formal/Benitoite/Release/Lemmas/NoFailContext.lean
+index f1f459a5..bc401fc8 100644
+--- a/formal/Benitoite/Release/Lemmas/NoFailContext.lean
++++ b/formal/Benitoite/Release/Lemmas/NoFailContext.lean
+@@ -73,8 +73,8 @@ mutual
+     | .guarded hp hg hm ht =>
+         exact .guarded hp (HasTypeCQ.q_mono hg hq) (HasTypeCQ.q_mono hm hq) (HasTypeArmsQ.q_mono ht hq)
+ 
+-  theorem HasTypeClausesQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+-      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R h t ε Δl := by
++  theorem HasTypeClausesQ.q_mono {Δl : LocalCtx} {Ψ Q' C Γ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
++      (hq : QLe Q Q') : HasTypeClausesQ P B Ψ Q' C Γ R εb h t ε Δl := by
+     match hc with
+     | .nil => exact .nil
+     | .cons hsg hnames hn hk hew hbody hrest =>
+diff --git a/formal/Benitoite/Release/Lemmas/OuterC.lean b/formal/Benitoite/Release/Lemmas/OuterC.lean
+index fc0f38b1..13bb60d0 100644
+--- a/formal/Benitoite/Release/Lemmas/OuterC.lean
++++ b/formal/Benitoite/Release/Lemmas/OuterC.lean
+@@ -159,9 +159,9 @@ mutual
+         exact .guarded hp (HasTypeCQ.outer (depth := _) hb hg hm.1) (HasTypeCQ.outer (depth := _) hb hbody hm.2.1)
+           (HasTypeArmsQ.outer (depth := _) hb hrest hm.2.2)
+ 
+-  theorem HasTypeClausesQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ R h t ε}
+-      (hc : HasTypeClausesQ P B Ψ Q C1 Γ R h t ε Δl) (hm : Clause.VarsInList C1.length (fun _ => True) h depth) :
+-      HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ R h t ε Δl := by
++  theorem HasTypeClausesQ.outer {Δl : LocalCtx} {depth : Nat} (hb : B.CoreAssumptions P) {Ψ C1 C0 Γ R εb h t ε}
++      (hc : HasTypeClausesQ P B Ψ Q C1 Γ R εb h t ε Δl) (hm : Clause.VarsInList C1.length (fun _ => True) h depth) :
++      HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ R εb h t ε Δl := by
+     match hc with
+     | .cons (sg := sg) hsg hnames hn hk hew hbody hrest =>
+         simp only [Clause.VarsInList] at hm
+diff --git a/formal/Benitoite/Release/Lemmas/PresHelpers.lean b/formal/Benitoite/Release/Lemmas/PresHelpers.lean
+index ee0100f2..2b245504 100644
+--- a/formal/Benitoite/Release/Lemmas/PresHelpers.lean
++++ b/formal/Benitoite/Release/Lemmas/PresHelpers.lean
+@@ -144,7 +144,7 @@ theorem ContTy.R_wf {Ψ R ε k a b ε0 Re} (h : ContTy P B Ψ R ε k a b ε0 Re)
+   | K_Mark _ hw _ => intro x hx; cases hx; exact hw
+   | K_Update _ _ _ => intro x hx; cases hx
+   | K_Release _ _ _ _ ih => exact ih hRe
+-  | K_Handle _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih => exact ih hRe
++  | K_Handle _ _ _ _ _ ih | K_Handle_Fail _ _ _ _ _ _ ih => exact ih hRe
+   | K_Drop _ _ _ ih => exact ih hRe
+   | K_Guard => intro x hx; cases hx
+   | K_Sub _ _ ih => exact ih hRe
+@@ -163,9 +163,9 @@ theorem ContTy.markPush {Ψ R ε k a b E r} (hk : ContTy P B Ψ R ε k a b E non
+ 
+ /-! ## 節の探索 -/
+ 
+-theorem HasTypeClausesQ.find {Ψ C Γ R hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R hs t ε)
++theorem HasTypeClausesQ.find {Ψ C Γ R εb hs t ε o c} (h : HasTypeClauses P B Ψ C Γ R εb hs t ε)
+     (hc : findClause hs o = some c) :
+-    ∃ sg, opSig P B o = some sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF 0 C.length ε ∧
++    ∃ sg, ClauseSig P B εb o sg ∧ c.arity = sg.params.length ∧ c.ntys = sg.tparams.length ∧ Eff.WF 0 C.length ε ∧
+       HasTypeC P B Ψ (sg.tparams ++ C)
+         (some (.cont sg.ret (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε)) :: (binds sg.params ++ shiftEnv c.ntys Γ))
+         (R.map (Ty.shift c.ntys 0)) c.body (t.shift c.ntys 0) (Eff.shift c.ntys 0 ε) := by
+diff --git a/formal/Benitoite/Release/Lemmas/PresMain.lean b/formal/Benitoite/Release/Lemmas/PresMain.lean
+index 844829e2..f4429ac7 100644
+--- a/formal/Benitoite/Release/Lemmas/PresMain.lean
++++ b/formal/Benitoite/Release/Lemmas/PresMain.lean
+@@ -514,7 +514,8 @@ theorem preservationE (hwf : P.WellFormed) (hwt : P.WellTyped B) (hdecl : P.Effe
+       by_cases ho : handles h .fail = false
+       · obtain ⟨t, εm, ε', hm1, hsubm, hcl, hle, hs'⟩ := hm.inv_handle rfl ho
+         have htw : Ty.WF 0 0 t := HasTypeCQ.wf hwf hb hm1 (envWF_nil 0) hσ.wf hmc.1
+-        exact ⟨Ψ, R, t, b, _, εm, hσ, hm1, hsubm, .K_Handle (.K_Sub hk hle) (hs'.trans hε) hcl.hideBuilders htw, hmc.1,
++        -- 枠の穴の効果は保護本体の効果 εm であり、節の添字はそこから選ぶ（L30.1）。
++        exact ⟨Ψ, R, t, b, εm, εm, hσ, hm1, Eff.Sub.refl _, .K_Handle (.K_Sub hk hle) (hs'.trans hε) hsubm hcl.hideBuilders htw, hmc.1,
+           Cont.Closed.cons.mpr ⟨hmc.2, hkc⟩, hσc⟩
+       · obtain ⟨t, eb, E, Rest, ec, hm1, hsubm, hn, hc, hle, hs'⟩ :=
+           hm.inv_handle_failure rfl (by cases hh : handles h .fail <;> simp_all)
+diff --git a/formal/Benitoite/Release/Lemmas/Rename.lean b/formal/Benitoite/Release/Lemmas/Rename.lean
+index 3e05ce12..682ae75f 100644
+--- a/formal/Benitoite/Release/Lemmas/Rename.lean
++++ b/formal/Benitoite/Release/Lemmas/Rename.lean
+@@ -282,10 +282,10 @@ mutual
+         rw [binds_length, hp.2.1] at hξ'
+         exact .guarded hp (HasTypeCQ.rename hg hξ'.hide _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeCQ.rename hm hξ' _ (by simpa [hp.2.1] using hL.extend _)) (HasTypeArmsQ.rename ht hξ Δl' hL)
+ 
+-  theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
++  theorem HasTypeClausesQ.rename {Δl : LocalCtx} {Ψ C Γ Δ ξ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
+       (hξ : RenOk Γ Δ ξ)
+       (Δl' : LocalCtx := Δl)
+-      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.renameList ξ h) t ε Δl' := by
++      (hL : LocalRenOk Δl Δl' ξ := by intro i k hi; simp [LocalCtx.kindAt] at hi) : HasTypeClausesQ P B Ψ Q C Δ R εb (Clause.renameList ξ h) t ε Δl' := by
+     match hc with
+     | .nil => simp only [Clause.renameList]; exact .nil
+     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
+@@ -403,8 +403,8 @@ mutual
+     | .guarded hp hg hm ht =>
+         exact .guarded hp (HasTypeCQ.store hg hΨ) (HasTypeCQ.store hm hΨ) (HasTypeArmsQ.store ht hΨ)
+ 
+-  theorem HasTypeClausesQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
+-      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R h t ε Δl := by
++  theorem HasTypeClausesQ.store {Δl : LocalCtx} {Ψ Ψ' C Γ R εb h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
++      (hΨ : StoreTy.Sub Ψ Ψ') : HasTypeClausesQ P B Ψ' Q C Γ R εb h t ε Δl := by
+     match hc with
+     | .nil => exact .nil
+     | .cons hsg hnames hn hk hew hbody hrest =>
+@@ -423,9 +423,9 @@ theorem hideBuilders_weaken {P B Ψ Q C Γ R m a e}
+   h.store (hideBuilders_sub Ψ)
+ 
+ /-- 節の捕捉境界を二度隠しても同じ判断になる。 -/
+-theorem HasTypeClausesQ.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ R cs t e}
+-    (h : HasTypeClausesQ P B Ψ Q C Γ R cs t e Δl) :
+-    HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R cs t e Δl := by
++theorem HasTypeClausesQ.hideBuilders {Δl : LocalCtx} {P B Ψ Q C Γ R εb cs t e}
++    (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t e Δl) :
++    HasTypeClausesQ P B Ψ.hideBuilders Q C Γ R εb cs t e Δl := by
+   match h with
+   | .nil => exact .nil
+   | .cons hs hn ha hk he hb ht =>
+diff --git a/formal/Benitoite/Release/Lemmas/SubstTyping.lean b/formal/Benitoite/Release/Lemmas/SubstTyping.lean
+index 8d0fb402..ea71ebb7 100644
+--- a/formal/Benitoite/Release/Lemmas/SubstTyping.lean
++++ b/formal/Benitoite/Release/Lemmas/SubstTyping.lean
+@@ -300,9 +300,9 @@ mutual
+         exact .guarded hp (HasTypeCQ.subst (ρ := _) hg (hσ'.hide none) (by simpa [hp.2.1] using hL.extend δ.length)) (HasTypeCQ.subst (ρ := _) hm hσ' (by simpa [hp.2.1] using hL.extend δ.length))
+           (HasTypeArmsQ.subst (ρ := _) ht hσ hL)
+ 
+-  theorem HasTypeClausesQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl)
++  theorem HasTypeClausesQ.subst {Δl : LocalCtx} {ρ : Nat → LocalRef} {Ψ C Γ Δ R εb σ h t ε} (hc : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl)
+       (hσ : SubstOk P B Ψ Γ Δ R σ) {Δl' : LocalCtx}
+-      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeClausesQ P B Ψ Q C Δ R (Clause.substList σ h ρ) t ε Δl' := by
++      (hL : LocalSubstOk Ψ Δl Δl' ρ := by intro i k hi; simp [LocalCtx.kindAt, LocalCtx.extend] at hi) : HasTypeClausesQ P B Ψ Q C Δ R εb (Clause.substList σ h ρ) t ε Δl' := by
+     match hc with
+     | .nil => simp only [Clause.substList]; exact .nil
+     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
+diff --git a/formal/Benitoite/Release/Lemmas/TySubstMain.lean b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+index f9e66f93..78ea85c3 100644
+--- a/formal/Benitoite/Release/Lemmas/TySubstMain.lean
++++ b/formal/Benitoite/Release/Lemmas/TySubstMain.lean
+@@ -358,18 +358,19 @@ theorem Exhaustive.substAt (hwf : P.WellFormed) (c : Nat) (ts' : List Ty) (es' :
+ noncomputable def envSubst (c : Nat) (ts : List Ty) (es : List Eff) (Γ : List (Option Ty)) : List (Option Ty) :=
+   Γ.map (Option.map (Ty.substAt c ts es))
+ 
+-theorem opSig_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {o sg} (h : opSig P B o = some sg) :
++/-- 節の添字 S で具体化した操作の型は、宣言した型パラメータだけを使う（`opSig_scoped` の一般化。L30.1）。 -/
++theorem opSigAt_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {S o sg} (h : opSigAt P B S o = some sg) :
+     NamesWF sg.names sg.params ∧
+     Ty.VarsInList 0 sg.tparams.length (fun _ => False) sg.params ∧
+       Ty.VarsIn 0 sg.tparams.length (fun _ => False) sg.ret := by
+   cases o with
+   | fail => cases h
+   | user o =>
+-      simp only [opSig, Option.map_eq_some_iff] at h
++      simp only [opSigAt, Option.map_eq_some_iff] at h
+       obtain ⟨od, hod, rfl⟩ := h
+       exact hwf.2.2.1 _ _ hod
+   | prim b =>
+-      simp only [opSig] at h
++      simp only [opSigAt] at h
+       split at h
+       · rename_i s hs
+         split at h
+@@ -379,7 +380,7 @@ theorem opSig_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {o sg} (h :
+           have hio := hb.opEff_io _ _ _ hs hl
+           obtain ⟨_, _, _, hne, _, _⟩ := (hb.io_op _ _ hs hio).common
+           have hsc := hb.sig_scoped _ _ hs
+-          have hp := (hsc.inst_varsIn_zero (rs := s.topRanges) (by simp [PrimSig.topRanges])).1
++          have hp := (hsc.inst_varsIn_zero (rs := List.replicate s.nranges S) (by simp)).1
+           rw [PrimSig.inst_params] at hp
+           refine ⟨by simpa only [NamesWF, List.length_map] using hsc.1, ?_, ?_⟩
+           · exact Ty.VarsInList.mono (Nat.le_refl _) (fun i hi => by omega) _ hp
+@@ -387,6 +388,52 @@ theorem opSig_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {o sg} (h :
+         · cases h
+       · cases h
+ 
++/-- 節の操作の型は、宣言した型パラメータだけを使う。 -/
++theorem ClauseSig.scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {e o sg} (h : ClauseSig P B e o sg) :
++    NamesWF sg.names sg.params ∧
++    Ty.VarsInList 0 sg.tparams.length (fun _ => False) sg.params ∧
++      Ty.VarsIn 0 sg.tparams.length (fun _ => False) sg.ret := by
++  obtain ⟨S, -, h⟩ := h
++  exact opSigAt_scoped hwf hb h
++
++/-- 行の変数を持たない効果は、代入で名前の原子が変わらず、行の変数を持たないままである。 -/
++theorem Eff.mem_substAt_of_noRows {c : Nat} {ts : List Ty} {es : List Eff} {e : Eff}
++    (he : ∀ i, ¬ Eff.mem e (.rho i)) (a : Atom) :
++    Eff.mem (Eff.substAt c ts es e) a ↔ Eff.mem e a := by
++  change Eff.mem (Eff.bind (SubstEnv.at c ts es) e) a ↔ _
++  rw [Eff.mem_bind]
++  constructor
++  · rintro (⟨l, r, rfl, h⟩ | ⟨i, hi, -⟩)
++    · exact h
++    · exact absurd hi (he i)
++  · intro h
++    cases a with
++    | name l r => exact Or.inl ⟨l, r, rfl, h⟩
++    | rho i => exact absurd h (he i)
++
++/-- 節の添字の規則の条件は、保護本体の効果への型の代入で保たれる（行の変数を持たない効果だけが条件を満たす）。 -/
++theorem Eff.ClauseRangeIs.substAt {c : Nat} {ts : List Ty} {es : List Eff} {e : Eff} {l : EffName}
++    {r : Scope.Domain.Range} (h : e.ClauseRangeIs l r) : (Eff.substAt c ts es e).ClauseRangeIs l r := by
++  obtain ⟨hno, hm, hu⟩ := h
++  refine ⟨fun i hi => hno i ((Eff.mem_substAt_of_noRows hno _).mp hi),
++    (Eff.mem_substAt_of_noRows hno _).mpr hm, fun ix hix => hu ix ((Eff.mem_substAt_of_noRows hno _).mp hix)⟩
++
++/-- 節の操作の型は、保護本体の効果への型の代入で保たれる。Top の節の添字は代入の後も Top のまま許される
++（代入で行の変数を具体化すると規則の値が Top から変わりうる）。 -/
++theorem ClauseSig.substAt {c : Nat} {ts : List Ty} {es : List Eff} {e o sg} (h : ClauseSig P B e o sg) :
++    ClauseSig P B (Eff.substAt c ts es e) o sg := by
++  obtain ⟨S, hS, h⟩ := h
++  refine ⟨S, ?_, h⟩
++  rcases hS with hS | ⟨b, s, l, ho, hs, hl, hr⟩
++  · exact Or.inl hS
++  · exact Or.inr ⟨b, s, l, ho, hs, hl, hr.substAt⟩
++
++theorem opSig_scoped (hwf : P.WellFormed) (hb : B.CoreAssumptions P) {o sg} (h : opSig P B o = some sg) :
++    NamesWF sg.names sg.params ∧
++    Ty.VarsInList 0 sg.tparams.length (fun _ => False) sg.params ∧
++      Ty.VarsIn 0 sg.tparams.length (fun _ => False) sg.ret :=
++  opSigAt_scoped hwf hb (S := .top) (by rw [opSigAt_top]; exact h)
++
+ theorem unguardedPats_substTy (c : Nat) (ts : List Ty) (es : List Eff) (arms : List Arm) :
+     unguardedPats (Arm.substTyAtList c ts es arms) = unguardedPats arms := by
+   induction arms with
+@@ -842,22 +889,22 @@ mutual
+           simpa only [List.length_map, LocalCtx.substTyAt_extend] using hh
+ 
+   theorem HasTypeClausesQ.substTy {Δl : LocalCtx} (hwf : P.WellFormed) (hb : B.CoreAssumptions P)
+-      {Q' : NoFailCtx} {Ψ C Γ R h t ε ts' es'} {c : Nat}
+-      (hcl : HasTypeClausesQ P B Ψ Q C Γ R h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
++      {Q' : NoFailCtx} {Ψ C Γ R εb h t ε ts' es'} {c : Nat}
++      (hcl : HasTypeClausesQ P B Ψ Q C Γ R εb h t ε Δl) (hc : c ≤ C.length) (hts : ClosedArgs ts')
+       (hes' : ∀ e ∈ es', Eff.WF 0 0 e) (hsat : SatAll B [] ts' (C.drop c)) (hΨ : StoreFix Ψ ts' es') (hrow : RowTransport Q Q' es') :
+       HasTypeClausesQ P B Ψ Q' (C.take c) (envSubst c ts' es' Γ) (R.map (Ty.substAt c ts' es'))
+-        (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
++        (Eff.substAt c ts' es' εb) (Clause.substTyAtList c ts' es' h) (t.substAt c ts' es') (Eff.substAt c ts' es' ε) (Δl.substTyAt c ts' es') := by
+     match hcl with
+     | .nil => simp only [Clause.substTyAtList]; exact .nil
+     | .cons (sg := sg) (k := k) hsg hnames hn hk hew hbody hrest =>
+         simp only [Clause.substTyAtList]
+-        refine .cons hsg hnames hn hk (by
++        refine .cons hsg.substAt hnames hn hk (by
+           have htc : (C.take c).length = c := by simp; omega
+           rw [htc]
+           apply Eff.substAt_wf es' (fun t ht => (hts t ht).1) hes' ε
+           rw [hsat.1]
+           exact Eff.WF.mono (by simp; omega) ε hew) ?_ (HasTypeClausesQ.substTy hwf hb hrest hc hts hes' hsat hΨ hrow)
+-        have hsc := opSig_scoped hwf hb hsg
++        have hsc := hsg.scoped hwf hb
+         have hc' : c + k ≤ (sg.tparams ++ C).length := by simp; omega
+         have hdrop : (sg.tparams ++ C).drop (c + k) = C.drop c := by
+           rw [hk, Nat.add_comm]; simp [List.drop_append]
+diff --git a/formal/Benitoite/Release/LocalScope.lean b/formal/Benitoite/Release/LocalScope.lean
+index cf7b1808..803017f7 100644
+--- a/formal/Benitoite/Release/LocalScope.lean
++++ b/formal/Benitoite/Release/LocalScope.lean
+@@ -133,7 +133,7 @@ mutual
+     | .plain hp hm hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hm (by simpa [hp.2.1] using hΔ.extend _) hΨ, HasTypeArmsQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
+     | .guarded hp hg hm hs => exact ⟨HasTypeCQ.localRefs (depth := _) (places := places) hg (by simpa [hp.2.1] using hΔ.extend _) hΨ, HasTypeCQ.localRefs (depth := _) (places := places) hm (by simpa [hp.2.1] using hΔ.extend _) hΨ, HasTypeArmsQ.localRefs (depth := _) (places := places) hs hΔ hΨ⟩
+ 
+-  theorem HasTypeClausesQ.localRefs {depth : Nat} {places : Nat → Prop} {Δl : LocalCtx} {Ψ C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
++  theorem HasTypeClausesQ.localRefs {depth : Nat} {places : Nat → Prop} {Δl : LocalCtx} {Ψ C Γ R εb cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl)
+       (hΔ : Δl.Scoped depth) (hΨ : Ψ.BuilderPlaces places) :
+       Clause.LocalRefsList depth places cs := by
+     match h with
+diff --git a/formal/Benitoite/Release/Semantics.lean b/formal/Benitoite/Release/Semantics.lean
+index a8dd1f29..c952dbaa 100644
+--- a/formal/Benitoite/Release/Semantics.lean
++++ b/formal/Benitoite/Release/Semantics.lean
+@@ -558,11 +558,14 @@ inductive ContTy (P : Program) (B : Builtins) (Ψ : StoreTy) :
+   | K_Release {R ε v o k a b ε0 Re} :
+       HasTypeV P B Ψ [] [] v (.opaqueTop o) → B.isResource o = true → Eff.mem ε (.nameTop stateEff) →
+       ContTy P B Ψ R ε k a b ε0 Re → ContTy P B Ψ R ε (.release v :: k) a b ε0 Re
+-  /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。 -/
+-  | K_Handle {R ε εc h k t b ε0 Re} :
+-      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → HasTypeClauses P B Ψ.hideBuilders [] [] R h t εc →
++  /-- K-Handle。節は、枠の下の継続が許すエフェクトに含まれるエフェクト εc で検査する（01-12「確かめる性質」）。
++  枠の穴の効果 εb は保護本体の効果であり、`εc ∪ handled(H)` に含まれる。節の添字は εb から選ぶ（L30.1。
++  `ClauseSig`）。 -/
++  | K_Handle {R ε εc εb h k t b ε0 Re} :
++      ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub εc ε → Eff.Sub εb (Eff.union εc (handled P B h)) →
++      HasTypeClauses P B Ψ.hideBuilders [] [] R εb h t εc →
+       Ty.WF 0 0 t →
+-      ContTy P B Ψ R (Eff.union εc (handled P B h)) (.handleF h :: k) t b ε0 Re
++      ContTy P B Ψ R εb (.handleF h :: k) t b ε0 Re
+   /-- Fail節の出力を、捕捉する本体の上限へ混ぜない。 -/
+   | K_Handle_Fail {R ε ec Rest E h k t b ε0 Re} :
+       ContTy P B Ψ R ε k t b ε0 Re → Eff.Sub Rest ε → NoFail Qempty Rest →
+diff --git a/formal/Benitoite/Release/Typing.lean b/formal/Benitoite/Release/Typing.lean
+index f15756b1..e4607235 100644
+--- a/formal/Benitoite/Release/Typing.lean
++++ b/formal/Benitoite/Release/Typing.lean
+@@ -156,6 +156,70 @@ def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig
+           | none => none
+       | none => none
+ 
++/-- 捕捉した組み込みの操作の型を節の添字 S で具体化した操作の型（L30.1）。組み込みの操作では引数を
++`Ty.instTarget` で S の列（長さは範囲の変数の個数）に具体化し、結果は `s.ret` のままにする（組み込みの操作の結果の
++型は範囲の変数を持たない。`PrimSig.Scoped` の操作の結果の条件）。利用者の操作は `opSig` と同じで S によらない。
++`Ty.instTarget` だけで書くので計算できる。 -/
++def opSigAt (P : Program) (B : Builtins) (S : Scope.Domain.Range) : OpRef → Option OpSig
++  | .fail => none
++  | .user o => (P.ops o).map fun od => ⟨od.tparams, od.names, od.params, od.ret, od.eff⟩
++  | .prim b =>
++      match B.sig b with
++      | some s =>
++          match s.opEff with
++          | some l => some ⟨s.tparams, s.names, s.params.map (Ty.instTarget (List.replicate s.nranges S)), s.ret, l⟩
++          | none => none
++      | none => none
++
++/-- 節の添字の規則の条件（判断 11）。保護本体の効果 e が行の変数を持たず、名前 l の原子をちょうど一つ持ち、
++その範囲の位置が閉じた範囲 r である。 -/
++def Eff.ClauseRangeIs (e : Eff) (l : EffName) (r : Scope.Domain.Range) : Prop :=
++  (∀ i, ¬ Eff.mem e (.rho i)) ∧ Eff.mem e (.name l (.fixed r)) ∧
++    ∀ ix, Eff.mem e (.name l ix) → ix = .fixed r
++
++open Classical in
++/-- 節の添字の規則（判断 11）。保護本体の効果 e に名前 l の閉じた原子がちょうど一つだけあればその範囲、
++複数の原子・同名の Top・未確定の行の変数・同名の原子なしの場合は Top とする。節の本体や期待される出力を読まない。 -/
++noncomputable def Eff.clauseRange (e : Eff) (l : EffName) : Scope.Domain.Range :=
++  if h : ∃ r, e.ClauseRangeIs l r then Classical.choose h else .top
++
++/-- 節の添字 S の許容（L30.1）。S は Top か、操作 o が組み込みの操作でエフェクトの名前 l を持ち、S が保護本体の
++効果 e についての規則の値（`Eff.ClauseRangeIs`）である。型付けは規則の値のほかに Top も許す。型の代入で行の
++変数を具体化すると規則の値が変わりうるので、代入の前に Top で型付けた節を代入の後も型付けるためである
++（`ClauseIxOk.substAt`）。 -/
++def ClauseIxOk (B : Builtins) (e : Eff) (o : OpRef) (S : Scope.Domain.Range) : Prop :=
++  S = .top ∨ ∃ b s l, o = .prim b ∧ B.sig b = some s ∧ s.opEff = some l ∧ e.ClauseRangeIs l S
++
++/-- 節の操作の型（L30.1）。保護本体の効果 e から許容される節の添字 S を選び、操作の型を S で具体化する。 -/
++def ClauseSig (P : Program) (B : Builtins) (e : Eff) (o : OpRef) (sg : OpSig) : Prop :=
++  ∃ S, ClauseIxOk B e o S ∧ opSigAt P B S o = some sg
++
++/-- 節の添字が Top のとき、`opSigAt` は `opSig` である。 -/
++theorem opSigAt_top (P : Program) (B : Builtins) (o : OpRef) : opSigAt P B .top o = opSig P B o := by
++  cases o <;> rfl
++
++/-- 利用者の操作の型は節の添字によらない。 -/
++theorem opSigAt_user (P : Program) (B : Builtins) (S : Scope.Domain.Range) (o : OpName) :
++    opSigAt P B S (.user o) = opSig P B (.user o) := rfl
++
++/-- 操作の型を持つ節の操作は Fail ではない。 -/
++theorem ClauseSig.ne_fail {P : Program} {B : Builtins} {e : Eff} {o : OpRef} {sg : OpSig}
++    (h : ClauseSig P B e o sg) : o ≠ .fail := by
++  obtain ⟨S, -, h⟩ := h
++  rintro rfl
++  cases h
++
++/-- Top の節の添字はどの保護本体の効果のもとでも許される。 -/
++theorem ClauseSig.of_opSig {P : Program} {B : Builtins} {e : Eff} {o : OpRef} {sg : OpSig}
++    (h : opSig P B o = some sg) : ClauseSig P B e o sg :=
++  ⟨.top, Or.inl rfl, by rw [opSigAt_top]; exact h⟩
++
++/-- 利用者の操作の節の操作の型は `opSig` である。 -/
++theorem ClauseSig.user {P : Program} {B : Builtins} {e : Eff} {o : OpName} {sg : OpSig}
++    (h : ClauseSig P B e (.user o) sg) : opSig P B (.user o) = some sg := by
++  obtain ⟨S, -, h⟩ := h
++  exact h
++
+ /-- 操作の辞書数。組み込みの操作は辞書を持たない。 -/
+ def opDictCount (P : Program) : OpRef → Nat
+   | .user o => ((P.ops o).map fun d => d.dictParams.length).getD 0
+@@ -566,7 +630,7 @@ mutual
+     /-- C-Handle。 -/
+     | C_Handle {Δ Γ R m h t εm ε} :
+         HasTypeCQ P B Ψ Q C Γ R m t εm Δ → Eff.Sub εm (Eff.union ε (handled P B h)) →
+-        HasTypeClausesQ P B Ψ Q C Γ R h t ε Δ →
++        HasTypeClausesQ P B Ψ Q C Γ R εm h t ε Δ →
+         HasTypeCQ P B Ψ Q C Γ R (.handle m h) t ε Δ
+     | C_Handle_Fail {Δ Γ R m h t E eb Rest ec} :
+         HasTypeCQ P B Ψ Q C Γ R m t eb Δ →
+@@ -609,15 +673,15 @@ mutual
+   節の中の型の変数の番号 `0..k-1` に束縛した、宣言の制約を持つ、ほかの型とは等しくない型の変数である。
+   節の外側の Γ・T・R の型は、番号を k だけずらす。 -/
+   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+-      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
+-    | nil {Δ Γ R t ε} : HasTypeClausesQ P B Ψ Q C Γ R [] t ε Δ
+-    | cons {Δ Γ R o n k body cs t ε sg} :
+-        opSig P B o = some sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF 0 C.length ε →
++      StoreTy → NoFailCtx → List TParam → List (Option Ty) → Option Ty → Eff → List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop
++    | nil {Δ Γ R εb t ε} : HasTypeClausesQ P B Ψ Q C Γ R εb [] t ε Δ
++    | cons {Δ Γ R εb o n k body cs t ε sg} :
++        ClauseSig P B εb o sg → NamesWF sg.names sg.params → n = sg.params.length → k = sg.tparams.length → Eff.WF 0 C.length ε →
+         HasTypeCQ P B Ψ.hideBuilders Q (sg.tparams ++ C)
+           (some (.cont sg.ret (t.shift k 0) (Eff.shift k 0 ε)) :: (binds sg.params ++ shiftEnv k Γ))
+           (R.map (Ty.shift k 0)) body (t.shift k 0) (Eff.shift k 0 ε) [] →
+-        HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δ →
+-        HasTypeClausesQ P B Ψ Q C Γ R (.mk o n k body :: cs) t ε Δ
++        HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δ →
++        HasTypeClausesQ P B Ψ Q C Γ R εb (.mk o n k body :: cs) t ε Δ
+ 
+   /-- Fail 節は一つだけであり、予約した継続の位置には型を与えない。 -/
+   inductive HasFailureClause (P : Program) (B : Builtins) :
+diff --git a/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean b/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean
+index 136dd6eb..2b6c608f 100644
+--- a/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean
++++ b/formal/Benitoite/Surface/Lemmas/BuilderCapture.lean
+@@ -183,7 +183,7 @@ mutual
+       · intro m hm; cases hm
+         simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hg (hp.append _).hide (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
+       · simpa only [binds_length, ha.2.1] using HasTypeCQ.reads hb (hp.append _) (by simpa only [binds_length, ha.2.1] using hΔ.extend _)
+- theorem HasTypeClausesQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl)
++ theorem HasTypeClausesQ.reads {Δl : LocalCtx} {Ψ : StoreTy} {C Γ R εb cs t ε} (h : HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl)
+      {pv} (hp : EnvReads pv Γ) : Clauses.Reads pv cs := by
+   match h with
+   | .nil => simp only [Clauses.Reads]
+diff --git a/formal/Benitoite/Surface/Lemmas/ReturnTry.lean b/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
+index a84622a0..c0395334 100644
+--- a/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
++++ b/formal/Benitoite/Surface/Lemmas/ReturnTry.lean
+@@ -47,9 +47,9 @@ mutual
+ 
+   termination_by structural h
+ 
+-  theorem HasTypeClausesQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ cs t ε}
+-      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ cs t ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
+-      HasTypeClausesQ P B Ψ Q C Γ R cs t ε Δl := by
++  theorem HasTypeClausesQ.withReturn {Δl : LocalCtx} {P B Ψ C Γ R₀ εb cs t ε}
++      (h : HasTypeClausesQ P B Ψ Q C Γ R₀ εb cs t ε Δl) (hΨ : Ψ = StoreTy.empty) (hR : R₀ = none) (R : Option Ty) :
++      HasTypeClausesQ P B Ψ Q C Γ R εb cs t ε Δl := by
+     match h with
+     | .nil => exact .nil
+     | .cons (k := k) ho hn hp hk hw hb hs =>

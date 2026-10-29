@@ -1,0 +1,21 @@
+import Benitoite.Unofficial.IO.Console
+import Benitoite.Unofficial.IO.File
+import Benitoite.Unofficial.IO.Process
+
+// counts = {}
+// for word in open("words.txt").read().split():
+//     counts[word] = counts.get(word, 0) + 1
+// for word in sorted(counts):
+//     if counts[word] > 1: print(f"{word} {counts[word]}")
+function main() -> Unit uses File.Read, Console.Write, Process.Exit
+  bind text <- try File.readText("words.txt") or die
+  bind words <- List.filter(xs: String.split(s: String.replace(s: text, old: "\n", new: " "), separator: " "), p: lambda(value) return value <> "")
+  bind counts <- List.fold(xs: words, initial: Map.empty(), f: lambda(acc, value)
+    return Map.set(m: acc, k: value, value: Option.unwrapOr(o: Map.get(m: acc, k: value), fallback: 0) + 1)
+  end lambda)
+  Map.forEach(m: Map.filter(m: counts, p: lambda(key, value) return value > 1), f: lambda(key, value)
+    Console.writeLine("${key} ${value}")
+  end lambda)
+  Console.writeLine("${List.length(words)} words, ${Map.size(counts)} distinct")
+  return ()
+end function

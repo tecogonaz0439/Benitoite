@@ -1,0 +1,184 @@
+   Compiling benitoite v0.0.12 (<wt>/crates/benitoite)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.34s
+     Running tests/desugar_export.rs (<tmp>
+
+running 47 tests
+test exchange::scope_export::rejects_range_index_equal_to_signature_bound - should panic ... ok
+test batch3::export_batch3_scope ... ok
+test batch3::export_batch3_range ... ok
+test batch3::export_batch4_blocks ... ok
+test batch3::export_batch3_solve ... ok
+test batch5::export_batch5_formats ... ok
+test export_desugar_corpus ... ignored, formal: scripts/check-formal.sh が走らせる
+test export_independent_program_exchange ... FAILED
+test export_interval_identity ... FAILED
+test export_interval_manifest ... FAILED
+test batch3::export_batch4_log_standard ... ok
+test export_named_declarations_smoke ... FAILED
+test export_named_types_smoke ... FAILED
+test batch3::export_batch4_checked_lists ... ok
+test export_accepts_generated_guard_local_handler ... ok
+test export_preserves_decimal_mantissas_as_exact_json_integers ... ok
+test export_scope_tables_smoke ... FAILED
+test export_width_smoke ... FAILED
+test interval::export_interval_range ... FAILED
+test interval::vm::export_interval_vm ... FAILED
+test named::export_checked_positional_constructor_holes ... FAILED
+test named::export_extensible_package ... FAILED
+test export_rejects_constref_in_value_position ... ok
+test named::export_general_named_programs ... FAILED
+test export_batch2_character ... ok
+test export_preserves_float64_bits_and_numeric_strings ... ok
+test named::export_named_annotation_without_named_calls ... FAILED
+test named::export_named_calls_smoke ... FAILED
+test named::export_named_static_calls_smoke ... FAILED
+test export_accepts_generated_placeholder_escapes ... ok
+test named::export_extensible_source ... ok
+test scope_tables::atom_order_tests::exports_effect_atoms_in_lean_code_order ... ok
+test scope_tables::exports_closed_candidate_atoms_from_signatures_and_calls ... ok
+test export_batch2_failure ... ok
+test named::export_hole_argument_plans ... FAILED
+test scope_tables::exports_closed_type_and_atom_indices_without_losing_ip_precision ... ok
+test named::standard_library_calls_require_named_arguments ... ok
+test scope_tables::exports_the_same_non_top_call_ranges_before_and_after_desugaring ... ok
+test scope_tables::rejects_range_variables_outside_signatures_and_invalid_signature_indices ... ok
+test scope_tables::exports_all_unused_operations_from_complete_stdlib ... ok
+test export_known_scope_failures_as_excluded ... FAILED
+test scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures ... FAILED
+test scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures ... FAILED
+test named::export_generated_record_property ... FAILED
+test batch3::export_batch3_monad2 ... ok
+test export_batch2_op ... ok
+test batch3::export_batch3_builders ... ok
+
+failures:
+
+---- export_independent_program_exchange stdout ----
+
+thread 'export_independent_program_exchange' (7680197) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_interval_identity stdout ----
+
+thread 'export_interval_identity' (7680198) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_interval_manifest stdout ----
+
+thread 'export_interval_manifest' (7680199) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_named_declarations_smoke stdout ----
+
+thread 'export_named_declarations_smoke' (7680218) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_named_types_smoke stdout ----
+
+thread 'export_named_types_smoke' (7680219) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_scope_tables_smoke stdout ----
+
+thread 'export_scope_tables_smoke' (7680263) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_width_smoke stdout ----
+
+thread 'export_width_smoke' (7680264) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- interval::export_interval_range stdout ----
+
+thread 'interval::export_interval_range' (7680265) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- interval::vm::export_interval_vm stdout ----
+
+thread 'interval::vm::export_interval_vm' (7680266) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_checked_positional_constructor_holes stdout ----
+
+thread 'named::export_checked_positional_constructor_holes' (7680267) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_extensible_package stdout ----
+
+thread 'named::export_extensible_package' (7680268) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_general_named_programs stdout ----
+
+thread 'named::export_general_named_programs' (7680273) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_named_annotation_without_named_calls stdout ----
+
+thread 'named::export_named_annotation_without_named_calls' (7680301) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_named_calls_smoke stdout ----
+
+thread 'named::export_named_calls_smoke' (7680302) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_named_static_calls_smoke stdout ----
+
+thread 'named::export_named_static_calls_smoke' (7680303) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_hole_argument_plans stdout ----
+
+thread 'named::export_hole_argument_plans' (7680276) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- export_known_scope_failures_as_excluded stdout ----
+
+thread 'export_known_scope_failures_as_excluded' (7680200) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures stdout ----
+
+thread 'scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures' (7680343) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures stdout ----
+
+thread 'scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures' (7680329) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+---- named::export_generated_record_property stdout ----
+
+thread 'named::export_generated_record_property' (7680274) panicked at crates/benitoite/tests/desugar_export.rs:315:5:
+output must stay inside this repository
+
+
+failures:
+    export_independent_program_exchange
+    export_interval_identity
+    export_interval_manifest
+    export_known_scope_failures_as_excluded
+    export_named_declarations_smoke
+    export_named_types_smoke
+    export_scope_tables_smoke
+    export_width_smoke
+    interval::export_interval_range
+    interval::vm::export_interval_vm
+    named::export_checked_positional_constructor_holes
+    named::export_extensible_package
+    named::export_general_named_programs
+    named::export_generated_record_property
+    named::export_hole_argument_plans
+    named::export_named_annotation_without_named_calls
+    named::export_named_calls_smoke
+    named::export_named_static_calls_smoke
+    scope_tables::exports_request_content_as_the_same_record_type_in_declarations_and_signatures
+    scope_tables::exports_used_path_checks_with_range_variables_only_in_signatures
+
+test result: FAILED. 26 passed; 20 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.57s
+
+error: test failed, to rerun pass `--test desugar_export`
+real 27.82
+user 68.10
+sys 2.42

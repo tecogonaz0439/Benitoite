@@ -1,0 +1,80 @@
+[
+  {
+    "branch": "R40.1",
+    "source": "tools/bench/results/2026-10-29-cadd0d81-m013-r40-1",
+    "sourceManifestSha256": "f19d9bd57da3cfc6ce4f0d5c5f865a941e0787f1d2e17ff79c351f248fb2e604",
+    "tier": "short",
+    "samples": 5,
+    "points": 94,
+    "medianRatio": 1.0481592660252614,
+    "selected": {
+      "runtime-lines-short": {
+        "beforeSeconds": 0.018936749999994618,
+        "afterSeconds": 0.021409667000000354,
+        "ratio": 1.1305882477197218,
+        "differenceMs": 2.4729170000057366
+      },
+      "interval-http-0": {
+        "beforeSeconds": 0.022978042000005416,
+        "afterSeconds": 0.026418082999995818,
+        "ratio": 1.1497099274163392,
+        "differenceMs": 3.4400409999904014
+      },
+      "interval-http-64": {
+        "beforeSeconds": 0.02724604200000158,
+        "afterSeconds": 0.03077362499999481,
+        "ratio": 1.1294713925785267,
+        "differenceMs": 3.5275829999932284
+      },
+      "functions-main-1000-0": {
+        "beforeSeconds": 0.020938709000006384,
+        "afterSeconds": 0.022319582999998033,
+        "ratio": 1.0659483829681777,
+        "differenceMs": 1.3808739999916497
+      }
+    },
+    "alertsByStatus": {
+      "判定不能": 78,
+      "退行の疑い": 14
+    }
+  },
+  {
+    "branch": "R40.2",
+    "source": "tools/bench/results/2026-10-29-10101dac-m013-r40-2",
+    "sourceManifestSha256": "7cfc2e13fe1e33f68cf91b0486f12f44f96a3f147063043621f03fa4c695fd21",
+    "tier": "short",
+    "samples": 5,
+    "points": 94,
+    "medianRatio": 1.0445237610582565,
+    "selected": {
+      "runtime-lines-short": {
+        "beforeSeconds": 0.017211000000003196,
+        "afterSeconds": 0.019396791000019675,
+        "ratio": 1.1269996513866756,
+        "differenceMs": 2.1857910000164793
+      },
+      "interval-http-0": {
+        "beforeSeconds": 0.022214708999996446,
+        "afterSeconds": 0.025333416999998803,
+        "ratio": 1.1403893249289403,
+        "differenceMs": 3.118708000002357
+      },
+      "interval-http-64": {
+        "beforeSeconds": 0.02514883400000656,
+        "afterSeconds": 0.027603542000008474,
+        "ratio": 1.0976072290270504,
+        "differenceMs": 2.454708000001915
+      },
+      "functions-main-1000-0": {
+        "beforeSeconds": 0.021302417000001128,
+        "afterSeconds": 0.022250083000002974,
+        "ratio": 1.0444863134545623,
+        "differenceMs": 0.9476660000018455
+      }
+    },
+    "alertsByStatus": {
+      "判定不能": 74,
+      "退行の疑い": 16
+    }
+  }
+]

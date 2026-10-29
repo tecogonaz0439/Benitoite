@@ -1,0 +1,60 @@
+== wait-for-lock start 23:37:21
+== lock acquired 23:37:21 after 0s
+✔ [111/431] Built Benitoite.Release.TypeRegularity (449ms)
+✔ [113/431] Built Benitoite.Release.Lemmas.Basic (309ms)
+✖ [115/431] Building Benitoite.Release.TypeBounds (583ms)
+trace: .> LEAN_PATH=<wt>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <wt>/formal/Benitoite/Release/TypeBounds.lean -o <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeBounds.olean -i <wt>/formal/.lake/build/lib/lean/Benitoite/Release/TypeBounds.ilean -c <wt>/formal/.lake/build/ir/Benitoite/Release/TypeBounds.c --setup <wt>/formal/.lake/build/ir/Benitoite/Release/TypeBounds.setup.json --json
+error: Benitoite/Release/TypeBounds.lean:62:40: Application type mismatch: The argument
+  h
+has type
+  Eff.WF 0 n (EffR.mk a fs)
+but is expected to have type
+  Ty.WFList 0 n fs
+in the application
+  Ty.WFList.raw fs h
+error: Benitoite/Release/TypeBounds.lean:67:81: unsolved goals
+case opaque
+n : Nat
+o✝ : OpaqueName
+ix✝ : Scope.Signature.Ix
+h : True
+⊢ Scope.Signature.Ix.WF 0 ix✝
+error: Benitoite/Release/TypeBounds.lean:90:6: Tactic `apply` failed: could not unify the conclusion of `Ty.WFList.iff.mpr`
+  Ty.WFList ?m.397 ?m.398 ?m.399
+with the goal
+  Eff.WF 0 n (Eff.norm (EffR.mk a fs))
+
+Note: The full type of `Ty.WFList.iff.mpr` is
+  (∀ (a : Ty), a ∈ ?m.399 → Ty.WF ?m.397 ?m.398 a) → Ty.WFList ?m.397 ?m.398 ?m.399
+
+case mk
+n : Nat
+a : Atom → Bool
+fs : List Ty
+h : Eff.RawWF n (EffR.mk a fs)
+⊢ Eff.WF 0 n (Eff.norm (EffR.mk a fs))
+✔ [145/431] Built Benitoite.Release.Lemmas.Rename (6.5s)
+✔ [149/431] Built Benitoite.Release.Lemmas.Inversion (8.8s)
+✔ [384/431] Built Benitoite.Release.Lemmas.Irrelevant (2.4s)
+Some required targets logged failures:
+- Benitoite.Release.TypeBounds
+error: build failed
+        9.80 real        59.85 user         1.64 sys
+          1608040448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              359352  page reclaims
+                   3  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  37  voluntary context switches
+               60500  involuntary context switches
+          1466960517  instructions retired
+           576934500  cycles elapsed
+            52806856  peak memory footprint
+== exit 1

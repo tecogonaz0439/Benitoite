@@ -1,0 +1,22 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "bbc22ac0913910d26936f4b2e2def2204da93c4f",
+    "--only",
+    "fmt,lint_default,lib_default,tests_related,source_rules,skill_generated,spec_tally",
+    "--test",
+    "*",
+    "--dry-run"
+  ],
+  "timer": "/usr/bin/time -p",
+  "started_utc": "2026-10-28T08:41:42.456715+00:00",
+  "finished_utc": "2026-10-28T08:41:42.473443+00:00",
+  "check_exit": 0,
+  "time_wrapper_exit": 0,
+  "elapsed_seconds": 0.016513917000000003,
+  "ru_maxrss_bytes": 2949120,
+  "rss_mib": 2.8125
+}

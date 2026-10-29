@@ -1,0 +1,11 @@
+import Benitoite.Unofficial.Scope
+function sample(path: String) -> Unit
+ bind result <- Scope.checkPathIn(pattern: "/data/**", path: path)
+ match result with
+ case Result.Ok(p) ->
+  bind text <- Scope.pathInValue(path: p)
+  ()
+ case Result.Error(_) -> ()
+ end match
+ ()
+end function
