@@ -1,0 +1,24 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/signature-probe.lean:12:11: error: None of the deriving handlers for class `DecidableEq` applied to `Term`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/signature-probe.lean:33:11: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (a✝¹ = b✝¹)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/signature-probe.lean:33:11: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (a✝ = b✝)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+SignatureProbe.Term.rec.{u} {motive_1 : Term → Sort u} {motive_2 : List (Option Term) → Sort u}
+  {motive_3 : Option Term → Sort u} (var : (i : Nat) → motive_1 (Term.var i))
+  (integer : (n : Int) → motive_1 (Term.integer n))
+  (listValue : (xs : List (Option Term)) → motive_2 xs → motive_1 (Term.listValue xs))
+  (mapValue :
+    (keys values : List (Option Term)) → motive_2 keys → motive_2 values → motive_1 (Term.mapValue keys values))
+  (field : (position : Nat) → (receiver : Term) → motive_1 receiver → motive_1 (Term.field position receiver))
+  (add : (left right : Term) → motive_1 left → motive_1 right → motive_1 (left.add right)) (nil : motive_2 [])
+  (cons : (head : Option Term) → (tail : List (Option Term)) → motive_3 head → motive_2 tail → motive_2 (head :: tail))
+  (none : motive_3 none) (some : (val : Term) → motive_1 val → motive_3 (some val)) (t : Term) : motive_1 t
+SignatureProbe.predBind (ν : Nat → Option Term) : Pred → Pred
+SignatureProbe.Captured.mk : (∀ (i : Nat), ImageOk i) → Captured
+SignatureProbe.SubstOk : Prop
+'SignatureProbe.bindOptional' does not depend on any axioms
+'SignatureProbe.predBind' does not depend on any axioms

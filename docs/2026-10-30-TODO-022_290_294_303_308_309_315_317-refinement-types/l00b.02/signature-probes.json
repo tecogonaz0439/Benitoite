@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/nested-negative.lean"
+    ],
+    "cwd": "formal",
+    "exit": 1,
+    "expected_exit": 1,
+    "wall_seconds": 0.622064583,
+    "sha256": "09ef0949a411170dbcc5424038cdbcce72b13521de19274848cf111176db8b4f"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/decidable-negative.lean"
+    ],
+    "cwd": "formal",
+    "exit": 1,
+    "expected_exit": 1,
+    "wall_seconds": 0.6484841670000001,
+    "sha256": "34ae9eeca5804d840ad48192403a60a2f66ced6456a25ff89dc9be5f1108e919"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/signature-probe.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "expected_exit": 0,
+    "wall_seconds": 0.6512534999999999,
+    "sha256": "4bb18772f78fe27c763d1811c3eb4f78b158a4548899f1112d25d6922d5426f5"
+  }
+]

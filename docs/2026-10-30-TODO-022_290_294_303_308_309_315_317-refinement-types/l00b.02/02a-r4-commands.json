@@ -1,0 +1,84 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:13:35.138220+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.149744333,
+    "log": "02a-r4-build.log",
+    "log_bytes": 24345,
+    "log_sha256": "53c56b0f90ec55ea2a701bd2001c0be142cf9c55190eac4ab45377c78fc7a843"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r4-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:13:35.288563+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.668523,
+    "log": "02a-r4-boundary.log",
+    "log_bytes": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r4-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:13:35.957387+09:00",
+    "exit": 0,
+    "elapsed_seconds": 4.548117916,
+    "log": "02a-r4-axioms.log",
+    "log_bytes": 628859,
+    "log_sha256": "fa65d3776d02fa77eefe72bad16ad234e916a4809f165517d2ab499f772372ee"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:13:40.506495+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07892754200000063,
+    "log": "02a-r4-lean-version.log",
+    "log_bytes": 106,
+    "log_sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e"
+  },
+  {
+    "name": "lake-version",
+    "command": [
+      "lake",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:13:40.585952+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.04242612499999954,
+    "log": "02a-r4-lake-version.log",
+    "log_bytes": 53,
+    "log_sha256": "36526a338068c343bedff5daa38fec328b4f722df1e8f0b5d026d4f0f908f3a3"
+  }
+]

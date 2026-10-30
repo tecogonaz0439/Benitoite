@@ -9,32 +9,118 @@ namespace Benitoite.Release.Refinement
 
 theorem Ty.LeQ.integerCarrier {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
     a.IntegerCarrier ↔ b.IntegerCarrier := by
-  induction h with
-  | refl => rfl
-  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
-  | fn_effect _ | list _ _ | lazy _ _ | map_value _ _ _ => rfl
-  | forget | introduce _ _ => rfl
-  | refine _ _ _ _ ih => exact ih
+  match h with
+  | .refl => rfl
+  | .trans h₁ h₂ => exact h₁.integerCarrier.trans h₂.integerCarrier
+  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => rfl
+  | .forget | .introduce _ _ => rfl
+  | .refine hv _ _ _ => exact hv.integerCarrier
+  | .dependentFn _ | .scoped _ => rfl
+  | .scoped_forget => simp [Ty.IntegerCarrier, Ty.HasSort, Ty.sort?]
 
-private theorem const_integer {B c} (h : ConstOK B c) (hi : (Const.type c).IntegerCarrier) :
-    ∃ t, (Val.const c).toTerm? = some t ∧ termSorted Γ t := by
-  cases c <;> simp_all [Const.type, Benitoite.Release.Const.type, embedTy,
-    Ty.IntegerCarrier, Val.toTerm?, termSorted]
+theorem Ty.LeQ.hasSort_source {Γ Φ a b sort} (h : Ty.LeQ Γ Φ a b) (hs : b.HasSort sort) :
+    a.HasSort sort := by
+  match h with
+  | .refl => exact hs
+  | .trans h₁ h₂ => exact h₁.hasSort_source (h₂.hasSort_source hs)
+  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => exact hs
+  | .forget | .introduce _ _ => exact hs
+  | .refine hv _ _ _ => exact hv.hasSort_source hs
+  | .dependentFn _ | .scoped _ => exact hs
+  | .scoped_forget => cases hs
+
+theorem Ty.LeQ.dataCore_source {Γ Φ a b d ts} (h : Ty.LeQ Γ Φ a b)
+    (hd : b.norm.core = .data d ts) : a.norm.core = .data d ts := by
+  match h with
+  | .refl => exact hd
+  | .trans h₁ h₂ => exact h₁.dataCore_source (h₂.dataCore_source hd)
+  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => cases hd
+  | .forget | .introduce _ _ => exact hd
+  | .refine hv _ _ _ => exact hv.dataCore_source hd
+
+theorem HasTypeVQ.data_observation {P B store Q C Γ Φ v a d ts}
+    (h : HasTypeVQ P B store Q C Γ Φ v a) (hd : a.norm.core = .data d ts)
+    {t : Term} (ht : v.toTerm? = some t) : Term.HasData P Γ t d ts := by
+  match h with
+  | .V_Var hi ho => cases ht; exact .var hi hd
+  | .V_Const (c := c) _ => cases c <;> cases hd
+  | .V_Lam _ _ _ _ | .V_List _ _ _ => cases hd
+  | .V_Sub hv hl _ _ _ => exact hv.data_observation (hl.dataCore_source hd) ht
+  | .V_Refine hv _ _ _ _ _ _ _ => exact hv.data_observation hd ht
+
+mutual
+  theorem HasTypeVQ.observation_declared {P B store Q C Γ Φ v a}
+      (h : HasTypeVQ P B store Q C Γ Φ v a) {t : Term} (ht : v.toTerm? = some t) :
+      Term.Declared P C Γ t := by
+    match h with
+    | .V_Var hi ho => cases ht; exact ⟨_, hi, ho⟩
+    | .V_Const (c := c) _ => cases c <;> cases ht <;> trivial
+    | .V_Lam _ _ _ _ => cases ht
+    | .V_List hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
+    | .V_Sub hv _ _ _ _ => exact hv.observation_declared ht
+    | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_declared ht
+  theorem HasTypeEachQ.observation_declared {P B store Q C Γ Φ vs a}
+      (h : HasTypeEachQ P B store Q C Γ Φ vs a) :
+      declaredSlots P C Γ (Val.toTermSlots vs) := by
+    match h with
+    | .nil => trivial
+    | .cons hv hs =>
+      refine ⟨?_, HasTypeEachQ.observation_declared hs⟩
+      cases he : Val.toTerm? _ with
+      | none => trivial
+      | some t => exact hv.observation_declared he
+end
+
+
+mutual
+  theorem HasTypeVQ.observation_references {P B store Q C Γ Φ v a}
+      (h : HasTypeVQ P B store Q C Γ Φ v a) {t : Term} (ht : v.toTerm? = some t) :
+      t.References Γ := by
+    match h with
+    | .V_Var hg ho => cases ht; exact ⟨_, hg, ho⟩
+    | .V_Const (c := c) _ => cases c <;> cases ht <;> trivial
+    | .V_Lam _ _ _ _ => cases ht
+    | .V_List hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
+    | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
+    | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_references ht
+  theorem HasTypeEachQ.observation_references {P B store Q C Γ Φ vs a}
+      (h : HasTypeEachQ P B store Q C Γ Φ vs a) :
+      varsInSlots Γ.Readable (Val.toTermSlots vs) := by
+    match h with
+    | .nil => trivial
+    | .cons hv hs =>
+      refine ⟨?_, HasTypeEachQ.observation_references hs⟩
+      cases he : Val.toTerm? _ with
+      | none => trivial
+      | some t => exact hv.observation_references he
+end
+
+private theorem const_observation {B c sort} (h : ConstOK B c) (hi : (Const.type c).HasSort sort) :
+    ∃ t, (Val.const c).toTerm? = some t ∧ t.HasSort Γ sort := by
+  cases c <;> simp_all [Const.type, Ty.HasSort, Ty.sort?, Val.toTerm?,
+    Term.HasSort, Term.Shape, Term.References, Term.VarsIn]
+
+theorem HasTypeVQ.observation {P B store Q C Γ Φ v a sort}
+    (h : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.HasSort sort) :
+    ∃ t, v.toTerm? = some t ∧ t.HasSort Γ sort := by
+  match h with
+  | .V_Var hg ho => exact ⟨_, rfl, ⟨a, hg, ho⟩, a, hg, hi⟩
+  | .V_Const hc => exact const_observation hc hi
+  | .V_Lam _ _ _ _ => cases hi
+  | .V_List hv _ _ =>
+    have hs : sort = .list := (Option.some.inj hi).symm
+    exact ⟨_, rfl, HasTypeEachQ.observation_references hv, hs⟩
+  | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
+  | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation hi
 
 theorem HasTypeVQ.integer_observation {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.IntegerCarrier) :
-    ∃ t, v.toTerm? = some t ∧ termSorted Γ t := by
-  match h with
-  | .V_Var hg _ => exact ⟨_, rfl, _, hg, hi⟩
-  | .V_Const hc => exact const_integer hc hi
-  | .V_Lam _ _ _ _ | .V_List _ _ _ => contradiction
-  | .V_Sub hv hl _ _ => exact hv.integer_observation (hl.integerCarrier.mpr hi)
-  | .V_Refine hv _ _ _ _ _ => exact hv.integer_observation hi
+    ∃ t, v.toTerm? = some t ∧ termSorted Γ t := h.observation hi
 
 theorem HasTypeVQ.toTerm_of_integerCarrier {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.IntegerCarrier) :
     ∃ t, v.toTerm? = some t := by
-  obtain ⟨t, ht, _⟩ := h.integer_observation hi
+  obtain ⟨t, ht, _⟩ := h.observation hi
   exact ⟨t, ht⟩
 
 @[simp] theorem Pred.open_lift (p : Pred) (t : Term) : p.lift.open t = p := by
@@ -49,12 +135,12 @@ theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
     intro p hp
     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
   | .V_Const (c := c) _ =>
-    cases c <;> simp [Const.type, Benitoite.Release.Const.type, embedTy, Ty.assume]
+    cases c <;> simp [Const.type, Ty.assume]
   | .V_Lam _ _ _ _ | .V_List _ _ _ => intro p hp; cases hp
-  | .V_Sub hv hl _ _ =>
+  | .V_Sub hv hl _ _ _ =>
     intro p hp
     apply ((hl.assume p hp).bind (fun i => match i with
-      | 0 => v.toTerm?.getD (.integer 0) | j+1 => .var j)).cut
+      | 0 => some (v.toTerm?.getD (.integer 0)) | j+1 => some (.var j))).cut
     intro q hq
     obtain ⟨r, hr, rfl⟩ := List.mem_map.mp hq
     rcases List.mem_append.mp hr with hr | hr
@@ -63,29 +149,40 @@ theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
       change Entails _ (s.lift.open _)
       rw [Pred.open_lift]
       exact .hyp hs
-  | .V_Refine hv _ ht _ _ he =>
+  | .V_Refine hv _ ht _ _ he hda hdp =>
     intro p hp
     rcases List.mem_cons.mp hp with rfl | hp
     · simpa only [ht, Option.getD_some] using he
     · exact hv.assume p hp
 
-theorem termSorted_bind_congr {Γ t} (ht : termSorted Γ t) {σ τ : Nat → Term}
-    (he : ∀ i a, Γ[i]? = some (some a) → a.IntegerCarrier → σ i = τ i) :
-    termBind σ t = termBind τ t := by
-  induction t with
-  | var i => obtain ⟨a, ha, hi⟩ := ht; exact he i a ha hi
-  | integer _ => rfl
-  | add a b ia ib => simp only [termBind, ia ht.1, ib ht.2]
-
-/-- Sorted が読まない位置の getD の既定値は、述語の像に影響しない。 -/
-theorem Pred.bind_congr_sorted {Γ p} (hp : p.Sorted Γ none) {σ τ : Nat → Term}
-    (he : ∀ i a, Γ[i]? = some (some a) → a.IntegerCarrier → σ i = τ i) :
-    predBind σ p = predBind τ p := by
-  induction p with
-  | truth | falsity => rfl
-  | eq a b | le a b | lt a b =>
-    simp only [predBind, termSorted_bind_congr hp.1 he, termSorted_bind_congr hp.2 he]
-  | and p q ip iq | or p q ip iq => simp only [predBind, ip hp.1, iq hp.2]
-  | not p ip => exact congrArg Pred.not (ip hp)
+theorem HasTypeVQ.assume_optional {P B store Q C Γ Φ v a}
+    (h : HasTypeVQ P B store Q C Γ Φ v a) :
+    ∀ p ∈ a.assume, Entails (Γ.facts ++ Φ) (p.openOptional v.toTerm?) := by
+  match h with
+  | .V_Var hg _ =>
+    intro p hp
+    exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
+  | .V_Const (c := c) _ =>
+    cases c <;> simp [Const.type, Ty.assume]
+  | .V_Lam _ _ _ _ | .V_List _ _ _ => intro p hp; cases hp
+  | .V_Sub hv hl _ _ _ =>
+    intro p hp
+    apply ((hl.assume p hp).bind (fun i => match i with
+      | 0 => v.toTerm? | j+1 => some (.var j))).cut
+    intro q hq
+    obtain ⟨r, hr, rfl⟩ := List.mem_map.mp hq
+    rcases List.mem_append.mp hr with hr | hr
+    · exact hv.assume_optional r hr
+    · obtain ⟨s, hs, rfl⟩ := List.mem_map.mp hr
+      change Entails _ (s.lift.openOptional _)
+      simp only [Pred.openOptional, Pred.lift, predBind_comp] 
+      change Entails _ (predBind (fun i => some (.var i)) s)
+      rw [predBind_id]
+      exact .hyp hs
+  | .V_Refine hv _ ht _ _ he hda hdp =>
+    intro p hp
+    rcases List.mem_cons.mp hp with rfl | hp
+    · simpa only [ht, Pred.openOptional_some] using he
+    · exact hv.assume_optional p hp
 
 end Benitoite.Release.Refinement

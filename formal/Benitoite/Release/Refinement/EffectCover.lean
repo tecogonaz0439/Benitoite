@@ -39,15 +39,15 @@ theorem Eff.mem_rawBind (θ : SubstEnv) (e : Eff) (a : Atom) :
       ∃ i f, θ.rows[i]? = some f ∧ e.mem (.rho i) ∧ f.mem a := by
   cases e with
   | mk atoms fs =>
-    change substAtoms θ.rows (Benitoite.Release.Eff.instAtoms θ.ranges atoms) a = true ↔ _
-    have hm := Eff.mem_substAtoms θ.rows (.mk (Benitoite.Release.Eff.instAtoms θ.ranges atoms) []) a
+    change substAtoms θ.rows (instAtoms θ.ranges atoms) a = true ↔ _
+    have hm := Eff.mem_substAtoms θ.rows (.mk (instAtoms θ.ranges atoms) []) a
     simp only [Eff.atoms] at hm
     rw [hm]
     apply or_congr _ Iff.rfl
     cases a with
     | name l ix =>
-      change Benitoite.Release.Eff.instAtoms θ.ranges atoms (.name l ix) = true ↔ _
-      rw [Benitoite.Release.Eff.instAtoms_spec]
+      change instAtoms θ.ranges atoms (.name l ix) = true ↔ _
+      rw [instAtoms_spec]
       constructor
       · rintro ⟨b, hb, he⟩
         refine ⟨b, hb, he, ?_⟩
@@ -64,7 +64,7 @@ theorem Eff.mem_rawBind (θ : SubstEnv) (e : Eff) (a : Atom) :
         | rho j => cases he; exact ⟨hi, hb⟩
 
 /-- 範囲の具体化で、覆う一原子を覆われる原子と同時に移す。 -/
-theorem atomCovers_instR {a b : Atom} (h : a.Covers b) (rs : List Scope.Domain.Range) :
+theorem atomCovers_instR {a b : Atom} (h : a.Covers b) (rs : List RangeExpr) :
     (a.instR rs).Covers (b.instR rs) := by
   rcases a with ⟨l, r | i⟩ | i <;> rcases b with ⟨m, s | j⟩ | j <;>
     simp only [Atom.Covers] at h
@@ -116,8 +116,8 @@ theorem cannot_split_one_atom (Γ : Ctx) (Φ : List Pred) (l : EffName) (host : 
       b = .name l (.fixed (.endpoint ⟨host, ⟨5, 9⟩⟩)) := of_decide_eq_true hb
   obtain ⟨_, hleft, hright⟩ := Scope.Domain.Range.endpoint_union_not_covers host
   rcases hb with rfl | rfl
-  · exact hleft hc.2
-  · exact hright hc.2
+  · exact hleft ((RangeExpr.covers_absolute _ _).mp hc.2)
+  · exact hright ((RangeExpr.covers_absolute _ _).mp hc.2)
 
 /-- 被覆から構造上の包含への逆向きの含意は成り立たない。 -/
 theorem covers_not_sub (Γ : Ctx) (Φ : List Pred) (l : EffName) :

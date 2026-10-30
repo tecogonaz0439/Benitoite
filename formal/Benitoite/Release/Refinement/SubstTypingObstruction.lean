@@ -17,8 +17,8 @@ private theorem lam_annotations {P B store Q C Γ Φ v a}
       intro ns ps body he; cases he
   | .V_Lam _ hw _ _ =>
       intro ns ps body he; cases he; exact hw.2.1
-  | .V_Sub hv _ _ _ => exact lam_annotations hv
-  | .V_Refine hv _ _ _ _ _ => exact lam_annotations hv
+  | .V_Sub hv _ _ _ _ => exact lam_annotations hv
+  | .V_Refine hv _ _ _ _ _ _ _ => exact lam_annotations hv
 
 /-- ラムダの注釈の整形式は、外側の部分型・篩導入を越えて必要である。 -/
 theorem HasTypeVQ.lam_annotations_wf {P B store Q C Γ Φ ns ps body a}
@@ -31,7 +31,7 @@ private theorem return_value {P B store Q C Γ Φ R m a ε Δl}
   match h with
   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
   | .C_Let _ _ | .C_App _ _ => intro v he; cases he
-  | .C_Sub hm _ _ _ _ | .C_Eff hm _ => exact return_value hm
+  | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
 
 /-- return の型付けは、部分型・効果拡大の下にも値の導出を含む。 -/
 theorem HasTypeCQ.return_value_typable {P B store Q C Γ Φ R v a ε Δl}
@@ -63,12 +63,12 @@ theorem latent_canonical : latent.Canonical := by
 
 theorem source_wf : sourceTy.WF 0 0 Γ.length := by
   exact ⟨⟨rfl, List.nodup_nil⟩, trivial, trivial,
-    ⟨⟨trivial, by simp [Γ, Pred.WF, termWF, Ty.NotContCore, Ty.core]⟩,
-      ⟨trivial, by simp [Γ, Pred.WF, termWF, Ty.NotContCore, Ty.core]⟩, trivial⟩, latent_canonical⟩
+    ⟨⟨trivial, by simp [Term.VarsIn, Pred.VarsIn, Γ, Pred.WF, Ty.NotContCore, Ty.core]⟩,
+      ⟨trivial, by simp [Term.VarsIn, Pred.VarsIn, Γ, Pred.WF, Ty.NotContCore, Ty.core]⟩, trivial⟩, latent_canonical⟩
 
 theorem source_sorted : sourceTy.Sorted Γ := by
-  simp [sourceTy, Ty.Sorted, sortedTys, sortedEff, latent, failure,
-    Pred.Sorted, termSorted, Γ, refinedInt, Ty.IntegerCarrier]
+  simp [Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, sourceTy, Ty.Sorted, sortedTys, sortedEff, latent, failure,
+    Pred.Sorted, Γ, refinedInt]
 
 theorem image_type : substTyValues σ refinedInt = refinedInt := rfl
 
@@ -96,8 +96,17 @@ theorem context_facts : Γ.facts = [path, .eq (.var 1) (.integer 7)] ∧
 
 theorem transport : Transport (valEnv σ) Γ Φ Δ Φ := by
   constructor
-  · intro i a hi ha
-    exact ⟨refinedInt, rfl, trivial⟩
+  · intro i a sort hi ha
+    have he : a = refinedInt := by
+      cases i with
+      | zero => simpa [Γ] using hi.symm
+      | succ i => cases i <;> simp_all [Γ]
+    subst a
+    exact ⟨.var 0, rfl, ⟨refinedInt, rfl, by simp [refinedInt]⟩, refinedInt, rfl, ha⟩
+  · intro i a hi ho t ht
+    cases ht
+    exact ⟨refinedInt, rfl, by simp [refinedInt]⟩
+  · intro i; simp [valEnv]
   · intro p hp
     have hp : p = path ∨ p = .eq (.var 1) (.integer 7) := by
       simp only [context_facts.1, Φ, List.mem_append, List.mem_cons,
@@ -111,7 +120,7 @@ theorem transport : Transport (valEnv σ) Γ Φ Δ Φ := by
 
 theorem latent_image : Eff.rawBind (valEnv σ) latent =
     .mk (fun _ => false) [failure 0, failure 0] := by
-  change Eff.rawBind ⟨Ty.tvar, [], [], fun _ => .var 0⟩ latent = _
+  change Eff.rawBind ⟨Ty.tvar, [], [], fun _ => some (.var 0)⟩ latent = _
   rw [← Eff.rawSubstV_eq_rawBind]
   rfl
 
@@ -138,11 +147,11 @@ theorem value_wf : valueTy.WF 0 0 Γ.length := by
 theorem value_sorted : valueTy.Sorted Γ := ⟨⟨source_sorted, trivial⟩, trivial, trivial⟩
 
 theorem path_lift_sorted : path.lift.Sorted Γ (some valueTy) := by
-  simp [path, Pred.lift, predBind, termBind, Pred.Sorted, termSorted,
-    Γ, refinedInt, Ty.IntegerCarrier]
+  simp [termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, path, Pred.lift, predBind, termBind, Pred.Sorted,
+    Γ, refinedInt]
 
 theorem path_lift_wf : path.lift.WF (Γ.length+1) := by
-  simp [path, Pred.lift, predBind, termBind, Pred.WF, termWF, Γ]
+  simp [termBind?, Term.VarsIn, Pred.VarsIn, path, Pred.lift, predBind, termBind, Pred.WF, Γ]
 
 /-- 文脈の事実を実際に使う、外側の篩の導入。 -/
 theorem source_le : Ty.LeQ Γ Φ valueTy resultTy := by
@@ -158,15 +167,20 @@ theorem lambda_typed {P B store Q} :
   · exact ⟨rfl, by simp⟩
   · exact .C_Return (.V_Const trivial)
 
+theorem result_declared {P} : Ty.Declared P [] Γ resultTy := by
+  simp [resultTy, valueTy, sourceTy, latent, failure, refinedInt, path, Pred.lift, predBind,
+    termBind, termBind?, Ty.Declared, declaredTys, declaredEff, Pred.Declared, Term.Declared,
+    Ctx.declarationSelf, Ctx.extend, Ctx.Readable, Γ, Ty.shiftV, Ordinary, Eff.empty]
+
 theorem source_v_sub {P B store Q} :
     HasTypeVQ P B store Q [] Γ Φ sourceVal resultTy :=
   .V_Sub lambda_typed source_le ⟨value_wf, path_lift_wf, by simp [valueTy, Ty.NotContCore, Ty.core]⟩
-    ⟨value_sorted, path_lift_sorted⟩
+    ⟨value_sorted, path_lift_sorted⟩ result_declared
 
 theorem source_c_sub {P B store Q R Δl} :
     HasTypeCQ P B store Q [] Γ Φ R (.ret sourceVal) resultTy Eff.empty Δl :=
   .C_Sub (.C_Return lambda_typed) source_le (Eff.Covers.refl _ _ _)
-    ⟨value_wf, path_lift_wf, by simp [valueTy, Ty.NotContCore, Ty.core]⟩ ⟨value_sorted, path_lift_sorted⟩
+    ⟨value_wf, path_lift_wf, by simp [valueTy, Ty.NotContCore, Ty.core]⟩ ⟨value_sorted, path_lift_sorted⟩ result_declared
 
 def rawSourceVal : Val := .lam ["f"] [sourceTy.rawBind (valEnv σ)] (.ret (.const .unit))
 
@@ -279,32 +293,38 @@ def target : Ctx := outer.extend narrowTy
 def result : Ty := .refined refinedInt path.lift
 
 theorem original_wf : refinedInt.WF 0 0 outer.length := by
-  simp [refinedInt, outer, Ty.WF, Pred.WF, termWF, Ty.NotContCore, Ty.core]
+  simp [Term.VarsIn, Pred.VarsIn, refinedInt, outer, Ty.WF, Pred.WF, Ty.NotContCore, Ty.core]
 
 theorem original_sorted : refinedInt.Sorted outer := by
-  simp [refinedInt, Ty.Sorted, Pred.Sorted, termSorted, Ty.IntegerCarrier]
+  simp [Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, refinedInt, Ty.Sorted, Pred.Sorted]
 
-theorem narrows : Ctx.Narrows 0 source (Φ.map Pred.lift) target (Φ.map Pred.lift) :=
-  .here .forget original_wf original_sorted
+theorem narrows {P} : Ctx.Narrows P [] source (Φ.map Pred.lift) target (Φ.map Pred.lift) :=
+  .here .forget original_wf original_sorted (by
+    simp [refinedInt, Ty.Declared, Pred.Declared, Term.Declared, Ctx.declarationSelf, Ctx.extend, Ctx.Readable, Ty.shiftV, Ordinary])
 
 theorem source_le : Ty.LeQ source (Φ.map Pred.lift) refinedInt result := by
   apply Ty.LeQ.introduce
-  · simp [path, Pred.lift, predBind, termBind, Pred.Sorted, termSorted, source,
-      Ctx.extend, refinedInt, Ty.IntegerCarrier]
+  · simp [Ty.shiftV, termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, path, Pred.lift, predBind, termBind, Pred.Sorted, source,
+      Ctx.extend, refinedInt]
   · exact .hyp (List.mem_append_right _ (List.mem_map.mpr
       ⟨path, List.mem_append_left _ (Ctx.mem_facts_extend.mpr
         (Or.inl (show path ∈ refinedInt.assume from List.mem_cons_self))), rfl⟩))
 
 theorem result_wf : result.WF 0 0 source.length := by
-  simp [result, refinedInt, path, Pred.lift, predBind, termBind, Ty.WF, Pred.WF, termWF,
+  simp [Ty.shiftV, termBind?, Term.VarsIn, Pred.VarsIn, result, refinedInt, path, Pred.lift, predBind, termBind, Ty.WF, Pred.WF,
     source, outer, Ctx.extend, Ty.NotContCore, Ty.core]
 
 theorem result_sorted : result.Sorted source := by
-  simp [result, refinedInt, path, Pred.lift, predBind, termBind, Ty.Sorted, Pred.Sorted,
-    termSorted, source, Ctx.extend, Ty.IntegerCarrier]
+  simp [Ty.shiftV, termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, result, refinedInt, path, Pred.lift, predBind, termBind, Ty.Sorted, Pred.Sorted,
+    source, Ctx.extend]
+
+theorem result_declared {P} : Ty.Declared P [] source result := by
+  simp [result, refinedInt, path, Pred.lift, predBind, termBind, termBind?, Ty.Declared,
+    Pred.Declared, Term.Declared, Ctx.declarationSelf, Ctx.extend, Ctx.Readable, source, outer,
+    Ty.shiftV, Ordinary]
 
 theorem source_value {P B store Q} : HasTypeVQ P B store Q [] source (Φ.map Pred.lift) (.var 0) result :=
-  .V_Sub (.V_Var rfl (by intro b t e he; cases he)) source_le result_wf result_sorted
+  .V_Sub (.V_Var rfl (by intro b t e he; cases he)) source_le result_wf result_sorted result_declared
 
 theorem narrowed_value {P B store Q} : HasTypeVQ P B store Q [] target (Φ.map Pred.lift) (.var 0) result :=
   source_value.narrow narrows
@@ -312,7 +332,7 @@ theorem narrowed_value {P B store Q} : HasTypeVQ P B store Q [] target (Φ.map P
 theorem source_comp {P B store Q} :
     HasTypeCQ P B store Q [] source (Φ.map Pred.lift) none (.ret (.var 0)) result Eff.empty [] :=
   .C_Sub (.C_Return (.V_Var rfl (by intro b t e he; cases he))) source_le
-    (Eff.Covers.refl _ _ _) result_wf result_sorted
+    (Eff.Covers.refl _ _ _) result_wf result_sorted result_declared
 
 theorem narrowed_comp {P B store Q} :
     HasTypeCQ P B store Q [] target (Φ.map Pred.lift) none (.ret (.var 0)) result Eff.empty [] :=

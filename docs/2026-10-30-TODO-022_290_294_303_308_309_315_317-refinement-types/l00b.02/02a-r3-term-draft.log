@@ -1,0 +1,546 @@
+'Benitoite.Release.Refinement.ReferenceBoundary.transport_sort_boundary' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.ReferenceBoundary.hide_reference_boundary' depends on axioms: [propext, Quot.sound]
+draft declarations: 543
+'Benitoite.Release.Refinement.Comparison.Allowed' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Comparison.Allowed._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Comparison.Allowed._sparseCasesOn_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Comparison.Allowed.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ObservationEnv' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.Source' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.Source._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.Source._sunfold' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.Source._unsafe_rec' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn._sunfold' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn._unsafe_rec' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_10' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_11' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_12' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_13' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_14' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_5' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_6' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_7' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_8' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_9' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.VarsIn.eq_def' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.WF' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.and' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.and.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.and.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.and.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.and.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.and.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.below' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.bind_congr' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.bind_congr._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.brecOn' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.brecOn.eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.brecOn.go' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.charactersIn' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.charactersIn.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.charactersIn.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.charactersIn.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.charactersIn.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.charactersIn.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.compare' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.compare.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.compare.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.compare.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.compare.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.compare.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.constructorIs' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.constructorIs.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.constructorIs.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.constructorIs.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.constructorIs.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.constructorIs.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.ctorElim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.ctorElimType' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.decimalRepresented' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.decimalRepresented.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.decimalRepresented.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.decimalRepresented.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.decimalRepresented.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.decimalRepresented.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.eq.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.eq.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.eq.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.eq.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.eq.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.falsity' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.falsity.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.falsity.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.floatClass' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.floatClass.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.floatClass.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.floatClass.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.floatClass.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.floatClass.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.le' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.le.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.le.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.le.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.le.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.le.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lift' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lift.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lt' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lt.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lt.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lt.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.lt.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.lt.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.member' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.member.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.member.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.member.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.member.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.member.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.not' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.not.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.not.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.not.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.not.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.not.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.open' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.open.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.open.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.or' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.or.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.or.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.or.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.or.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.or.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.truth' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.truth.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.truth.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.varsIn_bind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.varsIn_bind._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.varsIn_mono' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.varsIn_mono._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.wf_bind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.C' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.collection' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.collection.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.collection.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.continuation' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.continuation.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.continuation.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.ctorElim' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.ctorElimType' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.function' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.function.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.function.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.integer' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.integer.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.integer.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.sort?' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.Carrier.sort?.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.ImagesSorted' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.ImagesWF' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.References' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.References.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.Sorted' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.hide_reference_boundary' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.ReferenceBoundary.image' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.image.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.no_target_reference' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.ReferenceBoundary.references_snapshot' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.shape' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.shape._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.shape._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.shape._sunfold' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.shape._unsafe_rec' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.shape.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ReferenceBoundary.snapshot' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.snapshot.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ReferenceBoundary.transport_sort_boundary' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Term' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.Closed' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source._sparseCasesOn_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source._sunfold' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source._unsafe_rec' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.Source.match_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn._sparseCasesOn_1.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn._sunfold' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn._unsafe_rec' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_10' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_11' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_5' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_6' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_7' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_8' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_9' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.eq_def' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.VarsIn.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Term._sizeOf_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Term._sizeOf_2_eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Term._sizeOf_3' does not depend on any axioms
+'Benitoite.Release.Refinement.Term._sizeOf_3_eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Term._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.add' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.add.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.add.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.add.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.add.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.add.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.below' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.below_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.below_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.bind_congr' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.bind_congr._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.boolean' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.boolean.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.boolean.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.boolean.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.boolean.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.boolean.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn.eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn.go' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn_1.eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn_1.go' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn_2.eq' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.brecOn_2.go' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.bytesValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.bytesValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.bytesValue.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.bytesValue.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.bytesValue.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.bytesValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.character' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.character.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.character.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.character.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.character.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.character.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.ctorElim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.ctorElimType' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.dataValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.dataValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.dataValue.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.dataValue.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.dataValue.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.dataValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.decimal' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.decimal.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.decimal.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.decimal.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.decimal.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.decimal.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.field' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.field.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.field.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.field.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.field.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.field.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float32' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float32.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float32.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float32.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.float32.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float32.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float64' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float64.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float64.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float64.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.float64.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.float64.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.integer' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.integer.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.integer.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.integer.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.integer.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.integer.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.listValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.listValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.listValue.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.listValue.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.listValue.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.listValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.mapValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.mapValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.mapValue.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.mapValue.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.mapValue.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.mapValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.measure' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.measure.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.measure.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.measure.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.measure.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.measure.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.neg' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.neg.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.neg.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.neg.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.neg.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.neg.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.rec_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.rec_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.scale' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.scale.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.scale.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.scale.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.scale.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.scale.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.setValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.setValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.setValue.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.setValue.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.setValue.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.setValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.string' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.string.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.string.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.string.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.string.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.string.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.targetValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.targetValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.targetValue.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.targetValue.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.targetValue.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.targetValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.unitValue' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.unitValue.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.unitValue.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.var' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.var.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.var.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.var.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.var.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.var.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.Term.varsIn_bind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.varsIn_mono' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.varsIn_mono._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Term.varsIn_termBind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.instDecidableEqPred' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.instDecidableEqTerm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.predBind' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind._f' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind._sunfold' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind._unsafe_rec' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_10' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_11' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_12' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_13' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_14' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_9' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.eq_def' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.predBind_comp' depends on axioms: [propext]
+'Benitoite.Release.Refinement.predBind_comp._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.predBind_id' depends on axioms: [propext]
+'Benitoite.Release.Refinement.predBind_id._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.predBind_lift' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.predBind_open_of_some' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.slotBind' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind._f' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind._sunfold' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind._unsafe_rec' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind.eq_def' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.slotBind_id' depends on axioms: [propext]
+'Benitoite.Release.Refinement.slotBind_id._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termBind' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?._f' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?._sunfold' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?._unsafe_rec' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_10' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_11' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_12' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_13' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_14' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_15' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_16' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_17' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_18' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_19' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_20' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_9' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.eq_def' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind?_comp' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termBind?_id' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termBind?_id._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termBind?_lift' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.termBind?_renaming' does not depend on any axioms
+'Benitoite.Release.Refinement.termBind_comp' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termBind_id' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termWF' depends on axioms: [propext]
+'Benitoite.Release.Refinement.termWF_bind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.upValues' does not depend on any axioms
+'Benitoite.Release.Refinement.upValues.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.upValues.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.upValues_comp' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.upValues_id' depends on axioms: [Quot.sound]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.open.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.open.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.open.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_10' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_11' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_3' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_5' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_6' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_7' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_8' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_9' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots._f' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots._sunfold' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots._unsafe_rec' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.eq_def' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.match_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots_comp' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots_comp._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots_congr' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots_congr._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots_id' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.bindSlots_id._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.congr2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.map_rename_eq_bind' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_10' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_11' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_12' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_13' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_14' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_3' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_4' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_5' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_6' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_7' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_8' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.eq_9' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.predBind.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind_comp' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind_comp._f' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind_congr' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.slotBind_congr._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_10' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_11' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_12' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_13' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_14' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_15' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_16' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_17' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_18' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_19' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_20' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_3' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_4' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_5' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_6' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_7' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_8' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.eq_9' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.termBind?_shift_open' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.termBind_comp_pair' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.termBind_comp_pair._f' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot._f' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot._sunfold' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot._unsafe_rec' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot.eq_def' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot_bind' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot_bind._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot_mono' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlot_mono._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots._f' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots._sunfold' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots._unsafe_rec' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots.eq_def' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots_bind' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots_bind._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots_mono' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsInSlots_mono._f' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsIn_bind_pair' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.varsIn_bind_pair._f' depends on axioms: [propext]

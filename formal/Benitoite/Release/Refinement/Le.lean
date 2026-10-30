@@ -20,46 +20,67 @@ def Eff.Covers (_Γ : Ctx) (_Φ : List Pred) (outer inner : Eff) : Prop :=
 def assumptions (Γ : Ctx) (Φ : List Pred) (a : Ty) : List Pred :=
   a.assume ++ (Γ.facts ++ Φ).map Pred.lift
 
+mutual
 /-- 有限の論理の文脈を持つ部分型判断。 -/
-inductive Ty.LeQ (Γ : Ctx) (Φ : List Pred) : Ty → Ty → Prop where
-  | refl {a} : LeQ Γ Φ a a
-  | trans {a b c} : LeQ Γ Φ a b → LeQ Γ Φ b c → LeQ Γ Φ a c
-  | fn_effect {ns ps r ε ε'} : Eff.Covers Γ Φ ε' ε →
-      LeQ Γ Φ (.fn ns ps r ε) (.fn ns ps r ε')
-  | list {a b} : LeQ Γ Φ a b → LeQ Γ Φ (.list a) (.list b)
-  | lazy {a b} : LeQ Γ Φ a b → LeQ Γ Φ (.lazy a) (.lazy b)
-  | map_value {k k' a b} : k = k' → LeQ Γ Φ a b → LeQ Γ Φ (.map k a) (.map k' b)
-  | forget {a p} : LeQ Γ Φ (.refined a p) a
-  | introduce {a p} : p.Sorted Γ (some a) → Entails (assumptions Γ Φ a) p →
-      LeQ Γ Φ a (.refined a p)
-  | refine {a b p q} : LeQ Γ Φ a b → p.Sorted Γ (some a) → q.Sorted Γ (some b) →
-      Entails (p :: assumptions Γ Φ a) q → LeQ Γ Φ (.refined a p) (.refined b q)
+inductive Ty.LeQ : Ctx → List Pred → Ty → Ty → Prop where
+  | refl {Γ Φ} {a} : Ty.LeQ Γ Φ a a
+  | trans {Γ Φ} {a b c} : Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ b c → Ty.LeQ Γ Φ a c
+  | fn_effect {Γ Φ} {ns ps r ε ε'} : Eff.Covers Γ Φ ε' ε →
+      Ty.LeQ Γ Φ (.fn ns ps r ε) (.fn ns ps r ε')
+  | list {Γ Φ} {a b} : Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ (.list a) (.list b)
+  | lazy {Γ Φ} {a b} : Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ (.lazy a) (.lazy b)
+  | map_value {Γ Φ} {k k' a b} : k = k' → Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ (.map k a) (.map k' b)
+  | forget {Γ Φ} {a p} : Ty.LeQ Γ Φ (.refined a p) a
+  | introduce {Γ Φ} {a p} : p.Sorted Γ (some a) → Entails (assumptions Γ Φ a) p →
+      Ty.LeQ Γ Φ a (.refined a p)
+  | refine {Γ Φ} {a b p q} : Ty.LeQ Γ Φ a b → p.Sorted Γ (some a) → q.Sorted Γ (some b) →
+      Entails (p :: assumptions Γ Φ a) q → Ty.LeQ Γ Φ (.refined a p) (.refined b q)
+
+  | dependentFn {Γ Φ t u} : TelClosure Γ Φ t u → Ty.LeQ Γ Φ (.dependentFn t) (.dependentFn u)
+  | scoped {Γ Φ o k inner outer} : RangeIx.Covers outer inner →
+      Ty.LeQ Γ Φ (.scoped o k inner) (.scoped o k outer)
+  | scoped_forget {Γ Φ o k ix} : Ty.LeQ Γ Φ (.scoped o k ix) (.opaque o ix)
+
+inductive TelLe : Ctx → List Pred → Tel → Tel → Prop where
+  | done {Γ Φ r s e f} : Ty.LeQ Γ Φ r s → Eff.Covers Γ Φ f e →
+      TelLe Γ Φ (.done r e) (.done s f)
+  | param {Γ Φ n a b t u} : Ty.LeQ Γ Φ b a →
+      TelLe (Γ.extend b) (Φ.map Pred.lift) t u →
+      TelLe Γ Φ (.param n a t) (.param n b u)
+
+inductive TelClosure : Ctx → List Pred → Tel → Tel → Prop where
+  | refl {Γ Φ t} : TelClosure Γ Φ t t
+  | tail {Γ Φ t u v} : TelClosure Γ Φ t u → TelLe Γ Φ u v → TelClosure Γ Φ t v
+end
 
 /-- 部分型の導出で、行き先の各最外の事実を元の事実から導く。 -/
 theorem Ty.LeQ.assume {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
     ∀ q ∈ b.assume, Entails (a.assume ++ (Γ.facts ++ Φ).map Pred.lift) q := by
-  induction h with
-  | refl => intro q hq; exact .hyp (List.mem_append_left _ hq)
-  | trans _ _ ih₁ ih₂ =>
+  match h with
+  | .refl => intro q hq; exact .hyp (List.mem_append_left _ hq)
+  | .trans h₁ h₂ =>
+    have ih₁ := Ty.LeQ.assume h₁
+    have ih₂ := Ty.LeQ.assume h₂
     intro q hq
     apply (ih₂ q hq).cut
     intro r hr
     rcases List.mem_append.mp hr with hr | hr
     · exact ih₁ r hr
     · exact .hyp (List.mem_append_right _ hr)
-  | fn_effect _ => intro q hq; cases hq
-  | list _ _ => intro q hq; cases hq
-  | lazy _ _ => intro q hq; cases hq
-  | map_value _ _ _ => intro q hq; cases hq
-  | forget =>
+  | .fn_effect _ | .dependentFn _ | .scoped _ | .scoped_forget => intro q hq; cases hq
+  | .list _ => intro q hq; cases hq
+  | .lazy _ => intro q hq; cases hq
+  | .map_value _ _ => intro q hq; cases hq
+  | .forget =>
     intro q hq
     exact .hyp (List.mem_append_left _ (List.mem_cons_of_mem _ hq))
-  | introduce _ hp =>
+  | .introduce _ hp =>
     intro q hq
     rcases List.mem_cons.mp hq with rfl | hq
     · exact hp
     · exact .hyp (List.mem_append_left _ hq)
-  | refine _ _ _ hp ih =>
+  | .refine hv _ _ hp =>
+    have ih := Ty.LeQ.assume hv
     intro q hq
     rcases List.mem_cons.mp hq with rfl | hq
     · exact hp
@@ -71,8 +92,11 @@ theorem embedCovers {outer inner : Benitoite.Release.Eff} {Γ Φ}
     Eff.Covers Γ Φ (embedEff outer) (embedEff inner) := by
   refine ⟨?_, ?_⟩
   · intro a ha
-    obtain ⟨b, hb, hba⟩ := h.1 a (by cases inner; exact ha)
-    exact ⟨b, (by cases outer; exact hb), hba⟩
+    have ha' : embedAtoms inner.atoms a = true := by cases inner; exact ha
+    obtain ⟨oa, hoa, rfl⟩ := (embedAtoms_true _ _).mp ha'
+    obtain ⟨ob, hob, hba⟩ := h.1 oa hoa
+    exact ⟨embedAtom ob, by cases outer; simpa only [embedEff, Eff.mem, Eff.test, Eff.atoms, embedAtoms_embed, Benitoite.Release.Eff.mem, Benitoite.Release.Eff.test, Benitoite.Release.Eff.atoms] using hob,
+      embedAtom_covers hba⟩
   · intro t ht
     cases inner with
     | mk ia fs =>

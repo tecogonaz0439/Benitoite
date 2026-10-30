@@ -9,7 +9,13 @@ import Benitoite.Release.Refinement.Syntax
 namespace Benitoite.Release.Refinement
 
 def renEnv (ξ : Nat → Nat) : SubstEnv :=
-  ⟨Ty.tvar, [], [], fun i => .var (ξ i)⟩
+  ⟨Ty.tvar, [], [], fun i => some (.var (ξ i))⟩
+@[simp] theorem renEnv_up (ξ : Nat → Nat) : (renEnv ξ).up = renEnv (upRen 1 ξ) := by
+  change SubstEnv.mk _ _ _ _ = SubstEnv.mk _ _ _ _
+  congr 1
+  funext i
+  cases i <;> simp [upValues, renEnv, upRen, termBind, termBind?]
+
 def renameTy (ξ : Nat → Nat) (a : Ty) : Ty := a.rawBind (renEnv ξ)
 def renameEff (ξ : Nat → Nat) (e : Eff) : Eff := Eff.rawBind (renEnv ξ) e
 def renameKind (ξ : Nat → Nat) : BuilderKind → BuilderKind
@@ -74,7 +80,7 @@ end
 
 
 def valEnv (σ : Nat → Val) : SubstEnv :=
-  ⟨Ty.tvar, [], [], fun i => (σ i).toTerm?.getD (.integer 0)⟩
+  ⟨Ty.tvar, [], [], fun i => (σ i).toTerm?⟩
 noncomputable def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.bind (valEnv σ)
 noncomputable def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.bind (valEnv σ) e
 private noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
@@ -164,6 +170,14 @@ mutual
     | .tapp i as => .tapp (if i < c then i else i+k) (shiftTypesList k c as)
     | .ctor φ => .ctor φ
     | .refined a p => .refined (shiftTypes k c a) p
+    | .dependentFn t => .dependentFn (shiftTelTypes k c t)
+    | .external id as => .external id (shiftTypesList k c as)
+    | .scoped o kind ix => .scoped o kind ix
+    | .pathBases => .pathBases
+    | .scopePattern kind => .scopePattern kind
+  def shiftTelTypes (k c : Nat) : Tel → Tel
+    | .done r e => .done (shiftTypes k c r) (shiftRowsTypes k c e)
+    | .param n a t => .param n (shiftTypes k c a) (shiftTelTypes k c t)
   def shiftTypesList (k c : Nat) : List Ty → List Ty
     | [] => []
     | a :: as => shiftTypes k c a :: shiftTypesList k c as
@@ -174,7 +188,7 @@ end
 def typeEnvAt (c : Nat) (ts : List Ty) (es : List Eff) : SubstEnv :=
   ⟨(fun i => if i < c then .tvar i
     else if i-c < ts.length then shiftTypes c 0 ((ts[i-c]?).getD (.tvar i))
-    else .tvar (i-ts.length)), es.map (shiftRowsTypes c 0), [], Term.var⟩
+    else .tvar (i-ts.length)), es.map (shiftRowsTypes c 0), [], (fun i => some (.var i))⟩
 noncomputable def substTypeAt (c : Nat) (ts : List Ty) (es : List Eff) (t : Ty) : Ty :=
   t.bind (typeEnvAt c ts es)
 noncomputable def substRowAt (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff) : Eff :=

@@ -19,7 +19,7 @@ open Order
 /-- 引数を捨てる既定の枝も含む、型構成子適用と正規化の交換。 -/
 theorem rawApply_norm (t : Ty) (as : List Ty) :
     (rawApply t.norm (Ty.normTys as)).norm = (rawApply t as).norm := by
-  cases t <;> simp only [Ty.norm, rawApply, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem]
+  cases t <;> simp only [Ty.norm, rawApply, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem, Tel.norm_idem]
   case ctor c =>
     cases c <;> cases as <;> simp only [Ty.norm, Ty.normTys, Ty.norm_idem, Ty.normTys_idem,
       List.headD_nil, List.headD_cons, List.tail_nil, List.tail_cons]
@@ -31,7 +31,7 @@ mutual
   theorem Ty.norm_rawBind (θ : SubstEnv) (t : Ty) :
       (t.norm.rawBind θ).norm = (t.rawBind θ).norm := by
     cases t <;>
-      simp only [Ty.norm, Ty.rawBind, Ty.norm_rawBind, Ty.normTys_rawBind, Eff.norm_rawBind]
+      simp only [Ty.norm, Ty.rawBind, Ty.norm_rawBind, Ty.normTys_rawBind, Eff.norm_rawBind, Tel.norm_rawBind]
     case tapp i as =>
       have h := Ty.normTys_rawBind θ as
       have h' := rawApply_norm (θ.types i) (rawBindTys θ as)
@@ -39,6 +39,9 @@ mutual
       rw [h] at h''
       exact h''.symm.trans h'
 
+  theorem Tel.norm_rawBind (θ : SubstEnv) (t : Tel) :
+      Tel.norm (Tel.rawBind θ (Tel.norm t)) = Tel.norm (Tel.rawBind θ t) := by
+    cases t <;> simp only [Tel.norm, Tel.rawBind, Ty.norm_rawBind, Eff.norm_rawBind, Tel.norm_rawBind]
   theorem Ty.normTys_rawBind (θ : SubstEnv) (as : List Ty) :
       Ty.normTys (rawBindTys θ (Ty.normTys as)) = Ty.normTys (rawBindTys θ as) := by
     cases as with
@@ -124,7 +127,9 @@ theorem Eff.mem_substAtoms (es : List Eff) (e : Eff) (a : Atom) :
 mutual
   theorem Ty.rawBind_id (a : Ty) : a.rawBind (renEnv id) = a := by
     cases a <;> simp only [Ty.rawBind, renEnv_types, renEnv_ranges, renEnv_values, id_eq, rawApply, Ty.rawBind_id, rawBindTys_id,
-      Eff.rawBind_id, Scope.Signature.Ix.inst_nil, upValues_id, predBind_id]
+      Eff.rawBind_id, RangeIx.inst_nil, upValues_id, predBind_id, Tel.rawBind_id]
+  theorem Tel.rawBind_id (t : Tel) : Tel.rawBind (renEnv id) t = t := by
+    cases t <;> simp only [Tel.rawBind, Ty.rawBind_id, Eff.rawBind_id, Tel.rawBind_id, renEnv_up_id]
   theorem rawBindTys_id (as : List Ty) : rawBindTys (renEnv id) as = as := by
     cases as <;> simp only [rawBindTys, Ty.rawBind_id, rawBindTys_id]
   theorem Eff.rawBind_id (e : Eff) : Eff.rawBind (renEnv id) e = e := by

@@ -1,0 +1,16 @@
+SignatureProbe.Term.rec.{u} {motive_1 : Term → Sort u} {motive_2 : List (Option Term) → Sort u}
+  {motive_3 : Option Term → Sort u} (var : (i : Nat) → motive_1 (Term.var i))
+  (integer : (n : Int) → motive_1 (Term.integer n))
+  (listValue : (xs : List (Option Term)) → motive_2 xs → motive_1 (Term.listValue xs))
+  (mapValue :
+    (keys values : List (Option Term)) → motive_2 keys → motive_2 values → motive_1 (Term.mapValue keys values))
+  (field : (position : Nat) → (receiver : Term) → motive_1 receiver → motive_1 (Term.field position receiver))
+  (add : (left right : Term) → motive_1 left → motive_1 right → motive_1 (left.add right)) (nil : motive_2 [])
+  (cons : (head : Option Term) → (tail : List (Option Term)) → motive_3 head → motive_2 tail → motive_2 (head :: tail))
+  (none : motive_3 none) (some : (val : Term) → motive_1 val → motive_3 (some val)) (t : Term) : motive_1 t
+SignatureProbe.predBind (ν : Nat → Option Term) : Pred → Pred
+SignatureProbe.Captured.mk : (∀ (i : Nat), ImageOk i) → Captured
+SignatureProbe.SubstOk : Prop
+'SignatureProbe.bindOptional' does not depend on any axioms
+'SignatureProbe.predBind' does not depend on any axioms
+'ClosedEvaluationBoundary.unconditional_complete_impossible' does not depend on any axioms

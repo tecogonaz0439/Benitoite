@@ -30,6 +30,16 @@ mutual
     | .tapp i as => .tapp i (Ty.normTys as)
     | .ctor c => .ctor c
     | .refined a p => .refined a.norm p
+    | .dependentFn t => .dependentFn (Tel.norm t)
+    | .external id as => .external id (Ty.normTys as)
+    | .scoped o k ix => .scoped o k ix
+    | .pathBases => .pathBases
+    | .scopePattern k => .scopePattern k
+  termination_by structural t => t
+
+  noncomputable def Tel.norm : Tel → Tel
+    | .done r e => .done r.norm (Eff.norm e)
+    | .param n a t => .param n a.norm (Tel.norm t)
   termination_by structural t => t
 
   /-- 型列も同じ構造再帰に含める。 -/
@@ -75,7 +85,10 @@ private theorem normTys_sortUnique {as : List Ty} (h : Ty.normTys as = as) :
 mutual
   /-- 正規化は型で冪等である。 -/
   theorem Ty.norm_idem (t : Ty) : t.norm.norm = t.norm := by
-    cases t <;> simp only [Ty.norm, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem]
+    cases t <;> simp only [Ty.norm, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem, Tel.norm_idem]
+
+  theorem Tel.norm_idem (t : Tel) : (Tel.norm (Tel.norm t)) = Tel.norm t := by
+    cases t <;> simp only [Tel.norm, Ty.norm_idem, Eff.norm_idem, Tel.norm_idem]
 
   /-- 型列でも二度目の正規化は変化を起こさない。 -/
   theorem Ty.normTys_idem (as : List Ty) : Ty.normTys (Ty.normTys as) = Ty.normTys as := by

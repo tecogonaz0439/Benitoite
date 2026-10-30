@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Subst
 import Benitoite.Release.Refinement.Le
+import Benitoite.Release.Refinement.DeclaredTransport
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -45,11 +46,12 @@ mutual
         Ty.WF 0 C.length Γ.length a → Ty.Sorted Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.list vs) (.list a)
     | V_Sub {Ψ Q C Γ Φ v a b} : HasTypeVQ P B Ψ Q C Γ Φ v a →
-        Ty.LeQ Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b →
+        Ty.LeQ Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeVQ P B Ψ Q C Γ Φ v b
-    | V_Refine {Ψ Q C Γ Φ v a t p} : HasTypeVQ P B Ψ Q C Γ Φ v a →
-        Ty.IntegerCarrier a → v.toTerm? = some t → Pred.Sorted Γ (some a) p →
+    | V_Refine {Ψ Q C Γ Φ v a t p sort} : HasTypeVQ P B Ψ Q C Γ Φ v a →
+        Ty.HasSort a sort → v.toTerm? = some t → Pred.Sorted Γ (some a) p →
         Pred.WF (Γ.length+1) p → Entails (Γ.facts ++ Φ) (p.open t) →
+        Ty.Declared P C Γ a → Pred.Declared P C Γ (some a) p →
         HasTypeVQ P B Ψ Q C Γ Φ v (.refined a p)
 
   inductive HasTypeVsQ (P : Program) (B : Builtins) :
@@ -77,11 +79,18 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ f (.fn ns as b ε) → HasTypeVsQ P B Ψ Q C Γ Φ args as →
         HasTypeCQ P B Ψ Q C Γ Φ R (.app f args) b ε Δ
     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
-        Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b →
+        Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ
     | C_Eff {Ψ Q C Γ Φ Δ R m a ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         Eff.Covers Γ Φ ε' ε → HasTypeCQ P B Ψ Q C Γ Φ R m a ε' Δ
 end
+
+theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
+    (h : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.IntegerCarrier) (ht : v.toTerm? = some t)
+    (hda : Ty.Declared P C Γ a) (hdp : Pred.Declared P C Γ (some a) p)
+    (hs : Pred.Sorted Γ (some a) p) (hw : p.WF (Γ.length+1))
+    (he : Entails (Γ.facts ++ Φ) (p.open t)) : HasTypeVQ P B store Q C Γ Φ v (.refined a p) :=
+  .V_Refine h hi ht hs hw he hda hdp
 
 abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty
 abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty

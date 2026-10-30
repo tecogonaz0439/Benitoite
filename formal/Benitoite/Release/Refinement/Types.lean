@@ -1,20 +1,31 @@
-import Benitoite.Release.Typing
+import Benitoite.Release.Refinement.TermSyntax
+import Benitoite.Release.Refinement.Atoms
 
 namespace Benitoite.Release.Refinement
 
-/-- 整数を観測する有限項。番号は Nat の de Bruijn 添字である。 -/
-inductive Term where
-  | var (index : Nat)
-  | integer (value : Int)
-  | add (a b : Term)
+inductive TyKind where
+  | value
+  | constructor (arity : Nat)
   deriving DecidableEq
 
-/-- 一階の整数の条件。 -/
-inductive Pred where
-  | truth | falsity
-  | eq (a b : Term) | le (a b : Term) | lt (a b : Term)
-  | and (p q : Pred) | or (p q : Pred) | not (p : Pred)
-  deriving DecidableEq
+abbrev KindCtx := List TyKind
+
+/-- 関数の型パラメータの宣言。操作・実装の値型パラメータの制約とは分ける。 -/
+structure TParamDecl where
+  constraints : Benitoite.Release.TParam := {}
+  kind : TyKind := .value
+
+def embedTParam (p : Benitoite.Release.TParam) : TParamDecl := ⟨p, .value⟩
+
+@[simp] theorem embedTParam_constraints (p : Benitoite.Release.TParam) :
+    (embedTParam p).constraints = p := rfl
+@[simp] theorem embedTParam_kind (p : Benitoite.Release.TParam) :
+    (embedTParam p).kind = .value := rfl
+
+theorem embedTParam_injective : Function.Injective embedTParam := by
+  intro a b h
+  exact congrArg TParamDecl.constraints h
+
 
 mutual
 /-- 型。旧型の欄を保ち、有限の述語による篩を子にも格納できる。
@@ -22,7 +33,7 @@ mutual
 `Dict[Cl, τ]`、`tapp i Ā` は型構成子を表す型パラメータの適用 `α[Ā]`、`ctor φ` は型構成子 φ である。 -/
 inductive Ty where
   | base (ι : BaseTy)
-  | opaque (o : OpaqueName) (ix : Scope.Signature.Ix)
+  | opaque (o : OpaqueName) (ix : RangeIx)
   | data (d : DataName) (args : List Ty)
   | list (a : Ty)
   | fn (names : List String) (params : List Ty) (ret : Ty) (eff : EffR)
@@ -37,11 +48,20 @@ inductive Ty where
   | tapp (i : Nat) (args : List Ty)
   | ctor (φ : TyCon)
   | refined (a : Ty) (p : Pred)
+  | dependentFn (signature : Tel)
+  | external (id : ExternalId) (arguments : List Ty)
+  | scoped (name : OpaqueName) (kind : Scope.Domain.Kind) (index : RangeIx)
+  | pathBases
+  | scopePattern (kind : Scope.Domain.Kind)
 
 
 /-- 名前と行の所属、および Fail のエラー型の有限列。 -/
 inductive EffR where
   | mk (atoms : Atom → Bool) (fails : List Ty)
+
+inductive Tel where
+  | done (result : Ty) (effect : EffR)
+  | param (name : String) (argument : Ty) (rest : Tel)
 end
 
 abbrev Eff := EffR
@@ -71,7 +91,7 @@ mutual
   /-- 旧型の全ての子を新構文へ写す。 -/
   def embedTy : Benitoite.Release.Ty → Ty
     | .base b => .base b
-    | .opaque o ix => .opaque o ix
+    | .opaque o ix => .opaque o (embedIx ix)
     | .data d as => .data d (embedTys as)
     | .list a => .list (embedTy a)
     | .fn ns ps r e => .fn ns (embedTys ps) (embedTy r) (embedEff e)
@@ -89,7 +109,7 @@ mutual
     | [] => []
     | a :: as => embedTy a :: embedTys as
   def embedEff : Benitoite.Release.Eff → Eff
-    | .mk a fs => .mk a (embedTys fs)
+    | .mk a fs => .mk (embedAtoms a) (embedTys fs)
 end
 
 @[simp] theorem embedTys_eq_map (as : List Benitoite.Release.Ty) :

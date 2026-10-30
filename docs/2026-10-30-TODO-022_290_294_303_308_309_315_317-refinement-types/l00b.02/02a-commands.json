@@ -1,0 +1,42 @@
+[
+  {
+    "name": "02a-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "wall_seconds": 18.6467835
+  },
+  {
+    "name": "02a-wf-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-wf-boundary.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "wall_seconds": 0.373986958,
+    "input_sha256": "17538e175f9cdad599cc0d94d5cb2f39e31fb19f3abe34ef73407e022b3431ea"
+  },
+  {
+    "name": "02a-scope-axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-scope-axioms.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "wall_seconds": 0.698549833,
+    "input_sha256": "13bbbe470bad396578cc21f14382eb283bdc93bb6aa03cd0ede4d1f37d439463"
+  }
+]

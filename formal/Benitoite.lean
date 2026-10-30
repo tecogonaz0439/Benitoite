@@ -289,3 +289,6 @@ import Benitoite.Release.Refinement.Typing
 import Benitoite.Release.Refinement.OpenSubstitution
 import Benitoite.Release.Refinement.SubstTypingObstruction
 import Benitoite.Release.Refinement.NarrowingObstruction
+
+import Benitoite.Release.Refinement.KindInference
+import Benitoite.Release.Refinement.ValueReferences

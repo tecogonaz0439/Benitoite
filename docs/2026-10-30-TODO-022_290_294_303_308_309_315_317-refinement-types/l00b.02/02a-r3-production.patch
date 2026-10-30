@@ -1,0 +1,118 @@
+--- a/formal/Benitoite/Release/Refinement/Context.lean
++++ b/formal/Benitoite/Release/Refinement/Context.lean
+@@ -79,6 +79,49 @@
+       termSorted Δ a ∧ termSorted Δ b
+   | .and p q | .or p q => Pred.Sorted Γ self p ∧ Pred.Sorted Γ self q
+   | .not p => Pred.Sorted Γ self p
++
++/-- 項の全参照は、その文脈で値の型を持つ位置を指す。Noneは読まない。 -/
++def Term.References (Γ : Ctx) : Term → Prop
++  | .var i => ∃ a, Γ[i]? = some (some a)
++  | .integer _ => True
++  | .add a b => a.References Γ ∧ b.References Γ
++
++/-- selfを含め、参照の規約をsortとは独立に表す。 -/
++def Pred.References (Γ : Ctx) (self : Option Ty) : Pred → Prop
++  | .truth | .falsity => True
++  | .eq a b | .le a b | .lt a b =>
++      let Δ := match self with | none => Γ | some a => some a :: Γ
++      a.References Δ ∧ b.References Δ
++  | .and p q | .or p q => p.References Γ self ∧ q.References Γ self
++  | .not p => p.References Γ self
++
++theorem Term.references_wf {Γ : Ctx} {t : Term} (h : t.References Γ) : termWF Γ.length t := by
++  induction t with
++  | var i => obtain ⟨a, hi⟩ := h; exact (List.getElem?_eq_some_iff.mp hi).1
++  | integer _ => trivial
++  | add a b ia ib => exact ⟨ia h.1, ib h.2⟩
++
++theorem termSorted.references {Γ : Ctx} {t : Term} (h : termSorted Γ t) : t.References Γ := by
++  induction t with
++  | var i => obtain ⟨a, hi, _⟩ := h; exact ⟨a, hi⟩
++  | integer _ => trivial
++  | add a b ia ib => exact ⟨ia h.1, ib h.2⟩
++
++theorem Pred.Sorted.references {Γ : Ctx} {self : Option Ty} {p : Pred}
++    (h : p.Sorted Γ self) : p.References Γ self := by
++  induction p with
++  | truth | falsity => trivial
++  | eq a b | le a b | lt a b => exact ⟨h.1.references, h.2.references⟩
++  | and p q ip iq | or p q ip iq => exact ⟨ip h.1, iq h.2⟩
++  | not p ip => exact ip h
++
++theorem Pred.references_wf {Γ : Ctx} {a : Ty} {p : Pred}
++    (h : p.References Γ (some a)) : p.WF (Γ.length+1) := by
++  induction p with
++  | truth | falsity => trivial
++  | eq a b | le a b | lt a b => exact ⟨Term.references_wf h.1, Term.references_wf h.2⟩
++  | and p q ip iq | or p q ip iq => exact ⟨ip h.1, iq h.2⟩
++  | not p ip => exact ip h
+ 
+ def Ty.assume : Ty → List Pred
+   | .refined a p => p :: a.assume
+@@ -125,6 +168,42 @@
+     | a :: as => a.Sorted Γ ∧ sortedTys Γ as
+   def sortedEff (Γ : Ctx) : Eff → Prop
+     | .mk _ fs => sortedTys Γ fs
++end
++
++mutual
++  def Ty.References (Γ : Ctx) : Ty → Prop
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ => True
++    | .data _ as | .tapp _ as => referencesTys Γ as
++    | .list a | .reference a | .lazy a | .set a | .dict _ a => a.References Γ
++    | .fn _ ps r e => referencesTys Γ ps ∧ r.References Γ ∧ Eff.References Γ e
++    | .cont b t e => b.References Γ ∧ t.References Γ ∧ Eff.References Γ e
++    | .map a b => a.References Γ ∧ b.References Γ
++    | .refined a p => a.References Γ ∧ p.References Γ (some a)
++  private def referencesTys (Γ : Ctx) : List Ty → Prop
++    | [] => True
++    | a :: as => a.References Γ ∧ referencesTys Γ as
++  def Eff.References (Γ : Ctx) : Eff → Prop
++    | .mk _ fs => referencesTys Γ fs
++end
++
++mutual
++  theorem Ty.Sorted.references {Γ : Ctx} {a : Ty} (h : a.Sorted Γ) : a.References Γ := by
++    cases a <;> simp only [Ty.Sorted] at h <;> simp only [Ty.References]
++    all_goals first
++      | trivial
++      | exact Ty.Sorted.references h
++      | exact sortedTys_references h
++      | exact ⟨sortedTys_references h.1, Ty.Sorted.references h.2.1, sortedEff_references h.2.2⟩
++      | exact ⟨Ty.Sorted.references h.1, Ty.Sorted.references h.2.1, sortedEff_references h.2.2⟩
++      | exact ⟨Ty.Sorted.references h.1, Ty.Sorted.references h.2⟩
++      | exact ⟨Ty.Sorted.references h.1, Pred.Sorted.references h.2⟩
++  private theorem sortedTys_references {Γ : Ctx} {as : List Ty} (h : sortedTys Γ as) :
++      referencesTys Γ as := by
++    cases as with
++    | nil => trivial
++    | cons a as => exact ⟨Ty.Sorted.references h.1, sortedTys_references h.2⟩
++  theorem sortedEff_references {Γ : Ctx} {e : Eff} (h : sortedEff Γ e) : Eff.References Γ e := by
++    cases e; exact sortedTys_references h
+ end
+ 
+ mutual
+--- a/formal/Benitoite/Release/Refinement/ValueRegularity.lean
++++ b/formal/Benitoite/Release/Refinement/ValueRegularity.lean
+@@ -33,19 +33,8 @@
+     Ty.normTys e.fails = e.fails := by
+   cases e; exact Ty.normTys_of_wf h
+ 
+-theorem termWF_of_sorted {Γ t} (h : termSorted Γ t) : termWF Γ.length t := by
+-  induction t with
+-  | var i => obtain ⟨a, hi, _⟩ := h; exact (List.getElem?_eq_some_iff.mp hi).1
+-  | integer _ => trivial
+-  | add a b ia ib => exact ⟨ia h.1, ib h.2⟩
+-
+ theorem Pred.wf_of_sorted {Γ a p} (h : Pred.Sorted Γ (some a) p) : p.WF (Γ.length+1) := by
+-  induction p with
+-  | truth | falsity => trivial
+-  | eq a b | le a b | lt a b =>
+-    exact ⟨termWF_of_sorted h.1, termWF_of_sorted h.2⟩
+-  | and p q ip iq | or p q ip iq => exact ⟨ip h.1, iq h.2⟩
+-  | not p ip => exact ip h
++  exact Pred.references_wf h.references
+ 
+ @[simp] theorem Ty.notContCore_rawSubstV (a : Ty) (σ : Nat → Term) :
+     (a.rawSubstV σ).NotContCore ↔ a.NotContCore := by

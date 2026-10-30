@@ -7,14 +7,53 @@ import Benitoite.Release.Refinement.ValueRegularity
 -/
 namespace Benitoite.Release.Refinement
 
-theorem Val.toTerm_rename (v : Val) (ξ : Nat → Nat) :
-    (v.rename ξ).toTerm? = v.toTerm?.map (termBind (fun i => .var (ξ i))) := by
-  cases v <;> try rfl
-  case const c => cases c <;> rfl
+mutual
+  theorem Val.toTerm_rename (v : Val) (ξ : Nat → Nat) :
+      (v.rename ξ).toTerm? = v.toTerm?.map (termBind (fun i => some (.var (ξ i)))) := by
+    cases v <;> try rfl
+    case const c => cases c <;> rfl
+    all_goals simp only [Val.rename, Val.toTerm?, Val.toTermSlots_rename,
+      termBind_listValue, termBind_mapValue, termBind_setValue, termBind_dataValue,
+      Option.map_some]
+  theorem Val.toTermSlots_rename (vs : List Val) (ξ : Nat → Nat) :
+      Val.toTermSlots (Val.renameList ξ vs) =
+        bindSlots (fun i => some (.var (ξ i))) (Val.toTermSlots vs) := by
+    cases vs with
+    | nil => rfl
+    | cons v vs =>
+      simp only [Val.renameList, Val.toTermSlots, Val.toTerm_rename,
+        Val.toTermSlots_rename, bindSlots]
+      congr 1
+      cases v.toTerm? <;> simp only [slotBind, Option.map_none, Option.map_some, termBind?_renaming]
+end
+
+mutual
+  theorem Val.toTerm_subst_optional (v : Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
+      (v.subst ν ρ).toTerm? = v.toTerm?.bind (termBind? (valEnv ν).values) := by
+    cases v <;> try rfl
+    case const c => cases c <;> rfl
+    all_goals simp only [Val.subst, Val.toTerm?, Val.toTermSlots_subst,
+      termBind?, Option.bind_some]
+  theorem Val.toTermSlots_subst (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
+      Val.toTermSlots (Val.substList ν vs ρ) = bindSlots (valEnv ν).values (Val.toTermSlots vs) := by
+    cases vs with
+    | nil => rfl
+    | cons v vs =>
+      simp only [Val.substList, Val.toTermSlots, Val.toTerm_subst_optional,
+        Val.toTermSlots_subst, bindSlots]
+      congr 1
+      cases v.toTerm? <;> rfl
+end
+
+theorem Val.toTerm_subst_slots (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
+    (Val.substList ν vs ρ).map Val.toTerm? =
+      (vs.map Val.toTerm?).map (slotBind (valEnv ν).values) := by
+  rw [← Val.toTermSlots_eq_map, Val.toTermSlots_subst, ← Val.toTermSlots_eq_map]
+  induction Val.toTermSlots vs <;> simp_all [bindSlots]
 
 theorem Val.observe_rename (v : Val) (ξ : Nat → Nat) :
     (v.rename ξ).toTerm?.getD (.integer 0) =
-      termBind (fun i => .var (ξ i)) (v.toTerm?.getD (.integer 0)) := by
+      termBind (fun i => some (.var (ξ i))) (v.toTerm?.getD (.integer 0)) := by
   rw [Val.toTerm_rename]
   cases v.toTerm? <;> rfl
 
@@ -77,7 +116,7 @@ theorem valEnv_upSubst_one (σ : Nat → Val) : valEnv (upSubst 1 σ) = (valEnv 
   | zero => rfl
   | succ i =>
     simp only [upSubst, Nat.succ_lt_succ_iff, Nat.not_lt_zero,
-      ↓reduceIte, Nat.add_one_sub_one, Val.observe_rename, upValues, valEnv]
+      ↓reduceIte, Nat.add_one_sub_one, Val.toTerm_rename, upValues, valEnv]
 
 theorem valEnv_upSubst (k : Nat) (σ : Nat → Val) :
     valEnv (upSubst k σ) = SubstEnv.valuesOnly (upTerms k (valEnv σ).values) := by
@@ -87,18 +126,21 @@ theorem valEnv_upSubst (k : Nat) (σ : Nat → Val) :
   simp only [upSubst, upTerms]
   split
   · rfl
-  · exact Val.observe_rename _ _
+  · exact Val.toTerm_rename _ _
 
-theorem upTerms_succ (k : Nat) (σ : Nat → Term) : upTerms (k+1) σ = upValues (upTerms k σ) := by
+theorem upTerms_succ (k : Nat) (σ : ObservationEnv) : upTerms (k+1) σ = upValues (upTerms k σ) := by
   funext i
   cases i with
   | zero => simp [upTerms, upValues]
   | succ i =>
     simp only [upValues, upTerms, Nat.succ_lt_succ_iff, Nat.add_sub_add_right]
     split
-    · simp only [termBind]
-    · rw [termBind_comp]
-      congr 1
+    · simp
+    · cases he : σ (i-k) with
+      | none => rfl
+      | some t =>
+        simp only [Option.map_some, termBind_comp]
+        congr 1
 
 theorem valEnv_upN (k : Nat) (σ : Nat → Val) :
     valEnv (upSubst k σ) = (valEnv σ).upN k := by
@@ -111,23 +153,26 @@ theorem valEnv_upN (k : Nat) (σ : Nat → Val) :
     rfl
 
 mutual
-  theorem Ty.rawSubstV_comp (a : Ty) (σ τ : Nat → Term) :
-      (a.rawSubstV σ).rawSubstV τ = a.rawSubstV (fun i => termBind τ (σ i)) := by
-    cases a <;> simp only [Ty.rawSubstV, Ty.rawSubstV_comp, substVTys_comp, Eff.rawSubstV_comp]
+  theorem Ty.rawSubstV_comp (a : Ty) (σ τ : ObservationEnv) :
+      (a.rawSubstV σ).rawSubstV τ = a.rawSubstV (fun i => (σ i).bind (termBind? τ)) := by
+    cases a <;> simp only [Ty.rawSubstV, Ty.rawSubstV_comp, substVTys_comp, Eff.rawSubstV_comp, Tel.rawSubstV_comp]
     case refined a p => rw [predBind_comp, upValues_comp]
-  theorem substVTys_comp (as : List Ty) (σ τ : Nat → Term) :
-      substVTys τ (substVTys σ as) = substVTys (fun i => termBind τ (σ i)) as := by
+  theorem Tel.rawSubstV_comp (t : Tel) (σ τ : ObservationEnv) :
+      Tel.rawSubstV τ (Tel.rawSubstV σ t) = Tel.rawSubstV (fun i => (σ i).bind (termBind? τ)) t := by
+    cases t <;> simp only [Tel.rawSubstV, Ty.rawSubstV_comp, Eff.rawSubstV_comp, Tel.rawSubstV_comp, upValues_comp]
+  theorem substVTys_comp (as : List Ty) (σ τ : ObservationEnv) :
+      substVTys τ (substVTys σ as) = substVTys (fun i => (σ i).bind (termBind? τ)) as := by
     cases as <;> simp only [substVTys, Ty.rawSubstV_comp, substVTys_comp]
-  theorem Eff.rawSubstV_comp (e : Eff) (σ τ : Nat → Term) :
-      Eff.rawSubstV τ (Eff.rawSubstV σ e) = Eff.rawSubstV (fun i => termBind τ (σ i)) e := by
+  theorem Eff.rawSubstV_comp (e : Eff) (σ τ : ObservationEnv) :
+      Eff.rawSubstV τ (Eff.rawSubstV σ e) = Eff.rawSubstV (fun i => (σ i).bind (termBind? τ)) e := by
     cases e; simp only [Eff.rawSubstV, substVTys_comp]
 end
 
 theorem renameTy_eq_rawSubstV (ξ : Nat → Nat) (a : Ty) :
-    renameTy ξ a = a.rawSubstV (fun i => .var (ξ i)) := (Ty.rawSubstV_eq_rawBind _ _).symm
+    renameTy ξ a = a.rawSubstV (fun i => some (.var (ξ i))) := (Ty.rawSubstV_eq_rawBind _ _).symm
 
 theorem renameEff_eq_rawSubstV (ξ : Nat → Nat) (e : Eff) :
-    renameEff ξ e = Eff.rawSubstV (fun i => .var (ξ i)) e := (Eff.rawSubstV_eq_rawBind _ _).symm
+    renameEff ξ e = Eff.rawSubstV (fun i => some (.var (ξ i))) e := (Eff.rawSubstV_eq_rawBind _ _).symm
 
 theorem Ty.bind_shiftV_values (a : Ty) (k : Nat) (σ : Nat → Val) :
     substTyValues (upSubst k σ) (a.shiftV k 0) = (substTyValues σ a).shiftV k 0 := by
@@ -141,7 +186,7 @@ theorem Ty.bind_shiftV_values (a : Ty) (k : Nat) (σ : Nat → Val) :
   congr 2
   funext i
   have hi : ¬ i+k < k := by omega
-  simp [termBind, shiftIndex, upTerms, hi]
+  simp [termBind?, map_rename_eq_bind, shiftIndex, upTerms, hi]
 
 theorem Eff.bind_shiftV_values (e : Eff) (k : Nat) (σ : Nat → Val) :
     substEffValues (upSubst k σ) (Eff.shiftV k 0 e) = Eff.shiftV k 0 (substEffValues σ e) := by
@@ -155,7 +200,7 @@ theorem Eff.bind_shiftV_values (e : Eff) (k : Nat) (σ : Nat → Val) :
   congr 2
   funext i
   have hi : ¬ i+k < k := by omega
-  simp [termBind, shiftIndex, upTerms, hi]
+  simp [termBind?, map_rename_eq_bind, shiftIndex, upTerms, hi]
 
 theorem Ty.bind_fn (ns : List String) (ps : List Ty) (r : Ty) (e : Eff) (θ : SubstEnv) :
     (Ty.fn ns ps r e).bind θ = .fn ns (ps.map (Ty.bind θ)) (r.bind θ) (Eff.bind θ e) := by
@@ -168,24 +213,6 @@ theorem Ty.bind_fn (ns : List String) (ps : List Ty) (r : Ty) (e : Eff) (θ : Su
 
 theorem substTyValues_eq_bind (σ : Nat → Val) : substTyValues σ = Ty.bind (valEnv σ) := rfl
 theorem substEffValues_eq_bind (σ : Nat → Val) : substEffValues σ = Eff.bind (valEnv σ) := rfl
-
-theorem Ty.shiftV_comm (a : Ty) (n k c : Nat) :
-    (a.shiftV n 0).shiftV k (c+n) = (a.shiftV k c).shiftV n 0 := by
-  simp only [Ty.shiftV_eq_renameTy, renameTy_eq_rawSubstV, Ty.rawSubstV_comp]
-  congr 1
-  funext i
-  simp only [termBind, shiftIndex, Nat.not_lt_zero, ↓reduceIte]
-  by_cases h : i < c <;> simp [h, show (i+n < c+n) ↔ i<c by omega]
-  all_goals omega
-
-theorem Eff.shiftV_comm (e : Eff) (n k c : Nat) :
-    Eff.shiftV k (c+n) (Eff.shiftV n 0 e) = Eff.shiftV n 0 (Eff.shiftV k c e) := by
-  simp only [Eff.shiftV_eq_renameEff, renameEff_eq_rawSubstV, Eff.rawSubstV_comp]
-  congr 1
-  funext i
-  simp only [termBind, shiftIndex, Nat.not_lt_zero, ↓reduceIte]
-  by_cases h : i < c <;> simp [h, show (i+n < c+n) ↔ i<c by omega]
-  all_goals omega
 
 theorem Pred.shiftV_lift (p : Pred) (k c : Nat) :
     p.lift.shiftV k (c+1) = (p.shiftV k c).lift := by
@@ -219,20 +246,20 @@ theorem HasTypeVQ.subst_lam {P B store Q C Γ Φ Δ Ξ ns ps body r e σ ρ}
   refine .V_Lam ?_ ?_ ?_ ?_
   · simpa only [NamesWF, List.length_map] using hw.1
   · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using
-      Ty.wf_bind_values hw hs (valEnv σ).values ht.values
+      Ty.wf_bind_values hw hs.references (valEnv σ).values ht.imageWF
   · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using
-      Ty.sorted_bind_values hs (valEnv σ).values ht.values
+      Ty.sorted_bind_values hs (valEnv σ).values ht.values ht.references
   · simpa only [List.length_map, substTyValues, substEffValues] using hb
 
 mutual
-  theorem Ty.rawSubstV_embed (a : Benitoite.Release.Ty) (σ : Nat → Term) :
+  theorem Ty.rawSubstV_embed (a : Benitoite.Release.Ty) (σ : ObservationEnv) :
       (embedTy a).rawSubstV σ = embedTy a := by
     cases a <;> simp only [embedTy, Ty.rawSubstV, Ty.rawSubstV_embed,
       substVTys_embed, Eff.rawSubstV_embed]
-  theorem substVTys_embed (as : List Benitoite.Release.Ty) (σ : Nat → Term) :
+  theorem substVTys_embed (as : List Benitoite.Release.Ty) (σ : ObservationEnv) :
       substVTys σ (embedTys as) = embedTys as := by
     cases as <;> simp only [embedTys, substVTys, Ty.rawSubstV_embed, substVTys_embed]
-  theorem Eff.rawSubstV_embed (e : Benitoite.Release.Eff) (σ : Nat → Term) :
+  theorem Eff.rawSubstV_embed (e : Benitoite.Release.Eff) (σ : ObservationEnv) :
       Eff.rawSubstV σ (embedEff e) = embedEff e := by
     cases e; simp only [embedEff, Eff.rawSubstV, substVTys_embed]
 end
@@ -246,52 +273,6 @@ theorem substEffValues_embed (σ : Nat → Val) (e : Benitoite.Release.Eff) :
     substEffValues σ (embedEff e) = embedEff e.norm := by
   unfold substEffValues Eff.bind valEnv
   rw [← Eff.rawSubstV_eq_rawBind, Eff.rawSubstV_embed, ← embedEff_norm]
-
-private theorem termBind_fixed {nv t} (h : termWF nv t) (σ : Nat → Term)
-    (hf : ∀ i, i<nv → σ i = .var i) : termBind σ t = t := by
-  induction t with
-  | var i => exact hf i h
-  | integer _ => rfl
-  | add a b ia ib => simp only [termBind, ia h.1, ib h.2]
-
-private theorem predBind_fixed {nv p} (h : Pred.WF nv p) (σ : Nat → Term)
-    (hf : ∀ i, i<nv → σ i = .var i) : predBind σ p = p := by
-  induction p with
-  | truth | falsity => rfl
-  | eq a b | le a b | lt a b => simp only [predBind, termBind_fixed h.1 σ hf, termBind_fixed h.2 σ hf]
-  | and p q ip iq | or p q ip iq => simp only [predBind, ip h.1, iq h.2]
-  | not p ip => exact congrArg Pred.not (ip h)
-
-mutual
-  /-- self 以外の値変数を参照しない WF 注釈では、生の値置換が恒等である。 -/
-  theorem Ty.rawSubstV_of_wf_zero {nr nt a} (h : Ty.WF nr nt 0 a) (σ : Nat → Term) :
-      a.rawSubstV σ = a := by
-    cases a <;> simp only [Ty.WF] at h <;> simp only [Ty.rawSubstV]
-    all_goals first
-      | rfl
-      | exact congrArg _ (Ty.rawSubstV_of_wf_zero h σ)
-      | exact congrArg _ (substVTys_of_wf_zero h σ)
-      | skip
-    case fn ns ps r e => rw [substVTys_of_wf_zero h.2.1 σ,
-      Ty.rawSubstV_of_wf_zero h.2.2.1 σ, Eff.rawSubstV_of_wf_zero h.2.2.2.1 σ]
-    case cont b t e => rw [Ty.rawSubstV_of_wf_zero h.1 σ,
-      Ty.rawSubstV_of_wf_zero h.2.1 σ, Eff.rawSubstV_of_wf_zero h.2.2.1 σ]
-    case map a b => rw [Ty.rawSubstV_of_wf_zero h.1 σ, Ty.rawSubstV_of_wf_zero h.2 σ]
-    case tapp i as => rw [substVTys_of_wf_zero h.2 σ]
-    case refined a p =>
-      rw [Ty.rawSubstV_of_wf_zero h.1 σ, predBind_fixed h.2.1 (upValues σ) (by
-        intro i hi
-        have he : i=0 := by omega
-        subst i; rfl)]
-  theorem substVTys_of_wf_zero {nr nt as} (h : Ty.WFList nr nt 0 as) (σ : Nat → Term) :
-      substVTys σ as = as := by
-    cases as with
-    | nil => rfl
-    | cons a as => simp only [substVTys, Ty.rawSubstV_of_wf_zero h.1 σ, substVTys_of_wf_zero h.2 σ]
-  theorem Eff.rawSubstV_of_wf_zero {nr nt e} (h : Eff.WF nr nt 0 e) (σ : Nat → Term) :
-      Eff.rawSubstV σ e = e := by
-    cases e; simp only [Eff.rawSubstV, substVTys_of_wf_zero h σ]
-end
 
 theorem Ty.subst_values_of_wf_zero {nr nt a} (h : Ty.WF nr nt 0 a) (σ : Nat → Val) :
     substTyValues σ a = a := by
