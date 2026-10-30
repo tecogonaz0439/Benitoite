@@ -296,7 +296,11 @@ rawApply : Ty → List Ty → Ty
 
 `Def.declaredKinds` は tparams の kind の列である。`Def.KindWF P d K` は K がこの列と等しいこと、注釈の全出現との一致、引数・結果・効果の注釈自体の HasKind を要求する。`Def.kinds P d` はこの照合に成功したときだけ some K を返す。出現のない明示的な constructor の宣言も value へ変えない。未宣言のクラスや ctor の arity の不一致を、出現なしとして通さない。`Def.kinds_eq_some_iff` はこの照合と KindWF の同値を示す。旧の kindCandidate / inferKinds は取り除いた。
 
-旧 Release の宣言からは `embedTParam` で既存の制約を保ち、追加の kind を value とする。制約の射影との往復、単射性を証明した。`embedMethSig` / `embedClassDecl` は旧の型・行・名前・表を写し、追加の欄に value を使う。これは旧構文にない高カインドの宣言情報を推測する操作ではない。表層の F[_] / F[_, _] と型クラスの引数の宣言は、その明示した kind を別途写す。旧の全型付けの保存の完成とは区別する。
+旧 Release の宣言の埋め込みは、RV-L00b.02b-values中1に対する2026-10-31の取りまとめの案(ii)に従い、**kindの表を引数にとる契約**とする。表は型クラスごとの引数のkind、関数ごとの型パラメータのkind列、型クラスとメソッドごとの型パラメータのkind列を与える。型パラメータのkind列は宣言の型パラメータと同じ長さ・順序で対応させる。既存の制約・型・行・名前・宣言の対応は保ち、kindを注釈から推測して埋めない。
+
+D29の旧導出の埋め込みの定理は、この表と外側の宣言から与えたkindの文脈の下で、旧の導出の型引数が各宣言のkindとarityに整合することを前提にとる。表層の型検査はarityの一致を検査するため、表層から来る旧の入力はこの前提を満たす。D29が既に要求する表現可能性・対象の保持と同じく、適格な旧導出の条件として明示し、高カインドの型を書ける形を除外しない。
+
+現行の `embedTParam / embedDef / embedMethSig / embedClassDecl / embedProgram` は追加のkindにvalueを使う構文変換の補助である。制約の射影との往復・単射性等の証明はその現行定義についての結果であり、D29を満たす一般のkind表付き埋め込みを完成したとは扱わない。**L20が、D29の旧導出の埋め込みの定理とともに、これらの埋め込み定義をkind表を受け取る形へ改訂し、L70が合成と表層との照合を閉じる。** 起動単位の表は第12.2節、採った案・捨てた案と義務の対応は第24節を参照する。
 
 `TyCon.arity P (.data d)` は、少なくとも一つ構成子宣言があり、同じ data の全構成子宣言の ntys が一致するときにだけ some n を返す。組込みの固定 arity と分ける。`rawApply_proper` は適格な適用の全結果を `ProperApply` の7形で列挙し、`rawApply_valueKind` は結果が value の kind を持つことを示す。全域関数の既定枝を隠すだけのラッパーは使わない。
 
@@ -1786,6 +1790,8 @@ embedStore : O.Store → Store
 embedState : O.State → State
 ```
 
+上の署名は現行の構文変換の入口を列挙したものである。D29に使う宣言・プログラムの埋め込みは、第2.2節のkind表付きの契約へL20で改訂する。全てvalueとする現行の補助だけで高カインドを含む旧導出の埋め込みを済ませたとは扱わない。
+
 旧状態は Capture.empty を使う閉じた旧状態から埋め込み、開いた旧状態を空環境へ閉じたことにしない。旧 source の注釈・宣言は位置ごとの値の shift を行う。embedStoreTy では各 LocTy の全型/行/Rへ再帰する。Embed の関数を定義することと、全旧型付け・遷移の保存の証明を完成することを分ける。後者の適格条件は数値の表現可能性・標準対象の保持・Request の ground/端点一致・外部表と σ の承認済みの差に限る。
 
 ### 10.2 公開/非公開と旧の対応
@@ -1895,11 +1901,11 @@ embedState : O.State → State
 | 起動単位 | 加える構成子・公開定義 | 同じ単位で追随する既存相互補題と場合の数 | L10/L20から移す分（能動時間） | 能動時間の見込み | 単位末の検査 |
 |---|---|---|---:|---:|---|
 | `.02a` 全 sort・型・有限置換 | Sort14/Term20/Pred14、Ty の追加5形（dependentFn/external/scoped/pathBases/scopePattern）、Tel2/Atom2/RangeExpr3/RangeIx2、Const16 と bits 比較の型、ObservationEnv・Declared・kind。型/行の全相互再帰へ Tel を含める。Term/Tyから読むPathEnv/ID/AtErrorの有限構文もここで置く | 現在の3族は各15のまま全 sort/Option 像へ追随。TypedFacts は現在のV6を2入口で処理。`Ty.LeQ.bind/rawBind` の既存9＋新3（Tel/scoped/opaque互換）=12、TelLe2、TelClosure2。`Ty.norm/rawBind/shiftV/WF` は Ty21/Tel2/型列2/Eff1、既存の `embedTy_norm/embedEff_norm/embed_wf/tyCompare_embed/embedTy_injective` は旧Ty15/型列2/Eff1。第3.4節のWF、slot可換性を含む | **L10から2時間、L20は0**。型付き像の全sort/WFとsnapshot可換性の共通追随を移す。旧 `.02a` の1〜3時間を加えた配分 | **3〜5時間** | 全既定 lake build。構成子表・埋め込み・自己/外側参照の局所照合 |
-| `.02b-values` 値の葉・既存計算 | V_Fun/Prim/Op/Raise/Con/LocRef/LocLazy/Map/Set/Bytes/Dict/Super の12、C_BuilderLet/BuilderOp/If/Lazy/Escape/Use/Meth の7。Admissible/PrimitiveAdmissible/MethodRowsAdmissible、LocalRef.HasKind/LocalSubstOk、ストアの移送条件を同時に置く。依存する構文としてCapture1/Closure1、Val.dependentLam/closure、Frame7/Cell6/LocTy4/State4/Event2（io/release）と旧68遷移/stepを先に置く。旧17/13形からValは19、Compは13 | V_Lam・V_List など注釈を持つ値の規則へ Ty.Declared を加え、型付けから Declared を取り出す正則性の補題を置く（RV-L00b.02a 中1。書ける形を狭めないことを群末レビューで確認）。3族に19場合追加し、累計V18/C12/Vs2/Each2=34。TypedFactsはV18を各入口で処理（追加12×2）。hide_context の新しい場所/ストア前提、subst/None版の局所参照を追随。既存Vs/Eachは各2を保持 | **0**。旧 `.02b` の2〜4時間をこの単位へ全配分。以降の単位をその枠に重ねない | **2〜4時間** | 全既定 lake build。場所を消すストアへ移せないことと重複Mapの型付けを照合 |
+| `.02b-values` 値の葉・既存計算 | V_Fun/Prim/Op/Raise/Con/LocRef/LocLazy/Map/Set/Bytes/Dict/Super の12、C_BuilderLet/BuilderOp/If/Lazy/Escape/Use/Meth の7。Admissible/PrimitiveAdmissible/MethodRowsAdmissible、LocalRef.HasKind/LocalSubstOk、ストアの移送条件を同時に置く。依存する構文としてCapture1/Closure1、Val.dependentLam/closure、Frame7/Cell6/LocTy4/State4/Event2（io/release）と旧68遷移/stepを先に置く。旧17/13形からValは19、Compは13。RV-L00b.02b-values中1のD29のkind表付き埋め込みの定義の改訂と旧導出の埋め込みの定理は**L20**、合成・表層の照合は**L70**が受け持つ。この単位では本番の埋め込みを改訂しない（第2.2・24節） | V_Lam・V_List など注釈を持つ値の規則へ Ty.Declared を加え、型付けから Declared を取り出す正則性の補題を置く（RV-L00b.02a 中1。書ける形を狭めないことを群末レビューで確認）。3族に19場合追加し、累計V18/C12/Vs2/Each2=34。TypedFactsはV18を各入口で処理（追加12×2）。hide_context の新しい場所/ストア前提、subst/None版の局所参照を追随。既存Vs/Eachは各2を保持 | **0**。旧 `.02b` の2〜4時間をこの単位へ全配分。以降の単位をその枠に重ねない | **2〜4時間** | 全既定 lake build。場所を消すストアへ移せないことと重複Mapの型付けを照合 |
 | `.02b-external` 外部と依存する実引数列 | Val.externalRef/externalHandle、Comp.externalCall。V_ExternalRef/ExternalHandle、C_External、TelArgs done/param の5導出。外部ID/有限表/三欄、E_ExternalApply/External/ExternalErr を無事象で置く。Valは21/Compは14、Stepは71 | 3族に5場合追加し累計39。TypedFactsはV20を各入口（追加2×2）。TelArgsのparamの下の bind/up と逐次具体化の可換性をここで閉じる。Rを持たないTelArgsの相互補題も後送しない | **L10から1時間、L20から1〜2時間**。外部型のWF/埋め込みの追随と依存列の相互置換・逐次具体化を分ける。外部応答の三モデルの充足はL60に残す | **2〜3時間** | 全既定 lake build。外部pureのラベルnone、external_typedのno-exit、名目IDを局所照合 |
 | `.02b-at` σ/At・保持値 | Val.pathBases/scopePattern/checkedAt/atError、Comp.issuePathBases/checkAt。V_PathBases/ScopePattern/Checked/CheckedRequest/CheckedAt/AtError の6、C_IssuePathBases/CheckAtの2、CheckedWitness2。先に置いたPathEnvのValid、準備の帰納的Required、Adequate、AtError/ResultShape、BuiltinArgs/AdequateResultとCoreAssumptionsの改訂、Event.pathBasesと5遷移。Valは25/Compは16、Event3/Step76になる | 3族に10場合追加し累計49。TypedFactsはV26を各入口（追加6×2）。Witness.requestのHasTypeVを相互に含める。snapshot/memberの値置換・WFと旧のabsolute保持値の対応、hideにおける保持要求を追随 | **L10から1〜2時間、L20から1〜2時間**。保持値のsort/WFとRequestを含む相互置換を分ける。意味の全σ健全性/IO対象と三モデルはL50のまま | **2〜4時間** | 全既定 lake build。別σのtoken、Requestのground/端点一致、At準備のindexを局所照合 |
 | `.02b-handlers` 腕/節/ハンドラ | C_Match/Handle/Handle_Fail/Resume/ResumeLの5、Arms3/Clauses2/Failure1、ImageOk3の計14導出。PatTy7/PatTys2/AltsTy、Inhabits群/Exhaustiveを腕の参照に必要な全形で作る。Arm1/Clause2の構文は既にある | 3族に14場合追加し累計63。V26のTypedFactsは増えず、この単位でCQ/Arms等の置換の公開署名をR0の拘束付きへ切り替え、C_ResumeLのR0拘束、`.subst_under_none`、SubstOk.hide/up、節の継続のcontVar/contLocと多相入力の全束縛を同時に閉じる。パターンの移動/置換の既存補助はPatTy7/PatTys2、腕の3場合の中でguard有無を処理 | **L10から2〜3時間、L20から1〜3時間**。既存のCovers/V_Sub等の追随と継続/節/腕の相互置換・upを分ける。全handle/resume/dropの状態保存はL20に残す | **3〜6時間** | 全既定 lake build。R0の反例を除く拘束、Noneの位置、guard/節の全Φを局所照合 |
-| `.02b-closures` 閉包/状態・依存呼出し | 新しい値/計算/状態の構文の追加は0。V_DependentLam/Closureの2、C_DependentApp、TelBody2/CaptureOk1/ClosureTy1/DependentClosureTy1の計8導出。ContTy10、CellOk6/StoreOk/StateTyE4/StateTyを、既にあるFrame7/Cell6/LocTy4/State4とStep76/stepへ接続 | 3族に8場合追加し累計71。TypedFactsはV28を各入口（追加2×2）。捕捉したΓ/Φの型付き像、TelBodyとdependentLam/closureの下のshift/subst/narrow/hide、依存βに必要な構文のbind/instantiateの可換性を同時に閉じる。全状態の保存の定理をここで完成とはしない | **L10から1〜4時間、L20から2時間**。型のWF/移動の追随と捕捉環境/依存βの構文の可換性を分ける。.14aの固定Ebでの代表、.14bのgroundからのΦの代表、L20の全状態保存を二重に移さない | **3〜6時間** | 全既定 lake build。旧68遷移の欠落なし、固定σ/Eb、StateTyがValidだけを要求することを照合 |
+| `.02b-closures` 閉包/状態・依存呼出し | 新しい値/計算/状態の構文の追加は0。V_DependentLam/Closureの2、C_DependentApp、TelBody2/CaptureOk1/ClosureTy1/DependentClosureTy1の計8導出。ContTy10、CellOk6/StoreOk/StateTyE4/StateTyを、既にあるFrame7/Cell6/LocTy4/State4とStep76/stepへ接続 | 3族に8場合追加し累計71。TypedFactsはV28を各入口（追加2×2）。捕捉したΓ/Φの型付き像、TelBodyとdependentLam/closureの下のshift/subst/narrow/hide、依存βに必要な構文のbind/instantiateの可換性を同時に閉じる。全状態の保存の定理をここで完成とはしない。D29が依存するC_DependentAppを置き、StoreOk等で場所の型のDeclaredを保持する条件を定める（RV-L00b.02b-values中2・軽4、第24節） | **L10から1〜4時間、L20から2時間**。型のWF/移動の追随と捕捉環境/依存βの構文の可換性を分ける。.14aの固定Ebでの代表、.14bのgroundからのΦの代表、L20の全状態保存を二重に移さない | **3〜6時間** | 全既定 lake build。旧68遷移の欠落なし、固定σ/Eb、StateTyがValidだけを要求することを照合 |
 | `.02c` 共有層と既定import | 新しい値/計算の構成子0。IntKind/IntegerValue/Intervalとmin/maxをRelease.Syntaxに依存しない共有数値層へ分離、ValueApprox4/ApproxValue3/FlowApprox1/EvalResult3とadapterを置く | 前段までの3族71/TypedFacts56を新たな場合として加算しない。旧Interval/Releaseの読者とembed/intKind.type/ofTypeの依存を追随し、全旧APIを残す | **0**。旧 `.02c` の1〜3時間を維持 | **1〜3時間** | 全既定 lake build。推移importを検査し、新旧全既定ターゲットと相対リンクを確認 |
 
 型の新しい構成子のうち Tel/scoped/opaque互換による LeQ の新3規則は `.02a` で同時に置く。fn/Tel の正規化後等号・F3全体は .11/L10/L40 のままであり、上表の12はその最終規則数を主張しない。型付き入力から ClosedObservable を得る一般証明、groundの新規則、δ/IO/externalの三モデルは上表の相互補題の件数へ混ぜない。
@@ -2056,3 +2062,168 @@ SortはLeanの予約語なので、本番では `«Sort»` と綴る。宣言名
 | 中1 / .02b-values | 注釈を持つ値の規則（V_Lam・V_List 等）に Ty.Declared を加え、型付けから Declared を取り出す正則性の補題を置いて Ctx.Narrows.here へ供給する | 同群の全相互補題と正則性の証明。未宣言の名前は表層で拒まれ、書ける形を狭めないことを群末レビューで確認する。今回は本番を変えない |
 | 中2 / .11 | data の変性を入れるとき、Ty.LeQ.dataCore_source と DataImages・data_observation・DeclarationImages.data・ContextMap.declaration を、型引数の等号から宣言の欄の具体化に要る関係へ弱める | ntys の一致・欄型の部分型等の必要な関係を具体化し、依存する観測・置換・narrowing を同じ変更で証明する |
 | 軽2 / .13 | 複数の構成子を持つ data の欄の参照で、受け手の構成子と ref.constructor の一致をどう扱うか、観測が none になる場合の意味を定める | .04 の閉じた評価との対応、表層が許す欄の参照との照合。今回の FieldRef.Declared だけで構成子の一致を保証したと扱わない |
+
+## 21. `.02b-values` の実装済みの補助契約と停止点
+
+2026-10-31。`.02b-values` は未完了である。第12.2節の完成予定 V18/C12/Vs2/Each2=34 に対し、現在は V12/C9/Vs2/Each2=25 である。主な定理が読む組込みの制約の条件について、[停止点の契約](02b-values-contract.md)に不足・Lean の境界・再開の案を示した。第12.2節の行全体を完了へ変えない。
+
+以下は起動依頼の委任に従って決め、本番へ残した補助契約である。主な定理、新しい公理、提供範囲、利用者の書ける形、精密な外部状態の変更は確定していない。
+
+| 論点 | 採った案と理由 | 捨てた案・限界 |
+|---|---|---|
+| 注釈の適格性 | `Ty.Annotation P C Γ a` に WF/Sorted/Declared の三欄をまとめる。V_Lam/V_List の既存前提は保ち、Declared を末尾に加える。追加した葉の注釈も同じ三性質で検査する | WF や sort から Declared まで推論する案は、未宣言の名目型を排除できない |
+| Declared の正則性 | `Ctx.Declared` は lookup の型をその番号を読む文脈で照合する。`HasTypeVQ.declared` と `HasTypeVsQ.declared` はその証拠を受け、`Ctx.Narrows.of_value` へ供給する | V_Var は任意の Γ から lookup するので、Γ の条件なしの正則性は主張しない。計算全体の正則性は未完了 |
+| ストア型 | LocTy.WF は閉じた型の WF、PreservesNormals は builder 以外、Extends は全場所を保存する。値の移動には source の StoreTy.WF と PreservesNormals、計算には source の StoreTy.WF と Extends を渡す | 場所を消す任意の行き先ストアへ移す旧の一般化は残さない。場所の型を開いた注釈として写す別案は今回扱わない |
+| hide と narrowing | hideBuilders の WF と通常の場所の保存を証明する。hide_context/subst/narrow と、像を引数の下へ移す補助も source の StoreTy.WF を受ける | 場所の閉じた型の不変を、WF なしで仮定する案は採らない |
+| 既存の障害例 | 空ストアからの移動 `weaken_empty` を使い、元の任意の store を量化する言明を保つ | 検査入力の言明に store の WF を追加して弱める案は採らない |
+| 許容の述語の値の上限 | Admissible/PrimitiveAdmissible/MethodRowsAdmissible の scope に `nv : Nat` を持たせ、呼出し元の Γ.length を渡せる形にする。Q/RowsIn は全ての入れ子と Tel へ再帰する | 型/行引数を nv=0 に限定して、値置換の追随を不要にする案は採らない。V_Fun/V_Prim/C_Meth への接続と kind の供給は未完了 |
+| 型/行の像の正規化 | `SubstEnv.normRows` と Ty/Tel/Eff の bind_normRows、`Ty.subst_norm_images_all` を置く。閉じた宣言に対する、値置換・移動と型/行の具体化の交換を証明する | 行引数を既に Canonical なものへ限定する案は、旧導出の範囲を狭めるので採らない |
+| V_Con の観測 | 宣言の lookup・ntys・具体化した全欄の型付け・結果の Annotation を要求し、型付き列の長さから snapshot の欄数を供給する | 任意の FieldRef の名前を信用する案は採らない。複数構成子の欄の観測の意味は、引き続き第20節の `.13` の義務である |
+| sat/admits の移送 | 元の B.sat/admits と型付きの像だけでは値移送後の成立が従わないことを補助 Lean で確かめた。新しい信頼条件又は制約の解釈の変更は、取りまとめの判断へ戻す | 各葉を移送に閉じた sat/admits に制限する案は、元の条件から供給できないため本番へ残さない。型引数を値非依存にする案も採らない |
+
+本番に追加した導出は V_Raise/Con/LocRef/LocLazy/Bytes/Super の6、C_If/Lazy/Escape/Use の4である。値の相互構文には Capture/Closure と Val.dependentLam/closure を追加した。Frame/Cell/State/Event、旧68遷移/step、残る6葉/3計算、局所参照の条件は未完了であり、実装済みとして数えない。独立レビューは未実施である。
+
+## 22. 案Aでの再開：sat/admits の独立した保存条件
+
+2026-10-31。plan の先頭の判断と再開依頼に従い案Aを採る。第21節と02b-values-contractの停止は当時の記録である。B.sat/PrimSig.admitsの型と、型付けの葉が要求する元の条件を保ち、保存則を組込みの信頼条件へ明記する。これはD28の意味の変更であり、主な定理が読む独立した条件の追加として取りまとめが設計者へ報告する。Leanの公理にはしない。案Bは三モデルがこれらの条件を満たすための実装方法に用い、型付けの一般の表の解釈を置き換えない。各葉に閉包性を要求する案Cは採らない。
+
+補助定理が受け取る束を `Builtins.ValueAssumptions P B` とし、`Builtins.CoreAssumptions P B` がこれを含む。CoreAssumptionsの既存の他の信頼条件は、予定どおり保持値/組込みの群で同じ構造体へ追加する。この群で四欄だけを置いたことを、全CoreAssumptionsの完成と数えない。
+
+`TypeAnnotations P C Γ ts := ∀ t ∈ ts, Ty.Annotation P C Γ t`。
+`TypedValueImages P B Ψ Q C Γ Δ Ξ ν := ∀ i a, Γ[i]? = some(some a) → Ordinary a → HasTypeVQ P B Ψ Q C Δ Ξ (ν i) (substTyValues ν a)`。これは既存SubstOkの通常値の像から導き、factsの移送とは分ける。
+
+```text
+Builtins.ValueAssumptions.sat_rename :
+  (∀ i j, i < j → ξ i < ξ j) →
+  Ty.Annotation P C Γ a → Ty.Annotation P C Δ (renameTy ξ a) →
+  B.sat C a p → B.sat C (renameTy ξ a) p
+Builtins.ValueAssumptions.admits_rename :
+  B.sig b = some sg → (∀ i j, i < j → ξ i < ξ j) →
+  TypeAnnotations P C Γ ts → TypeAnnotations P C Δ (ts.map (renameTy ξ)) →
+  sg.admits C ts → sg.admits C (ts.map (renameTy ξ))
+Builtins.ValueAssumptions.sat_values :
+  TypedValueImages P B Ψ Q C Γ Δ Ξ ν → Ty.Annotation P C Γ a →
+  B.sat C a p → B.sat C (substTyValues ν a) p
+Builtins.ValueAssumptions.admits_values :
+  B.sig b = some sg → TypedValueImages P B Ψ Q C Γ Δ Ξ ν →
+  TypeAnnotations P C Γ ts → sg.admits C ts →
+  sg.admits C (ts.map (substTyValues ν))
+```
+
+各欄の自由変数は表示した型から全称量化する。改名は厳密に増加するNatの写像に限る。shiftIndexの各移動がこれを満たすことを内部で証明する。source/targetの注釈の三性質は移動の構文の補題から、TypedValueImagesはSubstOkから供給する。Γ/Φの意味の充足を新しい外部前提として渡さない。
+
+| 義務 | 担当・時期 | この群の証拠と残ること |
+|---|---|---|
+| sat/admitsの四保存則の言明、CoreAssumptionsからの供給、3族への適用 | 今回の `.02b-values` | 上の四欄を本番に置き、型引数を値非依存に限定せずに使う。境界の表がValueAssumptionsを満たさないことを補助入力で検査する |
+| Model/ModelHttp/ModelTargetsのcarrierの骨格によるsat/admitsと、四保存則の充足 | L50の三モデルの本番への接続。外部の応答を含む最終の三モデルはL60/L70 | 群末の結果と後続の対応表へ未完のまま残す。旧のsat=Trueだけを新しい三モデルの完成と呼ばない |
+| D28と07-04の信頼条件の意味の変更の対照、設計者への報告 | `.15`と取りまとめ | 四欄の独立性と量化範囲を、δ/IOのAdequateの追加と分けて記録する |
+
+## 23. `.02b-values` の案Aでの再開後の補助契約（2026-10-31）
+
+第21節は停止時点の記録である。本節と第22節を再開後の契約とする。第12節の次の起動単位には進めない。主な定理への信頼条件の追加は、取りまとめが採った第22節の案Aだけである。
+
+### 23.1 型引数・行引数・宣言の依存列
+
+次の補助を採った。完全な型と本体は本番の `Admissible.lean`、`KindValues.lean`、`TelArguments.lean` に置く。
+
+```text
+TypeAnnotations P C Γ ts := ∀ t ∈ ts, Ty.Annotation P C Γ t
+RowAnnotations P C Γ es :=
+  ∀ e ∈ es, Ty.Annotation P C Γ (Ty.fn [] [] (Ty.base unit) e)
+
+TypeArgsKinded P C ts ks :=
+  ts.length = ks.length ∧ ∃ K : KindCtx,
+    K.length = C.length ∧
+    ∀ i a k, ts[i]? = some a → ks[i]? = some k → Ty.HasKind P K a k
+
+instantiatedTel t ts es := Tel.bind (typeEnvAt 0 ts es) t
+
+SignatureInstance P C Γ t ks ts es : Prop
+  source : Ty.WF 0 ks.length 0 (Ty.dependentFn t)
+  types : TypeAnnotations P C Γ ts
+  kinds : TypeArgsKinded P C ts ks
+  rows : RowAnnotations P C Γ es
+  result : Ty.Annotation P C Γ (Ty.dependentFn (instantiatedTel t ts es))
+
+Tel.arguments : Tel → List Val → Option (List Ty × Ty × Eff)
+```
+
+`Ty.Annotation` は WF・Sorted・Declared の三欄である。型引数は constructor kind の場合もあるため、Annotation 自体に value kind を固定しない。`SignatureInstance.kinds` は宣言の kind 列で引数を照合する。Def/PrimSig/MethSig は TParamDecl.kind、Op/Con/Impl の型パラメータは value を使い、メソッドの最後の型引数は ClassDecl.argumentKind を使う。呼出し側の K の長さも検査する。Program.WellTyped と宣言の全注釈からの供給は予定どおり `.03` で接続する。
+
+行引数の注釈は失敗型にある値参照を同じΓで照合する。上のfnによる表現は Canonical も含む。内部の行は正規化して判断に渡すため、利用者の行の記述を制限する条件ではない。nv=0へ限定する案、Declaredだけで値参照の適格性を代用する案、型引数をすべてvalueとする案は捨てた。
+
+Def.tel/PrimSig.tel/OpDecl.tel/MethSig.tel は格納済みの依存列を `signatureTel` で包む。V_Fun/Prim/Op の結果は dependentFn とする。V_Prim の許容は元の PrimSig.admits を検査し、範囲を具体化したTelに SignatureInstanceを適用する。このため第22節の admits_values/rename には元の `B.sig b = some sg` を渡せる。範囲の引数は FitsKind・WF・Canonical と、全Top又はB.admitsRを検査する。
+
+C_Meth は SignatureInstance に `ss ++ [τ]` を渡し、そのTelを `Tel.arguments` で先行する実引数から順に具体化する。成功が返す引数型列で HasTypeVsQ を検査し、結果のAnnotationも検査する。HasTypeTelArgsQをこの群に前倒しして場合数を増やす案と、依存する引数を旧の非依存な型列として検査する案は捨てた。`Tel.arguments_subst/map/shift`、`bind_open_exchange` はNoneを含む部分観測のまま交換を証明する。外部の群はこの純粋な交換を再利用できるが、TelArgsの二導出と相互補題は同群で追加する。
+
+### 23.2 局所参照とストア
+
+```text
+LocalCtx.extend x L := x :: L.map (Option.map (renameKind (shiftIndex 1 0)))
+localExtend 0 L := L
+localExtend (n+1) L := LocalCtx.extend none (localExtend n L)
+
+LocalRef.HasKind Ψ L (.bound i) b  ← L[i]? = some (some b)
+LocalRef.HasKind Ψ L (.loc l) b    ← Ψ l = some (LocTy.builder b)
+
+LocalCtx.Shift k c L L' := ∀ i b,
+  L[i]? = some (some b) →
+  L'[shiftIndex k c i]? = some (some (renameKind (shiftIndex k c) b))
+
+LocalSubstOk Ψ L ν ρ L' := ∀ i b,
+  L[i]? = some (some b) → LocalRef.HasKind Ψ L' (ρ i) (substKind ν b)
+```
+
+Noneを延ばす場合も、既存のリスト要素型の外側の値参照を移動する。以前の `replicate n none ++ L` だけの案はこの注釈を移さないため採らない。空のLでもNoneの位置を保持する。位置を詰めたり、通常値をbuilderの参照として使ったりしない。
+
+C_BuilderLet は内容型のAnnotation・kind、Noneを延ばした本体、外側の結果のDeclaredを検査する。C_BuilderOp は内容型のAnnotation・kind、LocalRef.HasKind、操作ごとの引数型列を検査する。通常の値の移動は PreservesNormals、計算の移動は Extends を要求する。ストアに格納した型・builderの要素型が閉じていることはStoreTy.WFから取り出す。場所を消す移送を認める案は捨てた。
+
+3族のV/Vs/Each/CQは第22節のValueAssumptionsを明示的に受け取る。CQ.shift_valuesはShiftMapの後にLocalCtx.Shift、CQ.substはρの後にLocalSubstOkを受け取る。CQ/None版も、既にNoneを延ばしたsourceとtargetの局所文脈でLocalSubstOkを検査する。値の三判断は任意のρを保つ。lam/lazyの捕捉の境界はL=[]であり、LocalSubstOk.emptyで供給する。
+
+型を変えないnarrowing・hide・空ストアからの弱化がValueAssumptionsを要求するのは、改名の補題（shift_valuesのk=0等）を再利用したための前提であり、意味上の必要ではない。これらの操作ではsat/admitsを検査する型自体は変わらない。主な定理ではCoreAssumptionsから供給できる。型を変えないContextMapの専用の補題へ分ければ外せる前提であり、今回の記録の修正では本番の補題の型を変えない（RV-L00b.02b-values軽1）。
+
+CQ/None版の親Rの拘束とSubstOkのImageOkへの切替は、第12節どおりhandlersの単位で一緒に行う。今回その未導入の継続の規則を追加したとは数えない。
+
+### 23.3 Declaredの正則性
+
+V_Lam/List/Sub/Refine/Raise/Con/LocRef/LocLazy/Map/Set/Dict/Superと、宣言を具体化するFun/Prim/OpにDeclaredの供給口を置いた。C_LetとC_BuilderLetにも外側の結果のDeclaredを明示する。shiftした本体の型からDeclaredを逆向きに取り出す補題に依存させる案は採らない。
+
+```text
+Ctx.Declared P C Γ := ∀ i a, Γ[i]? = some (some a) → Ty.Declared P C Γ a
+HasTypeVQ.declared : HasTypeVQ P B Ψ Q C Γ Φ v a → Ctx.Declared P C Γ → Ty.Declared P C Γ a
+HasTypeVsQ.declared : HasTypeVsQ P B Ψ Q C Γ Φ vs as → Ctx.Declared P C Γ → declaredTys P C Γ as
+HasTypeCQ.declared : HasTypeCQ P B Ψ Q C Γ Φ R m a e L → Ctx.Declared P C Γ → Ty.Declared P C Γ a
+```
+
+`Ctx.Narrows.of_value` は値の導出からnarrowingのhereに必要なDeclaredを供給する。Each.nilは要素型の宣言を保証しないため、Eachだけから要素型のDeclaredを取り出す偽の正則性は置かない。V_List等の注釈の入口がその条件を持つ。未宣言の名は既に表層で拒否され、型注釈の構文は変わらない。群末のレビューで、これらが利用者の書ける形を狭めないことを確認する。
+
+### 23.4 捕捉環境・既存の遷移・埋め込み
+
+Capture.envのNone・列の外はUnitを返し、WF/Referencesにより読めない位置を通常値の型付き像として使わない。extendは先頭へsomeの値を一つ加え、extendManyは宣言順にfoldlする。closeTy/Eff/Rはbindを使い、At版のNatは未束縛の内側の位置数である。closeValは値と注釈を閉じ、lam/dependentLamをclosureへ写す。既存のclosureは変更しない。
+
+旧lamはparamsとbodyだけを持ち、結果型と効果を実行時に推測できない。このため `lambdaShape ns ps = Ty.toTel ns ps unit empty` を実行のarityと引数注釈の形に使い、終端のunit/emptyを結果の静的契約として信頼しない。結果型と効果は後のClosureTy/DependentClosureTyの構文の証拠がbodyから検査する。実行時に型推論を追加する案と、旧lamに結果型・効果の欄を増やす案は採らない。closuresの単位のV_Closureは、旧lamのこの終端を任意の結果型の証拠として使わないことを確認する。
+
+Closure.viewは一歩で読む値だけをcloseValで閉じ、内側のcodeは元のCaptureとともに残す。Stepの68構成子はこのviewの等式と既存の各前提を検査する。E_Lamはclosureのarityを検査し、閉じた実引数を環境へ一度加える。let/guard/handler/thunkは捕捉時のCaptureを失わない。σは全68場合で固定し、Eventはio/releaseの2形とする。stepは外部oracleの引数を既に持つが、この群では外部の遷移を増やさない。
+
+Frame7/Cell6/LocTy4/State4、Val19/Comp13、Step68を維持した。旧Val17/Comp13/Arm1/Clause2/Frame7/Cell6/LocTy4/State4の埋め込み関数を置き、宣言のparamsは位置ごと、ret/effは引数数だけshiftして格納する。全域のembedStateを定義したことを、開いた旧状態が空環境で閉じる証明とは扱わない。旧型付け・全遷移の保存、step_sound、ContTy/CellOk/StateTyE等との接続はclosures/.14a/L20/L70の既定の義務に残す。
+
+
+## 24. RV-L00b.02b-values後の決定の記録と義務の対応
+
+2026-10-31。[群末の独立レビュー](../reviews/RV-L00b.02b-values.md)は条件付き可（重なし、中2・軽5）であった。plan「計画の変更と取りまとめへの確認点」の同日の先頭の判断に従い、以下を固定する。今回は文書だけを修正し、本番のLeanとplanは変更しない。表の後続の義務を実装・証明済みとは扱わない。
+
+### 中1の採った案と捨てた案
+
+案(ii)のうち、旧の宣言の埋め込みにkindの表を引数として与える案を採る。表は型クラスの引数ごと、関数・メソッドの型パラメータごとのkindを与え、D29の埋め込みの定理にその表に対する旧導出の型引数のkindの整合を明示する。理由: 旧の表層入力では既にkindとarityを検査するため、その条件を形式化の埋め込みにも与えれば、`implement Functor[Option]`等の高カインドを含む形を保てる。旧の表にないkindを注釈から推論する実装を復活させる必要もない。
+
+案(i)の「kindを推論できない旧の高カインド型の導出をD29の対象から外す」は、旧の定理の対象を狭めるため採らない。現行の全てvalueとする埋め込みを一般のD29の埋め込みとして使い続ける案も、構成子の型引数が新しいkindの照合を通らないため採らない。本番の定義の改訂は、D29の旧導出の埋め込みを証明するL20で行い、L70で合成・表層の照合を行う。第12.2節の起動単位の行にもこの担当を記した。
+
+| 所見 | 担当・時期 | 固定する義務・完了の確認 |
+|---|---|---|
+| 中1 / D29のkind表付き埋め込み | **L20**（定義の改訂・旧導出の埋め込みの定理）、**L70**（合成・表層の照合） | 第2.2節のkind表を引数に受け取る形へ宣言・プログラムの埋め込みを改訂し、旧導出の型引数がその表と外側の宣言から与えたkindに整合することを定理の前提に置く。表の長さ・宣言順・arityを照合し、高カインドの関数・メソッドの呼出しを含めて確認する。現行のvalue固定の補助の証明だけでは閉じない |
+| 中2 / D29の関数型の対応 | **.02b-closures**・**.11**を依存とし、**L20・L70**で埋め込みを証明・合成 | 旧のV_Fun/V_Prim/V_Op由来のfn型の位置（高階の引数・分岐の合流・C_App）の埋め込みは、.02b-closuresのC_DependentAppと、.11の`.fn`と`dependentFn (toTel …)`の正規化後の等号に依存する。この二つを置く前にD29を完了と数えない |
+| 軽1 / 型を変えない補題のValueAssumptions | **今回の第23.2節の注記** | narrowing・hide・空ストアからの弱化の前提は改名の補題の再利用によるもので、意味上の必要ではないと明記した。本番の前提を今回削除したとは扱わない |
+| 軽2 / 外側のkindの一貫性 | **.03** | Program.WellTypedとの接続で、外側の型パラメータのkindを宣言から与え、TypeArgsKindedのKをそのkind列に固定する。同じ導出の前提ごとにKを選び直す形だけで、開いた文脈のkindの一貫性を検査済みと数えない |
+| 軽3 / 三モデルの骨格とエフェクト | **L50** | 三モデルのsat/admitsに使う骨格は、エフェクトを読まないか、集合として読む。Fail列の順序・重複数を保存する骨格に依存させず、値置換後の正規化による整列・重複除去を含めて案Aの保存条件を証明する。集合として読む場合も、この正規化による変化を区別しないことを確認する |
+| 軽4 / 場所の型のDeclared | **.02b-closures**・**L20** | StoreOk等の型付き状態の不変条件に、場所の型のDeclaredを保持する条件を置く。E_RefNew/E_Lazyによる場所の生成と後続の保存から、V_LocRef/V_LocLazyのDeclaredを供給する。閉じたWFだけのStoreTy.WFからDeclaredが得られるとは扱わない |
+| 軽5 / 旧lamの遷移の埋め込み | **L20・L70** | 旧の遷移の埋め込みを言明するときに、対象のlamのNamesWFを前提に置く。名前と引数型の個数の一致からTel.arityと旧のparams.lengthの一致を供給する。型の付かない任意のlamについて同じarityを仮定しない |

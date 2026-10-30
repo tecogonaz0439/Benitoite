@@ -83,7 +83,7 @@ theorem upRen_identity (k : Nat) : upRen k id = id := by
 mutual
   theorem Val.rename_identity (v : Val) : v.rename id = v := by
     cases v <;> simp [Val.rename, upRen_identity,
-      Val.renameList_identity, Comp.rename_identity, Val.rename_identity]
+      Val.renameList_identity, Comp.rename_identity, Val.rename_identity, Tel.rawBind_id]
   theorem Val.renameList_identity (vs : List Val) : Val.renameList id vs = vs := by
     cases vs <;> simp [Val.renameList, Val.rename_identity, Val.renameList_identity]
   theorem Comp.rename_identity (m : Comp) : m.rename id = m := by
@@ -229,11 +229,34 @@ theorem upRen_shiftIndex (n k c : Nat) :
     · simp only [show i-n<c by omega, ↓reduceIte]; omega
     · simp only [show ¬ i-n<c by omega, ↓reduceIte]; omega
 
+theorem Ty.bind_data (d : DataName) (ts : List Ty) (θ : SubstEnv) :
+    (Ty.data d ts).bind θ = .data d (ts.map (Ty.bind θ)) := by
+  simp only [Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map, List.map_map]
+  rfl
+
+theorem Ty.subst_shiftV_closed {nt a} (hw : Ty.WF 0 nt 0 a) (ts : List Ty) (k c : Nat) :
+    (a.subst ts []).shiftV k c = a.subst (ts.map (Ty.shiftV k c)) [] := by
+  have hs := Ty.substV_subst_closed hw ts (fun i => some (.var (shiftIndex k c i)))
+  rw [bindDataArgs_eq_norm, Ty.subst_norm_images] at hs
+  have hi : (a.subst ts []).norm = a.subst ts [] := Ty.norm_idem _
+  have hn : ((a.subst ts []).shiftV k c).norm = (a.subst ts []).shiftV k c := by
+    rw [Ty.norm_shiftV, hi]
+  have he : Ty.rawSubstV (fun i => some (.var (shiftIndex k c i))) = Ty.shiftV k c := by
+    funext t
+    rw [← renameTy_eq_rawSubstV, ← Ty.shiftV_eq_renameTy]
+  simpa only [Ty.substV, Ty.bind, SubstEnv.valuesOnly, ← Ty.rawSubstV_eq_rawBind,
+    he, hn, substVTys_eq_map] using hs
+
+@[simp] theorem Val.toTermSlots_length (vs : List Val) : (Val.toTermSlots vs).length = vs.length := by
+  simp only [Val.toTermSlots_eq_map, List.length_map]
+
 /-- V_Lam の注釈と帰納仮定の結論を、同じ bind の型へそろえる入口。 -/
 theorem HasTypeVQ.subst_lam {P B store Q C Γ Φ Δ Ξ ns ps body r e σ ρ}
     (hw : Ty.WF 0 C.length Γ.length (.fn ns ps r e))
     (hs : Ty.Sorted Γ (.fn ns ps r e))
     (ht : Transport (valEnv σ) Γ Φ Δ Ξ)
+    (hd : Ty.Declared P C Γ (.fn ns ps r e))
+    (hdi : DeclarationImages P C Γ Δ (valEnv σ).values)
     (hb : HasTypeCQ P B (hideBuilders store) Q C
       (bindParams (hideConts Δ) (ps.map (substTyValues σ)))
       (liftMany ps.length Ξ) (some ((substTyValues σ r).shiftV ps.length 0))
@@ -243,13 +266,14 @@ theorem HasTypeVQ.subst_lam {P B store Q C Γ Φ Δ Ξ ns ps body r e σ ρ}
     HasTypeVQ P B store Q C Δ Ξ ((Val.lam ns ps body).subst σ ρ)
       ((Ty.fn ns ps r e).bind (valEnv σ)) := by
   rw [Ty.bind_fn]
-  refine .V_Lam ?_ ?_ ?_ ?_
+  refine .V_Lam ?_ ?_ ?_ ?_ ?_
   · simpa only [NamesWF, List.length_map] using hw.1
   · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using
       Ty.wf_bind_values hw hs.references (valEnv σ).values ht.imageWF
   · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using
       Ty.sorted_bind_values hs (valEnv σ).values ht.values ht.references
   · simpa only [List.length_map, substTyValues, substEffValues] using hb
+  · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using hd.bind_values hdi
 
 mutual
   theorem Ty.rawSubstV_embed (a : Benitoite.Release.Ty) (σ : ObservationEnv) :

@@ -356,7 +356,7 @@ O002/O004/O006/O009/O029/O040/O042/O159等は未完了のまま維持する。O0
 
 今回の `.02a` の本番の定義・補題と担当検査を終えた。`.02b` / `.02c` には進んでいない。群末の独立レビューと受け入れは未実施であり、取りまとめへ渡す。第18節までの停止の理由は、最新の候補(A)と補助契約の詳細化によってこの群で処理した。自己点検を独立レビュー済みとは記さない。
 
-B_WORK は `2c8b9cc5380dc2956e245cb95d7849ad98c4bcdf`、ブランチは指定値 `m014/l00b.02` である。git を呼んで検査・切替・作成・コミットしていない。今回開始時の ScopeSyntax / Context / Types / ValueRegularity を含む前の担当の未コミット差分を土台にした。[開始時のハッシュ](02a-r4-inputs-before.json)と[最終のハッシュ](02a-r4-inputs-final.json)を保存した。[本番の差分](02a-r4-production.patch)は**今回開始時の作業ツリーからの差分**であり、B_WORK に単独で適用する差分ではない。処理系・現行設計書・plan・docs/todo は編集していない。依存・固定ツールチェーンの更新も行っていない。
+B_WORK は `2c8b9cc5380dc2956e245cb95d7849ad98c4bcdf`、ブランチは指定値 `m014/l00b.02` である。git を呼んで検査・切替・作成・コミットしていない。今回開始時の ScopeSyntax / Context / Types / ValueRegularity を含む前の担当の未コミット差分を土台にした。[開始時のハッシュ](02a-r4-inputs-before.json)と[最終のハッシュ](02a-r4-inputs-final.json)を保存した。本番の差分（[大きさとSHA-256](large-records.md)）は**今回開始時の作業ツリーからの差分**であり、B_WORK に単独で適用する差分ではない。処理系・現行設計書・plan・docs/todo は編集していない。依存・固定ツールチェーンの更新も行っていない。
 
 ### 置いた構成子と閉じた定義・補題
 
@@ -518,3 +518,214 @@ O002/O004/O006/O009/O029/O040/O042/O159等は、この群の上の構文・相�
 - 一度目はビルドの結果が手元に残っていたため、0.26秒で終わった。最大常駐量が Lean の検査を表さないので、`formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消して、もう一度実行した。
 - 結果: 終了0（selected checks passed）。外側の時間は29.13秒、最大常駐量は966,131,712バイト（約0.90 GiB）。
 - 計画からのずれ: なし。大きな生の記録3件は、改造に大きさと SHA-256 だけを残した（[large-records.md](large-records.md)）。
+
+## `.02b-values`：値の葉と既存計算の停止点（2026-10-31）
+
+**群全体は未完了である。** 組込みの制約の値移送に、主な定理が読む信頼条件又は受理条件の変更が必要になるため、起動依頼の停止条件を適用した。[停止点の契約](02b-values-contract.md)と[レビュー依頼](../reviews/RV-L00b.02b-values-request.md)を残した。外部の群へは進んでいない。
+
+基準 B_WORK は `fb9afed8a9dc800ea558c07ccdc7c589b40118f8`、指定ブランチは `m014/l00b.02b-values` である。前の `.02a` の取り込みは依頼の `08f9ac72` を出どころとし、git で状態を照合・操作していない。処理系、現行設計書、plan.md は変更していない。
+
+### 閉じた定義と補題
+
+| 群 | 本番に置いたもの・閉じた範囲 |
+|---|---|
+| 値の相互構文 | Capture.mk/Closure.mk、Capture.values/empty、Closure.capture/code、Val.dependentLam/closure。Val は17→19。dependentLam の注釈と本体の各束縛を rename/subst/substTyAt へ追随し、既存の toTerm/恒等改名の証明を保った。閉包の型付け・状態保存は未実装 |
+| 追加した値の規則 | V_Raise、V_Con、V_LocRef、V_LocLazy、V_Bytes、V_Super の6。注釈の WF/Sorted/Declared、構成子宣言と欄数、場所の閉じた型、Byte の上限を接続した |
+| 追加した計算の規則 | C_If、C_Lazy、C_Escape、C_Use の4。Γ/Φ/R の移送、lazy の hide、通常資源と State の条件を保持した |
+| 宣言照合の正則性 | Ty.Annotation、Ctx.Declared、HasTypeVQ.declared、HasTypeVsQ.declared、Ctx.Narrows.of_value。V_Lam/V_List に Declared を加え、現在の全V12場合から、文脈の Declared を前提に型の Declared を取り出す。narrowing の here への供給をこの入口で閉じた |
+| ストアの移送 | LocTy.WF、LocTy.Normal、StoreTy.WF/PreservesNormals/Extends と反射・推移・射影、hide の WF/保存、StoreTy.empty。V/Vs/Each の shift_values は source の WF と通常の場所の保存、CQ は WF と全場所の保存を受ける |
+| 3族 | 移動・値の相互置換・narrowing の各族に、追加したV6/C4の全場合を加えた。hide_context、像の params/none、公開の subst/subst_under_none/narrow に StoreTy.WF を接続した。局所参照はまだ追加していない |
+| 型付きの観測と事実 | TypedFacts の observation/assume/assume_optional/data_observation/observation_declared/observation_references にV6の全場合を追加した。V_Con は宣言の owner/型引数/欄数を保つ。Vs の長さ・観測の参照・宣言照合の各入口も追加した |
+| 具体化と値注釈の交換 | Ty.bind_data、Ty.subst_shiftV_closed、SubstEnv.normRows、Ty/Tel/Eff.bind_normRows、normBindTys_normRows、Ty.subst_norm_typeImages/subst_norm_rowImages/subst_norm_images_all、Ty.substV_subst_closed_rows/subst_shiftV_closed_rows。型/行の像を先に正規化する場合も扱い、行引数をCanonicalに限定しない |
+| 許容の定義 | SatAll、QTy/QTel/QTys/QEff/Qsig、Ty/Tel/Eff.RowsIn、NoFail/RowTransport、Admissible/PrimitiveAdmissible/MethodRowsAdmissible。scope の nv を独立に持ち、値依存型引数を除かない。呼出しの葉への接続・移送・kind の供給は未完了 |
+
+新規本番ファイルは [Admissible](../../../formal/Benitoite/Release/Refinement/Admissible.lean)、[StoreTransport](../../../formal/Benitoite/Release/Refinement/StoreTransport.lean)、[TypingDeclared](../../../formal/Benitoite/Release/Refinement/TypingDeclared.lean)、[ValueInstantiation](../../../formal/Benitoite/Release/Refinement/ValueInstantiation.lean) の4である。既定 import に含めた。変更した本番Leanは15ファイル（新規4・既存11）、そのファイル群の行数は2,939→3,605、純増666行である。[全一覧とハッシュ](02b-values-source-changes.json)と[差分](02b-values-production.patch)を保存した。
+
+### RV-L00b.02a 中1と補助契約の判断
+
+V_Lam/V_List の Declared の追加と、値からの Declared の正則性は閉じた。変数は元から任意の Γ の lookup だけで型付けられるため、正則性は Ctx.Declared を前提にする。V_Var 自体へ新しい前提を加えていない。計算の全規則から結果型の Declared を取り出す一般の正則性は、群の残りとして未完了である。
+
+この追加で利用者の書ける形は狭まらない。未宣言の data 名・不適格な欄の参照は表層で拒まれ、ラムダの契約と空 List の要素型も、表層で解決済みの型を注釈にするからである。今回の Declared はそれらの宣言との照合をコアにも要求する。これは source とコアの全対応を証明済みという主張ではなく、群末の独立レビューとL70で確かめる根拠である。
+
+補助契約の採った案・理由・捨てた案は signatures 第21節へ記録した。主なものは、(1) Annotation の三欄、(2) 文脈を前提にした正則性、(3) source の StoreTy.WF と通常/全場所の二つの保存関係、(4) 空ストアからの弱化による既存の障害例の言明の維持、(5) nvを引数にする許容、(6) 行の像の正規化との交換、である。
+
+### 停止した理由と未採用の案
+
+本番の `B.sat` と `PrimSig.admits` は任意の型/型列の述語である。元の sat/admits と、型付きの値の像・sort/References/Declared/WF だけでは、値移送後の sat/admits を導けない。[境界入力](02b-values-constraint-boundary.lean)は、sat について、既存の型/行の置換・型文脈の延長・制約なしの条件を満たしながら、整形式の篩付き型を整数0で値置換すると鍵の条件が失われる表を示す。移動の場合も同じ不足を示した。これはその条件の独立性の証拠であり、全CoreAssumptionsと新StateTyを満たすモデルの主定理への反例とは区別する。
+
+葉ごとに sat/admits の移送に閉じた条件を要求する案も検討したが、元の sat/admits からその条件を供給できないため、本番から外した。利用者の書ける形と旧導出の範囲を狭めない証明を後送し、3族だけを完成させる処置は採っていない。型引数を値非依存に限る案も採っていない。
+
+推す案は、値置換と単調な改名についての sat/admits の保存を組込みの信頼条件に明記し、三モデルで証明する案Aである。主な定理が読む前提に独立した条件が加わるため、補助契約の委任だけでは確定しない。案Bは制約を判定する型の構造への写しを定義するものだが、こちらも制約の解釈の変更を要する。具体的な署名の要旨・対案・追加の能動時間と残りの工程は停止点の契約に記した。D28/F Q07 の既存の了承内としてAを扱えるかの判断も取りまとめへ返す。
+
+### 場合の数：予定と現在
+
+| 対象 | 群末の予定 | 現在・閉じた範囲 |
+|---|---:|---|
+| 値/計算の追加 | V12/C7 | V6/C4。残りV6/C3は未完了 |
+| 3族の累計 | V18/C12/Vs2/Each2=34、各族 | **V12/C9/Vs2/Each2=25、各族**。今回10場合を加えた。現存する導出の未処理場合は0だが、群末の34場合の完成ではない |
+| TypedFacts の予定の2入口 | observation18＋assume18=36 | observation12＋assume12=24。今回6×2=12場合追加 |
+| TypedFacts の追加の補助入口 | 全ての追加葉へ追随 | assume_optional12、data_observation12、observation_references はV12/Vs2/Each2=16、observation_declared も16。合計56。`.02a` の28から28増であり、予定の2入口とは分ける |
+| Declared の正則性 | 群の型付け全体 | V12/Vs2、Ctx.Narrows.of_value。CQ等の一般化は残り |
+| 構文 | Val19/Comp13/Capture1/Closure1、Frame等と旧68遷移 | Val19/Comp13/Arm1/Clause2/Capture1/Closure1。LocTy4は維持。Frame/Cell/State/Event、Step/step、旧値・状態の埋め込みは未完了 |
+
+実際の構成子数は [公理依存の入力](02b-values-axioms.lean)が Lean の metadata で照合した。派生した空ストアからの弱化や整数の系を、新しい根の場合として二重に足していない。L10/L20 から移す時間は第12.2節のこの単位では0であり、今回閉じた10場合や具体化の交換を後段で再計上しない。
+
+### 検査と証拠
+
+[再実行用の台本](02b-values-validate.py)で、次を実行した。[全結果](02b-values-validation.json)、[コマンド・終了・外側の時間](02b-values-commands.json)、[本番380入力のハッシュ](02b-values-inputs-final.json)、[補助入力のハッシュ](02b-values-artifact-inputs.json)を保存した。検査の前後で本番入力のハッシュは一致している。
+
+| 検査 | 結果・実行時間 | 根拠 |
+|---|---|---|
+| `cd formal && lake build` | 終了0、既定623 jobs、2.826秒。旧体系・並置体系・全既定ターゲットを含む | [出力](02b-values-build.log) |
+| 制約と場所の境界 | `lake env lean -M 12288 …/02b-values-constraint-boundary.lean`、終了0、0.530秒。satの不足、型付きの像、場所を空ストアへ消せないことを確認。17宣言の公理依存も照合 | [入力](02b-values-constraint-boundary.lean) / [出力](02b-values-constraint-boundary.log) |
+| 既存の参照・sort等の境界 | r4の入力を変更せず実行、終了0、0.638秒。None/cont・snapshot・self/外側・宣言照合等を保持 | [出力](02b-values-previous-boundary.log) |
+| 既存kindの境界 | r5の入力を変更せず実行、終了0、0.388秒。21宣言の公理依存も照合 | [出力](02b-values-kind-boundary.log) |
+| 新規/変更宣言の公理依存 | 既定importの全50モジュール・6,543宣言を検査、終了0、4.935秒。privateと生成宣言を含み、今回の新規/変更を包含。使用は propext/Quot.sound/Classical.choiceだけ。独自公理・sorryAxなし | [入力](02b-values-axioms.lean) / [集計](02b-values-axioms-summary.json) / [生の出力の大きさとSHA-256](large-records.md) |
+| 担当範囲・抜け道 | 本番Refinementに sorry/admit/axiom/native_decide/implemented_by/unsafe/partial の語の検出なし。設定と固定版は変更なし。Leanは既定・単独とも-M 12288 | [結果](02b-values-validation.json) |
+| 重複Mapの本番型付け | **未実施**。V_Mapを本番へ置く前に停止した。境界入力のmap_premisesを、本番V_Mapの重複受理の証拠と呼ばない | 再開後、この群の末で実施する |
+| work / RSS | workは起動依頼に従い未実行。RSSは未取得（計画上の非採取） | 取りまとめの担当を維持 |
+
+Leanは4.34.1、手元のmacOS arm64である。既存Intervalの警告は再表示されるが、最終のRefinementの警告は0件である。公理の依存の生の出力は669,661バイトで一時領域へ置き、改造には大きさとSHA-256だけを残した。
+
+途中は、相互定義の引数の追随、raw/normの像とmapの関数の等号、境界の帰納法の一般化の不足で局所検査が失敗した。各箇所を修正し、上の最終入力で再確認した。途中の失敗で Lean が回復用に生成した sorryAx の出力は成功の証拠にしていない。最終の境界と全宣言の公理依存には残っていない。
+
+既存の障害例は、構成子の引数の追随と、空ストアからの型付けを目的の任意のストアへ移す証明へ直した。元の言明と、不正なraw置換・継続の篩に対する反例を保った。Rustテストの追加・変更・削除は0件である。境界入力は本番の型付け・SubstOk・ストアの保存関係を使い、新しい本番の差し込み口は設けていない。制約の例は新構文の論理的な不足の照合であり、旧Rustの退行を再現したテストとは呼ばない。`test-audit` の作成時の関門をこの区別で適用した。
+
+### 残りと送り先
+
+| 残り | 送り先・条件 |
+|---|---|
+| sat/admitsの移送の信頼条件・制約の解釈の判断 | 取りまとめ・設計者。本停止点の契約のA/B、又は別の供給経路を確定する |
+| V_Fun/Prim/Op/Map/Set/Dict、C_BuilderLet/BuilderOp/Meth | **同じ `.02b-values` の再開**。新しい構成子に対応する3族/TypedFactsを含む。V_Map/V_Setに重複なしの条件を足さない |
+| primitive等のkind/Declared、許容の移送、計算の正則性、局所参照/None版 | 同じ群の再開。型引数の外側の値依存を除かず、LocalRef.HasKind/LocalSubstOk/LocalCtx.Shiftを閉じる |
+| Captureの操作、Frame/Cell/State/Event、旧68遷移/step、埋め込み | 同じ群の再開。今回置いたCapture/Closureの型だけを、実行や捕捉の保存の完成にしない |
+| 群末の34場合の検証・重複Map・結果更新・独立レビュー・work | 担当が本番と検証・記録を仕上げ、取りまとめが独立レビューとwork。受け入れは設計者 |
+| 外部の群 | `.02b-values` を完了しレビューするまでは起動しない。今回の未完了を外部群の内数へ移さない |
+| RV-.02a 中2/軽2 | 既定どおり `.11` のdata変性と `.13` の複数構成子の欄。今回の停止とは別の義務として維持 |
+
+O002/O004/O006/O009/O029/O040/O042/O159等のうち、この節に列挙した定義と現存する25場合だけを本番で閉じた。義務全体と群全体は未完了である。O016は今回の50モジュールの照合範囲だけで、L00b全体のA-Lの完了ではない。O169の共有層は `.02c` のままである。
+
+### 外側の時間と計画からのずれ
+
+開始は2026-10-31 06:02:14 JST、最終検査終了は06:32:41 JSTで、外側の時間は1,827.53秒（約30.46分）だった。文書・依頼の仕上げを含む受け渡し時点は `02b-values-delivery.json` に保存する。能動時間と待ちを分離していないため、能動時間の実測や較正の比には使わない。見込み2〜4時間の上端の2倍（8時間）による停止ではない。
+
+計画からのずれは、群を完成する前に、組込みの制約について新しい信頼条件又は制約の解釈の判断が必要になったことである。新しい前提を主な定理へ加える代わりに停止した。独立レビューと受け入れは未実施であり、この報告を群末の完了報告へ読み替えない。
+
+## `.02b-values`：案Aでの再開と群末（2026-10-31）
+
+**この起動単位の実装と群末の検査を終えた。** 群末の独立レビューは条件付き可（重なし、中2・軽5）であり、所見への対応は本節末「レビューの所見の対応」に記す。受け入れは未実施である。 取りまとめが採った案Aを [signatures 第22節・第23節](signatures.md) と本番に反映した。上の停止点の節・その入力と出力は当時の記録として保持する。今回の最終入力と検査は `02b-values-r2-*` を正とする。外部の群には進んでいない。
+
+基準 B_WORK は `fb9afed8a9dc800ea558c07ccdc7c589b40118f8`、指定ブランチは `m014/l00b.02b-values` である。gitの照合・操作、処理系・現行設計書・plan.mdの変更、作業末のworkは行っていない。
+
+### 完成した定義と補題
+
+| 群 | 今回の最終状態 |
+|---|---|
+| 値の葉12 | **V_Fun/Prim/Op/Raise/Con/LocRef/LocLazy/Map/Set/Bytes/Dict/Super** を本番に置いた。Fun/Prim/Opは依存列の具体化を保つ。Conは宣言の名目型・型引数のkind・欄数を照合する。Map/Setには重複を拒む前提を足していない |
+| 計算7 | **C_BuilderLet/BuilderOp/If/Lazy/Escape/Use/Meth**。builderの局所参照、Noneとkind内の値参照、lazyのhide、通常資源とState、メソッドの逐次具体化を接続した |
+| 案Aの四条件 | Builtins.ValueAssumptionsのsat_rename/admits_rename/sat_values/admits_values。型・型列のWF/Sorted/Declaredと型付きの値の像を明示する。CoreAssumptionsがこの証拠を含み、CoreAssumptions.valuesから補助定理へ供給する。Leanの公理ではない |
+| 許容とkind | TypeAnnotations/RowAnnotations/SignatureInstance/TypeArgsKinded、RangeExpr.FitsKind/WF/Canonical、Builtins.RangeAdmissible。Admissible/PrimitiveAdmissible/MethodRowsAdmissibleの移動・値置換・narrowingを各葉へ接続した。Ty.HasKindのrawSubstV/norm/bind_values/shift_valuesと型列のkind保存を閉じた |
+| 3族 | HasTypeVQ/VsQ/EachQ/CQの**shift_values/subst/narrow**の全34場合を閉じた。各入口へValueAssumptionsとStoreTy.WFを渡す。値は通常の場所を保存するストア、計算は全場所を保存するストアへ移動する。CQはLocalCtx.Shift/LocalSubstOkを受け取り、hide_contextとsubst_under_noneも追随した |
+| 宣言照合の正則性 | HasTypeVQ.declared、HasTypeVsQ.declared、**HasTypeCQ.declared**、Ctx.Declared、Ctx.Narrows.of_value。V_Lam/List等の注釈と、C_Let/BuilderLetの外側の結果にDeclaredを明示した |
+| TypedFacts | observation/assumeの両入口をV18へ追随。assume_optional/data_observation/observation_declared/observation_referencesも全葉と関係するVs/Eachへ追随した。V_Conの宣言・名目型・欄数、Mapの鍵列と値列の両方を保持する |
+| 値と具体化の交換 | Ty.substV_subst_closed_rows/subst_shiftV_closed_rowsと正規化した型・行の像の交換。instantiatedTel_shift/substとそのTelの等式、RowTransport.map、三つの許容のmapを閉じた |
+| メソッドの実引数 | Tel.argumentsが、先行する実引数で次の引数型・最終契約を逐次具体化する。opening_comp、Tel.bind_values_comp/bind_open_exchange、arguments_subst/map/shift/norm/normalを閉じた。部分観測のNoneを勝手に通常項へ変えない |
+| 局所参照 | LocalRef.HasKind、LocalCtx.Shift、LocalSubstOk、各extend/empty、HasKind.shift/lift/subst、renameKind/substKindの閉性と束縛の交換。Noneを増やす場合も既存のkindの値注釈をshiftする |
+| Captureの操作 | env/closeTy/Eff/R、各At版、closeTel、extend/extendNone/extendMany、closeVal/closeVals、Closure.pure/apply/view。lam/dependentLamを捕捉したclosureへ写し、既存closureは保持する |
+| 状態と実行 | **Frame7/Cell6/LocTy4/State4、Event2（io/release）、旧68遷移とstep**。Stepsはnoneを事象列へ加えない。σを固定し、外部oracleの公開引数を先に置いた。旧68構成子の名前・順序は完全一致 |
+| 旧の埋め込み | Val17/Comp13/Arm1/Clause2/Frame7/Cell6/LocTy4/State4、Def/ConDecl/OpDecl/MethSig/ClassDecl/ImplDecl/Program、Cont/StoreTy/Store/Outcome/Eventを写す関数。宣言のparamsの各位置、ret/effは必要な引数数だけshiftして依存列へ格納する。embedStore_setと長さの補題も閉じた |
+
+追加した公開の定義・補題277名を [一覧](02b-values-r2-public-api.md) に記した。これは手で宣言した名前の一覧であり、生成されたrecursor・射影等は含めない。新規本番Leanは17、変更した既存Leanは11、合計28ファイルである。[全変更とSHA-256](02b-values-r2-source-changes.json)と[全393入力のSHA-256](02b-values-r2-inputs-final.json)を保存した。既定importに全63モジュールを含む。
+
+### 場合数の予定と実際
+
+| 対象 | 予定 | 実際・照合 |
+|---|---:|---|
+| 追加する導出 | V12/C7 | **V12/C7、19場合**。停止時点のV6/C4から残りV6/C3を追加した |
+| 3族の累計 | 各V18/C12/Vs2/Each2=34 | **各34、3族合計102**。今回の起動全体で各族に19場合追加。Leanが各相互matchの全場合を検査し、構成子数もmetadataで照合した |
+| TypedFactsの予定の2入口 | observation18＋assume18 | **36**。今回の追加12葉×2=24場合を含む |
+| TypedFactsの補助入口 | 全葉 | assume_optional18、data_observation18、observation_references22、observation_declared22、**計80**。Vs/Eachの各2を含む。派生する整数の系やassumeの系を根の場合へ二重に足さない |
+| 正則性 | 値・値列・計算 | V18/Vs2/C12。Each.nilだけから要素型のDeclaredを取り出す言明は置かない |
+| 構文 | Val19/Comp13/Capture1/Closure1 | **予定どおり**。Frame7/Cell6/LocTy4/State4、BuilderContents3、LocalRef.HasKind2、Event2、Step68/Steps2も照合した |
+| 旧遷移の被覆 | 68 | **名前・順序とも68件一致**。[一覧と照合](02b-values-r2-step-coverage.json) |
+
+### 補助契約で採った判断
+
+採った案・理由・捨てた案の詳細は signatures第22・23節に残した。担当が確定したのは次の補助の細部であり、案Aを超える主な定理の前提・結論の変更、新しい公理、提供範囲・利用者の書ける形・精密な外部状態の変更は加えていない。
+
+1. sat/admitsの保存はValueAssumptionsの独立した四条件として受け取る。各葉を「移送に閉じた型だけ」の別の受理条件へ変える案と、型引数を値非依存に制限する案は採らない。
+2. AnnotationはWF/Sorted/Declaredを持ち、kindは宣言のkind列で別に照合する。高カインドの型引数をvalueに固定しない。行引数の失敗型の注釈も呼出し側のΓで照合する。
+3. 宣言の依存する型・行はTelとして具体化する。C_Methは純粋なTel.argumentsと既存Vs判断を使う。TelArgs二導出の追加は外部の群の予定を維持し、この群の数を増やさない。
+4. ストアの型は閉じたものを保つ。値にはPreservesNormals、計算にはExtendsを要求する。場所を全て消す移送は認めない。
+5. 局所文脈は通常の値と同じ番号を持ち、Noneを延ばしてもkind内の外側の参照をshiftする。任意のρで計算を移す案は捨て、LocalSubstOkを要求する。値の任意ρは保持した。
+6. C_Let/BuilderLetの結果のDeclaredは明示的に検査する。shift後の本体から逆向きに推論する補助へ依存させない。
+7. Closure.viewで一歩に必要な値を閉じ、内部のcodeはCaptureとともに残す。実引数は一度だけ環境へ追加する。旧lamの実行上のTelの終端unit/emptyは型の証拠として使わず、結果型・効果は後の捕捉した型付けの証拠が検査する。
+8. 旧の埋め込みは情報を保つ構文の変換として置く。開いた旧状態の閉性や、旧の全型付け・遷移の保存を証明済みとは扱わない。
+
+RV-L00b.02a中1について、値に加えて計算全体から結果型のDeclaredを取り出す正則性を閉じた。変数の型はCtx.Declaredから取り出し、narrowingのhereにはCtx.Narrows.of_valueで供給する。未宣言の名前・不適格な欄参照は表層で既に拒まれ、ラムダや空コレクションの注釈も解決済みの型である。今回の追加はその宣言照合をコアにも明示するもので、型注釈の構文を減らさない。この根拠と、捕捉境界・空のコレクション・高カインドの型引数を群末の独立レビューで確認する。表層との全対応の証明自体はL70の担当のままである。
+
+既存のraw置換・篩の継続に対する障害例は削除していない。一般の移送の補題を呼ぶ正のwitness7件は案AのValueAssumptionsを明示して呼出しに渡し、ストアの弱化にも同じ証拠を渡す。負の言明には案Aを勝手に足していない。
+
+### 群末の検査
+
+[再実行用台本](02b-values-r2-validate.py)、[全結果](02b-values-r2-validation.json)、[コマンド・終了・時間](02b-values-r2-commands.json)、[補助入力のハッシュ](02b-values-r2-artifact-inputs.json)を保存した。最終検査中の本番393入力は前後で一致した。
+
+| 検査 | 結果 | 証拠 |
+|---|---|---|
+| 旧体系・並置体系・全既定ターゲットのLeanビルド | `cd formal && lake build`、**終了0、636 jobs**。最終の入口はキャッシュ利用0.155秒であり、全636ファイルを新たに検査した時間とは呼ばない。途中の関係するビルドで変更した本番をコンパイルした | [出力](02b-values-r2-build.log) |
+| 案A・重複Map・場所・Captureの境界 | `lake env lean -M 12288 …/02b-values-r2-constraint-boundary.lean`、**終了0、0.648秒、30宣言**。Integerの外側の値を区別するsat/admitsの表はValueAssumptionsを満たさない。満たす表では依存鍵型のMapの置換が通る。重複Mapの本番型付け、場所を消すストアへの移送不能、let/関数適用の捕捉値と一度だけの追加を確認 | [入力](02b-values-r2-constraint-boundary.lean) / [出力](02b-values-r2-constraint-boundary.log) |
+| 既存の参照・sort等の境界 | r4の入力を変えず実行、**終了0、0.648秒**。None/cont・snapshot・self/外側・宣言照合等 | [出力](02b-values-r2-previous-boundary.log) |
+| 既存kindの境界 | r5の入力を変えず実行、**終了0、0.385秒、21宣言の公理依存も照合** | [出力](02b-values-r2-kind-boundary.log) |
+| 新規・変更宣言の公理依存（A-L） | 全63モジュール・**7,448宣言**を検査、**終了0、5.978秒**。非公開・生成宣言を含み、報告件数・一意な件数・モジュール別件数が一致。使用は **propext/Quot.sound/Classical.choiceだけ**。独自公理・sorryAxなし | [入力](02b-values-r2-axioms.lean) / [集計](02b-values-r2-axioms-summary.json) |
+| 構成子数・抜け道・設定 | 3族の34場合、Step68等をLean metadataで照合。本番Refinementにsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの語の検出なし。Lean4.34.1、既定・単独とも **-M 12288**。固定版・lake設定は変更なし | [結果](02b-values-r2-validation.json) |
+| work・RSS・Rust | workは依頼どおり取りまとめへ残した。RSSは未取得（計画上の非採取）。Rustのテストの追加・変更・削除は0件 | 同上 |
+
+大きな生の記録は、公理依存762,611バイトと差分206,185バイトを一時領域へ保存した。改造には [large-records.md](large-records.md) の大きさ・SHA-256だけを残し、100 KBを超える生の記録を追加していない。台本・文書に手元の絶対パスを記していない。
+
+途中の局所検査は、追加した前提の呼出し、相互定義の新しい場合、raw/normの交換、Captureを持つ状態への移植、補助入力の引数の不足で失敗した。修正後の最終入力で上の検査を全て通した。失敗時の回復用sorryAxを成功の証拠にはしていない。新しいRefinementの警告は残していない。既存Intervalの警告の再表示は維持した。
+
+### 残る義務と次の群への申し送り
+
+| 義務・残り | 担当・時期 | 今回の判定と根拠 |
+|---|---|---|
+| `.02b-values` の値12・計算7・3族34・TypedFacts・Declared・状態構文・旧68遷移/step・埋め込み | 今回の担当 | **実装と検査を完了**。本節とr2の入力・出力。今回受け持つ未完了を外部の群へ移していない |
+| 案Aの三モデルのsat/admitsの充足 | L50（三モデル）、L60/L70（接続）、`.15`（信頼条件の比較） | 条件の言明とCoreAssumptions.valuesによる供給を今回置いた。モデルの実装・充足は未実施。signatures第22節の義務の対応表に固定した。carrierの骨格から定め、篩と外側の値の番号を判定に使わない |
+| 外部の5導出とTelArgs | 次の `.02b-external` | 今回のVal19/Comp13/Step68へ追加する。Tel.argumentsとMethodArgumentsの交換を再利用できる。外部pureの無事象、external_typedのno-exit、名目ID、TelArgsの各束縛の3族は同群で閉じる |
+| At・保持値、handlers、closuresの判断と型付き状態 | それぞれ既定の後続単位 | CQ/NoneのR0拘束とImageOkへの切替はhandlers。旧lamのlambdaShapeの終端を静的契約として信頼しないこと、CaptureのΓ/Φとbodyの証拠、全状態・step_soundの接続はclosures/.14a/L20/L70。今回それらの完了を主張しない |
+| Program.WellTyped、文脈・全注釈のkind/WF/Declared | `.03` | SignatureInstance/TypeArgsKindedへの供給を接続する。V_Conの名目型・宣言の観測と今回の呼出しのkind照合は本番に残した |
+| RV-.02a 中2/軽2 | `.11` / `.13` | data変性、複数構成子の欄の既定の義務を維持 |
+| 独立レビュー・work・受け入れ | 取りまとめ・設計者 | [群末レビュー依頼](../reviews/RV-L00b.02b-values-request.md)を更新。独立レビューの判定と所見への対応は本節末に記す。work・受け入れは未実施 |
+
+O002/O004/O006/O009/O029/O040/O042/O159等は、この起動単位の定義・34場合・構文・遷移を本節の証拠で閉じた。O016は63モジュールの今回の照合範囲を閉じ、L00b全体のA-L完了とはしない。O010/O160の較正は通常の外側の時間を取りまとめへ返す。O169の共有層は`.02c`の担当を維持する。提供範囲と設定のCLI照合等、今回に割り当てられていない義務全体は閉鎖していない。
+
+### 外側の時間と計画との差
+
+再開の時刻は **2026-10-31 06:41:34 JST**、最終検査終了は **07:19:36 JST**、外側の時間は **2,282.83秒（約38.05分）** であった。前の停止までの作業と、再開を待った時間は混ぜない。文書・依頼の仕上げを含む今回の受け渡し時点は `02b-values-r2-delivery.json` に記す。能動時間と待ちを分離しておらず、能動時間の比を実測したとは扱わない。上端の2倍の8時間には到達していない。
+
+計画からの変更は、承認された案AのD28の意味の追加と、その証拠を3族に明示したこと、C_Methで既存Vsと純粋な逐次具体化を使った補助契約の選択である。主要な場合数・今回の提供範囲・後続の順序は変えていない。前回の停止点の残りを今回の内数で仕上げた。独立レビュー・取り込み・workは取りまとめの担当のままである。
+
+
+### レビューの所見の対応（RV-L00b.02b-values、2026-10-31）
+
+[群末の独立レビュー](../reviews/RV-L00b.02b-values.md)は**条件付き可（重なし、中2・軽5）**であった。取りまとめのplanの2026-10-31の先頭の判断に従い、以下の契約・担当・依存をsignaturesに固定した。今回の変更はsignatures.mdと本小節だけである。後続の定義の改訂や定理の証明を今回済ませたとは数えない。
+
+| 所見 | 直した箇所 | 対応・残る義務 |
+|---|---|---|
+| 中1 | signatures **第2.2節・第12.2節の.02b-valuesの行・第24節**。現行の入口と将来の契約の区別は第10.1節にも注記 | 案(ii)のkind表を引数に与える案を採り、D29の定理に旧導出の型引数のkindの整合を前提として置く。宣言・プログラムの埋め込みの定義の改訂と旧導出の埋め込みの定理はL20、合成・表層の照合はL70。案(i)は旧の定理の対象を狭めるため採らない。現行Leanのvalue固定の補助は今回変更していない |
+| 中2 | signatures **第24節の義務の対応表**、第12.2節の.02b-closuresの行 | D29の旧のV_Fun/V_Prim/V_Op由来のfn型の位置の埋め込みが、.02b-closuresのC_DependentAppと.11のfn/dependentFnの正規化後の等号に依存することを一行に固定した |
+| 軽1 | signatures **第23.2節**、第24節の対応表 | 型を変えないnarrowing・hide・空ストアからの弱化のValueAssumptionsは、改名の補題の再利用による前提であり、意味上の必要ではないと注記した |
+| 軽2 | signatures **第24節の義務の対応表** | .03で外側の型パラメータのkindを宣言から与え、TypeArgsKindedのKをそれに固定する。開いた文脈のkindの一貫性はこの接続で確認する |
+| 軽3 | signatures **第24節の義務の対応表** | L50の三モデルの骨格はエフェクトを読まないか、集合として読む。Fail列の正規化による整列・重複除去を含めて案Aの保存を証明する |
+| 軽4 | signatures **第24節の義務の対応表**、第12.2節の.02b-closuresの行 | .02b-closuresとL20で、場所の型のDeclaredをStoreOk等の不変条件として保持し、生成・保存からV_LocRef/V_LocLazyへ供給する |
+| 軽5 | signatures **第24節の義務の対応表** | L20・L70で旧の遷移の埋め込みにNamesWFを前提として置き、旧のparams.lengthとTel.arityの一致を供給する |
+
+本番のLean・処理系・現行設計書・plan.mdを変更せず、gitの操作と次の群の実装も行っていない。今回は文書の契約・担当・依存の照合と相対リンクの検査を行い、既定ビルドと公理依存の検査は再実行していない。前節のr2のビルド・公理依存の記録はその本番入力の結果として保持する。この記録の修正を、後続の義務の実装完了や再レビューによる受け入れと同一には扱わない。
+
+文書の照合では、変更禁止範囲の4,776ファイルが今回の編集前と一致し、前回のr2の本番393入力も全て同じSHA-256であることを確認した。二文書の相対リンクは全件解決し、signaturesの対応表と本小節に中2件・軽5件の計7行がそろっている。最初の時刻取得07:42:41 JSTからこの照合の時刻07:45:51 JSTまでの外側の時間は約3.17分であり、能動時間と待ちを分離した値ではない。
+
+## .02b-values の作業末の work（取りまとめ、2026-10-31）
+
+- 基準: `fb9afed8a9dc800ea558c07ccdc7c589b40118f8`。作業ツリーは案 A での再開を終えた状態。その後の RV-L00b.02b-values の所見の対応は文書だけで、本番の Lean は変えていない。
+- コマンド: `/usr/bin/time -l scripts/check.sh --level work --base fb9afed8a9dc800ea558c07ccdc7c589b40118f8`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。最大常駐量が Lean の検査を表すように、先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
+- 結果: 終了0（selected checks passed）。外側の時間は36.72秒、最大常駐量は966,918,144バイト（約0.90 GiB）。
+- 計画からのずれ: 起動単位の表の見込みどおりの範囲を、停止と再開（案 A）を挟んで閉じた。

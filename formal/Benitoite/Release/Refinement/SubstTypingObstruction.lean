@@ -13,9 +13,11 @@ private theorem lam_annotations {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) :
     ∀ ns ps body, v = .lam ns ps body → Ty.WFList 0 C.length Γ.length ps := by
   match h with
-  | .V_Var _ _ | .V_Const _ | .V_List _ _ _ =>
+  | .V_Var _ _ | .V_Const _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
+  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+  | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ =>
       intro ns ps body he; cases he
-  | .V_Lam _ hw _ _ =>
+  | .V_Lam _ hw _ _ _ =>
       intro ns ps body he; cases he; exact hw.2.1
   | .V_Sub hv _ _ _ _ => exact lam_annotations hv
   | .V_Refine hv _ _ _ _ _ _ _ => exact lam_annotations hv
@@ -30,7 +32,8 @@ private theorem return_value {P B store Q C Γ Φ R m a ε Δl}
     ∀ v, m = .ret v → ∃ b, HasTypeVQ P B store Q C Γ Φ v b := by
   match h with
   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
-  | .C_Let _ _ | .C_App _ _ => intro v he; cases he
+  | .C_BuilderLet _ _ _ _ | .C_BuilderOp _ _ _ _ | .C_Meth _ _ _ _ _ _ _ _ _ _
+  | .C_Let _ _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
   | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
 
 /-- return の型付けは、部分型・効果拡大の下にも値の導出を含む。 -/
@@ -163,9 +166,12 @@ theorem lambda_typed {P B store Q} :
     HasTypeVQ P B store Q [] Γ Φ sourceVal valueTy := by
   change HasTypeVQ P B store Q [] Γ Φ
     (.lam ["f"] [sourceTy] (.ret (.const .unit))) (.fn ["f"] [sourceTy] (.base .unit) Eff.empty)
-  refine .V_Lam ?_ value_wf value_sorted ?_
+  refine .V_Lam ?_ value_wf value_sorted ?_ ?_
   · exact ⟨rfl, by simp⟩
   · exact .C_Return (.V_Const trivial)
+  · simp [sourceTy, latent, failure, refinedInt, predBind,
+      termBind, termBind?, Ty.Declared, declaredTys, declaredEff, Pred.Declared, Term.Declared,
+      Ctx.declarationSelf, Ctx.extend, Ctx.Readable, Γ, Ty.shiftV, Ordinary, Eff.empty]
 
 theorem result_declared {P} : Ty.Declared P [] Γ resultTy := by
   simp [resultTy, valueTy, sourceTy, latent, failure, refinedInt, path, Pred.lift, predBind,
@@ -212,14 +218,14 @@ theorem conditions_image : ∀ p ∈ Φ, Entails (Δ.facts ++ Φ) (predBind (val
   exact transport.facts p (List.mem_append_right _ hp)
 
 /-- 修正後は、型付き像から導いた facts を V_Sub の置換で使える。 -/
-theorem substituted_lambda_typed {P B store Q} :
+theorem substituted_lambda_typed {P B store Q} (hA : Builtins.ValueAssumptions P B) :
     HasTypeVQ P B store Q [] Δ Φ (sourceVal.subst σ) (substTyValues σ resultTy) :=
-  source_v_sub.subst subst_ok conditions_image
+  ((source_v_sub (store := StoreTy.empty)).subst hA StoreTy.WF.empty subst_ok conditions_image).weaken_empty hA
 
-theorem substituted_return_typed {P B store Q Δl} {R : Option Ty} :
+theorem substituted_return_typed {P B store Q Δl} {R : Option Ty} (hA : Builtins.ValueAssumptions P B) :
     HasTypeCQ P B store Q [] Δ Φ (R.map (substTyValues σ))
       ((Comp.ret sourceVal).subst σ) (substTyValues σ resultTy) (substEffValues σ Eff.empty) Δl :=
-  source_c_sub.subst subst_ok conditions_image
+  ((source_c_sub (store := StoreTy.empty) (Δl := [])).subst hA StoreTy.WF.empty subst_ok conditions_image LocalRef.bound (.empty _ _ _ _)).weaken_empty hA
 
 theorem normalized_image_canonical : (substEffValues σ latent).Canonical := Eff.norm_idem _
 
@@ -257,28 +263,28 @@ theorem swap_not_canonical : ¬ (Eff.rawBind (valEnv swapσ) latent).Canonical :
   simp [Eff.fails, failure] at ht
 
 /-- 空でない facts と篩付き像を、None の専用入口でも使う。 -/
-theorem substituted_lambda_under_none {P B store Q} :
+theorem substituted_lambda_under_none {P B store Q} (hA : Builtins.ValueAssumptions P B) :
     HasTypeVQ P B store Q [] Δ.extendNone (Φ.map Pred.lift)
       ((sourceVal.rename (fun i => i+1)).subst (upSubst 1 σ) (upLocalSubst 1 LocalRef.bound))
       (substTyValues (upSubst 1 σ) (resultTy.shiftV 1 0)) := by
-  have hs := (source_v_sub (P := P) (B := B) (store := store) (Q := Q)).shift_values
-    (store' := store) (ShiftMap.outerNone Γ)
+  have hs := (source_v_sub (P := P) (B := B) (store := StoreTy.empty) (Q := Q)).shift_values
+    (store' := StoreTy.empty) hA StoreTy.WF.empty (.refl _) (ShiftMap.outerNone Γ)
     (Ξ := Φ.map Pred.lift) (fun p hp => by
       change Entails _ p.lift
       exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
-  simpa only [shiftIndex_add] using hs.subst_under_none subst_ok conditions_image
+  simpa only [shiftIndex_add] using (hs.subst_under_none hA StoreTy.WF.empty subst_ok conditions_image).weaken_empty hA
 
-theorem substituted_return_under_none {P B store Q} :
+theorem substituted_return_under_none {P B store Q} (hA : Builtins.ValueAssumptions P B) :
     HasTypeCQ P B store Q [] Δ.extendNone (Φ.map Pred.lift) none
       ((Comp.ret (sourceVal.rename (fun i => i+1))).subst (upSubst 1 σ) (upLocalSubst 1 LocalRef.bound))
       (substTyValues (upSubst 1 σ) (resultTy.shiftV 1 0)) Eff.empty [] := by
   simpa only [substEffValues_empty, shiftIndex_add, Option.map_none] using
-    (HasTypeCQ.C_Return (P := P) (B := B) (R := none) (Δ := [])
-      ((source_v_sub (P := P) (B := B) (store := store) (Q := Q)).shift_values (store' := store) (ShiftMap.outerNone Γ)
+    ((HasTypeCQ.C_Return (P := P) (B := B) (R := none) (Δ := [])
+      ((source_v_sub (P := P) (B := B) (store := StoreTy.empty) (Q := Q)).shift_values (store' := StoreTy.empty) hA StoreTy.WF.empty (.refl _) (ShiftMap.outerNone Γ)
         (Ξ := Φ.map Pred.lift) (fun p hp => by
           change Entails _ p.lift
           exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩))))).subst_under_none
-          subst_ok conditions_image
+          hA StoreTy.WF.empty subst_ok conditions_image LocalRef.bound (.empty _ _ _ _)).weaken_empty hA
 
 end RawValueSubstCollision
 
@@ -326,27 +332,27 @@ theorem result_declared {P} : Ty.Declared P [] source result := by
 theorem source_value {P B store Q} : HasTypeVQ P B store Q [] source (Φ.map Pred.lift) (.var 0) result :=
   .V_Sub (.V_Var rfl (by intro b t e he; cases he)) source_le result_wf result_sorted result_declared
 
-theorem narrowed_value {P B store Q} : HasTypeVQ P B store Q [] target (Φ.map Pred.lift) (.var 0) result :=
-  source_value.narrow narrows
+theorem narrowed_value {P B store Q} (hA : Builtins.ValueAssumptions P B) : HasTypeVQ P B store Q [] target (Φ.map Pred.lift) (.var 0) result :=
+  ((source_value (store := StoreTy.empty)).narrow hA StoreTy.WF.empty narrows).weaken_empty hA
 
 theorem source_comp {P B store Q} :
     HasTypeCQ P B store Q [] source (Φ.map Pred.lift) none (.ret (.var 0)) result Eff.empty [] :=
   .C_Sub (.C_Return (.V_Var rfl (by intro b t e he; cases he))) source_le
     (Eff.Covers.refl _ _ _) result_wf result_sorted result_declared
 
-theorem narrowed_comp {P B store Q} :
+theorem narrowed_comp {P B store Q} (hA : Builtins.ValueAssumptions P B) :
     HasTypeCQ P B store Q [] target (Φ.map Pred.lift) none (.ret (.var 0)) result Eff.empty [] :=
-  source_comp.narrow narrows
+  ((source_comp (store := StoreTy.empty)).narrow hA StoreTy.WF.empty narrows).weaken_empty hA
 
-theorem narrowed_under_none {P B store Q} :
+theorem narrowed_under_none {P B store Q} (hA : Builtins.ValueAssumptions P B) :
     HasTypeVQ P B store Q [] target.extendNone ((Φ.map Pred.lift).map Pred.lift)
       (.var 1) (result.shiftV 1 0) := by
-  have hs := (source_value (P := P) (B := B) (store := store) (Q := Q)).shift_values
-    (store' := store) (ShiftMap.outerNone source)
+  have hs := (source_value (P := P) (B := B) (store := StoreTy.empty) (Q := Q)).shift_values
+    (store' := StoreTy.empty) hA StoreTy.WF.empty (.refl _) (ShiftMap.outerNone source)
     (Ξ := (Φ.map Pred.lift).map Pred.lift) (fun p hp => by
       change Entails _ p.lift
       exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
-  exact hs.narrow (.underNone narrows)
+  exact (hs.narrow hA StoreTy.WF.empty (.underNone narrows)).weaken_empty hA
 
 end NarrowingExample
 end Benitoite.Release.Refinement

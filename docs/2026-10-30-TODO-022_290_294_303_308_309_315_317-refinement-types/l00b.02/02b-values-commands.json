@@ -1,0 +1,124 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T06:32:32.108661+09:00",
+    "exit": 0,
+    "elapsed_seconds": 2.825686166,
+    "output": {
+      "name": "02b-values-build.log",
+      "bytes": 24689,
+      "sha256": "a06761be1047743e20b89e67b3afd0e24d52723153e6b1a20c6d8cfb446d7b22",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "constraint-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-values-constraint-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T06:32:34.934878+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.52957425,
+    "output": {
+      "name": "02b-values-constraint-boundary.log",
+      "bytes": 2097,
+      "sha256": "73e3840008d9dd62ff0ad63ebe8ee52a762d99784b20827fc7ed651f7e813ec0",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "previous-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r4-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T06:32:35.465285+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.6380649169999995,
+    "output": {
+      "name": "02b-values-previous-boundary.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "kind-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r5-kind-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T06:32:36.103886+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.38842024999999936,
+    "output": {
+      "name": "02b-values-kind-boundary.log",
+      "bytes": 2671,
+      "sha256": "1b09da9cea78456861a8874912ac4835a2006b502e04518ec63087a643f56e1a",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-values-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T06:32:36.492900+09:00",
+    "exit": 0,
+    "elapsed_seconds": 4.935069374999999,
+    "output": {
+      "name": "02b-values-axioms.log",
+      "bytes": 669661,
+      "sha256": "5d2a88dc9941c59a7a6e2d7d54f92fbd3808d1a8bff873149fa9cf4d04e08a17",
+      "storage": "<tmp>"
+    }
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T06:32:41.436858+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07643145800000006,
+    "output": {
+      "name": "02b-values-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    }
+  }
+]
