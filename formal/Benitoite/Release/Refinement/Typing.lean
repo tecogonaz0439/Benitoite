@@ -1,24 +1,30 @@
 import Benitoite.Release.Refinement.Subst
 import Benitoite.Release.Refinement.Le
 
+/-!
+# 有限の文脈と経路条件を持つ値・計算の型付け
+
+捕捉時の文脈とパラメータの束縛は、置換の補題と同じ操作で構成する。
+-/
+
 namespace Benitoite.Release.Refinement
 
-private def hideConts (Γ : Ctx) : Ctx := Γ.map fun a => match a with
+def hideConts (Γ : Ctx) : Ctx := Γ.map fun a => match a with
   | some (.cont _ _ _) => none
   | a => a
 
-private def hideBuilders (Ψ : StoreTy) : StoreTy := fun l => match Ψ l with
+def hideBuilders (Ψ : StoreTy) : StoreTy := fun l => match Ψ l with
   | some (.builder _) => none
   | a => a
 
-private def bindParams (Γ : Ctx) (ps : List Ty) : Ctx :=
+def bindParams (Γ : Ctx) (ps : List Ty) : Ctx :=
   (ps.reverse.map (fun a => some (a.shiftV ps.length 0))) ++
     Γ.map (Option.map (Ty.shiftV ps.length 0))
 
-private def liftMany (n : Nat) (Φ : List Pred) : List Pred :=
+def liftMany (n : Nat) (Φ : List Pred) : List Pred :=
   Nat.rec Φ (fun _ Ξ => Ξ.map Pred.lift) n
 
-private def localExtend (n : Nat) : LocalCtx → LocalCtx
+def localExtend (n : Nat) : LocalCtx → LocalCtx
   | [] => []
   | x :: xs => List.replicate n none ++ (x :: xs)
 

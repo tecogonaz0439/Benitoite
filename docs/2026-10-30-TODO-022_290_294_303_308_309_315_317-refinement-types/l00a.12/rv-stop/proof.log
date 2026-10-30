@@ -1,0 +1,1047 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Benitoite.Release.Refinement.Ty.canonical_of_wf {nr nt nv : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.WF nr nt nv a) : a.Canonical
+'Benitoite.Release.Refinement.Ty.canonical_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.normTys_of_wf {nr nt nv : Nat} {as : List Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.WFList nr nt nv as) : Benitoite.Release.Refinement.Ty.normTys as = as
+'Benitoite.Release.Refinement.Ty.normTys_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.normTys_of_wf {nr nt nv : Nat} {e : Benitoite.Release.Refinement.Eff}
+  (h : Benitoite.Release.Refinement.Eff.WF nr nt nv e) : Benitoite.Release.Refinement.Ty.normTys e.fails = e.fails
+'Benitoite.Release.Refinement.Eff.normTys_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.termWF_of_sorted {Γ : Benitoite.Release.Refinement.Ctx}
+  {t : Benitoite.Release.Refinement.Term} (h : Benitoite.Release.Refinement.termSorted Γ t) :
+  Benitoite.Release.Refinement.termWF (List.length Γ) t
+'Benitoite.Release.Refinement.termWF_of_sorted' depends on axioms: [propext]
+Benitoite.Release.Refinement.Pred.wf_of_sorted {Γ : Benitoite.Release.Refinement.Ctx}
+  {a : Benitoite.Release.Refinement.Ty} {p : Benitoite.Release.Refinement.Pred}
+  (h : Benitoite.Release.Refinement.Pred.Sorted Γ (some a) p) :
+  Benitoite.Release.Refinement.Pred.WF (List.length Γ + 1) p
+'Benitoite.Release.Refinement.Pred.wf_of_sorted' depends on axioms: [propext]
+Benitoite.Release.Refinement.Ty.integerCarrier_rawSubstV (a : Benitoite.Release.Refinement.Ty)
+  (σ : Nat → Benitoite.Release.Refinement.Term) :
+  (Benitoite.Release.Refinement.Ty.rawSubstV σ a).IntegerCarrier ↔ a.IntegerCarrier
+'Benitoite.Release.Refinement.Ty.integerCarrier_rawSubstV' depends on axioms: [propext]
+Benitoite.Release.Refinement.Ty.sorted_rawSubstV {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.Ty.Sorted Γ a)
+  (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.Ty.Sorted Δ (Benitoite.Release.Refinement.Ty.rawSubstV σ a)
+'Benitoite.Release.Refinement.Ty.sorted_rawSubstV' depends on axioms: [propext]
+Benitoite.Release.Refinement.sortedTys_rawSubstV {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {as : List Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.sortedTys Γ as)
+  (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.sortedTys Δ (Benitoite.Release.Refinement.substVTys σ as)
+'Benitoite.Release.Refinement.sortedTys_rawSubstV' depends on axioms: [propext]
+Benitoite.Release.Refinement.sortedEff_rawSubstV {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {e : Benitoite.Release.Refinement.Eff} (h : Benitoite.Release.Refinement.sortedEff Γ e)
+  (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.sortedEff Δ (Benitoite.Release.Refinement.Eff.rawSubstV σ e)
+'Benitoite.Release.Refinement.sortedEff_rawSubstV' depends on axioms: [propext]
+Benitoite.Release.Refinement.Ty.sorted_norm {Γ : Benitoite.Release.Refinement.Ctx} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.Sorted Γ a) : Benitoite.Release.Refinement.Ty.Sorted Γ a.norm
+'Benitoite.Release.Refinement.Ty.sorted_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.sortedTys_norm {Γ : Benitoite.Release.Refinement.Ctx}
+  {as : List Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.sortedTys Γ as) :
+  Benitoite.Release.Refinement.sortedTys Γ (Benitoite.Release.Refinement.Ty.normTys as)
+'Benitoite.Release.Refinement.sortedTys_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.sortedEff_norm {Γ : Benitoite.Release.Refinement.Ctx}
+  {e : Benitoite.Release.Refinement.Eff} (h : Benitoite.Release.Refinement.sortedEff Γ e) :
+  Benitoite.Release.Refinement.sortedEff Γ e.norm
+'Benitoite.Release.Refinement.sortedEff_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.wf_bind_values {nr nt : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.Ty.WF nr nt (List.length Γ) a)
+  (ha : Benitoite.Release.Refinement.Ty.Sorted Γ a) (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.Ty.WF nr nt (List.length Δ)
+    (Benitoite.Release.Refinement.Ty.bind (Benitoite.Release.Refinement.SubstEnv.valuesOnly σ) a)
+'Benitoite.Release.Refinement.Ty.wf_bind_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.sorted_bind_values {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {a : Benitoite.Release.Refinement.Ty} (ha : Benitoite.Release.Refinement.Ty.Sorted Γ a)
+  (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.Ty.Sorted Δ
+    (Benitoite.Release.Refinement.Ty.bind (Benitoite.Release.Refinement.SubstEnv.valuesOnly σ) a)
+'Benitoite.Release.Refinement.Ty.sorted_bind_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.wf_bind_values {nr nt : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {e : Benitoite.Release.Refinement.Eff} (h : Benitoite.Release.Refinement.Eff.WF nr nt (List.length Γ) e)
+  (ha : Benitoite.Release.Refinement.sortedEff Γ e) (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.Eff.WF nr nt (List.length Δ)
+    (Benitoite.Release.Refinement.Eff.bind (Benitoite.Release.Refinement.SubstEnv.valuesOnly σ) e)
+'Benitoite.Release.Refinement.Eff.wf_bind_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.sorted_bind_values {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {e : Benitoite.Release.Refinement.Eff} (ha : Benitoite.Release.Refinement.sortedEff Γ e)
+  (σ : Nat → Benitoite.Release.Refinement.Term)
+  (hs :
+    ∀ (i : Nat) (t : Benitoite.Release.Refinement.Ty),
+      Γ[i]? = some (some t) → t.IntegerCarrier → Benitoite.Release.Refinement.termSorted Δ (σ i)) :
+  Benitoite.Release.Refinement.sortedEff Δ
+    (Benitoite.Release.Refinement.Eff.bind (Benitoite.Release.Refinement.SubstEnv.valuesOnly σ) e)
+'Benitoite.Release.Refinement.Eff.sorted_bind_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Val.toTerm_rename (v : Benitoite.Release.Refinement.Val) (ξ : Nat → Nat) :
+  (Benitoite.Release.Refinement.Val.rename ξ v).toTerm? =
+    Option.map (Benitoite.Release.Refinement.termBind fun i => Benitoite.Release.Refinement.Term.var (ξ i)) v.toTerm?
+'Benitoite.Release.Refinement.Val.toTerm_rename' depends on axioms: [propext]
+Benitoite.Release.Refinement.Val.observe_rename (v : Benitoite.Release.Refinement.Val) (ξ : Nat → Nat) :
+  (Benitoite.Release.Refinement.Val.rename ξ v).toTerm?.getD (Benitoite.Release.Refinement.Term.integer 0) =
+    Benitoite.Release.Refinement.termBind (fun i => Benitoite.Release.Refinement.Term.var (ξ i))
+      (v.toTerm?.getD (Benitoite.Release.Refinement.Term.integer 0))
+'Benitoite.Release.Refinement.Val.observe_rename' depends on axioms: [propext]
+Benitoite.Release.Refinement.SubstEnv.upN (k : Nat) (θ : Benitoite.Release.Refinement.SubstEnv) :
+  Benitoite.Release.Refinement.SubstEnv
+'Benitoite.Release.Refinement.SubstEnv.upN' does not depend on any axioms
+Benitoite.Release.Refinement.renameTy_id (a : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.renameTy id a = a
+'Benitoite.Release.Refinement.renameTy_id' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.renameEff_id (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.renameEff id e = e
+'Benitoite.Release.Refinement.renameEff_id' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.renameTy_identity : Benitoite.Release.Refinement.renameTy id = id
+'Benitoite.Release.Refinement.renameTy_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.renameEff_identity : Benitoite.Release.Refinement.renameEff id = id
+'Benitoite.Release.Refinement.renameEff_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.upRen_identity (k : Nat) : Benitoite.Release.upRen k id = id
+'Benitoite.Release.Refinement.upRen_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Val.rename_identity (v : Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.Val.rename id v = v
+'Benitoite.Release.Refinement.Val.rename_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Val.renameList_identity (vs : List Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.Val.renameList id vs = vs
+'Benitoite.Release.Refinement.Val.renameList_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Comp.rename_identity (m : Benitoite.Release.Refinement.Comp) :
+  Benitoite.Release.Refinement.Comp.rename id m = m
+'Benitoite.Release.Refinement.Comp.rename_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Arm.renameList_identity (as : List Benitoite.Release.Refinement.Arm) :
+  Benitoite.Release.Refinement.Arm.renameList id as = as
+'Benitoite.Release.Refinement.Arm.renameList_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Clause.renameList_identity (cs : List Benitoite.Release.Refinement.Clause) :
+  Benitoite.Release.Refinement.Clause.renameList id cs = cs
+'Benitoite.Release.Refinement.Clause.renameList_identity' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.upSubst_zero (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.upSubst 0 σ = σ
+'Benitoite.Release.Refinement.upSubst_zero' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.valEnv_upSubst_one (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.valEnv (Benitoite.Release.Refinement.upSubst 1 σ) =
+    (Benitoite.Release.Refinement.valEnv σ).up
+'Benitoite.Release.Refinement.valEnv_upSubst_one' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.valEnv_upSubst (k : Nat) (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.valEnv (Benitoite.Release.Refinement.upSubst k σ) =
+    Benitoite.Release.Refinement.SubstEnv.valuesOnly
+      (Benitoite.Release.Refinement.upTerms k (Benitoite.Release.Refinement.valEnv σ).values)
+'Benitoite.Release.Refinement.valEnv_upSubst' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.upTerms_succ (k : Nat) (σ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.upTerms (k + 1) σ =
+    Benitoite.Release.Refinement.upValues (Benitoite.Release.Refinement.upTerms k σ)
+'Benitoite.Release.Refinement.upTerms_succ' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.valEnv_upN (k : Nat) (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.valEnv (Benitoite.Release.Refinement.upSubst k σ) =
+    Benitoite.Release.Refinement.SubstEnv.upN k (Benitoite.Release.Refinement.valEnv σ)
+'Benitoite.Release.Refinement.valEnv_upN' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Ty.rawSubstV_comp (a : Benitoite.Release.Refinement.Ty)
+  (σ τ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.Ty.rawSubstV τ (Benitoite.Release.Refinement.Ty.rawSubstV σ a) =
+    Benitoite.Release.Refinement.Ty.rawSubstV (fun i => Benitoite.Release.Refinement.termBind τ (σ i)) a
+'Benitoite.Release.Refinement.Ty.rawSubstV_comp' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.substVTys_comp (as : List Benitoite.Release.Refinement.Ty)
+  (σ τ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.substVTys τ (Benitoite.Release.Refinement.substVTys σ as) =
+    Benitoite.Release.Refinement.substVTys (fun i => Benitoite.Release.Refinement.termBind τ (σ i)) as
+'Benitoite.Release.Refinement.substVTys_comp' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Eff.rawSubstV_comp (e : Benitoite.Release.Refinement.Eff)
+  (σ τ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.Eff.rawSubstV τ (Benitoite.Release.Refinement.Eff.rawSubstV σ e) =
+    Benitoite.Release.Refinement.Eff.rawSubstV (fun i => Benitoite.Release.Refinement.termBind τ (σ i)) e
+'Benitoite.Release.Refinement.Eff.rawSubstV_comp' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.renameTy_eq_rawSubstV (ξ : Nat → Nat) (a : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.renameTy ξ a =
+    Benitoite.Release.Refinement.Ty.rawSubstV (fun i => Benitoite.Release.Refinement.Term.var (ξ i)) a
+'Benitoite.Release.Refinement.renameTy_eq_rawSubstV' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.renameEff_eq_rawSubstV (ξ : Nat → Nat) (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.renameEff ξ e =
+    Benitoite.Release.Refinement.Eff.rawSubstV (fun i => Benitoite.Release.Refinement.Term.var (ξ i)) e
+'Benitoite.Release.Refinement.renameEff_eq_rawSubstV' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Ty.bind_shiftV_values (a : Benitoite.Release.Refinement.Ty) (k : Nat)
+  (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.substTyValues (Benitoite.Release.Refinement.upSubst k σ)
+      (Benitoite.Release.Refinement.Ty.shiftV k 0 a) =
+    Benitoite.Release.Refinement.Ty.shiftV k 0 (Benitoite.Release.Refinement.substTyValues σ a)
+'Benitoite.Release.Refinement.Ty.bind_shiftV_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.bind_shiftV_values (e : Benitoite.Release.Refinement.Eff) (k : Nat)
+  (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.substEffValues (Benitoite.Release.Refinement.upSubst k σ)
+      (Benitoite.Release.Refinement.Eff.shiftV k 0 e) =
+    Benitoite.Release.Refinement.Eff.shiftV k 0 (Benitoite.Release.Refinement.substEffValues σ e)
+'Benitoite.Release.Refinement.Eff.bind_shiftV_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.bind_fn (ns : List String) (ps : List Benitoite.Release.Refinement.Ty)
+  (r : Benitoite.Release.Refinement.Ty) (e : Benitoite.Release.Refinement.Eff)
+  (θ : Benitoite.Release.Refinement.SubstEnv) :
+  Benitoite.Release.Refinement.Ty.bind θ (Benitoite.Release.Refinement.Ty.fn ns ps r e) =
+    Benitoite.Release.Refinement.Ty.fn ns (List.map (Benitoite.Release.Refinement.Ty.bind θ) ps)
+      (Benitoite.Release.Refinement.Ty.bind θ r) (Benitoite.Release.Refinement.Eff.bind θ e)
+'Benitoite.Release.Refinement.Ty.bind_fn' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.valEnv_valuesOnly (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.SubstEnv.valuesOnly (Benitoite.Release.Refinement.valEnv σ).values =
+    Benitoite.Release.Refinement.valEnv σ
+'Benitoite.Release.Refinement.valEnv_valuesOnly' depends on axioms: [propext]
+Benitoite.Release.Refinement.substTyValues_eq_bind (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.substTyValues σ =
+    Benitoite.Release.Refinement.Ty.bind (Benitoite.Release.Refinement.valEnv σ)
+'Benitoite.Release.Refinement.substTyValues_eq_bind' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.substEffValues_eq_bind (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.substEffValues σ =
+    Benitoite.Release.Refinement.Eff.bind (Benitoite.Release.Refinement.valEnv σ)
+'Benitoite.Release.Refinement.substEffValues_eq_bind' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.shiftV_comm (a : Benitoite.Release.Refinement.Ty) (n k c : Nat) :
+  Benitoite.Release.Refinement.Ty.shiftV k (c + n) (Benitoite.Release.Refinement.Ty.shiftV n 0 a) =
+    Benitoite.Release.Refinement.Ty.shiftV n 0 (Benitoite.Release.Refinement.Ty.shiftV k c a)
+'Benitoite.Release.Refinement.Ty.shiftV_comm' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.shiftV_comm (e : Benitoite.Release.Refinement.Eff) (n k c : Nat) :
+  Benitoite.Release.Refinement.Eff.shiftV k (c + n) (Benitoite.Release.Refinement.Eff.shiftV n 0 e) =
+    Benitoite.Release.Refinement.Eff.shiftV n 0 (Benitoite.Release.Refinement.Eff.shiftV k c e)
+'Benitoite.Release.Refinement.Eff.shiftV_comm' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Pred.shiftV_lift (p : Benitoite.Release.Refinement.Pred) (k c : Nat) :
+  Benitoite.Release.Refinement.Pred.shiftV k (c + 1) p.lift = (Benitoite.Release.Refinement.Pred.shiftV k c p).lift
+'Benitoite.Release.Refinement.Pred.shiftV_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.upRen_shiftIndex (n k c : Nat) :
+  Benitoite.Release.upRen n (Benitoite.Release.Refinement.shiftIndex k c) =
+    Benitoite.Release.Refinement.shiftIndex k (c + n)
+'Benitoite.Release.Refinement.upRen_shiftIndex' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.subst_lam {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {ns : List String} {ps : List Benitoite.Release.Refinement.Ty}
+  {body : Benitoite.Release.Refinement.Comp} {r : Benitoite.Release.Refinement.Ty}
+  {e : Benitoite.Release.Refinement.EffR} {σ : Nat → Benitoite.Release.Refinement.Val}
+  {ρ : Nat → Benitoite.Release.LocalRef}
+  (hw : Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) (Benitoite.Release.Refinement.Ty.fn ns ps r e))
+  (hs : Benitoite.Release.Refinement.Ty.Sorted Γ (Benitoite.Release.Refinement.Ty.fn ns ps r e))
+  (ht : Benitoite.Release.Refinement.Transport (Benitoite.Release.Refinement.valEnv σ) Γ Φ Δ Ξ)
+  (hb :
+    Benitoite.Release.Refinement.HasTypeCQ P B (Benitoite.Release.Refinement.hideBuilders store) Q C
+      (Benitoite.Release.Refinement.bindParams (Benitoite.Release.Refinement.hideConts Δ)
+        (List.map (Benitoite.Release.Refinement.substTyValues σ) ps))
+      (Benitoite.Release.Refinement.liftMany ps.length Ξ)
+      (some (Benitoite.Release.Refinement.Ty.shiftV ps.length 0 (Benitoite.Release.Refinement.substTyValues σ r)))
+      (Benitoite.Release.Refinement.Comp.subst (Benitoite.Release.Refinement.upSubst ps.length σ) body
+        (Benitoite.Release.upLocalSubst ps.length ρ))
+      (Benitoite.Release.Refinement.Ty.shiftV ps.length 0 (Benitoite.Release.Refinement.substTyValues σ r))
+      (Benitoite.Release.Refinement.Eff.shiftV ps.length 0 (Benitoite.Release.Refinement.substEffValues σ e))) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Δ Ξ
+    (Benitoite.Release.Refinement.Val.subst σ (Benitoite.Release.Refinement.Val.lam ns ps body) ρ)
+    (Benitoite.Release.Refinement.Ty.bind (Benitoite.Release.Refinement.valEnv σ)
+      (Benitoite.Release.Refinement.Ty.fn ns ps r e))
+'Benitoite.Release.Refinement.HasTypeVQ.subst_lam' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.rawSubstV_embed (a : Benitoite.Release.Ty)
+  (σ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.Ty.rawSubstV σ (Benitoite.Release.Refinement.embedTy a) =
+    Benitoite.Release.Refinement.embedTy a
+'Benitoite.Release.Refinement.Ty.rawSubstV_embed' depends on axioms: [propext]
+Benitoite.Release.Refinement.substVTys_embed (as : List Benitoite.Release.Ty)
+  (σ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.substVTys σ (Benitoite.Release.Refinement.embedTys as) =
+    Benitoite.Release.Refinement.embedTys as
+'Benitoite.Release.Refinement.substVTys_embed' depends on axioms: [propext]
+Benitoite.Release.Refinement.Eff.rawSubstV_embed (e : Benitoite.Release.Eff)
+  (σ : Nat → Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.Eff.rawSubstV σ (Benitoite.Release.Refinement.embedEff e) =
+    Benitoite.Release.Refinement.embedEff e
+'Benitoite.Release.Refinement.Eff.rawSubstV_embed' depends on axioms: [propext]
+Benitoite.Release.Refinement.substTyValues_embed (σ : Nat → Benitoite.Release.Refinement.Val)
+  (a : Benitoite.Release.Ty) :
+  Benitoite.Release.Refinement.substTyValues σ (Benitoite.Release.Refinement.embedTy a) =
+    Benitoite.Release.Refinement.embedTy a.norm
+'Benitoite.Release.Refinement.substTyValues_embed' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.substEffValues_embed (σ : Nat → Benitoite.Release.Refinement.Val)
+  (e : Benitoite.Release.Eff) :
+  Benitoite.Release.Refinement.substEffValues σ (Benitoite.Release.Refinement.embedEff e) =
+    Benitoite.Release.Refinement.embedEff e.norm
+'Benitoite.Release.Refinement.substEffValues_embed' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.LeQ.integerCarrier {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {a b : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b) : a.IntegerCarrier ↔ b.IntegerCarrier
+'Benitoite.Release.Refinement.Ty.LeQ.integerCarrier' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.integer_observation {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (hi : a.IntegerCarrier) : ∃ t, v.toTerm? = some t ∧ Benitoite.Release.Refinement.termSorted Γ t
+'Benitoite.Release.Refinement.HasTypeVQ.integer_observation' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.toTerm_of_integerCarrier {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (hi : a.IntegerCarrier) : ∃ t, v.toTerm? = some t
+'Benitoite.Release.Refinement.HasTypeVQ.toTerm_of_integerCarrier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.Pred.open_lift (p : Benitoite.Release.Refinement.Pred)
+  (t : Benitoite.Release.Refinement.Term) : p.lift.open t = p
+'Benitoite.Release.Refinement.Pred.open_lift' depends on axioms: [propext]
+Benitoite.Release.Refinement.HasTypeVQ.assume {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (p : Benitoite.Release.Refinement.Pred) :
+  p ∈ a.assume →
+    Benitoite.Release.Refinement.Entails (Γ.facts ++ Φ)
+      (p.open (v.toTerm?.getD (Benitoite.Release.Refinement.Term.integer 0)))
+'Benitoite.Release.Refinement.HasTypeVQ.assume' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.termSorted_bind_congr {Γ : Benitoite.Release.Refinement.Ctx}
+  {t : Benitoite.Release.Refinement.Term} (ht : Benitoite.Release.Refinement.termSorted Γ t)
+  {σ τ : Nat → Benitoite.Release.Refinement.Term}
+  (he : ∀ (i : Nat) (a : Benitoite.Release.Refinement.Ty), Γ[i]? = some (some a) → a.IntegerCarrier → σ i = τ i) :
+  Benitoite.Release.Refinement.termBind σ t = Benitoite.Release.Refinement.termBind τ t
+'Benitoite.Release.Refinement.termSorted_bind_congr' depends on axioms: [propext]
+Benitoite.Release.Refinement.Pred.bind_congr_sorted {Γ : Benitoite.Release.Refinement.Ctx}
+  {p : Benitoite.Release.Refinement.Pred} (hp : Benitoite.Release.Refinement.Pred.Sorted Γ none p)
+  {σ τ : Nat → Benitoite.Release.Refinement.Term}
+  (he : ∀ (i : Nat) (a : Benitoite.Release.Refinement.Ty), Γ[i]? = some (some a) → a.IntegerCarrier → σ i = τ i) :
+  Benitoite.Release.Refinement.predBind σ p = Benitoite.Release.Refinement.predBind τ p
+'Benitoite.Release.Refinement.Pred.bind_congr_sorted' depends on axioms: [propext]
+Benitoite.Release.Refinement.Ty.Ordinary (a : Benitoite.Release.Refinement.Ty) : Prop
+'Benitoite.Release.Refinement.Ty.Ordinary' does not depend on any axioms
+Benitoite.Release.Refinement.Ty.ordinary_shiftV (a : Benitoite.Release.Refinement.Ty) (k c : Nat) :
+  (Benitoite.Release.Refinement.Ty.shiftV k c a).Ordinary ↔ a.Ordinary
+'Benitoite.Release.Refinement.Ty.ordinary_shiftV' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Ty.IntegerCarrier.ordinary {a : Benitoite.Release.Refinement.Ty} (h : a.IntegerCarrier) :
+  a.Ordinary
+'Benitoite.Release.Refinement.Ty.IntegerCarrier.ordinary' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Ty.assume_ordinary {a : Benitoite.Release.Refinement.Ty}
+  {p : Benitoite.Release.Refinement.Pred} (hp : p ∈ a.assume) : a.Ordinary
+'Benitoite.Release.Refinement.Ty.assume_ordinary' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap (k c : Nat) (Γ Δ : Benitoite.Release.Refinement.Ctx) : Prop
+'Benitoite.Release.Refinement.ShiftMap' depends on axioms: [propext]
+Benitoite.Release.Refinement.renameTy_shiftIndex (k c : Nat) :
+  Benitoite.Release.Refinement.renameTy (Benitoite.Release.Refinement.shiftIndex k c) =
+    Benitoite.Release.Refinement.Ty.shiftV k c
+'Benitoite.Release.Refinement.renameTy_shiftIndex' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.renameEff_shiftIndex (k c : Nat) :
+  Benitoite.Release.Refinement.renameEff (Benitoite.Release.Refinement.shiftIndex k c) =
+    Benitoite.Release.Refinement.Eff.shiftV k c
+'Benitoite.Release.Refinement.renameEff_shiftIndex' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.values {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ) (i : Nat) (a : Benitoite.Release.Refinement.Ty) :
+  Γ[i]? = some (some a) →
+    a.IntegerCarrier →
+      Benitoite.Release.Refinement.termSorted Δ
+        (Benitoite.Release.Refinement.Term.var (Benitoite.Release.Refinement.shiftIndex k c i))
+'Benitoite.Release.Refinement.ShiftMap.values' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.facts {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ) {p : Benitoite.Release.Refinement.Pred} (hp : p ∈ Γ.facts) :
+  Benitoite.Release.Refinement.Pred.shiftV k c p ∈ Δ.facts
+'Benitoite.Release.Refinement.ShiftMap.facts' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.transport {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {Φ Ξ : List Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.Transport
+    (Benitoite.Release.Refinement.renEnv (Benitoite.Release.Refinement.shiftIndex k c)) Γ Φ Δ Ξ
+'Benitoite.Release.Refinement.ShiftMap.transport' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.hideConts_lookup {Γ : Benitoite.Release.Refinement.Ctx} {i : Nat}
+  {a : Benitoite.Release.Refinement.Ty} :
+  (Benitoite.Release.Refinement.hideConts Γ)[i]? = some (some a) ↔ Γ[i]? = some (some a) ∧ a.Ordinary
+'Benitoite.Release.Refinement.hideConts_lookup' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.hide {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ) :
+  Benitoite.Release.Refinement.ShiftMap k c (Benitoite.Release.Refinement.hideConts Γ)
+    (Benitoite.Release.Refinement.hideConts Δ)
+'Benitoite.Release.Refinement.ShiftMap.hide' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.underParams {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ) (ps : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.ShiftMap k (c + ps.length) (Benitoite.Release.Refinement.bindParams Γ ps)
+    (Benitoite.Release.Refinement.bindParams Δ (List.map (Benitoite.Release.Refinement.Ty.shiftV k c) ps))
+'Benitoite.Release.Refinement.ShiftMap.underParams' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.outer (Γ : Benitoite.Release.Refinement.Ctx)
+  (ps : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.ShiftMap ps.length 0 Γ (Benitoite.Release.Refinement.bindParams Γ ps)
+'Benitoite.Release.Refinement.ShiftMap.outer' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.liftMany_eq (n : Nat) (Φ : List Benitoite.Release.Refinement.Pred) :
+  Benitoite.Release.Refinement.liftMany n Φ = List.map (Benitoite.Release.Refinement.Pred.shiftV n 0) Φ
+'Benitoite.Release.Refinement.liftMany_eq' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.liftMany_one (Φ : List Benitoite.Release.Refinement.Pred) :
+  Benitoite.Release.Refinement.liftMany 1 Φ = List.map Benitoite.Release.Refinement.Pred.lift Φ
+'Benitoite.Release.Refinement.liftMany_one' does not depend on any axioms
+Benitoite.Release.Refinement.liftMany_shiftV (n k c : Nat) (Φ : List Benitoite.Release.Refinement.Pred) :
+  List.map (Benitoite.Release.Refinement.Pred.shiftV k (c + n)) (Benitoite.Release.Refinement.liftMany n Φ) =
+    Benitoite.Release.Refinement.liftMany n (List.map (Benitoite.Release.Refinement.Pred.shiftV k c) Φ)
+'Benitoite.Release.Refinement.liftMany_shiftV' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Entails.under_params {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {p : Benitoite.Release.Refinement.Pred}
+  (h : Benitoite.Release.Refinement.Entails (Γ.facts ++ Φ) p) (ps : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.Entails
+    ((Benitoite.Release.Refinement.bindParams Γ ps).facts ++ Benitoite.Release.Refinement.liftMany ps.length Φ)
+    (Benitoite.Release.Refinement.Pred.shiftV ps.length 0 p)
+'Benitoite.Release.Refinement.Entails.under_params' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.conditions_params {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {Φ Ξ : List Benitoite.Release.Refinement.Pred} (_h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p))
+  (ps : List Benitoite.Release.Refinement.Ty) (p : Benitoite.Release.Refinement.Pred) :
+  p ∈ Benitoite.Release.Refinement.liftMany ps.length Φ →
+    Benitoite.Release.Refinement.Entails
+      ((Benitoite.Release.Refinement.bindParams Δ (List.map (Benitoite.Release.Refinement.Ty.shiftV k c) ps)).facts ++
+        Benitoite.Release.Refinement.liftMany ps.length Ξ)
+      (Benitoite.Release.Refinement.Pred.shiftV k (c + ps.length) p)
+'Benitoite.Release.Refinement.ShiftMap.conditions_params' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ctx.mem_facts_hide {Γ : Benitoite.Release.Refinement.Ctx}
+  {p : Benitoite.Release.Refinement.Pred} : p ∈ (Benitoite.Release.Refinement.hideConts Γ).facts ↔ p ∈ Γ.facts
+'Benitoite.Release.Refinement.Ctx.mem_facts_hide' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Entails.hideConts {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {p : Benitoite.Release.Refinement.Pred}
+  (h : Benitoite.Release.Refinement.Entails (Γ.facts ++ Φ) p) :
+  Benitoite.Release.Refinement.Entails ((Benitoite.Release.Refinement.hideConts Γ).facts ++ Φ) p
+'Benitoite.Release.Refinement.Entails.hideConts' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Transport.entails {θ : Benitoite.Release.Refinement.SubstEnv}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {p : Benitoite.Release.Refinement.Pred} (ht : Benitoite.Release.Refinement.Transport θ Γ Φ Δ Ξ)
+  (h : Benitoite.Release.Refinement.Entails (Γ.facts ++ Φ) p) :
+  Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.predBind θ.values p)
+'Benitoite.Release.Refinement.Transport.entails' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.sorted {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (ha : Benitoite.Release.Refinement.Ty.Sorted Γ a) :
+  Benitoite.Release.Refinement.Ty.Sorted Δ (Benitoite.Release.Refinement.Ty.shiftV k c a)
+'Benitoite.Release.Refinement.ShiftMap.sorted' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ShiftMap.wf {k c : Nat} {Γ Δ : Benitoite.Release.Refinement.Ctx} {nr nt : Nat}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (ha : Benitoite.Release.Refinement.Ty.WF nr nt (List.length Γ) a) :
+  Benitoite.Release.Refinement.Ty.WF nr nt (List.length Δ) (Benitoite.Release.Refinement.Ty.shiftV k c a)
+'Benitoite.Release.Refinement.ShiftMap.wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.shift_values {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a) {k c : Nat}
+  {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {store' : Benitoite.Release.Refinement.StoreTy} (hm : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store' Q C Δ Ξ
+    (Benitoite.Release.Refinement.Val.rename (Benitoite.Release.Refinement.shiftIndex k c) v)
+    (Benitoite.Release.Refinement.Ty.shiftV k c a)
+'Benitoite.Release.Refinement.HasTypeVQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVsQ.shift_values {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {as : List Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVsQ P B store Q C Γ Φ vs as)
+  {k c : Nat} {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {store' : Benitoite.Release.Refinement.StoreTy} (hm : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.HasTypeVsQ P B store' Q C Δ Ξ
+    (Benitoite.Release.Refinement.Val.renameList (Benitoite.Release.Refinement.shiftIndex k c) vs)
+    (List.map (Benitoite.Release.Refinement.Ty.shiftV k c) as)
+'Benitoite.Release.Refinement.HasTypeVsQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeEachQ.shift_values {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeEachQ P B store Q C Γ Φ vs a)
+  {k c : Nat} {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {store' : Benitoite.Release.Refinement.StoreTy} (hm : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.HasTypeEachQ P B store' Q C Δ Ξ
+    (Benitoite.Release.Refinement.Val.renameList (Benitoite.Release.Refinement.shiftIndex k c) vs)
+    (Benitoite.Release.Refinement.Ty.shiftV k c a)
+'Benitoite.Release.Refinement.HasTypeEachQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeCQ.shift_values {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R m a e L)
+  {k c : Nat} {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {store' : Benitoite.Release.Refinement.StoreTy} {L' : Benitoite.Release.Refinement.LocalCtx}
+  (hm : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.HasTypeCQ P B store' Q C Δ Ξ (Option.map (Benitoite.Release.Refinement.Ty.shiftV k c) R)
+    (Benitoite.Release.Refinement.Comp.rename (Benitoite.Release.Refinement.shiftIndex k c) m)
+    (Benitoite.Release.Refinement.Ty.shiftV k c a) (Benitoite.Release.Refinement.Eff.shiftV k c e) L'
+'Benitoite.Release.Refinement.HasTypeCQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ClosedTy (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (store : Benitoite.Release.Refinement.StoreTy)
+  (v : Benitoite.Release.Refinement.Val) (a : Benitoite.Release.Refinement.Ty) : Prop
+'Benitoite.Release.Refinement.ClosedTy' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.SubstOk (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (store : Benitoite.Release.Refinement.StoreTy)
+  (Q : Benitoite.Release.NoFailCtx) (C : List Benitoite.Release.TParam) (Γ : Benitoite.Release.Refinement.Ctx)
+  (_Φ : List Benitoite.Release.Refinement.Pred) (Δ : Benitoite.Release.Refinement.Ctx)
+  (Ξ : List Benitoite.Release.Refinement.Pred) (R0 : Option Benitoite.Release.Refinement.Ty)
+  (σ : Nat → Benitoite.Release.Refinement.Val) : Prop
+'Benitoite.Release.Refinement.SubstOk' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.SubstOk.transport {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p)) :
+  Benitoite.Release.Refinement.Transport (Benitoite.Release.Refinement.valEnv σ) Γ Φ Δ Ξ
+'Benitoite.Release.Refinement.SubstOk.transport' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Ty.ordinary_bind_values (a : Benitoite.Release.Refinement.Ty)
+  (σ : Nat → Benitoite.Release.Refinement.Val) : (Benitoite.Release.Refinement.substTyValues σ a).Ordinary ↔ a.Ordinary
+'Benitoite.Release.Refinement.Ty.ordinary_bind_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.shiftIndex_zero (c : Nat) : Benitoite.Release.Refinement.shiftIndex 0 c = id
+'Benitoite.Release.Refinement.shiftIndex_zero' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.shiftIndex_add (k : Nat) : Benitoite.Release.Refinement.shiftIndex k 0 = fun i => i + k
+'Benitoite.Release.Refinement.shiftIndex_add' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.Ty.shiftV_zero (a : Benitoite.Release.Refinement.Ty) (c : Nat) :
+  Benitoite.Release.Refinement.Ty.shiftV 0 c a = a
+'Benitoite.Release.Refinement.Ty.shiftV_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Pred.shiftV_zero (p : Benitoite.Release.Refinement.Pred) (c : Nat) :
+  Benitoite.Release.Refinement.Pred.shiftV 0 c p = p
+'Benitoite.Release.Refinement.Pred.shiftV_zero' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.hide_context {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (store' : Benitoite.Release.Refinement.StoreTy) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store' Q C (Benitoite.Release.Refinement.hideConts Γ) Φ v a
+'Benitoite.Release.Refinement.HasTypeVQ.hide_context' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.predBind_upSubst_shift (p : Benitoite.Release.Refinement.Pred)
+  (σ : Nat → Benitoite.Release.Refinement.Val) (k : Nat) :
+  Benitoite.Release.Refinement.predBind
+      (Benitoite.Release.Refinement.valEnv (Benitoite.Release.Refinement.upSubst k σ)).values
+      (Benitoite.Release.Refinement.Pred.shiftV k 0 p) =
+    Benitoite.Release.Refinement.Pred.shiftV k 0
+      (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p)
+'Benitoite.Release.Refinement.predBind_upSubst_shift' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.SubstOk.observation {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {t : Benitoite.Release.Refinement.Term}
+  (h : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hv : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a) (hi : a.IntegerCarrier) (ht : v.toTerm? = some t)
+  (ρ : Nat → Benitoite.Release.LocalRef) :
+  (Benitoite.Release.Refinement.Val.subst σ v ρ).toTerm? =
+    some (Benitoite.Release.Refinement.termBind (Benitoite.Release.Refinement.valEnv σ).values t)
+'Benitoite.Release.Refinement.SubstOk.observation' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Const.type_bind_values (con : Benitoite.Release.Refinement.Const)
+  (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.Ty.bind (Benitoite.Release.Refinement.valEnv σ) con.type = con.type
+'Benitoite.Release.Refinement.Const.type_bind_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.substEffValues_empty (σ : Nat → Benitoite.Release.Refinement.Val) :
+  Benitoite.Release.Refinement.substEffValues σ Benitoite.Release.Refinement.Eff.empty =
+    Benitoite.Release.Refinement.Eff.empty
+'Benitoite.Release.Refinement.substEffValues_empty' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.subst {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (ht : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Δ Ξ (Benitoite.Release.Refinement.Val.subst σ v ρ)
+    (Benitoite.Release.Refinement.substTyValues σ a)
+'Benitoite.Release.Refinement.HasTypeVQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVsQ.subst {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {as : List Benitoite.Release.Refinement.Ty} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.HasTypeVsQ P B store Q C Γ Φ vs as)
+  (ht : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.HasTypeVsQ P B store Q C Δ Ξ (Benitoite.Release.Refinement.Val.substList σ vs ρ)
+    (List.map (Benitoite.Release.Refinement.substTyValues σ) as)
+'Benitoite.Release.Refinement.HasTypeVsQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeEachQ.subst {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.HasTypeEachQ P B store Q C Γ Φ vs a)
+  (ht : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.HasTypeEachQ P B store Q C Δ Ξ (Benitoite.Release.Refinement.Val.substList σ vs ρ)
+    (Benitoite.Release.Refinement.substTyValues σ a)
+'Benitoite.Release.Refinement.HasTypeEachQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeCQ.subst {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R0 : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R m a e L)
+  (ht : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q C Δ Ξ (Option.map (Benitoite.Release.Refinement.substTyValues σ) R)
+    (Benitoite.Release.Refinement.Comp.subst σ m ρ) (Benitoite.Release.Refinement.substTyValues σ a)
+    (Benitoite.Release.Refinement.substEffValues σ e) L
+'Benitoite.Release.Refinement.HasTypeCQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.lam_annotations_wf {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {ns : List String} {ps : List Benitoite.Release.Refinement.Ty}
+  {body : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ (Benitoite.Release.Refinement.Val.lam ns ps body) a) :
+  Benitoite.Release.Refinement.Ty.WFList 0 C.length (List.length Γ) ps
+'Benitoite.Release.Refinement.HasTypeVQ.lam_annotations_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeCQ.return_value_typable {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty} {ε : Benitoite.Release.Refinement.Eff}
+  {Δl : Benitoite.Release.Refinement.LocalCtx}
+  (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R (Benitoite.Release.Refinement.Comp.ret v) a ε Δl) :
+  ∃ b, Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v b
+'Benitoite.Release.Refinement.HasTypeCQ.return_value_typable' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.Γ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.RawValueSubstCollision.Γ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.Δ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.RawValueSubstCollision.Δ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.path : Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.RawValueSubstCollision.path' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.Φ : List Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.RawValueSubstCollision.Φ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.σ : Nat → Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.RawValueSubstCollision.σ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.failure (i : Nat) : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.failure' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.latent : Benitoite.Release.Refinement.Eff
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.failure_compare :
+  Benitoite.Release.Refinement.tyCompare (Benitoite.Release.Refinement.RawValueSubstCollision.failure 0)
+      (Benitoite.Release.Refinement.RawValueSubstCollision.failure 1) =
+    Ordering.lt
+'Benitoite.Release.Refinement.RawValueSubstCollision.failure_compare' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.failure_norm (i : Nat) :
+  (Benitoite.Release.Refinement.RawValueSubstCollision.failure i).norm =
+    Benitoite.Release.Refinement.RawValueSubstCollision.failure i
+'Benitoite.Release.Refinement.RawValueSubstCollision.failure_norm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.latent_canonical :
+  Benitoite.Release.Refinement.RawValueSubstCollision.latent.Canonical
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_wf :
+  Benitoite.Release.Refinement.Ty.WF 0 0 (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Γ)
+    Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_sorted :
+  Benitoite.Release.Refinement.Ty.Sorted Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_sorted' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.image_type :
+  Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt =
+    Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt
+'Benitoite.Release.Refinement.RawValueSubstCollision.image_type' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.images_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {i : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (hi : Benitoite.Release.Refinement.RawValueSubstCollision.Γ[i]? = some (some a)) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ (Benitoite.Release.Refinement.RawValueSubstCollision.σ i)
+    (Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ a)
+'Benitoite.Release.Refinement.RawValueSubstCollision.images_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.images_typed_bind {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {i : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (hi : Benitoite.Release.Refinement.RawValueSubstCollision.Γ[i]? = some (some a)) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ (Benitoite.Release.Refinement.RawValueSubstCollision.σ i)
+    (Benitoite.Release.Refinement.Ty.bind
+      (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ) a)
+'Benitoite.Release.Refinement.RawValueSubstCollision.images_typed_bind' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.context_facts :
+  Benitoite.Release.Refinement.RawValueSubstCollision.Γ.facts =
+      [Benitoite.Release.Refinement.RawValueSubstCollision.path,
+        Benitoite.Release.Refinement.Pred.eq (Benitoite.Release.Refinement.Term.var 1)
+          (Benitoite.Release.Refinement.Term.integer 7)] ∧
+    Benitoite.Release.Refinement.RawValueSubstCollision.Δ.facts =
+      [Benitoite.Release.Refinement.RawValueSubstCollision.path]
+'Benitoite.Release.Refinement.RawValueSubstCollision.context_facts' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.transport :
+  Benitoite.Release.Refinement.Transport
+    (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ)
+    Benitoite.Release.Refinement.RawValueSubstCollision.Γ Benitoite.Release.Refinement.RawValueSubstCollision.Φ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Δ Benitoite.Release.Refinement.RawValueSubstCollision.Φ
+'Benitoite.Release.Refinement.RawValueSubstCollision.transport' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.latent_image :
+  Benitoite.Release.Refinement.Eff.rawBind
+      (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ)
+      Benitoite.Release.Refinement.RawValueSubstCollision.latent =
+    Benitoite.Release.Refinement.EffR.mk (fun x => false)
+      [Benitoite.Release.Refinement.RawValueSubstCollision.failure 0,
+        Benitoite.Release.Refinement.RawValueSubstCollision.failure 0]
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent_image' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.latent_image_not_canonical :
+  ¬(Benitoite.Release.Refinement.Eff.rawBind
+        (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ)
+        Benitoite.Release.Refinement.RawValueSubstCollision.latent).Canonical
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent_image_not_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.substituted_not_wf :
+  ¬Benitoite.Release.Refinement.Ty.WF 0 0 (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Δ)
+      (Benitoite.Release.Refinement.Ty.rawBind
+        (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ)
+        Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy)
+'Benitoite.Release.Refinement.RawValueSubstCollision.substituted_not_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal : Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.valueTy : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.valueTy' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.resultTy : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.resultTy' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.value_wf :
+  Benitoite.Release.Refinement.Ty.WF 0 0 (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Γ)
+    Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.value_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.value_sorted :
+  Benitoite.Release.Refinement.Ty.Sorted Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.value_sorted' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_sorted :
+  Benitoite.Release.Refinement.Pred.Sorted Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    (some Benitoite.Release.Refinement.RawValueSubstCollision.valueTy)
+    Benitoite.Release.Refinement.RawValueSubstCollision.path.lift
+'Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_sorted' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_wf :
+  Benitoite.Release.Refinement.Pred.WF (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Γ + 1)
+    Benitoite.Release.Refinement.RawValueSubstCollision.path.lift
+'Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_wf' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_le :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+    Benitoite.Release.Refinement.RawValueSubstCollision.resultTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.lambda_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal
+    Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.lambda_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_v_sub {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal
+    Benitoite.Release.Refinement.RawValueSubstCollision.resultTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_v_sub' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_c_sub {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {R : Option Benitoite.Release.Refinement.Ty}
+  {Δl : Benitoite.Release.Refinement.LocalCtx} :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ R
+    (Benitoite.Release.Refinement.Comp.ret Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal)
+    Benitoite.Release.Refinement.RawValueSubstCollision.resultTy Benitoite.Release.Refinement.Eff.empty Δl
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_c_sub' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.rawSourceVal : Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.RawValueSubstCollision.rawSourceVal' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.raw_lambda_untypable {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {Φ' : List Benitoite.Release.Refinement.Pred}
+  {a : Benitoite.Release.Refinement.Ty} :
+  ¬Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Δ Φ'
+      Benitoite.Release.Refinement.RawValueSubstCollision.rawSourceVal a
+'Benitoite.Release.Refinement.RawValueSubstCollision.raw_lambda_untypable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.raw_return_untypable {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {Φ' : List Benitoite.Release.Refinement.Pred}
+  {R : Option Benitoite.Release.Refinement.Ty} {a : Benitoite.Release.Refinement.Ty}
+  {ε : Benitoite.Release.Refinement.Eff} {Δl : Benitoite.Release.Refinement.LocalCtx} :
+  ¬Benitoite.Release.Refinement.HasTypeCQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Δ Φ' R
+      (Benitoite.Release.Refinement.Comp.ret Benitoite.Release.Refinement.RawValueSubstCollision.rawSourceVal) a ε Δl
+'Benitoite.Release.Refinement.RawValueSubstCollision.raw_return_untypable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.subst_ok {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} :
+  Benitoite.Release.Refinement.SubstOk P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ none Benitoite.Release.Refinement.RawValueSubstCollision.σ
+'Benitoite.Release.Refinement.RawValueSubstCollision.subst_ok' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.conditions_image (p : Benitoite.Release.Refinement.Pred) :
+  p ∈ Benitoite.Release.Refinement.RawValueSubstCollision.Φ →
+    Benitoite.Release.Refinement.Entails
+      (Benitoite.Release.Refinement.RawValueSubstCollision.Δ.facts ++
+        Benitoite.Release.Refinement.RawValueSubstCollision.Φ)
+      (Benitoite.Release.Refinement.predBind
+        (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ).values p)
+'Benitoite.Release.Refinement.RawValueSubstCollision.conditions_image' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.substituted_lambda_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ
+    (Benitoite.Release.Refinement.Val.subst Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal)
+    (Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.resultTy)
+'Benitoite.Release.Refinement.RawValueSubstCollision.substituted_lambda_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.substituted_return_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {Δl : Benitoite.Release.Refinement.LocalCtx}
+  {R : Option Benitoite.Release.Refinement.Ty} :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ
+    (Option.map (Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ) R)
+    (Benitoite.Release.Refinement.Comp.subst Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      (Benitoite.Release.Refinement.Comp.ret Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal))
+    (Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.resultTy)
+    (Benitoite.Release.Refinement.substEffValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.Eff.empty)
+    Δl
+'Benitoite.Release.Refinement.RawValueSubstCollision.substituted_return_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.normalized_image_canonical :
+  (Benitoite.Release.Refinement.substEffValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.latent).Canonical
+'Benitoite.Release.Refinement.RawValueSubstCollision.normalized_image_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.swapIndex (i : Nat) : Nat
+'Benitoite.Release.Refinement.RawValueSubstCollision.swapIndex' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.swapσ (i : Nat) : Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.RawValueSubstCollision.swapσ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.swap_involutive (i : Nat) :
+  Benitoite.Release.Refinement.RawValueSubstCollision.swapIndex
+      (Benitoite.Release.Refinement.RawValueSubstCollision.swapIndex i) =
+    i
+'Benitoite.Release.Refinement.RawValueSubstCollision.swap_involutive' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.swap_injective :
+  Function.Injective Benitoite.Release.Refinement.RawValueSubstCollision.swapσ
+'Benitoite.Release.Refinement.RawValueSubstCollision.swap_injective' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.swap_latent_image :
+  Benitoite.Release.Refinement.Eff.rawBind
+      (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.swapσ)
+      Benitoite.Release.Refinement.RawValueSubstCollision.latent =
+    Benitoite.Release.Refinement.EffR.mk (fun x => false)
+      [Benitoite.Release.Refinement.RawValueSubstCollision.failure 1,
+        Benitoite.Release.Refinement.RawValueSubstCollision.failure 0]
+'Benitoite.Release.Refinement.RawValueSubstCollision.swap_latent_image' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.swap_not_canonical :
+  ¬(Benitoite.Release.Refinement.Eff.rawBind
+        (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.swapσ)
+        Benitoite.Release.Refinement.RawValueSubstCollision.latent).Canonical
+'Benitoite.Release.Refinement.RawValueSubstCollision.swap_not_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.HasTypeVQ.variable_origin {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {i : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ (Benitoite.Release.Refinement.Val.var i) a) :
+  ∃ b, Γ[i]? = some (some b) ∧ b.Ordinary
+'Benitoite.Release.Refinement.HasTypeVQ.variable_origin' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a' does not depend on any axioms
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b' does not depend on any axioms
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ' does not depend on any axioms
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ' does not depend on any axioms
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a_wf :
+  Benitoite.Release.Refinement.Ty.WF 0 0 0 Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b_wf :
+  Benitoite.Release.Refinement.Ty.WF 0 0 0 Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a_sorted :
+  Benitoite.Release.Refinement.Ty.Sorted [] Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a_sorted' depends on axioms: [propext]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b_sorted :
+  Benitoite.Release.Refinement.Ty.Sorted [] Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b_sorted' depends on axioms: [propext]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.subtype_outside :
+  Benitoite.Release.Refinement.Ty.LeQ [] [] Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a
+    Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.subtype_outside' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.context_facts :
+  Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ.facts = [Benitoite.Release.Refinement.Pred.truth] ∧
+    Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ.facts = []
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.context_facts' depends on axioms: [propext]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.facts_preserved (p : Benitoite.Release.Refinement.Pred) :
+  p ∈ Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ.facts →
+    Benitoite.Release.Refinement.Entails Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ.facts p
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.facts_preserved' depends on axioms: [propext]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.source_variable {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ
+    [] (Benitoite.Release.Refinement.Val.var 0) Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.source_variable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.target_variable_untypable
+  {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {store : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam}
+  {Φ : List Benitoite.Release.Refinement.Pred} {t : Benitoite.Release.Refinement.Ty} :
+  ¬Benitoite.Release.Refinement.HasTypeVQ P B store Q C Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ
+      Φ (Benitoite.Release.Refinement.Val.var 0) t
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.target_variable_untypable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.source_return {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {R : Option Benitoite.Release.Refinement.Ty}
+  {L : Benitoite.Release.Refinement.LocalCtx} :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q C Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ
+    [] R (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.var 0))
+    Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b Benitoite.Release.Refinement.Eff.empty L
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.source_return' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.ContinuationNarrowingObstruction.target_return_untypable
+  {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {store : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} :
+  ¬Benitoite.Release.Refinement.HasTypeCQ P B store Q C Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ
+      Φ R (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.var 0)) t e L
+'Benitoite.Release.Refinement.ContinuationNarrowingObstruction.target_return_untypable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.renameKind (ξ : Nat → Nat) :
+  Benitoite.Release.Refinement.BuilderKind → Benitoite.Release.Refinement.BuilderKind
+'Benitoite.Release.Refinement.renameKind' depends on axioms: [propext]
+Benitoite.Release.Refinement.hideConts (Γ : Benitoite.Release.Refinement.Ctx) : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.hideConts' depends on axioms: [propext]
+Benitoite.Release.Refinement.hideBuilders (Ψ : Benitoite.Release.Refinement.StoreTy) :
+  Benitoite.Release.Refinement.StoreTy
+'Benitoite.Release.Refinement.hideBuilders' depends on axioms: [propext]
+Benitoite.Release.Refinement.bindParams (Γ : Benitoite.Release.Refinement.Ctx)
+  (ps : List Benitoite.Release.Refinement.Ty) : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.bindParams' does not depend on any axioms
+Benitoite.Release.Refinement.liftMany (n : Nat) (Φ : List Benitoite.Release.Refinement.Pred) :
+  List Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.liftMany' does not depend on any axioms
+Benitoite.Release.Refinement.localExtend (n : Nat) :
+  Benitoite.Release.Refinement.LocalCtx → Benitoite.Release.Refinement.LocalCtx
+'Benitoite.Release.Refinement.localExtend' does not depend on any axioms
+Benitoite.Release.Refinement.substTyValues (σ : Nat → Benitoite.Release.Refinement.Val)
+  (a : Benitoite.Release.Refinement.Ty) : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.substTyValues' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.substEffValues (σ : Nat → Benitoite.Release.Refinement.Val)
+  (e : Benitoite.Release.Refinement.Eff) : Benitoite.Release.Refinement.Eff
+'Benitoite.Release.Refinement.substEffValues' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Val.subst (σ : Nat → Benitoite.Release.Refinement.Val)
+  (v : Benitoite.Release.Refinement.Val) (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.Val.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Val.substList (σ : Nat → Benitoite.Release.Refinement.Val)
+  (vs : List Benitoite.Release.Refinement.Val)
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) : List Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.Val.substList' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Comp.subst (σ : Nat → Benitoite.Release.Refinement.Val)
+  (m : Benitoite.Release.Refinement.Comp) (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.Comp
+'Benitoite.Release.Refinement.Comp.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Arm.substList (σ : Nat → Benitoite.Release.Refinement.Val)
+  (arms : List Benitoite.Release.Refinement.Arm)
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) : List Benitoite.Release.Refinement.Arm
+'Benitoite.Release.Refinement.Arm.substList' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Clause.substList (σ : Nat → Benitoite.Release.Refinement.Val)
+  (cs : List Benitoite.Release.Refinement.Clause)
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) : List Benitoite.Release.Refinement.Clause
+'Benitoite.Release.Refinement.Clause.substList' depends on axioms: [propext, Classical.choice, Quot.sound]

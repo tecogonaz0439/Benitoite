@@ -12,7 +12,7 @@ def renEnv (ξ : Nat → Nat) : SubstEnv :=
   ⟨Ty.tvar, [], [], fun i => .var (ξ i)⟩
 def renameTy (ξ : Nat → Nat) (a : Ty) : Ty := a.rawBind (renEnv ξ)
 def renameEff (ξ : Nat → Nat) (e : Eff) : Eff := Eff.rawBind (renEnv ξ) e
-private def renameKind (ξ : Nat → Nat) : BuilderKind → BuilderKind
+def renameKind (ξ : Nat → Nat) : BuilderKind → BuilderKind
   | .string => .string
   | .bytes => .bytes
   | .list a => .list (renameTy ξ a)
@@ -75,9 +75,9 @@ end
 
 def valEnv (σ : Nat → Val) : SubstEnv :=
   ⟨Ty.tvar, [], [], fun i => (σ i).toTerm?.getD (.integer 0)⟩
-def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.rawBind (valEnv σ)
-def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.rawBind (valEnv σ) e
-private def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
+noncomputable def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.bind (valEnv σ)
+noncomputable def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.bind (valEnv σ) e
+private noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
   | .string => .string
   | .bytes => .bytes
   | .list a => .list (substTyValues σ a)
@@ -85,6 +85,7 @@ private def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
 def upSubst (k : Nat) (σ : Nat → Val) (i : Nat) : Val :=
   if i < k then .var i else (σ (i - k)).rename (· + k)
 
+noncomputable section
 mutual
   def Val.subst (σ : Nat → Val) (v : Val) (ρ : Nat → LocalRef := LocalRef.bound) : Val :=
     match v with
@@ -141,6 +142,7 @@ mutual
     | [] => []
     | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m (upLocalSubst (n + 1) ρ)) :: Clause.substList σ cs ρ
     | .fail e m :: cs => .fail (substTyValues σ e) (Comp.subst (upSubst 2 σ) m (upLocalSubst 2 ρ)) :: Clause.substList σ cs ρ
+end
 end
 
 
