@@ -66,7 +66,9 @@ mutual
   def Ty.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop
     | .base _ | .bytes | .opaque _ _ | .scoped _ _ _ | .pathBases | .scopePattern _ | .tvar _ => True
     | .data d as => (∃ n, P.DataArity d n ∧ as.length = n) ∧ declaredTys P C Γ as
-    | .external _ as | .tapp _ as => declaredTys P C Γ as
+    | .external id as => (∃ td, P.externalType id = some td ∧ td.id = id ∧ as.length = td.arity) ∧
+        declaredTys P C Γ as
+    | .tapp _ as => declaredTys P C Γ as
     | .ctor (.data d) => ∃ n, P.DataArity d n
     | .ctor _ => True
     | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.Declared P C Γ a

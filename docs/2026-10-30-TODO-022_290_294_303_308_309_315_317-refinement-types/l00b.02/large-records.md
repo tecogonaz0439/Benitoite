@@ -10,3 +10,5 @@
 | `02b-values-axioms.log` | 669661 | `5d2a88dc9941c59a7a6e2d7d54f92fbd3808d1a8bff873149fa9cf4d04e08a17` |
 | `02b-values-r2-production.patch` | 206185 | `193a5dd16a7826843d92f185d8509cde01b56752a9bb2b1000077a6d277d9b07` |
 | `02b-values-r2-axioms.log` | 762611 | `c1d2e33735f189bf82b49a170ab55beb0c0c2caf13a22ef838f27f3a226cb500` |
+| `02b-external-axioms.log`（途中） | 822092 | `00052e8fe3207228b2d83670ceeb0f6f24c9404129b6bc4adc35d8537325f478` |
+| `02b-external-axioms.log` | 822591 | `2c4d97507cc752abc35c73eb033231693ac089add9b5bd53a697675e8f6b22fb` |

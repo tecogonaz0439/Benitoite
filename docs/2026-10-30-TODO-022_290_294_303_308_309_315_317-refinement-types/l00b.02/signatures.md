@@ -774,6 +774,8 @@ external_adequate :
   B.externalResponse f ts vs out obs → Outcome.Adequate σ out
 ```
 
+**RV-L00b.02b-external後の改訂予定**：上のexternal_typedの結果型aは、現行の本番では篩までを信頼する暫定の署名である。2026-10-31の取りまとめの判断に従い、`.04`・`.05`で保証を全入れ子の篩を除いた型（carrier）までへ改め、E_Externalに受信後の篩の述語の閉じた評価と違反時のerrを加える。第24・25節と第12.2節の後続の表に担当と完了条件を固定した。今回は本番を改訂していない。
+
 `external_adequate` は結果型の保持値が同じ実行で適格であることを明示する候補の言明である。これを直ちに第四の信頼条件の欄として追加しない。現行03-10で受け渡せる非再帰の型から PathBases/Scope の保持値が作れないことを ExternalSignature.WF から証明し、external_typed と全 canonical forms からこの言明を**補題として導く**。導けず新しい外部仮定が必要なら **S2** で停止する。typed/exists/no_targets の三欄と、そこから導く adequate を区別する。Model/ModelTargets/ModelHttp の三つで三欄を充足することが L60/L70 の義務である。
 
 外部型を受け渡す署名の State は潜在効果として保つが、IO の操作や State という handler 操作にしない。外部型を含まない pure な外部関数も専用応答関係で扱い、決定的な delta への移動はしない。externalResponse の obs は外部 IO 対象を生じない条件を表示するために残し、結果から常に [] と証明する。外部呼出しの遷移ラベルは none であり、Event.external は設けない。空効果から到達した状態がどの事象も出さないという effect_soundness/O060 の結論を保つ。通常の資源として B.isResource=true にする処理と release の対象への自動追加は禁止する。
@@ -1902,10 +1904,10 @@ embedState : O.State → State
 |---|---|---|---:|---:|---|
 | `.02a` 全 sort・型・有限置換 | Sort14/Term20/Pred14、Ty の追加5形（dependentFn/external/scoped/pathBases/scopePattern）、Tel2/Atom2/RangeExpr3/RangeIx2、Const16 と bits 比較の型、ObservationEnv・Declared・kind。型/行の全相互再帰へ Tel を含める。Term/Tyから読むPathEnv/ID/AtErrorの有限構文もここで置く | 現在の3族は各15のまま全 sort/Option 像へ追随。TypedFacts は現在のV6を2入口で処理。`Ty.LeQ.bind/rawBind` の既存9＋新3（Tel/scoped/opaque互換）=12、TelLe2、TelClosure2。`Ty.norm/rawBind/shiftV/WF` は Ty21/Tel2/型列2/Eff1、既存の `embedTy_norm/embedEff_norm/embed_wf/tyCompare_embed/embedTy_injective` は旧Ty15/型列2/Eff1。第3.4節のWF、slot可換性を含む | **L10から2時間、L20は0**。型付き像の全sort/WFとsnapshot可換性の共通追随を移す。旧 `.02a` の1〜3時間を加えた配分 | **3〜5時間** | 全既定 lake build。構成子表・埋め込み・自己/外側参照の局所照合 |
 | `.02b-values` 値の葉・既存計算 | V_Fun/Prim/Op/Raise/Con/LocRef/LocLazy/Map/Set/Bytes/Dict/Super の12、C_BuilderLet/BuilderOp/If/Lazy/Escape/Use/Meth の7。Admissible/PrimitiveAdmissible/MethodRowsAdmissible、LocalRef.HasKind/LocalSubstOk、ストアの移送条件を同時に置く。依存する構文としてCapture1/Closure1、Val.dependentLam/closure、Frame7/Cell6/LocTy4/State4/Event2（io/release）と旧68遷移/stepを先に置く。旧17/13形からValは19、Compは13。RV-L00b.02b-values中1のD29のkind表付き埋め込みの定義の改訂と旧導出の埋め込みの定理は**L20**、合成・表層の照合は**L70**が受け持つ。この単位では本番の埋め込みを改訂しない（第2.2・24節） | V_Lam・V_List など注釈を持つ値の規則へ Ty.Declared を加え、型付けから Declared を取り出す正則性の補題を置く（RV-L00b.02a 中1。書ける形を狭めないことを群末レビューで確認）。3族に19場合追加し、累計V18/C12/Vs2/Each2=34。TypedFactsはV18を各入口で処理（追加12×2）。hide_context の新しい場所/ストア前提、subst/None版の局所参照を追随。既存Vs/Eachは各2を保持 | **0**。旧 `.02b` の2〜4時間をこの単位へ全配分。以降の単位をその枠に重ねない | **2〜4時間** | 全既定 lake build。場所を消すストアへ移せないことと重複Mapの型付けを照合 |
-| `.02b-external` 外部と依存する実引数列 | Val.externalRef/externalHandle、Comp.externalCall。V_ExternalRef/ExternalHandle、C_External、TelArgs done/param の5導出。外部ID/有限表/三欄、E_ExternalApply/External/ExternalErr を無事象で置く。Valは21/Compは14、Stepは71 | 3族に5場合追加し累計39。TypedFactsはV20を各入口（追加2×2）。TelArgsのparamの下の bind/up と逐次具体化の可換性をここで閉じる。Rを持たないTelArgsの相互補題も後送しない | **L10から1時間、L20から1〜2時間**。外部型のWF/埋め込みの追随と依存列の相互置換・逐次具体化を分ける。外部応答の三モデルの充足はL60に残す | **2〜3時間** | 全既定 lake build。外部pureのラベルnone、external_typedのno-exit、名目IDを局所照合 |
+| `.02b-external` 外部と依存する実引数列 | Val.externalRef/externalHandle、Comp.externalCall。V_ExternalRef/ExternalHandle、C_External、TelArgs done/param の5導出。外部ID/有限表/三欄、E_ExternalApply/External/ExternalErr を無事象で置く。Valは21/Compは14、Stepは71 | 3族に5場合追加し累計39。TypedFactsはV20を各入口（追加2×2）。TelArgsのparamの下の bind/up と逐次具体化の可換性をここで閉じる。Rを持たないTelArgsの相互補題も後送しない | **L10から1時間、L20から1〜2時間**。外部型のWF/埋め込みの追随と依存列の相互置換・逐次具体化を分ける。外部応答の三モデルの充足はL60に残す。現行external_typedの篩までの信頼は暫定とし、`.04`・`.05`でcarrierまでへの結論の改訂とE_Externalの受信検査をそろえる（第24・25節） | **2〜3時間** | 全既定 lake build。外部pureのラベルnone、external_typedのno-exit、名目IDを局所照合 |
 | `.02b-at` σ/At・保持値 | Val.pathBases/scopePattern/checkedAt/atError、Comp.issuePathBases/checkAt。V_PathBases/ScopePattern/Checked/CheckedRequest/CheckedAt/AtError の6、C_IssuePathBases/CheckAtの2、CheckedWitness2。先に置いたPathEnvのValid、準備の帰納的Required、Adequate、AtError/ResultShape、BuiltinArgs/AdequateResultとCoreAssumptionsの改訂、Event.pathBasesと5遷移。Valは25/Compは16、Event3/Step76になる | 3族に10場合追加し累計49。TypedFactsはV26を各入口（追加6×2）。Witness.requestのHasTypeVを相互に含める。snapshot/memberの値置換・WFと旧のabsolute保持値の対応、hideにおける保持要求を追随 | **L10から1〜2時間、L20から1〜2時間**。保持値のsort/WFとRequestを含む相互置換を分ける。意味の全σ健全性/IO対象と三モデルはL50のまま | **2〜4時間** | 全既定 lake build。別σのtoken、Requestのground/端点一致、At準備のindexを局所照合 |
 | `.02b-handlers` 腕/節/ハンドラ | C_Match/Handle/Handle_Fail/Resume/ResumeLの5、Arms3/Clauses2/Failure1、ImageOk3の計14導出。PatTy7/PatTys2/AltsTy、Inhabits群/Exhaustiveを腕の参照に必要な全形で作る。Arm1/Clause2の構文は既にある | 3族に14場合追加し累計63。V26のTypedFactsは増えず、この単位でCQ/Arms等の置換の公開署名をR0の拘束付きへ切り替え、C_ResumeLのR0拘束、`.subst_under_none`、SubstOk.hide/up、節の継続のcontVar/contLocと多相入力の全束縛を同時に閉じる。パターンの移動/置換の既存補助はPatTy7/PatTys2、腕の3場合の中でguard有無を処理 | **L10から2〜3時間、L20から1〜3時間**。既存のCovers/V_Sub等の追随と継続/節/腕の相互置換・upを分ける。全handle/resume/dropの状態保存はL20に残す | **3〜6時間** | 全既定 lake build。R0の反例を除く拘束、Noneの位置、guard/節の全Φを局所照合 |
-| `.02b-closures` 閉包/状態・依存呼出し | 新しい値/計算/状態の構文の追加は0。V_DependentLam/Closureの2、C_DependentApp、TelBody2/CaptureOk1/ClosureTy1/DependentClosureTy1の計8導出。ContTy10、CellOk6/StoreOk/StateTyE4/StateTyを、既にあるFrame7/Cell6/LocTy4/State4とStep76/stepへ接続 | 3族に8場合追加し累計71。TypedFactsはV28を各入口（追加2×2）。捕捉したΓ/Φの型付き像、TelBodyとdependentLam/closureの下のshift/subst/narrow/hide、依存βに必要な構文のbind/instantiateの可換性を同時に閉じる。全状態の保存の定理をここで完成とはしない。D29が依存するC_DependentAppを置き、StoreOk等で場所の型のDeclaredを保持する条件を定める（RV-L00b.02b-values中2・軽4、第24節） | **L10から1〜4時間、L20から2時間**。型のWF/移動の追随と捕捉環境/依存βの構文の可換性を分ける。.14aの固定Ebでの代表、.14bのgroundからのΦの代表、L20の全状態保存を二重に移さない | **3〜6時間** | 全既定 lake build。旧68遷移の欠落なし、固定σ/Eb、StateTyがValidだけを要求することを照合 |
+| `.02b-closures` 閉包/状態・依存呼出し | 新しい値/計算/状態の構文の追加は0。V_DependentLam/Closureの2、C_DependentApp、TelBody2/CaptureOk1/ClosureTy1/DependentClosureTy1の計8導出。ContTy10、CellOk6/StoreOk/StateTyE4/StateTyを、既にあるFrame7/Cell6/LocTy4/State4とStep76/stepへ接続 | 3族に8場合追加し累計71。TypedFactsはV28を各入口（追加2×2）。捕捉したΓ/Φの型付き像、TelBodyとdependentLam/closureの下のshift/subst/narrow/hide、依存βに必要な構文のbind/instantiateの可換性を同時に閉じる。全状態の保存の定理をここで完成とはしない。D29が依存するC_DependentAppを置き、StoreOk等で場所の型のDeclaredを保持する条件を定める（RV-L00b.02b-values中2・軽4、第24節）。E_ExternalApplyの保存へ渡すため、C_DependentAppの実引数をHasTypeTelArgsQで検査する。Tel.argumentsとVsを使う場合は、文脈の正則性から各引数のAnnotationを供給してTelArgsを作る逆向きの補題をこの群で閉じる。L20がその補題を使ってE_ExternalApplyの保存を示す（RV-L00b.02b-external軽3） | **L10から1〜4時間、L20から2時間**。型のWF/移動の追随と捕捉環境/依存βの構文の可換性を分ける。.14aの固定Ebでの代表、.14bのgroundからのΦの代表、L20の全状態保存を二重に移さない | **3〜6時間** | 全既定 lake build。旧68遷移の欠落なし、固定σ/Eb、StateTyがValidだけを要求することを照合 |
 | `.02c` 共有層と既定import | 新しい値/計算の構成子0。IntKind/IntegerValue/Intervalとmin/maxをRelease.Syntaxに依存しない共有数値層へ分離、ValueApprox4/ApproxValue3/FlowApprox1/EvalResult3とadapterを置く | 前段までの3族71/TypedFacts56を新たな場合として加算しない。旧Interval/Releaseの読者とembed/intKind.type/ofTypeの依存を追随し、全旧APIを残す | **0**。旧 `.02c` の1〜3時間を維持 | **1〜3時間** | 全既定 lake build。推移importを検査し、新旧全既定ターゲットと相対リンクを確認 |
 
 型の新しい構成子のうち Tel/scoped/opaque互換による LeQ の新3規則は `.02a` で同時に置く。fn/Tel の正規化後等号・F3全体は .11/L10/L40 のままであり、上表の12はその最終規則数を主張しない。型付き入力から ClosedObservable を得る一般証明、groundの新規則、δ/IO/externalの三モデルは上表の相互補題の件数へ混ぜない。
@@ -1913,6 +1915,15 @@ embedState : O.State → State
 各群の末で累計の場合をすべて通す。追加の212被覆義務を `.02b` 末に一括で穴埋めする配分にはしない。実装の記録では新しく置いた相互入口の実名・実際のmatchの根・統合した系を列挙し、この予定の71と照合する。
 
 埋め込みの関数の根の場合は `.02a` で旧Ty15/型列2/Eff1/Const16、`.02b-values` で旧Val17/Comp13/Arm1/Clause2とFrame7/Cell6/LocTy4/State4を処理する。外部/At/閉包の後続単位では旧入力に新しい形は増えず、既存の根の場合の像と型付けの接続だけを追随する。適格な旧の全導出・全遷移の保存の一般証明を、この関数の定義の場合と同じ件数として二重に数えない。
+
+
+RV-L00b.02b-externalを受け、閉じた評価を置く後続の起動単位へ次の義務を固定する。これは上表の構成子数へ新しい導出を加算する表ではない。各単位の本体・既存の検査の枠で詳細化し、今回の記載を実装済みの署名・規則と扱わない。
+
+| 起動単位 | 外部の受信後の所属検査に関する義務 | 完了の確認と接続先 |
+|---|---|---|
+| `.04` 閉じた評価 | 結果型の全入れ子から篩を除くcarrierと、受信した値の篩の述語を閉じて評価する検査を用意する。結果の最外、Mapの鍵、dataの欄を含む全入れ子を対象にし、評価失敗を真に変えない | `.05`とともにexternal_typed・E_External・stepの改訂へ使える定義と健全性を示す。述語の所属をゲストへの信頼として残さない |
+| `.05` 閉じた評価と葉の接続 | `.04`の評価を使い、external_typedの結論をcarrierまでへ弱める改訂と、E_Externalでの受信後の所属検査・違反時のerr・stepの対応を同じ変更でそろえる。篩付きの外部型は受け付けたままとし、no-exitと無事象を保つ | 三つの外部条件・遷移・保存の前提と結論を照合する。carrierだけの型付けから検査に成功した値の元の篩付き型付けを導き、違反時のエラー経路も示す。現行の篩までを信頼する本番はこの改訂まで暫定である |
+| `L60` 三モデル | Model/ModelTargets/ModelHttpで、carrierまでのexternal_typedとexists/no_targetsの三条件を充足する。受信検査後の正常結果の篩への所属と、違反時のerrを示す | ゲストの正常結果が篩を満たすことを仮定にせず、`.04`・`.05`の検査から導く。R50・L70が表層・交換・実装の受信経路との対応を照合する |
 
 ### 12.3 三段の配分の保存と現在の相談条件
 
@@ -2227,3 +2238,94 @@ Frame7/Cell6/LocTy4/State4、Val19/Comp13、Step68を維持した。旧Val17/Com
 | 軽3 / 三モデルの骨格とエフェクト | **L50** | 三モデルのsat/admitsに使う骨格は、エフェクトを読まないか、集合として読む。Fail列の順序・重複数を保存する骨格に依存させず、値置換後の正規化による整列・重複除去を含めて案Aの保存条件を証明する。集合として読む場合も、この正規化による変化を区別しないことを確認する |
 | 軽4 / 場所の型のDeclared | **.02b-closures**・**L20** | StoreOk等の型付き状態の不変条件に、場所の型のDeclaredを保持する条件を置く。E_RefNew/E_Lazyによる場所の生成と後続の保存から、V_LocRef/V_LocLazyのDeclaredを供給する。閉じたWFだけのStoreTy.WFからDeclaredが得られるとは扱わない |
 | 軽5 / 旧lamの遷移の埋め込み | **L20・L70** | 旧の遷移の埋め込みを言明するときに、対象のlamのNamesWFを前提に置く。名前と引数型の個数の一致からTel.arityと旧のparams.lengthの一致を供給する。型の付かない任意のlamについて同じarityを仮定しない |
+| RV-external 中1 / 外部の受信後の篩の所属検査 | **.04・.05**（閉じた評価・三欄と遷移の改訂）、**L60**（三モデル）、**R50・L70**（表層・交換） | 篩付きの型を外部境界で受け付けたまま、external_typedが保証するのは全入れ子の篩を除いた型（carrier）までとする。受信した結果・Mapの鍵・dataの欄等の全入れ子の篩を閉じた評価で検査し、違反はerrとする。external_typedの結論とE_External・stepを`.04`・`.05`でそろえて改訂し、L60の三モデルで三条件の充足と検査後の所属・違反時のerrを示す。現行の篩までを信頼する本番はその改訂までの暫定であり、今回は変更しない |
+| RV-external 軽1 / 受理と補助判断のWFの対応 | **L70** | 「処理系が受理する外部署名ならExternalSignature.WFを満たす」という向きだけを示す。補助判断はdataのUnitや展開の予算等で上限が広いため、WFから処理系の受理への逆向きは主張しない |
+| RV-external 軽2 / 外部の多相性と型引数の文脈 | **多相の外部宣言を加える改造の担当**（今回は対象外） | 現行ExternalCallAdmissible.typesは空のΓでTypeAnnotationsを検査し、SignatureInstanceは呼出し側のΓを使う。現在は単相でts=[]なので影響しない。多相の外部宣言を加えるときはtypesをTypeAnnotations P C Γ tsへ改め、SignatureInstanceと文脈をそろえ、外側の値依存を含む移動・置換・narrowingとmapを証明し直す |
+| RV-external 軽3 / E_ExternalApplyの保存の道筋 | **.02b-closures**（TelArgsへの接続）、**L20**（保存） | C_DependentAppの実引数の前提にHasTypeTelArgsQを使い、E_ExternalApplyの後のC_Externalへ渡す。Tel.argumentsとVsを使う場合は、文脈の正則性から各引数のAnnotationを供給し、VsとargumentsからTelArgsを作る逆向きの補題を同じ群で置く。既存HasTypeTelArgsQ.argumentsはTelArgsからVsへの向きだけであり、逆向きの代用にしない。L20はこの接続と捕捉環境の具体化からE_ExternalApplyの保存を示す |
+| RV-external 軽4 / State・ハンドル引数・再帰の境界 | **今回の補助入力** | 02b-external-boundary.leanにStateful.get_wf、Stateful.get_call_typed、Recursive.recursive_rejectedを加える。本番の変更を伴わず、非空usesの逆向き、Stateの正規形、ハンドルを渡すTelArgs、自己参照dataの有限導出の不存在をLeanで検査する。結果はresultsのレビュー対応とr2の検査記録に保存する |
+
+2026-10-31、[RV-L00b.02b-external](../reviews/RV-L00b.02b-external.md)後の上の5行は、planの同日の先頭の判断を固定した追記である。元のRV-valuesの7行も維持する。本番の信頼条件と遷移の改訂を今回済ませたとは扱わない。
+
+## 25. `.02b-external` の補助契約と実装（2026-10-31）
+
+起動依頼で委ねられた補助契約の細部を、以下の形で本番へ置いた。基準B_WORKは `9184a3ced427d4897fcb234d2ac277f95b60ac0f`、指定ブランチは `m014/l00b.02b-external` である。gitによる照合・操作は行っていない。主な定理の前提・結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態を変更していない。第5節の三つの外部条件を具体化し、CoreAssumptionsに接続した。第24節の後続の義務は引き続き同じ担当へ残す。
+
+**レビュー後の扱い**：本節の本番の定義は実装時点の記録である。RV-L00b.02b-external中1を受け、篩付きの型を外部境界で受け付け、受信後の所属検査を必須にする方針を採った。external_typedとE_Externalの本番の改訂は第12.2・24節の`.04`・`.05`へ割り当て、今回は文書と境界の補助入力だけを直す。
+
+### 25.1 宣言の有限表・名目IDと受渡し型
+
+ExternalMode/ExternalTypeDecl/ExternalPosition/ExternalPathStep/ExternalUse/ExternalSignature/ExternalDecl/ExternalKey/ExternalHandleをSyntaxに置き、Program.externalsを有限列とした。ExternalKeyは型IDと関数IDの直和であり、lookupはDecidableEqから得る等値を使う。表示名で引かない。外部の応答はBuiltins.externalResponseであり、delta/ioResponse/releaseResponseとは独立している。
+
+`Ty.Declared P C Γ (.external id ts)` は、`∃ td, P.externalType id = some td ∧ td.id = id ∧ ts.length = td.arity` と `declaredTys P C Γ ts` の連言とした。これで通常の注釈の全入れ子でも未知のIDと不正なarityを拒否する。DeclaredのrawSubstV/norm/bind_valuesの保存は、ID・lookup・型列長が不変であることと各型引数の帰納仮定から閉じた。Tyの既存の移動・型/行/値/範囲置換・正規化はIDを保持する。`Ty.bind_external` をその公開の入口として加えた。
+
+ExternalValueTypeは、受け渡す有限な値構造の導出である。基本型・Bytes・外部ハンドル・List・Map・flags・data・篩の9構成子を持つ。外部ハンドルでは型ID、component、arity 0、空の型引数を照合する。dataでは、そのdataに属する全構成子の有限な一覧と、具体化した全欄の再帰的な導出を持つ。flagsは引数なしの構成子1〜32個、Mapの鍵は対応する基本型のcarrier（篩を除いて検査）とする。関数・Reference・Lazy・通常資源・scoped/PathBases等の構造は導入できない。
+
+この判断はWITの照合器全体ではない。dataの欄のUnitを許し、標準Resultの省略されたUnitも表現できる。Unitを許すソース位置、record/variant/tupleの具体的な対応・名前・ABI・予算の照合は、既定の表層・交換の担当へ残す。この補助判断の上限がソースのABI照合より広いことを、利用者に書ける外部宣言の拡張とは扱わない。外部応答の正常存在を要求しないため、三条件のモデルは対応できない内部入力へerrを返せる。精密なゲスト状態や所有権ヒープは導入していない。**L70が示すのは「処理系が受理する外部署名なら補助判断のExternalSignature.WFを満たす」という向きだけである。WFから処理系の受理への逆向きは主張しない**（RV-external軽1）。
+
+ExternalOccurrenceは外部型の出現を、Listのelement、Mapのkey/value、具体化したdataのconstructor/field位置まで辿る。ExternalUseAtはそれをTelの宣言順の引数番号と結果位置へ対応させ、引数をborrow、結果をownに固定する。ExternalSignature.WFのuses_exactとuses_uniqueが、usesの過不足と重複を検査する。ExternalTelWFは全引数と結果を検査し、終端の効果を、usesが空ならempty、それ以外ならStateだけに固定する。Program.ExternalWFはkeyの重複、keyと宣言内IDの一致、型のarity 0、全関数のExternalSignature.WFを検査する。type_lookup/function_lookupが有限表から対応する適格性を取り出す。
+
+### 25.2 許容と型付けの入口
+
+```text
+ExternalCallAdmissible P B C d ts : Prop
+  count : ts.length = d.tparams.length
+  kinds : TypeArgsKinded P C ts d.kinds
+  constraints : SatAll B C ts d.tparams
+  types : TypeAnnotations P C [] ts
+
+HasTypeVQ.V_ExternalRef :
+  P.externalFunction f = some d → d.WF P → ExternalCallAdmissible P B C d ts →
+  SignatureInstance P C Γ d.parameters d.kinds ts [] →
+  HasTypeVQ P B Ψ Q C Γ Φ (.externalRef f ts)
+    (.dependentFn (instantiatedTel d.parameters ts []))
+
+HasTypeVQ.V_ExternalHandle (h : ExternalHandle) (td : ExternalTypeDecl) :
+  P.externalType h.typeId = some td → td.component = h.component →
+  td.resource = h.resource → ts.length = td.arity →
+  Ty.Annotation P C Γ (.external h.typeId ts) →
+  HasTypeVQ P B Ψ Q C Γ Φ (.externalHandle h ts) (.external h.typeId ts)
+
+HasTypeTelArgsQ.done :
+  Ty.Annotation P C Γ (.dependentFn (.done a e)) →
+  HasTypeTelArgsQ P B Ψ Q C Γ Φ [] (.done a e) a e
+HasTypeTelArgsQ.param :
+  Ty.Annotation P C Γ a → HasTypeVQ P B Ψ Q C Γ Φ v a →
+  HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (Tel.argumentsEnv v) rest) r e →
+  HasTypeTelArgsQ P B Ψ Q C Γ Φ (v :: vs) (.param name a rest) r e
+```
+
+自由変数の型は第7.2節の対応する型と同じであり、C_Externalの前提・結論は同節の署名を保つ。`typeEnv ts = typeEnvAt 0 ts []`。外部署名のWFはtparamsとkindsが空であることを検査し、types_nilが適格な呼出しのts=[]を導く。空列の下でcount/kind/SatAll/型注釈をそれぞれ照合し、長さだけの許容にしない。現在の外部呼出しで型引数が閉じていることは、この単相性から従う。一般の関数・コレクションの型引数に外部型や値依存型を書く形を、この条件で制限しない。
+
+`ExternalCallAdmissible.types`は現在 `TypeAnnotations P C [] ts` として空のΓで検査する。SignatureInstanceが使う呼出し側のΓとは異なる。今は単相でts=[]なので受理への影響はないが、多相の外部宣言を加えるときは `TypeAnnotations P C Γ ts` へ改め、SignatureInstanceとそろえて移送の補題も更新する義務を第24節に残す（RV-external軽2）。
+
+V_ExternalRefは前の群のSignatureInstanceを使う。V_ExternalHandleにはAnnotationを加え、型引数のWF/Sorted/Declaredと外部IDの整合を保持した。これは葉の補助条件の具体化であり、arity 0の現行ソースや内部ハンドルを除外しない。
+
+TelArgsのparamは、実引数を現在のΓ/Φで検査した後にrestへbindする。Γに引数を追加して残る実引数を読む方式にはしない。doneのAnnotationにより結果と効果の正規形を得る。移動・値の相互置換・narrowingの三族にTelArgsを含め、Rのない公開入口、hide_context、subst_under_noneも閉じた。normal/instantiate/length/arguments/result_annotation/declaredは、その導出から最終契約・型付きの引数型列・結果型の適格性を取り出す。
+
+### 25.3 逐次具体化の交換と三つの外部条件
+
+Tel.open_shiftはparamの後続のcutoffをc+1にして、実引数の改名と外側の移動を交換する。Tel.open_substは `valEnv (upSubst 1 ν) = (valEnv ν).up` と第23節のbind_open_exchangeを使い、実引数の置換と外側のbindを交換する。根・スロットのnoneを保持し、観測不能な関数やハンドルを整数0の観測として扱わない。instantiate_eq_arguments/instantiate_subst/instantiate_shiftと、TelArgsの各相互入口に接続した。
+
+Val.GroundはVal/Comp/Arm/Clause/Capture/Closureの有限な相互再帰で定めた。型注釈・行・範囲のWFと、値変数の束縛数を検査する。単にvarがないという条件ではない。ExternalArgsは空のC/Γ/Φでの許容・TelArgs・全実引数のGroundと、型引数/結果/行の閉じたWF/Canonicalを持つ。Outcome.Typedのvalは同じストアでのHasTypeVとGround、err/exitはTrueである。
+
+Builtins.ExternalAssumptionsの欄は第5節のexternal_typed/external_exists/external_no_targetsの三つだけである。CoreAssumptionsはValueAssumptionsとこの三欄を含む。**現行の本番のexternal_typedは、具体化した結果型の篩までを信頼する暫定の条件である。** 全終了コードに対するno-exitは保持する。採った改訂では、external_typedの正常結果の保証を全入れ子の篩を除いた型（carrier）までへ弱め、E_Externalが受信した値の篩の述語を閉じて評価し、違反した結果をerrにする。結果の最外だけでなく、Mapの鍵やdataの欄を含む全入れ子を検査する。`.04`・`.05`でこの信頼条件と遷移・stepをそろえて改訂し、L60の三モデルで充足と検査後の所属を示す。今回はその本番の改訂を行っていない。正常応答の存在・決定性・外部の第四の適格性の条件は加えていない。external_adequateは、第5節どおり型の構造と三欄から導く後続の補題である。
+
+E_ExternalApply/External/ExternalErrを既存のStepへ追加し、すべてラベルnoneとした。第23.4節のClosure.viewの等式を入口に使い、型引数と実引数を呼出し元のCaptureで閉じる。stepも専用のExternalOracleを使い、val/errだけを遷移させる。exitを選んだ不適格なoracleからプロセス終了へ遷移させない。Eventはio/releaseの2形のままである。
+
+### 25.4 採った案・理由・捨てた案
+
+| 論点 | 採った案と理由 | 捨てた案 |
+|---|---|---|
+| 外部IDの宣言照合 | Ty.Declaredのexternalでもlookup/宣言内ID/arityと全型引数を検査する。一般の注釈の入れ子にも同じ条件を適用できる | 外部呼出しの葉だけでIDを検査する案は、他の注釈の未知の外部型を通してしまう |
+| 有限な受渡し型 | 全構成子の有限一覧と、具体化後の全欄の有限な導出を持つ。有限のBox[Box[Integer]]を許せる | 同じdata名を祖先で見たら一律に拒否する案は、有限の同名の入れ子まで拒む |
+| Mapの鍵の篩 | carrierを再帰して照合する。篩が基本型のABIを変えないことを保つ | 最外がbaseの鍵だけを認める案は、篩付きの鍵型を不必要に除く |
+| WITとの分担 | この補助判断は保持値を生じない有限な構造を与え、Unitの省略等のABIの細部は既定の表層・交換で照合する | WITの表現を持たないProgramに、表示名から標準ResultやrecordのABIを推測させる案は採らない |
+| 外部の型引数 | count/kind/SatAll/Annotationを明示し、ExternalSignature.WFから現在の空列を導く | 外部型を通常の型引数へ渡す一般の形まで空列に制限する案、ソースの多相externalを今回追加する案は採らない |
+| 葉の正則性 | V_ExternalHandleにAnnotation、V_ExternalRefにSignatureInstanceを渡す。TelArgsから結果のAnnotationを導く | WFだけから外部IDの宣言照合を得る案、ストアの適格性から任意の型引数を推測する案は採らない |
+| TelArgsの束縛 | 同じΓ/Φで各実引数を検査し、restを逐次bindする。Rを持たない判断を同じ相互帰納へ置く | 従来の非依存Vsだけで依存列を検査する案、Γへ全実引数の型を先に追加する案は採らない |
+| 移送の証明 | 第23節の部分観測の交換を一般化し、param下のup/cutoffと三族・hide/None版を同じ群で閉じる | L20へTelArgsの一般の置換を後送する案、noneを既定の観測値で埋める案は採らない |
+| 外部応答と事象 | 三条件とno-exitをCoreAssumptionsへ接続し、専用応答のval/errを無事象で実行する | Event.external、E_ExternalExit、delta/IOや通常資源のreleaseへの自動追加は採らない |
+| Ground | 全注釈の自由変数も有限構文で検査する。捕捉環境のNoneの番号も保つ | varだけの不存在、あるいは任意の置換に対する意味上の不変性で閉性を代用する案は採らない |
+| 受信後の篩の所属（RV-external中1） | 篩付きの型を受け付けたまま、external_typedの保証をcarrierまでとし、E_Externalで全入れ子の篩を閉じた評価で検査する。違反はerrとする。`.04`・`.05`で本番の条件と遷移を改訂し、L60で三モデルの充足を示す。現行の篩までの信頼はその改訂まで暫定とする | 表層で篩付き外部宣言を拒む案はD02/D03の書ける形を狭めるため採らない。ゲストが篩を満たすことを信頼する案は、受信後の所属検査を必須にする調べの方針とD18に従わない |
+
+実装の全一覧・検査・場合数・後続の義務は [results.md](results.md) の `.02b-external` の節と [公開宣言の一覧](02b-external-public-api.md) に記録する。群末の独立レビューと受け入れは取りまとめ・設計者の担当であり、今回の自己点検を独立レビューとして数えない。

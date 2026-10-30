@@ -15,6 +15,7 @@ private theorem lam_annotations {P B store Q C Γ Φ v a}
   match h with
   | .V_Var _ _ | .V_Const _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+  | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ =>
       intro ns ps body he; cases he
   | .V_Lam _ hw _ _ _ =>
@@ -32,6 +33,7 @@ private theorem return_value {P B store Q C Γ Φ R m a ε Δl}
     ∀ v, m = .ret v → ∃ b, HasTypeVQ P B store Q C Γ Φ v b := by
   match h with
   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
+  | .C_External _ _ _ _
   | .C_BuilderLet _ _ _ _ | .C_BuilderOp _ _ _ _ | .C_Meth _ _ _ _ _ _ _ _ _ _
   | .C_Let _ _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
   | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm

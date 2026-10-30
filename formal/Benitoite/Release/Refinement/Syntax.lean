@@ -67,6 +67,58 @@ abbrev BuilderOp := Benitoite.Release.BuilderOp
 inductive BuilderKind where
   | string | list (element : Ty) | bytes
 
+inductive ExternalMode where
+  | borrow | own
+  deriving DecidableEq, BEq
+
+structure ExternalTypeDecl where
+  id : ExternalId
+  component : ComponentId
+  displayName : String
+  arity : Nat
+  resource : Nat
+
+inductive ExternalPosition where
+  | argument (index : Nat)
+  | result
+  deriving DecidableEq, BEq
+
+inductive ExternalPathStep where
+  | element | key | value
+  | field (constructor : ConName) (index : Nat)
+  deriving DecidableEq, BEq
+
+structure ExternalUse where
+  position : ExternalPosition
+  path : List ExternalPathStep
+  mode : ExternalMode
+  typeId : ExternalId
+  deriving DecidableEq, BEq
+
+structure ExternalSignature where
+  component : ComponentId
+  displayName : String
+  tparams : List TParam
+  kinds : KindCtx
+  parameters : Tel
+  uses : List ExternalUse
+
+inductive ExternalDecl where
+  | type (declaration : ExternalTypeDecl)
+  | function (id : ExternalFunctionId) (signature : ExternalSignature)
+
+inductive ExternalKey where
+  | type (id : ExternalId)
+  | function (id : ExternalFunctionId)
+  deriving DecidableEq
+
+structure ExternalHandle where
+  typeId : ExternalId
+  component : ComponentId
+  resource : Nat
+  identity : Nat
+  deriving DecidableEq, BEq
+
 mutual
   /-- 値。 -/
   inductive Val where
@@ -97,6 +149,8 @@ mutual
     /-- 上位の型クラスの辞書 `V↑S`。 -/
     | super (v : Val) (s : ClassName)
     /-- 検査済みの対象。対象自身に型や値の自由変数はない（設計書 01-12「構文」）。 -/
+    | externalRef (id : ExternalFunctionId) (types : List Ty)
+    | externalHandle (handle : ExternalHandle) (types : List Ty)
     | checked (t : Scope.Domain.Target)
     /-- 要求と検査済みの endpoint を保持する。型付けの葉では閉じた要求の型付けに加え、
     groundVal と reqTarget による端点一致を検査する。葉の規則は構文と別に追加する。 -/
@@ -122,6 +176,7 @@ mutual
     /-- `resume κ V`。κ は節の変数か、継続の場所。 -/
     | resume (k : Val) (v : Val)
     /-- メソッドの呼び出し `V.m[S̄; Ē](W̄)`。 -/
+    | externalCall (id : ExternalFunctionId) (types : List Ty) (arguments : List Val)
     | meth (d : Val) (m : MethName) (tys : List Ty) (effs : List Eff) (args : List Val)
 
   /-- 節 `op(x̄) k ⇒ N`。`arity` は x̄ の個数、`ntys` は操作の型パラメータの個数である。N の中で、番号 0 が k、
@@ -252,6 +307,18 @@ structure Program where
   effects : EffName → Option (List OpName)
   classes : ClassName → Option ClassDecl
   impls : ImplName → Option ImplDecl
+  externals : List (ExternalKey × ExternalDecl) := []
+
+
+def Program.externalType (P : Program) (id : ExternalId) : Option ExternalTypeDecl :=
+  match P.externals.lookup (.type id) with
+  | some (.type d) => some d
+  | _ => none
+
+def Program.externalFunction (P : Program) (id : ExternalFunctionId) : Option ExternalSignature :=
+  match P.externals.lookup (.function id) with
+  | some (.function _ d) => some d
+  | _ => none
 
 
 inductive Outcome where
@@ -313,6 +380,8 @@ structure Builtins where
   /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
   要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
   valContent : OpaqueName → Option Ty := fun _ => none
+  externalResponse : ExternalFunctionId → List Ty → List Val → Outcome → List Scope.Domain.Target → Prop :=
+    fun _ _ _ _ _ => False
 
 /-- 宣言は既に先行する値の引数の下で格納されている。 -/
 def signatureTel : List String → List Ty → Ty → Eff → Tel

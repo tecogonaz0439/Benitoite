@@ -1,0 +1,41 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-external-boundary.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-10-30T23:28:58.674337+00:00",
+  "completed_utc": "2026-10-30T23:28:59.699448+00:00",
+  "exit": 0,
+  "elapsed_seconds": 1.0244255,
+  "input": {
+    "file": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-external-boundary.lean",
+    "bytes": 16445,
+    "sha256": "009066ab0bde17761d94ea12feb1e60bddce8258e4f36cdea591090a54146762"
+  },
+  "output": {
+    "file": "02b-external-r2-boundary.log",
+    "bytes": 9534,
+    "sha256": "2260dba6d96360ee51163f267e80cc3caaf0de5a35923d17ec04b7c0ae5af2f4"
+  },
+  "checked_declarations": 87,
+  "unique_declarations": 87,
+  "used_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "rejected_axioms": [],
+  "warnings": 0,
+  "review_witnesses": [
+    "Benitoite.Release.Refinement.ExternalBoundary.Stateful.get_wf",
+    "Benitoite.Release.Refinement.ExternalBoundary.Stateful.get_call_typed",
+    "Benitoite.Release.Refinement.ExternalBoundary.Recursive.recursive_rejected"
+  ],
+  "initial_clock_utc": "2026-10-30T23:25:16+00:00",
+  "scope": "文書と境界入力だけ。本番Lean・plan・処理系・設計書は変更しない。既定build/workは再実行しない"
+}

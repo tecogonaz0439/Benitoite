@@ -297,3 +297,5 @@ import Benitoite.Release.Refinement.TypingDeclared
 import Benitoite.Release.Refinement.ValueInstantiation
 
 import Benitoite.Release.Refinement.Embedding
+
+import Benitoite.Release.Refinement.TelTyping

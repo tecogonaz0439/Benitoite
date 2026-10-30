@@ -77,7 +77,9 @@ def embedImplDecl (d : Benitoite.Release.ImplDecl) : ImplDecl :=
 def embedProgram (P : Benitoite.Release.Program) : Program :=
   ⟨fun f => (P.defs f).map embedDef, fun c => (P.cons c).map embedConDecl,
     fun o => (P.ops o).map embedOpDecl, P.effects, fun c => (P.classes c).map embedClassDecl,
-    fun i => (P.impls i).map embedImplDecl⟩
+    (fun i => (P.impls i).map embedImplDecl), []⟩
+
+@[simp] theorem embedProgram_externals (P : Benitoite.Release.Program) : (embedProgram P).externals = [] := rfl
 
 def embedFrame : Benitoite.Release.Frame → Frame
   | .letF m => .letF (.pure (embedComp m))

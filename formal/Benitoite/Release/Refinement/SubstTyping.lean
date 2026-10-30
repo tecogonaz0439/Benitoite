@@ -112,6 +112,10 @@ theorem Pred.shiftV_zero (p : Pred) (c : Nat) : p.shiftV 0 c = p := by
   simp only [Pred.shiftV, shiftIndex_zero]
   exact predBind_id p
 
+theorem Tel.shiftV_zero (t : Tel) (c : Nat) : Tel.shiftV 0 c t = t := by
+  rw [Tel.shiftV_eq_rawBind, shiftIndex_zero]
+  exact Tel.rawBind_id t
+
 theorem HasTypeVQ.hide_context {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store)
     (store' : StoreTy) (hpres : store.PreservesNormals store') :
@@ -124,6 +128,20 @@ theorem HasTypeVQ.hide_context {P B store Q C Γ Φ v a}
   have ht := h.shift_values (store' := store') hA hstore hpres hm (Ξ := Φ) (fun p hp => by
     rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
   simpa only [shiftIndex_zero, Val.rename_identity, Ty.shiftV_zero] using ht
+
+theorem HasTypeTelArgsQ.hide_context {P B store Q C Γ Φ vs t a e}
+    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
+    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+    (store' : StoreTy) (hpres : store.PreservesNormals store') :
+    HasTypeTelArgsQ P B store' Q C (hideConts Γ) Φ vs t a e := by
+  have hm : ShiftMap 0 0 Γ (hideConts Γ) := by
+    constructor
+    · simp [hideConts]
+    · intro i a hi ho
+      simpa only [shiftIndex_zero, id_eq, Ty.shiftV_zero] using hideConts_lookup.mpr ⟨hi,ho⟩
+  have hh := h.shift_values hA hstore hpres hm (Ξ := Φ) (fun p hp => by
+    rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
+  simpa only [shiftIndex_zero, Val.renameList_identity, Ty.shiftV_zero, Eff.shiftV_zero, Tel.shiftV_zero] using hh
 
 theorem HasTypeVQ.weaken_empty {P B Q C Γ Φ v a store}
     (h : HasTypeVQ P B StoreTy.empty Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) : HasTypeVQ P B store Q C Γ Φ v a := by
@@ -369,6 +387,15 @@ mutual
       have hs := ha.map (substTyValues σ) (fun a hm p hp => hA.sat_values store Q C Γ Δ Ξ σ a p ht (hi.types a hm) hp)
       have hh := HasTypeVQ.V_Op (Q := Q) (Ψ := store) (Φ := Ξ) ho hn hs (ht.signature hi)
       simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh
+    | .V_ExternalRef hd hw ha hi =>
+      have hh := HasTypeVQ.V_ExternalRef (Q := Q) (Ψ := store) (Φ := Ξ) hd hw
+        (ha.map hw (substTyValues σ)) (ht.signature hi)
+      simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh
+    | .V_ExternalHandle h td hd hc hr hn ha =>
+      simpa only [Val.subst, substTyValues, Ty.bind_external, substTyValues_eq_bind] using
+        HasTypeVQ.V_ExternalHandle (Ψ := store) (Φ := Ξ) h td hd hc hr
+          (by simpa only [List.length_map] using hn)
+          (by simpa only [substTyValues, Ty.bind_external, substTyValues_eq_bind] using ht.annotation ha)
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (subst_each hk hA hstore ρ ht hf) (subst_each hv hA hstore ρ ht hf)
         (by simpa using hn) (hA.sat_values store Q C Γ Δ Ξ σ _ _ ht ha hs) (ht.annotation ha) (ht.annotation hb)
@@ -496,6 +523,13 @@ mutual
       exact .C_Meth (subst_value hv hA hstore ρ ht hf) hc hmeth hn hs'
         (by simpa only [List.map_append, List.map_cons, List.map_nil, substTyValues, Ty.bind] using ht.signature hi)
         (ht.methodRows hi.rows hr) hargs' (subst_values hvs hA hstore ρ ht hf) (ht.annotation ha)
+    | .C_External (ts := ts) hd hw ha hargs =>
+      have hh := subst_telArgs hargs hA hstore ρ ht hf
+      have he := instantiatedTel_subst_eq hw.annotation.wf ts [] σ
+      simp only [List.map_nil] at he
+      change Tel.bind (valEnv σ) (Tel.bind (typeEnv ts) _) = _ at he
+      rw [he] at hh
+      exact .C_External hd hw (ha.map hw _) hh
     | .C_Sub hm hl hc hw hs hd =>
       exact .C_Sub (subst_comp hm hA hstore ρ ht hL hf) (hl.bind (valEnv σ) (ht.transport hf))
         (hc.bind (valEnv σ)) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
@@ -507,6 +541,22 @@ mutual
         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.nil_append,
         List.cons_append, liftMany_one, Option.map_map, Function.comp_def,
         Ty.bind_shiftV_values, Eff.bind_shiftV_values, Option.map_none, localExtend] using hb'
+  private theorem subst_telArgs {P B store Q C Γ Φ vs t a e}
+      (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ σ} (ρ : Nat → LocalRef)
+      (ht : TypedImages P B store Q C Γ Δ Ξ σ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+      HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (Tel.bind (valEnv σ) t)
+        (substTyValues σ a) (substEffValues σ e) := by
+    match h with
+    | .done ha => exact .done (ht.annotation ha)
+    | .param (rest := rest) (v := v) (vs := vs) ha hv hs =>
+      apply HasTypeTelArgsQ.param (ht.annotation ha) (subst_value hv hA hstore ρ ht hf)
+      change HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ)
+        (Tel.bind (Tel.argumentsEnv (v.subst σ ρ)) (Tel.bind (valEnv σ).up rest)) _ _
+      rw [← valEnv_upSubst_one, Tel.open_subst]
+      exact subst_telArgs hs hA hstore ρ ht hf
+
 end
 
 theorem HasTypeVQ.subst {P B store Q C Γ Φ v a Δ Ξ R σ}
@@ -548,6 +598,16 @@ theorem HasTypeCQ.subst {P B store Q C Γ Φ R m a e L L' Δ Ξ R0 σ}
     (ρ : Nat → LocalRef) (hL : LocalSubstOk store L σ ρ L') :
     HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (m.subst σ ρ)
       (substTyValues σ a) (substEffValues σ e) L' := subst_comp h hA hstore ρ ht.images hL hf
+
+theorem HasTypeTelArgsQ.subst {P B store Q C Γ Φ vs t a e Δ Ξ R0 σ}
+    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
+    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+    (ht : SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
+    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+    (ρ : Nat → LocalRef := LocalRef.bound) :
+    HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (Tel.bind (valEnv σ) t)
+      (substTyValues σ a) (substEffValues σ e) :=
+  subst_telArgs h hA hstore ρ ht.images hf
 
 /-- None の束縛では新しい像や事実を仮定せず、親の移送を extendNone する。 -/
 theorem SubstOk.transport_extendNone {P B store Q C Γ Φ Δ Ξ R σ}
@@ -605,6 +665,18 @@ theorem HasTypeCQ.subst_under_none {P B store Q C Γ Φ R m a e L L' Δ Ξ R0 σ
       (m.subst (upSubst 1 σ) (upLocalSubst 1 ρ))
       (substTyValues (upSubst 1 σ) a) (substEffValues (upSubst 1 σ) e) L' :=
   subst_comp h hA hstore _ (ht.images.none hA hstore) hL (fun p hp =>
+    Transport.facts (ht.transport_extendNone hf) p (List.mem_append_right _ hp))
+
+theorem HasTypeTelArgsQ.subst_under_none {P B store Q C Γ Φ vs t a e Δ Ξ R0 σ}
+    (h : HasTypeTelArgsQ P B store Q C Γ.extendNone (Φ.map Pred.lift) vs t a e)
+    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+    (ht : SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
+    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+    (ρ : Nat → LocalRef := LocalRef.bound) :
+    HasTypeTelArgsQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)
+      (Val.substList (upSubst 1 σ) vs (upLocalSubst 1 ρ)) (Tel.bind (valEnv (upSubst 1 σ)) t)
+      (substTyValues (upSubst 1 σ) a) (substEffValues (upSubst 1 σ) e) :=
+  subst_telArgs h hA hstore _ (ht.images.none hA hstore) (fun p hp =>
     Transport.facts (ht.transport_extendNone hf) p (List.mem_append_right _ hp))
 
 end Benitoite.Release.Refinement

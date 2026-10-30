@@ -18,7 +18,7 @@ def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : Err
   | none => some (some (.release v none), ok)
   | some r => some (some (.release v (some r)), err r)
 
-private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option ErrKind)
+private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (externalOracle : ExternalOracle) (rel : Val → Option ErrKind)
     (fresh : Store → Nat) (q : Closure) : Comp → Cont → Store → Option (Option Event × State)
   | (.builderLet kind body), k, μ =>
       let l := fresh μ
@@ -51,6 +51,15 @@ private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val �
   | (.ret _), [], _ => none
   | (.app (.closure signature body) ws), k, μ =>
       if ws.length = signature.arity then some (none, .run (body.apply ws) (markPush k) μ) else none
+  | (.app (.externalRef f ts) ws), k, μ =>
+      some (none, .run (Closure.pure (.externalCall f ts ws)) k μ)
+  | (.externalCall f ts ws), k, μ =>
+      match P.externalFunction f with
+      | none => none
+      | some _ => match externalOracle f ts ws with
+        | (.val v, _) => some (none, .run (Closure.pure (.ret v)) k μ)
+        | (.err r, _) => some (none, .error [r] k μ)
+        | (.exit _, _) => none
   | (.app (.fnRef f ts es) ws), k, μ =>
       match P.defs f with
       | some d =>
@@ -176,10 +185,10 @@ private def stepMatch (v : Val) (cap : Capture) (arms : List Arm) (next : Nat) (
           | some g => some (none, .run (Closure.mk (cap.extendMany ws) g)
               (.guardF v cap arms (next+1) body :: k) μ)
 
-/-- σは固定し、外部oracleを使う場合は外部の起動単位で追加する。 -/
-def step (P : Program) (B : Builtins) (_σ : PathEnv) (oracle : Oracle) (_externalOracle : ExternalOracle)
+/-- σは固定し、外部応答も事象を発生させない。 -/
+def step (P : Program) (B : Builtins) (_σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle)
     (rel : Val → Option ErrKind) (fresh : Store → Nat) : State → Option (Option Event × State)
-  | .run q k μ => stepRun P B oracle rel fresh q q.view k μ
+  | .run q k μ => stepRun P B oracle externalOracle rel fresh q q.view k μ
   | .matchRun v cap arms next k μ => stepMatch v cap arms next k μ
   | .error rs (.release v :: k) σ =>
       releaseStep rel v (.error rs k σ) (fun r => .error (rs ++ [r]) k σ)

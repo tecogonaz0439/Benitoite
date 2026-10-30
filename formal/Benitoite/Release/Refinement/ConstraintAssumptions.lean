@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.TypedFacts
+import Benitoite.Release.Refinement.ExternalResponse
 
 /-!
 # 組込みの制約と値注釈の移送の条件
@@ -37,7 +38,7 @@ theorem SatAll.map {B C ts tps} (h : SatAll B C ts tps) (f : Ty → Ty)
 
 /-- 既存の組込み・応答の条件は、それらの判断を追加する群で同じ構造体へ加える。 -/
 structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
-    Builtins.ValueAssumptions P B
+    Builtins.ValueAssumptions P B, Builtins.ExternalAssumptions P B
 
 /-- 主定理のCoreAssumptionsから、補助の移送が使う四条件を供給する。 -/
 theorem Builtins.CoreAssumptions.values {P B} (h : Builtins.CoreAssumptions P B) :

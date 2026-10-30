@@ -48,6 +48,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i tys args => .dict i (tys.map (renameTy ξ)) (Val.renameList ξ args)
     | .super v cl => .super (Val.rename ξ v) cl
+    | .externalRef f tys => .externalRef f (tys.map (renameTy ξ))
+    | .externalHandle h tys => .externalHandle h (tys.map (renameTy ξ))
     | .checked t => .checked t
     | .checkedRequest t c => .checkedRequest t c
 
@@ -68,6 +70,7 @@ mutual
     | .use v m => .use (Val.rename ξ v) (Comp.rename ξ m)
     | .handle m h => .handle (Comp.rename ξ m) (Clause.renameList ξ h)
     | .resume k v => .resume (Val.rename ξ k) (Val.rename ξ v)
+    | .externalCall f tys args => .externalCall f (tys.map (renameTy ξ)) (Val.renameList ξ args)
     | .meth d m tys effs args => .meth (Val.rename ξ d) m (tys.map (renameTy ξ)) (effs.map (renameEff ξ)) (Val.renameList ξ args)
 
   def Arm.renameList (ξ : Nat → Nat) : List Arm → List Arm
@@ -118,6 +121,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i tys args => .dict i (tys.map (substTyValues σ)) (Val.substList σ args ρ)
     | .super v cl => .super (Val.subst σ v ρ) cl
+    | .externalRef f tys => .externalRef f (tys.map (substTyValues σ))
+    | .externalHandle h tys => .externalHandle h (tys.map (substTyValues σ))
     | .checked t => .checked t
     | .checkedRequest t c => .checkedRequest t c
 
@@ -140,6 +145,7 @@ mutual
     | .use v m => .use (Val.subst σ v ρ) (Comp.subst σ m ρ)
     | .handle m h => .handle (Comp.subst σ m ρ) (Clause.substList σ h ρ)
     | .resume k v => .resume (Val.subst σ k ρ) (Val.subst σ v ρ)
+    | .externalCall f tys args => .externalCall f (tys.map (substTyValues σ)) (Val.substList σ args ρ)
     | .meth d m tys effs args => .meth (Val.subst σ d ρ) m (tys.map (substTyValues σ)) (effs.map (substEffValues σ)) (Val.substList σ args ρ)
 
   def Arm.substList (σ : Nat → Val) (arms : List Arm) (ρ : Nat → LocalRef := LocalRef.bound) : List Arm :=
@@ -226,6 +232,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i tys args => .dict i (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
     | .super v cl => .super (Val.substTyAt c ts es v) cl
+    | .externalRef f tys => .externalRef f (tys.map (substTypeAt c ts es))
+    | .externalHandle h tys => .externalHandle h (tys.map (substTypeAt c ts es))
     | .checked t => .checked t
     | .checkedRequest t c => .checkedRequest t c
 
@@ -246,6 +254,7 @@ mutual
     | .use v m => .use (Val.substTyAt c ts es v) (Comp.substTyAt c ts es m)
     | .handle m h => .handle (Comp.substTyAt c ts es m) (Clause.substTyAtList c ts es h)
     | .resume k v => .resume (Val.substTyAt c ts es k) (Val.substTyAt c ts es v)
+    | .externalCall f tys args => .externalCall f (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
     | .meth d m tys effs args =>
         .meth (Val.substTyAt c ts es d) m (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es))
           (Val.substTyAtList c ts es args)

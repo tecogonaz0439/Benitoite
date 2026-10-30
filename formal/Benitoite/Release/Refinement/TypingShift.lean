@@ -394,6 +394,15 @@ mutual
       have hh := HasTypeVQ.V_Op (Q := Q) (Ψ := store') (Φ := Ξ) ho hn hs (hm.signature hi)
       simpa only [Val.rename, renameTy_shiftIndex, renameEff_shiftIndex, List.map_nil,
         instantiatedTel_shift hi.source] using hh
+    | .V_ExternalRef hd hw ha hi =>
+      have hh := HasTypeVQ.V_ExternalRef (Q := Q) (Ψ := store') (Φ := Ξ) hd hw
+        (ha.map hw (Ty.shiftV k c)) (hm.signature hi)
+      simpa only [Val.rename, renameTy_shiftIndex, List.map_nil, instantiatedTel_shift hi.source] using hh
+    | .V_ExternalHandle h td hd hc hr hn ha =>
+      simpa only [Val.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys_eq_map] using
+        HasTypeVQ.V_ExternalHandle (Ψ := store') (Φ := Ξ) h td hd hc hr
+          (by simpa only [List.length_map] using hn)
+          (by simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.annotation ha)
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (HasTypeEachQ.shift_values hk hA hstore hpres hm hf)
         (HasTypeEachQ.shift_values hv hA hstore hpres hm hf) (by simpa using hn)
@@ -543,6 +552,13 @@ mutual
         (by simpa only [List.map_append, List.map_cons, List.map_nil] using hm.signature hi)
         (hm.methodRows hi.rows hr) hargs' (HasTypeVsQ.shift_values hvs hA hstore hext.preservesNormals hm hf)
         (hm.annotation ha)
+    | .C_External (ts := ts) hd hw ha hargs =>
+      have hh := HasTypeTelArgsQ.shift_values hargs hA hstore hext.preservesNormals hm hf
+      have he := instantiatedTel_shift_eq hw.annotation.wf ts [] k c
+      simp only [List.map_nil] at he
+      change Tel.shiftV k c (Tel.bind (typeEnv _) _) = _ at he
+      rw [he] at hh
+      simpa only [Comp.rename, renameTy_shiftIndex] using HasTypeCQ.C_External hd hw (ha.map hw _) hh
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
@@ -562,6 +578,21 @@ mutual
         List.nil_append, List.map_cons, List.map_nil, List.cons_append, List.nil_append,
         List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
         Option.map_map, Function.comp_def, hr] using hb'
+
+  theorem HasTypeTelArgsQ.shift_values {P B store Q C Γ Φ vs t a e}
+      (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) {k c Δ Ξ store'}
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+      (hpres : StoreTy.PreservesNormals store store') (hm : ShiftMap k c Γ Δ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+      HasTypeTelArgsQ P B store' Q C Δ Ξ (Val.renameList (shiftIndex k c) vs)
+        (Tel.shiftV k c t) (a.shiftV k c) (e.shiftV k c) := by
+    match h with
+    | .done ha => exact .done (hm.annotation ha)
+    | .param ha hv ht =>
+      apply HasTypeTelArgsQ.param (hm.annotation ha) (HasTypeVQ.shift_values hv hA hstore hpres hm hf)
+      rw [Tel.open_shift]
+      exact HasTypeTelArgsQ.shift_values ht hA hstore hpres hm hf
+
 end
 
 end Benitoite.Release.Refinement

@@ -234,6 +234,11 @@ theorem Ty.bind_data (d : DataName) (ts : List Ty) (θ : SubstEnv) :
   simp only [Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map, List.map_map]
   rfl
 
+theorem Ty.bind_external (id : ExternalId) (ts : List Ty) (θ : SubstEnv) :
+    (Ty.external id ts).bind θ = .external id (ts.map (Ty.bind θ)) := by
+  simp only [Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map, List.map_map]
+  rfl
+
 theorem Ty.subst_shiftV_closed {nt a} (hw : Ty.WF 0 nt 0 a) (ts : List Ty) (k c : Nat) :
     (a.subst ts []).shiftV k c = a.subst (ts.map (Ty.shiftV k c)) [] := by
   have hs := Ty.substV_subst_closed hw ts (fun i => some (.var (shiftIndex k c i)))
