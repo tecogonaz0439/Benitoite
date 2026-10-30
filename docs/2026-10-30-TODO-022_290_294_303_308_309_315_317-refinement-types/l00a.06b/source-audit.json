@@ -1,0 +1,219 @@
+{
+  "captured_at": "2026-10-30T12:05:25.040728+00:00",
+  "B_WORK": "74bdfcdd0f8e0a2b1d1944955d072511542e97d5",
+  "baseline_inventory": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.01b/inventory.json.gz",
+  "baseline_compared_inputs": 402,
+  "unchanged_old_inputs": 401,
+  "aggregate_only_added_import": true,
+  "reverse_imports": [],
+  "constructors": {
+    "Ty": [
+      "base",
+      "opaque",
+      "data",
+      "list",
+      "fn",
+      "tvar",
+      "reference",
+      "lazy",
+      "cont",
+      "map",
+      "set",
+      "bytes",
+      "dict",
+      "tapp",
+      "ctor",
+      "refined"
+    ],
+    "Val": [
+      "var",
+      "const",
+      "fnRef",
+      "prim",
+      "lam",
+      "con",
+      "list",
+      "op",
+      "raise",
+      "loc",
+      "mapV",
+      "setV",
+      "bytesV",
+      "dict",
+      "super",
+      "checked",
+      "checkedRequest"
+    ],
+    "Comp": [
+      "builderLet",
+      "builderOp",
+      "ret",
+      "letIn",
+      "app",
+      "ite",
+      "«match»",
+      "lazyC",
+      "escape",
+      "use",
+      "handle",
+      "resume",
+      "meth"
+    ],
+    "Arm": [
+      "mk"
+    ],
+    "Clause": [
+      "mk",
+      "fail"
+    ]
+  },
+  "fields": {
+    "Def": [
+      "tparams",
+      "neffs",
+      "names",
+      "params",
+      "ret",
+      "eff",
+      "body"
+    ],
+    "ConDecl": [
+      "data",
+      "ntys",
+      "args"
+    ],
+    "OpDecl": [
+      "eff",
+      "tparams",
+      "names",
+      "params",
+      "ret",
+      "dictParams"
+    ],
+    "MethSig": [
+      "tparams",
+      "neffs",
+      "names",
+      "params",
+      "ret",
+      "eff"
+    ],
+    "ClassDecl": [
+      "supers",
+      "methods"
+    ],
+    "ImplDecl": [
+      "tparams",
+      "dictParams",
+      "cls",
+      "target",
+      "supers",
+      "methods"
+    ],
+    "Program": [
+      "defs",
+      "cons",
+      "ops",
+      "effects",
+      "classes",
+      "impls"
+    ],
+    "PrimSig": [
+      "tparams",
+      "neffs",
+      "names",
+      "params",
+      "ret",
+      "eff",
+      "admits",
+      "kind",
+      "opEff",
+      "rkinds",
+      "shape"
+    ],
+    "Builtins": [
+      "sig",
+      "delta",
+      "ioResponse",
+      "releaseResponse",
+      "isResource",
+      "effects",
+      "sat",
+      "refGet",
+      "refSet",
+      "effKind",
+      "valKind",
+      "admitsR",
+      "valContent"
+    ]
+  },
+  "proof_audit_count": 21,
+  "new_modules": 9,
+  "inputs": [
+    {
+      "path": "formal/Benitoite/Release/Refinement/Context.lean",
+      "bytes": 9329,
+      "sha256": "3efef1fe6f370045b7a6c67e5ad395cf815530a041141a4b7ffe9f12019bc1b7"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Le.lean",
+      "bytes": 4144,
+      "sha256": "662cd829179b2ce3d8f1d94e1c66c8a0aa9c564f44a5e245b012e629c204db02"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Logic.lean",
+      "bytes": 4106,
+      "sha256": "c57da6e700911f93160b8fd37e4f3a7fffef4b7844db7fd66cc270d0b86f0129"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Normalize.lean",
+      "bytes": 5917,
+      "sha256": "84d81a4b12e596a754617a2db103a4d2496f6dd8b80be38985271ef54c7ed5de"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Order.lean",
+      "bytes": 9685,
+      "sha256": "315e20355ea0bbf256893c9a9aac1b59d3fa92f5ce00bc9fb26da0a3ff5aa805"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Subst.lean",
+      "bytes": 13366,
+      "sha256": "d5868461df42a508c077a227814fbb9729a5e502c8415c179dab76b9ad2498aa"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "bytes": 13488,
+      "sha256": "9b301617f6711ad3acf7ae8a53ce99680018d497079a04f872bd93db2bd84e22"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Types.lean",
+      "bytes": 3360,
+      "sha256": "cb330c3f553b46df6f2d63b1e43729912987b0206892a9a37d70124ab2af3072"
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Typing.lean",
+      "bytes": 4983,
+      "sha256": "e0f30f283e005d2e7c1dca3994ba2f2783e4c7ae99f0444ce90474644f785f4f"
+    },
+    {
+      "path": "formal/Benitoite.lean",
+      "bytes": 10153,
+      "sha256": "7986cde840aea719963965be82ee254af21ef9a5e8d379cbbe0631783b8fc7a8"
+    },
+    {
+      "path": "formal/lean-toolchain",
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    {
+      "path": "formal/lakefile.toml",
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.06a/contracts.md",
+      "bytes": 73888,
+      "sha256": "ffa95dbf072eec29055652dbfcc25bf252b277b3e07a0a04c4814020bcf9fe32"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "kind": "dry-run",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "74bdfcdd0f8e0a2b1d1944955d072511542e97d5",
+      "--dry-run"
+    ],
+    "started_at": "2026-10-30T12:04:40.124219+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.11082175,
+    "log": "dry-run.log"
+  },
+  {
+    "kind": "work",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "74bdfcdd0f8e0a2b1d1944955d072511542e97d5"
+    ],
+    "started_at": "2026-10-30T12:04:45.325411+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.03049375,
+    "log": "work.log"
+  }
+]
