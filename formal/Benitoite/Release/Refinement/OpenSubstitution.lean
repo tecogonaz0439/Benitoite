@@ -143,7 +143,8 @@ theorem images_wf_sorted :
     (dependentType.rawSubstV σ).WF 2 2 3 ∧ (dependentType.rawSubstV σ).Sorted Δ ∧
     (dependentFail.rawSubstV σ).WF 2 2 3 ∧ (dependentFail.rawSubstV σ).Sorted Δ := by
   simp [dependentType, dependentFail, Ty.rawSubstV, σ, Ty.WF, Ty.Sorted, Pred.WF,
-    Pred.Sorted, predBind, termWF, termSorted, upValues, termBind, Δ, Ty.IntegerCarrier]
+    Pred.Sorted, predBind, termWF, termSorted, upValues, termBind, Δ, Ty.IntegerCarrier,
+    Ty.NotContCore, Ty.core]
 
 /-- 型・行の像を先に値置換した交換先と一致する。 -/
 theorem type_value_exchange :

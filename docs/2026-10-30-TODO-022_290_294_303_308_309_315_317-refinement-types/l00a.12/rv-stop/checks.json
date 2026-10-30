@@ -1,0 +1,70 @@
+[
+  {
+    "kind": "local-build",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "build",
+      "Benitoite.Release.Refinement.NarrowingObstruction"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T14:28:52.083312+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.15984204200000002,
+    "log": "local-build.log"
+  },
+  {
+    "kind": "proof",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.12/rv-stop/proof-audit.lean"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T14:29:06.719569+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.384909833,
+    "log": "proof.log"
+  },
+  {
+    "kind": "dry-run",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "c652fa3d15f0c4a86e89250c28eccf662cb91f93",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-30T14:29:07.170955+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.242483416,
+    "log": "dry-run.log"
+  },
+  {
+    "kind": "work",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "c652fa3d15f0c4a86e89250c28eccf662cb91f93"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-30T14:30:55.091688+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.224614708,
+    "log": "work.log"
+  }
+]

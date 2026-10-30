@@ -287,3 +287,5 @@ import Benitoite.Surface.ScopeSoundExamples
 
 import Benitoite.Release.Refinement.Typing
 import Benitoite.Release.Refinement.OpenSubstitution
+import Benitoite.Release.Refinement.SubstTypingObstruction
+import Benitoite.Release.Refinement.NarrowingObstruction

@@ -1,0 +1,210 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Benitoite.Release.Refinement.HasTypeVQ.lam_annotations_wf {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {ns : List String} {ps : List Benitoite.Release.Refinement.Ty}
+  {body : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ (Benitoite.Release.Refinement.Val.lam ns ps body) a) :
+  Benitoite.Release.Refinement.Ty.WFList 0 C.length (List.length Γ) ps
+'Benitoite.Release.Refinement.HasTypeVQ.lam_annotations_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.HasTypeCQ.return_value_typable {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty} {ε : Benitoite.Release.Refinement.Eff}
+  {Δl : Benitoite.Release.Refinement.LocalCtx}
+  (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R (Benitoite.Release.Refinement.Comp.ret v) a ε Δl) :
+  ∃ b, Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v b
+'Benitoite.Release.Refinement.HasTypeCQ.return_value_typable' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.Γ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.RawValueSubstCollision.Γ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.Δ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.RawValueSubstCollision.Δ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.path : Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.RawValueSubstCollision.path' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.Φ : List Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.RawValueSubstCollision.Φ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.σ : Nat → Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.RawValueSubstCollision.σ' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.failure (i : Nat) : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.failure' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.latent : Benitoite.Release.Refinement.Eff
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.failure_compare :
+  Benitoite.Release.Refinement.tyCompare (Benitoite.Release.Refinement.RawValueSubstCollision.failure 0)
+      (Benitoite.Release.Refinement.RawValueSubstCollision.failure 1) =
+    Ordering.lt
+'Benitoite.Release.Refinement.RawValueSubstCollision.failure_compare' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.failure_norm (i : Nat) :
+  (Benitoite.Release.Refinement.RawValueSubstCollision.failure i).norm =
+    Benitoite.Release.Refinement.RawValueSubstCollision.failure i
+'Benitoite.Release.Refinement.RawValueSubstCollision.failure_norm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.latent_canonical :
+  Benitoite.Release.Refinement.RawValueSubstCollision.latent.Canonical
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_wf :
+  Benitoite.Release.Refinement.Ty.WF 0 0 (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Γ)
+    Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_sorted :
+  Benitoite.Release.Refinement.Ty.Sorted Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_sorted' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.image_type :
+  Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt =
+    Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt
+'Benitoite.Release.Refinement.RawValueSubstCollision.image_type' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.images_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {i : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (hi : Benitoite.Release.Refinement.RawValueSubstCollision.Γ[i]? = some (some a)) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ (Benitoite.Release.Refinement.RawValueSubstCollision.σ i)
+    (Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ a)
+'Benitoite.Release.Refinement.RawValueSubstCollision.images_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.images_typed_bind {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {i : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (hi : Benitoite.Release.Refinement.RawValueSubstCollision.Γ[i]? = some (some a)) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Benitoite.Release.Refinement.RawValueSubstCollision.Δ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ (Benitoite.Release.Refinement.RawValueSubstCollision.σ i)
+    (Benitoite.Release.Refinement.Ty.bind
+      (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ) a)
+'Benitoite.Release.Refinement.RawValueSubstCollision.images_typed_bind' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.context_facts :
+  Benitoite.Release.Refinement.RawValueSubstCollision.Γ.facts =
+      [Benitoite.Release.Refinement.RawValueSubstCollision.path,
+        Benitoite.Release.Refinement.Pred.eq (Benitoite.Release.Refinement.Term.var 1)
+          (Benitoite.Release.Refinement.Term.integer 7)] ∧
+    Benitoite.Release.Refinement.RawValueSubstCollision.Δ.facts =
+      [Benitoite.Release.Refinement.RawValueSubstCollision.path]
+'Benitoite.Release.Refinement.RawValueSubstCollision.context_facts' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.transport :
+  Benitoite.Release.Refinement.Transport
+    (Benitoite.Release.Refinement.valEnv Benitoite.Release.Refinement.RawValueSubstCollision.σ)
+    Benitoite.Release.Refinement.RawValueSubstCollision.Γ Benitoite.Release.Refinement.RawValueSubstCollision.Φ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Δ Benitoite.Release.Refinement.RawValueSubstCollision.Φ
+'Benitoite.Release.Refinement.RawValueSubstCollision.transport' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.latent_image :
+  Benitoite.Release.Refinement.substEffValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+      Benitoite.Release.Refinement.RawValueSubstCollision.latent =
+    Benitoite.Release.Refinement.EffR.mk (fun x => false)
+      [Benitoite.Release.Refinement.RawValueSubstCollision.failure 0,
+        Benitoite.Release.Refinement.RawValueSubstCollision.failure 0]
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent_image' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.latent_image_not_canonical :
+  ¬(Benitoite.Release.Refinement.substEffValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+        Benitoite.Release.Refinement.RawValueSubstCollision.latent).Canonical
+'Benitoite.Release.Refinement.RawValueSubstCollision.latent_image_not_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.substituted_not_wf :
+  ¬Benitoite.Release.Refinement.Ty.WF 0 0 (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Δ)
+      (Benitoite.Release.Refinement.substTyValues Benitoite.Release.Refinement.RawValueSubstCollision.σ
+        Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy)
+'Benitoite.Release.Refinement.RawValueSubstCollision.substituted_not_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal : Benitoite.Release.Refinement.Val
+'Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.valueTy : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.valueTy' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.resultTy : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.RawValueSubstCollision.resultTy' does not depend on any axioms
+Benitoite.Release.Refinement.RawValueSubstCollision.value_wf :
+  Benitoite.Release.Refinement.Ty.WF 0 0 (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Γ)
+    Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.value_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.value_sorted :
+  Benitoite.Release.Refinement.Ty.Sorted Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.value_sorted' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_sorted :
+  Benitoite.Release.Refinement.Pred.Sorted Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    (some Benitoite.Release.Refinement.RawValueSubstCollision.valueTy)
+    Benitoite.Release.Refinement.RawValueSubstCollision.path.lift
+'Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_sorted' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_wf :
+  Benitoite.Release.Refinement.Pred.WF (List.length Benitoite.Release.Refinement.RawValueSubstCollision.Γ + 1)
+    Benitoite.Release.Refinement.RawValueSubstCollision.path.lift
+'Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_wf' depends on axioms: [propext]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_le :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+    Benitoite.Release.Refinement.RawValueSubstCollision.resultTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.lambda_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal
+    Benitoite.Release.Refinement.RawValueSubstCollision.valueTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.lambda_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_v_sub {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal
+    Benitoite.Release.Refinement.RawValueSubstCollision.resultTy
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_v_sub' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.source_c_sub {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {R : Option Benitoite.Release.Refinement.Ty}
+  {Δl : Benitoite.Release.Refinement.LocalCtx} :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Γ
+    Benitoite.Release.Refinement.RawValueSubstCollision.Φ R
+    (Benitoite.Release.Refinement.Comp.ret Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal)
+    Benitoite.Release.Refinement.RawValueSubstCollision.resultTy Benitoite.Release.Refinement.Eff.empty Δl
+'Benitoite.Release.Refinement.RawValueSubstCollision.source_c_sub' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.substituted_lambda_untypable
+  {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {store : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}
+  {Φ' : List Benitoite.Release.Refinement.Pred} {a : Benitoite.Release.Refinement.Ty}
+  {ρ : Nat → Benitoite.Release.LocalRef} :
+  ¬Benitoite.Release.Refinement.HasTypeVQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Δ Φ'
+      (Benitoite.Release.Refinement.Val.subst Benitoite.Release.Refinement.RawValueSubstCollision.σ
+        Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal ρ)
+      a
+'Benitoite.Release.Refinement.RawValueSubstCollision.substituted_lambda_untypable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.RawValueSubstCollision.substituted_return_untypable
+  {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {store : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}
+  {Φ' : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {a : Benitoite.Release.Refinement.Ty} {ε : Benitoite.Release.Refinement.Eff}
+  {Δl : Benitoite.Release.Refinement.LocalCtx} {ρ : Nat → Benitoite.Release.LocalRef} :
+  ¬Benitoite.Release.Refinement.HasTypeCQ P B store Q [] Benitoite.Release.Refinement.RawValueSubstCollision.Δ Φ' R
+      (Benitoite.Release.Refinement.Comp.subst Benitoite.Release.Refinement.RawValueSubstCollision.σ
+        (Benitoite.Release.Refinement.Comp.ret Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal) ρ)
+      a ε Δl
+'Benitoite.Release.Refinement.RawValueSubstCollision.substituted_return_untypable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -102,8 +102,8 @@ mutual
     case map a b => exact ⟨Ty.wf_shiftV h.1 k c, Ty.wf_shiftV h.2 k c⟩
     case tapp i as => exact ⟨h.1, Ty.wfList_shiftV h.2 k c⟩
     case refined a p =>
-      refine ⟨Ty.wf_shiftV h.1 k c, ?_⟩
-      have hp := Pred.wf_shiftV h.2 k (c+1)
+      refine ⟨Ty.wf_shiftV h.1 k c, ?_, (Ty.notContCore_shiftV _ _ _).mpr h.2.2⟩
+      have hp := Pred.wf_shiftV h.2.1 k (c+1)
       simpa only [Pred.shiftV, shiftIndex, Nat.add_right_comm nv k 1] using hp
   theorem Ty.wfList_shiftV {nr nt nv : Nat} {as : List Ty} (h : Ty.WFList nr nt nv as) (k c : Nat) :
       Ty.WFList nr nt (nv+k) (shiftVTys k c as) := by

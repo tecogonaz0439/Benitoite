@@ -51,6 +51,22 @@ def Ty.IntegerCarrier : Ty → Prop
   | .refined a _ => a.IntegerCarrier
   | _ => False
 
+/-- 最外の篩をすべて除いた担い手。子の型の篩は除かない。 -/
+def Ty.core : Ty → Ty
+  | .refined a _ => a.core
+  | a => a
+
+/-- 継続の型は篩の担い手にしない。 -/
+def Ty.NotContCore (a : Ty) : Prop := ∀ b t e, a.core ≠ .cont b t e
+
+@[simp] theorem Ty.notContCore_norm (a : Ty) : a.norm.NotContCore ↔ a.NotContCore := by
+  cases a <;> simp [Ty.NotContCore, Ty.core, Ty.norm]
+  case refined a p => exact Ty.notContCore_norm a
+
+theorem Ty.IntegerCarrier.notContCore {a : Ty} (h : a.IntegerCarrier) : a.NotContCore := by
+  cases a <;> simp_all [Ty.IntegerCarrier, Ty.NotContCore, Ty.core]
+  case refined a p => exact Ty.IntegerCarrier.notContCore h
+
 def termSorted (Γ : Ctx) : Term → Prop
   | .var i => ∃ a, Γ[i]? = some (some a) ∧ a.IntegerCarrier
   | .integer _ => True
@@ -87,7 +103,7 @@ mutual
     | .cont b t e => b.WF nr nt nv ∧ t.WF nr nt nv ∧ Eff.WF nr nt nv e ∧ Eff.Canonical e
     | .map a b => a.WF nr nt nv ∧ b.WF nr nt nv
     | .tapp i args => i < nt ∧ Ty.WFList nr nt nv args
-    | .refined a p => a.WF nr nt nv ∧ p.WF (nv+1)
+    | .refined a p => a.WF nr nt nv ∧ p.WF (nv+1) ∧ a.NotContCore
   def Ty.WFList (nr nt nv : Nat) : List Ty → Prop
     | [] => True
     | a :: as => a.WF nr nt nv ∧ Ty.WFList nr nt nv as
@@ -142,6 +158,11 @@ def Ctx.extend (Γ : Ctx) (a : Ty) : Ctx :=
   some (a.shiftV 1 0) :: Γ.map (Option.map (Ty.shiftV 1 0))
 def Ctx.extendNone (Γ : Ctx) : Ctx :=
   none :: Γ.map (Option.map (Ty.shiftV 1 0))
+
+@[simp] theorem Ty.notContCore_shiftV (a : Ty) (k c : Nat) :
+    (a.shiftV k c).NotContCore ↔ a.NotContCore := by
+  cases a <;> simp [Ty.NotContCore, Ty.core, Ty.shiftV]
+  case refined a p => exact Ty.notContCore_shiftV a k c
 
 
 mutual

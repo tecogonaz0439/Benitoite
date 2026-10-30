@@ -145,6 +145,11 @@ private theorem wfList_sortUnique {nr nt nv : Nat} {as : List Ty} (h : Ty.WFList
     (shiftTypesList k c as).length = as.length := by
   induction as <;> simp_all [shiftTypesList]
 
+theorem Ty.notContCore_shiftTypes (a : Ty) (k c : Nat) :
+    (shiftTypes k c a).NotContCore ↔ a.NotContCore := by
+  cases a <;> simp [shiftTypes, Ty.NotContCore, Ty.core]
+  case refined a p => exact Ty.notContCore_shiftTypes a k c
+
 mutual
   theorem Ty.wf_shiftTypes_norm {nr nt nv : Nat} {a : Ty} (h : a.WF nr nt nv) (k c : Nat) :
       (shiftTypes k c a).norm.WF nr (nt+k) nv := by
@@ -160,7 +165,8 @@ mutual
         Eff.wf_shiftTypes_norm h.2.2.1 k c, Eff.norm_idem _⟩
     case map a b => exact ⟨Ty.wf_shiftTypes_norm h.1 k c, Ty.wf_shiftTypes_norm h.2 k c⟩
     case tapp i as => exact ⟨by split <;> omega, wfList_shiftTypes_norm h.2 k c⟩
-    case refined a p => exact ⟨Ty.wf_shiftTypes_norm h.1 k c, h.2⟩
+    case refined a p => exact ⟨Ty.wf_shiftTypes_norm h.1 k c, h.2.1,
+      (Ty.notContCore_norm _).mpr ((Ty.notContCore_shiftTypes _ _ _).mpr h.2.2)⟩
   theorem wfList_shiftTypes_norm {nr nt nv : Nat} {as : List Ty} (h : Ty.WFList nr nt nv as) (k c : Nat) :
       Ty.WFList nr (nt+k) nv (Ty.normTys (shiftTypesList k c as)) := by
     cases as with
