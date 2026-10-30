@@ -1,0 +1,2782 @@
+{
+  "count": 694,
+  "allowed": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "dependencies": {
+    "Benitoite.Core.progress": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Core.preservation": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Core.step_sound": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Core.step_complete": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Core.effect_soundness": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.progress": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.preservation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.preservationE": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.step_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.effect_soundness": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.effect_soundness_noLamNames": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.step_target_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.step_target_sound_event": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.step_target_sound_of_assumptions": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.reachable_target_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.reachable_target_sound_event": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.reachable_target_sound_of_assumptions": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.desugar_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.desugar_wellFormed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.desugar_wellTyped": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.desugar_effectsOk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.main_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.main_typed_eff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.surface_effect_soundness": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.surface_target_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Coverage.usefulFuelWithView_none_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Coverage.usefulFuel_none_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.usefulWithView_none_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.useful_none_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.checkMatchWithView_exhaustive_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.checkMatch_exhaustive_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.checkMatchWithView_unreachable_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.checkMatch_unreachable_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.irrefutableWithView_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.irrefutable_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.usefulWithView_extension_exhaustive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkExpr_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkBlock_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkArms_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkClauses_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkTypes_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkEach_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkHoleArgs_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkDict_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkDicts_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkDef_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.checkImpl_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.Check.acceptEffCover_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckTables.checkProgram_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckTables.checkProgram_sound_contracts": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckAccept.acceptProgram_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckAccept.checkProgramAccepted_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckAccept.accepted_check_connection": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckAccept.accepted_check_connection_at": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.CheckTools.Finite.effCovers_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.scope_check_connection": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.scope_check_core": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.scope_local_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.scope_check_connection_at": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.scope_check_core_at": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.productionRules_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Surface.ScopeSound.http_check_connection": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Interval.analyzeBase_normal_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Interval.analyzeBase_warning_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Interval.evalClosed_sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Scope.Inference.apply_sound": [
+      "propext"
+    ],
+    "Benitoite.Release.Eff.Covers.sound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Ty.WF": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Eff.WF": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Ty.Le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Eff.Covers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.HasTypeVQ": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.HasTypeCQ": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.StateTy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.StateTyE": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Program.WellTyped": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Builtins.CoreAssumptions": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Builtins.TargetAgreement": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Builtins.Assumptions": [],
+    "Benitoite.Release.Step": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Steps": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty": [],
+    "Benitoite.Release.Refinement.EffR": [],
+    "Benitoite.Release.Refinement.Term": [],
+    "Benitoite.Release.Refinement.Pred": [],
+    "Benitoite.Release.Refinement.Entails": [],
+    "Benitoite.Release.Refinement.Ty.LeQ": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVsQ": [],
+    "Benitoite.Release.Refinement.HasTypeEachQ": [],
+    "Benitoite.Release.Refinement.HasTypeCQ": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.memFail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Canonical": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ConstOK": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.embedTy": [],
+    "Benitoite.Release.Refinement.embedEff": [],
+    "Benitoite.Release.Refinement.tyCompare_eq_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.tyCompare_total": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.tyCompare_lt_trans": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.tyCompare_antisymm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.tyCompare_embed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embedTy_injective": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.normTys_eq_map": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.norm_idem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.normTys_idem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.norm_idem": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.norm_memFail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embedTy_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embedEff_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embed_memFail": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embed_canonical": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embed_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Entails.weaken": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Entails.cut": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.assume": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embedLe": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.embedCovers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.termTree": [],
+    "Benitoite.Release.Refinement.predTree": [],
+    "Benitoite.Release.Refinement.Ty.toTree": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.toTree": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.toTrees": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.termBind": [],
+    "Benitoite.Release.Refinement.predBind": [],
+    "Benitoite.Release.Refinement.termWF": [],
+    "Benitoite.Release.Refinement.termSorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.sortedTys": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.sortedEff": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftVTys": [],
+    "Benitoite.Release.Refinement.upValues": [],
+    "Benitoite.Release.Refinement.rawApply": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.substAtoms": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.rowFails": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.renEnv": [],
+    "Benitoite.Release.Refinement.renameTy": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.renameEff": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.valEnv": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.substTyValues": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substEffValues": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypes": [],
+    "Benitoite.Release.Refinement.shiftTypesList": [],
+    "Benitoite.Release.Refinement.shiftRowsTypes": [],
+    "Benitoite.Release.Refinement.typeEnvAt": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.substTypeAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substRowAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.assumptions": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.termBind_id": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.predBind_id": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.termBind_comp": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.predBind_comp": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.upValues_id": [
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.upValues_comp": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.predBind_lift": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.predBind_open": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Entails.bind": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftIndex": [],
+    "Benitoite.Release.Refinement.Pred.shiftV": [],
+    "Benitoite.Release.Refinement.upValues_shiftIndex": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Entails.shiftV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.termWF_bind": [],
+    "Benitoite.Release.Refinement.Pred.wf_bind": [],
+    "Benitoite.Release.Refinement.Pred.wf_shiftV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.termSorted_bind": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.instAtoms_nil": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substAtoms_nil": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftV_eq_renameTy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftVTys_eq_rename": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.shiftV_eq_renameEff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renEnv_types": [],
+    "Benitoite.Release.Refinement.renEnv_rows": [],
+    "Benitoite.Release.Refinement.renEnv_ranges": [],
+    "Benitoite.Release.Refinement.renEnv_values": [],
+    "Benitoite.Release.Refinement.Ty.tree_shiftV_compare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.trees_shiftV_compare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.tree_shiftV_compare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftV_compare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftVTys_eq_map": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.norm_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.normTys_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.norm_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.wf_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.wfList_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.wf_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.shiftV": [],
+    "Benitoite.Release.Refinement.Ctx.lookup_shiftV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.integerCarrier_shiftV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.assume_shiftV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ctx.mem_facts": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.facts_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.sorted_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.sorted_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.sortedTys_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.sortedEff_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.open_shiftV_self": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.open_shiftV_outer": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.mem_facts_extend": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys_eq_map": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.normTys_append": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawApply_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.norm_rawBind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.normTys_rawBind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.norm_rawBind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawBind_norm_congr": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.mem_rowFails": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.memFail_rawBind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.mem_substAtoms": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawBind_id": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys_id": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawBind_id": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.integerCarrier_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.IntegerCarrier.bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.assume_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.assume_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.termSorted_lift": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Pred.sorted_bind": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Transport.assumptions": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.rawBind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.id": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.up": [],
+    "Benitoite.Release.Refinement.SubstEnv.up_types": [],
+    "Benitoite.Release.Refinement.SubstEnv.up_rows": [],
+    "Benitoite.Release.Refinement.SubstEnv.up_ranges": [],
+    "Benitoite.Release.Refinement.SubstEnv.up_values": [],
+    "Benitoite.Release.Refinement.Ty.rawBind_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawBind_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.bind_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.bind_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.extend": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.up_raw": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.bindTypes": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.facts_bindTypes": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.types": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.substAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.substAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.substAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.shiftTypes": [],
+    "Benitoite.Release.Refinement.Ty.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypes_shiftV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftTypesList_shiftV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftRowsTypes_shiftV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.typeEnvAt_up": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.substAt_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substAt_up": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypes_zero": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftTypesList_zero": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftRowsTypes_zero": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.wfList_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypesList_length": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.wf_shiftTypes_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.wfList_shiftTypes_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.wf_shiftTypes_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawBind_shiftTypes": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys_shiftTypes": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawBind_shiftTypes": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.wf_shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.wf_shift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapIx": [],
+    "Benitoite.Release.Refinement.mapAtomRanges": [],
+    "Benitoite.Release.Refinement.mapRangeAtoms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapRangesTys": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapRangesTys_eq_map": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.norm_rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.normTys_rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.norm_rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.assume_rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.integerCarrier_rawMapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.facts_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rangeAt": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.substRAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substRAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.instR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.instR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.shiftR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.substRAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.substRAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.rangesOnly": [],
+    "Benitoite.Release.Refinement.mapIx_rangeAt": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.mapRangeAtoms_rangeAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawMapRanges_rangesOnly": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapRangesTys_rangesOnly": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawMapRanges_rangesOnly": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.instR_eq_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.instR_eq_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.instR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.shiftR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.instR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.shiftR": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.valuesOnly": [],
+    "Benitoite.Release.Refinement.upTerms": [],
+    "Benitoite.Release.Refinement.upTerms_zero": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.upTerms_one": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.substVAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substVAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.substVAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.substVAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawApply_refined": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawSubstV": [],
+    "Benitoite.Release.Refinement.substVTys": [],
+    "Benitoite.Release.Refinement.Eff.rawSubstV": [],
+    "Benitoite.Release.Refinement.substVTys_eq_map": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawSubstV_eq_rawBind": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substVTys_eq_rawBind": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawSubstV_eq_rawBind": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.mapValues": [],
+    "Benitoite.Release.Refinement.SubstEnv.mapValues_types": [],
+    "Benitoite.Release.Refinement.SubstEnv.mapValues_rows": [],
+    "Benitoite.Release.Refinement.SubstEnv.mapValues_ranges": [],
+    "Benitoite.Release.Refinement.SubstEnv.mapValues_values": [],
+    "Benitoite.Release.Refinement.Ty.rawBind_substV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys_substV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawBind_substV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.bind_substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.bind_substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypes_substV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftTypesList_substV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.shiftRowsTypes_substV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.typeEnvAt_mapValues": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.substAt_substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substAt_substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapRangeAtoms_spec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapRangeAtoms_rho": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.mapRanges_types": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.mapRanges_rows": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.mapRanges_ranges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.mapRanges_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawBind_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.rawBindTys_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawBind_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.bind_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.bind_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypes_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftTypesList_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftRowsTypes_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.typeEnvAt_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.substAt_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.substAt_mapRanges": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawMapRanges_rawSubstV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.mapRangesTys_substVTys": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawMapRanges_rawSubstV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.mapRanges_substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.mapRanges_substV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.Γ": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.Δ": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.path": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.σ": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.dependentType": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.dependentFail": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.rowImage": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.θ": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.inner": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.outer": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.source": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.context_facts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.context_none": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.transport": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.source_covers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.all_open_derivation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.all_open_covers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.open_images": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.path_witness": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.images_wf_sorted": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.type_value_exchange": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.row_value_exchange": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.type_range_exchange": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.row_range_exchange": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.image_not_reapplied": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.double_value_substitution_changes_image": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.double_value_substitution_changes_fail": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.row_image_not_reapplied": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.mem_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.refl": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.trans": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.Sub.covers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.covers_norm_left": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.covers_norm_right": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.mem_rawBind": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.atomCovers_instR": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Eff.Covers.bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.cannot_split_one_atom": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.covers_not_sub": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.mem_facts_extendNone": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.extendNone": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.Ψ": [],
+    "Benitoite.Release.Refinement.OpenSubstitution.target_path_from_facts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.target_conditions_from_facts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.source_introduce": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.introduce_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.introduce_bind_shape": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.OpenSubstitution.introduce_bind_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx": [],
+    "Benitoite.Release.Refinement.Pred.lift": [],
+    "Benitoite.Release.Refinement.Pred.open": [],
+    "Benitoite.Release.Refinement.Pred.WF": [],
+    "Benitoite.Release.Refinement.Ty.IntegerCarrier": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.core": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.NotContCore": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.notContCore_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.IntegerCarrier.notContCore": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.Sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.assume": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ctx.facts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.WF": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.WFList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.WF": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.Sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftV": [],
+    "Benitoite.Release.Refinement.Eff.shiftV": [],
+    "Benitoite.Release.Refinement.Ctx.extend": [],
+    "Benitoite.Release.Refinement.Ctx.extendNone": [],
+    "Benitoite.Release.Refinement.Ty.notContCore_shiftV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv": [],
+    "Benitoite.Release.Refinement.Ty.rawBind": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawBind": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.notContCore_shiftTypes": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameKind": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Val.rename": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Val.renameList": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Comp.rename": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Arm.renameList": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Clause.renameList": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.upSubst": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Val.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Val.substList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Comp.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Arm.substList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Clause.substList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Val.substTyAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Val.substTyAtList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Comp.substTyAt": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Arm.substTyAtList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Clause.substTyAtList": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.hideConts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.hideBuilders": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.bindParams": [],
+    "Benitoite.Release.Refinement.liftMany": [],
+    "Benitoite.Release.Refinement.localExtend": [],
+    "Benitoite.Release.Refinement.HasTypeV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVs": [],
+    "Benitoite.Release.Refinement.HasTypeEach": [],
+    "Benitoite.Release.Refinement.HasTypeC": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeCL": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.canonical_of_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.normTys_of_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.normTys_of_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.termWF_of_sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Pred.wf_of_sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.notContCore_rawSubstV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.integerCarrier_rawSubstV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.sorted_rawSubstV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.sortedTys_rawSubstV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.sortedEff_rawSubstV": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.sorted_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.sortedTys_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.sortedEff_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.wf_bind_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.sorted_bind_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.wf_bind_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.sorted_bind_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Val.toTerm_rename": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Val.observe_rename": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.SubstEnv.upN": [],
+    "Benitoite.Release.Refinement.renameTy_id": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameEff_id": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameTy_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameEff_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.upRen_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Val.rename_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Val.renameList_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Comp.rename_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Arm.renameList_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Clause.renameList_identity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.upSubst_zero": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.valEnv_upSubst_one": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.valEnv_upSubst": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.upTerms_succ": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.valEnv_upN": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawSubstV_comp": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substVTys_comp": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawSubstV_comp": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameTy_eq_rawSubstV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameEff_eq_rawSubstV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.bind_shiftV_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.bind_shiftV_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.bind_fn": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.valEnv_valuesOnly": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.substTyValues_eq_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substEffValues_eq_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftV_comm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.shiftV_comm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.shiftV_lift": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.upRen_shiftIndex": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.subst_lam": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawSubstV_embed": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.substVTys_embed": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawSubstV_embed": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.substTyValues_embed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substEffValues_embed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.rawSubstV_of_wf_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substVTys_of_wf_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.rawSubstV_of_wf_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.subst_values_of_wf_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Eff.subst_values_of_wf_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.integerCarrier": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.integer_observation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.toTerm_of_integerCarrier": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.open_lift": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.assume": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.termSorted_bind_congr": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Pred.bind_congr_sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Ty.Ordinary": [],
+    "Benitoite.Release.Refinement.Ty.ordinary_shiftV": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.IntegerCarrier.ordinary": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.assume_ordinary": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.NotContCore.ordinary": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.notContCore_of_wf_ordinary": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.LeQ.notContCore": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.renameTy_shiftIndex": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.renameEff_shiftIndex": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.values": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.facts": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.transport": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.hideConts_lookup": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.hide": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.underParams": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.outer": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.outerNone": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.Entails.under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.liftMany_eq": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.liftMany_one": [],
+    "Benitoite.Release.Refinement.liftMany_shiftV": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Entails.under_params": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.conditions_params": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.mem_facts_hide": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Entails.hideConts": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Transport.entails": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.sorted": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ShiftMap.wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.shift_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVsQ.shift_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeEachQ.shift_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeCQ.shift_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ClosedTy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstOk": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstOk.transport": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.ordinary_bind_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftIndex_zero": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.shiftIndex_add": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ty.shiftV_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Pred.shiftV_zero": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.hide_context": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.predBind_upSubst_shift": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstOk.observation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Const.type_bind_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.substEffValues_empty": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVsQ.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeEachQ.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeCQ.subst": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.SubstOk.transport_extendNone": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.subst_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVsQ.subst_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeEachQ.subst_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeCQ.subst_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.Narrows": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.Narrows.conditions": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.narrow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVsQ.narrow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeEachQ.narrow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeCQ.narrow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.lam_annotations_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeCQ.return_value_typable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.refinedInt": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.Γ": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.Δ": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.path": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.Φ": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.σ": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.failure": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.latent": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.sourceTy": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.failure_compare": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.failure_norm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.latent_canonical": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.source_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.source_sorted": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.image_type": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.images_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.images_typed_bind": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.context_facts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.transport": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.latent_image": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.latent_image_not_canonical": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.substituted_not_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.sourceVal": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.valueTy": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.resultTy": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.value_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.value_sorted": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_sorted": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.path_lift_wf": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.source_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.lambda_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.source_v_sub": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.source_c_sub": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.rawSourceVal": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.raw_lambda_untypable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.raw_return_untypable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.subst_ok": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.conditions_image": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.substituted_lambda_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.substituted_return_typed": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.normalized_image_canonical": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.swapIndex": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.swapσ": [],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.swap_involutive": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.swap_injective": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.swap_latent_image": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.swap_not_canonical": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.substituted_lambda_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.RawValueSubstCollision.substituted_return_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.outer": [],
+    "Benitoite.Release.Refinement.NarrowingExample.Φ": [],
+    "Benitoite.Release.Refinement.NarrowingExample.narrowTy": [],
+    "Benitoite.Release.Refinement.NarrowingExample.source": [],
+    "Benitoite.Release.Refinement.NarrowingExample.target": [],
+    "Benitoite.Release.Refinement.NarrowingExample.result": [],
+    "Benitoite.Release.Refinement.NarrowingExample.original_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.original_sorted": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.narrows": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.source_le": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.result_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.result_sorted": [
+      "propext",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.source_value": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.narrowed_value": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.source_comp": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.narrowed_comp": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.NarrowingExample.narrowed_under_none": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.HasTypeVQ.variable_origin": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a": [],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b": [],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Γ": [],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.Δ": [],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b_not_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.nested_not_wf": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.a_sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.b_sorted": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.subtype_outside": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.context_facts": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.facts_preserved": [
+      "propext"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.source_variable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.target_variable_untypable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.source_return": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.ContinuationNarrowingObstruction.target_return_untypable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.Narrows.here": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Benitoite.Release.Refinement.Ctx.Narrows.under": [],
+    "Benitoite.Release.Refinement.Ctx.Narrows.underNone": [],
+    "Benitoite.Release.Refinement.Ctx.Narrows.rec": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "unapproved": {},
+  "missing": [],
+  "extra": [],
+  "pass": true
+}

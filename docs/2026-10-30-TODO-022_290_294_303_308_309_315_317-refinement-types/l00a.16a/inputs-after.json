@@ -1,0 +1,3382 @@
+{
+  "crates/benitoite/src/base/decimal.rs": {
+    "bytes": 20780,
+    "sha256": "3ea54de93d07ecbb50cc4cdcb17224b875d154d675692031edaf3aa5f5fb594e"
+  },
+  "crates/benitoite/src/base/display_width.rs": {
+    "bytes": 7341,
+    "sha256": "06141c8006d837111d9f72d45197bdcee612a2555dc77de039d41de6ff751bc8"
+  },
+  "crates/benitoite/src/base/file_read.rs": {
+    "bytes": 2454,
+    "sha256": "dfd1c40fd1a642718008dc3e10d2a5b96ecac554942c7e15f0cf7e7d0b400508"
+  },
+  "crates/benitoite/src/base/format.rs": {
+    "bytes": 13314,
+    "sha256": "efd1f2654f78ee72a6121b20251bea43f286b2fe2537204d24f40bb2c3281ee6"
+  },
+  "crates/benitoite/src/base/literal.rs": {
+    "bytes": 2541,
+    "sha256": "2733a8a8adffba5cdcdabb21dc9d96152378a00bc8613cb828c66a206bd8b9e8"
+  },
+  "crates/benitoite/src/base/mod.rs": {
+    "bytes": 6301,
+    "sha256": "bac3b718d107ab6f3d9a70fcfae0a6cb7db7502bc78644507fa13d310a8cc360"
+  },
+  "crates/benitoite/src/base/parameter_names.rs": {
+    "bytes": 752,
+    "sha256": "7636b3da5d9c740e60e6023a2dafa0bbbf68e7ae439c8f02f5c05bfdc54c56ac"
+  },
+  "crates/benitoite/src/base/prim/numeric.rs": {
+    "bytes": 3446,
+    "sha256": "d072bec6cc2f1d8fd774b5a6fdee8b68da1c63e4a6e5c71ebd9666a400f11dda"
+  },
+  "crates/benitoite/src/base/prim.rs": {
+    "bytes": 9278,
+    "sha256": "06e6229fb61d7377b34d66319eeeee54ef5e4aec0d34618751077bcffc818472"
+  },
+  "crates/benitoite/src/base/source.rs": {
+    "bytes": 12017,
+    "sha256": "cea2cfd5e6fec816403012176ac00ad0aa0ebcb193315008e873262ea65a582b"
+  },
+  "crates/benitoite/src/builtins/checked_regex.rs": {
+    "bytes": 1319,
+    "sha256": "d325a0e4e8b3892ce220845d8448df9c8cbd746847d131ddfaee0cc1b0871dd2"
+  },
+  "crates/benitoite/src/builtins/checked_scope.rs": {
+    "bytes": 6586,
+    "sha256": "4221d56de54da0d15eed77c08d675cc694c7ed0b9c287452d845e3af8a837fb4"
+  },
+  "crates/benitoite/src/builtins/funcs/assert.rs": {
+    "bytes": 3037,
+    "sha256": "c713145336feaeb1385488fe9c9e07b4178f77d24e95f87f97213d5b9ed28304"
+  },
+  "crates/benitoite/src/builtins/funcs/boolean.rs": {
+    "bytes": 804,
+    "sha256": "3dbd4202b85a4a343f6973f51edc0443f166d8136b5ecd8de4a09d7282e25530"
+  },
+  "crates/benitoite/src/builtins/funcs/byte.rs": {
+    "bytes": 5346,
+    "sha256": "9d410fcc4bf4b3f5b6b3e20c1ba7f9de7249a3a44451a212711625954edb6f3d"
+  },
+  "crates/benitoite/src/builtins/funcs/bytes.rs": {
+    "bytes": 33621,
+    "sha256": "048118e1ef86f8b73923c15908d005ac2bf29be64f782faf7542012b2b059129"
+  },
+  "crates/benitoite/src/builtins/funcs/character.rs": {
+    "bytes": 8387,
+    "sha256": "7c2e1a143562641a9acadde8dc8e96bc779a255b90da651886de3013938ed1e6"
+  },
+  "crates/benitoite/src/builtins/funcs/clock/tests.rs": {
+    "bytes": 7917,
+    "sha256": "21417d8e49b0b77827b5f720335136954884425dfc2226077af2f62d434a9736"
+  },
+  "crates/benitoite/src/builtins/funcs/clock.rs": {
+    "bytes": 2301,
+    "sha256": "8c6583fce06067c16be07b4974baabf16c5b9ab1eb6b68d7afdc0a0962a38382"
+  },
+  "crates/benitoite/src/builtins/funcs/console/tests.rs": {
+    "bytes": 17610,
+    "sha256": "54dcba688c670c59ee9e5c68fcc22d326830edc6a9dc75702fbd69e724f161bc"
+  },
+  "crates/benitoite/src/builtins/funcs/console.rs": {
+    "bytes": 8010,
+    "sha256": "dd50f10f432a6d363b2566a023202eb27d5bf4509db560643e4e73336577ffca"
+  },
+  "crates/benitoite/src/builtins/funcs/csv.rs": {
+    "bytes": 28645,
+    "sha256": "c1acd4629572603fbb95918e07d121048fed06b7ecd9a69bec7e392ace317858"
+  },
+  "crates/benitoite/src/builtins/funcs/decimal.rs": {
+    "bytes": 13866,
+    "sha256": "c0789f2dfc3ccaf97761ea0eb356e58c5eaf0a8fd481af5f01d3f1cf3e2e0d36"
+  },
+  "crates/benitoite/src/builtins/funcs/encoding.rs": {
+    "bytes": 9053,
+    "sha256": "3a55f079f46ed2b217e69e1293de16178042028c72e13eee35a5fd69c62974ab"
+  },
+  "crates/benitoite/src/builtins/funcs/file/path_tests.rs": {
+    "bytes": 36855,
+    "sha256": "5889c7b191a82f4a4c936e2570bd43dcaa4e871afed64da92f2a3cfa320bcd9c"
+  },
+  "crates/benitoite/src/builtins/funcs/file/resource_tests.rs": {
+    "bytes": 50553,
+    "sha256": "299302230f2d2ed0e4525e59289705ef4d7300640c348368d361a57e7513232d"
+  },
+  "crates/benitoite/src/builtins/funcs/file/tests.rs": {
+    "bytes": 22283,
+    "sha256": "31efcebcfb429cb64871c7aa3e5d5a1fdec25f9bf019f775007e9f7942e2e6c6"
+  },
+  "crates/benitoite/src/builtins/funcs/file/tree.rs": {
+    "bytes": 7482,
+    "sha256": "11bc65886ab7869bd086b9da6cf7ab8050a6181c2de5deb8f82027365d9541e1"
+  },
+  "crates/benitoite/src/builtins/funcs/file.rs": {
+    "bytes": 46943,
+    "sha256": "7a85f723ac8aadf35e5f09292105e4ac6ec132757954a233feab3d62aa612526"
+  },
+  "crates/benitoite/src/builtins/funcs/fixed_io.rs": {
+    "bytes": 5544,
+    "sha256": "0d0e7cae3839f551bc1112c367f8faf50ff06ee4bb774f0d3b9907484743f396"
+  },
+  "crates/benitoite/src/builtins/funcs/float.rs": {
+    "bytes": 2883,
+    "sha256": "71f7d51731618571c702eb8eabbec0e0fb63be8715bc46930e49c8bd83418ce5"
+  },
+  "crates/benitoite/src/builtins/funcs/float32.rs": {
+    "bytes": 3764,
+    "sha256": "b35dc1edc38342d170c00b4c361d67bc2fac41f92b772a867992a73a1c8c4a0b"
+  },
+  "crates/benitoite/src/builtins/funcs/format.rs": {
+    "bytes": 3763,
+    "sha256": "24bc3f3bfcbe01cde3775fbd5a9e1a03011a0fd5557b573353bd33d2de0a23cc"
+  },
+  "crates/benitoite/src/builtins/funcs/hash.rs": {
+    "bytes": 2703,
+    "sha256": "c542f7c208cf3c10a447acbd676598fd5ac3e09d3d33dcae8b551fa8b580c585"
+  },
+  "crates/benitoite/src/builtins/funcs/http_client/checked_request.rs": {
+    "bytes": 13707,
+    "sha256": "47d37a5a6634cc14487f54a8f9da59773280b4f04ea80b32f5e72173910324e1"
+  },
+  "crates/benitoite/src/builtins/funcs/http_client/redirect_body.rs": {
+    "bytes": 9501,
+    "sha256": "82e6a78044b2d93a0e468e80a2165f208ddb555d787d6bfe0342505fb83ff1f9"
+  },
+  "crates/benitoite/src/builtins/funcs/http_client/tests.rs": {
+    "bytes": 11092,
+    "sha256": "48e5caea8c8818b64f7836983f22570d8ccce07f7011e191b0af766190bb3dbb"
+  },
+  "crates/benitoite/src/builtins/funcs/http_client.rs": {
+    "bytes": 25620,
+    "sha256": "dd65697f3d40b0fee412acd03e850e86361adeee941213692af2935167d0c331"
+  },
+  "crates/benitoite/src/builtins/funcs/http_server/tests.rs": {
+    "bytes": 19300,
+    "sha256": "b46ad15fd91a8177eaf4e14ad0c75cd54eb8ac5b33bd2b81add9c70af02bd1bf"
+  },
+  "crates/benitoite/src/builtins/funcs/http_server.rs": {
+    "bytes": 11973,
+    "sha256": "2cd7118f6994392d0fe088015b4d7f59163f01cd1cfa16fc2dca076d28f5cbb8"
+  },
+  "crates/benitoite/src/builtins/funcs/http_util.rs": {
+    "bytes": 3842,
+    "sha256": "e64b9ac53af0e6b9dc4ce82e97f1ece49a891c694a62fb8ebe3a3ccf47342430"
+  },
+  "crates/benitoite/src/builtins/funcs/integer.rs": {
+    "bytes": 7700,
+    "sha256": "ba4d28355ac4ca839d22fb21cc96fa174cff672725171872c7e49eb2ba0ff1a1"
+  },
+  "crates/benitoite/src/builtins/funcs/io_error/tests.rs": {
+    "bytes": 1485,
+    "sha256": "852164cedd4c3f23225a0259e7f1c7d95b9e4d181aa83760433494edbd572f8a"
+  },
+  "crates/benitoite/src/builtins/funcs/io_error.rs": {
+    "bytes": 1492,
+    "sha256": "80987f67e4ffac3065fc7b5afd92e642263d61d6d9add396f9998ca5132ecc43"
+  },
+  "crates/benitoite/src/builtins/funcs/json.rs": {
+    "bytes": 35722,
+    "sha256": "92e5b679dc997a4445563ef80ebec21e3c4226fed9cfd55af11dc56c5a419013"
+  },
+  "crates/benitoite/src/builtins/funcs/lazy/tests.rs": {
+    "bytes": 623,
+    "sha256": "4bf06c0d8d0838f59eb5a2db8e8e1808cfc9cc30a7d94634f29f986c67af645c"
+  },
+  "crates/benitoite/src/builtins/funcs/lazy.rs": {
+    "bytes": 780,
+    "sha256": "74046ace0e25450129940d3715005c85d2a0b9e5a7bddf7b01c95b50206706d9"
+  },
+  "crates/benitoite/src/builtins/funcs/list.rs": {
+    "bytes": 9625,
+    "sha256": "b71e2545162af9600c0743fc2f3536ee87fbb71cb19c97ca1888d2d04c771365"
+  },
+  "crates/benitoite/src/builtins/funcs/log.rs": {
+    "bytes": 5511,
+    "sha256": "bc8ac578c115147720acc9ba18f97d12d261853bb9f68ae8d051b832476a30a5"
+  },
+  "crates/benitoite/src/builtins/funcs/map.rs": {
+    "bytes": 18977,
+    "sha256": "b5d9e5c34cac0b2c83dae365fb1e685ab99e36da8098a76a40823f43e6d232fa"
+  },
+  "crates/benitoite/src/builtins/funcs/mod.rs": {
+    "bytes": 50153,
+    "sha256": "c2c013237666f0bdb5049a911ca178acb5c1d7d7db86d3c57488d44d3a2bbf7d"
+  },
+  "crates/benitoite/src/builtins/funcs/narrow_integer.rs": {
+    "bytes": 8998,
+    "sha256": "0985710c71de2ec40e47c9708251f961c31b24509bc460c328165f4a2ff23387"
+  },
+  "crates/benitoite/src/builtins/funcs/network_error.rs": {
+    "bytes": 2965,
+    "sha256": "5705ae3555fd7a1f3250d7edce371d4df2cd271fd601591c2e1421cce904ea60"
+  },
+  "crates/benitoite/src/builtins/funcs/operators/float32.rs": {
+    "bytes": 5369,
+    "sha256": "d120f99174f85201876e34007abba9050200b898e1a4e3001a3b48c4473ca59c"
+  },
+  "crates/benitoite/src/builtins/funcs/operators/signed.rs": {
+    "bytes": 4128,
+    "sha256": "f0d642445fd9c0dc72767955f56b4e772f6f810e90fcb2566260939836f570a2"
+  },
+  "crates/benitoite/src/builtins/funcs/operators/unsigned.rs": {
+    "bytes": 3667,
+    "sha256": "8b9ed443bcdddf6759bbedbdedbdfb557e434ca20fd6ff019cc85253e894640d"
+  },
+  "crates/benitoite/src/builtins/funcs/operators.rs": {
+    "bytes": 19091,
+    "sha256": "c92c55552b016bd1944d463ad53cb28f2bbb95c46cd9726d0acdb5b410bc5694"
+  },
+  "crates/benitoite/src/builtins/funcs/path.rs": {
+    "bytes": 18713,
+    "sha256": "0895206c4d677bf5b2b64e9163c201ff2590c047cec0cabbafbfcb02cb3bbc71"
+  },
+  "crates/benitoite/src/builtins/funcs/process/external_tests.rs": {
+    "bytes": 14394,
+    "sha256": "b9b1bca113ab55bd1ad7fd017ef54bee8d1f90e61ba37f2bb63644b88dbb39c3"
+  },
+  "crates/benitoite/src/builtins/funcs/process/tests.rs": {
+    "bytes": 7519,
+    "sha256": "3919d3d0295e41f7d2e9c94fddde858992080ca0761fe506c99e668be947845d"
+  },
+  "crates/benitoite/src/builtins/funcs/process.rs": {
+    "bytes": 20171,
+    "sha256": "e1f6e91215057e87cc3655822936e64c50a923704b06a32544cd6b4f8fae965c"
+  },
+  "crates/benitoite/src/builtins/funcs/random/tests.rs": {
+    "bytes": 14230,
+    "sha256": "6ef5c03a85b16f47f2a07402a6cf25c9c6d462001172e3b49afb5adf8c2dc675"
+  },
+  "crates/benitoite/src/builtins/funcs/random.rs": {
+    "bytes": 6556,
+    "sha256": "8fc6c8664c1f48fc8275b2bc4a5839f2ddd124d35802625731f4407e4d01cb50"
+  },
+  "crates/benitoite/src/builtins/funcs/reference.rs": {
+    "bytes": 6259,
+    "sha256": "911ac1b78ec1f240f806d8fe32667fde0cdd5385523113c5723cbf9a1d08498d"
+  },
+  "crates/benitoite/src/builtins/funcs/regex/tests.rs": {
+    "bytes": 21042,
+    "sha256": "534e1b74c0e3481ff183c5877fa96c8c8148b4b904cd118693b987b05d6c0326"
+  },
+  "crates/benitoite/src/builtins/funcs/regex.rs": {
+    "bytes": 12096,
+    "sha256": "4290dc8fb1b9768d29dffcc4edc713cd4aee9fa117c05deecc86ac246952bcd5"
+  },
+  "crates/benitoite/src/builtins/funcs/runtime_test_support.rs": {
+    "bytes": 7837,
+    "sha256": "0eefb81980e79f73b5cb8c775c73622763049669f3d6b6123e0bc160c10d5a1b"
+  },
+  "crates/benitoite/src/builtins/funcs/samples.rs": {
+    "bytes": 20737,
+    "sha256": "50483108071bc34ec94520e1b8eb41dc7f8fbfaaa32166c3cf1a314b778273cb"
+  },
+  "crates/benitoite/src/builtins/funcs/scope.rs": {
+    "bytes": 7505,
+    "sha256": "97b911f37220b1a1a75f5ae033ba088536c7962ee668c9dcba3ec31093dadf96"
+  },
+  "crates/benitoite/src/builtins/funcs/set.rs": {
+    "bytes": 16139,
+    "sha256": "300b1a25f28cc0350ee62ce343191e24ac7c24dc7a0afb3e0c292666149fe1c1"
+  },
+  "crates/benitoite/src/builtins/funcs/string.rs": {
+    "bytes": 20989,
+    "sha256": "d17dc486e51f463a8c3d8ab8c429db413c79b819517bba05f7f5e4319d4aeafd"
+  },
+  "crates/benitoite/src/builtins/funcs/task.rs": {
+    "bytes": 4350,
+    "sha256": "ca8b92b5a0badfd937d9cd9efda91b7bda6f0cb7cb46dab821b28d66996103cf"
+  },
+  "crates/benitoite/src/builtins/funcs/task_group.rs": {
+    "bytes": 1237,
+    "sha256": "dc78f06819ca42b8f18e04c0241ccf11728abcb368045f729328e13faad4d670"
+  },
+  "crates/benitoite/src/builtins/funcs/time/tests.rs": {
+    "bytes": 15204,
+    "sha256": "fd6dbbfb8ddf6e96a7aff92e4901ff0c5e9e99e62e7e0f3d5cc879fdaeccf2be"
+  },
+  "crates/benitoite/src/builtins/funcs/time.rs": {
+    "bytes": 12677,
+    "sha256": "137c23fcec8e728c2998d6c0d3ebfd685b9db80ef75e34b16050e3c22da8a85b"
+  },
+  "crates/benitoite/src/builtins/funcs/traits.rs": {
+    "bytes": 2259,
+    "sha256": "60ac1608483d030bbcfa767979c6ee49dffe6540677cf5f7e16e1abf1311a406"
+  },
+  "crates/benitoite/src/builtins/funcs/unsigned_integer64.rs": {
+    "bytes": 4468,
+    "sha256": "7b783128fdca533f688a61bdaaff21f156ad5736a4e31163b5cb30f6a6cd4b75"
+  },
+  "crates/benitoite/src/builtins/funcs/width.rs": {
+    "bytes": 4908,
+    "sha256": "f88f2881a370f97b9cb6b0e4cef6cebfef4c9995308e65daafb5ec0181fe3877"
+  },
+  "crates/benitoite/src/builtins/funcs/width_bits.rs": {
+    "bytes": 9036,
+    "sha256": "f6a3efe0f67e768b0e0bf7c7b370837bc0edc84dc51ca58daac01567fe4f5edd"
+  },
+  "crates/benitoite/src/builtins/iface.rs": {
+    "bytes": 41584,
+    "sha256": "ffcb2e7fecaa9c61f80b20906a0269c29b915a3931228cf324781ffef3740a2f"
+  },
+  "crates/benitoite/src/builtins/mod.rs": {
+    "bytes": 640,
+    "sha256": "3fe1def7cd59b655095f6fe28a8f7507e6be25294c705b706768064e5f2e9532"
+  },
+  "crates/benitoite/src/builtins/table.rs": {
+    "bytes": 57107,
+    "sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0"
+  },
+  "crates/benitoite/src/bytecode/asm.rs": {
+    "bytes": 22286,
+    "sha256": "c2f9e30d4e0df662f9f14a2442212e6b02516866278f82a19158cb868388b85c"
+  },
+  "crates/benitoite/src/bytecode/builders.rs": {
+    "bytes": 8454,
+    "sha256": "542d6c64d9d43e09490298c657caa857d5b1aff597505b42336a13f4b65eba85"
+  },
+  "crates/benitoite/src/bytecode/codegen/analysis.rs": {
+    "bytes": 19526,
+    "sha256": "702fd993d7e9ef3edb32f7ac80517afd245993396d7b3dcffb6122deb75e07d0"
+  },
+  "crates/benitoite/src/bytecode/codegen/emit.rs": {
+    "bytes": 61559,
+    "sha256": "82659df09c1aec26ec1c8a86e72e5fadc85685c19c4ec8d2fd9babba02a743bf"
+  },
+  "crates/benitoite/src/bytecode/codegen/mod.rs": {
+    "bytes": 11551,
+    "sha256": "f7337ab271f027a5ce64342579f799fe0c5ac61aba21d3f5dd87998a42f17a78"
+  },
+  "crates/benitoite/src/bytecode/codegen/state.rs": {
+    "bytes": 8913,
+    "sha256": "1e6a300f32b1c05949126d0d2029a758b9ff41eecb9a406387d069fb2c2bb17b"
+  },
+  "crates/benitoite/src/bytecode/codegen/tables.rs": {
+    "bytes": 18457,
+    "sha256": "085776222af37e406d52260cf5ebaa0176f968d9deeff56534e5ab9528d560c3"
+  },
+  "crates/benitoite/src/bytecode/codegen/tests.rs": {
+    "bytes": 50979,
+    "sha256": "9351876e58c609c72413fd5d7be13ed04a200ddb239b17fc226524b2332ce7e9"
+  },
+  "crates/benitoite/src/bytecode/disasm.rs": {
+    "bytes": 6934,
+    "sha256": "1e74dd6fae93a19866ab4c2d79d094f94c8e8a87574f3d52a91825777338915b"
+  },
+  "crates/benitoite/src/bytecode/instr.rs": {
+    "bytes": 8872,
+    "sha256": "7e9a9b6b38bf3fbdb9780b08ee59d17b9927d48f673b3d26c4a14cf11c2bcb0f"
+  },
+  "crates/benitoite/src/bytecode/liveness.rs": {
+    "bytes": 58123,
+    "sha256": "579eb8d97d49bad46df985589f7446304bb0baf160c17016650c306bb4c9ce17"
+  },
+  "crates/benitoite/src/bytecode/mod.rs": {
+    "bytes": 592,
+    "sha256": "c4338eda4e028cd6c1ef977760756c3d9b9a4e964ca5a68a2f1229520f00ab27"
+  },
+  "crates/benitoite/src/bytecode/program.rs": {
+    "bytes": 17955,
+    "sha256": "1194b9d0b6c723a7abb3911f2953ba7643c44dacdb4419fc848388b111e677c9"
+  },
+  "crates/benitoite/src/bytecode/verify.rs": {
+    "bytes": 43161,
+    "sha256": "c0e51fb3c0f8845f9b8130ca708902d151f56d8ade0b079868c6f9d246a57fc8"
+  },
+  "crates/benitoite/src/cli/build_info.rs": {
+    "bytes": 1174,
+    "sha256": "92f89e09fea04fd96dc8aba2e4e57221b9e9dee4417d5c193fb9c5091710addc"
+  },
+  "crates/benitoite/src/cli/check_report.rs": {
+    "bytes": 13405,
+    "sha256": "52322ffd891c72170fdf80494e8afa10e753a5fface736fee75e9abc4f226925"
+  },
+  "crates/benitoite/src/cli/content_hash.rs": {
+    "bytes": 552,
+    "sha256": "42d2e6e94472a3b611e01aa6566b5ada1b898ccdb136a390b2c2c08fdba4348e"
+  },
+  "crates/benitoite/src/cli/effect_limit.rs": {
+    "bytes": 3317,
+    "sha256": "1589e2f7f3a5fea3cc4ba66576d49b52620d4498ccc7116979518e2462202e0d"
+  },
+  "crates/benitoite/src/cli/inspection.rs": {
+    "bytes": 10924,
+    "sha256": "1e80ff7a82cb7082383da280784fb21127a6fb47155b41516d0b121a5227521b"
+  },
+  "crates/benitoite/src/cli/mod.rs": {
+    "bytes": 81613,
+    "sha256": "a8a90852396ee201b58c41bf25f22d5d6a955476a2db96b68c1b422d4c750d58"
+  },
+  "crates/benitoite/src/cli/tools/args/tests.rs": {
+    "bytes": 5987,
+    "sha256": "58aa593bd44507fae435bb907abfc00ca9d990d2506936c2e3cfc0ccf3c3d244"
+  },
+  "crates/benitoite/src/cli/tools/args.rs": {
+    "bytes": 12550,
+    "sha256": "e19039d706b9ef2f22964c36d9f8e0720df7e73e59ee134e3e9e881b836a6fb9"
+  },
+  "crates/benitoite/src/cli/tools/doc_examples/input.rs": {
+    "bytes": 2512,
+    "sha256": "eb61eb8dedb58a99c23da187e4098394baa7bcd1a53e7c4dcc192bfe0eb3147d"
+  },
+  "crates/benitoite/src/cli/tools/doc_examples/mod.rs": {
+    "bytes": 7983,
+    "sha256": "c33bfe92f1bac5038b5d40f7ab9ff329aab998393876bf59eaabea8b3476fc68"
+  },
+  "crates/benitoite/src/cli/tools/doc_examples/source.rs": {
+    "bytes": 12116,
+    "sha256": "57c093d2643ae94a52332cfbaab10d5b908343f2aedabd1b89d9ff519a96c0d8"
+  },
+  "crates/benitoite/src/cli/tools/doc_examples/tests.rs": {
+    "bytes": 11642,
+    "sha256": "23fbd1bcae8f943b4cabb801c703b63e2f2de9035b716f9ae015fb155c0ddc7c"
+  },
+  "crates/benitoite/src/cli/tools/doc_examples/text.rs": {
+    "bytes": 796,
+    "sha256": "b5ed86480e8f58e21e0e600041eaf57bd8f82b69ff7f782d6f46571419e531bc"
+  },
+  "crates/benitoite/src/cli/tools/formatter/mod.rs": {
+    "bytes": 16616,
+    "sha256": "e4cb8819c02d02bf0fc870352ebd30935c9f2522a34a3f8db3d8476045e31131"
+  },
+  "crates/benitoite/src/cli/tools/formatter/print/tests.rs": {
+    "bytes": 12185,
+    "sha256": "65f1fe517301b4a0a0f5ed9569196401988027bd685dcca5f3dbbc6df0de9b5f"
+  },
+  "crates/benitoite/src/cli/tools/formatter/print.rs": {
+    "bytes": 22961,
+    "sha256": "75ffe7d4581e9614c04539814548288ae19ee6eaef45a1d5eea88571041009c7"
+  },
+  "crates/benitoite/src/cli/tools/formatter/roles/tests.rs": {
+    "bytes": 8345,
+    "sha256": "7ee5d76226fa9d628e4c4c823ee92832a1a9c793d8d9f9dfef3f8ff02f8b6caa"
+  },
+  "crates/benitoite/src/cli/tools/formatter/roles/walk.rs": {
+    "bytes": 50056,
+    "sha256": "1b0d02c080e52427ccb9f087d4e37b7f3c00cd086a4d20b76473046f4a2ac9a3"
+  },
+  "crates/benitoite/src/cli/tools/formatter/roles.rs": {
+    "bytes": 4210,
+    "sha256": "ee870ad6984e8317be852323ac4c79c8bd6bddb998b50c6f4c05f9cf4e2e6a2b"
+  },
+  "crates/benitoite/src/cli/tools/formatter/tests.rs": {
+    "bytes": 21511,
+    "sha256": "08931047339c8f1ad18bd6200bd06843634d6b55522583b8587d1921ca3339a8"
+  },
+  "crates/benitoite/src/cli/tools/formatter/verify/tests.rs": {
+    "bytes": 8348,
+    "sha256": "65003df0432934d25a657329f7069f1615ed18fabffa802001c5b8bcc08d18e0"
+  },
+  "crates/benitoite/src/cli/tools/formatter/verify.rs": {
+    "bytes": 8671,
+    "sha256": "22b9f39749a20b449919be5a61cfba94ab75d6e890b58e0f9a603aa0021fa0dd"
+  },
+  "crates/benitoite/src/cli/tools/licenses.rs": {
+    "bytes": 1513,
+    "sha256": "8e0b10f3334e9223f231147169e42e9100ffd421a9cff8520c8ef96aa7d988e4"
+  },
+  "crates/benitoite/src/cli/tools/package/edit.rs": {
+    "bytes": 7525,
+    "sha256": "8444b6e8d4f9845c246d571b090b85d7cf56ee70e491c4872f7f2819f6312929"
+  },
+  "crates/benitoite/src/cli/tools/package/effects.rs": {
+    "bytes": 9410,
+    "sha256": "338a550b316b7054a5a95a3b437c3de91d3668d2126205de8f5c6411c553e2de"
+  },
+  "crates/benitoite/src/cli/tools/package/mod.rs": {
+    "bytes": 39357,
+    "sha256": "1521fe3ecc16ceae0d386715907c1b2e83d227b94fcec0c947ed707f2d3438ae"
+  },
+  "crates/benitoite/src/cli/tools/package/tests.rs": {
+    "bytes": 9286,
+    "sha256": "cd421a0ed5f92f0fabad8538a6fc889d99c3e682831563570b94b6111cace96e"
+  },
+  "crates/benitoite/src/cli/tools/package/write.rs": {
+    "bytes": 2316,
+    "sha256": "5adcad1b9f036d98278089c8440d49f4ac26c2396b0e8729d178cada8910bbf0"
+  },
+  "crates/benitoite/src/cli/tools/skill/bundle.rs": {
+    "bytes": 11121,
+    "sha256": "c0f7bb1aaa810ed900721ffca81e1399eaa94695334f1fef9d7bd1c45318cd0e"
+  },
+  "crates/benitoite/src/cli/tools/skill/generate.rs": {
+    "bytes": 33125,
+    "sha256": "c57083794a25862c7c452735a19dcd2c254cb982de6e553d602c6c10d45ce846"
+  },
+  "crates/benitoite/src/cli/tools/skill/mod.rs": {
+    "bytes": 24171,
+    "sha256": "9bc03fd6686d7896c223859a25e1e677bc4f088bfe10b071b000d7bd65a421c4"
+  },
+  "crates/benitoite/src/cli/tools/skill/tests.rs": {
+    "bytes": 22458,
+    "sha256": "7bb791e9776e8c252d46ac8c219e8e4584d9cef2ffbbf1a928959386016ea541"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/check_report.rs": {
+    "bytes": 18615,
+    "sha256": "24d36d910b72c277d844db213cb8f595bbf138e3614221a7be203e8dc8bcd54d"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/docs/execute.rs": {
+    "bytes": 10418,
+    "sha256": "e51cc71fda8c6a3b510cf97d20888ba21291e2e7a86055dfb547d5d1d334f443"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/docs/prepare.rs": {
+    "bytes": 10132,
+    "sha256": "6e9d2c3d2eca9be90dfe2069a180733f1370c8e791d80ea127ec03e9c0fa2014"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/docs.rs": {
+    "bytes": 14132,
+    "sha256": "3b8132c1d92960bc2b204e06b75acfebf2e05c660701b060463159c98f287c8b"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/mod.rs": {
+    "bytes": 41425,
+    "sha256": "ee036d6b7a0c57d74c51b36dcfb10122995ca7c8767390fbd29fb1abccdb220d"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/report/tests.rs": {
+    "bytes": 10500,
+    "sha256": "cbb7a4744ab4e0e706561375aa587846ce38cb6fa4da595b62d0e8b907879b3d"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/report.rs": {
+    "bytes": 11736,
+    "sha256": "db39a1a2b2cf092a30a8afb8c0c597651f55de5cb87cec2941b5d24dfc6886e1"
+  },
+  "crates/benitoite/src/cli/tools/test_runner/tests.rs": {
+    "bytes": 2354,
+    "sha256": "2b84ed651e202736a8314c9d1c107dab246c88c7e1a9a32014ff929b84dfb33f"
+  },
+  "crates/benitoite/src/cli/tools.rs": {
+    "bytes": 4117,
+    "sha256": "32e56af6e98e431cf5ae38bf71dab304d007e41b7acdb19ed2a5e46589524f5c"
+  },
+  "crates/benitoite/src/cli/wasm.rs": {
+    "bytes": 4066,
+    "sha256": "8f557a14402ba166f896eb7d2bf62f61401a862105ec673e206149ba8dfac2e2"
+  },
+  "crates/benitoite/src/diag/codes.rs": {
+    "bytes": 123989,
+    "sha256": "d63f3aa9e9abf37ac69940b96cc4575af4845454c9eb793e3474604f28b74aac"
+  },
+  "crates/benitoite/src/diag/mod.rs": {
+    "bytes": 11339,
+    "sha256": "73f2937654ed0f1c36805854fe7ce05361c5bfad3ea5dfddef4b147ec3499d63"
+  },
+  "crates/benitoite/src/diag/render/acceptance_tests.rs": {
+    "bytes": 23841,
+    "sha256": "87329c98efec0d2f8338471686a0ad00c332c452d3275da65d456588c9c18f78"
+  },
+  "crates/benitoite/src/diag/render/excerpt.rs": {
+    "bytes": 4417,
+    "sha256": "47c915a9982caf3aec102fb7e1e44f932bbc02ff2f730318a4fd67d256b4583c"
+  },
+  "crates/benitoite/src/diag/render/help_tests.rs": {
+    "bytes": 26352,
+    "sha256": "7ee3330d1ea84d093fb2dee27e3a3a1c8fa875d186e49515e94c1214fb71ebca"
+  },
+  "crates/benitoite/src/diag/render/tests.rs": {
+    "bytes": 26482,
+    "sha256": "610f1682b9839d90b4133c5b7470f78c1afc43be17ae91f427edc2ae822a6ea4"
+  },
+  "crates/benitoite/src/diag/render.rs": {
+    "bytes": 36982,
+    "sha256": "1e52e2e07ed988f8488041dcfd2901ea55da3916ada3816c5ae8b1efc0dc9ea7"
+  },
+  "crates/benitoite/src/external/adapter/abi_tests.rs": {
+    "bytes": 25049,
+    "sha256": "b1899f4a7e3608c38ba4feb131c7b9f49c57220c1dfaea5f2ad4f13117edc401"
+  },
+  "crates/benitoite/src/external/adapter/codec/decode.rs": {
+    "bytes": 28891,
+    "sha256": "100d542d22962ae36ec81cf62a2057d8124594bc3177d907393c7f5d3e348d1c"
+  },
+  "crates/benitoite/src/external/adapter/codec/tests.rs": {
+    "bytes": 32686,
+    "sha256": "69e009f4dcec708aa4daa0732c9ed33c776b19443473976a25e60c22639ce3f2"
+  },
+  "crates/benitoite/src/external/adapter/codec.rs": {
+    "bytes": 27458,
+    "sha256": "f1aa90fbf24df3dac6514abc01457b8ef551d26aaf75413f07f3e59d15b49abf"
+  },
+  "crates/benitoite/src/external/adapter/collection_tests.rs": {
+    "bytes": 13771,
+    "sha256": "d2004b65fb8084a8ca5b24f7a288d1b55548581e931fedb9e57d85af1b137982"
+  },
+  "crates/benitoite/src/external/adapter/component.rs": {
+    "bytes": 27195,
+    "sha256": "d7be9f8db20c31ae70686f4a9172efa7eac477b92f5c79937bf6713bc63b3a94"
+  },
+  "crates/benitoite/src/external/adapter/emit.rs": {
+    "bytes": 25978,
+    "sha256": "06c297bcc48d8d1276f69fdb00742dda33b65c26e664377c24efc09852d0ecdf"
+  },
+  "crates/benitoite/src/external/adapter/emit_values.rs": {
+    "bytes": 56010,
+    "sha256": "f61920d5ca60377fa3437702db8a304e1aee3726edacebec70d971ad67b24435"
+  },
+  "crates/benitoite/src/external/adapter/fixed_tests.rs": {
+    "bytes": 49764,
+    "sha256": "6d2a8038420457d5e6bb8c490cc23577f27604b4a4c1e170f4c7d8c5da7540b9"
+  },
+  "crates/benitoite/src/external/adapter/layout.rs": {
+    "bytes": 17666,
+    "sha256": "a962c27eb6566b7baaf063d3045435ea8684b01d75a2e90de2b07f071cfddae8"
+  },
+  "crates/benitoite/src/external/adapter/lifetime_tests.rs": {
+    "bytes": 8575,
+    "sha256": "86b88dfa4adaa9ed9727498103d325ff0ad7c1d1dff4bd0924dc29393184fa20"
+  },
+  "crates/benitoite/src/external/adapter/limit_tests.rs": {
+    "bytes": 20866,
+    "sha256": "b39e1e2ed42941324372b65e92e66860e1c5a160055f4fd65754cf9ff4b916a1"
+  },
+  "crates/benitoite/src/external/adapter/memory_tests.rs": {
+    "bytes": 17513,
+    "sha256": "c4498caf84d20fb835297befa675422ed8934aaffff229209ea344fd74f59045"
+  },
+  "crates/benitoite/src/external/adapter/mod.rs": {
+    "bytes": 15705,
+    "sha256": "71a46ec2a33492b7e37b7b8e342318cd020dd8f1cc78b0bf85f9f6dd88bde17e"
+  },
+  "crates/benitoite/src/external/adapter/report_tests.rs": {
+    "bytes": 12905,
+    "sha256": "3f8e637bba4e51169587898e8f14934f12d0b37c86a6665db76100d42c9e357f"
+  },
+  "crates/benitoite/src/external/adapter/runtime.rs": {
+    "bytes": 15826,
+    "sha256": "e525051701451c8d4dc96f3b2044a312902680c6a460080745d15dd0b25b967d"
+  },
+  "crates/benitoite/src/external/adapter/sharing_tests.rs": {
+    "bytes": 12598,
+    "sha256": "a65d9bf6605a114899e78c9b64e2123f298015f1cc8bb1656b72429240cce8db"
+  },
+  "crates/benitoite/src/external/adapter/variant_tests.rs": {
+    "bytes": 20218,
+    "sha256": "5615fa1801171fbe28038fe6c231ca4470d90d0703073a2d5fb067aa31f863e7"
+  },
+  "crates/benitoite/src/external/adapter/wire.rs": {
+    "bytes": 5557,
+    "sha256": "58d63928f7e91aef4a6ebd462f30e547bb71213657028fb2e83f79a8f4b3c7f5"
+  },
+  "crates/benitoite/src/external/check.rs": {
+    "bytes": 30647,
+    "sha256": "9fd1294e50d80aa843210b8dc794f6b44a862d50c210d6ae761a7c01dc8f3a39"
+  },
+  "crates/benitoite/src/external/convert.rs": {
+    "bytes": 39242,
+    "sha256": "eff1d96754bc0ed62d443b7caad51512915c777efd5817931ea9445da0c41b11"
+  },
+  "crates/benitoite/src/external/expansion.rs": {
+    "bytes": 7943,
+    "sha256": "b66a37d2421b980ed1afa17d77393c5fab6b102aa6d934a14db382ce3aec7c0c"
+  },
+  "crates/benitoite/src/external/mod.rs": {
+    "bytes": 10952,
+    "sha256": "18c4c466d2d0c62ba9b4d04d95d9358c0758464af9488e9a23888f6c348d2be5"
+  },
+  "crates/benitoite/src/external/path.rs": {
+    "bytes": 3030,
+    "sha256": "d2cae4241daad72dd1663000be421a3d2cc5e7e4a9740f89e79a7565fc7679e8"
+  },
+  "crates/benitoite/src/external/runtime/adapter_tests.rs": {
+    "bytes": 20407,
+    "sha256": "f2a52a054e1394d8bdea7d4aebe84c77566dbf3b3cc5c1d3be02db5e19def03d"
+  },
+  "crates/benitoite/src/external/runtime/session_tests.rs": {
+    "bytes": 4705,
+    "sha256": "babc168cfa3e80affa0f8f699dc5e033034728047f0cc1ceb51da20b0339bbe3"
+  },
+  "crates/benitoite/src/external/runtime.rs": {
+    "bytes": 108413,
+    "sha256": "0510048739396d970d2a17be8ed1b6fc2ff668a2d95405d6b06e59849c905e98"
+  },
+  "crates/benitoite/src/external/stats.rs": {
+    "bytes": 13684,
+    "sha256": "52416d0e589eb4c1106873adcfa5a95f2faf28be58b7f733038aef7bd1f7a50e"
+  },
+  "crates/benitoite/src/external/tests.rs": {
+    "bytes": 95012,
+    "sha256": "f95eebc9c46e68257b93801d41047c319f3d863e0bda61e8ab4e9c33d998c2d7"
+  },
+  "crates/benitoite/src/external/text.rs": {
+    "bytes": 7698,
+    "sha256": "df84df6c7d27b6fe5f77ee40cf5994205e06d96d657b22747a083b0f849a485d"
+  },
+  "crates/benitoite/src/external/typed.rs": {
+    "bytes": 12504,
+    "sha256": "be972632f925bd7ae939e44215d7dadf0d167760304a62cbc71e6e059f9fcef7"
+  },
+  "crates/benitoite/src/external/types.rs": {
+    "bytes": 33906,
+    "sha256": "05ef8c98224398140e2de4297757b8191c09f3d8d730710f42167c89136f590e"
+  },
+  "crates/benitoite/src/ir/check.rs": {
+    "bytes": 160389,
+    "sha256": "98abfd22a6cfdbb21fe1185f89590d938790a31da1c824b5bfe310dbf07d21b2"
+  },
+  "crates/benitoite/src/ir/core_ir.rs": {
+    "bytes": 21506,
+    "sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2"
+  },
+  "crates/benitoite/src/ir/decision/arena.rs": {
+    "bytes": 15793,
+    "sha256": "408858fa37f3a2c76fd497f331c59c51acf89aa81d8748b950bab387f2110b88"
+  },
+  "crates/benitoite/src/ir/decision/block_tests.rs": {
+    "bytes": 5008,
+    "sha256": "41583a66a6a15c8d697532fc599dc87c1a90875edcabf217d6b346aa3d02ef53"
+  },
+  "crates/benitoite/src/ir/decision/rows.rs": {
+    "bytes": 14998,
+    "sha256": "2b8bdd11fce268c45759790883b2daad21761f5ac42109f6b37c92c24b3a48ce"
+  },
+  "crates/benitoite/src/ir/decision.rs": {
+    "bytes": 148967,
+    "sha256": "43b528a5c24bb15391b979a4fd68b17b1a75569cb5fd00a2710b519403f7c0f1"
+  },
+  "crates/benitoite/src/ir/desugar/builders.rs": {
+    "bytes": 2095,
+    "sha256": "9abdf92d484dc54631f6dbd1d42d68ce21418b57afd08b41d790002534d55e22"
+  },
+  "crates/benitoite/src/ir/desugar/decls.rs": {
+    "bytes": 16528,
+    "sha256": "7c0f3bbf7f055d6bab8d2b01dfae1129d11ba3ae431369a5c248c55078564635"
+  },
+  "crates/benitoite/src/ir/desugar/dicts.rs": {
+    "bytes": 9397,
+    "sha256": "461dcc6528de3468bc4bac563942b1e536202f4d503220cf6136e437bdc294de"
+  },
+  "crates/benitoite/src/ir/desugar/die_tests.rs": {
+    "bytes": 19214,
+    "sha256": "e5650d37820c10a1e02f59bfe3f35607cd54a2ba7f9d304e08b7265cb1a8e041"
+  },
+  "crates/benitoite/src/ir/desugar/effects.rs": {
+    "bytes": 21510,
+    "sha256": "f067757470a7e0ef013f23c712295b6897fc4f8c1b8d0b6c9278366d153007d3"
+  },
+  "crates/benitoite/src/ir/desugar/exprs.rs": {
+    "bytes": 52278,
+    "sha256": "6be536c8e048968822d70f49b735ee8f2f011ecc1c28180e802be1164f0583db"
+  },
+  "crates/benitoite/src/ir/desugar/patterns.rs": {
+    "bytes": 7100,
+    "sha256": "e1a64a39417e531e1e0919bbcbab72d902a580e64b8dbf7dedb61c79747431d2"
+  },
+  "crates/benitoite/src/ir/desugar/tests.rs": {
+    "bytes": 48192,
+    "sha256": "848c1b0a386b69483606ac22c7350e7306b41bd0a282c1fb14c2e6ca70977e5c"
+  },
+  "crates/benitoite/src/ir/desugar.rs": {
+    "bytes": 13720,
+    "sha256": "998f38ef05e685dbe7a2e2f4f83e3fa8eada41a9b62e9d819b19075d664b33d2"
+  },
+  "crates/benitoite/src/ir/lower_ir.rs": {
+    "bytes": 4553,
+    "sha256": "2152e181782d617218a09c03abb58617ed929872fce049dcd04f5e975e202ed3"
+  },
+  "crates/benitoite/src/ir/mod.rs": {
+    "bytes": 664,
+    "sha256": "f050275467d8fd42a7e9459b3e197eea1059669637f49f1092303b47f5aa024d"
+  },
+  "crates/benitoite/src/lib.rs": {
+    "bytes": 653,
+    "sha256": "c392976fcb6f33ce503df4c2ab5eba56b719ccdd733d47ef9e1c7b11f5b978e8"
+  },
+  "crates/benitoite/src/main.rs": {
+    "bytes": 109,
+    "sha256": "5a25efaaa0ba54246d71be4fcdde14d6d4e4372d84bb537f39a8f2f7d76bcbae"
+  },
+  "crates/benitoite/src/modules/cycle.rs": {
+    "bytes": 3445,
+    "sha256": "55a43b9bf82e109aa945a2cc9796cb0250100fb2a1ad81acb7f59fcfce0c47db"
+  },
+  "crates/benitoite/src/modules/find.rs": {
+    "bytes": 20973,
+    "sha256": "33d017b2d25393b614fc405fda1599d1c7960821b6b1228204ecda6b9aea7a85"
+  },
+  "crates/benitoite/src/modules/hash.rs": {
+    "bytes": 20266,
+    "sha256": "20555d25a978f071927608d6dcf4880325a5211576611287bfdd1512d795d1d3"
+  },
+  "crates/benitoite/src/modules/internal.rs": {
+    "bytes": 4659,
+    "sha256": "1ab36fef364b7a1943894e2a5cc1627eb899d81f1e92f471419fabd2ecac65da"
+  },
+  "crates/benitoite/src/modules/load.rs": {
+    "bytes": 21019,
+    "sha256": "e3002c9d8dce03c086ed907b38abe10d9b9e92f70916d536a2077dbdca61d997"
+  },
+  "crates/benitoite/src/modules/memfs.rs": {
+    "bytes": 6893,
+    "sha256": "06478391cb4ee7020081a8f868873d93abb3c236a801a71d456dcc226a0bf7fc"
+  },
+  "crates/benitoite/src/modules/mod.rs": {
+    "bytes": 10885,
+    "sha256": "6cc135fb9c31ac7ccc9e3b60b6334c3287d7839093c6793e28e7a6f21652f5f5"
+  },
+  "crates/benitoite/src/modules/package.rs": {
+    "bytes": 27574,
+    "sha256": "bd1a34490de71672fe71b707a110861e945b587dabedb42f396eb496a57891fc"
+  },
+  "crates/benitoite/src/modules/test_support.rs": {
+    "bytes": 1218,
+    "sha256": "5984e0509634f0e5582b159f503d36c9dd9a56dca1fde266169981b6960ed9f0"
+  },
+  "crates/benitoite/src/modules/tests.rs": {
+    "bytes": 51401,
+    "sha256": "2828c505fcf3974efb9d062987f67921504aa41508a8b1803d46f933e2620954"
+  },
+  "crates/benitoite/src/modules/text.rs": {
+    "bytes": 7088,
+    "sha256": "875ba0bb75dee769bc1159146c5808a8f3ae7b5ee6c00a7c761bf18814ad6fd1"
+  },
+  "crates/benitoite/src/pipeline/declarations.rs": {
+    "bytes": 7225,
+    "sha256": "9e171c1c1862753c76fc326a65d6de245a3623e36661b173195b5c693aac4131"
+  },
+  "crates/benitoite/src/pipeline/interval_inventory.rs": {
+    "bytes": 6410,
+    "sha256": "45945f2b622afa52d740c5f5405e01677935c4935c280c14efccad30a1284556"
+  },
+  "crates/benitoite/src/pipeline/source_location.rs": {
+    "bytes": 11937,
+    "sha256": "c3c580b10e30e147bc73cdc131b304d641b700102856c6573fe94a9cac061ec3"
+  },
+  "crates/benitoite/src/pipeline.rs": {
+    "bytes": 46533,
+    "sha256": "835143b851f3c00131441da4346c776b240f4993da44f1ae83a58012425c5314"
+  },
+  "crates/benitoite/src/prelude/mod.rs": {
+    "bytes": 11044,
+    "sha256": "6ca8bf430708392f86f361488162356e759b280b08f6eac394111710ecca6963"
+  },
+  "crates/benitoite/src/refinterp/builders.rs": {
+    "bytes": 5417,
+    "sha256": "b3d552cc24de796a9b6c2c5d95b06484283873dc8c75eb6c0f12de0b3b77766f"
+  },
+  "crates/benitoite/src/refinterp/convert.rs": {
+    "bytes": 64187,
+    "sha256": "995d7356fd1fc4aec5c100ad44199320afb0662e4711c4885e907828124c7917"
+  },
+  "crates/benitoite/src/refinterp/eval.rs": {
+    "bytes": 43298,
+    "sha256": "439b96e8371db77b52fd8beba7d43815c80b5ef45a51112d3d14d86ec1523585"
+  },
+  "crates/benitoite/src/refinterp/exit_report_tests.rs": {
+    "bytes": 19283,
+    "sha256": "3e4b1d03a925cffaf3fc174f4534a9b74d301a77a191828bc1fa762a0056dd3a"
+  },
+  "crates/benitoite/src/refinterp/index.rs": {
+    "bytes": 10963,
+    "sha256": "99a392cad59d84bf848fc4758a83cf4608d0ed06fae39d58d0bd8ba471084f05"
+  },
+  "crates/benitoite/src/refinterp/mod.rs": {
+    "bytes": 1933,
+    "sha256": "69289b9b3b9df18324e4c23346d3a95d0bf1096e17fa17e79f3d2724a70ca795"
+  },
+  "crates/benitoite/src/refinterp/pattern.rs": {
+    "bytes": 3807,
+    "sha256": "463ead9934a5c5c5777af8aac75ea56db5af733cd12c48fc357a8d232e16ac81"
+  },
+  "crates/benitoite/src/refinterp/resources.rs": {
+    "bytes": 6335,
+    "sha256": "977d58b480657dbd04df86b1f4102ba5c619f629ca3d78b596e2ddcb7aaaf6b6"
+  },
+  "crates/benitoite/src/refinterp/tests.rs": {
+    "bytes": 23958,
+    "sha256": "89f94828e7b695015476dc12bf0ece2262923e3c5c6c34b3795b2cfa384510c5"
+  },
+  "crates/benitoite/src/refinterp/value.rs": {
+    "bytes": 16273,
+    "sha256": "2b3ea99d3c87d44f3ca4ec3c424401144a3aa828988dc28523cb7b175a1dff75"
+  },
+  "crates/benitoite/src/resolve/builders.rs": {
+    "bytes": 12522,
+    "sha256": "0193ae9d97e9848d49a1e399a5cc04562d303b16d055824c34c19562f34831ce"
+  },
+  "crates/benitoite/src/resolve/checks.rs": {
+    "bytes": 10220,
+    "sha256": "22bf6dfed1b65dc8d7f06aceea7e3551157ebc7394b56625bb3c803ede252b58"
+  },
+  "crates/benitoite/src/resolve/collect.rs": {
+    "bytes": 20973,
+    "sha256": "90abd17182ae641d46fada652b812e5a452d19d6e84f6ef51374a9b8e90565d3"
+  },
+  "crates/benitoite/src/resolve/imports.rs": {
+    "bytes": 13398,
+    "sha256": "3a3e9db453af6dfdfd235b03877b2d70cd4844facbe7c9b453b3d4697781e0f7"
+  },
+  "crates/benitoite/src/resolve/lookup.rs": {
+    "bytes": 50084,
+    "sha256": "0bd5bf0f462dcff1545133dbc2ca49257a4eb6489449c78c7df9d1d1a332cbe4"
+  },
+  "crates/benitoite/src/resolve/mod.rs": {
+    "bytes": 11667,
+    "sha256": "82e185d5a25997acf0107f6612bc3576e12af010120295c9e33fa90a202c6171"
+  },
+  "crates/benitoite/src/resolve/renames.rs": {
+    "bytes": 5441,
+    "sha256": "05a79d358df1921d8eb8ae204fee49aad3889bd93adb489116e9af1cfb5e2725"
+  },
+  "crates/benitoite/src/resolve/scope.rs": {
+    "bytes": 8819,
+    "sha256": "dc923771b75338714c33e1de98683e0b920a43a2cfb0e3e9be2de17e7c69c812"
+  },
+  "crates/benitoite/src/resolve/shadow.rs": {
+    "bytes": 15069,
+    "sha256": "e25762538411b69b1bf30dcbea8ef6d5e4e5368782f24d57675b07fc089366bb"
+  },
+  "crates/benitoite/src/resolve/suggest.rs": {
+    "bytes": 2073,
+    "sha256": "97c6f5e4e692f124ba0049dc5a2eff9f12ade5619403f6f3aeef7bd3c0de3d3f"
+  },
+  "crates/benitoite/src/resolve/test_support.rs": {
+    "bytes": 853,
+    "sha256": "1092160fb77795d39fd8218a106bc93cd4b71f9292fab9913700a4728045e141"
+  },
+  "crates/benitoite/src/resolve/tests.rs": {
+    "bytes": 87142,
+    "sha256": "6be6becf32cba9429dfee2996b2658f60537e3db8aeb1cb0ce63c684046192e7"
+  },
+  "crates/benitoite/src/resolve/text.rs": {
+    "bytes": 2848,
+    "sha256": "449883e20fb9aef0d1afd1baec3dcfbc582239c0d31bf64294e70f2a4e5106d4"
+  },
+  "crates/benitoite/src/resolve/walk.rs": {
+    "bytes": 22220,
+    "sha256": "6d5debf63819ec5b27db55879c080426780225388d6859587a5171fa69c953f2"
+  },
+  "crates/benitoite/src/runtime/assert/tests.rs": {
+    "bytes": 38011,
+    "sha256": "c3f697b5cc4132295406eed0020d9a2b5a67491957304598f806226e8065a4a3"
+  },
+  "crates/benitoite/src/runtime/assert.rs": {
+    "bytes": 51805,
+    "sha256": "c080987dd25e712630b888b10927c73060bcc435d403b1cc5251636c2d135e4f"
+  },
+  "crates/benitoite/src/runtime/equal.rs": {
+    "bytes": 37619,
+    "sha256": "aaec345f2ab8cf8489c497e451c92782373964e8636ffe497b188e8c68a41d05"
+  },
+  "crates/benitoite/src/runtime/heap/build.rs": {
+    "bytes": 2601,
+    "sha256": "228c229aa2954bd623dfb9992076603f86bce38adb6d31bcaa9c9efadb91ef4c"
+  },
+  "crates/benitoite/src/runtime/heap/builders.rs": {
+    "bytes": 14089,
+    "sha256": "05224bfb1802822d143c4bb7954ad2eaa6c91c54d29b779a77d568f272348dd3"
+  },
+  "crates/benitoite/src/runtime/heap/builders_tests.rs": {
+    "bytes": 15785,
+    "sha256": "b7f9888e90ea123559e7f64fe228c1f6a10feedbf82ebf7a8a84f2d98876d7a9"
+  },
+  "crates/benitoite/src/runtime/heap/core/alloc.rs": {
+    "bytes": 7108,
+    "sha256": "121a1dcbc79776f032a2dd2e46e1160a26132676830d25b22af062d361d3f514"
+  },
+  "crates/benitoite/src/runtime/heap/core/layout.rs": {
+    "bytes": 4040,
+    "sha256": "00a757675bf8f1d466bce16fbcc113b94335099759b7c58e9853c8da69315605"
+  },
+  "crates/benitoite/src/runtime/heap/core/mark_sweep.rs": {
+    "bytes": 31480,
+    "sha256": "9c65d995ff7f6f3bcf41d1cc554570a797bbd2132a472347876aa9c2ca51c68f"
+  },
+  "crates/benitoite/src/runtime/heap/core/probe.rs": {
+    "bytes": 375,
+    "sha256": "1f3cf61b7435128ec310530c36031e4684b6e21a98bd3b97690f45351b24a091"
+  },
+  "crates/benitoite/src/runtime/heap/core/tests.rs": {
+    "bytes": 24895,
+    "sha256": "388d726fad8cde0c854c3636b4cbdcdab36ce56611ff636338c2621b38dacd50"
+  },
+  "crates/benitoite/src/runtime/heap/core/verify.rs": {
+    "bytes": 6984,
+    "sha256": "ff26718a0c891bad1d15b4da4c065733cc56112a34f55eacc2663ced38130fcb"
+  },
+  "crates/benitoite/src/runtime/heap/core.rs": {
+    "bytes": 54077,
+    "sha256": "f95fbcd3a3a72c55cd555208733293582d20fa5edcabbcf022ffff684de645bd"
+  },
+  "crates/benitoite/src/runtime/heap/ctx.rs": {
+    "bytes": 74840,
+    "sha256": "833ec134a85c64573a5bdd7ea31cac3b37af3754ac9d1ec696b2efb87ce440e9"
+  },
+  "crates/benitoite/src/runtime/heap/mod.rs": {
+    "bytes": 5171,
+    "sha256": "839f5647430f67d5a695dba74f0d0a9d37d1af4947e2648288aeaa5dbc62fb7c"
+  },
+  "crates/benitoite/src/runtime/heap/slot.rs": {
+    "bytes": 7091,
+    "sha256": "5061e23baec6f22a0180946e226528631280b6d6451a8b320e4671bdb9517d15"
+  },
+  "crates/benitoite/src/runtime/heap/stats.rs": {
+    "bytes": 3596,
+    "sha256": "4859d43a9af285c637f162e8619e0a85fd7a681b1259854dfeac09c2cc28e53b"
+  },
+  "crates/benitoite/src/runtime/heap/trace.rs": {
+    "bytes": 2960,
+    "sha256": "ecaa40e0245199a62a12fe2489d060116b465616f415c2a2a28c14b62de6118d"
+  },
+  "crates/benitoite/src/runtime/heap/value.rs": {
+    "bytes": 11136,
+    "sha256": "ae21f03a4586877c242ded1f3c4bd5ee8675cd21875c8cd978ec3b686b15c822"
+  },
+  "crates/benitoite/src/runtime/heap/verification_tests.rs": {
+    "bytes": 14819,
+    "sha256": "64a2127faf3a7d5b5161d94ac3329d218da712bea96a30be0b51259fda0b9cac"
+  },
+  "crates/benitoite/src/runtime/io/event.rs": {
+    "bytes": 17898,
+    "sha256": "f37ceaaf0c147acaf1c70d7a78ea5ef953b657a3cda5068201263f4ded623648"
+  },
+  "crates/benitoite/src/runtime/io/http/tests.rs": {
+    "bytes": 52596,
+    "sha256": "8f2c0ea9fd2e63aa274e20d03aecc861981698d23bdb5d61bbe1c7236babc5c8"
+  },
+  "crates/benitoite/src/runtime/io/http.rs": {
+    "bytes": 60536,
+    "sha256": "24fe9c3c9ad7cc24df503d0badfbd4be96e2c2adee365eb803bb192a1f9452f6"
+  },
+  "crates/benitoite/src/runtime/io/mod.rs": {
+    "bytes": 9904,
+    "sha256": "5b6ae3fa741372230c36971101eaf19f6e5140f69154e2f6ab8f71662fa70be4"
+  },
+  "crates/benitoite/src/runtime/io/ops/tests.rs": {
+    "bytes": 5159,
+    "sha256": "c48bd68bedba38e95bc38d73a3693e8f34dd1e8d7c4757a873dc237a3d504322"
+  },
+  "crates/benitoite/src/runtime/io/ops.rs": {
+    "bytes": 11498,
+    "sha256": "6097e55c7e6e0c52897f984d709de9063dd73b5eb4d70f16b5f85f27ae88e32f"
+  },
+  "crates/benitoite/src/runtime/io/output/testing.rs": {
+    "bytes": 10680,
+    "sha256": "9e50f50ffe645f4cc2d9abdc19c5cc9710f64d9b8b00637a0f7084e3a60c65b7"
+  },
+  "crates/benitoite/src/runtime/io/output.rs": {
+    "bytes": 13536,
+    "sha256": "efa881f7fbe06e0b5917f041963369333b64fe6cec28cd365c48b764ccfd333e"
+  },
+  "crates/benitoite/src/runtime/io/resources/tests.rs": {
+    "bytes": 17594,
+    "sha256": "4202c9c5dbfc9228dcd25b3272d36c90bb73377f2b16f28dd4ae0c2d936f3a93"
+  },
+  "crates/benitoite/src/runtime/io/resources.rs": {
+    "bytes": 24456,
+    "sha256": "44afa307c72fb488f6b0ab5bdcb5b542a47b14cec95553938eed68b609e3d77e"
+  },
+  "crates/benitoite/src/runtime/io/services.rs": {
+    "bytes": 12415,
+    "sha256": "63b8540efd6d3e395c773e6fe00b6ba6fc85b01f01002480c0178121de450bf0"
+  },
+  "crates/benitoite/src/runtime/list/rrb.rs": {
+    "bytes": 21643,
+    "sha256": "1d6537fefc53199429c2affe19fb434fab76cac5e0c3e0ff6cdcfed2ed01a72a"
+  },
+  "crates/benitoite/src/runtime/list.rs": {
+    "bytes": 41884,
+    "sha256": "56b1951dd8f8ebf08b072b1f7c56b10b995ae4344efaf159db8515226586cf42"
+  },
+  "crates/benitoite/src/runtime/map/keys.rs": {
+    "bytes": 6105,
+    "sha256": "50acb4bf01da4f11ddaa8bfe6ab28fdb1ecc6e4df2602cd0416beb4d9c4afa38"
+  },
+  "crates/benitoite/src/runtime/map/tests.rs": {
+    "bytes": 32378,
+    "sha256": "9777ce5ab5243d784b79ae8f014f9d6236c46e877504b2b477186c1752788ebe"
+  },
+  "crates/benitoite/src/runtime/map/tree.rs": {
+    "bytes": 17999,
+    "sha256": "4bd3cd270dfd154306c4a5eeb700593b3fcfb052e0138ebe722472abc8ab6529"
+  },
+  "crates/benitoite/src/runtime/map.rs": {
+    "bytes": 5496,
+    "sha256": "6a0f760323667a7067e81d7a4059331e3df89cac79472585776c7a46e9bf891f"
+  },
+  "crates/benitoite/src/runtime/mod.rs": {
+    "bytes": 6182,
+    "sha256": "6c62d3a45532533d94e36d89357be194ab7afb6048abc9f5f6189d7f0c548016"
+  },
+  "crates/benitoite/src/runtime/panic.rs": {
+    "bytes": 5453,
+    "sha256": "6cb454d75d74aa0c4ad398929a4a6073bf945a61bcd1b997424f27199ae8d821"
+  },
+  "crates/benitoite/src/runtime/random.rs": {
+    "bytes": 997,
+    "sha256": "2e8145d050f2fd942f31c072c408736fc0362f07511af064de70f03b659c816d"
+  },
+  "crates/benitoite/src/runtime/report.rs": {
+    "bytes": 63322,
+    "sha256": "ad585e43b545747e2b7b13643d93c697023dbb45fc078b31fab762e7335686fb"
+  },
+  "crates/benitoite/src/runtime/run/interrupt.rs": {
+    "bytes": 1975,
+    "sha256": "64472234403d1e16dd49bfacbd722e571e571f4a88d13815acb8532ec255117e"
+  },
+  "crates/benitoite/src/runtime/run/tests/interrupt.rs": {
+    "bytes": 8311,
+    "sha256": "3af9a265aad72f26128961be676f38e942e0f71f4007612daf3ebd036f92496c"
+  },
+  "crates/benitoite/src/runtime/run/tests/test_entry.rs": {
+    "bytes": 13967,
+    "sha256": "44ca6656eb928fedc901b4d699a10978d13ebf8922efcb76e7544280b8296179"
+  },
+  "crates/benitoite/src/runtime/run.rs": {
+    "bytes": 45048,
+    "sha256": "798dc187a165225942117abced31aa3fca414bbe5631ced38b7e7330a73b32f9"
+  },
+  "crates/benitoite/src/runtime/sched/mod.rs": {
+    "bytes": 13824,
+    "sha256": "80bcdc24fa04d438d4b5175356cb516b00d91142b13e5f847235133a79396b2d"
+  },
+  "crates/benitoite/src/runtime/sched/parts/tests.rs": {
+    "bytes": 14077,
+    "sha256": "887cce89eade8a224d8913401d37aea764077b69c63ba8c3dfeeddd0f24cb848"
+  },
+  "crates/benitoite/src/runtime/sched/parts.rs": {
+    "bytes": 13920,
+    "sha256": "ac88ddb7ba10fef9eb660f2de8a1a5cdc72eeb23334de8b9876ba1be5406a9a7"
+  },
+  "crates/benitoite/src/runtime/sched/testing.rs": {
+    "bytes": 15125,
+    "sha256": "c91a9d8158afdadd10ba02f76c5ea0dc8718a65ebb951ce0bb57436bf0e8e2f3"
+  },
+  "crates/benitoite/src/syntax/ast.rs": {
+    "bytes": 37506,
+    "sha256": "f8569b28b889699f54162ceecb66e3df878dc1e3947182ddd8e01f6980baea73"
+  },
+  "crates/benitoite/src/syntax/header.rs": {
+    "bytes": 2491,
+    "sha256": "2b9ceb63cac3112a3be2bdf87a4630938aac6980b6f820796d7c4d0ffad6a58b"
+  },
+  "crates/benitoite/src/syntax/lambda_bounds.rs": {
+    "bytes": 12649,
+    "sha256": "a751909c1590bc1fde32c9f156142adc11f0ea59fd4801fe07751dca2ef74b6f"
+  },
+  "crates/benitoite/src/syntax/lexer/string.rs": {
+    "bytes": 16919,
+    "sha256": "65c52f424a69ec1aad18193e2dbd6cd183fab0dc3de2c3f036f6efc275561d7b"
+  },
+  "crates/benitoite/src/syntax/lexer/tests.rs": {
+    "bytes": 46833,
+    "sha256": "d994f6999807e3716ce8d21f5916d2bd03ec5f564c67d63dfd9b2a83f7a8f73f"
+  },
+  "crates/benitoite/src/syntax/lexer.rs": {
+    "bytes": 46486,
+    "sha256": "d10be3305462ef62525b7e3cb88d065c312c93d1b512073c2acb497d0af77fd3"
+  },
+  "crates/benitoite/src/syntax/mod.rs": {
+    "bytes": 316,
+    "sha256": "4cb470df575352bfda332419cac23235332266a5b8993d48ae29721c76543457"
+  },
+  "crates/benitoite/src/syntax/newline.rs": {
+    "bytes": 18075,
+    "sha256": "715c6765a057cec13d2b762cd87760926206d534d064451f19c32d2da6c964fc"
+  },
+  "crates/benitoite/src/syntax/parser/decls.rs": {
+    "bytes": 18643,
+    "sha256": "42c2f3ba5a84e11a0623620255e6b119b79a2e1aef1113c6aa3f108fb9c9e62f"
+  },
+  "crates/benitoite/src/syntax/parser/effects.rs": {
+    "bytes": 48679,
+    "sha256": "c581ec7d6c607428221d479a70cae35d6ed7f1d3e653441a8dcdb6aecfa4d9a4"
+  },
+  "crates/benitoite/src/syntax/parser/exprs.rs": {
+    "bytes": 61122,
+    "sha256": "88dc92497f36ae92ef3d54e495f9e6d3fa09e0acb9e6d07fca4974b07e8faf8b"
+  },
+  "crates/benitoite/src/syntax/parser/foreign.rs": {
+    "bytes": 9835,
+    "sha256": "e5708e4332fa567f4640de94337546bd2aadbd338de0c374a7d85e419d0338b8"
+  },
+  "crates/benitoite/src/syntax/parser/format.rs": {
+    "bytes": 11006,
+    "sha256": "95b5f66bfcffc6c3fcf2ef44c3d2538977d5cf556a3fdeda26effb1822853447"
+  },
+  "crates/benitoite/src/syntax/parser/header.rs": {
+    "bytes": 25629,
+    "sha256": "86d86e978ab2f60814fe11c24ba3b50d2cbd8a7d3e1ef0bcdf04a753bf67ee9d"
+  },
+  "crates/benitoite/src/syntax/parser/interp.rs": {
+    "bytes": 24205,
+    "sha256": "c6563e05416539953dd2e09fe32b05964ccae8cea63e31af9763db093a2eb630"
+  },
+  "crates/benitoite/src/syntax/parser/items.rs": {
+    "bytes": 62590,
+    "sha256": "410e41f44d0da2c0d5a1774aa513d24d7d5a367be337c137d4c72cab9b7a41ab"
+  },
+  "crates/benitoite/src/syntax/parser/mod.rs": {
+    "bytes": 115409,
+    "sha256": "6eb8cae4697b954941a9da004e320ef582e329eefc137ddf50be602596eb6726"
+  },
+  "crates/benitoite/src/syntax/parser/patterns.rs": {
+    "bytes": 5257,
+    "sha256": "41e4f5c3bf42d46fb1809ee1a7bf3c2614b8e61596f6cc6970b87459c9d680ed"
+  },
+  "crates/benitoite/src/syntax/parser/patterns_ext.rs": {
+    "bytes": 23533,
+    "sha256": "222698ae2b4c943c19ab0fc6b28b0c1c2f8a98f8e542eb47ab949bccf1f90bbf"
+  },
+  "crates/benitoite/src/syntax/parser/records.rs": {
+    "bytes": 20948,
+    "sha256": "82db818cddd225793bd269a9d212918dcfd76a21a71498dff6036f3c6ebb396e"
+  },
+  "crates/benitoite/src/syntax/parser/scope.rs": {
+    "bytes": 8364,
+    "sha256": "0fd8b37e4b61ab19f2f0f050f143335f67f0e4328752f4f00feb666398eb3072"
+  },
+  "crates/benitoite/src/syntax/parser/snippet.rs": {
+    "bytes": 422,
+    "sha256": "3bb0473b96def4a4320727b0fa1a439893fb7947bf5b2b57866192dfaf2b4529"
+  },
+  "crates/benitoite/src/syntax/parser/spread.rs": {
+    "bytes": 5955,
+    "sha256": "ce19d49a6af03a655af60349b8abfee08729df9575cbd72152fa77994e1362c6"
+  },
+  "crates/benitoite/src/syntax/parser/test_support.rs": {
+    "bytes": 1851,
+    "sha256": "362eed4f8e1b35e87f0cc9ef6bfbb20797d3cb45f687a114c0ac8e83c7cc566e"
+  },
+  "crates/benitoite/src/syntax/parser/text.rs": {
+    "bytes": 8952,
+    "sha256": "f23ca1f868ab29cbbe3c556b50082a71f541345d5be41b11ae0756e3d0e54995"
+  },
+  "crates/benitoite/src/syntax/parser/traits.rs": {
+    "bytes": 17977,
+    "sha256": "c6bf6fe836550632820883b9f5102e1aaedd0ed5e7db89b5a2eacc4984f671f6"
+  },
+  "crates/benitoite/src/syntax/parser/types.rs": {
+    "bytes": 31707,
+    "sha256": "a986f6cbe45b3bd5bd1cf07cc52d96a469fcf05b022faefc5969346a62ca9279"
+  },
+  "crates/benitoite/src/syntax/token.rs": {
+    "bytes": 5976,
+    "sha256": "f27636daa773a558536fab903b42c028a5723846a42923d5e315f69405f54ac0"
+  },
+  "crates/benitoite/src/syntax/version.rs": {
+    "bytes": 1197,
+    "sha256": "4ec9e81e2fcb2d56b790133380f1cda72a4930560e200fdc90558f53e6c63269"
+  },
+  "crates/benitoite/src/typeck/body_map.rs": {
+    "bytes": 1549,
+    "sha256": "5a204182cde5bc20a2b865b74c76fa7c7ecb3713ee345f81fdffdf3ab2be6c25"
+  },
+  "crates/benitoite/src/typeck/builders.rs": {
+    "bytes": 4713,
+    "sha256": "661cdefdfb5bb7dd79ef2ca47a26039623b99b591f428533b64adebfabd5cd69"
+  },
+  "crates/benitoite/src/typeck/calls.rs": {
+    "bytes": 27741,
+    "sha256": "f1f780893a18d4e57466fc71de3ba94cd5d0b86230aa81bddf7493b66c0a2ca5"
+  },
+  "crates/benitoite/src/typeck/checked_args.rs": {
+    "bytes": 11786,
+    "sha256": "f25a7ec9a1a48111fbc28455f5feee77b2a1151783fdf23f54be4535f3a86a17"
+  },
+  "crates/benitoite/src/typeck/consts/key.rs": {
+    "bytes": 7045,
+    "sha256": "62e55e8e98f822d307820ae00727bb37ac6dabce0685711cd28471be34d368bf"
+  },
+  "crates/benitoite/src/typeck/consts/width_tests.rs": {
+    "bytes": 15558,
+    "sha256": "031f35a6e95723c40d8386bbb9e8fe394286420b825cd9125394b7951a4ae6f3"
+  },
+  "crates/benitoite/src/typeck/consts.rs": {
+    "bytes": 72037,
+    "sha256": "9aa841f838081e2e4171f83f1262621a0c43a7abd83323e945f8d2880ef67b0b"
+  },
+  "crates/benitoite/src/typeck/context.rs": {
+    "bytes": 36919,
+    "sha256": "49c65f57c7312d928273edb23380436c06a3ad4de93e4912147590cad8501e4d"
+  },
+  "crates/benitoite/src/typeck/decls.rs": {
+    "bytes": 62571,
+    "sha256": "14e416fdd98b85b98a712915d4d260f87290f655fa85c5445746c0377e25ae2f"
+  },
+  "crates/benitoite/src/typeck/effects/declarations.rs": {
+    "bytes": 17172,
+    "sha256": "a9d730903297a5175e45dc33b4329f9fe5400baf40c8670ec73be5c1a0be1a4a"
+  },
+  "crates/benitoite/src/typeck/effects/handle.rs": {
+    "bytes": 16567,
+    "sha256": "9fb60aff1a79f91c211d76a31ba3bbe522b1279d58f0016f23d1e347780e2c12"
+  },
+  "crates/benitoite/src/typeck/effects/mod.rs": {
+    "bytes": 10397,
+    "sha256": "6930594f0d97d862f2307cb114cfa148931e00bd2cab5d5106ea479c905c4b28"
+  },
+  "crates/benitoite/src/typeck/effects/special.rs": {
+    "bytes": 9372,
+    "sha256": "5fba1978fb4cecbbf50567bfdb9cd5e55f646c96a536bdf1f88d5e22725a637a"
+  },
+  "crates/benitoite/src/typeck/effects/tail.rs": {
+    "bytes": 3869,
+    "sha256": "0f8599e85ed9b4913b59ac4a6cefc87264010fcf835e9cc35224e531d07daf96"
+  },
+  "crates/benitoite/src/typeck/effects/tests.rs": {
+    "bytes": 58170,
+    "sha256": "8ba97f0435cf6b2e64ccbc6909423c7255ab78897872e6ae48347cb674c755d0"
+  },
+  "crates/benitoite/src/typeck/external.rs": {
+    "bytes": 5147,
+    "sha256": "2b064a6217d5ecb121400d417d99d12f35c89734d7835f3a2444d2fad56cd442"
+  },
+  "crates/benitoite/src/typeck/generate.rs": {
+    "bytes": 51552,
+    "sha256": "5cb6928483db210bb7d6e7a11c17f1b303dc37d6d3fb2db0ec5dae6c23fc8125"
+  },
+  "crates/benitoite/src/typeck/infer.rs": {
+    "bytes": 9177,
+    "sha256": "1a3091eeef6758074a4642b3500bce65a54030d5e5d20fd99cff8a2a9d6485dc"
+  },
+  "crates/benitoite/src/typeck/interval/arithmetic.rs": {
+    "bytes": 8237,
+    "sha256": "3c40143dd507283317d88e9ae57cacf354d1b438ed7ced3c3fe27b3d1d47e0ed"
+  },
+  "crates/benitoite/src/typeck/interval/budget.rs": {
+    "bytes": 7508,
+    "sha256": "3608290d154c5d7130359efbf7153cc4e7f06d50c92cb10eb09a7f520ad26f63"
+  },
+  "crates/benitoite/src/typeck/interval/diagnostics.rs": {
+    "bytes": 7359,
+    "sha256": "b9c6358447862ae1e088ea155435d87ddc598365feacaf01ba1bd5befa103653"
+  },
+  "crates/benitoite/src/typeck/interval/discovery.rs": {
+    "bytes": 43916,
+    "sha256": "6864ab491fb04f0aed288ca4e2ce24ee9ed6c6a7f4a0634d08c004eed942f286"
+  },
+  "crates/benitoite/src/typeck/interval/domain.rs": {
+    "bytes": 6027,
+    "sha256": "1dbbc1193e1dc9e161df878dd20a428929597ba90efbbd79746527f2444ae671"
+  },
+  "crates/benitoite/src/typeck/interval/environment.rs": {
+    "bytes": 22154,
+    "sha256": "fae815095c010cc954cfa12403c2130dfd9ac110bcea811045fbf4429f25b008"
+  },
+  "crates/benitoite/src/typeck/interval/fixed_domain.rs": {
+    "bytes": 5662,
+    "sha256": "980004f8591dfbb68fb54328704c3db7c3d022ddc995292e6f3a1c057346b2d9"
+  },
+  "crates/benitoite/src/typeck/interval/flow/fixed_domain.rs": {
+    "bytes": 9955,
+    "sha256": "3bc101b4fc80aaa62f076088152239687c1b36801ae6370d68a405dc91640c36"
+  },
+  "crates/benitoite/src/typeck/interval/flow/independent.rs": {
+    "bytes": 15122,
+    "sha256": "2311fd44c69c63efc85ec831b9374a5b544bb55b3dfed3ba04a7c31ccf1faee6"
+  },
+  "crates/benitoite/src/typeck/interval/flow/matching.rs": {
+    "bytes": 14083,
+    "sha256": "672c78227951c653f826ebe8e5b0d09bea03ec680e3ef1679a4312971ec75e69"
+  },
+  "crates/benitoite/src/typeck/interval/flow/range/tables_tests.rs": {
+    "bytes": 11599,
+    "sha256": "b793779f7e1e56d83cce5c85a21a329126ac83875e71f8783262fc43a1f27468"
+  },
+  "crates/benitoite/src/typeck/interval/flow/range.rs": {
+    "bytes": 29678,
+    "sha256": "2cf6f08400bd2c77d22c6d8e8f7b0af9ea839a8976f09470a829fda48e90fc43"
+  },
+  "crates/benitoite/src/typeck/interval/flow/widths/tests.rs": {
+    "bytes": 25538,
+    "sha256": "b1513a73dad14345b43c200e4b50db69756be6e6d68b32ff832f4f2e1563fa32"
+  },
+  "crates/benitoite/src/typeck/interval/flow/widths.rs": {
+    "bytes": 2011,
+    "sha256": "c7da8955f5df37421c123eeee26cf8f44b8d1f24505b46fc161463f3bee7c22e"
+  },
+  "crates/benitoite/src/typeck/interval/flow.rs": {
+    "bytes": 51714,
+    "sha256": "fb40556b3a5c02f53a2ea9ba5ddde92ab99f2d7da8ab13c2e230296658f96af4"
+  },
+  "crates/benitoite/src/typeck/interval/identity/tests.rs": {
+    "bytes": 25250,
+    "sha256": "8b8cd9ce6209f7a34278f4f5c2eb26285e578222155388542ab0b0d86a21864c"
+  },
+  "crates/benitoite/src/typeck/interval/identity.rs": {
+    "bytes": 22152,
+    "sha256": "3786890e9c561696af9565d65453cc4825ec6ecf4b858602307b9f39196a25e8"
+  },
+  "crates/benitoite/src/typeck/interval/input.rs": {
+    "bytes": 10086,
+    "sha256": "87dbb1309c24fc0f9d0231f8643519e7e55ef53d84377828b085e749c1f9e038"
+  },
+  "crates/benitoite/src/typeck/interval/mod.rs": {
+    "bytes": 21471,
+    "sha256": "9546892119b37ea3b280d73dc3c758aac6e01c4860240e30f08688955b4cf711"
+  },
+  "crates/benitoite/src/typeck/interval/observation.rs": {
+    "bytes": 7161,
+    "sha256": "489743d8e6d60ae19314d60de32a76633d9ebe6c8cef6075073938f13f97c331"
+  },
+  "crates/benitoite/src/typeck/interval/origins.rs": {
+    "bytes": 2767,
+    "sha256": "7bb8c35a26a5f6bd570ab4a558289111b767645a11c9f0b25d081634e38d1961"
+  },
+  "crates/benitoite/src/typeck/interval/summary.rs": {
+    "bytes": 10945,
+    "sha256": "269140ad73165dff238ccdfdf909f8daa6dfb0c6a30f2508b8d7442fb4194277"
+  },
+  "crates/benitoite/src/typeck/interval/tests/arithmetic_extensions.rs": {
+    "bytes": 4701,
+    "sha256": "bfe930b43712a891487a897f9e7228fdb1abaeba8b2d5bdb34d76f5173217f55"
+  },
+  "crates/benitoite/src/typeck/interval/tests/budget_reference.rs": {
+    "bytes": 47654,
+    "sha256": "2dd8e8b1252cf5e4492c699b4feb8d77eb596329b4b01c9149b7b87e12385f7c"
+  },
+  "crates/benitoite/src/typeck/interval/tests/fixed_domain.rs": {
+    "bytes": 13616,
+    "sha256": "3f02f8fd43b006f7a889e65fd1a6dd1268d30b7f9d2acd507c3e060b994caa82"
+  },
+  "crates/benitoite/src/typeck/interval/tests/range_calls.rs": {
+    "bytes": 30339,
+    "sha256": "2af84d64375eb0afd008f9ec7375cded94fc32ffd7e9de3c0a8f12a696712c7a"
+  },
+  "crates/benitoite/src/typeck/interval/tests.rs": {
+    "bytes": 51372,
+    "sha256": "6b69870fd4e8619784648e6285cd541c5b75ac519114e90e6f70d33af5c3eb46"
+  },
+  "crates/benitoite/src/typeck/limits.rs": {
+    "bytes": 3607,
+    "sha256": "3827c0cc9336a94dd9444e26a85b742dddf5bea7e3941c73ea9d0775685de6ae"
+  },
+  "crates/benitoite/src/typeck/mod.rs": {
+    "bytes": 11912,
+    "sha256": "3609eba566f2aae983025d37f47174dc1dc7670c7f56170836ffbd11670240ad"
+  },
+  "crates/benitoite/src/typeck/pattern_ext.rs": {
+    "bytes": 63039,
+    "sha256": "f40f5a0b01b4f32f216b17bcff150f597e9e79c2347b95d71a1b7881f1eedfef"
+  },
+  "crates/benitoite/src/typeck/patterns.rs": {
+    "bytes": 78564,
+    "sha256": "d3074265d680e0256913e8c553b0fe027d0663684921e2f18761256eeb76da51"
+  },
+  "crates/benitoite/src/typeck/records.rs": {
+    "bytes": 5610,
+    "sha256": "206ca04ade4749b185874db403aa3ce41078dd08df725b015e362a8675782a17"
+  },
+  "crates/benitoite/src/typeck/scope/accept.rs": {
+    "bytes": 8345,
+    "sha256": "e346508be9486cff79b335b18851579b5b4dc93d8a691a4f65c9803b220eb839"
+  },
+  "crates/benitoite/src/typeck/scope/accept_tests.rs": {
+    "bytes": 10911,
+    "sha256": "2a28152dd781e46c0b36036a165a232aa16c2d806ddccb800797134281052bac"
+  },
+  "crates/benitoite/src/typeck/scope/input.rs": {
+    "bytes": 31053,
+    "sha256": "2b71c71733a8a24e798b8bdc09e1f2196dfcc053a6f2d1760e5ff7505c597307"
+  },
+  "crates/benitoite/src/typeck/scope/local.rs": {
+    "bytes": 28079,
+    "sha256": "705853dad8ef4ae56a0e506f9f985ba141def6702828b7933e697a754e126ceb"
+  },
+  "crates/benitoite/src/typeck/scope/local_tests.rs": {
+    "bytes": 27105,
+    "sha256": "3f13ac7dd993ac94eeed21a549e5d37dd04afd11c377272dcceec3d40757140e"
+  },
+  "crates/benitoite/src/typeck/scope/lower.rs": {
+    "bytes": 17578,
+    "sha256": "b96db595541efcb9cb4d35fdd9488ad930cc648c043140426cd940d0780e139e"
+  },
+  "crates/benitoite/src/typeck/scope/measure.rs": {
+    "bytes": 23438,
+    "sha256": "0c6d03be9640d49277b75a7818a4dbfd2676a09b60dc03aee83549f0d1c1268a"
+  },
+  "crates/benitoite/src/typeck/scope/mod.rs": {
+    "bytes": 13917,
+    "sha256": "3a973846ca94412dba7a6e7d42e62fac8ff9210e7e690891419fb36880f79836"
+  },
+  "crates/benitoite/src/typeck/scope/numbering_budget_tests.rs": {
+    "bytes": 2177,
+    "sha256": "5e4300eeb92a86f5b67af3315a8891fa3282cdc8e717c4ecc28af5f1f7edf021"
+  },
+  "crates/benitoite/src/typeck/scope/tests.rs": {
+    "bytes": 21944,
+    "sha256": "b14b2a5a4e0946f3c07fd2bb52f2f020addb37b2341c522c46f42b32ab919dd3"
+  },
+  "crates/benitoite/src/typeck/scoped_calls.rs": {
+    "bytes": 34231,
+    "sha256": "c54bd37669b6d793f9a4f0da544aed4de5a1d6860b4b9a5dc10a8a641e05376b"
+  },
+  "crates/benitoite/src/typeck/scoped_calls_tests.rs": {
+    "bytes": 14368,
+    "sha256": "6aa42a79d58ed382e3f47d272ce9ebe19da7d3bf4926eaef6f858d18b028afcb"
+  },
+  "crates/benitoite/src/typeck/solve/effect_key.rs": {
+    "bytes": 5799,
+    "sha256": "9b7201d235cd8e106b26189aa1e425a68d63e3772cb6173985fbca08c5202922"
+  },
+  "crates/benitoite/src/typeck/solve/provenance.rs": {
+    "bytes": 38859,
+    "sha256": "db8747b3cbf88ca0e134729649d137fba1a41d9ef87d49a67096e5bf7c79e154"
+  },
+  "crates/benitoite/src/typeck/solve.rs": {
+    "bytes": 119238,
+    "sha256": "db6932e4c72dbde10664109faaeede7d120a9ac655f9435e8a00d43ceda5383b"
+  },
+  "crates/benitoite/src/typeck/source_input.rs": {
+    "bytes": 7661,
+    "sha256": "d9cbc8651cea9468f56e300fcab8c7ddf56c56794bcdf3b3b200646af0d605e2"
+  },
+  "crates/benitoite/src/typeck/test_support.rs": {
+    "bytes": 7517,
+    "sha256": "75e0141cd8957d3e5ce6803aa7a3a17bd40f2407250747eb5809bf53a89b6fcb"
+  },
+  "crates/benitoite/src/typeck/tests/diagnostics_batch4.rs": {
+    "bytes": 12698,
+    "sha256": "4326bc16a162f73c359e08b6f975516eabc8091a8d84814e68b5a1f5b4ffa6df"
+  },
+  "crates/benitoite/src/typeck/tests/interpolation_formats.rs": {
+    "bytes": 6093,
+    "sha256": "3ff1c64e8580c6d2badde904158a901337dbee3246991abe1a52e61c31a0f675"
+  },
+  "crates/benitoite/src/typeck/tests.rs": {
+    "bytes": 82626,
+    "sha256": "e94282618548e5ba873861f4c80f90911c9d7edcee1eaf9554cdbb278a486332"
+  },
+  "crates/benitoite/src/typeck/text.rs": {
+    "bytes": 7528,
+    "sha256": "f59f7956e13129a98638d4d5f1e4fa14f74b2c937fc4bea93ed4004afffaa27f"
+  },
+  "crates/benitoite/src/typeck/traits/collect.rs": {
+    "bytes": 13492,
+    "sha256": "cf15de9f21cd7ce9903963908da35c0ff66295780ed19532a4a03d46575449ac"
+  },
+  "crates/benitoite/src/typeck/traits/impls.rs": {
+    "bytes": 15075,
+    "sha256": "5ac2115daf15904fcf5139bdb27f03953e5427dcd3609533330b37dbfc213389"
+  },
+  "crates/benitoite/src/typeck/traits/mod.rs": {
+    "bytes": 10853,
+    "sha256": "3839eb3077d85ce94629e8ab1406a8bff6f2af751122fafb40b0e13197d3c632"
+  },
+  "crates/benitoite/src/typeck/traits/solve.rs": {
+    "bytes": 23349,
+    "sha256": "8c90cd76e0ce737ac436b7e4aca742da33e1113cf0c0c9fe79c1535b4520da45"
+  },
+  "crates/benitoite/src/typeck/traits/tests.rs": {
+    "bytes": 38171,
+    "sha256": "32dc96a815fa51d6b7c73a4098ac7d40849879a919160ff2a04662eabd8e0f7d"
+  },
+  "crates/benitoite/src/typeck/traits/text.rs": {
+    "bytes": 316,
+    "sha256": "daa2885bedd3ab1b8633104605a87bf35265c0c625da488f142b7a62e2c76c5f"
+  },
+  "crates/benitoite/src/types/builtin.rs": {
+    "bytes": 23052,
+    "sha256": "87f3290be3ffaa4a531624195e6241de6e10469199a4fcd53d56e9c88411754b"
+  },
+  "crates/benitoite/src/types/mod.rs": {
+    "bytes": 58187,
+    "sha256": "0cabb2a360fab981dc571b7b97c7d0d798a79a76f70006e7c7e24c4d42ce17d4"
+  },
+  "crates/benitoite/src/types/scope/ip_text.rs": {
+    "bytes": 6630,
+    "sha256": "de7fcd248ac5f38c8702c286f452ec970ef414a81e1aa136f5d9c634352e3d52"
+  },
+  "crates/benitoite/src/types/scope/tests.rs": {
+    "bytes": 21188,
+    "sha256": "0d73f08c10aa023e75369d0929e0376b0931cf36ac07657cf078c59e4214fe11"
+  },
+  "crates/benitoite/src/types/scope.rs": {
+    "bytes": 20359,
+    "sha256": "4dd6411b585e2c813259ee4378efbf7cfa42e93c47194c883e78611121b9e45f"
+  },
+  "crates/benitoite/src/types/signature.rs": {
+    "bytes": 21983,
+    "sha256": "7c6a67916c13f5bb42de77203dc3fa9499f2332f5616b187557a8b88214a4e58"
+  },
+  "crates/benitoite/src/vm/budget.rs": {
+    "bytes": 4978,
+    "sha256": "6dbb5a0f8528f17b4d4cf92c7096314143dfa60eec274730ed3dfc0b69235e4c"
+  },
+  "crates/benitoite/src/vm/builder_tests.rs": {
+    "bytes": 16271,
+    "sha256": "1d3393a42fbac97b2726ec35006effb746ad9d97b4cd5af03b75c4b9463e9a3a"
+  },
+  "crates/benitoite/src/vm/dispatch/cell/tests.rs": {
+    "bytes": 15125,
+    "sha256": "34f0f1231ccd07fe388191c8ad06732119c9142c0a55a1e4e39c6d064f790327"
+  },
+  "crates/benitoite/src/vm/dispatch/cell.rs": {
+    "bytes": 7261,
+    "sha256": "01cf4e116e2f4f96200af8c93d93dd26de6e4432f2fc14254ee21955e22da1f8"
+  },
+  "crates/benitoite/src/vm/dispatch/collections.rs": {
+    "bytes": 6296,
+    "sha256": "6afdc773cd21eb2c3e6dcaaca14e07ac7b67f9cd097a46f063e078c236bc26da"
+  },
+  "crates/benitoite/src/vm/dispatch/handlers/tests.rs": {
+    "bytes": 53751,
+    "sha256": "38e6b6a0caa19a6e2f3a202e472dd3b1d610c1c092ba5b53c1dda2ad9b76a654"
+  },
+  "crates/benitoite/src/vm/dispatch/handlers.rs": {
+    "bytes": 36562,
+    "sha256": "f538b440d0d9e4353a564bb0825b228a9adc842be58d8fe1b2e2ba5351ccce2a"
+  },
+  "crates/benitoite/src/vm/dispatch/lazy/tests.rs": {
+    "bytes": 19565,
+    "sha256": "c65adf75b085daff2b27bdcba6c217b427e3ca2c7682e24b01a44a31efbfcfa4"
+  },
+  "crates/benitoite/src/vm/dispatch/lazy.rs": {
+    "bytes": 9019,
+    "sha256": "2f034406bcb3f618646e7e9773f91a2a710766425a1d593aa93336605f96800d"
+  },
+  "crates/benitoite/src/vm/dispatch/numeric.rs": {
+    "bytes": 15888,
+    "sha256": "69ea7ec397637cf4947ea14f75610648112ff0d79537df5ad5ca077e1402bd6c"
+  },
+  "crates/benitoite/src/vm/dispatch/resource/tests.rs": {
+    "bytes": 30968,
+    "sha256": "c7b7cb63e666b257700ccb46d4a37425c7b49565685e85513c3ca79342fa478e"
+  },
+  "crates/benitoite/src/vm/dispatch/resource.rs": {
+    "bytes": 5774,
+    "sha256": "8740a5a9f8f16a94b3c46b94048b54a6ef7e476c0f4acc9e26900aad0fd315ba"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/cancel.rs": {
+    "bytes": 15948,
+    "sha256": "8756e74a329ffd91d38911d28e0a53cff702c250324d8393409c54df02e3320b"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/io/output_tests.rs": {
+    "bytes": 30979,
+    "sha256": "23a88c3050b6f5c1273ad49486941e261361a6b56b320d52dfd2dabc5dcea7a0"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/io/tests.rs": {
+    "bytes": 55962,
+    "sha256": "401a28923c156c31f72ef2e2fcdc80c40accec31b2b7fec0ca26e5578168cf92"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/io.rs": {
+    "bytes": 34948,
+    "sha256": "9aa1bd14aae6e412c2af5898f7f9e4054e4658102dfa1ba35ca2a0ca71a4f798"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/tests/cancellation.rs": {
+    "bytes": 68450,
+    "sha256": "7507cff6476a73c0358b40275aeb97a5cd92e45549e945a18f0a867d3869e2d4"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/tests/interrupt.rs": {
+    "bytes": 16805,
+    "sha256": "bf835ee47eef61a8b58352c891a43c436f562c14746d1b9f07fdcee1b526195d"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks/tests.rs": {
+    "bytes": 54217,
+    "sha256": "55afc1ec2171c8b838cbd5e5a4e205a5e86ce74485011e7cc9ee66f72d98ae59"
+  },
+  "crates/benitoite/src/vm/dispatch/tasks.rs": {
+    "bytes": 42362,
+    "sha256": "fe622e41158f6809d87787a65a871418b24d41b83b85ace15e9fcd1384739c9a"
+  },
+  "crates/benitoite/src/vm/dispatch/test_support.rs": {
+    "bytes": 5193,
+    "sha256": "503f80bc9975abc8419331ccf575228f495026b34ae05e5619c4bcb4a6a75277"
+  },
+  "crates/benitoite/src/vm/dispatch/traits/tests.rs": {
+    "bytes": 19885,
+    "sha256": "bcd03bc756c6cc04a2c5c0cbeb34ad03ea57fe0f923a3fdd808a594d09c6e3d5"
+  },
+  "crates/benitoite/src/vm/dispatch/traits.rs": {
+    "bytes": 6992,
+    "sha256": "162250d35cf2520fdd55c71b349a14930094f20d24deb8a3dcc4a5d68dc3ae91"
+  },
+  "crates/benitoite/src/vm/dispatch/unwinding/tests.rs": {
+    "bytes": 11145,
+    "sha256": "94e822a617e2d091a4b397f34ea5ac5f1973289564e5ff43dd4df15a2f079756"
+  },
+  "crates/benitoite/src/vm/dispatch/unwinding.rs": {
+    "bytes": 14295,
+    "sha256": "4c5eb23e61c1e843534252129b39e9c6900a76a5e728c6b4ac5d52e686eeef15"
+  },
+  "crates/benitoite/src/vm/dispatch.rs": {
+    "bytes": 84131,
+    "sha256": "22fe4c9b13956ad10ed962205838c7e224f1fe8615ff3d52cb2aa6cfa3faefe5"
+  },
+  "crates/benitoite/src/vm/exit_report_tests.rs": {
+    "bytes": 10829,
+    "sha256": "587fb13ca0a12729379752a02192b2c70ade5c40d86b879f88f8574c756fa7a7"
+  },
+  "crates/benitoite/src/vm/frame.rs": {
+    "bytes": 7917,
+    "sha256": "6912e896a059c3a1a8a5aa0f846a1325cfb2b08d139d3ad3f809f563911995ff"
+  },
+  "crates/benitoite/src/vm/handler.rs": {
+    "bytes": 2395,
+    "sha256": "82359ffb29ecdfe73863889eea1af7bd41f749aa5c2a7d3e9b49ad6b928085a8"
+  },
+  "crates/benitoite/src/vm/miri_tests.rs": {
+    "bytes": 14081,
+    "sha256": "dcd034d507964a220e9c603c940fc7947d6424fdc1fed1c5cc86e537bef4ff50"
+  },
+  "crates/benitoite/src/vm/mod.rs": {
+    "bytes": 12225,
+    "sha256": "58912a8410776b756760f719488aecd92fa08165bb504b9828919f841e309b76"
+  },
+  "crates/benitoite/src/vm/state.rs": {
+    "bytes": 24474,
+    "sha256": "ba8bb33ba832f86872cac617ec9aeeadd9ca71f3d5875937568ae46efbf5b456"
+  },
+  "crates/benitoite/src/vm/task.rs": {
+    "bytes": 10232,
+    "sha256": "516c57fa62e7bc1bb62d34768e8d1c689eed85039c2c6df99201ea432696c7c2"
+  },
+  "crates/benitoite/src/vm/tests.rs": {
+    "bytes": 73387,
+    "sha256": "352c9a9995172c4ed5a35f32beefbcae3d1f65db19ad2628ae70f9d8bba90422"
+  },
+  "crates/benitoite/src/vm/unwind.rs": {
+    "bytes": 11701,
+    "sha256": "d212ee2d3cb985ed59df4f417f7637df1f3d25ab1de668e1c0bf3670446c904a"
+  },
+  "crates/benitoite/src/vm/verification_tests.rs": {
+    "bytes": 20060,
+    "sha256": "1ecc6ab861fdb0b20744f154ab82108e42a3e76289a7865ab9aa24618d923db6"
+  },
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/implementation-request.md": {
+    "bytes": 24593,
+    "sha256": "c192998a08649ee22b155d53806636d3571d83fd25f4b084dec9e3bc0458a1ca"
+  },
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/plan.md": {
+    "bytes": 159345,
+    "sha256": "1fa5671c01b908e3884d06e0a3ac4a9f1bbeae87cfb9773f9fee910e36965081"
+  },
+  "docs/design/00-overview/00-01-goals.md": {
+    "bytes": 11919,
+    "sha256": "befe6bb8dbdd6415349ecff82a305afc3d65ac96684ce5fe5f7112bf99a7d8c0"
+  },
+  "docs/design/00-overview/00-02-architecture.md": {
+    "bytes": 11078,
+    "sha256": "13401ef6e6233d575c5e1baabfd17226c0dcdd107a3d03cbcb4b80bc65dcb9d0"
+  },
+  "docs/design/00-overview/00-03-roadmap.md": {
+    "bytes": 18331,
+    "sha256": "8ec43306a4f8dca90d5824dc2bcead36a8711bef3ae0e2d3efaabd6a80e9fbdd"
+  },
+  "docs/design/00-overview/00-04-glossary.md": {
+    "bytes": 91958,
+    "sha256": "6b59afcc0ef39487ecbd863bc3f50f1881a575b7f17cc83997b111a1cdf9bce7"
+  },
+  "docs/design/01-spec/01-01-lexical.md": {
+    "bytes": 35382,
+    "sha256": "b991b6703106cab6473b40eeb517e1c2e5b5744e1a8925a28ee6eb97676d07b4"
+  },
+  "docs/design/01-spec/01-02-syntax.md": {
+    "bytes": 107119,
+    "sha256": "049c0c5f5fa42f008d93c36b15da34bea125a1dde3c3b42d9810e03d61752407"
+  },
+  "docs/design/01-spec/01-03-names-modules.md": {
+    "bytes": 44681,
+    "sha256": "1c293ef3e9586afa8593b6bcd6ac1a926cac3b6f3c9b12c1e45bfb2f194242b0"
+  },
+  "docs/design/01-spec/01-04-types-basic.md": {
+    "bytes": 43584,
+    "sha256": "756607ca0ad8a8d57dd647af417435e0d5c730f1eb5bc1a72472c63a40388f78"
+  },
+  "docs/design/01-spec/01-05-data-types.md": {
+    "bytes": 35348,
+    "sha256": "a6975259232d17719367bf0eaae8b981b6c3dbe2a11d949d81da242fddf8c747"
+  },
+  "docs/design/01-spec/01-06-type-system.md": {
+    "bytes": 82547,
+    "sha256": "bc6e825c45d729a598f9f616f0cd3ba7357f824ae9b2323674eb0701bbcd9b6f"
+  },
+  "docs/design/01-spec/01-07-effects.md": {
+    "bytes": 50439,
+    "sha256": "56413054dd6d4aa6cba6757c46aa6613cf56e1b943992c2dbdac2d31c0891435"
+  },
+  "docs/design/01-spec/01-08-evaluation.md": {
+    "bytes": 24937,
+    "sha256": "65e9b5e7ce63d6dd78432dd55b2bc8e875371c7ad957031941d8dcb7503e04ca"
+  },
+  "docs/design/01-spec/01-09-errors.md": {
+    "bytes": 18153,
+    "sha256": "8019eb7015624db674f830b632e4be045dc8585bd50f48ba59e87f6030a8062b"
+  },
+  "docs/design/01-spec/01-10-resources.md": {
+    "bytes": 12985,
+    "sha256": "61d23131d6ecca066cf77527d42bdea1d8f644c1576eb2da9a7827ab94613e7a"
+  },
+  "docs/design/01-spec/01-11-concurrency.md": {
+    "bytes": 21855,
+    "sha256": "6ba3d8d0cc0725ec70aeaf0577d5311cacc061b3ff119209a383e764af70d078"
+  },
+  "docs/design/01-spec/01-12-core-calculus.md": {
+    "bytes": 634931,
+    "sha256": "4485cc8e5ad3659c4701f257b1ed80e048c1c7f5ce1cbbbccdfa9b7def0e7300"
+  },
+  "docs/design/02-impl/02-01-pipeline.md": {
+    "bytes": 32857,
+    "sha256": "fc1adba4b595695ac37b1f12f04c36d8070060de0d975c4c13f75010a74cbd21"
+  },
+  "docs/design/02-impl/02-02-source-and-spans.md": {
+    "bytes": 20807,
+    "sha256": "9f8e69ced982658db713187c2b8bd8f2f9df8efb8e8f22b60d77891e909a263e"
+  },
+  "docs/design/02-impl/02-03-frontend.md": {
+    "bytes": 71592,
+    "sha256": "27d44653780d9d8031e166f1fcae3155bf73e910afe0a1c9721a2317f488f786"
+  },
+  "docs/design/02-impl/02-04-resolver.md": {
+    "bytes": 62675,
+    "sha256": "7ac813149759ffb515bfa8575e323b431944e0cc095022c62e89f63c348e806d"
+  },
+  "docs/design/02-impl/02-05-typechecker.md": {
+    "bytes": 236422,
+    "sha256": "0a825a06794cd4f5b48cc217b4dfeecc0f8dd3dbf743f60cbddbb960f021fa6d"
+  },
+  "docs/design/02-impl/02-06-ir-and-lowering.md": {
+    "bytes": 65402,
+    "sha256": "fcc39530247e6aa263cd06584e1c0b4eab16739cecd4c788cf8e1cf8cb2a7e16"
+  },
+  "docs/design/02-impl/02-07-bytecode.md": {
+    "bytes": 51668,
+    "sha256": "3c77f22bc9dd05832378c74cb967509a9062c76420e400fddfcf07137dca3d88"
+  },
+  "docs/design/02-impl/02-08-vm.md": {
+    "bytes": 90512,
+    "sha256": "f5095e9b9aa5faec9a08e7c9835fe6483e55fc366ea08a1cc764e48e5c509671"
+  },
+  "docs/design/02-impl/02-09-runtime.md": {
+    "bytes": 102940,
+    "sha256": "f510161731896aa8c886c8c38c46354fd51a44b81b477dc6e7f4ab5247943b88"
+  },
+  "docs/design/02-impl/02-10-diagnostics.md": {
+    "bytes": 82666,
+    "sha256": "d831b65cc4d71b110a2cc822c577a4a4763f582ddc2c6d4b717f6f9d2434b461"
+  },
+  "docs/design/02-impl/02-11-embedding.md": {
+    "bytes": 25136,
+    "sha256": "cee754c568aa26005eda7f8144716827105b42bc4fee9849121429d9b12f4c6a"
+  },
+  "docs/design/03-interop/03-01-library-structure.md": {
+    "bytes": 24082,
+    "sha256": "c0d05b87d2c88243f7cd844e14e8a7178629423ff7945d03a6772f92934120dd"
+  },
+  "docs/design/03-interop/03-06-stdlib.md": {
+    "bytes": 125645,
+    "sha256": "968c238a0fbdaf8dffe5af7fbbdfbd392d145bdbfb0c3e6fce6c455c11678187"
+  },
+  "docs/design/03-interop/03-07-io-modules.md": {
+    "bytes": 46506,
+    "sha256": "e373ce23c57541135c79f033cff091879a746b5f43c1d1fc52184c5dc14ba701"
+  },
+  "docs/design/03-interop/03-08-text-and-data.md": {
+    "bytes": 45133,
+    "sha256": "9503f92ef2423666a03e9f843b73f21d4e6879c0077176b5e85abb8ac84251ea"
+  },
+  "docs/design/03-interop/03-09-network.md": {
+    "bytes": 49697,
+    "sha256": "07aa8cf6e570c8bb5f981381a4c6b0665d45c1644e3dbf8e0ee6d3761f7c9fc9"
+  },
+  "docs/design/03-interop/03-10-external-functions.md": {
+    "bytes": 53221,
+    "sha256": "157bf24dd30e62d0a70a57b14d1240f55dbf4a48dfc6f543da345004f6bae74d"
+  },
+  "docs/design/05-platform/05-01-distribution.md": {
+    "bytes": 16607,
+    "sha256": "f52d57fc5cc0a7a070417ff6d1dc8b5bb223f85873ba336b0a6dde058744da05"
+  },
+  "docs/design/06-tooling/06-01-cli.md": {
+    "bytes": 75411,
+    "sha256": "f871fa7612d5c1dae5cbcec9de321df66e759246ad49df57deeae3a0142a3383"
+  },
+  "docs/design/06-tooling/06-03-formatter.md": {
+    "bytes": 34618,
+    "sha256": "56f4cfd2d9d8828e0952ea2e8c65d5bec9b80d324be6eeaabda8e3adf6489ced"
+  },
+  "docs/design/06-tooling/06-04-test-runner.md": {
+    "bytes": 48413,
+    "sha256": "42fa8fec2ffeeb419e0d9c17fabb9c9629505f2fb944cdffd2d3c1286f0d8f0a"
+  },
+  "docs/design/06-tooling/06-06-agent-skills.md": {
+    "bytes": 38807,
+    "sha256": "362ae0bc5ce37fb6928b5a2b0d4c55384392df5a73b9dc7cca1c2281249ab6a2"
+  },
+  "docs/design/06-tooling/06-09-packages.md": {
+    "bytes": 27479,
+    "sha256": "4b81cda296cf0901a8704e2ad3a1e92de6e3f4336cc79903dfc9a5a23f0a6248"
+  },
+  "docs/design/07-quality/07-01-security-model.md": {
+    "bytes": 23844,
+    "sha256": "ec6ebdc180b9af8ef528c48e2fc7e24bc1cb364af19b3d1426cfd2b5221cc9a6"
+  },
+  "docs/design/07-quality/07-02-performance.md": {
+    "bytes": 16483,
+    "sha256": "eeedb41917d0f7e18aeb54ca69af1189f8b122447cb8043c8a535ef149c839fd"
+  },
+  "docs/design/07-quality/07-03-compiler-testing.md": {
+    "bytes": 101901,
+    "sha256": "3968ef76233f4fd1f6fcc02e3927225cd69ecea4b8838b6daebc5e9f42d4f195"
+  },
+  "docs/design/07-quality/07-04-formal-semantics.md": {
+    "bytes": 430435,
+    "sha256": "3dc73af5a86a7ee1b8e620fb563139e93d8c8faf90e90b101be571e4708ea4e4"
+  },
+  "docs/design/08-appendix/08-01-implementation-language-comparison.md": {
+    "bytes": 24369,
+    "sha256": "e08b18bbb68e8ec441107d608dc217fd438202c11c44dc2b15ad3b941bdd9443"
+  },
+  "docs/design/08-appendix/08-02-prior-art.md": {
+    "bytes": 14384,
+    "sha256": "69deff4cfa60084117a448babb76381af31cce3c6961ee29061d0bf9f724b0eb"
+  },
+  "docs/design/08-appendix/08-03-language-surveys.md": {
+    "bytes": 173017,
+    "sha256": "57ecd4fd7a4a476bd12f516f163be6c822c60999dab086e33b472260465a486e"
+  },
+  "docs/design/08-appendix/08-04-fp-syntax-comparison.md": {
+    "bytes": 64768,
+    "sha256": "baaab0126437cc5c38d69aef0960ef8f64e5c1a6e7c949b25a0521f9be3e1483"
+  },
+  "docs/design/README.md": {
+    "bytes": 12859,
+    "sha256": "0e5cdc82d43f7a49891358540af0cbf2ebf6f47d491606c23527ff933c941234"
+  },
+  "formal/Benitoite/Checked/Access.lean": {
+    "bytes": 2412,
+    "sha256": "e6a476056d5889fa5e2e38a8169932d58a6e47ea6e1542e62b4b75de6467836f"
+  },
+  "formal/Benitoite/Checked/ListIndex.lean": {
+    "bytes": 1897,
+    "sha256": "f0061e5e869b442de262690bfb31f71290f6e9dadfa7b060ae97fe43521503c9"
+  },
+  "formal/Benitoite/Checked/ListLength.lean": {
+    "bytes": 2558,
+    "sha256": "66d654c5dfcc42b83144db2f31d1669f4f0d4cfee6d9cb2e8423da07c0064cc9"
+  },
+  "formal/Benitoite/Checked/NonEmptyList.lean": {
+    "bytes": 1645,
+    "sha256": "40272b5b730c7522b708ebcc5e5eef5f0e805fe568286e565b44aaaf1b26b371"
+  },
+  "formal/Benitoite/Checked/Range.lean": {
+    "bytes": 3781,
+    "sha256": "1b2078a41019eef398a77592faa948a59de379ede6fd5ad9b7c22cd0b5dfab3b"
+  },
+  "formal/Benitoite/Checked/Scope.lean": {
+    "bytes": 44295,
+    "sha256": "6d5a795317a2029a54c5398e2458aea630c4c2bfd19578189685439e75640e56"
+  },
+  "formal/Benitoite/Core/Assumptions.lean": {
+    "bytes": 3003,
+    "sha256": "b8ff44048d1441ab6691ae448107e96ea369f8c79cceacd8a3b142ea851aa702"
+  },
+  "formal/Benitoite/Core/Examples.lean": {
+    "bytes": 5049,
+    "sha256": "5392e9aa8fbf6aa60e6e7493f05227aa004fb21ca4013f58e1c7bb0f8bdc392d"
+  },
+  "formal/Benitoite/Core/Lemmas/Basic.lean": {
+    "bytes": 3697,
+    "sha256": "976302b6e7688b5c2f4219f3dc2172d5e6dfd0b2f609b0c2a3a5a58727d1e222"
+  },
+  "formal/Benitoite/Core/Lemmas/Canonical.lean": {
+    "bytes": 6605,
+    "sha256": "7512ff93871d4f7f97af322bd4877c8bf45d4c02580789b4f2fa9fdc1eaddedc"
+  },
+  "formal/Benitoite/Core/Lemmas/Compose.lean": {
+    "bytes": 8158,
+    "sha256": "f26894297ae4425f57ac54ad2d37c3f1ee7148fa000c3d6af968f2ae13c7f26e"
+  },
+  "formal/Benitoite/Core/Lemmas/Inversion.lean": {
+    "bytes": 7468,
+    "sha256": "04768bcb0f66501abd09f9bafb74b0b3aafe632a392f5a7a8677050aa901e577"
+  },
+  "formal/Benitoite/Core/Lemmas/Preservation.lean": {
+    "bytes": 6957,
+    "sha256": "28e11e9d490f339dee4caa9984309f0e3a4c84b323e232a897f4822b38d6f772"
+  },
+  "formal/Benitoite/Core/Lemmas/Rename.lean": {
+    "bytes": 5216,
+    "sha256": "b1c99e9c290a4ba74fd57dfd720d5fc3b3ed5a5ee190526932cfaf4402320f0e"
+  },
+  "formal/Benitoite/Core/Lemmas/SubstTyping.lean": {
+    "bytes": 5738,
+    "sha256": "0dff2b5cafee5a8c2c44c425f699e1da76288d25613e4303b9560899dc975f32"
+  },
+  "formal/Benitoite/Core/Lemmas/TySubst.lean": {
+    "bytes": 11494,
+    "sha256": "3ea6c5b279d4819f4a1f87a2700885cb19390f9cae0d8237d2f10840092ee76c"
+  },
+  "formal/Benitoite/Core/Semantics.lean": {
+    "bytes": 7067,
+    "sha256": "56e71e377f6c501e44986b50b89dc36d01717215bb69c6577c0191753f10e545"
+  },
+  "formal/Benitoite/Core/Subst.lean": {
+    "bytes": 7202,
+    "sha256": "51039410b6ac969d92b3d99e357c5531f121739a1de8332da3b3a93f0d27b156"
+  },
+  "formal/Benitoite/Core/Syntax.lean": {
+    "bytes": 6298,
+    "sha256": "5af519712cf3a502f2faae2dd35941162b0ee1e6977cddbd384fd02abe1255a1"
+  },
+  "formal/Benitoite/Core/Theorems.lean": {
+    "bytes": 11458,
+    "sha256": "2041e3a25ef737450cedcb43b544125e5bf0215beab00046f0a5f9f8b2e724ce"
+  },
+  "formal/Benitoite/Core/Typing.lean": {
+    "bytes": 9914,
+    "sha256": "1961dedf7c1c9357d8716bb9a7c72d4766f2a855f5ba125d2e7399c90e7dd590"
+  },
+  "formal/Benitoite/Core/WellFormed.lean": {
+    "bytes": 4211,
+    "sha256": "b50babbe487eda9d33e36a793973f588f5ee9d89796a5250ddab28323aaaabaf"
+  },
+  "formal/Benitoite/Exchange/BuilderExamples.lean": {
+    "bytes": 3245,
+    "sha256": "123604369a7ab504668b453e487f5f38464acabdb9751157796466288a57d62c"
+  },
+  "formal/Benitoite/Exchange/Builtins.lean": {
+    "bytes": 15485,
+    "sha256": "c518a1b2895870a4572b2a24e493faae706d02273c77c953b86b6dce86358571"
+  },
+  "formal/Benitoite/Exchange/CheckInput.lean": {
+    "bytes": 13862,
+    "sha256": "691c3c16c530222ab83a75e03f4431cf368626bc9a214ea228e99d9246ec5cd4"
+  },
+  "formal/Benitoite/Exchange/Convert.lean": {
+    "bytes": 63184,
+    "sha256": "f4bb98a0fb87833229538a7948b8f2a7747a334c60f096d59f724b0e0f8f7982"
+  },
+  "formal/Benitoite/Exchange/FormatExamples.lean": {
+    "bytes": 947,
+    "sha256": "152582193cea5829c7ada1698ceb67320650c3f295d2ce60ff85458d7bc6dab1"
+  },
+  "formal/Benitoite/Exchange/IntegerExamples.lean": {
+    "bytes": 2928,
+    "sha256": "e22156eb7cf451f1e40ac16dc2f73b48e6db4a993383b895e90d4143c3c89cec"
+  },
+  "formal/Benitoite/Exchange/Observe.lean": {
+    "bytes": 15630,
+    "sha256": "7913cd5c99b1b0032cf6451533cf0d8e13f03181ed0f62532335de8478cc937e"
+  },
+  "formal/Benitoite/Exchange/ObserveExamples.lean": {
+    "bytes": 6864,
+    "sha256": "e5f5f94aac12f18ab12315893241a01908f0aa370f15d1567c9ea184fda5804c"
+  },
+  "formal/Benitoite/Exchange/Range.lean": {
+    "bytes": 23347,
+    "sha256": "0be5711329044267078d6e306a4b6520cc16a1e9f018f176daaae93551340c77"
+  },
+  "formal/Benitoite/Exchange/RangeExamples.lean": {
+    "bytes": 7630,
+    "sha256": "aaa86173c61fa3060883a9777c2b46f53ec5034c1e5cae98768716acf2ce7e8b"
+  },
+  "formal/Benitoite/Exchange/Syntax.lean": {
+    "bytes": 57407,
+    "sha256": "18cd8b134a9ae78e471d6c3dd55e02d85817656d3dd5e8c1e3b6b57d0d5fa038"
+  },
+  "formal/Benitoite/Exchange/Version.lean": {
+    "bytes": 20178,
+    "sha256": "7e186657dde51635bb2daa30dfd53b664a7cdbe39aa8f57be76e3507825b7384"
+  },
+  "formal/Benitoite/Interval/Analyze.lean": {
+    "bytes": 18521,
+    "sha256": "0e4942159f500d7e7bda01be044e91928963e659934db4552f087c71bb9a86c1"
+  },
+  "formal/Benitoite/Interval/Arithmetic.lean": {
+    "bytes": 52264,
+    "sha256": "2ebc5f3e9206d12835f5c1bbbcce2df6df05dd5afbc3ef653ea331ab16ee21d5"
+  },
+  "formal/Benitoite/Interval/BindingScope.lean": {
+    "bytes": 2375,
+    "sha256": "157530593bfdf76e904dff1c69b776ca4c037de154a1b81b8d418810197fe80f"
+  },
+  "formal/Benitoite/Interval/Budget.lean": {
+    "bytes": 16952,
+    "sha256": "f3bc4bae3c2d542d24ea5707dd38793cb936070de6ed7650d2edcc7989c103b7"
+  },
+  "formal/Benitoite/Interval/BudgetAnalysisExamples.lean": {
+    "bytes": 16738,
+    "sha256": "b0c813de56711a6d80b25d174623f5062758db9240e05f985b66dc8b8f7cf33d"
+  },
+  "formal/Benitoite/Interval/BudgetAnalyze.lean": {
+    "bytes": 21436,
+    "sha256": "e05a3fb0c3ad0388a27d3945cff574a14aef4b5ea5f14e7d62802f42c0687087"
+  },
+  "formal/Benitoite/Interval/BudgetBody.lean": {
+    "bytes": 5886,
+    "sha256": "520eb9a0b136c54ea12f9a3fa262522bf48ad264df709342d733927a665eafd3"
+  },
+  "formal/Benitoite/Interval/BudgetCallReach.lean": {
+    "bytes": 41693,
+    "sha256": "4862d7a46b25b00ad1b7fe6080b1a5b969761b1de34313eeced564d4ae6b230c"
+  },
+  "formal/Benitoite/Interval/BudgetCause.lean": {
+    "bytes": 31787,
+    "sha256": "e49f1471bcab22559e2e9af2d63b2b5645d1e0a2e5d1350cc137e10651919535"
+  },
+  "formal/Benitoite/Interval/BudgetChildren.lean": {
+    "bytes": 8521,
+    "sha256": "d332f148114006f983a8a5cb7d912bb233447c267d26fc67e47d31d55936c837"
+  },
+  "formal/Benitoite/Interval/BudgetChildrenExamples.lean": {
+    "bytes": 8859,
+    "sha256": "3b876915df6693612d9b2b464d1385d9cd1a6e0c0fa5fdbdbdd4033a79b296e8"
+  },
+  "formal/Benitoite/Interval/BudgetCount.lean": {
+    "bytes": 9171,
+    "sha256": "26febbc5e862a21c3711f8f4aff51cd9f4821298968a1a54086a7193e8e331af"
+  },
+  "formal/Benitoite/Interval/BudgetDiscover.lean": {
+    "bytes": 12706,
+    "sha256": "1c0ea7ce0bffd70b5100ef01c58ffa7b2f048e18698feb4c08d13f6eef2ebf4a"
+  },
+  "formal/Benitoite/Interval/BudgetDiscoverProof.lean": {
+    "bytes": 20736,
+    "sha256": "b48485c194c436cd2a8a5ae52b85fcea9c0f0dfb0dca1e8e22e6eceb50e1d5df"
+  },
+  "formal/Benitoite/Interval/BudgetDiscoveryExamples.lean": {
+    "bytes": 2995,
+    "sha256": "5d61fe1008497826f82500605aedb88e88b71d43d6af2617cec7cd0f5e7820f3"
+  },
+  "formal/Benitoite/Interval/BudgetDomainScan.lean": {
+    "bytes": 6123,
+    "sha256": "715e071c385cb1701964f9d6e47fc2ea3e124c0727630da8cda0b36a83cd1e68"
+  },
+  "formal/Benitoite/Interval/BudgetEnvironment.lean": {
+    "bytes": 27508,
+    "sha256": "04a4608a47210e6fd1d3b8c34cbe1ab5998bb3c25cb78247161f3b33e17be456"
+  },
+  "formal/Benitoite/Interval/BudgetExamples.lean": {
+    "bytes": 4620,
+    "sha256": "90f320a81097546b02c745ba0d279a12a8e52cef07aabf7f711c3347d76151c0"
+  },
+  "formal/Benitoite/Interval/BudgetIndependent.lean": {
+    "bytes": 14097,
+    "sha256": "a0d77a5195083e6e58d58fe33cbb45d53dced5e3ce39e1f24e63f18f37c48d45"
+  },
+  "formal/Benitoite/Interval/BudgetIndependentExamples.lean": {
+    "bytes": 5781,
+    "sha256": "6e6bb9432a4882f4abac1519c29baf24d5de68ca6e5836406dad12b6dadbff33"
+  },
+  "formal/Benitoite/Interval/BudgetIndependentPosition.lean": {
+    "bytes": 29519,
+    "sha256": "80f8eeaca6fbe4c3a584cf087fe2ea4215e8922a5d6144dbc7ea08bd4ff1b09d"
+  },
+  "formal/Benitoite/Interval/BudgetIndependentRun.lean": {
+    "bytes": 2233,
+    "sha256": "92748822411cf5e9594e339cd933f2a1c3c0432fe8a594bc5ff6a7ec86e68db1"
+  },
+  "formal/Benitoite/Interval/BudgetIndependentSound.lean": {
+    "bytes": 30083,
+    "sha256": "a165b1b4f457649edfbc2a1582ef4c04a74f5d5cb4539eabdecf5ce5c5d75e19"
+  },
+  "formal/Benitoite/Interval/BudgetLocated.lean": {
+    "bytes": 40234,
+    "sha256": "eb3a2dcc786a110e5d47d1a2a7e23e31c551c98b7020bd05d7003434001e51fc"
+  },
+  "formal/Benitoite/Interval/BudgetNormal.lean": {
+    "bytes": 80899,
+    "sha256": "37c7eaf6e0a71bef46fa45be517e5127f58834b8257a3ac04281a0754da234aa"
+  },
+  "formal/Benitoite/Interval/BudgetPatterns.lean": {
+    "bytes": 31491,
+    "sha256": "85cb9ebfb22e5a0be9c5cbc864f434e9ec0f09a7cfa51a6ca1eabadbb8dcd9a3"
+  },
+  "formal/Benitoite/Interval/BudgetProof.lean": {
+    "bytes": 16486,
+    "sha256": "ae37eb14c522ec66a3194700b7c9d7b7a3bb1d38095cae31470b1ad598f72f07"
+  },
+  "formal/Benitoite/Interval/BudgetRange.lean": {
+    "bytes": 31476,
+    "sha256": "dd46fa879e5619aadd8a84461ac08616f7fc93273c201ab705fb158a2e4d70e3"
+  },
+  "formal/Benitoite/Interval/BudgetRangeBorrow.lean": {
+    "bytes": 10129,
+    "sha256": "f89846e24c89bcc099b68e360611f705d0d417b749d550b18d51d67007d6ff14"
+  },
+  "formal/Benitoite/Interval/BudgetReach.lean": {
+    "bytes": 24206,
+    "sha256": "729bfacd7e56db8caed40cd97ff06414a46e117aa3fa3250312093fd99cdceb2"
+  },
+  "formal/Benitoite/Interval/BudgetScan.lean": {
+    "bytes": 13795,
+    "sha256": "dc5e3f145900e89bb94cf7d5e8fb9e3326270a4198395fdcf18f4c9d30badf44"
+  },
+  "formal/Benitoite/Interval/BudgetScanExamples.lean": {
+    "bytes": 6771,
+    "sha256": "7fc14d71aeab307df52a0c3f135b88e7a181ace016600b6be67eb3b98e51e492"
+  },
+  "formal/Benitoite/Interval/BudgetSelect.lean": {
+    "bytes": 1627,
+    "sha256": "b8c73c92c78a339eb98efd973ba8867b27371e35bcfdb6a4b2f39e4420220959"
+  },
+  "formal/Benitoite/Interval/BudgetSound.lean": {
+    "bytes": 138615,
+    "sha256": "4760c370182cf47d2a33d640925d19e486ae0038c0935b87f4b3b8eb3dff8953"
+  },
+  "formal/Benitoite/Interval/BudgetTraversal.lean": {
+    "bytes": 38138,
+    "sha256": "58c4e88aac57fbf0e31e4efd5df2a69b45aa9adc51babdeab1fe4a5ac8cc0b97"
+  },
+  "formal/Benitoite/Interval/BudgetWalk.lean": {
+    "bytes": 8677,
+    "sha256": "0cbaa3ad76b56536e1b7531960d4f1bd05358b6987ada4722d74d1576d98eff0"
+  },
+  "formal/Benitoite/Interval/BudgetWhole.lean": {
+    "bytes": 16385,
+    "sha256": "9b1a514b2086800cd5e5001b5d15c901fe158c4fd089c7177c630c5b17341863"
+  },
+  "formal/Benitoite/Interval/BudgetWholeExamples.lean": {
+    "bytes": 5170,
+    "sha256": "633cc522c3252598ddb3043d9166f93625f46aa68cbb9ae78d0a6ab809d412fd"
+  },
+  "formal/Benitoite/Interval/CallReach.lean": {
+    "bytes": 18398,
+    "sha256": "10729ead489c5ed756abcf8ffdfe1df2969c3d3091e2753d137674a5a9e7c1f4"
+  },
+  "formal/Benitoite/Interval/CallReachIndependent.lean": {
+    "bytes": 24406,
+    "sha256": "ebb33a0b70860795db943d4c215046c336460a435f2b41016a147208b28017db"
+  },
+  "formal/Benitoite/Interval/CallReachSound.lean": {
+    "bytes": 7926,
+    "sha256": "37e355cc12eb96f8a1a1596c09bab75d97b6bb98b3e1c17d2aeaf3a81ec66006"
+  },
+  "formal/Benitoite/Interval/CallReachWhole.lean": {
+    "bytes": 5202,
+    "sha256": "03c36853e1af06bd689297c54844800de6c0ec7aa36e36b0a824195e4774c6dc"
+  },
+  "formal/Benitoite/Interval/CallTables.lean": {
+    "bytes": 1282,
+    "sha256": "de7a0e5e4e772f0a3ce6399eb5241e2da2204fd061fb709fecedb134670f4988"
+  },
+  "formal/Benitoite/Interval/Domain.lean": {
+    "bytes": 11039,
+    "sha256": "ceae764ac0ea18b3cb60d9cf3c000707f647eb03cb1505a06e164baad27cfb35"
+  },
+  "formal/Benitoite/Interval/DomainExamples.lean": {
+    "bytes": 14295,
+    "sha256": "0288218254ba318ef385b767e777d54f5a2e14a57319c6790dc9c00139f874ef"
+  },
+  "formal/Benitoite/Interval/Environment.lean": {
+    "bytes": 37011,
+    "sha256": "22812b854ac39d520884b5f073c422029cd947ffaf32dc08f80806045ab63dd7"
+  },
+  "formal/Benitoite/Interval/Eval.lean": {
+    "bytes": 154626,
+    "sha256": "942317cd760d636a2892de63de461b19b3ddfcfb795545c61a87b668b1abd6d1"
+  },
+  "formal/Benitoite/Interval/EvalClosed.lean": {
+    "bytes": 60404,
+    "sha256": "609e11b3450a0ccc782ab437e59f679b91e843d448324e954324541fcda0e003"
+  },
+  "formal/Benitoite/Interval/Examples.lean": {
+    "bytes": 88642,
+    "sha256": "fa79b6cc863ec8f46a8692754ba2418893938bc7061b92c1a27f98eb46edff9f"
+  },
+  "formal/Benitoite/Interval/Exchange.lean": {
+    "bytes": 61627,
+    "sha256": "d4c4133cbe3ec31193eeb480bf522f48020e22ad16a6d0a6481b8a9df3877d44"
+  },
+  "formal/Benitoite/Interval/ExchangeExamples.lean": {
+    "bytes": 18010,
+    "sha256": "b18e21747e3f4d17484af7dca500d37923676fd4e0dd5e361bedbf08b11051d4"
+  },
+  "formal/Benitoite/Interval/FixedDomain.lean": {
+    "bytes": 8942,
+    "sha256": "c8b784c69a46a4fae5d01135689332302f2952fd735e9618b6dd98488378a75e"
+  },
+  "formal/Benitoite/Interval/FixedDomainExamples.lean": {
+    "bytes": 5351,
+    "sha256": "044165fcf75e6c73d3861bead91d178aefda4a489cc8bc4fe21494be4b95116a"
+  },
+  "formal/Benitoite/Interval/Flow.lean": {
+    "bytes": 89012,
+    "sha256": "78202fdfd5ce689090e81f3fff92165325a556000eb7ece6a5b735bf1080bd44"
+  },
+  "formal/Benitoite/Interval/FlowExamples.lean": {
+    "bytes": 13744,
+    "sha256": "5dc75e75530f65f4b11099335b71f0aa1d742fc47010aa5feb54ee89fd655727"
+  },
+  "formal/Benitoite/Interval/Identity.lean": {
+    "bytes": 20156,
+    "sha256": "f122332bc250eb11f6d99d32948489ff968baa5b71dc2964dfd9aa5715558cfe"
+  },
+  "formal/Benitoite/Interval/IdentityExamples.lean": {
+    "bytes": 8393,
+    "sha256": "2a1f04ab05c78d0c012375cbd119471c65423398faa21df83ae1ad9f8d196c52"
+  },
+  "formal/Benitoite/Interval/Range.lean": {
+    "bytes": 95239,
+    "sha256": "41b931f0badcdc6728a8150e67d6fddb8b836d6ac91494059e73693d426b8c00"
+  },
+  "formal/Benitoite/Interval/RangeBorrowed.lean": {
+    "bytes": 12982,
+    "sha256": "9d8680042f2ee9d381ca2ba0f8284517dab405f230897a5b81fd841c29bb5c55"
+  },
+  "formal/Benitoite/Interval/RangeState.lean": {
+    "bytes": 7243,
+    "sha256": "caea0825940212559735d3ce91e3296252fe1bb2400cd183e6635dd02f993cc6"
+  },
+  "formal/Benitoite/Interval/Sound.lean": {
+    "bytes": 244472,
+    "sha256": "5730c33a90ee78c6b632dc10026695005491a321a219b2b70be10c9b66721d49"
+  },
+  "formal/Benitoite/Interval/SyntacticReach.lean": {
+    "bytes": 16352,
+    "sha256": "da3d469f523ebe1a47a38735a78d3da8796404afe30e309e65bba3f3e6c7438e"
+  },
+  "formal/Benitoite/Interval/SyntacticReachExamples.lean": {
+    "bytes": 6850,
+    "sha256": "744f414eff2e057160d332605d600585a6c290fe2a9f9aa0844c3ebe11065a47"
+  },
+  "formal/Benitoite/Interval/TablePreservation.lean": {
+    "bytes": 7226,
+    "sha256": "e9a38b99606d5e2f882405a36cc319ab24981fc541dff486ae8993c644d53645"
+  },
+  "formal/Benitoite/Library/ResultLaws.lean": {
+    "bytes": 4799,
+    "sha256": "a436b844421e9206af6c499af6579b9694de57e0def04e9e47b449d5977d6fa9"
+  },
+  "formal/Benitoite/Release/Admissible.lean": {
+    "bytes": 3494,
+    "sha256": "b69b157a654dd18eb8d25989a68fde9e92ae0ab80138630b939a713443327471"
+  },
+  "formal/Benitoite/Release/Assumptions.lean": {
+    "bytes": 13037,
+    "sha256": "e2eed4915abba8ed2ed3a2e35e2b1596b2a64234cad84b68abd5ea77da6b7bed"
+  },
+  "formal/Benitoite/Release/Atom.lean": {
+    "bytes": 3721,
+    "sha256": "b05ab8faacb19142c4aa37a8ea96bd3051c9c0f6f1ce33307cdb270374a74df3"
+  },
+  "formal/Benitoite/Release/BuilderContents.lean": {
+    "bytes": 3879,
+    "sha256": "09ba454c09b2b71fbcbeaa236dbc764af74c193546297eea353ceb1b0ca9e3c9"
+  },
+  "formal/Benitoite/Release/BuilderExamples.lean": {
+    "bytes": 7439,
+    "sha256": "87837e56823996a7eccab613fb8e2fc669f9a7b3d67dc263621fcce5e10bea52"
+  },
+  "formal/Benitoite/Release/BuilderExec.lean": {
+    "bytes": 4785,
+    "sha256": "c8060c785fe1940b620043be5fe7924e5de8558ada2c833fac09b93dd5a44ef8"
+  },
+  "formal/Benitoite/Release/BuiltinTable.lean": {
+    "bytes": 13966,
+    "sha256": "2972c97d3dc96282a688b56767f672e8a62dd35aeb21dee1f6594e3322592e0e"
+  },
+  "formal/Benitoite/Release/CoverCompat.lean": {
+    "bytes": 3112,
+    "sha256": "378b7a9672f9fb404ca790cf1201c441265a5998516e9079e5d69eb86a0da5fa"
+  },
+  "formal/Benitoite/Release/CoverExamples.lean": {
+    "bytes": 15249,
+    "sha256": "9ca812b3350ef584765d5e40dded22900636183567f6c4c537d493a642c6d35d"
+  },
+  "formal/Benitoite/Release/Coverage.lean": {
+    "bytes": 118689,
+    "sha256": "3031b26d7622fcdaa3eea23aeeeb7a7a9bff45904b9f36166bd6258e8642b3bf"
+  },
+  "formal/Benitoite/Release/CoverageExtension.lean": {
+    "bytes": 13845,
+    "sha256": "4ccc7887d0668ad5e87b9b72f6a22673f1609c1ca09919182141faa80f097b39"
+  },
+  "formal/Benitoite/Release/CoverageIntegerExamples.lean": {
+    "bytes": 5010,
+    "sha256": "6ddb45e135ecdede2c1e8d31b693a8ad5659a0d03a70a4d5ac1c6e484319a701"
+  },
+  "formal/Benitoite/Release/CoverageShow.lean": {
+    "bytes": 8201,
+    "sha256": "e7c69c8a5fa4fa2d4083e2d84f6ca2b213757e8b0e2528e3be2ab409dc861219"
+  },
+  "formal/Benitoite/Release/CoverageTypes.lean": {
+    "bytes": 5997,
+    "sha256": "7dfc055528c96440be5e025c567024ad5bc8643e9b1ba3cc16b96152c8209925"
+  },
+  "formal/Benitoite/Release/Effect.lean": {
+    "bytes": 5775,
+    "sha256": "0adcdead2f646dac74c2891a0fd921830f116531b1659fe1007b90e05d8efbfe"
+  },
+  "formal/Benitoite/Release/EffectCover.lean": {
+    "bytes": 22915,
+    "sha256": "952a0fe5ccdd531fb90caec712e3223c9a371fa401ede41a68312457c6a4cd01"
+  },
+  "formal/Benitoite/Release/EffectCoverDef.lean": {
+    "bytes": 14048,
+    "sha256": "667141d99a9a69a174657e0ad1cfe4c207f9df7e3f5b405e830a9f6ebe8dba54"
+  },
+  "formal/Benitoite/Release/Examples.lean": {
+    "bytes": 21045,
+    "sha256": "a91d3222987f6ddae4b295d80fc81cbcb95352dd2466dd67058db570e1ac7bda"
+  },
+  "formal/Benitoite/Release/FailureEffects.lean": {
+    "bytes": 682,
+    "sha256": "dc2deb2ebde5182635585c367cf0f221e36d34541b2a32eb7ade8fcb8267eac0"
+  },
+  "formal/Benitoite/Release/FailureExamples.lean": {
+    "bytes": 8949,
+    "sha256": "517a062af58ec27bfa94d00119478b178b2383dc358aa0b9a37dcb5703a80f11"
+  },
+  "formal/Benitoite/Release/Finite.lean": {
+    "bytes": 10910,
+    "sha256": "40757197839a5dd88cb563d09260e6832446f2e881650d051e082fb727204150"
+  },
+  "formal/Benitoite/Release/FiniteSupport.lean": {
+    "bytes": 9289,
+    "sha256": "3955de7bcca6e0f2e18e17c55e1f8b1a9e5b34609d5e32b6a1b7e2c2621d31a1"
+  },
+  "formal/Benitoite/Release/HandlerTargetExamples.lean": {
+    "bytes": 23000,
+    "sha256": "daf9f37d51815bfde2d6718d5dbd60735c1f6f7fbc07d3d7bc685e1721280450"
+  },
+  "formal/Benitoite/Release/LegacyCheck.lean": {
+    "bytes": 1488,
+    "sha256": "ebeaf58e685928fb970eb543dd2a89526669ca74f4b7e09208c979a46779c595"
+  },
+  "formal/Benitoite/Release/Lemmas/Basic.lean": {
+    "bytes": 4982,
+    "sha256": "3353ce9b0508ed047969d8cf0070af5b14d5310601486820563878944abd187c"
+  },
+  "formal/Benitoite/Release/Lemmas/BuilderStore.lean": {
+    "bytes": 7173,
+    "sha256": "e5470aadc29751f0ea955453791ec38f0a4dfc6538b9239af5afdcfdf08da9ff"
+  },
+  "formal/Benitoite/Release/Lemmas/BuilderTyping.lean": {
+    "bytes": 9832,
+    "sha256": "1d065c5442169d0aec6aebbb3e1ecbf80cadc011080d55ada8bd819d27ef8039"
+  },
+  "formal/Benitoite/Release/Lemmas/Canonical.lean": {
+    "bytes": 27497,
+    "sha256": "3b24ea3884a2eadda8aadad0d91f6b910aa8b29fb85f09b951fc0a0797f6f8cb"
+  },
+  "formal/Benitoite/Release/Lemmas/ClauseIx.lean": {
+    "bytes": 18412,
+    "sha256": "798cdcc9d07de7c269223c7ffda55ffad748845beb036561eb866e8fda002a21"
+  },
+  "formal/Benitoite/Release/Lemmas/Closed.lean": {
+    "bytes": 45238,
+    "sha256": "ad4d9e83bdd835c2184b76d301848e9ff512d45f84f0ba58e278fe588da682b2"
+  },
+  "formal/Benitoite/Release/Lemmas/ContLemmas.lean": {
+    "bytes": 25986,
+    "sha256": "60d6c6cc21f92576b2772ae8d26ce7e57e2f8c1b673fe136403a5e50940b3da4"
+  },
+  "formal/Benitoite/Release/Lemmas/CoverageRuntime.lean": {
+    "bytes": 12091,
+    "sha256": "cdce18390466a5bf39ecaf15821572bf7aa94dc0ff7b4d654623d322887c1176"
+  },
+  "formal/Benitoite/Release/Lemmas/Dict.lean": {
+    "bytes": 14134,
+    "sha256": "ec5e1ace4dacad656975ea85535c6e3444c8e6910fb8a541f12b87b18b44ad69"
+  },
+  "formal/Benitoite/Release/Lemmas/EffectSound.lean": {
+    "bytes": 10453,
+    "sha256": "ef059c5f599f6345c9c694756abcb225603c4c502c44420168f1660b15a63aa7"
+  },
+  "formal/Benitoite/Release/Lemmas/FailureBase.lean": {
+    "bytes": 4098,
+    "sha256": "44459ad05ba7601382a8741db50e9d641d10c2322b68e1690c122e2eb319f7a7"
+  },
+  "formal/Benitoite/Release/Lemmas/FailureCont.lean": {
+    "bytes": 14481,
+    "sha256": "baeb1f35221de74a764c72141a666c227940f069676afd80b24744cda2fa8993"
+  },
+  "formal/Benitoite/Release/Lemmas/Inversion.lean": {
+    "bytes": 28439,
+    "sha256": "4b87e12cc4804109a48168f8376ff2843ac8190ca43dddf0326a0eff3a488538"
+  },
+  "formal/Benitoite/Release/Lemmas/Irrelevant.lean": {
+    "bytes": 11429,
+    "sha256": "708662e6b052adaef29f7c0cf3a6e58b7e60acb899c0c337ddcf45a55a924fb9"
+  },
+  "formal/Benitoite/Release/Lemmas/LocalInvariant.lean": {
+    "bytes": 7976,
+    "sha256": "45a3dde819e90ec77d77c3a795e7fa37e3863c6c8356b5615f079e0391ecbe61"
+  },
+  "formal/Benitoite/Release/Lemmas/Membership.lean": {
+    "bytes": 11355,
+    "sha256": "1bb175739d0e1dbf18e601d9c6f00e5dd7dd9f1e97bf5fd09366a60773897d32"
+  },
+  "formal/Benitoite/Release/Lemmas/MembershipBase.lean": {
+    "bytes": 12702,
+    "sha256": "c0e288ab608dee5e75c086d13bca761ef5274bd9b6cef921c4249c2d599b0de8"
+  },
+  "formal/Benitoite/Release/Lemmas/Names.lean": {
+    "bytes": 19172,
+    "sha256": "710b450a0b41d68a88819a4a83a7385885105a9754c2afc4c5b37cec44bbdd22"
+  },
+  "formal/Benitoite/Release/Lemmas/NoFailContext.lean": {
+    "bytes": 5083,
+    "sha256": "f4cc2d0c2bd05a0bf16316244359dc9789c9556a419c7622115cd5b421af79a9"
+  },
+  "formal/Benitoite/Release/Lemmas/Observation.lean": {
+    "bytes": 17614,
+    "sha256": "a5d7c84531354ae22e2351e40cb559aa2ac29e0c1065c4e45250f6f52aaf969e"
+  },
+  "formal/Benitoite/Release/Lemmas/OuterC.lean": {
+    "bytes": 10630,
+    "sha256": "4196c704e1e6235bb62edde498049e37c98a100f1fbe4de4b599646ec3739543"
+  },
+  "formal/Benitoite/Release/Lemmas/PresBase.lean": {
+    "bytes": 14731,
+    "sha256": "09d0ceccff44bfd2b328157d75ff1b0bd9a95322d45d75c3b443afb2e1161122"
+  },
+  "formal/Benitoite/Release/Lemmas/PresFailure.lean": {
+    "bytes": 5883,
+    "sha256": "fbb8771d3a5b4275e8f01f4ac34f3cacdcd2c05f4a7e770f0451059308bb8a31"
+  },
+  "formal/Benitoite/Release/Lemmas/PresHelpers.lean": {
+    "bytes": 9677,
+    "sha256": "b2d2a1f14250f41a09f4174a9250e83ed2684ade277e9ad67f8ea40369e08332"
+  },
+  "formal/Benitoite/Release/Lemmas/PresMain.lean": {
+    "bytes": 38596,
+    "sha256": "87f6e70c964844b62b4ae18c6953c6b6f4e5cf5c38aaafd4545c2834161fef69"
+  },
+  "formal/Benitoite/Release/Lemmas/Preservation.lean": {
+    "bytes": 12516,
+    "sha256": "f5035f2bc68d373d758f4077cf297e8c6122a2f43c55088564badf2d62573ef7"
+  },
+  "formal/Benitoite/Release/Lemmas/PrimRanges.lean": {
+    "bytes": 28295,
+    "sha256": "ba8cad10f7032474cf17153e1b626a09d57bae82946dbb8c199975a5e79939b8"
+  },
+  "formal/Benitoite/Release/Lemmas/Progress.lean": {
+    "bytes": 27392,
+    "sha256": "8811aa5650485e2d5d202dd6ed6e5bd6ef021af8f1b185c11266fd471726560b"
+  },
+  "formal/Benitoite/Release/Lemmas/Regularity.lean": {
+    "bytes": 12779,
+    "sha256": "e18bd4870df262b2142fa6f2d6e2140fc609a517e69434926b4891cde0da4992"
+  },
+  "formal/Benitoite/Release/Lemmas/Rename.lean": {
+    "bytes": 23823,
+    "sha256": "555c655e9de4929b165e2e62ca67c9fe76d2ad3b9a2d987feaf3ad0dd860704c"
+  },
+  "formal/Benitoite/Release/Lemmas/StepSound.lean": {
+    "bytes": 21934,
+    "sha256": "c757d0471e4b6a63ba0b0c7a94b18c88c4bbf29d452520e562a452cb94ff1842"
+  },
+  "formal/Benitoite/Release/Lemmas/StoreLemmas.lean": {
+    "bytes": 5874,
+    "sha256": "0f1b124f31fbd5a5d69e3785ce97e97e1379069808617db57e9123fe0640683c"
+  },
+  "formal/Benitoite/Release/Lemmas/SubstTyping.lean": {
+    "bytes": 21636,
+    "sha256": "e9e46f3ec7d9a6c36b28f3f48416f262c551b09d5ec50de1050cb75f89410d17"
+  },
+  "formal/Benitoite/Release/Lemmas/TargetPropagation.lean": {
+    "bytes": 11170,
+    "sha256": "b840f9b572a1abae7b5f224201cdf62874e7a5103a7a41a7ce30e1e18e893f96"
+  },
+  "formal/Benitoite/Release/Lemmas/TargetSound.lean": {
+    "bytes": 7250,
+    "sha256": "1e9f8d1f870ef76a0048e674eac57c239d3da42bf18fc8fd81e85a60dc1c71d8"
+  },
+  "formal/Benitoite/Release/Lemmas/TargetStep.lean": {
+    "bytes": 13205,
+    "sha256": "1cbfb2ae7660e9f027162ebd73ee7a976dc2f4044164b197c359cef563da1530"
+  },
+  "formal/Benitoite/Release/Lemmas/TyLemmas.lean": {
+    "bytes": 4196,
+    "sha256": "d8eb6c83c4051bc545f205e9d2e4fcb66e256d2bc829c3f6d6530f57a0b319c2"
+  },
+  "formal/Benitoite/Release/Lemmas/TySubst.lean": {
+    "bytes": 9830,
+    "sha256": "2b2fcd08caea95404a11bd1f8774b00ca6d6d4d4aada45083c24efb6eca19d14"
+  },
+  "formal/Benitoite/Release/Lemmas/TySubstMain.lean": {
+    "bytes": 49323,
+    "sha256": "28244251580a8890ad67ef2fd0665af10d13c362ddb11448f3597a3652fd3f8c"
+  },
+  "formal/Benitoite/Release/Lemmas/VariableBind.lean": {
+    "bytes": 4216,
+    "sha256": "4e9b0103a78ddfba06c93dc03ac118ad1989d6cf7a94f81be8bf227595a83c67"
+  },
+  "formal/Benitoite/Release/LocalRef.lean": {
+    "bytes": 2691,
+    "sha256": "03bbabff72b519ab548f24dd284bebf4b7265f266dfc1320021e3d779b75d6a3"
+  },
+  "formal/Benitoite/Release/LocalScope.lean": {
+    "bytes": 10567,
+    "sha256": "9b9569d13c89f8e9990a3fc193d55ba9a627b1315c0327c5941b8677b5e96b20"
+  },
+  "formal/Benitoite/Release/LocalTyping.lean": {
+    "bytes": 6229,
+    "sha256": "e223ea74281a83698e2575013e3913be4a75b4546db350376e818731a298d697"
+  },
+  "formal/Benitoite/Release/Model.lean": {
+    "bytes": 21606,
+    "sha256": "e7a0963e62fb02dcecaccf57ee00ee5ed3b318307c375084cda9d9c08cb15490"
+  },
+  "formal/Benitoite/Release/ModelHttp.lean": {
+    "bytes": 52168,
+    "sha256": "dae10fef4002ae6ef7c832301493c62d991ea26dab942e994f11e841c6276fc0"
+  },
+  "formal/Benitoite/Release/ModelTargets.lean": {
+    "bytes": 46638,
+    "sha256": "77c793884b86ffd11983942c6419d0147460adc157c10d732d4d457fbf96d133"
+  },
+  "formal/Benitoite/Release/NoFail.lean": {
+    "bytes": 12695,
+    "sha256": "0f070af9461bf6dff72f8665fae6726e25e45e5a00573b38c1a301d10a80922e"
+  },
+  "formal/Benitoite/Release/Normalize.lean": {
+    "bytes": 7875,
+    "sha256": "5468243815216e96b0b96f13b1cab5196a445d28435410ecd0e0819e67922703"
+  },
+  "formal/Benitoite/Release/Order/Atoms.lean": {
+    "bytes": 10211,
+    "sha256": "e8f3372fdc94d664e0deda945e8e00a706a40bda66e7d948cdf66b217307cd00"
+  },
+  "formal/Benitoite/Release/Order/FiniteAtoms.lean": {
+    "bytes": 3726,
+    "sha256": "6a57378eb743fd672df5010d34996be6d5468c82f9222f274e308211be13855b"
+  },
+  "formal/Benitoite/Release/Order/Labels.lean": {
+    "bytes": 2266,
+    "sha256": "f3567a65c8177481934b4d4e4ab824e7ff5346f64802203ef63db5263d54902a"
+  },
+  "formal/Benitoite/Release/Order/Range.lean": {
+    "bytes": 15764,
+    "sha256": "029c81ceaea39376ecf901f7ec6743e06a35f5c74a9c23abc29df0cabb7f348c"
+  },
+  "formal/Benitoite/Release/Order/Shift.lean": {
+    "bytes": 2006,
+    "sha256": "1af11ada7ad453465a7e969ca381024e531d55621c2b2edc5957b42942e6d682"
+  },
+  "formal/Benitoite/Release/Order/SortUnique.lean": {
+    "bytes": 7782,
+    "sha256": "86247aaf4b61a90065e0fe94f0a257be5b0791eaf9e76da0b33b66faebafb3e1"
+  },
+  "formal/Benitoite/Release/Order/Tree.lean": {
+    "bytes": 6285,
+    "sha256": "44c87e0cb542fb55a7a0d3c754eb851624ab3ca3d3c961fd5318126deaeb0ffd"
+  },
+  "formal/Benitoite/Release/Order/Types.lean": {
+    "bytes": 12386,
+    "sha256": "425d96631e59b04c2aa9ca640fdeac82da4fe2f2f6030e33cd51c82c48ba4107"
+  },
+  "formal/Benitoite/Release/RangeInst.lean": {
+    "bytes": 61284,
+    "sha256": "ac99d72378145f20455f4dde484677c915a3b7b6316d1112891f8bfb56ea706c"
+  },
+  "formal/Benitoite/Release/RangeInstDef.lean": {
+    "bytes": 3436,
+    "sha256": "0048527ae4f32406bad92068077160e71cc0a1722784c9babb82714d9f3d0cbf"
+  },
+  "formal/Benitoite/Release/RangeIxExamples.lean": {
+    "bytes": 3434,
+    "sha256": "00152af06caadc5d1521599e407cffd362b24ecc1d476342ec150c143a88742f"
+  },
+  "formal/Benitoite/Release/RangeNormalize.lean": {
+    "bytes": 11905,
+    "sha256": "9c23b9a234b4408b746a5965367a22888c36f3bfbd48aead29f5dae4a4d95215"
+  },
+  "formal/Benitoite/Release/RangeWF.lean": {
+    "bytes": 23998,
+    "sha256": "db81169a177f2f56b71bbea08ccb3d45d8ed682e3947764b512a1737264e63ac"
+  },
+  "formal/Benitoite/Release/Refinement/Basic.lean": {
+    "bytes": 6758,
+    "sha256": "41274ca8b69651488020e65baa7ea7786866df98144c9fafc364b1cb98668561"
+  },
+  "formal/Benitoite/Release/Refinement/Bind.lean": {
+    "bytes": 6398,
+    "sha256": "323ca8857bc860bfa113d24b9c83e90a236eb43e5dda1a7b37268504dedf979e"
+  },
+  "formal/Benitoite/Release/Refinement/Context.lean": {
+    "bytes": 10306,
+    "sha256": "73e00043d6d93a83bc947873212845c4ddb275641d6f7ea37847b3d147b4aa74"
+  },
+  "formal/Benitoite/Release/Refinement/EffectCover.lean": {
+    "bytes": 6666,
+    "sha256": "800b6386426607e344690ae973083f90d6a647a883f40d788a06eb241be4052f"
+  },
+  "formal/Benitoite/Release/Refinement/Exchange.lean": {
+    "bytes": 9564,
+    "sha256": "1828dfb5afeb77f70d46da996ef953dfadf5997df2a967efa7f5a4c70f230e6f"
+  },
+  "formal/Benitoite/Release/Refinement/Le.lean": {
+    "bytes": 4283,
+    "sha256": "ef556304633135aff630f77562c59fe44962abf0d439b6a6d031b908207df75d"
+  },
+  "formal/Benitoite/Release/Refinement/Logic.lean": {
+    "bytes": 4106,
+    "sha256": "c57da6e700911f93160b8fd37e4f3a7fffef4b7844db7fd66cc270d0b86f0129"
+  },
+  "formal/Benitoite/Release/Refinement/Narrowing.lean": {
+    "bytes": 12055,
+    "sha256": "a998058355fb8383e5c9761a5638e84b46116046cb240fd41e90daec6b4fb3bb"
+  },
+  "formal/Benitoite/Release/Refinement/NarrowingObstruction.lean": {
+    "bytes": 2676,
+    "sha256": "3cb9901dc406f71255b0e493eb57d30f68d4715531481fca1362d2887129535d"
+  },
+  "formal/Benitoite/Release/Refinement/Normalize.lean": {
+    "bytes": 5917,
+    "sha256": "84d81a4b12e596a754617a2db103a4d2496f6dd8b80be38985271ef54c7ed5de"
+  },
+  "formal/Benitoite/Release/Refinement/OpenSubstitution.lean": {
+    "bytes": 9376,
+    "sha256": "01422add7d6806878705b8d9f017042ce658620cef6bdc938c030da19dab7d6e"
+  },
+  "formal/Benitoite/Release/Refinement/Order.lean": {
+    "bytes": 9781,
+    "sha256": "91cc35ad779d001ec2f1b2198fba987640f933e4f3fc92e15726240083021942"
+  },
+  "formal/Benitoite/Release/Refinement/RangeExchange.lean": {
+    "bytes": 11130,
+    "sha256": "6121c0119fd8ace89ea5b8063d422316fc4656293255d8d468877c749f266c31"
+  },
+  "formal/Benitoite/Release/Refinement/RangeSubst.lean": {
+    "bytes": 13106,
+    "sha256": "386af6cf6fe6116fd10fd34f2c099c6ad1abf19a58cdffa65acd391278babaf0"
+  },
+  "formal/Benitoite/Release/Refinement/Shift.lean": {
+    "bytes": 8377,
+    "sha256": "de63745086edd3ea5cd14ce6026fefd2f3746bd5357156100b1c2fb4218d6d30"
+  },
+  "formal/Benitoite/Release/Refinement/ShiftOrder.lean": {
+    "bytes": 5564,
+    "sha256": "3d4c2c5a919c20e5072515f80661cd97c318214eaf4bd2dfac90031f25b7ce66"
+  },
+  "formal/Benitoite/Release/Refinement/Subst.lean": {
+    "bytes": 13454,
+    "sha256": "8a96f3e5583ee9ca92b25c089cba5ec062e36aedaa2da5ab2406aa0607f5f8c1"
+  },
+  "formal/Benitoite/Release/Refinement/SubstTyping.lean": {
+    "bytes": 19285,
+    "sha256": "74bca63ff91080e7a09ba88d872aa5d3925adbb63ab5f6431d3b7d3323efb248"
+  },
+  "formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean": {
+    "bytes": 14762,
+    "sha256": "22b17e6b7f58b9cfcb153b8b56427f23384a22d3ff96abd775910c6fd0e7274f"
+  },
+  "formal/Benitoite/Release/Refinement/Syntax.lean": {
+    "bytes": 13488,
+    "sha256": "9b301617f6711ad3acf7ae8a53ce99680018d497079a04f872bd93db2bd84e22"
+  },
+  "formal/Benitoite/Release/Refinement/Transport.lean": {
+    "bytes": 7447,
+    "sha256": "d4a65227949d128e09ebac3aedb345c5a55a08f6d501a405f7f2f3b056a60435"
+  },
+  "formal/Benitoite/Release/Refinement/TypeSubst.lean": {
+    "bytes": 10399,
+    "sha256": "7df3c500199f03c84f314a7f960805cf986a0a6572e8ea180eef97b7abdd9dda"
+  },
+  "formal/Benitoite/Release/Refinement/TypedFacts.lean": {
+    "bytes": 3853,
+    "sha256": "340c7abe7f981b3dc5f40bff0e5993e296f129970e82636cbd3421f18bdf340f"
+  },
+  "formal/Benitoite/Release/Refinement/Types.lean": {
+    "bytes": 3360,
+    "sha256": "cb330c3f553b46df6f2d63b1e43729912987b0206892a9a37d70124ab2af3072"
+  },
+  "formal/Benitoite/Release/Refinement/Typing.lean": {
+    "bytes": 5118,
+    "sha256": "e81752a2c44e1b43f3be3d659741a71df2b54d458e2c3bf914d815de66a2fd25"
+  },
+  "formal/Benitoite/Release/Refinement/TypingShift.lean": {
+    "bytes": 16531,
+    "sha256": "79b932aed50d48bf89d494f7bb5986f7049342c84ae864a9f425b52c0b20bc56"
+  },
+  "formal/Benitoite/Release/Refinement/ValueBinding.lean": {
+    "bytes": 13626,
+    "sha256": "8438b02ac4c9a9128f4921f5f97b228bba8b7d8cc5c72c24307089f97057b446"
+  },
+  "formal/Benitoite/Release/Refinement/ValueExchange.lean": {
+    "bytes": 8525,
+    "sha256": "d00ae6a5aae96134005e5ac99741cd4eb1400a71b765991c96fc4407deb13cfa"
+  },
+  "formal/Benitoite/Release/Refinement/ValueRegularity.lean": {
+    "bytes": 12933,
+    "sha256": "60dce76207314e82f3a42428c9babac6ccc6a715e7267a1904c0e494c360ac88"
+  },
+  "formal/Benitoite/Release/Refinement/ValueSubst.lean": {
+    "bytes": 2172,
+    "sha256": "3a0f9279ad493c10e39380ca13326d74ec93d4054ccf8ab9187ed82212497e87"
+  },
+  "formal/Benitoite/Release/Semantics.lean": {
+    "bytes": 39716,
+    "sha256": "5d0694574de019becec5a6ede9235bf74c0483c12c8588bf2facc84cddbd79db"
+  },
+  "formal/Benitoite/Release/ShapeOk.lean": {
+    "bytes": 9125,
+    "sha256": "0eee3fa67b71a8ac36e45d63dcad50989c688e9636e90cb31705037a65fbe689"
+  },
+  "formal/Benitoite/Release/Subst.lean": {
+    "bytes": 16538,
+    "sha256": "c754060234c6ed3f710f81cad49860e2af042a3bd28a0cb3ef9f9a1cbae118ce"
+  },
+  "formal/Benitoite/Release/SubstEnv.lean": {
+    "bytes": 4163,
+    "sha256": "a36d72c275678911776fdde311b06f7f43fd4cecce68fac36aac0af83c7e7e3c"
+  },
+  "formal/Benitoite/Release/SubstExamples.lean": {
+    "bytes": 2275,
+    "sha256": "73a8d27788c321cb7ef16beb822c9ecc9f81c929708c3d77a8e803a435145c26"
+  },
+  "formal/Benitoite/Release/Syntax.lean": {
+    "bytes": 19395,
+    "sha256": "d42e4136ca898dadce8026d9fa0f59aa01f5a3563c5d8d751d741ec00450cc07"
+  },
+  "formal/Benitoite/Release/TargetReachExamples.lean": {
+    "bytes": 14647,
+    "sha256": "9fbee5e1e601ba66632d0b55a9eb09497eabb5a8d81155f3a92eaf3adb8d9737"
+  },
+  "formal/Benitoite/Release/TargetStepExamples.lean": {
+    "bytes": 9602,
+    "sha256": "faccae52ae6a3f5e54af1f5c137c1622a84575a2881347c4a34d7683ef50b400"
+  },
+  "formal/Benitoite/Release/TargetTable.lean": {
+    "bytes": 15272,
+    "sha256": "df6d17bd99082acbc85302a6dcf1000a3f367d92f8beedb654a5b00aaf2882e8"
+  },
+  "formal/Benitoite/Release/Theorems.lean": {
+    "bytes": 8024,
+    "sha256": "d6046c7ce18b72be9ff749f85db0cac079fa20268bdcb4811cd556a9b60a631f"
+  },
+  "formal/Benitoite/Release/TypeBounds.lean": {
+    "bytes": 14692,
+    "sha256": "2b4144638f36f15b443c2c661f23cb7e4fab1f1def4f259c2f91be52cf95a949"
+  },
+  "formal/Benitoite/Release/TypeComposition.lean": {
+    "bytes": 19338,
+    "sha256": "f6f755ff0bbb1863f812f951bc93ce8a89f93c653b678feefc29bf53d83d0612"
+  },
+  "formal/Benitoite/Release/TypeCongruence.lean": {
+    "bytes": 6275,
+    "sha256": "dd3bf0a6eba09649cb26c22973a5706c5d04ff71469750b8ec619e8f5382c84f"
+  },
+  "formal/Benitoite/Release/TypeRegularity.lean": {
+    "bytes": 6424,
+    "sha256": "1bd4008999c2aeb8a4e9913690f08db7233b337dd71d6f3eb7cb1ed9c6127923"
+  },
+  "formal/Benitoite/Release/TypeRows.lean": {
+    "bytes": 4647,
+    "sha256": "71cf1e088b10cff94fb0de715844e264e274f3b2c0efba5e956786c267e031ad"
+  },
+  "formal/Benitoite/Release/TypeScopedSubst.lean": {
+    "bytes": 15216,
+    "sha256": "936e849271651f9177e06aea024b3c9a8daaa361c2d52b19fa64e75dfb145bf2"
+  },
+  "formal/Benitoite/Release/TypeShift.lean": {
+    "bytes": 7807,
+    "sha256": "b35837dfd5efc32c16b48157a5392a22096085a2adb498c27fbefac8d7e2fc1e"
+  },
+  "formal/Benitoite/Release/TypeSubst.lean": {
+    "bytes": 9009,
+    "sha256": "2bf0af91e9fd53e87b62bb87e75ee885f6116f99a5eaf5d07369db7f40ed3bf5"
+  },
+  "formal/Benitoite/Release/TypeSubstLemmas.lean": {
+    "bytes": 20657,
+    "sha256": "558d1dcb7464ea09965d6d72988821d15823de16afc21dcc15beadaaf3fc18cc"
+  },
+  "formal/Benitoite/Release/TypeSupport.lean": {
+    "bytes": 8103,
+    "sha256": "7bb1e72dfeec2e28402bc9317f735a975475663c78085855f6fad9d286d3dc16"
+  },
+  "formal/Benitoite/Release/TypeVariables.lean": {
+    "bytes": 7588,
+    "sha256": "32645c79e1d98b721bdb7b6d2f095b49e544221ea8a91ea52b659d482dcdf1f5"
+  },
+  "formal/Benitoite/Release/Types.lean": {
+    "bytes": 4218,
+    "sha256": "b87128151734d754f12aed218795cfd8dc46343e14625ee7d12d1f9e15ccd538"
+  },
+  "formal/Benitoite/Release/Typing.lean": {
+    "bytes": 49159,
+    "sha256": "f383e4f88bf2df8702d1dda89fbab4284feecc8febabaa9f4431d5550de42ce7"
+  },
+  "formal/Benitoite/Release/WellFormed.lean": {
+    "bytes": 9840,
+    "sha256": "44dc8cedd19fed429f95999072e3c80cb4ca52692dbdb1cd46aae8c19e7637a8"
+  },
+  "formal/Benitoite/Scope/CompatExamples.lean": {
+    "bytes": 4508,
+    "sha256": "d049da1ccabbca7430291101b8d61f8fdd4cd9cc540485f317c6d4e80d758bea"
+  },
+  "formal/Benitoite/Scope/Cover.lean": {
+    "bytes": 14061,
+    "sha256": "7a2708b22f6dbd17223ca05d70f498bf9fe78f0a4de25e2a9eee4bbefbe64689"
+  },
+  "formal/Benitoite/Scope/Domain.lean": {
+    "bytes": 33836,
+    "sha256": "01a2284129ad7f4c84fb08ae2fed17f000e7ce27e6438027ebc843d84ef923d3"
+  },
+  "formal/Benitoite/Scope/IPCover.lean": {
+    "bytes": 24512,
+    "sha256": "dc35389d51d6c39120bca0bb7e16407f798afea8d41d741c87d9909ff1f67319"
+  },
+  "formal/Benitoite/Scope/Inference.lean": {
+    "bytes": 13435,
+    "sha256": "bbc880b5d976dd2b55dc63cbff357acbb164a8ba9eba2cab3d5ea72958a92e66"
+  },
+  "formal/Benitoite/Scope/InferenceExamples.lean": {
+    "bytes": 26731,
+    "sha256": "1f6bb48f9a1d13bdc7e1b1f07b3da993063d62e9ae84fb8b0fb781a53258be82"
+  },
+  "formal/Benitoite/Scope/RangeCover.lean": {
+    "bytes": 34600,
+    "sha256": "42b77b7b96d525515453e8c6443d7a516f7df92650c6a79818ea841e31b555db"
+  },
+  "formal/Benitoite/Scope/RepresentationExamplesI.lean": {
+    "bytes": 15804,
+    "sha256": "60d2b8aa9fb39ce1715459caae06bdfbfe26ca06fa5999bd189dd20886c9d680"
+  },
+  "formal/Benitoite/Scope/Signature.lean": {
+    "bytes": 9002,
+    "sha256": "77c40ac10d9bc16e753c80754ef4fc280bb6e5c5824bbae672c47ab34cea1635"
+  },
+  "formal/Benitoite/Scope/SignatureExamples.lean": {
+    "bytes": 34434,
+    "sha256": "51fada24da15dcb321a8a448601ce2a4f672eb869baf99ce526d0803029a0284"
+  },
+  "formal/Benitoite/Scope/SwitchExamples.lean": {
+    "bytes": 27510,
+    "sha256": "d255eab57980d1816b2bbb006196733bbc87dcc84138d58681835924eef9564e"
+  },
+  "formal/Benitoite/Scope/TopCompat.lean": {
+    "bytes": 14392,
+    "sha256": "c91c21c08c3b1ea96f12209683b313812dbe1c568709bdf5a9ada638bfc5c417"
+  },
+  "formal/Benitoite/Surface/AdmissibleCheck.lean": {
+    "bytes": 8296,
+    "sha256": "099ee73efdd4399d8037ce5e257ce210c91eab110ef4970c368671ad1a5ed8a3"
+  },
+  "formal/Benitoite/Surface/BuilderCheck.lean": {
+    "bytes": 1310,
+    "sha256": "cc930c8d6804772c697d3d75380ce226a61883f98d5a84f2a3008762160d0e8b"
+  },
+  "formal/Benitoite/Surface/BuilderExamples.lean": {
+    "bytes": 19732,
+    "sha256": "038472a56478ad1fd1533d3c7e464b5258f207668e6af9353762d559e878d930"
+  },
+  "formal/Benitoite/Surface/BuilderFree.lean": {
+    "bytes": 4525,
+    "sha256": "c738f303c17dd0b4ace443799cd1da8ce9a6f587995b733220870f0e6ed42cd6"
+  },
+  "formal/Benitoite/Surface/BuilderLower.lean": {
+    "bytes": 580,
+    "sha256": "d90a04e1b28ec08c7dce734cc6b9a5a705f64ada36f32268353e480d43c292f2"
+  },
+  "formal/Benitoite/Surface/BuilderSyntax.lean": {
+    "bytes": 616,
+    "sha256": "4cdab6fa770fa0a16fa514496f0681b7d5e014b90b46f7823f32336798ccc77e"
+  },
+  "formal/Benitoite/Surface/Builders.lean": {
+    "bytes": 5469,
+    "sha256": "b591ba471a0b0df5ed93f19b8657a1c28b9a70362f256746a3bd43edee4caeec"
+  },
+  "formal/Benitoite/Surface/Check.lean": {
+    "bytes": 61972,
+    "sha256": "fc8246e3c26d5a2885edbf4fe819a7b15f14cdb5d570fbb5decb10b2398024f8"
+  },
+  "formal/Benitoite/Surface/CheckAccept.lean": {
+    "bytes": 16976,
+    "sha256": "95f21c989407325132fbf714f5a1d5bb05f24b3311be059ec51d41a14bb41fb1"
+  },
+  "formal/Benitoite/Surface/CheckAcceptExamples.lean": {
+    "bytes": 10469,
+    "sha256": "e9fc6344b2880ddf0b1a4f2415494354941c7b207c6efc5a081e81bd11f179fd"
+  },
+  "formal/Benitoite/Surface/CheckComputeAtoms.lean": {
+    "bytes": 9434,
+    "sha256": "58eac2029b943a2ed3786d63616af133c670b0b48ebc67e1ed84c1a4804e362e"
+  },
+  "formal/Benitoite/Surface/CheckComputeCalls.lean": {
+    "bytes": 9849,
+    "sha256": "9bee964f60ae0127ea85067c066583a0a8e893cdd3375c4ebcfbf939df64fa76"
+  },
+  "formal/Benitoite/Surface/CheckComputeCases.lean": {
+    "bytes": 21694,
+    "sha256": "4a73c87c393c811e878f92194bf8a59e2f9caf4ab8c7adba5d7b71df2390bc58"
+  },
+  "formal/Benitoite/Surface/CheckComputeControl.lean": {
+    "bytes": 8782,
+    "sha256": "b6aed08a6cf55334412d65b332fa4d7d5cf32369a10b2cd1ef8bcec0343fcbb7"
+  },
+  "formal/Benitoite/Surface/CheckComputePipe.lean": {
+    "bytes": 3997,
+    "sha256": "d1ed64017839c1b2dbc3806dd8f2cc0b2c1c4c6bbc8affc3f4661d5895b3f84b"
+  },
+  "formal/Benitoite/Surface/CheckComputeSound.lean": {
+    "bytes": 10177,
+    "sha256": "2369f2ab62cbcd0ceaaa095e90ba285db1004c9349fcb75e661641a87f979b77"
+  },
+  "formal/Benitoite/Surface/CheckCounterexamples.lean": {
+    "bytes": 3831,
+    "sha256": "b360aeff9df14ff1d1e7d1a008b4adc54c47e55b08c37ca2e6f90b972fa36885"
+  },
+  "formal/Benitoite/Surface/CheckDictSupport.lean": {
+    "bytes": 3697,
+    "sha256": "f92068ad0d760a31c515722d7e525c765c61f60532be1f143fd47bd60dc4d8b6"
+  },
+  "formal/Benitoite/Surface/CheckExamples.lean": {
+    "bytes": 64541,
+    "sha256": "0acb1ad218d050ddbfa8282f4d9d2dedc4b830b804db1275d7eda0a60f432e29"
+  },
+  "formal/Benitoite/Surface/CheckInduction.lean": {
+    "bytes": 18730,
+    "sha256": "cadac207ed3955fe2798d1bef706c940e43fe2fa4ee3c76d4afdb052d4d00f0e"
+  },
+  "formal/Benitoite/Surface/CheckLemmas.lean": {
+    "bytes": 34434,
+    "sha256": "8119c4f1e63b268ef31f03f842443c6f61d8bcc3c17b2142024628fb9b342d36"
+  },
+  "formal/Benitoite/Surface/CheckPatterns.lean": {
+    "bytes": 14321,
+    "sha256": "53eb52ccbfd3986cd2cbe3b51b9669b5665eae5e6cd33f5b121b0eab9e011223"
+  },
+  "formal/Benitoite/Surface/CheckPredicates.lean": {
+    "bytes": 26316,
+    "sha256": "1e8ffc9558fa219bfb855bf6cd8ca467ca9bd1d0053a4d4310c0c7417f4881b4"
+  },
+  "formal/Benitoite/Surface/CheckProgramSound.lean": {
+    "bytes": 13132,
+    "sha256": "b4328c849c950e0cef3ac5bc5802904988897c3ef21fed72f50252c1a3b4a0ec"
+  },
+  "formal/Benitoite/Surface/CheckRanges.lean": {
+    "bytes": 10422,
+    "sha256": "0a43c7a4a82ec2a56bdeebdbffd7aae9711d39b4ffb0f682faacb867bf543f1c"
+  },
+  "formal/Benitoite/Surface/CheckSound.lean": {
+    "bytes": 6623,
+    "sha256": "9c59af9b3cd93ce6dcaa2224d115762a2ad7c7756e91a1525c44b2c2649e0a7d"
+  },
+  "formal/Benitoite/Surface/CheckSoundBasicExpr.lean": {
+    "bytes": 25003,
+    "sha256": "2a6e8262562191e53e3ea5704b02bd14659b016c1e0b43c4244f75163bc97082"
+  },
+  "formal/Benitoite/Surface/CheckSoundCalls.lean": {
+    "bytes": 14850,
+    "sha256": "833dd521ea3fd89c8a54e2562cc9fd48435f5a67d33bb97a328e5dbf613f88fc"
+  },
+  "formal/Benitoite/Surface/CheckSoundCollections.lean": {
+    "bytes": 11724,
+    "sha256": "a3e514295bdb8a560a3ecf95daec511ea6914de5a042e93cbdef039a22df9eb5"
+  },
+  "formal/Benitoite/Surface/CheckSoundControl.lean": {
+    "bytes": 27250,
+    "sha256": "a70aafeb7f0272c485adc392dad81b4624ca89694d7da0bef956233f721c815d"
+  },
+  "formal/Benitoite/Surface/CheckSoundDicts.lean": {
+    "bytes": 11353,
+    "sha256": "f961c084a3ac64a643de766054c89c076e5e9ebea120755187909de5fcaad9cb"
+  },
+  "formal/Benitoite/Surface/CheckSoundDie.lean": {
+    "bytes": 9542,
+    "sha256": "1567b82b830f51ea8623a139f8074564064f29964119a31efaa397fc3522b42c"
+  },
+  "formal/Benitoite/Surface/CheckSoundSequence.lean": {
+    "bytes": 11752,
+    "sha256": "443b574e8db4d29a37d58b30db5c51f7c168fa45586623d7a218f004593e9d49"
+  },
+  "formal/Benitoite/Surface/CheckSupport.lean": {
+    "bytes": 10947,
+    "sha256": "d951f69a2f8522ae4868a3ace0d4a19420a5ee209897e4a8474e59be85715603"
+  },
+  "formal/Benitoite/Surface/CheckTables.lean": {
+    "bytes": 10352,
+    "sha256": "437f701f92c627498f07d612680287e2cdebd080143ea4326aea1221a320b2a3"
+  },
+  "formal/Benitoite/Surface/CheckTablesSound.lean": {
+    "bytes": 4752,
+    "sha256": "0cad57b370dee554b0e790f988414d07490887fc9cf4ade741a924a1b7158d53"
+  },
+  "formal/Benitoite/Surface/CheckTools.lean": {
+    "bytes": 12320,
+    "sha256": "61670e77102fcb9f833b457a6b017dfc6a4653ad8fe23101443bf6b8bc376c71"
+  },
+  "formal/Benitoite/Surface/CheckToolsExamples.lean": {
+    "bytes": 27901,
+    "sha256": "a7b7d224bb7a9e373f62f9b7124e64a96e63e165ce88f89258c2a83bd0f487f6"
+  },
+  "formal/Benitoite/Surface/ClauseIxExamples.lean": {
+    "bytes": 8671,
+    "sha256": "9999bcdc18cd728b5817d6a27eaa50047704e8f37a9b976744128ff372242b48"
+  },
+  "formal/Benitoite/Surface/ClauseIxRule.lean": {
+    "bytes": 10635,
+    "sha256": "67dd9a87c710b7303ecf2075263fcbe42d83e98042738ec54a870d045251ef3a"
+  },
+  "formal/Benitoite/Surface/CoverExamples.lean": {
+    "bytes": 32702,
+    "sha256": "d88e0ffbf6a79dce335f4fc2c2f79aefcae83074bdfa1c65adead7141a542594"
+  },
+  "formal/Benitoite/Surface/Desugar.lean": {
+    "bytes": 37955,
+    "sha256": "93e7e5352951cb0c8a561fcd0d658d339f30096835df64b8416eb5e820be51d1"
+  },
+  "formal/Benitoite/Surface/DesugarRange.lean": {
+    "bytes": 10472,
+    "sha256": "dc3cf4c0be79606ff1240cae548e0923b8f3c36202d9f1e653a9a146ea91e7ca"
+  },
+  "formal/Benitoite/Surface/Examples.lean": {
+    "bytes": 33676,
+    "sha256": "86172acd32a4805041361529729cf932598c327651e4eca1991e4d1dbf6c0e4c"
+  },
+  "formal/Benitoite/Surface/FailureExamples.lean": {
+    "bytes": 9470,
+    "sha256": "29bc8d1628fd5e125777f43e7a96b539c638a546a34676961b2bb1254b6773c0"
+  },
+  "formal/Benitoite/Surface/FiniteExamples.lean": {
+    "bytes": 3352,
+    "sha256": "68744cebc36f97765e55ac8a307439e420f093724b4835714bd7f998baef9f1d"
+  },
+  "formal/Benitoite/Surface/FinitePredicates.lean": {
+    "bytes": 6670,
+    "sha256": "2b0e48d77f210c2c8925a01dd61dcae01ec57619d7fb74a7b057573245b9965b"
+  },
+  "formal/Benitoite/Surface/FiniteTools.lean": {
+    "bytes": 14518,
+    "sha256": "0aa3ed4fefd8aed64d080f64a7079834f0da837140da0e12c142967a4f2a923c"
+  },
+  "formal/Benitoite/Surface/FormatSpec.lean": {
+    "bytes": 8398,
+    "sha256": "62d0ac57e076242e5614751471664c8eec58a5e1fe5bc988e0aca6243df5d025"
+  },
+  "formal/Benitoite/Surface/Lemmas/BlockSequence.lean": {
+    "bytes": 4861,
+    "sha256": "b41614a3960170a37f44f7056a6bcf19e334b7efb0eda370ae97836de95f7eaa"
+  },
+  "formal/Benitoite/Surface/Lemmas/BuilderCapture.lean": {
+    "bytes": 19768,
+    "sha256": "93b0999c5573a5db47c180660afc6783f7200eba86926a48ca1657715647a81c"
+  },
+  "formal/Benitoite/Surface/Lemmas/BuilderCaptureAll.lean": {
+    "bytes": 12681,
+    "sha256": "e4c32aa8652f207585f198241933b37b784995a468b9de77b424275fc3f2e475"
+  },
+  "formal/Benitoite/Surface/Lemmas/BuilderCaptureCompose.lean": {
+    "bytes": 13570,
+    "sha256": "16da4ba46dc57c62517bb128732d91651f3e1b63eb9dd6ef308ec1da461663d4"
+  },
+  "formal/Benitoite/Surface/Lemmas/BuilderLower.lean": {
+    "bytes": 3301,
+    "sha256": "91f6fbaddbdd6bf059ad7d583b6e3177122772afb3c7d48adc14fdf96038daef"
+  },
+  "formal/Benitoite/Surface/Lemmas/BuilderNoCapture.lean": {
+    "bytes": 23699,
+    "sha256": "10580dc7959864546441b96d2856b5ee279380208f9b48a3e16b3bad33668cb2"
+  },
+  "formal/Benitoite/Surface/Lemmas/Builders.lean": {
+    "bytes": 3706,
+    "sha256": "4954bc7bcd5deb84444ecdc1a2be0ba16baa9ce46e368367466eb348cd97a4bc"
+  },
+  "formal/Benitoite/Surface/Lemmas/CallHead.lean": {
+    "bytes": 13318,
+    "sha256": "2587fe8cd3da8d316bcd7bcc85ea7f1e5b578cee4cba2c51aa6621b430798c80"
+  },
+  "formal/Benitoite/Surface/Lemmas/Calls.lean": {
+    "bytes": 16282,
+    "sha256": "043b8859605469b522e2338e622e7801c9a6490069aa83679095e5105c1fa923"
+  },
+  "formal/Benitoite/Surface/Lemmas/Dict.lean": {
+    "bytes": 5953,
+    "sha256": "c4efdd82417c4c810185df8917f1f3802c568a6cc24a73ef7538f16796912431"
+  },
+  "formal/Benitoite/Surface/Lemmas/DictSupport.lean": {
+    "bytes": 1537,
+    "sha256": "795b19036fc1d20f1b38c5a652b33c1a003ee796046ab690ca2451cbcac55276"
+  },
+  "formal/Benitoite/Surface/Lemmas/Extensions.lean": {
+    "bytes": 11969,
+    "sha256": "8c549012224860a3a1fbbe6475cb8f957d2599af0f32e64c194f24ad52dfa45a"
+  },
+  "formal/Benitoite/Surface/Lemmas/ExtensionsScoped.lean": {
+    "bytes": 6276,
+    "sha256": "83c6f2e4d67d56f9866d2421f0037aadde9d37f19e7cfb8ca920a304f1c2995d"
+  },
+  "formal/Benitoite/Surface/Lemmas/Invariants.lean": {
+    "bytes": 22507,
+    "sha256": "30e8c76806a1a11e3fc160a70db90af333fdcfbf0acc4d51c2d63bbb63823ba9"
+  },
+  "formal/Benitoite/Surface/Lemmas/NoFailSignature.lean": {
+    "bytes": 1049,
+    "sha256": "44b0f36307d1e4f2ddff4d1b3ebf11cd46b25a5b432dcdf80eba0f8d480c08e0"
+  },
+  "formal/Benitoite/Surface/Lemmas/PatternSupport.lean": {
+    "bytes": 3149,
+    "sha256": "79ae185124b15c38d9c0027107af4ce2b22a0f8528dc592efa47a86e8911682c"
+  },
+  "formal/Benitoite/Surface/Lemmas/Patterns.lean": {
+    "bytes": 3565,
+    "sha256": "0c3f76b3880747f6ceba7fe085c3dd83d136a03da90b63ea9708e61d9b7402cf"
+  },
+  "formal/Benitoite/Surface/Lemmas/Program.lean": {
+    "bytes": 10787,
+    "sha256": "af7a306b50a69381a3b6e43b92755d10e778763182037d103022226754d80662"
+  },
+  "formal/Benitoite/Surface/Lemmas/Records.lean": {
+    "bytes": 13647,
+    "sha256": "a9377946f65ed517ffaf0b3d2ff5ce1fdd42386bade2fb805bfc3fc8c134d0bd"
+  },
+  "formal/Benitoite/Surface/Lemmas/ReturnTry.lean": {
+    "bytes": 20296,
+    "sha256": "3b41b0e72e5d89ec99a74b9a9ddfa67f70d2a713ac0d2b84e9ec59f2cb28bebd"
+  },
+  "formal/Benitoite/Surface/Lemmas/Scoped.lean": {
+    "bytes": 18618,
+    "sha256": "6fcafdefd4619edd1b2b095a9588f4ce25b52db65862f90c9e5d9e66259d2fdb"
+  },
+  "formal/Benitoite/Surface/Lemmas/ScopedRename.lean": {
+    "bytes": 1477,
+    "sha256": "9b438324aadb174f845ffc6126cacb18712cb6bdb140a6d1407f20267268624c"
+  },
+  "formal/Benitoite/Surface/Lemmas/ScopedSupport.lean": {
+    "bytes": 7826,
+    "sha256": "795519ed7337e0b7db632be638b7a8e30271c74b35af75ba60ffec69068c1984"
+  },
+  "formal/Benitoite/Surface/Lemmas/Sequence.lean": {
+    "bytes": 18695,
+    "sha256": "a23f266b16b9361ed7e1092523d0948dbd96eba5a523ce3249002c53d8223dfb"
+  },
+  "formal/Benitoite/Surface/Lemmas/ShiftClean.lean": {
+    "bytes": 4042,
+    "sha256": "43801b9dc5afe09ac14b9731c9fa4778366f3b4f79068dc575fa7ccc513ecf93"
+  },
+  "formal/Benitoite/Surface/Lemmas/SubstClean.lean": {
+    "bytes": 1762,
+    "sha256": "0dbda30347439d7af1e5ecfc1ddfd727984c560b5366ed66673f1ac629ba22df"
+  },
+  "formal/Benitoite/Surface/Lemmas/Typing.lean": {
+    "bytes": 64819,
+    "sha256": "1cea491e276a00767840c5d1f41e6adbd4993695dc866f057cab505dbb143f62"
+  },
+  "formal/Benitoite/Surface/LogExamples.lean": {
+    "bytes": 7326,
+    "sha256": "cc9e0e32552730e24f9de761d334737ae720a4e165bb918176dcfcee606fcc33"
+  },
+  "formal/Benitoite/Surface/Monad2Examples.lean": {
+    "bytes": 24537,
+    "sha256": "9d58b68c59852379f58ebdb883c06fcbce85c3cac8641a94acd7b0f56e8c15bd"
+  },
+  "formal/Benitoite/Surface/NoFailCheck.lean": {
+    "bytes": 6978,
+    "sha256": "8575a01f1ca8b940b83db8c4c87e8b14b1f08ffa8bd206b3fc02bc7ae35917b1"
+  },
+  "formal/Benitoite/Surface/NoFailCheckExamples.lean": {
+    "bytes": 2433,
+    "sha256": "f37bc24a2a98b1bda12b1004075d745863c85f6c266455998573fd8304c69710"
+  },
+  "formal/Benitoite/Surface/PrimRange.lean": {
+    "bytes": 4932,
+    "sha256": "cb68a2e42056114761318136cc71c09488b2f2606367c2d8670ee729f8535224"
+  },
+  "formal/Benitoite/Surface/RangeFree.lean": {
+    "bytes": 3700,
+    "sha256": "499782dbd0183437665ed9a59730dd699e934dcde54f3b15da3ded253d8faa4c"
+  },
+  "formal/Benitoite/Surface/ScopeAccept.lean": {
+    "bytes": 29628,
+    "sha256": "f87e008eb503ed081423b224a6c4983bd980dc76f02031307e27dbfae9d346ab"
+  },
+  "formal/Benitoite/Surface/ScopeAcceptExamples.lean": {
+    "bytes": 15104,
+    "sha256": "6e7b90eb5d302ce1f9fae7f9caf7a8a0e55c38f813d185b9db24f5c9db1341bb"
+  },
+  "formal/Benitoite/Surface/ScopeLower.lean": {
+    "bytes": 60518,
+    "sha256": "170f6d03112744fe3bad7dcf586b14f902ad64eca5a1b0eb7c93ffb91a68e39c"
+  },
+  "formal/Benitoite/Surface/ScopeLowerExamples.lean": {
+    "bytes": 16611,
+    "sha256": "5b00023a5985e898bd2af3e472afb30386aad414463f1a4cbd7dbd16ae49fcc4"
+  },
+  "formal/Benitoite/Surface/ScopeOccurrence.lean": {
+    "bytes": 24171,
+    "sha256": "d7e4c693d1b263fbce13cb71c84a7d168592bf2a442d86166afb083a0413aa36"
+  },
+  "formal/Benitoite/Surface/ScopeSound.lean": {
+    "bytes": 47314,
+    "sha256": "627459ef4b5b129688e34fc59f592fc695f47f0bd05680533e7f6d1b6c871fe2"
+  },
+  "formal/Benitoite/Surface/ScopeSoundExamples.lean": {
+    "bytes": 16706,
+    "sha256": "288b0e9b12e686400ff09863bb579550552fc68dd5889cde2cd7d4cc20120c65"
+  },
+  "formal/Benitoite/Surface/ScopeState.lean": {
+    "bytes": 69597,
+    "sha256": "69401ab02c9fdc804f52b353e93a663bb94453416fa1c5e09d3db489183a5754"
+  },
+  "formal/Benitoite/Surface/ScopeStateExamples.lean": {
+    "bytes": 12006,
+    "sha256": "ffa65573354f3b3176aeb37cb20e1821d1ef7efeb2c394f4dcc354a34e1e001c"
+  },
+  "formal/Benitoite/Surface/SingleFail.lean": {
+    "bytes": 1235,
+    "sha256": "b57ca666f2d1b337f2908d532d96bab6041cb2107c3d3695186f0204a2de0ae2"
+  },
+  "formal/Benitoite/Surface/SingleFailCheck.lean": {
+    "bytes": 3591,
+    "sha256": "42e555a2e25996d47c2117be8ca494a71bc2b181976c54fc9d961bfd670335c6"
+  },
+  "formal/Benitoite/Surface/Syntax.lean": {
+    "bytes": 34144,
+    "sha256": "6b34b2886298a780ea4128840c6102265787d9660891d02aae823999f79ec872"
+  },
+  "formal/Benitoite/Surface/Theorems.lean": {
+    "bytes": 4173,
+    "sha256": "53028dde141fefd594cc2b89454ae75196254d5996e50468096d5c7d19195c8d"
+  },
+  "formal/Benitoite/Surface/Typing.lean": {
+    "bytes": 84145,
+    "sha256": "9df31b7955fccc0511505630b998ecff9d7169841b616f3c96b2f671b1a7bc40"
+  },
+  "formal/Benitoite/Surface/WellFormed.lean": {
+    "bytes": 10570,
+    "sha256": "cbcfe54d9e42929d9c2fd45f137ae65a3bdf24b232f1acfd7f10ca9db5a084da"
+  },
+  "formal/Benitoite.lean": {
+    "bytes": 10322,
+    "sha256": "55996fb545d7a687aaf32c6506a2812a603f1268b3237bf5c6be62509a532310"
+  },
+  "formal/BuiltinCheck/Main.lean": {
+    "bytes": 11603,
+    "sha256": "18a171241afcb977d4afe380c7830331dc0bbe242b927fb1f5d6ce45cc33fb6c"
+  },
+  "formal/CoverageDiff/Main.lean": {
+    "bytes": 15887,
+    "sha256": "0c218ada126b6d727ad7365d93e9c59785e53be0020f8afbe23e28f222516518"
+  },
+  "formal/CoverageProgramDiff/Main.lean": {
+    "bytes": 7794,
+    "sha256": "2deaaa8b447747df3cbc9ec97ee9ae25f8bf064b0c2c77694545567853643b26"
+  },
+  "formal/DesugarDiff/Main.lean": {
+    "bytes": 25660,
+    "sha256": "e25d3bb243c9965da4a0a31ecb50d4478b8312d26ecca36aabf20913c14e00a8"
+  },
+  "formal/IntervalDiff/Main.lean": {
+    "bytes": 2139,
+    "sha256": "ff18fc76ace85183e39ca2b845bed2ba9946ab730cbec8f59fc2e1fb8bcbf1a8"
+  },
+  "formal/SurfaceCheck/All.lean": {
+    "bytes": 488,
+    "sha256": "c9040d09339c160bfa1f673cf10735a22f34e8e1c12d2e0eb8a3f87b4b5ad286"
+  },
+  "formal/SurfaceCheck/Batch.lean": {
+    "bytes": 13634,
+    "sha256": "d6232104263406b6e1c09ccb0250777e7e6b0a0d3ccda77319140c6247757bcc"
+  },
+  "formal/SurfaceCheck/Main.lean": {
+    "bytes": 6427,
+    "sha256": "c6c37446e72d63658a898478ce66d72a2690b2738b5bb22cb6c2171de6db2d2e"
+  },
+  "formal/SurfaceCheck/Validation.lean": {
+    "bytes": 4212,
+    "sha256": "59166ece078b813f5d20dd09d7bc8954d315337dfff84e9e43bfbb09f8ad163a"
+  },
+  "formal/SurfaceCheck/Walk.lean": {
+    "bytes": 9984,
+    "sha256": "14147693241fe11639c3a6df9eabc7bb9c65c4625f5eec5a3c61def893aec274"
+  },
+  "formal/lake-manifest.json": {
+    "bytes": 152,
+    "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+  },
+  "formal/lakefile.toml": {
+    "bytes": 872,
+    "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+  },
+  "formal/lean-toolchain": {
+    "bytes": 25,
+    "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+  },
+  "scripts/check.sh": {
+    "bytes": 35885,
+    "sha256": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34"
+  }
+}

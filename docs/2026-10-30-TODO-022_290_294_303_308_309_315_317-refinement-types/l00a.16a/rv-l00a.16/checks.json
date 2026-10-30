@@ -1,0 +1,29 @@
+{
+  "freshness": {
+    "command": [
+      "lake",
+      "build",
+      "--no-build"
+    ],
+    "cwd": "formal",
+    "exit_code": 0,
+    "elapsed_seconds": 0.14938141700000002,
+    "log": "freshness.log",
+    "recorded_at": "2026-10-31T00:33:06.719365+09:00"
+  },
+  "dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "9863c0141511dc225aff9ec787a4b733d65a9431",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start_utc": "2026-10-30T15:39:42.425632+00:00",
+    "elapsed_seconds": 0.10851608300000001,
+    "exit_code": 0,
+    "log": "dry-run.log"
+  }
+}
