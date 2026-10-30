@@ -1,0 +1,22 @@
+-- 意味上の前提を、本物の P1 の部分型規則・被覆から作る導入方向。
+-- F3 を経た関数の構文的な逆転と呼出しの保存は別の未完了の命題。
+theorem Subtype.of_rules {Φ : Path V} {a b : STy V}
+    (h : ∀ w η, TyLe w η Φ a b) : Subtype Φ a b := by
+  intro w η
+  exact (h w η).sound
+
+theorem VTy.sub_from_rules {D : CodeSig} {Ψ : StoreTy} {Γ : Ctx V} {Φ : Path V}
+    {v : SVal V} {a b : STy V} (hv : VTy D Ψ Γ Φ v a)
+    (h : ∀ w η, TyLe w η Φ a b) : VTy D Ψ Γ Φ v b :=
+  .V_Sub hv (Subtype.of_rules h)
+
+theorem CTy.sub_from_rules {D : CodeSig} {Ψ : StoreTy} {Γ : Ctx V} {Φ : Path V}
+    {m : SComp V} {a b : STy V} {e f : SEff V} (hm : CTy D Ψ Γ Φ m a e)
+    (h : ∀ w η, TyLe w η Φ a b) (he : ∀ η, Eff.Covers η f e) :
+    CTy D Ψ Γ Φ m b f := by
+  apply CTy.C_Sub hm (Subtype.of_rules h)
+  intro w η ρ _ ev hv
+  exact Eff.covers_sound w η ρ (he η) hv
+
+#print axioms VTy.sub_from_rules
+#print axioms CTy.sub_from_rules

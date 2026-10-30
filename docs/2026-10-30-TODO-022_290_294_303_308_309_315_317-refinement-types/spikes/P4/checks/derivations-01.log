@@ -1,0 +1,94 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:135:37: error: unexpected token 'opaque'; expected '_' or identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:135:44: error: unexpected token '|'; expected identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:135:44: error: unexpected token '|'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:174:4: error(lean.inductiveParamMismatch): Mismatched inductive type parameter in
+  TelLe (b.assume ++ List.map Pred.lift Φ) as bs
+The provided argument
+  b.assume ++ List.map Pred.lift Φ
+is not definitionally equal to the expected parameter
+  Φ
+
+Note: The value of parameter `Φ` must be fixed throughout the inductive declaration. Consider making this parameter an index if it must vary.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:207:3: error: unexpected token 'opaque'; expected '_' or identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:193:30: error: Function expected at
+  TyLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Φ
+
+Hint: The identifier `TyLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:194:48: error: Function expected at
+  TyLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Ψ
+
+Hint: The identifier `TyLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:207:12: error: unexpected token '=>'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:207:43: error: unexpected token '|'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:233:3: error: unexpected token 'opaque'; expected '_' or identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:215:31: error: Function expected at
+  TelLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Φ
+
+Hint: The identifier `TelLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:215:78: error: Function expected at
+  TelLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Ψ
+
+Hint: The identifier `TelLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:216:12: error(lean.unknownIdentifier): Unknown identifier `TyLe`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:215:93: error: unsolved goals
+x✝ : Sort u_1
+TelLe : x✝
+Φ : ?m.15
+a : ?m.16
+b : ?m.17
+h : sorry
+Ψ : List Pred
+hm : ∀ (p : Pred), p ∈ Φ → Entails Ψ p
+hh : sorry
+⊢ sorry
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:233:12: error: unexpected token '=>'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:233:43: error: unexpected token '|'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:276:3: error: unexpected token 'opaque'; expected '_' or identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:253:31: error: Function expected at
+  TyLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  Φ
+
+Hint: The identifier `TyLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:254:4: error: Function expected at
+  TyLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (Φ.map (Pred.bind θ.values))
+
+Hint: The identifier `TyLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:276:12: error: unexpected token '=>'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:276:38: error: unexpected token '('; expected identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:276:56: error: unexpected token '|'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:285:14: error(lean.unknownIdentifier): Unknown constant `TyLe.bind`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:286:14: error(lean.unknownIdentifier): Unknown constant `TyLe.cut`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:287:14: error(lean.unknownIdentifier): Unknown constant `TelLe.cut`
+'P4.Derivation.Covers.bind' depends on axioms: [propext]
+'P4.Derivation.TyQ.assume_bind' depends on axioms: [propext, sorryAx]
+        0.74 real         0.43 user         0.35 sys
+time: sysctl kern.clockrate: Operation not permitted

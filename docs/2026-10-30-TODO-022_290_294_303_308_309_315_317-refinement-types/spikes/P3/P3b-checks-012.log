@@ -1,0 +1,70 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:996:69: error: unsolved goals
+T T' E E' R R' V V' : Type
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+⊢ { types := fun x => Ty.map id id id some ((«renaming» t e r v).types x),
+      rows := fun x => Eff.map id id id some ((«renaming» t e r v).rows x), ranges := («renaming» t e r v).ranges,
+      values := upExpr («renaming» t e r v).values } =
+    «renaming» t e r (Option.map v)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:997:12: error: unexpected token 'renaming'; expected command
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1009:31: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1009:14: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1010:36: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1010:19: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1011:34: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1011:17: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:36: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:16: error: unsolved goals
+case refined
+T E R V T' E' R' V' : Type
+a : Ty T E R V
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+b : Ty T E R V
+p : Pred (Option V)
+ha : a = b.refined p
+⊢ Ty.bind { types := Ty.var ∘ t, rows := Eff.row ∘ e, ranges := Ix.var ∘ r, values := Expr.var ∘ v } (b.refined p) =
+    Ty.map t e r v (b.refined p)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1013:30: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1013:13: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1022:31: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1022:14: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1023:34: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1023:17: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1029:33: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1029:16: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1030:37: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1030:20: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1037:36: error(lean.unknownIdentifier): Unknown identifier `map`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1037:19: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1014:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1024:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1031:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1038:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:30: warning: This simp argument is unused:
+  bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [map, Ty.bind_renaming b, Sub.renaming, upExpr_renaming]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:41: warning: This simp argument is unused:
+  Ty.bind_renaming b
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, map, Sub.renaming, upExpr_renaming]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:75: warning: This simp argument is unused:
+  upExpr_renaming
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [bind, map, Ty.bind_renaming b, Sub.renaming]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        2.86 real         3.59 user         0.24 sys
+time: sysctl kern.clockrate: Operation not permitted

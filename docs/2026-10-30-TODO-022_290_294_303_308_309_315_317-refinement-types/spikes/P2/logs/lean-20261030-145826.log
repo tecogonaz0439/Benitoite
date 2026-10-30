@@ -1,0 +1,25 @@
+'P2.normalize_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.derive_sound' depends on axioms: [propext, Quot.sound]
+'P2.refute_sound' depends on axioms: [propext, Quot.sound]
+'P2.check_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.implication_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.purify_formula_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.source_check_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/RenderProbe.lean:564:24: error: Function expected at
+  1
+but this term has type
+  ?m.9
+
+Note: Expected a function because this term is being applied to the argument
+  (.close 0)
+P2.Cert.split 0 - sorry : ?m.7
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/RenderProbe.lean:565:26: error: Function expected at
+  1
+but this term has type
+  ?m.9
+
+Note: Expected a function because this term is being applied to the argument
+  ⟨[-1], -1⟩
+P2.Derive.round 0 - sorry : ?m.7
+        4.14 real         1.28 user         0.56 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,170 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:635:12: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case done
+w : World
+T✝ E✝ R✝ : Type
+η : Interp T✝ E✝ R✝
+a✝³ : Type
+Φ : (a✝³ → Value) → Prop
+a b : Ty T✝ E✝ R✝ a✝³
+x✝ : Type
+Φ✝ : (x✝ → Value) → Prop
+a✝² b✝ : Ty T✝ E✝ R✝ x✝
+g✝ f✝ : Eff T✝ E✝ R✝ x✝
+ha : TyLe w η Φ✝ a✝² b✝
+he : Eff.Covers η g✝ f✝
+ih : Ty.Subtype w η Φ✝ a✝² b✝
+ρ✝ : x✝ → Value
+a✝¹ : Φ✝ ρ✝
+vs✝ : List Value
+a✝ : Tel.Pre w η ρ✝ (Tel.done b✝ g✝) vs✝
+⊢ Tel.Pre w η ρ✝ (Tel.done a✝² f✝) vs✝ ∧
+    ∀ (result : Value) (trace : List Event),
+      Tel.Post w η ρ✝ (Tel.done a✝² f✝) vs✝ result trace → Tel.Post w η ρ✝ (Tel.done b✝ g✝) vs✝ result trace
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:640:13: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case param
+w : World
+T✝ E✝ R✝ : Type
+η : Interp T✝ E✝ R✝
+a✝³ : Type
+Φ✝ : (a✝³ → Value) → Prop
+a✝² b✝ : Ty T✝ E✝ R✝ a✝³
+V : Type
+Φ : (V → Value) → Prop
+b a : Ty T✝ E✝ R✝ V
+as bs : Tel T✝ E✝ R✝ (Option V)
+name : String
+hba : TyLe w η Φ b a
+hs : TelLe w η (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) b (ρ none)) as bs
+iarg : Ty.Subtype w η Φ b a
+irest :
+  ∀ (ρ : Option V → Value),
+    (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) b (ρ none)) ρ →
+      ∀ (vs : List Value),
+        Tel.Pre w η ρ bs vs →
+          Tel.Pre w η ρ as vs ∧
+            ∀ (result : Value) (trace : List Event),
+              Tel.Post w η ρ as vs result trace → Tel.Post w η ρ bs vs result trace
+ρ✝ : V → Value
+a✝¹ : Φ ρ✝
+vs✝ : List Value
+a✝ : Tel.Pre w η ρ✝ (Tel.param name b bs) vs✝
+⊢ Tel.Pre w η ρ✝ (Tel.param name a as) vs✝ ∧
+    ∀ (result : Value) (trace : List Event),
+      Tel.Post w η ρ✝ (Tel.param name a as) vs✝ result trace → Tel.Post w η ρ✝ (Tel.param name b bs) vs✝ result trace
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:647:13: error: Type mismatch
+  fun x x_1 x_2 x_3 => trivial
+has type
+  ∀ (x : ?m.411) (x_1 : ?m.415 x) (x_2 : ?m.416 x x_1) (x : ?m.417 x x_1 x_2), True
+but is expected to have type
+  Fields.Mem w η ρ✝ Fields.nil xs✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:649:13: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case cons
+w : World
+T✝ E✝ R✝ : Type
+η : Interp T✝ E✝ R✝
+a✝³ : Type
+Φ : (a✝³ → Value) → Prop
+a b : Ty T✝ E✝ R✝ a✝³
+x✝ : Type
+Φ✝ : (x✝ → Value) → Prop
+a✝² b✝ : Ty T✝ E✝ R✝ x✝
+as✝ bs✝ : Fields T✝ E✝ R✝ x✝
+n✝ : String
+ha : TyLe w η Φ✝ a✝² b✝
+hs : FieldsLe w η Φ✝ as✝ bs✝
+ia : Ty.Subtype w η Φ✝ a✝² b✝
+is : ∀ (ρ : x✝ → Value), Φ✝ ρ → ∀ (xs : List (String × Value)), Fields.Mem w η ρ as✝ xs → Fields.Mem w η ρ bs✝ xs
+ρ✝ : x✝ → Value
+a✝¹ : Φ✝ ρ✝
+xs✝ : List (String × Value)
+a✝ : Fields.Mem w η ρ✝ (Fields.cons n✝ a✝² as✝) xs✝
+⊢ Fields.Mem w η ρ✝ (Fields.cons n✝ b✝ bs✝) xs✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:695:13: error: Type mismatch
+  fun x x_1 x_2 x_3 => trivial
+has type
+  ∀ (x : ?m.628) (x_1 : ?m.632 x) (x_2 : ?m.633 x x_1) (x : ?m.634 x x_1 x_2), True
+but is expected to have type
+  Fields.Mem w η ρ✝ Fields.nil xs✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:697:13: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case cons
+w : World
+T✝ E✝ R✝ : Type
+η : Interp T✝ E✝ R✝
+a✝³ : Type
+Φ : (a✝³ → Value) → Prop
+a b : Tel T✝ E✝ R✝ a✝³
+x✝ : Type
+Φ✝ : (x✝ → Value) → Prop
+a✝² b✝ : Ty T✝ E✝ R✝ x✝
+as✝ bs✝ : Fields T✝ E✝ R✝ x✝
+n✝ : String
+ha : TyLe w η Φ✝ a✝² b✝
+hs : FieldsLe w η Φ✝ as✝ bs✝
+ia : Ty.Subtype w η Φ✝ a✝² b✝
+is : ∀ (ρ : x✝ → Value), Φ✝ ρ → ∀ (xs : List (String × Value)), Fields.Mem w η ρ as✝ xs → Fields.Mem w η ρ bs✝ xs
+ρ✝ : x✝ → Value
+a✝¹ : Φ✝ ρ✝
+xs✝ : List (String × Value)
+a✝ : Fields.Mem w η ρ✝ (Fields.cons n✝ a✝² as✝) xs✝
+⊢ Fields.Mem w η ρ✝ (Fields.cons n✝ b✝ bs✝) xs✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:732:12: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case done
+w : World
+T✝ E✝ R✝ : Type
+η : Interp T✝ E✝ R✝
+a✝³ : Type
+Φ : (a✝³ → Value) → Prop
+a b : Fields T✝ E✝ R✝ a✝³
+x✝ : Type
+Φ✝ : (x✝ → Value) → Prop
+a✝² b✝ : Ty T✝ E✝ R✝ x✝
+g✝ f✝ : Eff T✝ E✝ R✝ x✝
+ha : TyLe w η Φ✝ a✝² b✝
+he : Eff.Covers η g✝ f✝
+ih : Ty.Subtype w η Φ✝ a✝² b✝
+ρ✝ : x✝ → Value
+a✝¹ : Φ✝ ρ✝
+vs✝ : List Value
+a✝ : Tel.Pre w η ρ✝ (Tel.done b✝ g✝) vs✝
+⊢ Tel.Pre w η ρ✝ (Tel.done a✝² f✝) vs✝ ∧
+    ∀ (result : Value) (trace : List Event),
+      Tel.Post w η ρ✝ (Tel.done a✝² f✝) vs✝ result trace → Tel.Post w η ρ✝ (Tel.done b✝ g✝) vs✝ result trace
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:737:13: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case param
+w : World
+T✝ E✝ R✝ : Type
+η : Interp T✝ E✝ R✝
+a✝³ : Type
+Φ✝ : (a✝³ → Value) → Prop
+a✝² b✝ : Fields T✝ E✝ R✝ a✝³
+V : Type
+Φ : (V → Value) → Prop
+b a : Ty T✝ E✝ R✝ V
+as bs : Tel T✝ E✝ R✝ (Option V)
+name : String
+hba : TyLe w η Φ b a
+hs : TelLe w η (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) b (ρ none)) as bs
+iarg : Ty.Subtype w η Φ b a
+irest :
+  ∀ (ρ : Option V → Value),
+    (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) b (ρ none)) ρ →
+      ∀ (vs : List Value),
+        Tel.Pre w η ρ bs vs →
+          Tel.Pre w η ρ as vs ∧
+            ∀ (result : Value) (trace : List Event),
+              Tel.Post w η ρ as vs result trace → Tel.Post w η ρ bs vs result trace
+ρ✝ : V → Value
+a✝¹ : Φ ρ✝
+vs✝ : List Value
+a✝ : Tel.Pre w η ρ✝ (Tel.param name b bs) vs✝
+⊢ Tel.Pre w η ρ✝ (Tel.param name a as) vs✝ ∧
+    ∀ (result : Value) (trace : List Event),
+      Tel.Post w η ρ✝ (Tel.param name a as) vs✝ result trace → Tel.Post w η ρ✝ (Tel.param name b bs) vs✝ result trace
+        2.97 real         3.40 user         0.23 sys
+time: sysctl kern.clockrate: Operation not permitted

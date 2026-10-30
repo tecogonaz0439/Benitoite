@@ -1,0 +1,21 @@
+{
+  "started_utc": "2026-10-30T07:25:31.121372+00:00",
+  "source_sha256": "aec56e28b6e51cb541278045cb254a8bbcdfbeea2c77ff01873cacc833afd117",
+  "source_changed_during_check": false,
+  "command": [
+    "/usr/bin/time",
+    "-l",
+    "/bin/sh",
+    "-c",
+    "lake env lean -M 12288 \"$1\"; r=$?; echo \"$r\" > \"$2\"; exit \"$r\"",
+    "lean-check",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-checks-021-final.lean-exit"
+  ],
+  "cwd": "<repo>/formal",
+  "time_exit": 1,
+  "lean_exit": "0",
+  "elapsed_s": 3.7648636669999997,
+  "auxiliary_ru_maxrss_bytes": 837730304,
+  "time_l_rss_available": false
+}

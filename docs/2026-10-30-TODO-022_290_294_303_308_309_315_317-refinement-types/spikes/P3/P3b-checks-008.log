@@ -1,0 +1,85 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:786:9: error: unsolved goals
+case refl
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝ : Ty T E R V✝
+T'✝ E'✝ R'✝ V'✝ : Type
+θ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ' Φ' : Ctx T'✝ E'✝ R'✝ V'✝
+hv : Sub.Valid w θ Γ✝ Φ✝ Γ' Φ'
+⊢ TyLe w Γ' Φ' (Ty.bind θ a✝) (Ty.bind θ a✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:790:11: error: unsolved goals
+case forget
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝ : Ty T E R V✝
+p✝ : Pred (Option V✝)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ' Φ' : Ctx T'✝ E'✝ R'✝ V'✝
+hv : Sub.Valid w θ Γ✝ Φ✝ Γ' Φ'
+⊢ TyLe w Γ' Φ' (Ty.bind θ (a✝.refined p✝)) (Ty.bind θ a✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:806:14: error: unsolved goals
+case list
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝¹ b✝ : Ty T E R V✝
+a✝ : TyLe w Γ✝ Φ✝ a✝¹ b✝
+ih :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V✝ T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ✝ Φ✝ Γ' Φ' → TyLe w Γ' Φ' (Ty.bind θ a✝¹) (Ty.bind θ b✝)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ' Φ' : Ctx T'✝ E'✝ R'✝ V'✝
+hv : Sub.Valid w θ Γ✝ Φ✝ Γ' Φ'
+⊢ TyLe w Γ' Φ' (Ty.bind θ a✝¹.list) (Ty.bind θ b✝.list)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:810:16: error: unsolved goals
+case record
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝¹ b✝ : Fields T E R V✝
+a✝ : FieldsLe w Γ✝ Φ✝ a✝¹ b✝
+ih :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V✝ T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ✝ Φ✝ Γ' Φ' → FieldsLe w Γ' Φ' (Fields.bind θ a✝¹) (Fields.bind θ b✝)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ' Φ' : Ctx T'✝ E'✝ R'✝ V'✝
+hv : Sub.Valid w θ Γ✝ Φ✝ Γ' Φ'
+⊢ TyLe w Γ' Φ' (Ty.bind θ (Ty.record a✝¹)) (Ty.bind θ (Ty.record b✝))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:820:12: error: unsolved goals
+case fn
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝¹ b✝ : Tel T E R V✝
+a✝ : TelLe w Γ✝ Φ✝ a✝¹ b✝
+ih :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V✝ T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ✝ Φ✝ Γ' Φ' → TelLe w Γ' Φ' (Tel.bind θ a✝¹) (Tel.bind θ b✝)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ' Φ' : Ctx T'✝ E'✝ R'✝ V'✝
+hv : Sub.Valid w θ Γ✝ Φ✝ Γ' Φ'
+⊢ TyLe w Γ' Φ' (Ty.bind θ (Ty.fn a✝¹)) (Ty.bind θ (Ty.fn b✝))
+        2.79 real         3.38 user         0.23 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,12 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:117:5: error: unknown tactic
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:115:20: error: unsolved goals
+case and.true
+ρ : Env
+a b : Formula
+iha : ∀ (p : Bool), (normalize a p).Holds ρ ↔ if p = true then ¬a.Holds ρ else a.Holds ρ
+ihb : ∀ (p : Bool), (normalize b p).Holds ρ ↔ if p = true then ¬b.Holds ρ else b.Holds ρ
+⊢ ¬a.Holds ρ ∨ ¬b.Holds ρ ↔ a.Holds ρ → ¬b.Holds ρ
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:108:2: error: Alternative `or` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:108:2: error: Alternative `not` has not been provided
+        7.05 real         0.59 user         0.80 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,12 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Cases.lean:55:13: error: unsolved goals
+case succ.zero
+hi : sourceΓ[0 + 1]? = some (some sourceTy)
+⊢ Ty.WF 0 0 (Ty.base BaseTy.integer)
+'P4.Cases.closed_V_Sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Cases.moved_V_Sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Cases.sourceΓ_wf' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Cases.embedded_source' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Cases.list_source_predicate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Cases.bad_integer_not_entailed' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.69 real         0.41 user         0.35 sys
+time: sysctl kern.clockrate: Operation not permitted

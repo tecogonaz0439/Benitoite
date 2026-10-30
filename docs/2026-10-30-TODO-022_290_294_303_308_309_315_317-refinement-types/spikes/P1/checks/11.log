@@ -1,0 +1,10 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:281:0: error: failed to infer structural recursion:
+Cannot use parameters a of P1.Ty.mem_map, a of P1.Tel.post_map, a of P1.Eff.allows_map, a of P1.Tel.pre_map, and a of P1.Fields.mem_map:
+  failed to eliminate recursive application
+    Ty.mem_map w η ρ t e r v a x
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:376:0: error: failed to infer structural recursion:
+Cannot use parameters a of P1.Ty.mem_bind, a of P1.Tel.post_bind, a of P1.Eff.allows_bind, a of P1.Tel.pre_bind, and a of P1.Fields.mem_bind:
+  failed to eliminate recursive application
+    Ty.mem_bind w η ρ ρ' θ h a x
+        1.74 real         1.92 user         0.22 sys
+time: sysctl kern.clockrate: Operation not permitted

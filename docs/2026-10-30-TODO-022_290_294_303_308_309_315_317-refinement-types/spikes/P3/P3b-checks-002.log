@@ -1,0 +1,74 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:602:13: error: Dependent elimination failed: Failed to solve equation
+  f.atoms = a :: as✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:604:4: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:607:4: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:609:14: error: Dependent elimination failed: Failed to solve equation
+  f.atoms = a✝ :: as✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:611:30: error: Application type mismatch: The argument
+  h
+has type
+  a ∈ f✝.atoms
+but is expected to have type
+  ?m.223 ∈ ?m.224 ++ ?m.225
+in the application
+  List.mem_append.mp h
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:615:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:621:13: error: Dependent elimination failed: Failed to solve equation
+  f.fails = a :: as✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:622:17: error: Dependent elimination failed: Failed to solve equation
+  f.fails = a :: as✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:623:13: error: Dependent elimination failed: Failed to solve equation
+  f.fails = a :: as✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:624:103: error: Application type mismatch: The argument
+  h
+has type
+  a ∈ f.fails
+but is expected to have type
+  ?m.230 ∈ [?m.231]
+in the application
+  List.mem_singleton.mp h
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:626:30: error: Application type mismatch: The argument
+  h
+has type
+  a ∈ f✝.fails
+but is expected to have type
+  ?m.267 ∈ ?m.268 ++ ?m.269
+in the application
+  List.mem_append.mp h
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:630:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:640:48: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:654:43: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:666:43: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:669:50: error: Application type mismatch: The argument
+  cover_union_left ?m.476 a b
+has type
+  Covers ?m.476 (a.union b) a
+but is expected to have type
+  Covers (θ.pull w η ρ) i a
+in the application
+  cover_trans h (cover_union_left ?m.476 a b)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:670:50: error: Application type mismatch: The argument
+  cover_union_right ?m.498 a b
+has type
+  Covers ?m.498 (a.union b) b
+but is expected to have type
+  Covers (θ.pull w η ρ) i b
+in the application
+  cover_trans h (cover_union_right ?m.498 a b)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:672:1: warning: unused termination hints, function is not recursive
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:684:61: error: Application type mismatch: The argument
+  a
+has type
+  ?m.1
+but is expected to have type
+  Ty T E R V
+in the application
+  TyLe w Γ Φ ?m.6 a
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:727:4: error: Type mismatch: After simplification, term
+  eval_up θ.values (ρ ∘ some) ρ₀ he (ρ none)
+ has type
+  ∀ (x : Option V), @Eq (Option Value) (Expr.eval ρ (upExpr θ.values x)) (some (extend ρ₀ (ρ none) x))
+but is expected to have type
+  ∀ (x : Option V), @Eq (Option Value) (Expr.eval ρ (θ.up.values x)) (some (extend ρ₀ (ρ none) x))
+        2.73 real         3.26 user         0.22 sys
+time: sysctl kern.clockrate: Operation not permitted

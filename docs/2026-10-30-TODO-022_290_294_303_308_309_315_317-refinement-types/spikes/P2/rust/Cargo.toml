@@ -1,0 +1,10 @@
+[package]
+name = "p2-lia-spike"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# Standalone disposable crate: never a member of the production workspace.
+[workspace]
+
+[dependencies]

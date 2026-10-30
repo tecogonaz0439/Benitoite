@@ -1,0 +1,571 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:601:2: error: The `induction` tactic does not support the type `P3b.Eff` because it is mutually inductive
+
+Hint: Consider using the `cases` tactic instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:617:2: error: The `induction` tactic does not support the type `P3b.Eff` because it is mutually inductive
+
+Hint: Consider using the `cases` tactic instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:631:2: error: The `induction` tactic does not support the type `P3b.Eff` because it is mutually inductive
+
+Hint: Consider using the `cases` tactic instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:63: error: don't know how to synthesize implicit argument `R`
+  @Ix.eval ?m.390 η.ranges ib
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:71: error: don't know how to synthesize implicit argument `R`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:71: error: don't know how to synthesize implicit argument `E`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:71: error: don't know how to synthesize implicit argument `T`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:37: error: don't know how to synthesize implicit argument `R`
+  @Ix.eval ?m.390 η.ranges ia
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:45: error: don't know how to synthesize implicit argument `R`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:45: error: don't know how to synthesize implicit argument `E`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:45: error: don't know how to synthesize implicit argument `T`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:69: error: don't know how to synthesize implicit argument `R`
+  @Ix.eval ?m.390 η.ranges ib
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:77: error: don't know how to synthesize implicit argument `R`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:77: error: don't know how to synthesize implicit argument `E`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:77: error: don't know how to synthesize implicit argument `T`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:50: error: don't know how to synthesize implicit argument `R`
+  @Ix.eval ?m.390 η.ranges ia
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:58: error: don't know how to synthesize implicit argument `R`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:58: error: don't know how to synthesize implicit argument `E`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:58: error: don't know how to synthesize implicit argument `T`
+  @Interp.ranges ?m.388 ?m.389 ?m.390 η
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+η : Interp ?m.388 ?m.389 ?m.390
+ρ : ?m.391 → Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:6: error: don't know how to synthesize implicit argument `R`
+  @TyLe w ?m.388 ?m.389 ?m.390 ?m.391 Γ Φ (Ty.opaque n ia) (Ty.opaque n ib)
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:6: error: don't know how to synthesize implicit argument `E`
+  @TyLe w ?m.388 ?m.389 ?m.390 ?m.391 Γ Φ (Ty.opaque n ia) (Ty.opaque n ib)
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:6: error: don't know how to synthesize implicit argument `T`
+  @TyLe w ?m.388 ?m.389 ?m.390 ?m.391 Γ Φ (Ty.opaque n ia) (Ty.opaque n ib)
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:33: error: don't know how to synthesize implicit argument `R`
+  @Ty.opaque ?m.388 ?m.389 ?m.390 ?m.391 n ib
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:33: error: don't know how to synthesize implicit argument `E`
+  @Ty.opaque ?m.388 ?m.389 ?m.390 ?m.391 n ib
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:33: error: don't know how to synthesize implicit argument `T`
+  @Ty.opaque ?m.388 ?m.389 ?m.390 ?m.391 n ib
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:18: error: don't know how to synthesize implicit argument `R`
+  @Ty.opaque ?m.388 ?m.389 ?m.390 ?m.391 n ia
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:18: error: don't know how to synthesize implicit argument `E`
+  @Ty.opaque ?m.388 ?m.389 ?m.390 ?m.391 n ia
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:689:18: error: don't know how to synthesize implicit argument `T`
+  @Ty.opaque ?m.388 ?m.389 ?m.390 ?m.391 n ia
+context:
+w : World
+Γ Φ : Ctx ?m.388 ?m.389 ?m.390 ?m.391
+n : String
+ia ib : Ix ?m.390
+h : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → Range.Sub ?m.272 ?m.273
+htop : ∀ (η : Interp ?m.388 ?m.389 ?m.390) (ρ : ?m.391 → Value), Γ η ρ → Φ η ρ → ?m.284 = Range.top → ?m.289 = Range.top
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:688:16: error(lean.inferBinderTypeFailed): Failed to infer type of binder `η`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:687:18: error(lean.inferBinderTypeFailed): Failed to infer type of binder `η`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:682:31: error: don't know how to synthesize implicit argument `V`
+  @Pred.Holds (Option ?m.162) (extend ρ x) q
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+η : Interp ?m.159 ?m.160 ?m.161
+ρ : ?m.162 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:682:40: error: don't know how to synthesize implicit argument `V`
+  @extend ?m.162 ρ x
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+η : Interp ?m.159 ?m.160 ?m.161
+ρ : ?m.162 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:682:8: error: don't know how to synthesize implicit argument `V`
+  @Pred.Holds (Option ?m.162) (extend ρ x) p
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+η : Interp ?m.159 ?m.160 ?m.161
+ρ : ?m.162 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:682:17: error: don't know how to synthesize implicit argument `V`
+  @extend ?m.162 ρ x
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+η : Interp ?m.159 ?m.160 ?m.161
+ρ : ?m.162 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:683:6: error: don't know how to synthesize implicit argument `V`
+  @TyLe w ?m.159 ?m.160 ?m.161 ?m.162 Γ Φ (a.refined p) (b.refined q)
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+hp :
+  ∀ (η : Interp ?m.159 ?m.160 ?m.161) (ρ : ?m.162 → Value),
+    Γ η ρ → Φ η ρ → ∀ (x : Value), Ty.Mem w η ρ a x → ?m.127 → ?m.128
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:683:33: error: don't know how to synthesize implicit argument `V`
+  @Ty.refined ?m.159 ?m.160 ?m.161 ?m.162 b q
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+hp :
+  ∀ (η : Interp ?m.159 ?m.160 ?m.161) (ρ : ?m.162 → Value),
+    Γ η ρ → Φ η ρ → ∀ (x : Value), Ty.Mem w η ρ a x → ?m.127 → ?m.128
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:683:18: error: don't know how to synthesize implicit argument `V`
+  @Ty.refined ?m.159 ?m.160 ?m.161 ?m.162 a p
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+hp :
+  ∀ (η : Interp ?m.159 ?m.160 ?m.161) (ρ : ?m.162 → Value),
+    Γ η ρ → Φ η ρ → ∀ (x : Value), Ty.Mem w η ρ a x → ?m.127 → ?m.128
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:681:40: error: don't know how to synthesize implicit argument `V`
+  @Ty.Mem ?m.159 ?m.160 ?m.161 ?m.162 w η ρ a x
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+hab : TyLe w Γ Φ a b
+η : Interp ?m.159 ?m.160 ?m.161
+ρ : ?m.162 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:681:16: error(lean.inferBinderTypeFailed): Failed to infer type of binder `ρ`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:680:18: error: don't know how to synthesize implicit argument `V`
+  @TyLe w ?m.159 ?m.160 ?m.161 ?m.162 Γ Φ a b
+context:
+w : World
+Γ Φ : Ctx ?m.159 ?m.160 ?m.161 ?m.162
+a b : Ty ?m.159 ?m.160 ?m.161 ?m.162
+p q : Pred (Option ?m.162)
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:63: error: don't know how to synthesize implicit argument `V`
+  @Pred.Holds (Option ?m.101) (extend ρ x) p
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+η : Interp ?m.98 ?m.99 ?m.100
+ρ : ?m.101 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:72: error: don't know how to synthesize implicit argument `V`
+  @extend ?m.101 ρ x
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+η : Interp ?m.98 ?m.99 ?m.100
+ρ : ?m.101 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:47: error: don't know how to synthesize implicit argument `V`
+  @Ty.Mem ?m.98 ?m.99 ?m.100 ?m.101 w η ρ a x
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+η : Interp ?m.98 ?m.99 ?m.100
+ρ : ?m.101 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:47: error: don't know how to synthesize implicit argument `R`
+  @Ty.Mem ?m.98 ?m.99 ?m.100 ?m.101 w η ρ a x
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+η : Interp ?m.98 ?m.99 ?m.100
+ρ : ?m.101 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:47: error: don't know how to synthesize implicit argument `E`
+  @Ty.Mem ?m.98 ?m.99 ?m.100 ?m.101 w η ρ a x
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+η : Interp ?m.98 ?m.99 ?m.100
+ρ : ?m.101 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:47: error: don't know how to synthesize implicit argument `T`
+  @Ty.Mem ?m.98 ?m.99 ?m.100 ?m.101 w η ρ a x
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+η : Interp ?m.98 ?m.99 ?m.100
+ρ : ?m.101 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:6: error: don't know how to synthesize implicit argument `V`
+  @TyLe w ?m.98 ?m.99 ?m.100 ?m.101 Γ Φ a (a.refined p)
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:6: error: don't know how to synthesize implicit argument `R`
+  @TyLe w ?m.98 ?m.99 ?m.100 ?m.101 Γ Φ a (a.refined p)
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:6: error: don't know how to synthesize implicit argument `E`
+  @TyLe w ?m.98 ?m.99 ?m.100 ?m.101 Γ Φ a (a.refined p)
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:6: error: don't know how to synthesize implicit argument `T`
+  @TyLe w ?m.98 ?m.99 ?m.100 ?m.101 Γ Φ a (a.refined p)
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:20: error: don't know how to synthesize implicit argument `V`
+  @Ty.refined ?m.98 ?m.99 ?m.100 ?m.101 a p
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:20: error: don't know how to synthesize implicit argument `R`
+  @Ty.refined ?m.98 ?m.99 ?m.100 ?m.101 a p
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:20: error: don't know how to synthesize implicit argument `E`
+  @Ty.refined ?m.98 ?m.99 ?m.100 ?m.101 a p
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:679:20: error: don't know how to synthesize implicit argument `T`
+  @Ty.refined ?m.98 ?m.99 ?m.100 ?m.101 a p
+context:
+w : World
+Γ Φ : Ctx ?m.98 ?m.99 ?m.100 ?m.101
+a : Ty ?m.98 ?m.99 ?m.100 ?m.101
+p : Pred (Option ?m.101)
+h : ∀ (η : Interp ?m.98 ?m.99 ?m.100) (ρ : ?m.101 → Value), Γ η ρ → Φ η ρ → ∀ (x : Value), ?m.62 → ?m.63
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:23: error(lean.inferBinderTypeFailed): Failed to infer type of binder `ρ`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:678:21: error(lean.inferBinderTypeFailed): Failed to infer type of binder `η`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:720:7: error: unknown tactic
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:719:60: error: unsolved goals
+T E R V T' E' R' V' : Type
+w : World
+Γ Φ : Ctx T E R V
+Γ' Φ' : Ctx T' E' R' V'
+θ : Sub T E R V T' E' R' V'
+hv : Valid w θ Γ Φ Γ' Φ'
+b : Ty T E R V
+η : Interp T' E' R'
+ρ : Option V' → Value
+hΓ : Ctx.extend w Γ' (Ty.bind θ b) η ρ
+hΦ : Φ'.lift η ρ
+ρ₀ : V → Value
+he : ∀ (x : V), Expr.eval (ρ ∘ some) (θ.values x) = some (ρ₀ x)
+hΓ₀ : Γ (θ.pull w η (ρ ∘ some)) ρ₀
+hΦ₀ : Φ (θ.pull w η (ρ ∘ some)) ρ₀
+⊢ θ.up.pull w η ρ = θ.pull w η (ρ ∘ some)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:719:2: error: unsolved goals
+case refine_2
+T E R V T' E' R' V' : Type
+w : World
+Γ Φ : Ctx T E R V
+Γ' Φ' : Ctx T' E' R' V'
+θ : Sub T E R V T' E' R' V'
+hv : Valid w θ Γ Φ Γ' Φ'
+b : Ty T E R V
+η : Interp T' E' R'
+ρ : Option V' → Value
+hΓ : Ctx.extend w Γ' (Ty.bind θ b) η ρ
+hΦ : Φ'.lift η ρ
+ρ₀ : V → Value
+he : ∀ (x : V), Expr.eval (ρ ∘ some) (θ.values x) = some (ρ₀ x)
+hΓ₀ : Γ (θ.pull w η (ρ ∘ some)) ρ₀
+hΦ₀ : Φ (θ.pull w η (ρ ∘ some)) ρ₀
+hpull : θ.up.pull w η ρ = θ.pull w η (ρ ∘ some)
+⊢ Ctx.extend w Γ b (θ.up.pull w η ρ) (extend ρ₀ (ρ none))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:714:94: error: unsolved goals
+case refine_3
+T E R V T' E' R' V' : Type
+w : World
+Γ Φ : Ctx T E R V
+Γ' Φ' : Ctx T' E' R' V'
+θ : Sub T E R V T' E' R' V'
+hv : Valid w θ Γ Φ Γ' Φ'
+b : Ty T E R V
+η : Interp T' E' R'
+ρ : Option V' → Value
+hΓ : Ctx.extend w Γ' (Ty.bind θ b) η ρ
+hΦ : Φ'.lift η ρ
+ρ₀ : V → Value
+he : ∀ (x : V), Expr.eval (ρ ∘ some) (θ.values x) = some (ρ₀ x)
+hΓ₀ : Γ (θ.pull w η (ρ ∘ some)) ρ₀
+hΦ₀ : Φ (θ.pull w η (ρ ∘ some)) ρ₀
+⊢ Φ.lift (θ.up.pull w η ρ) (extend ρ₀ (ρ none))
+        2.80 real         3.24 user         0.22 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,110 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2069:73: error: unsolved goals
+ρ : Empty → Value
+a✝ : True
+⊢ Pred.Holds (extend ρ (Value.int 2))
+    (Pred.bind (upExpr (logicSub (extendSub emptyEnv (SVal.lit (Value.int 3)))))
+      ((Pred.le (Expr.lit (Value.int 0)) (Expr.var none)).and (Pred.le (Expr.var none) (Expr.var (some none)))))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2072:8: warning: This simp argument is unused:
+  yBound
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Pred.Holds, Expr.eval, upExpr, logicSub, extendSub, SVal.expr, SVal.eval, Expr.bind, Expr.rename,
+    extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2072:16: warning: This simp argument is unused:
+  Pred.Holds
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Expr.eval, upExpr, logicSub, extendSub, SVal.expr, SVal.eval, Expr.bind, Expr.rename, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2072:28: warning: This simp argument is unused:
+  Expr.eval
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, upExpr, logicSub, extendSub, SVal.expr, SVal.eval, Expr.bind, Expr.rename, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2072:39: warning: This simp argument is unused:
+  upExpr
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, logicSub, extendSub, SVal.expr, SVal.eval, Expr.bind, Expr.rename,
+    extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2072:47: warning: This simp argument is unused:
+  logicSub
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, upExpr, extendSub, SVal.expr, SVal.eval, Expr.bind, Expr.rename, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2072:57: warning: This simp argument is unused:
+  extendSub
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, upExpr, logicSub, SVal.expr, SVal.eval, Expr.bind, Expr.rename, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2073:4: warning: This simp argument is unused:
+  SVal.expr
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, upExpr, logicSub, extendSub, SVal.eval, Expr.bind, Expr.rename, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2073:26: warning: This simp argument is unused:
+  Expr.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, upExpr, logicSub, extendSub, SVal.expr, SVal.eval, Expr.rename, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2073:37: warning: This simp argument is unused:
+  Expr.rename
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, upExpr, logicSub, extendSub, SVal.expr, SVal.eval, Expr.bind, extend]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2073:50: warning: This simp argument is unused:
+  extend
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [yBound, Pred.Holds, Expr.eval, upExpr, logicSub, extendSub, SVal.expr, SVal.eval, Expr.bind,
+    Expr.rename]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2092:43: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.73 = ?m.73
+but is expected to have type
+  ctx2 Ty.int yBound ?m.70 = resultY
+in the application
+  VTy.V_Var rfl
+'P3.Concrete.dependent_function_beta' depends on axioms: [propext, sorryAx, Quot.sound]
+'P3.Concrete.dependent_fail_beta' depends on axioms: [propext, sorryAx]
+'P3.Concrete.allocate_and_write' depends on axioms: [propext, Quot.sound]
+'P3.Concrete.dependent_let_pop' depends on axioms: [propext, Quot.sound]
+'P3.VTy.subst' depends on axioms: [propext, Quot.sound]
+'P3.CTy.subst' depends on axioms: [propext, Quot.sound]
+'P3.ArgsTy.subst' depends on axioms: [propext, Quot.sound]
+'P3.function_beta_preservation' depends on axioms: [propext, Quot.sound]
+'P3.StoreOk.allocate' depends on axioms: [propext, Quot.sound]
+'P3.let_pop_preserves' depends on axioms: [propext, Quot.sound]
+        4.71 real         6.06 user         0.32 sys
+time: sysctl kern.clockrate: Operation not permitted

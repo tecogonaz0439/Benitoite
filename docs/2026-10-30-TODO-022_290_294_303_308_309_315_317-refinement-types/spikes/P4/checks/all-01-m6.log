@@ -1,0 +1,8 @@
+'P4.M6.one_key_correct' depends on axioms: [propext]
+'P4.M6.relaxed_length_correct' depends on axioms: [propext, Quot.sound]
+'P4.M6.checked_subtype' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.M6.PreparedLeaf.subtype' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.M6.length_subtype' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.M6.length_subtype_bind' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.64 real         0.37 user         0.29 sys
+time: sysctl kern.clockrate: Operation not permitted

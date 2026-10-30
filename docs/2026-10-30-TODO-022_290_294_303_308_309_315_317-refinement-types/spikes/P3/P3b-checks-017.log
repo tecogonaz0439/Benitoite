@@ -1,0 +1,17 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1341:4: error: Type mismatch: After simplification, term
+  Eq.symm heq
+ has type
+  some (ρ₀ ()) = do
+    let __x ← some (Value.int n)
+    match __x with
+      | Value.int x => do
+        let __x ← some (Value.int 1)
+        match __x with
+          | Value.int y => pure (Value.int (x + y))
+          | x => none
+      | x => none
+but is expected to have type
+  ρ₀ () = Value.int (n + 1)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1368:9: warning: declaration uses `sorry`
+        3.46 real         4.41 user         0.26 sys
+time: sysctl kern.clockrate: Operation not permitted

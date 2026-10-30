@@ -1,0 +1,704 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:784:86: error: Type mismatch
+  b
+has type
+  Ty T E R V
+but is expected to have type
+  Ty ?m.24 ?m.25 ?m.26 ?m.27
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:805:24: error(lean.invalidField): Invalid field `fail_invariant`: The environment does not contain `And.fail_invariant`, so it is not possible to project the field `fail_invariant` from an expression
+  h
+of type
+  (∀ (a : Atom E R), a ∈ (Eff.fail Nonneg).atoms → ∃ b, b ∈ (Eff.fail Ty.int).atoms ∧ Atom.Covers η b a) ∧
+    ∀ (a : Ty T E R V), a ∈ (Eff.fail Nonneg).fails → a ∈ (Eff.fail Ty.int).fails
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:804:63: error: unsolved goals
+T E R V : Type
+η : Interp T E R
+h : Eff.Covers η (Eff.fail Ty.int) (Eff.fail Nonneg)
+⊢ False
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:823:40: error(lean.unknownIdentifier): Unknown identifier `a.Subtype`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:825:62: error: Function expected at
+  ρ'
+but this term has type
+  ?m.41 ρ
+
+Note: Expected a function because this term is being applied to the argument
+  z
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:826:26: error: Function expected at
+  Φ
+but this term has type
+  ?m.11
+
+Note: Expected a function because this term is being applied to the argument
+  ρ'
+
+Hint: The identifier `Φ` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:826:35: error(lean.unknownIdentifier): Unknown identifier `a.bind`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:827:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+T E R V T' E' R' V' : Type
+w : World
+η : Interp T E R
+x✝ : Sort u_1
+Φ : x✝
+hsub : sorry
+θ : Sub T E R V T' E' R' V'
+η' : Interp T' E' R'
+Φ' : (V' → Value) → Prop
+ok : ∀ (ρ : V' → Value), Φ' ρ → ∃ ρ', (∀ (z : V), Expr.eval ρ (θ.values z) = some sorry) ∧ θ.pull w η' ρ = η ∧ sorry
+⊢ sorry
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `V'`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `R'`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `E'`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `T'`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `V`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `R`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `E`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:24: error: don't know how to synthesize implicit argument `T`
+  @Ty.bind ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) ?m.67 ?m.68 ?m.69 ?m.72 (Sub.valueOnly (substTwo x y)) r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:32: error: don't know how to synthesize implicit argument `R`
+  @Sub.valueOnly (Option (Option ?m.72)) ?m.72 ?m.67 ?m.68 ?m.69 (substTwo x y)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:32: error: don't know how to synthesize implicit argument `E`
+  @Sub.valueOnly (Option (Option ?m.72)) ?m.72 ?m.67 ?m.68 ?m.69 (substTwo x y)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:32: error: don't know how to synthesize implicit argument `T`
+  @Sub.valueOnly (Option (Option ?m.72)) ?m.72 ?m.67 ?m.68 ?m.69 (substTwo x y)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:32: error: don't know how to synthesize implicit argument `V'`
+  @Sub.valueOnly (Option (Option ?m.72)) ?m.72 ?m.67 ?m.68 ?m.69 (substTwo x y)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:32: error: don't know how to synthesize implicit argument `V`
+  @Sub.valueOnly (Option (Option ?m.72)) ?m.72 ?m.67 ?m.68 ?m.69 (substTwo x y)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:44: error: don't know how to synthesize implicit argument `V`
+  @substTwo ?m.72 x y
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:861:21: error: don't know how to synthesize implicit argument `V`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 (Option ?m.72) w η (extend ρ x) b y
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:861:21: error: don't know how to synthesize implicit argument `R`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 (Option ?m.72) w η (extend ρ x) b y
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:861:21: error: don't know how to synthesize implicit argument `E`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 (Option ?m.72) w η (extend ρ x) b y
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:861:21: error: don't know how to synthesize implicit argument `T`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 (Option ?m.72) w η (extend ρ x) b y
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:861:32: error: don't know how to synthesize implicit argument `V`
+  @extend ?m.72 ρ x
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:860:21: error: don't know how to synthesize implicit argument `V`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 ?m.72 w η ρ a x
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:860:21: error: don't know how to synthesize implicit argument `R`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 ?m.72 w η ρ a x
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:860:21: error: don't know how to synthesize implicit argument `E`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 ?m.72 w η ρ a x
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:860:21: error: don't know how to synthesize implicit argument `T`
+  @Ty.Mem ?m.67 ?m.68 ?m.69 ?m.72 w η ρ a x
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+ρ : ?m.72 → Value
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:13: error: don't know how to synthesize implicit argument `V`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) w η (ArgsTwo w η Φ a b) body r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:13: error: don't know how to synthesize implicit argument `R`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) w η (ArgsTwo w η Φ a b) body r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:13: error: don't know how to synthesize implicit argument `E`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) w η (ArgsTwo w η Φ a b) body r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:13: error: don't know how to synthesize implicit argument `T`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 (Option (Option ?m.72)) w η (ArgsTwo w η Φ a b) body r
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:29: error: don't know how to synthesize implicit argument `V`
+  @ArgsTwo ?m.67 ?m.68 ?m.69 ?m.72 w η Φ a b
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:29: error: don't know how to synthesize implicit argument `R`
+  @ArgsTwo ?m.67 ?m.68 ?m.69 ?m.72 w η Φ a b
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:29: error: don't know how to synthesize implicit argument `E`
+  @ArgsTwo ?m.67 ?m.68 ?m.69 ?m.72 w η Φ a b
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:29: error: don't know how to synthesize implicit argument `T`
+  @ArgsTwo ?m.67 ?m.68 ?m.69 ?m.72 w η Φ a b
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:4: error: don't know how to synthesize implicit argument `V`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 ?m.72 w η Φ reduct (Ty.bind (Sub.valueOnly (substTwo x y)) r)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:4: error: don't know how to synthesize implicit argument `R`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 ?m.72 w η Φ reduct (Ty.bind (Sub.valueOnly (substTwo x y)) r)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:4: error: don't know how to synthesize implicit argument `E`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 ?m.72 w η Φ reduct (Ty.bind (Sub.valueOnly (substTwo x y)) r)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:863:4: error: don't know how to synthesize implicit argument `T`
+  @Expr.Typed ?m.67 ?m.68 ?m.69 ?m.72 w η Φ reduct (Ty.bind (Sub.valueOnly (substTwo x y)) r)
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+hstep : BetaStep x y body reduct
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:862:13: error: don't know how to synthesize implicit argument `V`
+  @BetaStep x y ?m.72 body reduct
+context:
+Φ : (?m.72 → Value) → Prop
+x y : Value
+body : Expr (Option (Option ?m.72))
+reduct : Expr ?m.72
+w : World
+η : Interp ?m.67 ?m.68 ?m.69
+a : Ty ?m.67 ?m.68 ?m.69 ?m.72
+b : Ty ?m.67 ?m.68 ?m.69 (Option ?m.72)
+r : Ty ?m.67 ?m.68 ?m.69 (Option (Option ?m.72))
+hbody : Expr.Typed w η (ArgsTwo w η Φ a b) body r
+hx : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.14
+hy : ∀ (ρ : ?m.72 → Value), Φ ρ → ?m.19
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:861:12: error(lean.inferBinderTypeFailed): Failed to infer type of binder `ρ`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:860:12: error(lean.inferBinderTypeFailed): Failed to infer type of binder `ρ`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:859:5: error(lean.inferBinderTypeFailed): Failed to infer type of binder `hbody`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:866:76: error: Application type mismatch: The argument
+  hy ρ hρ
+has type
+  ?m.78 hbody hx ρ
+but is expected to have type
+  Ty.Mem w η (fun z => extend (extend ρ x) y (some z)) b (extend (extend ρ x) y none)
+in the application
+  ⟨?m.129, hy ρ hρ⟩
+        3.02 real         3.54 user         0.24 sys
+time: sysctl kern.clockrate: Operation not permitted

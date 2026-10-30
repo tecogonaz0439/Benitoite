@@ -1,0 +1,204 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:19:11: error: None of the deriving handlers for class `DecidableEq` applied to `Value`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:26:11: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Repr Value
+
+Hint: Adding the command `deriving instance Repr for P1.Value` may allow Lean to derive the missing instance.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:131:2: error: (kernel) invalid occurrence of datatype 'P1.Tel' being declared: it must be applied to the parameters and universe levels of the mutual declaration
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:166:6: error: Function expected at
+  Eff
+but this term has type
+  ?m.19
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Eff` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:166:20: error: Function expected at
+  Eff
+but this term has type
+  ?m.19
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Eff` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:173:6: error: Function expected at
+  Tel
+but this term has type
+  ?m.32
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Tel` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:173:20: error: Function expected at
+  Tel
+but this term has type
+  ?m.32
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Tel` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:177:6: error: Function expected at
+  Fields
+but this term has type
+  ?m.45
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Fields` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:177:23: error: Function expected at
+  Fields
+but this term has type
+  ?m.45
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Fields` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:183:13: error: Function expected at
+  Eff
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Eff` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:186:16: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.3
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:186:43: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.3
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:192:19: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.3
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:202:20: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.13
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:202:47: error: Function expected at
+  Eff
+but this term has type
+  ?m.6
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Eff` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:202:61: error: Function expected at
+  Eff
+but this term has type
+  ?m.6
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Eff` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:208:20: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.23
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:208:47: error: Function expected at
+  Tel
+but this term has type
+  ?m.13
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Tel` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:208:61: error: Function expected at
+  Tel
+but this term has type
+  ?m.13
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Tel` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:211:23: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.33
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:211:50: error: Function expected at
+  Fields
+but this term has type
+  ?m.20
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Fields` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:211:67: error: Function expected at
+  Fields
+but this term has type
+  ?m.20
+
+Note: Expected a function because this term is being applied to the argument
+  T'
+
+Hint: The identifier `Fields` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:215:41: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.7
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:216:41: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.8
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:216:25: error: Function expected at
+  Eff
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  T
+
+Hint: The identifier `Eff` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:217:36: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.8
+
+Note: Expected a function because this term is being applied to the argument
+  E
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:218:38: error: Function expected at
+  Sub T
+but this term has type
+  Type ?u.8
+
+Note: Expected a function because this term is being applied to the argument
+  E
+        0.53 real         0.49 user         0.18 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,30 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:786:9: error: unsolved goals
+case refl
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝ : Ty T E R V✝
+T'✝ E'✝ R'✝ V'✝ : Type
+θ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ' Φ' : Ctx T'✝ E'✝ R'✝ V'✝
+hv : Sub.Valid w θ Γ✝ Φ✝ Γ' Φ'
+⊢ TyLe w Γ' Φ' (Ty.bind θ a✝) (Ty.bind θ a✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `trans` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `forget` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `introduce` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `refine` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `list` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `reference` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `record` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `opaque` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `fn` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `done` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `param` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `nil` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:779:2: error: Alternative `cons` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:787:4: error: unexpected identifier; expected command
+        2.80 real         3.36 user         0.22 sys
+time: sysctl kern.clockrate: Operation not permitted

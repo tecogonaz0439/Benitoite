@@ -1,0 +1,69 @@
+{
+  "protected_count": 1344,
+  "protected_changed": [],
+  "protected_missing": [],
+  "new_unprefixed_files": [],
+  "broken_links": [],
+  "proofs": {
+    "P3b-BoundaryProofs.lean": {
+      "sha256": "9b07ab47e697eae7acf583c64a0fca21b9e99461a8e3e742696d73514a68bd75",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 75
+    },
+    "P3b-Derivations.lean": {
+      "sha256": "a74b62fb3bafc6611bb6052e4bd9a786cfd2545f9f59df4b01893f0535d5ca68",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 1477
+    },
+    "P3b-Heartbeat200k.lean": {
+      "sha256": "dc1892cade92a9baca32a2fab4e48d8dea2a676258d1c4c515c15d14759da3a6",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 1477
+    },
+    "P3b-ImportProbe.lean": {
+      "sha256": "08169a2c1925d819520556d219172cccf4ecd3e60394c005dcd7aacb62b70f36",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 9
+    },
+    "P3b-Nat.lean": {
+      "sha256": "1ede2833367084b7af4b35c0b6e458f3591f579e11eb9285f0e2d841226e494a",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 226
+    },
+    "P3b-RequestSnapshot.lean": {
+      "sha256": "9c34ec320af2f1b297b50c01218de1f9e584de94b1e1be79fd5dbff9a7491f85",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 113
+    }
+  },
+  "heartbeat_copy_diff_is_only_cap": true,
+  "final_checks": {
+    "P3b-Derivations.lean": "P3b-checks-023-final.json",
+    "P3b-Heartbeat200k.lean": "P3b-checks-024-heartbeat200k.json",
+    "P3b-Nat.lean": "P3b-check-nat-03.json",
+    "P3b-BoundaryProofs.lean": "P3b-check-boundary-final.json",
+    "P3b-RequestSnapshot.lean": "P3b-check-request-final.json",
+    "P3b-ImportProbe.lean": "P3b-check-import-probe.json"
+  },
+  "inventory": {
+    "direct": 150,
+    "priority": 419,
+    "s2_all": 807,
+    "exchange_name_candidates": 47,
+    "all_axes": 819
+  },
+  "estimates": {
+    "lean_low": 180,
+    "lean_high": 420,
+    "lean_center": 300,
+    "body_low": 363.2,
+    "body_high": 836.8,
+    "body_center": 600
+  }
+}

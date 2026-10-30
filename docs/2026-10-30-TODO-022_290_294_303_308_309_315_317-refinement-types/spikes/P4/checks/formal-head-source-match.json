@@ -1,0 +1,21 @@
+{
+  "command_exit_code": 0,
+  "time_exit_code": 1,
+  "name": "formal-head-source-match",
+  "command": [
+    "git",
+    "-C",
+    "<repo>",
+    "diff",
+    "--exit-code",
+    "HEAD",
+    "--",
+    "formal"
+  ],
+  "started": "2026-10-30T08:31:56.464367+00:00",
+  "elapsed_seconds": 0.036782583,
+  "exit_code": 0,
+  "timeout": false,
+  "log": "checks/formal-head-source-match.log",
+  "max_rss_bytes": null
+}

@@ -1,0 +1,87 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:822:10: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case done
+w : World
+T E R V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝¹ b✝ : Ty T E R V✝
+V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+f g : Eff T E R V
+hab : TyLe w Γ Φ a b
+he : ∀ (η : Interp T E R) (ρ : V → Value), Γ η ρ → Φ η ρ → Eff.Covers η g f
+ih :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ Φ Γ' Φ' → TyLe w Γ' Φ' (Ty.bind θ a) (Ty.bind θ b)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ✝ : Sub T E R V T'✝ E'✝ R'✝ V'✝
+Γ'✝ Φ'✝ : Ctx T'✝ E'✝ R'✝ V'✝
+a✝ : Sub.Valid w θ✝ Γ Φ Γ'✝ Φ'✝
+⊢ TelLe w Γ'✝ Φ'✝ (Tel.bind θ✝ (Tel.done a f)) (Tel.bind θ✝ (Tel.done b g))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:828:10: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case param
+w : World
+T E R V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝¹ b✝ : Ty T E R V✝
+V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+as bs : Tel T E R (Option V)
+name : String
+ha : TyLe w Γ Φ b a
+hs : TelLe w (Ctx.extend w Γ b) Φ.lift as bs
+ia :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ Φ Γ' Φ' → TyLe w Γ' Φ' (Ty.bind θ b) (Ty.bind θ a)
+is :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R (Option V) T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ (Ctx.extend w Γ b) Φ.lift Γ' Φ' → TelLe w Γ' Φ' (Tel.bind θ as) (Tel.bind θ bs)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ✝ : Sub T E R V T'✝ E'✝ R'✝ V'✝
+Γ'✝ Φ'✝ : Ctx T'✝ E'✝ R'✝ V'✝
+a✝ : Sub.Valid w θ✝ Γ Φ Γ'✝ Φ'✝
+⊢ TelLe w Γ'✝ Φ'✝ (Tel.bind θ✝ (Tel.param name a as)) (Tel.bind θ✝ (Tel.param name b bs))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:830:17: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case nil
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+T'✝ E'✝ R'✝ V'✝ : Type
+θ✝ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ'✝ Φ'✝ : Ctx T'✝ E'✝ R'✝ V'✝
+a✝ : Sub.Valid w θ✝ Γ✝ Φ✝ Γ'✝ Φ'✝
+⊢ FieldsLe w Γ'✝ Φ'✝ (Fields.bind θ✝ Fields.nil) (Fields.bind θ✝ Fields.nil)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:832:10: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case cons
+w : World
+T E R V : Type
+Γ Φ : Ctx T E R V
+a b : Ty T E R V
+V✝ : Type
+Γ✝ Φ✝ : Ctx T E R V✝
+a✝³ b✝ : Ty T E R V✝
+as✝ bs✝ : Fields T E R V✝
+n✝ : String
+a✝² : TyLe w Γ✝ Φ✝ a✝³ b✝
+a✝¹ : FieldsLe w Γ✝ Φ✝ as✝ bs✝
+ia :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V✝ T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ✝ Φ✝ Γ' Φ' → TyLe w Γ' Φ' (Ty.bind θ a✝³) (Ty.bind θ b✝)
+ib :
+  ∀ {T' E' R' V' : Type} (θ : Sub T E R V✝ T' E' R' V') (Γ' Φ' : Ctx T' E' R' V'),
+    Sub.Valid w θ Γ✝ Φ✝ Γ' Φ' → FieldsLe w Γ' Φ' (Fields.bind θ as✝) (Fields.bind θ bs✝)
+T'✝ E'✝ R'✝ V'✝ : Type
+θ✝ : Sub T E R V✝ T'✝ E'✝ R'✝ V'✝
+Γ'✝ Φ'✝ : Ctx T'✝ E'✝ R'✝ V'✝
+a✝ : Sub.Valid w θ✝ Γ✝ Φ✝ Γ'✝ Φ'✝
+⊢ FieldsLe w Γ'✝ Φ'✝ (Fields.bind θ✝ (Fields.cons n✝ a✝³ as✝)) (Fields.bind θ✝ (Fields.cons n✝ b✝ bs✝))
+        2.78 real         3.36 user         0.23 sys
+time: sysctl kern.clockrate: Operation not permitted

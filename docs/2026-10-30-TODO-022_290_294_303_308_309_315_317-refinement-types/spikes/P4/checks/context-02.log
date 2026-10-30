@@ -1,0 +1,19 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:90:59: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.59 = ?m.59
+but is expected to have type
+  Term.eval ρ (Term.var (0 + i)) = some (ρ i)
+in the application
+  Pred.holds_open a.predicate parse ρ (Term.var (0 + i)) (ρ i) rfl
+'P4.Typed.canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Typed.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.context_map_of_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Le.substAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Le.shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.RefTy.shift_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.facts_of_values' depends on axioms: [propext, sorryAx]
+'P4.branchFacts_sound' depends on axioms: [propext, Quot.sound]
+'P4.branchFacts_bind' depends on axioms: [propext, Quot.sound]
+        0.68 real         0.40 user         0.33 sys
+time: sysctl kern.clockrate: Operation not permitted

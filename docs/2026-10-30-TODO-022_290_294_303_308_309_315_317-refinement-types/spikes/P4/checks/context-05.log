@@ -1,0 +1,32 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:327:75: error: Application type mismatch: The argument
+  ρ
+has type
+  Nat → Value
+but is expected to have type
+  Ctx
+in the application
+  extend ρ
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:328:28: error: Application type mismatch: The argument
+  ρ
+has type
+  Nat → Value
+but is expected to have type
+  Ctx
+in the application
+  extend ρ
+'P4.Typed.shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Ctx.extend_facts' depends on axioms: [propext, Quot.sound]
+'P4.Ctx.extend_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Ctx.extend_satisfies' depends on axioms: [propext, sorryAx, Quot.sound]
+'P4.closed_embedding' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Typed.canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Typed.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.context_map_of_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Le.substAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Le.shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.RefTy.shift_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.facts_of_values' depends on axioms: [propext, Quot.sound]
+'P4.branchFacts_sound' depends on axioms: [propext, Quot.sound]
+'P4.branchFacts_bind' depends on axioms: [propext, Quot.sound]
+        0.71 real         0.48 user         0.34 sys
+time: sysctl kern.clockrate: Operation not permitted

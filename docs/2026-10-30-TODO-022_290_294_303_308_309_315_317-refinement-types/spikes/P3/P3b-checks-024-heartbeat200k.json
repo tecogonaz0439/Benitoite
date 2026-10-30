@@ -1,0 +1,21 @@
+{
+  "started_utc": "2026-10-30T07:30:08.655023+00:00",
+  "source_sha256": "dc1892cade92a9baca32a2fab4e48d8dea2a676258d1c4c515c15d14759da3a6",
+  "source_changed_during_check": false,
+  "command": [
+    "/usr/bin/time",
+    "-l",
+    "/bin/sh",
+    "-c",
+    "lake env lean -M 12288 \"$1\"; r=$?; echo \"$r\" > \"$2\"; exit \"$r\"",
+    "lean-check",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Heartbeat200k.lean",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-checks-024-heartbeat200k.lean-exit"
+  ],
+  "cwd": "<repo>/formal",
+  "time_exit": 1,
+  "lean_exit": "0",
+  "elapsed_s": 3.676035791,
+  "auxiliary_ru_maxrss_bytes": 834093056,
+  "time_l_rss_available": false
+}

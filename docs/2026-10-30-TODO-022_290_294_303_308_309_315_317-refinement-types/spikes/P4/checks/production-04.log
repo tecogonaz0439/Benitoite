@@ -1,0 +1,29 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:158:2: error: Tactic `apply` failed: could not unify the conclusion of `Le.refine (Ty.Le.refl (RefTy.carrier ?m.3))`
+  Le ?m.2 ?m.3 ?m.3
+with the goal
+  Le Φ { carrier := a.list, predicate := listShape } { carrier := a.list, predicate := checkedLength }
+
+Note: The full type of `Le.refine (Ty.Le.refl (RefTy.carrier ?m.3))` is
+  Entails (RefTy.predicate ?m.3 :: List.map Pred.lift ?m.2) (RefTy.predicate ?m.3) → Le ?m.2 ?m.3 ?m.3
+
+Φ : List Pred
+a : Ty
+⊢ Le Φ { carrier := a.list, predicate := listShape } { carrier := a.list, predicate := checkedLength }
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:188:10: error: don't know how to synthesize implicit argument `Ψ`
+  @ModelHttp.Examples.checkedReq_typed ?m.25
+context:
+Ψ : StoreTy
+⊢ StoreTy
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:188:53: error(lean.inferBinderTypeFailed): Failed to infer type of binder `h`
+'P4.Production.checked_list_canonical' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Production.concrete_request' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Production.Typed.native_origin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.request_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.int_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.list_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.record_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.reference_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.request_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.old_request_mismatch' depends on axioms: [propext, Classical.choice, Quot.sound]
+        0.79 real         0.68 user         0.31 sys
+time: sysctl kern.clockrate: Operation not permitted

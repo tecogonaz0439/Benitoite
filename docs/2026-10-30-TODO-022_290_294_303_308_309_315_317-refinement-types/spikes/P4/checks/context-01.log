@@ -1,0 +1,290 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:21:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Ty.substAt', which is 'noncomputable'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:26:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Ty.shift', which is 'noncomputable'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:52:59: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `predicate`
+
+Hint: Consider replacing the field projection `.predicate` with a call to the function `RefTy.predicate`.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:54:8: error: unsolved goals
+case nil
+p : Pred
+k : Nat
+⊢ ∀ (x : ?m.26) (x_1 : ?m.27 x), [][x]? = some (some x_1) → ¬p = sorry ()
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:63:12: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.26
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case cons.none.mpr
+p : Pred
+tail : List (Option RefTy)
+ih : ∀ {k : Nat}, p ∈ factsFrom k tail ↔ ∃ i a, tail[i]? = some (some a) ∧ p = sorry
+k : Nat
+i : ?m.26
+a : ?m.107
+hi : (none :: tail)[i]? = some (some a)
+hp : p = sorry
+⊢ ∃ i a, tail[i]? = some (some a) ∧ p = sorry
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:70:32: error: unsolved goals
+tail : List (Option RefTy)
+k : Nat
+a : RefTy
+ih :
+  ∀ {k_1 : Nat},
+    a.predicate.open (Term.var k) ∈ factsFrom k_1 tail ↔
+      ∃ i a_1, tail[i]? = some (some a_1) ∧ a.predicate.open (Term.var k) = sorry
+⊢ a.predicate.open (Term.var k) = sorry ()
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:73:12: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.26
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case cons.some.mpr
+p : Pred
+tail : List (Option RefTy)
+ih : ∀ {k : Nat}, p ∈ factsFrom k tail ↔ ∃ i a, tail[i]? = some (some a) ∧ p = sorry
+k : Nat
+a : RefTy
+i : ?m.26
+b : ?m.225
+hi : (some a :: tail)[i]? = some (some b)
+hp : p = sorry
+⊢ p = a.predicate.open (Term.var k) ∨ ∃ i a, tail[i]? = some (some a) ∧ p = sorry
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:82:2: error(lean.unknownIdentifier): Unknown identifier `factsFrom_mem.mpr`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:86:41: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `predicate`
+
+Hint: Consider replacing the field projection `.predicate` with a call to the function `RefTy.predicate`.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:89:28: error(lean.unknownIdentifier): Unknown identifier `factsFrom_mem.mp`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:89:9: error: Tactic `rcases` failed: `x✝ : ?m.27` is not an inductive datatype
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:120:6: error: Type mismatch: After simplification, term
+  hh
+ has type
+  Entails (Pred.bind (upSub σ) a.predicate :: List.map (fun x => (Pred.bind σ x).lift) Φ)
+    (Pred.bind (upSub σ) b.predicate)
+but is expected to have type
+  Entails ((RefTy.substAt c ts es σ a).predicate :: List.map (fun x => (Pred.bind σ x).lift) Φ)
+    (RefTy.substAt c ts es σ b).predicate
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:128:6: error: Tactic `apply` failed: could not unify the conclusion of `refine hc`
+  Le ?m.34 a✝ b✝
+with the goal
+  Le (List.map (Pred.bind σ) Φ) (RefTy.bind σ a✝) (RefTy.bind σ b✝)
+
+Note: The full type of `refine hc` is
+  Entails (a✝.predicate :: List.map Pred.lift ?m.34) b✝.predicate → Le ?m.34 a✝ b✝
+
+case refine
+Φ : List Pred
+a b : RefTy
+σ : Nat → Term
+a✝ b✝ : RefTy
+hc : a✝.carrier.Le b✝.carrier
+hp : Entails (a✝.predicate :: List.map Pred.lift Φ) b✝.predicate
+⊢ Le (List.map (Pred.bind σ) Φ) (RefTy.bind σ a✝) (RefTy.bind σ b✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:141:6: error: Type mismatch: After simplification, term
+  hh
+ has type
+  Entails
+    (Pred.bind (upSub fun i => Term.var (shiftIndex kv cv i)) a✝.predicate ::
+      List.map (fun x => (Pred.bind (fun i => Term.var (shiftIndex kv cv i)) x).lift) Φ)
+    (Pred.bind (upSub fun i => Term.var (shiftIndex kv cv i)) b✝.predicate)
+but is expected to have type
+  Entails
+    ((RefTy.shift kt ct kv cv a✝).predicate ::
+      List.map (fun x => (Pred.bind (fun i => Term.var (shiftIndex kv cv i)) x).lift) Φ)
+    (RefTy.shift kt ct kv cv b✝).predicate
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:177:59: error: Function expected at
+  σ
+but this term has type
+  ?m.6
+
+Note: Expected a function because this term is being applied to the argument
+  i
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:177:65: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `bind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `bind`
+  • `EST.bind`
+  • `EStateM.bind`
+  • `Except.bind`
+  • `ExceptT.bind`
+  • `Option.bind`
+  • `OptionT.bind`
+  • `ReaderT.bind`
+  • `ST.bind`
+  • `StateT.bind`
+  • `Task.bind`
+  • `Thunk.bind`
+  • `Entails.bind`
+  • `Le.bind`
+  • `Pred.bind`
+  • `RefTy.bind`
+  • `Term.bind`
+  • `Eff.bind`
+  • `ListRest.bind`
+  • `NoFail.bind`
+  • `Ty.bind`
+  • `Std.Async.AsyncTask.bind`
+  • `Std.Async.BaseAsync.bind`
+  • `Std.Async.EAsync.bind`
+  • `Std.Async.ETask.bind`
+  • `Std.Async.MaybeTask.bind`
+  • `Std.Do.PredTrans.bind`
+  • `Std.Do.Spec.bind`
+  • `Std.Do.Triple.bind`
+  • `Std.Do.WP.bind`
+  • `Std.Http.Method.bind`
+  • `Std.Internal.Parsec.bind`
+  • `Std.Internal.Small.bind`
+  • `Std.Iterators.HetT.bind`
+  • `Std.Iterators.PostconditionT.bind`
+  • `Eff.Covers.bind`
+  • `Lean.Compiler.LCNF.Code.bind`
+  • `Std.Async.UDP.Socket.bind`
+  • `Std.Do.Internal.Ensures.bind`
+  • `Std.Internal.Do.Spec.bind`
+  • `Std.Internal.Do.Triple.bind`
+  • `Std.Async.TCP.Socket.Client.bind`
+  • `Std.Async.TCP.Socket.Server.bind`
+  • `Std.Internal.UV.TCP.Socket.bind`
+  • `Std.Internal.UV.UDP.Socket.bind`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:178:43: error(lean.invalidField): Invalid field notation: Type of
+  p
+is not known; cannot resolve field `bind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `bind`
+  • `EST.bind`
+  • `EStateM.bind`
+  • `Except.bind`
+  • `ExceptT.bind`
+  • `Option.bind`
+  • `OptionT.bind`
+  • `ReaderT.bind`
+  • `ST.bind`
+  • `StateT.bind`
+  • `Task.bind`
+  • `Thunk.bind`
+  • `Entails.bind`
+  • `Le.bind`
+  • `Pred.bind`
+  • `RefTy.bind`
+  • `Term.bind`
+  • `Eff.bind`
+  • `ListRest.bind`
+  • `NoFail.bind`
+  • `Ty.bind`
+  • `Std.Async.AsyncTask.bind`
+  • `Std.Async.BaseAsync.bind`
+  • `Std.Async.EAsync.bind`
+  • `Std.Async.ETask.bind`
+  • `Std.Async.MaybeTask.bind`
+  • `Std.Do.PredTrans.bind`
+  • `Std.Do.Spec.bind`
+  • `Std.Do.Triple.bind`
+  • `Std.Do.WP.bind`
+  • `Std.Http.Method.bind`
+  • `Std.Internal.Parsec.bind`
+  • `Std.Internal.Small.bind`
+  • `Std.Iterators.HetT.bind`
+  • `Std.Iterators.PostconditionT.bind`
+  • `Eff.Covers.bind`
+  • `Lean.Compiler.LCNF.Code.bind`
+  • `Std.Async.UDP.Socket.bind`
+  • `Std.Do.Internal.Ensures.bind`
+  • `Std.Internal.Do.Spec.bind`
+  • `Std.Internal.Do.Triple.bind`
+  • `Std.Async.TCP.Socket.Client.bind`
+  • `Std.Async.TCP.Socket.Server.bind`
+  • `Std.Internal.UV.TCP.Socket.bind`
+  • `Std.Internal.UV.UDP.Socket.bind`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:179:10: error(lean.invalidField): Invalid field notation: Type of
+  Γ
+is not known; cannot resolve field `facts`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Ctx.facts`
+  • `Lean.Meta.Grind.GoalState.facts`
+  • `Lean.Elab.Tactic.Omega.MetaProblem.facts`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:179:48: error(lean.invalidField): Invalid field notation: Type of
+  p
+is not known; cannot resolve field `bind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `bind`
+  • `EST.bind`
+  • `EStateM.bind`
+  • `Except.bind`
+  • `ExceptT.bind`
+  • `Option.bind`
+  • `OptionT.bind`
+  • `ReaderT.bind`
+  • `ST.bind`
+  • `StateT.bind`
+  • `Task.bind`
+  • `Thunk.bind`
+  • `Entails.bind`
+  • `Le.bind`
+  • `Pred.bind`
+  • `RefTy.bind`
+  • `Term.bind`
+  • `Eff.bind`
+  • `ListRest.bind`
+  • `NoFail.bind`
+  • `Ty.bind`
+  • `Std.Async.AsyncTask.bind`
+  • `Std.Async.BaseAsync.bind`
+  • `Std.Async.EAsync.bind`
+  • `Std.Async.ETask.bind`
+  • `Std.Async.MaybeTask.bind`
+  • `Std.Do.PredTrans.bind`
+  • `Std.Do.Spec.bind`
+  • `Std.Do.Triple.bind`
+  • `Std.Do.WP.bind`
+  • `Std.Http.Method.bind`
+  • `Std.Internal.Parsec.bind`
+  • `Std.Internal.Small.bind`
+  • `Std.Iterators.HetT.bind`
+  • `Std.Iterators.PostconditionT.bind`
+  • `Eff.Covers.bind`
+  • `Lean.Compiler.LCNF.Code.bind`
+  • `Std.Async.UDP.Socket.bind`
+  • `Std.Do.Internal.Ensures.bind`
+  • `Std.Internal.Do.Spec.bind`
+  • `Std.Internal.Do.Triple.bind`
+  • `Std.Async.TCP.Socket.Client.bind`
+  • `Std.Async.TCP.Socket.Server.bind`
+  • `Std.Internal.UV.TCP.Socket.bind`
+  • `Std.Internal.UV.UDP.Socket.bind`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:181:28: error: Application type mismatch: The argument
+  hp
+has type
+  Membership.mem.{u_6, u_7} (?m.40 ++ Φ) p
+but is expected to have type
+  Membership.mem.{?u.44, ?u.44} (?m.125 ++ ?m.126) ?m.124
+in the application
+  List.mem_append.mp hp
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:200:14: error(lean.unknownIdentifier): Unknown identifier `context_map_of_typed`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:208:12: error(lean.unknownIdentifier): Unknown identifier `context_map_of_typed`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:225:45: error: Application type mismatch: The argument
+  hq
+has type
+  q.lift ∈ List.map Pred.lift Φ
+but is expected to have type
+  q ∈ Φ
+in the application
+  hΦ q hq
+'P4.Typed.canonical' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Typed.subst' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:234:14: error(lean.unknownIdentifier): Unknown constant `context_map_of_typed`
+'P4.Le.substAt' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Le.shift' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.RefTy.shift_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Context.lean:238:14: error(lean.unknownIdentifier): Unknown constant `facts_of_values`
+'P4.branchFacts_sound' depends on axioms: [propext, sorryAx, Quot.sound]
+'P4.branchFacts_bind' depends on axioms: [propext, Quot.sound]
+        0.92 real         0.64 user         0.35 sys
+time: sysctl kern.clockrate: Operation not permitted

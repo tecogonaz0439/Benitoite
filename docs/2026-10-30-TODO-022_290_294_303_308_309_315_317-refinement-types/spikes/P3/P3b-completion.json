@@ -1,0 +1,73 @@
+{
+  "started_utc": "2026-10-30T07:07:43+00:00",
+  "completed_utc": "2026-10-30T07:39:39.609270+00:00",
+  "wall_elapsed_seconds": 1916.609,
+  "parent_conservative_seconds": 1916.609,
+  "derivations_reported_seconds_approx": 1400,
+  "reading_reported_seconds_approx": 1140,
+  "derivations_conservative_upper_seconds": 1500,
+  "reading_conservative_upper_seconds": 1200,
+  "sum_conservative_upper_seconds": 4616.609,
+  "additional_limit_seconds": 14400,
+  "within_limit_even_charged_separately": true,
+  "first_progress": {
+    "progress_mtime_after_first_p3b_entry": "2026-10-30T07:10:56.493349+00:00",
+    "started": "2026-10-30T07:07:43+00:00",
+    "within_one_hour": true
+  },
+  "protected_count": 1344,
+  "protected_changed": [],
+  "new_unprefixed_files": [],
+  "proofs": {
+    "P3b-BoundaryProofs.lean": {
+      "sha256": "9b07ab47e697eae7acf583c64a0fca21b9e99461a8e3e742696d73514a68bd75",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 75
+    },
+    "P3b-Derivations.lean": {
+      "sha256": "a74b62fb3bafc6611bb6052e4bd9a786cfd2545f9f59df4b01893f0535d5ca68",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 1477
+    },
+    "P3b-Heartbeat200k.lean": {
+      "sha256": "dc1892cade92a9baca32a2fab4e48d8dea2a676258d1c4c515c15d14759da3a6",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 1477
+    },
+    "P3b-ImportProbe.lean": {
+      "sha256": "08169a2c1925d819520556d219172cccf4ecd3e60394c005dcd7aacb62b70f36",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 9
+    },
+    "P3b-Nat.lean": {
+      "sha256": "1ede2833367084b7af4b35c0b6e458f3591f579e11eb9285f0e2d841226e494a",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 226
+    },
+    "P3b-RequestSnapshot.lean": {
+      "sha256": "9c34ec320af2f1b297b50c01218de1f9e584de94b1e1be79fd5dbff9a7491f85",
+      "holes": 0,
+      "custom_axioms": 0,
+      "lines": 113
+    }
+  },
+  "final_checks": {
+    "P3b-Derivations.lean": "P3b-checks-023-final.json",
+    "P3b-Heartbeat200k.lean": "P3b-checks-024-heartbeat200k.json",
+    "P3b-Nat.lean": "P3b-check-nat-03.json",
+    "P3b-BoundaryProofs.lean": "P3b-check-boundary-final.json",
+    "P3b-RequestSnapshot.lean": "P3b-check-request-final.json",
+    "P3b-ImportProbe.lean": "P3b-check-import-probe.json"
+  },
+  "independent_review": "未実施。導出と例を親が読み、Leanカーネル検査と自己点検を実施。",
+  "production_writes": false,
+  "git_operations": false,
+  "full_production_build": false,
+  "import_mismatch": "checkedRequest req:Const / valContent:Option OpaqueNameの旧生成物と現行ソースVal/Option Tyの不一致をImportProbeで記録。要求の代表は現行の関連枝を独立に縮小複写した。",
+  "time_l_maxrss_available": false
+}

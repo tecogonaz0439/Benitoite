@@ -1,0 +1,254 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:288:5: error: unexpected token 'opaque'; expected '_' or identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:288:4: error: Missing alternative name: Expected `opaque`, `var`, `list`, `record`, `reference`, `refined`, or `fn`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `opaque` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `var` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `list` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `record` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `reference` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `refined` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:285:4: error: Alternative `fn` has not been provided
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:288:17: error: unexpected token '=>'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:303:16: error: unsolved goals
+case atom
+T' E' R' V' T E R V : Type
+w : World
+η : Interp T' E' R'
+ρ : V' → Value
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+x : Event
+n : String
+ix : Ix R
+⊢ (∃ t,
+      x = Event.atom n t ∧
+        (match Ix.bind (fun x => Ix.var (r x)) ix with
+            | Ix.fixed r => r
+            | Ix.var x => η.ranges x).Mem
+          t) ↔
+    ∃ t,
+      x = Event.atom n t ∧
+        (match ix with
+            | Ix.fixed r => r
+            | Ix.var x => η.ranges (r x)).Mem
+          t
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:298:10: error: fail to show termination for
+  P1.Eff.allows_map
+with errors
+failed to infer structural recursion:
+Not considering parameter T' of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter E' of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter R' of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter V' of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter T of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter E of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter R of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter V of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter w of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter η of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter ρ of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter t of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter e of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter r of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter v of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Not considering parameter x of P1.Eff.allows_map:
+  it is unchanged in the recursive calls
+Cannot use parameter a:
+  failed to eliminate recursive application
+    allows_map w η ρ t e r v a x
+
+
+Application type mismatch: The argument
+  a✝.union b✝
+has type
+  Eff T E R V
+but is expected to have type
+  Eff T E R V✝
+in the application
+  sizeOf (a✝.union b✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:303:51: warning: This simp argument is unused:
+  Ix.eval_bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.map, Eff.Allows, Ix.eval, Function.comp_def, Interp.comap]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:307:10: error: fail to show termination for
+  P1.Tel.pre_map
+with errors
+failed to infer structural recursion:
+Not considering parameter T' of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter E' of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter R' of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter V' of P1.Tel.pre_map:
+  its type is not an inductive
+Not considering parameter T of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter E of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter R of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter V of P1.Tel.pre_map:
+  its type is not an inductive
+Not considering parameter w of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter η of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter ρ of P1.Tel.pre_map:
+  its type is not an inductive
+Not considering parameter t of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter e of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter r of P1.Tel.pre_map:
+  it is unchanged in the recursive calls
+Not considering parameter v of P1.Tel.pre_map:
+  its type is not an inductive
+Cannot use parameter a:
+  failed to eliminate recursive application
+    pre_map w η (extend ρ x) t e r (Option.map v) rest xs
+Cannot use parameter xs:
+  failed to eliminate recursive application
+    pre_map w η (extend ρ x) t e r (Option.map v) rest xs
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+             #1 xs
+1) 307:10-21  ?  ?
+
+#1: sizeOf a
+
+Please use `termination_by` to specify a decreasing measure.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:313:10: error: fail to show termination for
+  P1.Tel.post_map
+with errors
+failed to infer structural recursion:
+Not considering parameter T' of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter E' of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter R' of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter V' of P1.Tel.post_map:
+  its type is not an inductive
+Not considering parameter T of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter E of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter R of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter V of P1.Tel.post_map:
+  its type is not an inductive
+Not considering parameter w of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter η of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter ρ of P1.Tel.post_map:
+  its type is not an inductive
+Not considering parameter t of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter e of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter r of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter v of P1.Tel.post_map:
+  its type is not an inductive
+Not considering parameter result of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Not considering parameter trace of P1.Tel.post_map:
+  it is unchanged in the recursive calls
+Cannot use parameter a:
+  failed to eliminate recursive application
+    post_map w η (extend ρ x) t e r (Option.map v) rest xs result trace
+Cannot use parameter xs:
+  failed to eliminate recursive application
+    post_map w η (extend ρ x) t e r (Option.map v) rest xs result trace
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+             #1 xs #2 trace
+1) 313:10-22  ?  ?  ?     ?
+
+#1: sizeOf a
+#2: result
+
+Please use `termination_by` to specify a decreasing measure.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:320:10: error: fail to show termination for
+  P1.Fields.mem_map
+with errors
+failed to infer structural recursion:
+Not considering parameter T' of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter E' of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter R' of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter V' of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter T of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter E of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter R of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter V of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter w of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter η of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter ρ of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter t of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter e of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter r of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter v of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Not considering parameter xs of P1.Fields.mem_map:
+  it is unchanged in the recursive calls
+Cannot use parameter a:
+  failed to eliminate recursive application
+    mem_map w η ρ t e r v fs xs
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+             #1 xs
+1) 320:10-24  ?  ?
+
+#1: sizeOf a
+
+Please use `termination_by` to specify a decreasing measure.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:327:0: error: Missing name after `end`: Expected the current scope name `P1`
+
+Hint: To end the current scope `P1`, specify its name:
+  end ̲P̲1̲
+        1.13 real         1.82 user         0.21 sys
+time: sysctl kern.clockrate: Operation not permitted

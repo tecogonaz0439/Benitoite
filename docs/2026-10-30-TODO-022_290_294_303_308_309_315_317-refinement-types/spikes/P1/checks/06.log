@@ -1,0 +1,65 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:296:35: error: Tactic `rfl` failed: The left-hand side
+  Expr.eval (extend ρ x) (?m.419 none)
+is not definitionally equal to the right-hand side
+  some (extend (ρ ∘ v) x none)
+
+case none
+T' E' R' V' T E R V : Type
+w : World
+η : Interp T' E' R'
+ρ : V' → Value
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+x : Value
+a : Ty T E R V
+p : Pred (Option V)
+⊢ Expr.eval (extend ρ x) (?m.419 none) = some (extend (ρ ∘ v) x none)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:296:35: error: Tactic `rfl` failed: The left-hand side
+  Expr.eval (extend ρ x) (?m.419 (some val✝))
+is not definitionally equal to the right-hand side
+  some (extend (ρ ∘ v) x (some val✝))
+
+case some
+T' E' R' V' T E R V : Type
+w : World
+η : Interp T' E' R'
+ρ : V' → Value
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+x : Value
+a : Ty T E R V
+p : Pred (Option V)
+val✝ : V
+⊢ Expr.eval (extend ρ x) (?m.419 (some val✝)) = some (extend (ρ ∘ v) x (some val✝))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:293:18: error: unsolved goals
+case refined
+T' E' R' V' T E R V : Type
+w : World
+η : Interp T' E' R'
+ρ : V' → Value
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+x : Value
+a : Ty T E R V
+p : Pred (Option V)
+⊢ Ty.Mem w (Interp.comap t e r η) (ρ ∘ v) a x ∧ Pred.Holds (extend ρ x) (Pred.bind (Expr.var ∘ Option.map v) p) ↔
+    Ty.Mem w (Interp.comap t e r η) (ρ ∘ v) a x ∧ Pred.Holds (extend (ρ ∘ v) x) p
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:281:0: error: failed to infer structural recursion:
+Cannot use parameters a of P1.Ty.mem_map, a of P1.Tel.post_map, a of P1.Eff.allows_map, a of P1.Tel.pre_map, and a of P1.Fields.mem_map:
+  failed to eliminate recursive application
+    Ty.mem_map w η ρ t e r v a x
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:295:8: warning: This simp argument is unused:
+  Pred.holds_bind _ (extend ρ x) (extend (ρ ∘ v) x) (fun z => by cases z <;> rfl)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.map, Ty.Mem, Ty.mem_map w η ρ t e r v a]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        1.36 real         1.48 user         0.20 sys
+time: sysctl kern.clockrate: Operation not permitted

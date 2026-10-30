@@ -1,0 +1,51 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1653:0: error: Missing name after `end`: Expected the current scope name `P3`
+
+Hint: To end the current scope `P3`, specify its name:
+  end ̲P̲3̲
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1674:16: error: Type mismatch: After simplification, term
+  hs ?m.60
+ has type
+  VTy D Ψ Γ' Φ' (σ ?m.60) (Ty.vbind (logicSub σ) (Γ ?m.60))
+but is expected to have type
+  VTy D Ψ Γ' Φ' (SVal.subst σ (SVal.var x✝)) (Ty.vbind (logicSub σ) a✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1684:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Pred.Holds (extend ρ (SVal.eval ρ (SVal.subst σ v))) (Pred.bind (upExpr (logicSub σ)) ?p)
+in the target expression
+  Pred.Holds (extend ρ (SVal.eval ρ (SVal.subst σ v✝))) (Pred.bind (upExpr (logicSub σ)) p✝)
+
+case V_Refine
+V W : Type
+D : CodeSig
+Ψ : StoreTy
+Γ : Ctx V
+Φ : Path V
+v : SVal V
+a : STy V
+Γ' : Ctx W
+Φ' : Path W
+σ : V → SVal W
+hs : ∀ (x : V), VTy D Ψ Γ' Φ' (σ x) (Ty.vbind (logicSub σ) (Γ x))
+hΦ : ∀ (ρ : W → Value), Φ' ρ → Φ fun x => SVal.eval ρ (σ x)
+v✝ : SVal V
+a✝ : STy V
+p✝ : Pred (Option V)
+hv : VTy D Ψ Γ Φ v✝ a✝
+hp : ∀ (ρ : V → Value), Φ ρ → Pred.Holds (extend ρ (SVal.eval ρ v✝)) p✝
+ih : VTy D Ψ Γ' Φ' (SVal.subst σ v✝) (Ty.vbind (logicSub σ) a✝)
+ρ : W → Value
+hρ : Φ' ρ
+henv : ∀ (z : V), Expr.eval ρ (logicSub σ z) = some (SVal.eval ρ (σ z))
+⊢ Pred.Holds (extend ρ (SVal.eval ρ (SVal.subst σ v✝))) (Pred.bind (upExpr (logicSub σ)) p✝)
+        4.30 real         5.43 user         0.28 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,89 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:40:40: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≤ -129
+  0 ≤ a ≤ 127
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:40:40: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≤ -32769
+  0 ≤ a ≤ 32767
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:40:40: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≤ -2147483649
+  0 ≤ a ≤ 2147483647
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:40:40: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≤ -1
+  0 ≤ a ≤ 65535
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:40:40: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≤ -1
+  0 ≤ a ≤ 4294967295
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:40:40: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≤ -1
+  0 ≤ a ≤ 18446744073709551615
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:58:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 129
+  0 ≤ a ≤ 128
+where
+ a := ↑n✝
+ b := Int.ofNat n✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:64:44: error: failed to synthesize
+  Decidable ¬LiteralOK (Literal.integer8 128)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:75:49: error: Ambiguous term
+  Program
+Possible interpretations:
+  Benitoite.Surface.Program : Type
+  
+  Benitoite.Release.Program : Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:83:65: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.defaultRequest`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:86:41: error: Ambiguous term
+  Program
+Possible interpretations:
+  Benitoite.Surface.Program : Type
+  
+  Benitoite.Release.Program : Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:88:47: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.defaultRequest`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:90:33: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.defaultRequest`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:92:54: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.defaultRequest_typed`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:93:40: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.urlTarget`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:93:61: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.requestUrl`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:94:6: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.defaultRequest`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:94:32: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.Examples.parseUrl`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:94:61: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.Examples.apiUrl`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:93:2: error: unsolved goals
+case right
+P : sorry
+hP : ModelHttp.HasHttp sorry
+Ψ : StoreTy
+⊢ (match sorry () with
+    | Const.opaque "Http.ClientRequest" 7 => some ModelHttp.Examples.apiT
+    | x => none) =
+    none
+'P3bBoundary.literal_desugar_preserves' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P3bBoundary.shapeAt_of_target' depends on axioms: [propext]
+'P3bBoundary.old_checked_request_without_content' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P3bBoundary.old_checkedRequest_mismatch' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+        0.72 real         0.34 user         0.19 sys
+time: sysctl kern.clockrate: Operation not permitted

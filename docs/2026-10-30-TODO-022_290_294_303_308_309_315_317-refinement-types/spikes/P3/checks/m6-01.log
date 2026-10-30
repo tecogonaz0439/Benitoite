@@ -1,0 +1,55 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.normalize_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.derive_sound' depends on axioms: [propext, Quot.sound]
+'P2.refute_sound' depends on axioms: [propext, Quot.sound]
+'P2.check_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.implication_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.purify_formula_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P2.source_check_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean:1996:11: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (∃ k, m.slot k = n)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean:2002:2: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+V K : Type
+m : Model V K
+ρ : Option V → Value
+k : K
+⊢ sorry = m.captured ρ k
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean:2035:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Model.env', which is 'noncomputable'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean:2083:62: error: Type mismatch
+  hx
+has type
+  Value.int (Term.denote m a ρ) = Value.int x
+but is expected to have type
+  Term.denote m a ρ = x
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean:2084:62: error: Type mismatch
+  hy
+has type
+  Value.int (Term.denote m b ρ) = Value.int y
+but is expected to have type
+  Term.denote m b ρ = y
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean:2100:8: error: Type mismatch
+  hh
+has type
+  Value.int (Term.denote m a ρ) = Value.int (Term.denote m b ρ)
+but is expected to have type
+  Term.denote m a ρ = Term.denote m b ρ
+'P3M6.checked_subtype' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P3M6.Predicate.lower_correct' depends on axioms: [propext, sorryAx, Quot.sound]
+'P3M6.collision_impossible' depends on axioms: [propext, Quot.sound]
+        4.64 real         5.93 user         0.50 sys
+time: sysctl kern.clockrate: Operation not permitted

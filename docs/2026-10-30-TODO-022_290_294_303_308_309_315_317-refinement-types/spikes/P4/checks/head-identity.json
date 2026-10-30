@@ -1,0 +1,18 @@
+{
+  "command_exit_code": 0,
+  "time_exit_code": 1,
+  "name": "head-identity",
+  "command": [
+    "git",
+    "-C",
+    "<repo>",
+    "rev-parse",
+    "HEAD"
+  ],
+  "started": "2026-10-30T08:31:56.547208+00:00",
+  "elapsed_seconds": 0.020454915999999997,
+  "exit_code": 0,
+  "timeout": false,
+  "log": "checks/head-identity.log",
+  "max_rss_bytes": null
+}

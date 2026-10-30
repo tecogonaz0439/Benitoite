@@ -1,0 +1,30 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:159:32: error(lean.invalidField): Invalid field notation: Type of
+  l
+is not known; cannot resolve field `Holds`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Formula.Holds`
+  • `Lin.Holds`
+  • `NNF.Holds`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:160:11: error: Application type mismatch: The argument
+  l
+has type
+  α✝
+of sort `Type u_2` but is expected to have type
+  Lin
+of sort `Type` in the application
+  hs l
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:181:47: error(lean.unknownIdentifier): Unknown identifier `lookup_sound`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:201:17: error(lean.unknownIdentifier): Unknown identifier `lookup_sound`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:325:17: error(lean.unknownIdentifier): Unknown identifier `lookup_sound`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:348:4: error: `simp` made no progress
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:355:3: error: unknown tactic
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P2/lean/P2.lean:352:47: error: unsolved goals
+assumptions goal : Formula
+cert : Cert
+hc : check (assumptions.and goal.not) cert = true
+ρ : Env
+ha : assumptions.Holds ρ
+⊢ goal.Holds ρ
+        0.96 real         0.82 user         0.35 sys
+time: sysctl kern.clockrate: Operation not permitted

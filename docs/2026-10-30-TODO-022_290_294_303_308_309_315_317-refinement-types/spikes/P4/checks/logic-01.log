@@ -1,0 +1,101 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:131:29: error(lean.invalidField): Invalid field notation: Type of
+  t
+is not known; cannot resolve field `eval`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `P2.Term.eval`
+  • `Term.eval`
+  • `Lean.Data.AC.eval`
+  • `Lean.Omega.LinearCombo.eval`
+  • `Lean.Parser.Command.eval`
+  • `Std.Do.WhileVariant.eval`
+  • `Std.Sat.CNF.eval`
+  • `Lean.Meta.Grind.Filter.eval`
+  • `Std.Sat.CNF.Clause.eval`
+  • `Std.Tactic.BVDecide.BVBinOp.eval`
+  • `Std.Tactic.BVDecide.BVBinPred.eval`
+  • `Std.Tactic.BVDecide.BVExpr.eval`
+  • `Std.Tactic.BVDecide.BVLogicalExpr.eval`
+  • `Std.Tactic.BVDecide.BVPred.eval`
+  • `Std.Tactic.BVDecide.BVUnOp.eval`
+  • `Std.Tactic.BVDecide.BoolExpr.eval`
+  • `Std.Tactic.BVDecide.Gate.eval`
+  • `Lean.Elab.WF.GuessLex.RecCallCache.eval`
+  • `Lean.Meta.Tactic.Cbv.CbvSimprocPhase.eval`
+  • `Lean.Meta.Tactic.Cbv.CbvSimprocs.eval`
+  • `Std.Tactic.BVDecide.LRAT.Internal.Clause.eval`
+  • `Std.Tactic.BVDecide.LRAT.Internal.Entails.eval`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:131:46: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.int` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Value.int`
+  [apply] `Lean.Lsp.DiagnosticCode.int`
+  [apply] `Lean.Meta.Grind.Arith.Cutsat.Search.Kind.int`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:186:53: error: unsolved goals
+case arithmetic
+keys✝ : List Term
+formula✝ : P2.Formula
+⊢ List.map (Term.bind Term.var) keys✝ = keys✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:187:48: warning: This simp argument is unused:
+  List.map_id_fun
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [bind, Term.bind_id]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:195:17: error: unexpected token ','; expected 'scoped' or identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:211:14: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case mp
+σ : Nat → Term
+ρ ρ' : Nat → Value
+hs : ∀ (i : Nat), Term.eval ρ (σ i) = some (ρ' i)
+p : Pred
+parse : String → Option Target
+ks : List Term
+ν : P2.Env
+h : sorry ρ (List.map (Term.bind σ) ks) ν
+⊢ sorry ρ' ks ν
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:214:14: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case mpr
+σ : Nat → Term
+ρ ρ' : Nat → Value
+hs : ∀ (i : Nat), Term.eval ρ (σ i) = some (ρ' i)
+p : Pred
+parse : String → Option Target
+ks : List Term
+ν : P2.Env
+h : sorry ρ' ks ν
+⊢ sorry ρ (List.map (Term.bind σ) ks) ν
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:209:15: warning: declaration uses `sorry`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:209:26: warning: This simp argument is unused:
+  List.getElem?_map
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [KeyValues]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:243:15: error(lean.inferBinderTypeFailed): Failed to infer type of binder `parse`
+
+Note: Because this declaration's type has been explicitly provided, all parameter types and holes (e.g., `_`) in its header are resolved before its body is processed; information from the declaration body cannot be used to infer what these values should be
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:284:14: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case length_nonnegative.refine_1
+Φ : List Pred
+p : Pred
+parse : String → Option Target
+ρ : Nat → Value
+hΦ : Satisfies parse ρ Φ
+t : Term
+a✝ : Entails Φ (Pred.isList t)
+xs : List Value
+hx : Term.eval ρ t = some (Value.list xs)
+⊢ KeyValues ρ [t.length] fun x => ↑xs.length
+'P4.Entails.sound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Entails.bind' depends on axioms: [propext, Quot.sound]
+'P4.Entails.cut' depends on axioms: [propext]
+'P4.Pred.holds_bind' depends on axioms: [propext, sorryAx, Quot.sound]
+'P4.Pred.open_bind' depends on axioms: [sorryAx]
+        0.86 real         0.74 user         0.33 sys
+time: sysctl kern.clockrate: Operation not permitted

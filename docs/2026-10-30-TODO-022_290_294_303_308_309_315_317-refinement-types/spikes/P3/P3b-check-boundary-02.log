@@ -1,0 +1,83 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:89:36: error: Application type mismatch: The argument
+  req
+has type
+  Const
+but is expected to have type
+  Val
+in the application
+  Outcome.val req
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:94:60: warning: `String.data` has been deprecated: Use `String.toList` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:94:60: error: Function expected at
+  "Http.ClientRequest".data
+but this term has type
+  List Char
+
+Note: Expected a function because this term is being applied to the argument
+  []
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:102:60: error: unsolved goals
+P : Benitoite.Release.Program
+B : Builtins
+Ψ : StoreTy
+hP : P.cons "Http.ClientRequest" = some clientDecl
+⊢ Ty.WF 0 0 (Ty.substAt 0 [] [] (Ty.data "Pair" [Ty.base BaseTy.string, Ty.base BaseTy.string]))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:102:77: warning: This simp argument is unused:
+  Ty.WF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [pairTy, Ty.WFList]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:102:84: warning: This simp argument is unused:
+  Ty.WFList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [pairTy, Ty.WF]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:109:2: error: unsolved goals
+case a
+P : Benitoite.Release.Program
+B : Builtins
+Ψ : StoreTy
+⊢ Benitoite.Scope.Domain.Kind.endpoint =
+    (Benitoite.Scope.Domain.Target.endpoint
+        { host := Benitoite.Scope.Domain.HostTarget.name ["api", "example", "com"], port := 443 }).kind
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:109:10: warning: declaration uses `sorry`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:117:65: error: Application type mismatch: The argument
+  defaultRequest
+has type
+  Val
+but is expected to have type
+  Const
+in the application
+  Val.checkedRequest apiT defaultRequest
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:121:4: error: unsolved goals
+case left.a
+P : Benitoite.Release.Program
+B : Builtins
+Ψ : StoreTy
+hP : P.cons "Http.ClientRequest" = some clientDecl
+⊢ Benitoite.Scope.Domain.Kind.endpoint =
+    (Benitoite.Scope.Domain.Target.endpoint
+        { host := Benitoite.Scope.Domain.HostTarget.name ["api", "example", "com"], port := 443 }).kind
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:123:4: error: unsolved goals
+case left.a
+P : Benitoite.Release.Program
+B : Builtins
+Ψ : StoreTy
+hP : P.cons "Http.ClientRequest" = some clientDecl
+⊢ sorry () = ?left.n
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:120:2: error: unsolved goals
+case left.n
+P : Benitoite.Release.Program
+B : Builtins
+Ψ : StoreTy
+hP : P.cons "Http.ClientRequest" = some clientDecl
+⊢ OpaqueName
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-BoundaryProofs.lean:121:12: warning: declaration uses `sorry`
+'P3bBoundary.literal_desugar_preserves' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P3bBoundary.shapeAt_of_target' depends on axioms: [propext]
+'P3bBoundary.old_checked_request_without_content' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P3bBoundary.old_checkedRequest_mismatch' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+        0.50 real         0.44 user         0.17 sys
+time: sysctl kern.clockrate: Operation not permitted

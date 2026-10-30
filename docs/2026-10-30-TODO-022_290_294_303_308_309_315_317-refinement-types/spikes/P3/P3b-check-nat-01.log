@@ -1,0 +1,13 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Nat.lean:131:55: error: failed to synthesize
+  Decidable ¬Pred.WF 2 (Pred.le (Term.var 2) (Term.integer 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Nat.lean:132:72: error: failed to synthesize
+  Decidable (RefTy.WF 1 2 3 { carrier := (Ty.tvar 1).list, predicate := Pred.le (Term.var 0) (Term.var 3) })
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+'P3bNat.Le.shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P3bNat.RefTy.shift_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P3bNat.up_shiftIndex' depends on axioms: [propext, Quot.sound]
+        0.47 real         0.30 user         0.17 sys
+time: sysctl kern.clockrate: Operation not permitted

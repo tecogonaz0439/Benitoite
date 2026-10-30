@@ -1,0 +1,1375 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1862:22: error(lean.unknownIdentifier): Unknown identifier `ite_falsel`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1863:2: error: Type mismatch
+  hn k (Decidable.byContradiction fun a => put_finite._proof_1_3 n k hk hkl a)
+has type
+  m k = none
+but is expected to have type
+  (if k = l then some a else m k) = none
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1862:18: warning: This simp argument is unused:
+  hk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [put, ite_falsel]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1941:2: error: unsolved goals
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Ty T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl _x) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Ty T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V, a✝²⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ : Ty T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V✝, a✝.list⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+h✝ : a✝² ≍ a.list
+h : a✝² = a.list
+⊢ sizeOf a ≤ sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝² :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Ty T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl _x) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a : Ty T E R V
+a✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V, a⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+fs✝ : Fields T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V✝, Ty.record fs✝⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+fs : Fields T E R V
+h✝ : a ≍ Ty.record fs
+h : a = Ty.record fs
+⊢ sizeOf fs ≤ sizeOf fs✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Ty T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl _x) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Ty T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V, a✝²⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ : Ty T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V✝, a✝.reference⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+h✝ : a✝² ≍ a.reference
+h : a✝² = a.reference
+⊢ sizeOf a ≤ sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Ty T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl _x) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Ty T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V, a✝²⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ : Ty T E R V✝
+p✝ : Pred (Option V✝)
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V✝, a✝.refined p✝⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+p : Pred (Option V)
+h✝ : a✝² ≍ a.refined p
+h : a✝² = a.refined p
+⊢ sizeOf a ≤ sizeOf p✝ + sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝² :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Ty T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl _x) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a : Ty T E R V
+a✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V, a⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+ts✝ : Tel T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inl ⟨V✝, Ty.fn ts✝⟩) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+ts : Tel T E R V
+h✝ : a ≍ Ty.fn ts
+h : a = Ty.fn ts
+⊢ sizeOf ts ≤ sizeOf ts✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1954:2: error: unsolved goals
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Tel T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl _x)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Tel T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V, a✝²⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ : Ty T E R V✝
+e✝ : Eff T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V✝, Tel.done a✝ e✝⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+e : Eff T E R V
+h✝ : a✝² ≍ Tel.done a e
+h : a✝² = Tel.done a e
+⊢ sizeOf a ≤ sizeOf e✝ + sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Tel T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl _x)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Tel T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V, a✝²⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ : Ty T E R V✝
+e✝ : Eff T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V✝, Tel.done a✝ e✝⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+e : Eff T E R V
+h✝ : a✝² ≍ Tel.done a e
+h : a✝² = Tel.done a e
+⊢ sizeOf e ≤ sizeOf e✝ + sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Tel T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl _x)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Tel T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V, a✝²⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+n : String
+a✝ : Ty T E R V✝
+rest✝ : Tel T E R (Option V✝)
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V✝, Tel.param n a✝ rest✝⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+rest : Tel T E R (Option V)
+h✝ : a✝² ≍ Tel.param n a rest
+h : a✝² = Tel.param n a rest
+⊢ sizeOf a ≤ sizeOf n + sizeOf rest✝ + sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Tel T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl _x)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Tel T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V, a✝²⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+n : String
+a✝ : Ty T E R V✝
+rest✝ : Tel T E R (Option V✝)
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inl ⟨V✝, Tel.param n a✝ rest✝⟩)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+rest : Tel T E R (Option V)
+h✝ : a✝² ≍ Tel.param n a rest
+h : a✝² = Tel.param n a rest
+⊢ sizeOf rest ≤ sizeOf n + sizeOf rest✝ + sizeOf a✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1948:2: error: unsolved goals
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁶ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝¹ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝¹) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr _x✝)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Eff T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl _x))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Eff T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl ⟨V, a✝²⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ : Ty T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl ⟨V✝, Eff.fail a✝⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+h✝ : a✝² ≍ Eff.fail a
+h : a✝² = Eff.fail a
+⊢ sizeOf a ≤ sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁶ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝¹ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝¹) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr _x✝)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Eff T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl _x))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Eff T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl ⟨V, a✝²⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ b✝ : Eff T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl ⟨V✝, a✝.union b✝⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a b : Eff T E R V
+h✝ : a✝² ≍ a.union b
+h : a✝² = a.union b
+⊢ sizeOf a ≤ sizeOf a✝ + sizeOf b✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁶ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝¹ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝¹) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr _x✝)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Eff T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl _x))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Eff T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl ⟨V, a✝²⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+a✝ b✝ : Eff T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inl ⟨V✝, a✝.union b✝⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a b : Eff T E R V
+h✝ : a✝² ≍ a.union b
+h : a✝² = a.union b
+⊢ sizeOf b ≤ sizeOf a✝ + sizeOf b✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1960:2: error: unsolved goals
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁶ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝¹ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝¹) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr _x✝)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Fields T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inr _x))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Fields T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inr ⟨V, a✝²⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+n : String
+a✝ : Ty T E R V✝
+rest✝ : Fields T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inr ⟨V✝, Fields.cons n a✝ rest✝⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+rest : Fields T E R V
+h✝ : a✝² ≍ Fields.cons n a rest
+h : a✝² = Fields.cons n a rest
+⊢ sizeOf a ≤ sizeOf n + sizeOf rest✝ + sizeOf a✝
+
+T E R : Type
+x✝¹ : (V : Type) ×' Ty T E R V ⊕' (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁶ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y x✝¹ →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝¹ : (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁵ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr _x✝¹) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x✝ : (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V
+a✝⁴ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr _x✝)) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+_x : (V : Type) ×' Fields T E R V
+a✝³ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inr _x))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V : Type
+a✝² : Fields T E R V
+a✝¹ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inr ⟨V, a✝²⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+V✝ : Type
+n : String
+a✝ : Ty T E R V✝
+rest✝ : Fields T E R V✝
+x✝ :
+  ∀
+    (y :
+      (V : Type) ×' Ty T E R V ⊕'
+        (V : Type) ×' Tel T E R V ⊕' (V : Type) ×' Eff T E R V ⊕' (V : Type) ×' Fields T E R V),
+    InvImage (fun x1 x2 => x1 < x2)
+        (fun x =>
+          PSum.casesOn x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+            PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+              PSum.casesOn _x (fun _x => PSigma.casesOn _x fun V a => sizeOf a) fun _x =>
+                PSigma.casesOn _x fun V a => sizeOf a)
+        y (PSum.inr (PSum.inr (PSum.inr ⟨V✝, Fields.cons n a✝ rest✝⟩))) →
+      PSum.casesOn y (fun _x => Ty.vbind Expr.var _x.2 = _x.2) fun _x =>
+        PSum.casesOn _x (fun _x => Tel.vbind Expr.var _x.2 = _x.2) fun _x =>
+          PSum.casesOn _x (fun _x => Eff.vbind Expr.var _x.2 = _x.2) fun _x => Fields.vbind Expr.var _x.2 = _x.2
+h✝¹ : V = V✝
+a : Ty T E R V
+rest : Fields T E R V
+h✝ : a✝² ≍ Fields.cons n a rest
+h : a✝² = Fields.cons n a rest
+⊢ sizeOf rest ≤ sizeOf n + sizeOf rest✝ + sizeOf a✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1941:48: warning: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  [apply] simp +arith
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1948:48: warning: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  [apply] simp +arith
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1954:48: warning: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  [apply] simp +arith
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1960:48: warning: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  [apply] simp +arith
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1993:12: error: Type mismatch: After simplification, term
+  hv
+ has type
+  @VTy Empty D Ψ emptyEnv (fun x => True) (SVal.lit v) a
+but is expected to have type
+  @VTy Empty D Ψ emptyEnv (fun x => True) (plugVal v none) a
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2037:15: error: don't know how to synthesize implicit argument `Φ'`
+  @Subtype.subst One Empty (fun x => True) ?m.49 r (Ty.weakenClosed c) hp (plugVal v) fun x x_1 => trivial
+context:
+D : CodeSig
+Ψ : StoreTy
+s : Store
+body : SComp One
+k : Kont
+a c b : STy Empty
+r : STy One
+e : SEff One
+Eb : SEff Empty
+v : Value
+hs : StoreOk D Ψ s
+hv : VTy D Ψ emptyEnv (fun x => True) (SVal.lit v) a
+hb : CTy D Ψ (ctx1 a) (fun x => True) body r e
+hp : Subtype (fun x => True) r (Ty.weakenClosed c)
+he :
+  ∀ (w : World) (η : Interp Empty Empty Empty) (ρ : One → Value) (ev : Event),
+    Eff.Allows w η ρ e ev → Eff.Allows w η ρ (Eff.vbind emptyEnv Eb) ev
+hk : ContTy D Ψ k c b Eb
+hbody :
+  CTy D Ψ emptyEnv (fun x => True) (SComp.subst (plugVal v) body) (Ty.vbind (logicSub (plugVal v)) r)
+    (Eff.vbind (logicSub (plugVal v)) e)
+⊢ Path Empty
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2037:43: error(lean.inferBinderTypeFailed): Failed to infer binder type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2037:7: error: failed to infer `have` declaration type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:2035:57: error: unsolved goals
+D : CodeSig
+Ψ : StoreTy
+s : Store
+body : SComp One
+k : Kont
+a c b : STy Empty
+r : STy One
+e : SEff One
+Eb : SEff Empty
+v : Value
+hs : StoreOk D Ψ s
+hv : VTy D Ψ emptyEnv (fun x => True) (SVal.lit v) a
+hb : CTy D Ψ (ctx1 a) (fun x => True) body r e
+hp : Subtype (fun x => True) r (Ty.weakenClosed c)
+he :
+  ∀ (w : World) (η : Interp Empty Empty Empty) (ρ : One → Value) (ev : Event),
+    Eff.Allows w η ρ e ev → Eff.Allows w η ρ (Eff.vbind emptyEnv Eb) ev
+hk : ContTy D Ψ k c b Eb
+hbody :
+  CTy D Ψ emptyEnv (fun x => True) (SComp.subst (plugVal v) body) (Ty.vbind (logicSub (plugVal v)) r)
+    (Eff.vbind (logicSub (plugVal v)) e)
+⊢ StateTyE D Eb (Machine.run (SComp.subst (plugVal v) body) k s)
+        4.62 real         5.95 user         0.31 sys
+time: sysctl kern.clockrate: Operation not permitted

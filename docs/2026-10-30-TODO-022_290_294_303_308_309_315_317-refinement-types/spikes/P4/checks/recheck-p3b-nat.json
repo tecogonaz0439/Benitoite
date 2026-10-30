@@ -1,0 +1,19 @@
+{
+  "command_exit_code": 0,
+  "time_exit_code": 1,
+  "name": "recheck-p3b-nat",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Nat.lean"
+  ],
+  "started": "2026-10-30T08:08:01.743250+00:00",
+  "elapsed_seconds": 0.457871958,
+  "exit_code": 1,
+  "timeout": false,
+  "log": "checks/recheck-p3b-nat.log",
+  "max_rss_bytes": null
+}

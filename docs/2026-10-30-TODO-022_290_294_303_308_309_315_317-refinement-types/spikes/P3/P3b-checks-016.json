@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-l",
+    "/bin/sh",
+    "-c",
+    "lake env lean -M 12288 \"$1\"; r=$?; echo \"$r\" > \"$2\"; exit \"$r\"",
+    "lean-check",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean",
+    "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-checks-016.lean-exit"
+  ],
+  "cwd": "<repo>/formal",
+  "time_exit": 1,
+  "lean_exit": "1",
+  "elapsed_s": 3.410071042,
+  "auxiliary_ru_maxrss_bytes": 835944448,
+  "time_l_rss_available": false
+}

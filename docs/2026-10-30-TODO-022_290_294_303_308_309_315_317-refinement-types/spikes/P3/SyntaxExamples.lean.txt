@@ -1,0 +1,75 @@
+-- P3 の構文判断を使う具体の依存例。Syntax.lean の namespace P3 内へ連結する。
+namespace Concrete
+def yBound : STy One := .refined .int
+  (.and (.le (.lit (.int 0)) (.var none))
+    (.le (.var none) (.var (some none))))
+def resultY : STy Two := Ty.vbind (Expr.var ∘ some) yBound
+def exampleSig : STel Empty := telescope2 .int yBound resultY .empty
+def codes : CodeSig := fun _ => some exampleSig
+def noStore : StoreTy := fun _ => none
+def noValues : Store := fun _ => none
+
+theorem argument2 : VTy codes noStore emptyEnv (fun _ => True) (.lit (.int 2))
+    (Ty.vbind (logicSub (extendSub emptyEnv (.lit (.int 3)))) yBound) := by
+  apply VTy.V_Refine VTy.V_Int
+  intro ρ _
+  simp [Pred.bind, Pred.Holds, Expr.eval, upExpr, logicSub, extendSub,
+    SVal.expr, SVal.eval, Expr.bind, Expr.rename, extend]
+
+theorem body_return : CTy codes noStore (ctx2 .int yBound) (fun _ => True)
+    (.ret (.var none)) resultY .empty := .C_Return (.V_Var rfl)
+
+theorem dependent_function_beta :
+    CTy codes noStore emptyEnv (fun _ => True)
+      (.app (.lit (.closure 0)) [.lit (.int 3), .lit (.int 2)])
+      (Ty.vbind (logicSub (subst2 (.lit (.int 3)) (.lit (.int 2)))) resultY) .empty ∧
+    CTy codes noStore emptyEnv (fun _ => True) (.ret (.lit (.int 2)))
+      (Ty.vbind (logicSub (subst2 (.lit (.int 3)) (.lit (.int 2)))) resultY) .empty := by
+  exact function_beta_preservation (code := 0) (a := .int) (b := yBound)
+    (r := resultY) (e := .empty) rfl body_return VTy.V_Int argument2 .beta
+
+theorem dependent_fail_beta :
+    CTy codes noStore emptyEnv (fun _ => True) (.raise (.lit (.int 2)))
+      (Ty.vbind (logicSub (subst2 (.lit (.int 3)) (.lit (.int 2)))) resultY)
+      (Eff.vbind (logicSub (subst2 (.lit (.int 3)) (.lit (.int 2)))) (.fail resultY)) := by
+  exact beta_two_substitution (a := .int) (b := yBound) (r := resultY)
+    (e := .fail resultY) (.C_Raise (.V_Var (x := none) rfl)) VTy.V_Int argument2
+
+theorem empty_store : StoreOk codes noStore noValues := by
+  refine ⟨⟨0, fun _ _ => rfl⟩, ?_, ?_⟩
+  · intro l; constructor <;> rintro ⟨_, h⟩ <;> cases h
+  · intro l a v h; cases h
+
+theorem allocate_and_write : StoreOk codes (put noStore 0 .int)
+    (put (put noValues 0 (.int 2)) 0 (.int 3)) := by
+  have ha := StoreOk.allocate (l := 0) (a := .int) empty_store rfl (v := .int 2) VTy.V_Int
+  exact ha.write (by simp [put]) VTy.V_Int
+
+def dependentResult : STy One := .refined .int (.eq (.var none) (.var (some none)))
+theorem dependent_let_body : CTy codes noStore (ctx1 .int) (fun _ => True)
+    (.ret (.var none)) dependentResult .empty := by
+  apply CTy.C_Return
+  apply VTy.V_Refine (VTy.V_Var rfl)
+  intro ρ _
+  exact ⟨ρ none, rfl, rfl⟩
+
+theorem dependent_let_pop : StateTyE codes .empty
+    (.run (.ret (.lit (.int 2))) .halt noValues) := by
+  apply let_pop_preserves (a := .int) (c := .int) (b := .int)
+    (r := dependentResult) (e := .empty) (v := .int 2) empty_store VTy.V_Int dependent_let_body
+  · intro w η ρ _ x hx
+    exact hx.1
+  · intro w η ρ ev h; cases h
+  · exact .K_Empty
+
+#print axioms dependent_function_beta
+#print axioms dependent_fail_beta
+#print axioms allocate_and_write
+#print axioms dependent_let_pop
+end Concrete
+#print axioms VTy.subst
+#print axioms CTy.subst
+#print axioms ArgsTy.subst
+#print axioms function_beta_preservation
+#print axioms StoreOk.allocate
+#print axioms let_pop_preserves

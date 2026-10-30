@@ -1,0 +1,102 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1794:2: error: Tactic `apply` failed: could not unify the conclusion of `param hy`
+  ArgsTy D Ψ Γ Φ (y :: ?m.91) (Tel.param ?m.92 (Ty.vbind (logicSub (extendSub emptyEnv x)) b) ?m.94) ?m.95 ?m.96
+with the goal
+  ArgsTy D Ψ Γ Φ [y]
+    (Tel.param "y" (Ty.vbind (logicSub (one x)) (Ty.vbind (upExpr (logicSub emptyEnv)) b))
+      (Tel.done (Ty.vbind (upExpr (logicSub (one x))) (Ty.vbind (upExpr (upExpr (logicSub emptyEnv))) r))
+        (Eff.vbind (upExpr (logicSub (one x))) (Eff.vbind (upExpr (upExpr (logicSub emptyEnv))) e))))
+    (Ty.vbind (logicSub (subst2 x y)) r) (Eff.vbind (logicSub (subst2 x y)) e)
+
+Note: The full type of `param hy` is
+  ArgsTy D Ψ Γ Φ ?m.91 (Tel.vbind (logicSub (one y)) ?m.94) ?m.95 ?m.96 →
+    ArgsTy D Ψ Γ Φ (y :: ?m.91) (Tel.param ?m.92 (Ty.vbind (logicSub (extendSub emptyEnv x)) b) ?m.94) ?m.95 ?m.96
+
+V : Type
+D : CodeSig
+Ψ : StoreTy
+Γ : Ctx V
+Φ : Path V
+a : STy Empty
+b : STy (Option Empty)
+r : STy Two
+e : SEff Two
+x y : SVal V
+hx : VTy D Ψ Γ Φ x (Ty.weakenClosed a)
+hy : VTy D Ψ Γ Φ y (Ty.vbind (logicSub (extendSub emptyEnv x)) b)
+he : emptyEnv = logicSub emptyEnv
+⊢ ArgsTy D Ψ Γ Φ [y]
+    (Tel.param "y" (Ty.vbind (logicSub (one x)) (Ty.vbind (upExpr (logicSub emptyEnv)) b))
+      (Tel.done (Ty.vbind (upExpr (logicSub (one x))) (Ty.vbind (upExpr (upExpr (logicSub emptyEnv))) r))
+        (Eff.vbind (upExpr (logicSub (one x))) (Eff.vbind (upExpr (upExpr (logicSub emptyEnv))) e))))
+    (Ty.vbind (logicSub (subst2 x y)) r) (Eff.vbind (logicSub (subst2 x y)) e)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1793:13: warning: This simp argument is unused:
+  Tel.vbind_comp
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [up_one_comp, Tel.vbind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1793:29: warning: This simp argument is unused:
+  up_one_comp
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Tel.vbind_comp, Tel.vbind]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1856:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1868:22: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1870:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1875:46: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1875:29: error: Type mismatch: After simplification, term
+  hw
+ has type
+  (if True then some v else s l) = some w
+but is expected to have type
+  v = w
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1877:49: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1868:22: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [put]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1883:18: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1894:31: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1895:23: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1899:46: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1899:29: error: Type mismatch: After simplification, term
+  hb
+ has type
+  (if True then some a else Ψ l) = some b
+but is expected to have type
+  a = b
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1900:46: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1900:29: error: Type mismatch: After simplification, term
+  hw
+ has type
+  (if True then some v else s l) = some w
+but is expected to have type
+  v = w
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1903:25: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1904:25: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1894:31: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [put]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        4.39 real         5.63 user         0.29 sys
+time: sysctl kern.clockrate: Operation not permitted

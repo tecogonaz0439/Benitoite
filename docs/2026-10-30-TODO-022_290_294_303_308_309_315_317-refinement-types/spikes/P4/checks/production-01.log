@@ -1,0 +1,21 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:85:15: error(lean.unknownIdentifier): Unknown identifier `P`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:85:17: error(lean.unknownIdentifier): Unknown identifier `B`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:85:19: error(lean.unknownIdentifier): Unknown identifier `Ψ`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:102:16: error(lean.unknownIdentifier): Unknown identifier `P`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:102:18: error(lean.unknownIdentifier): Unknown identifier `B`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:150:24: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.parseUrl`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:150:75: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.apiT`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:152:4: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.parseUrl`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:152:24: error(lean.unknownIdentifier): Unknown identifier `ModelHttp.apiUrl`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Production.lean:150:93: error: unsolved goals
+⊢ ¬sorry () "" = some (sorry ())
+'P4.Production.Typed.native_origin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.request_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.int_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.list_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.record_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.reference_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.request_refined' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Production.old_request_mismatch' depends on axioms: [propext, sorryAx]
+        0.77 real         0.62 user         0.31 sys
+time: sysctl kern.clockrate: Operation not permitted

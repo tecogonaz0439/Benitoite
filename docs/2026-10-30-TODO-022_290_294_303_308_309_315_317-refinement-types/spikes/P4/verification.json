@@ -1,0 +1,531 @@
+{
+  "checked_at": "2026-10-30T08:39:11.037762+00:00",
+  "final_checks": [
+    [
+      "final-p2",
+      0
+    ],
+    [
+      "final-logic",
+      0
+    ],
+    [
+      "final-context",
+      0
+    ],
+    [
+      "final-derivations",
+      0
+    ],
+    [
+      "final-m6",
+      0
+    ],
+    [
+      "final-production",
+      0
+    ],
+    [
+      "final-cases",
+      0
+    ]
+  ],
+  "forbidden_lean_tokens": {},
+  "standard_axioms_only": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "axiom_reports": [
+    {
+      "declaration": "P2.normalize_correct",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P2.derive_sound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P2.refute_sound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P2.check_sound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P2.implication_sound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P2.purify_formula_correct",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P2.source_check_sound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Entails.sound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Entails.bind",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Entails.cut",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "declaration": "P4.Pred.holds_bind",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Pred.open_bind",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Typed.shift",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Ctx.extend_facts",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Ctx.extend_wf",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Ctx.extend_satisfies",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.closed_embedding",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Typed.canonical",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Typed.subst",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.context_map_of_typed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Le.substAt",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Le.shift",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.RefTy.shift_wf",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.facts_of_values",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.branchFacts_sound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.branchFacts_bind",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.TelLe.bind",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.FieldsLe.bind",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.adapter_le",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.TyLe.bind",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.TyLe.cut",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.TelLe.cut",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.Covers.bind",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "declaration": "P4.Derivation.TyQ.assume_bind",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.M6.one_key_correct",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "declaration": "P4.M6.relaxed_length_correct",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.M6.checked_subtype",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.M6.PreparedLeaf.subtype",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.M6.length_subtype",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.M6.length_subtype_bind",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.old_bare_request_typed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.new_bare_request_rejected",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "declaration": "P4.Production.checked_list_canonical",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.concrete_request",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.Typed.native_origin",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.request_canonical",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.int_refined",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.list_refined",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.record_refined",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.reference_refined",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.request_refined",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Production.old_request_mismatch",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Cases.closed_V_Sub",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Cases.moved_V_Sub",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Cases.sourceΓ_wf",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Cases.embedded_source",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Cases.list_source_predicate",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "P4.Cases.bad_integer_not_entailed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "p2_copy_matches": true,
+  "source_sha256": {
+    "Context.lean": "b46d7eb608334d30013c76527e5cdf21c22eee3bfc8ee0af32965127ecf3317c",
+    "Cases.lean": "a1b0a8e6016824981b78b3a5ef88601a5726986a71dd75671f52b0f0f57d6ad3",
+    "Logic.lean": "3b82092ab3ecd568b043efce62f04c764d23deee70d4c5ad7a8282219ba0dde1",
+    "Derivations.lean": "c1cf7bbe36f3f5e61f55dc6e7770f1fc65b1bda5db74efc4a42f3682b4e2e02c",
+    "P2.lean": "869092f0896445ae30f66e751110cf307de1295a5751266fc5793e442a925195",
+    "Production.lean": "df35aca27bc11b720a19b55dd15a15f86e7af795a15ce88451a80314812a613c",
+    "M6.lean": "fbbaca6d6bd4da45f013cd1a6ccd6d7ad417b3a5436b79d22d9fa9b078263e16"
+  },
+  "artifacts": {
+    "Context.lean": {
+      "source_mtime_ns": 1793348770603352034,
+      "olean_mtime_ns": 1793349439218559517
+    },
+    "Cases.lean": {
+      "source_mtime_ns": 1793349066719490427,
+      "olean_mtime_ns": 1793349442604309512
+    },
+    "Logic.lean": {
+      "source_mtime_ns": 1793349066719707260,
+      "olean_mtime_ns": 1793349438448938436
+    },
+    "Derivations.lean": {
+      "source_mtime_ns": 1793349115525844725,
+      "olean_mtime_ns": 1793349440137634652
+    },
+    "P2.lean": {
+      "source_mtime_ns": 1793347751697433513,
+      "olean_mtime_ns": 1793349437514209093
+    },
+    "Production.lean": {
+      "source_mtime_ns": 1793348892159345752,
+      "olean_mtime_ns": 1793349441809591949
+    },
+    "M6.lean": {
+      "source_mtime_ns": 1793349041517815649,
+      "olean_mtime_ns": 1793349440892624570
+    }
+  },
+  "protected_snapshot_started_at": "2026-10-30T08:29:00.796142+00:00",
+  "protected_files_compared": 2227,
+  "protected_files_changed": [],
+  "protected_snapshot_note": "作業途中から最終点検までの比較。全期間の開始前の比較ではない。",
+  "independent_review": false,
+  "max_rss_available": false
+}

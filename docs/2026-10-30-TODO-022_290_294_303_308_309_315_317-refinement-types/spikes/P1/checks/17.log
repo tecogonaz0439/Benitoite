@@ -1,0 +1,9 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:603:20: error: Expected resulting type of eliminator to be an application of one of its parameters (the motive), but found
+  Ty.Mem w η ρ a✝² x
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:653:20: error: Expected resulting type of eliminator to be an application of one of its parameters (the motive), but found
+  Tel.Pre w η ρ a✝³ vs ∧
+    ∀ (result : Value) (trace : List Event), Tel.Post w η ρ a✝³ vs result trace → Tel.Post w η ρ a✝² vs result trace
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:703:20: error: Expected resulting type of eliminator to be an application of one of its parameters (the motive), but found
+  Fields.Mem w η ρ a✝² xs
+        2.86 real         3.21 user         0.23 sys
+time: sysctl kern.clockrate: Operation not permitted

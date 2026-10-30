@@ -1,0 +1,23 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:953:14: error(lean.invalidField): Invalid field `typed_substitution`: The environment does not contain `Function.typed_substitution`, so it is not possible to project the field `typed_substitution` from an expression
+  hbody
+of type
+  ∀ (ρ : Option (Option V) → Value),
+    ArgsTwo w η Φ a b ρ → ∃ out, Comp.eval ρ body = some out ∧ Result.Typed w η ρ r ε out
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:954:8: error: No goals to be solved
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1001:42: error: Application type mismatch: The argument
+  hy
+has type
+  Ty.Mem w η (extend cl.env x) cl.second y
+but is expected to have type
+  Ty.Mem w η (fun z => ?m.52 (some z)) cl.second (?m.52 none)
+in the application
+  ⟨?m.60, hy⟩
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1017:11: error(lean.invalidField): Invalid field `typed_substitution`: The environment does not contain `Function.typed_substitution`, so it is not possible to project the field `typed_substitution` from an expression
+  hc
+of type
+  ∀ (ρ : Option V → Value),
+    (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) a (ρ none)) ρ →
+      ∃ out, Comp.eval ρ body = some out ∧ Result.Typed w η ρ r ε out
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1018:8: error: No goals to be solved
+        3.11 real         3.70 user         0.25 sys
+time: sysctl kern.clockrate: Operation not permitted

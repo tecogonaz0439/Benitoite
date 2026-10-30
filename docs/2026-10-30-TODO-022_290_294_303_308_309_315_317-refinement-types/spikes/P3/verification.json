@@ -1,0 +1,49 @@
+{
+  "protected_count": 1266,
+  "protected_changed": [],
+  "protected_missing": [],
+  "broken_links": [],
+  "proofs": {
+    "Syntax.lean": {
+      "sha256": "22265a55c8ac1703d6152c1d2151f5be380b35928822ecdd76538116bb19fb94",
+      "lines": 2156,
+      "holes": 0,
+      "custom_axioms": 0
+    },
+    "M6.lean": {
+      "sha256": "c56853836801d1253ea0bc012ed99dd5903839de5c017a91f82e89938bc69fa1",
+      "lines": 2217,
+      "holes": 0,
+      "custom_axioms": 0
+    }
+  },
+  "syntax_p1_prefix_matches": true,
+  "m6_concatenation_matches": true,
+  "final_syntax": {
+    "command": [
+      "/usr/bin/time",
+      "-l",
+      "/bin/sh",
+      "-c",
+      "lake env lean -M 12288 \"$1\"; r=$?; echo \"$r\" > \"$2\"; exit \"$r\"",
+      "lean-check",
+      "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean",
+      "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/checks/016.lean-exit"
+    ],
+    "cwd": "<repo>/formal",
+    "time_exit": 1,
+    "lean_exit": "0",
+    "elapsed_s": 4.624518541,
+    "ru_maxrss": 882917376,
+    "unit": "bytes on macOS; resource RUSAGE_CHILDREN auxiliary measurement",
+    "time_l_rss_available": false
+  },
+  "final_m6": {
+    "target": "<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/M6.lean",
+    "lean_exit": 0,
+    "timeout": false,
+    "elapsed_seconds": 5.232878459,
+    "auxiliary_ru_maxrss_bytes": 1568571392,
+    "time_l_maxrss": "outer /usr/bin/time -l log; may be unavailable under sandbox"
+  }
+}

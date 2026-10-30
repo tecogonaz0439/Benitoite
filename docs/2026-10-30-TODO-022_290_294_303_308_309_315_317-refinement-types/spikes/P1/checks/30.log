@@ -1,0 +1,32 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1311:14: error: Type mismatch
+  refl
+has type
+  ∀ (a : Option (Tel ?m.46 ?m.47 ?m.48 ?m.49)), FnRel ?m.50 ?m.51 ?m.52 a a
+but is expected to have type
+  FnRel w η Φ (some a) (some a)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1316:4: error: Tactic `assumption` failed
+
+case some.some.some
+T E R V : Type
+w : World
+η : Interp T E R
+Φ : (V → Value) → Prop
+val✝² val✝¹ : Tel T E R V
+h₁ : TelClosure w η Φ val✝² val✝¹
+val✝ : Tel T E R V
+h₂ : TelClosure w η Φ val✝¹ val✝
+⊢ TelClosure w η Φ val✝² val✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1317:2: error: No goals to be solved
+'P1.TyLe.fn_inversion' depends on axioms: [propext, sorryAx]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+        3.61 real         4.47 user         0.26 sys
+time: sysctl kern.clockrate: Operation not permitted

@@ -1,0 +1,144 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:616:1: error: unsolved goals
+T E R V T' E' R' V' : Type
+θ : Sub T E R V T' E' R' V'
+η : Interp T' E' R'
+a : Atom E R
+_x : (f : Eff T E R V) ×' a ∈ f.atoms
+a✝¹ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.atoms),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y _x →
+      Covers η (bind θ y.1) (Atom.expand θ a)
+f✝ : Eff T E R V
+h✝³ : a ∈ f✝.atoms
+a✝ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.atoms),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y ⟨f✝, h✝³⟩ →
+      Covers η (bind θ y.1) (Atom.expand θ a)
+V✝ : Type
+h✝² : V = V✝
+f g : Eff T E R V
+h✝¹ : f✝ ≍ f.union g
+h✝ : a ∈ (f.union g).atoms
+h : a ∈ f.atoms
+⊢ sizeOf f < sizeOf f✝
+
+T E R V T' E' R' V' : Type
+θ : Sub T E R V T' E' R' V'
+η : Interp T' E' R'
+a : Atom E R
+_x : (f : Eff T E R V) ×' a ∈ f.atoms
+a✝¹ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.atoms),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y _x →
+      Covers η (bind θ y.1) (Atom.expand θ a)
+f✝ : Eff T E R V
+h✝³ : a ∈ f✝.atoms
+a✝ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.atoms),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y ⟨f✝, h✝³⟩ →
+      Covers η (bind θ y.1) (Atom.expand θ a)
+V✝ : Type
+h✝² : V = V✝
+f g : Eff T E R V
+h✝¹ : f✝ ≍ f.union g
+h✝ : a ∈ (f.union g).atoms
+h : a ∈ g.atoms
+⊢ sizeOf g < sizeOf f✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:631:1: error: unsolved goals
+T E R V T' E' R' V' : Type
+θ : Sub T E R V T' E' R' V'
+a : Ty T E R V
+_x : (f : Eff T E R V) ×' a ∈ f.fails
+a✝¹ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.fails),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y _x →
+      Ty.bind θ a ∈ (bind θ y.1).fails
+f✝ : Eff T E R V
+h✝³ : a ∈ f✝.fails
+a✝ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.fails),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y ⟨f✝, h✝³⟩ →
+      Ty.bind θ a ∈ (bind θ y.1).fails
+V✝ : Type
+h✝² : V = V✝
+f g : Eff T E R V
+h✝¹ : f✝ ≍ f.union g
+h✝ : a ∈ (f.union g).fails
+h : a ∈ f.fails
+⊢ sizeOf f < sizeOf f✝
+
+T E R V T' E' R' V' : Type
+θ : Sub T E R V T' E' R' V'
+a : Ty T E R V
+_x : (f : Eff T E R V) ×' a ∈ f.fails
+a✝¹ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.fails),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y _x →
+      Ty.bind θ a ∈ (bind θ y.1).fails
+f✝ : Eff T E R V
+h✝³ : a ∈ f✝.fails
+a✝ :
+  ∀ (y : (f : Eff T E R V) ×' a ∈ f.fails),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun f h => sizeOf f) y ⟨f✝, h✝³⟩ →
+      Ty.bind θ a ∈ (bind θ y.1).fails
+V✝ : Type
+h✝² : V = V✝
+f g : Eff T E R V
+h✝¹ : f✝ ≍ f.union g
+h✝ : a ∈ (f.union g).fails
+h : a ∈ g.fails
+⊢ sizeOf g < sizeOf f✝
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:673:1: error: unsolved goals
+T E R V T' E' R' V' : Type
+θ : Sub T E R V T' E' R' V'
+w : World
+η : Interp T' E' R'
+ρ : V' → Value
+o : Eff T E R V
+_x : (i : Eff T E R V) ×' Covers (θ.pull w η ρ) o i
+a✝¹ :
+  ∀ (y : (i : Eff T E R V) ×' Covers (θ.pull w η ρ) o i),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun i h => sizeOf i) y _x →
+      Covers η (bind θ o) (bind θ y.1)
+i : Eff T E R V
+h✝² : Covers (θ.pull w η ρ) o i
+a✝ :
+  ∀ (y : (i : Eff T E R V) ×' Covers (θ.pull w η ρ) o i),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun i h => sizeOf i) y ⟨i, h✝²⟩ →
+      Covers η (bind θ o) (bind θ y.1)
+V✝ : Type
+h✝¹ : V = V✝
+a b : Eff T E R V
+h✝ : i ≍ a.union b
+h : Covers (θ.pull w η ρ) o (a.union b)
+⊢ sizeOf a < sizeOf i
+
+T E R V T' E' R' V' : Type
+θ : Sub T E R V T' E' R' V'
+w : World
+η : Interp T' E' R'
+ρ : V' → Value
+o : Eff T E R V
+_x : (i : Eff T E R V) ×' Covers (θ.pull w η ρ) o i
+a✝¹ :
+  ∀ (y : (i : Eff T E R V) ×' Covers (θ.pull w η ρ) o i),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun i h => sizeOf i) y _x →
+      Covers η (bind θ o) (bind θ y.1)
+i : Eff T E R V
+h✝² : Covers (θ.pull w η ρ) o i
+a✝ :
+  ∀ (y : (i : Eff T E R V) ×' Covers (θ.pull w η ρ) o i),
+    InvImage (fun x1 x2 => x1 < x2) (fun x => PSigma.casesOn x fun i h => sizeOf i) y ⟨i, h✝²⟩ →
+      Covers η (bind θ o) (bind θ y.1)
+V✝ : Type
+h✝¹ : V = V✝
+a b : Eff T E R V
+h✝ : i ≍ a.union b
+h : Covers (θ.pull w η ρ) o (a.union b)
+⊢ sizeOf b < sizeOf i
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:789:5: error: unexpected token 'opaque'; expected identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:789:37: error: unexpected token '=>'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:817:2: error: Dependent elimination failed: Failed to solve equation
+  Tel.bind θ b = Tel.bind θ a
+        2.84 real         3.45 user         0.23 sys
+time: sysctl kern.clockrate: Operation not permitted

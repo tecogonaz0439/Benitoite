@@ -1,0 +1,140 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:529:4: error: Tactic `contradiction` failed
+
+case row.row
+T E R : Type
+η : Interp T E R
+ev : Event
+x✝¹ x✝ : E
+hb : Allows η (row x✝) ev
+h : x✝¹ = x✝
+⊢ Allows η (row x✝¹) ev
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:530:2: error: No goals to be solved
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:542:83: error: unknown tactic
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:563:53: error: don't know how to synthesize implicit argument `V`
+  @Pred.Holds (Option ?m.80) (extend ρ x) p
+context:
+T E R : Type
+w : World
+η : Interp T E R
+Φ : (?m.80 → Value) → Prop
+a : Ty T E R ?m.80
+p : Pred (Option ?m.80)
+ρ : ?m.80 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:563:62: error: don't know how to synthesize implicit argument `V`
+  @extend ?m.80 ρ x
+context:
+T E R : Type
+w : World
+η : Interp T E R
+Φ : (?m.80 → Value) → Prop
+a : Ty T E R ?m.80
+p : Pred (Option ?m.80)
+ρ : ?m.80 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:563:37: error: don't know how to synthesize implicit argument `V`
+  @Ty.Mem T E R ?m.80 w η ρ a x
+context:
+T E R : Type
+w : World
+η : Interp T E R
+Φ : (?m.80 → Value) → Prop
+a : Ty T E R ?m.80
+p : Pred (Option ?m.80)
+ρ : ?m.80 → Value
+x : Value
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:564:8: error: don't know how to synthesize implicit argument `V`
+  @TyLe T E R w η ?m.80 Φ a (a.refined p)
+context:
+T E R : Type
+w : World
+η : Interp T E R
+Φ : (?m.80 → Value) → Prop
+a : Ty T E R ?m.80
+p : Pred (Option ?m.80)
+h : ∀ (ρ : ?m.80 → Value), Φ ρ → ∀ (x : Value), ?m.53 → ?m.54
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:564:22: error: don't know how to synthesize implicit argument `V`
+  @Ty.refined T E R ?m.80 a p
+context:
+T E R : Type
+w : World
+η : Interp T E R
+Φ : (?m.80 → Value) → Prop
+a : Ty T E R ?m.80
+p : Pred (Option ?m.80)
+h : ∀ (ρ : ?m.80 → Value), Φ ρ → ∀ (x : Value), ?m.53 → ?m.54
+⊢ Type
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:563:23: error(lean.inferBinderTypeFailed): Failed to infer type of binder `ρ`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:591:34: error: Function expected at
+  TyLe
+but this term has type
+  ?m.5
+
+Note: Expected a function because this term is being applied to the argument
+  w
+
+Hint: The identifier `TyLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:608:7: error: unexpected token 'opaque'; expected identifier
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:595:44: error(lean.unknownIdentifier): Unknown identifier `a.Subtype`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:595:26: error: Function expected at
+  TyLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  w
+
+Hint: The identifier `TyLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:608:30: error: unexpected token '=>'; expected ':'
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:623:63: error(lean.unknownIdentifier): Unknown identifier `b.Pre`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:624:6: error(lean.unknownIdentifier): Unknown identifier `a.Pre`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:624:39: error(lean.unknownIdentifier): Unknown identifier `a.Post`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:624:70: error(lean.unknownIdentifier): Unknown identifier `b.Post`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:623:27: error: Function expected at
+  TelLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  w
+
+Hint: The identifier `TelLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:623:51: error: Function expected at
+  Φ
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  ρ
+
+Hint: The identifier `Φ` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:641:6: error(lean.unknownIdentifier): Unknown identifier `a.Mem`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:641:23: error(lean.unknownIdentifier): Unknown identifier `b.Mem`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:640:30: error: Function expected at
+  FieldsLe
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  w
+
+Hint: The identifier `FieldsLe` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:640:57: error: Function expected at
+  Φ
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  ρ
+
+Hint: The identifier `Φ` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:648:0: error: Missing name after `end`: Expected the current scope name `P1`
+
+Hint: To end the current scope `P1`, specify its name:
+  end ̲P̲1̲
+        2.63 real         2.93 user         0.22 sys
+time: sysctl kern.clockrate: Operation not permitted

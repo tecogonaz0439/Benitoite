@@ -1,0 +1,52 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1790:2: error: Tactic `apply` failed: could not unify the conclusion of `param hy`
+  ArgsTy D Ψ Γ Φ (y :: ?m.59) (Tel.param ?m.60 (Ty.vbind (logicSub (extendSub emptyEnv x)) b) ?m.62) ?m.63 ?m.64
+with the goal
+  ArgsTy D Ψ Γ Φ [y]
+    (Tel.vbind (fun x_1 => Expr.bind (logicSub (one x)) (upExpr emptyEnv x_1)) (Tel.param "y" b (Tel.done r e)))
+    (Ty.vbind (logicSub (subst2 x y)) r) (Eff.vbind (logicSub (subst2 x y)) e)
+
+Note: The full type of `param hy` is
+  ArgsTy D Ψ Γ Φ ?m.59 (Tel.vbind (logicSub (one y)) ?m.62) ?m.63 ?m.64 →
+    ArgsTy D Ψ Γ Φ (y :: ?m.59) (Tel.param ?m.60 (Ty.vbind (logicSub (extendSub emptyEnv x)) b) ?m.62) ?m.63 ?m.64
+
+V : Type
+D : CodeSig
+Ψ : StoreTy
+Γ : Ctx V
+Φ : Path V
+a : STy Empty
+b : STy (Option Empty)
+r : STy Two
+e : SEff Two
+x y : SVal V
+hx : VTy D Ψ Γ Φ x (Ty.weakenClosed a)
+hy : VTy D Ψ Γ Φ y (Ty.vbind (logicSub (extendSub emptyEnv x)) b)
+⊢ ArgsTy D Ψ Γ Φ [y]
+    (Tel.vbind (fun x_1 => Expr.bind (logicSub (one x)) (upExpr emptyEnv x_1)) (Tel.param "y" b (Tel.done r e)))
+    (Ty.vbind (logicSub (subst2 x y)) r) (Eff.vbind (logicSub (subst2 x y)) e)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1789:29: warning: This simp argument is unused:
+  up_one_comp
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Tel.vbind_comp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1812:14: error: Type mismatch: After simplification, term
+  hx
+ has type
+  @VTy V D Ψ Γ Φ x (Ty.weakenClosed a)
+but is expected to have type
+  @VTy V D Ψ Γ Φ (subst2 x y (some none)) (Ty.weakenClosed a)
+        4.35 real         5.51 user         0.29 sys
+time: sysctl kern.clockrate: Operation not permitted

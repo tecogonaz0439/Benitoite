@@ -1,0 +1,10 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1373:20: error: Application type mismatch: The argument
+  hn
+has type
+  ρ () = Value.int n
+but is expected to have type
+  Expr.eval (extend ρ x) (Expr.var (some ())) = some (Value.int n)
+in the application
+  And.intro hn
+        3.44 real         4.40 user         0.26 sys
+time: sysctl kern.clockrate: Operation not permitted

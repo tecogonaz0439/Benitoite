@@ -1,0 +1,120 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:126:2: error: The `induction` tactic does not support the type `P4.Derivation.TyQ` because it is mutually inductive
+
+Hint: Consider using the `cases` tactic instead
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:209:26: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case done
+Φ : List Pred
+a b : TyQ
+Φ✝ : List Pred
+a✝² b✝ : TyQ
+e✝ f✝ : EffQ
+a✝¹ : TyLe Φ✝ a✝² b✝
+he : Covers f✝ e✝
+ih : ∀ (Ψ : List Pred), (∀ (p : Pred), p ∈ Φ✝ → Entails Ψ p) → TyLe Ψ a✝² b✝
+Ψ✝ : List Pred
+a✝ : ∀ (p : Pred), p ∈ Φ✝ → Entails Ψ✝ p
+⊢ TelLe Ψ✝ (TelQ.done a✝² e✝) (TelQ.done b✝ f✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:210:29: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case param
+Φ : List Pred
+a b : TyQ
+Φ✝ : List Pred
+name✝ : String
+a✝³ b✝ : TyQ
+as✝ bs✝ : TelQ
+a✝² : TyLe Φ✝ b✝ a✝³
+a✝¹ : TelLe (b✝.assume ++ List.map Pred.lift Φ✝) as✝ bs✝
+ia : ∀ (Ψ : List Pred), (∀ (p : Pred), p ∈ Φ✝ → Entails Ψ p) → TyLe Ψ b✝ a✝³
+ir : ∀ (Ψ : List Pred), (∀ (p : Pred), p ∈ b✝.assume ++ List.map Pred.lift Φ✝ → Entails Ψ p) → TelLe Ψ as✝ bs✝
+Ψ✝ : List Pred
+a✝ : ∀ (p : Pred), p ∈ Φ✝ → Entails Ψ✝ p
+⊢ TelLe Ψ✝ (TelQ.param name✝ a✝³ as✝) (TelQ.param name✝ b✝ bs✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:211:17: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case nil
+Φ : List Pred
+a b : TyQ
+Φ✝ Ψ✝ : List Pred
+a✝ : ∀ (p : Pred), p ∈ Φ✝ → Entails Ψ✝ p
+⊢ FieldsLe Ψ✝ FieldsQ.nil FieldsQ.nil
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:212:28: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case cons
+Φ : List Pred
+a b : TyQ
+Φ✝ : List Pred
+name✝ : String
+a✝³ b✝ : TyQ
+as✝ bs✝ : FieldsQ
+a✝² : TyLe Φ✝ a✝³ b✝
+a✝¹ : FieldsLe Φ✝ as✝ bs✝
+ia : ∀ (Ψ : List Pred), (∀ (p : Pred), p ∈ Φ✝ → Entails Ψ p) → TyLe Ψ a✝³ b✝
+ir : ∀ (Ψ : List Pred), (∀ (p : Pred), p ∈ Φ✝ → Entails Ψ p) → FieldsLe Ψ as✝ bs✝
+Ψ✝ : List Pred
+a✝ : ∀ (p : Pred), p ∈ Φ✝ → Entails Ψ✝ p
+⊢ FieldsLe Ψ✝ (FieldsQ.cons name✝ a✝³ as✝) (FieldsQ.cons name✝ b✝ bs✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:220:20: error: Expected resulting type of eliminator to be an application of one of its parameters (the motive), but found
+  TelLe Ψ a✝² a✝¹
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:278:26: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case done
+Φ : List Pred
+a b : TyQ
+Φ✝ : List Pred
+a✝¹ b✝ : TyQ
+e✝ f✝ : EffQ
+a✝ : TyLe Φ✝ a✝¹ b✝
+he : Covers f✝ e✝
+ih : ∀ (θ : Sub), TyLe (List.map (Pred.bind θ.values) Φ✝) (TyQ.bind θ a✝¹) (TyQ.bind θ b✝)
+θ✝ : Sub
+⊢ TelLe (List.map (Pred.bind θ✝.values) Φ✝) (TelQ.bind θ✝ (TelQ.done a✝¹ e✝)) (TelQ.bind θ✝ (TelQ.done b✝ f✝))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:280:12: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case param
+Φ✝ : List Pred
+a✝² b✝ : TyQ
+Φ : List Pred
+name : String
+a b : TyQ
+as bs : TelQ
+a✝¹ : TyLe Φ b a
+a✝ : TelLe (b.assume ++ List.map Pred.lift Φ) as bs
+ia : ∀ (θ : Sub), TyLe (List.map (Pred.bind θ.values) Φ) (TyQ.bind θ b) (TyQ.bind θ a)
+ir :
+  ∀ (θ : Sub),
+    TelLe (List.map (Pred.bind θ.values) (b.assume ++ List.map Pred.lift Φ)) (TelQ.bind θ as) (TelQ.bind θ bs)
+θ✝ : Sub
+⊢ TelLe (List.map (Pred.bind θ✝.values) Φ) (TelQ.bind θ✝ (TelQ.param name a as)) (TelQ.bind θ✝ (TelQ.param name b bs))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:282:17: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case nil
+Φ : List Pred
+a b : TyQ
+Φ✝ : List Pred
+θ✝ : Sub
+⊢ FieldsLe (List.map (Pred.bind θ✝.values) Φ✝) (FieldsQ.bind θ✝ FieldsQ.nil) (FieldsQ.bind θ✝ FieldsQ.nil)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Derivations.lean:283:28: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case cons
+Φ : List Pred
+a b : TyQ
+Φ✝ : List Pred
+name✝ : String
+a✝² b✝ : TyQ
+as✝ bs✝ : FieldsQ
+a✝¹ : TyLe Φ✝ a✝² b✝
+a✝ : FieldsLe Φ✝ as✝ bs✝
+ia : ∀ (θ : Sub), TyLe (List.map (Pred.bind θ.values) Φ✝) (TyQ.bind θ a✝²) (TyQ.bind θ b✝)
+ir : ∀ (θ : Sub), FieldsLe (List.map (Pred.bind θ.values) Φ✝) (FieldsQ.bind θ as✝) (FieldsQ.bind θ bs✝)
+θ✝ : Sub
+⊢ FieldsLe (List.map (Pred.bind θ✝.values) Φ✝) (FieldsQ.bind θ✝ (FieldsQ.cons name✝ a✝² as✝))
+    (FieldsQ.bind θ✝ (FieldsQ.cons name✝ b✝ bs✝))
+'P4.Derivation.TyLe.bind' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Derivation.TyLe.cut' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Derivation.TelLe.cut' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'P4.Derivation.Covers.bind' depends on axioms: [propext]
+'P4.Derivation.TyQ.assume_bind' depends on axioms: [propext, sorryAx]
+        0.73 real         0.46 user         0.33 sys
+time: sysctl kern.clockrate: Operation not permitted

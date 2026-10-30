@@ -1,0 +1,90 @@
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, Quot.sound]
+'P1.Ty.bind_comp_membership' depends on axioms: [propext, Quot.sound]
+'P1.ContinuationOne.resume_preserves' depends on axioms: [propext]
+'P1.TyLe.fn_inversion' depends on axioms: [propext]
+'P1.TelClosure.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1492:38: error: Tactic `rfl` failed: The left-hand side
+  Ty.vbind σ (Ty.opaque name✝ ix✝)
+is not definitionally equal to the right-hand side
+  Ty.bind (Sub.valueOnly σ) (Ty.opaque name✝ ix✝)
+
+case opaque
+T E R V W : Type
+a : Ty T E R V
+σ : V → Expr W
+name✝ : String
+ix✝ : Ix R
+h : a = Ty.opaque name✝ ix✝
+⊢ Ty.vbind σ (Ty.opaque name✝ ix✝) = Ty.bind (Sub.valueOnly σ) (Ty.opaque name✝ ix✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1503:28: error: Tactic `rfl` failed: The left-hand side
+  Eff.vbind σ (Eff.atom name✝ ix✝)
+is not definitionally equal to the right-hand side
+  Eff.bind (Sub.valueOnly σ) (Eff.atom name✝ ix✝)
+
+case atom
+T E R V W : Type
+a : Eff T E R V
+σ : V → Expr W
+name✝ : String
+ix✝ : Ix R
+h : a = Eff.atom name✝ ix✝
+⊢ Eff.vbind σ (Eff.atom name✝ ix✝) = Eff.bind (Sub.valueOnly σ) (Eff.atom name✝ ix✝)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1593:32: error: Tactic `rfl` failed: The left-hand side
+  logicSub (upVal σ) (some x)
+is not definitionally equal to the right-hand side
+  upExpr (logicSub σ) (some x)
+
+case some.var
+V : Type u_1
+W : Type
+σ : V → SVal W
+x : V
+x✝ : W
+h : σ x = SVal.var x✝
+⊢ logicSub (upVal σ) (some x) = upExpr (logicSub σ) (some x)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1593:32: error: Tactic `rfl` failed: The left-hand side
+  logicSub (upVal σ) (some x)
+is not definitionally equal to the right-hand side
+  upExpr (logicSub σ) (some x)
+
+case some.lit
+V : Type u_1
+W : Type
+σ : V → SVal W
+x : V
+v✝ : Value
+h : σ x = SVal.lit v✝
+⊢ logicSub (upVal σ) (some x) = upExpr (logicSub σ) (some x)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1604:4: error: Tactic `assumption` failed
+
+case some
+V W : Type
+σ : V → SVal W
+v : SVal V
+x : V
+he : (fun x => (one (SVal.subst σ v) (some x)).expr) = Expr.var
+⊢ Expr.bind (logicSub σ) (Expr.var x) =
+    Expr.bind (fun x => logicSub (one (SVal.subst σ v)) (some x))
+      (match σ x with
+      | SVal.var x => Expr.var x
+      | SVal.lit v => Expr.lit v)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1613:64: error: Application type mismatch: The argument
+  b
+has type
+  STy ?m.8
+but is expected to have type
+  Ty Empty Empty Empty V
+in the application
+  Ty.vbind (logicSub σ) b
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1639:6: error(lean.unknownIdentifier): Unknown identifier `SComp`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/Syntax.lean:1653:2: error: Invalid mutually inductive types: `SComp` has 1 parameter(s), but the preceding type `CTy` has 5
+
+Note: All inductive types declared in the same `mutual` block must have the same parameters
+        4.62 real         5.78 user         0.34 sys
+time: sysctl kern.clockrate: Operation not permitted

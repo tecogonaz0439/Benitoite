@@ -1,0 +1,24 @@
+Benitoite.Release.Val.checkedRequest (t : Benitoite.Scope.Domain.Target) (req : Benitoite.Release.Const) :
+  Benitoite.Release.Val
+Benitoite.Release.Builtins.valContent (self : Benitoite.Release.Builtins) :
+  Benitoite.Release.OpaqueName → Option Benitoite.Release.OpaqueName
+Benitoite.Surface.Literal.toConst : Benitoite.Surface.Literal → Benitoite.Release.Const
+def Benitoite.Surface.Literal.toConst : Benitoite.Surface.Literal → Benitoite.Release.Const :=
+fun x =>
+  match x with
+  | Benitoite.Surface.Literal.integer n => Benitoite.Release.Const.integer n.toValue
+  | Benitoite.Surface.Literal.float x => Benitoite.Release.Const.float x
+  | Benitoite.Surface.Literal.decimal n scale => Benitoite.Release.Const.decimal n scale
+  | Benitoite.Surface.Literal.string s => Benitoite.Release.Const.string s
+  | Benitoite.Surface.Literal.character c => Benitoite.Release.Const.character c
+  | Benitoite.Surface.Literal.boolean b => Benitoite.Release.Const.boolean b
+  | Benitoite.Surface.Literal.integer8 n => Benitoite.Release.Const.integer8 (Int.ofNat n)
+  | Benitoite.Surface.Literal.integer16 n => Benitoite.Release.Const.integer16 (Int.ofNat n)
+  | Benitoite.Surface.Literal.integer32 n => Benitoite.Release.Const.integer32 (Int.ofNat n)
+  | Benitoite.Surface.Literal.byte n => Benitoite.Release.Const.byte n
+  | Benitoite.Surface.Literal.unsignedInteger16 n => Benitoite.Release.Const.unsignedInteger16 (Int.ofNat n)
+  | Benitoite.Surface.Literal.unsignedInteger32 n => Benitoite.Release.Const.unsignedInteger32 (Int.ofNat n)
+  | Benitoite.Surface.Literal.unsignedInteger64 n => Benitoite.Release.Const.unsignedInteger64 (Int.ofNat n)
+  | Benitoite.Surface.Literal.float32 bits => Benitoite.Release.Const.float32 bits
+        0.31 real         0.15 user         0.15 sys
+time: sysctl kern.clockrate: Operation not permitted

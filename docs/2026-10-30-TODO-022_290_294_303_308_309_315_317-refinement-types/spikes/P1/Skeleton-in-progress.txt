@@ -1,0 +1,443 @@
+import Std
+/- P1。写した元: Release/Types.lean:42-70, Typing.lean:330-345,524-628,
+TypeShift.lean:19-55, TypeSubst.lean:42-52,81以降,
+RangeInstDef.lean:17-64, Lemmas/SubstTyping.lean:97-175,192-327,334-393.
+型/行/範囲/値の名前空間を分け、値の束縛だけ Option V で増やす。
+本番の正規化・有限支持・ソート検査・VM全体の代用品ではない。 -/
+namespace P1
+set_option maxRecDepth 4096
+set_option maxHeartbeats 1500000
+inductive Value where
+  | int (i : Int)
+  | list (xs : List Value)
+  | record (fields : List (String × Value))
+  | ref (loc : Nat)
+  | closure (code : Nat)
+  | target (kind : String) (id : Nat)
+  | opaque (name : String) (id : Nat)
+  | decimal (coefficient : Int) (scale : Nat)
+  deriving Repr
+inductive Expr (V : Type) where
+  | var (v : V)
+  | lit (v : Value)
+  | length (e : Expr V)
+  | field (e : Expr V) (name : String)
+  | add (a b : Expr V)
+  deriving Repr
+def Expr.bind (σ : V → Expr W) : Expr V → Expr W
+  | .var x => σ x
+  | .lit v => .lit v
+  | .length a => .length (a.bind σ)
+  | .field a n => .field (a.bind σ) n
+  | .add a b => .add (a.bind σ) (b.bind σ)
+def Expr.rename (f : V → W) : Expr V → Expr W := bind (.var ∘ f)
+def Expr.eval (ρ : V → Value) : Expr V → Option Value
+  | .var x => some (ρ x)
+  | .lit v => some v
+  | .length a => do
+      let .list xs ← a.eval ρ | none
+      pure (.int xs.length)
+  | .field a n => do
+      let .record fs ← a.eval ρ | none
+      fs.lookup n
+  | .add a b => do
+      let .int x ← a.eval ρ | none
+      let .int y ← b.eval ρ | none
+      pure (.int (x + y))
+-- 失敗する観測を零で補わない。代入像の評価可能性を明示する。
+theorem Expr.eval_bind (σ : V → Expr W) (ρ : W → Value) (ρ' : V → Value)
+    (h : ∀ x, (σ x).eval ρ = some (ρ' x)) (e : Expr V) :
+    (e.bind σ).eval ρ = e.eval ρ' := by
+  induction e with
+  | var x => exact h x
+  | lit v => rfl
+  | length a ih => simp only [bind, eval, ih]
+  | field a n ih => simp only [bind, eval, ih]
+  | add a b ia ib => simp only [bind, eval, ia, ib]
+theorem Expr.eval_rename (f : V → W) (ρ : W → Value) (e : Expr V) :
+    (e.rename f).eval ρ = e.eval (ρ ∘ f) :=
+  e.eval_bind _ _ _ (fun _ => rfl)
+theorem Expr.bind_id (e : Expr V) : e.bind .var = e := by
+  induction e <;> simp_all [bind]
+theorem Expr.bind_comp (σ : V → Expr W) (τ : W → Expr U) (e : Expr V) :
+    (e.bind σ).bind τ = e.bind (fun x => (σ x).bind τ) := by
+  induction e <;> simp_all [bind]
+inductive Pred (V : Type) where
+  | truth | falsity
+  | eq (a b : Expr V)
+  | le (a b : Expr V)
+  | and (a b : Pred V)
+  | or (a b : Pred V)
+  | not (a : Pred V)
+  deriving Repr
+def Pred.bind (σ : V → Expr W) : Pred V → Pred W
+  | .truth => .truth
+  | .falsity => .falsity
+  | .eq a b => .eq (a.bind σ) (b.bind σ)
+  | .le a b => .le (a.bind σ) (b.bind σ)
+  | .and a b => .and (a.bind σ) (b.bind σ)
+  | .or a b => .or (a.bind σ) (b.bind σ)
+  | .not a => .not (a.bind σ)
+def Pred.Holds (ρ : V → Value) : Pred V → Prop
+  | .truth => True
+  | .falsity => False
+  | .eq a b => ∃ v, a.eval ρ = some v ∧ b.eval ρ = some v
+  | .le a b => ∃ x y, a.eval ρ = some (.int x) ∧ b.eval ρ = some (.int y) ∧ x ≤ y
+  | .and a b => a.Holds ρ ∧ b.Holds ρ
+  | .or a b => a.Holds ρ ∨ b.Holds ρ
+  | .not a => ¬a.Holds ρ
+theorem Pred.holds_bind (σ : V → Expr W) (ρ : W → Value) (ρ' : V → Value)
+    (h : ∀ x, (σ x).eval ρ = some (ρ' x)) (p : Pred V) :
+    (p.bind σ).Holds ρ ↔ p.Holds ρ' := by
+  induction p with
+  | truth => rfl
+  | falsity => rfl
+  | eq a b => simp only [bind, Holds, Expr.eval_bind σ ρ ρ' h]
+  | le a b => simp only [bind, Holds, Expr.eval_bind σ ρ ρ' h]
+  | and a b ia ib => simp only [bind, Holds, ia, ib]
+  | or a b ia ib => simp only [bind, Holds, ia, ib]
+  | not a ia => simp only [bind, Holds, ia]
+def extend (ρ : V → Value) (v : Value) : Option V → Value
+  | none => v
+  | some x => ρ x
+def upExpr (σ : V → Expr W) : Option V → Expr (Option W)
+  | none => .var none
+  | some x => (σ x).rename some
+theorem eval_up (σ : V → Expr W) (ρ : W → Value) (ρ' : V → Value)
+    (h : ∀ x, (σ x).eval ρ = some (ρ' x)) (v : Value) (x : Option V) :
+    (upExpr σ x).eval (extend ρ v) = some (extend ρ' v x) := by
+  cases x with
+  | none => rfl
+  | some x => simpa only [upExpr, Expr.eval_rename, extend, Function.comp_def] using h x
+inductive Range where
+  | top
+  | finite (members : List Nat)
+  deriving DecidableEq, Repr
+def Range.Mem (r : Range) (t : Nat) : Prop := match r with
+  | .top => True
+  | .finite xs => t ∈ xs
+def Range.Sub (a b : Range) : Prop := ∀ t, a.Mem t → b.Mem t
+inductive Ix (R : Type) where
+  | fixed (r : Range)
+  | var (r : R)
+  deriving Repr
+def Ix.bind (f : R → Ix S) : Ix R → Ix S
+  | .fixed r => .fixed r
+  | .var x => f x
+def Ix.eval (ρ : R → Range) : Ix R → Range
+  | .fixed r => r
+  | .var x => ρ x
+mutual
+  inductive Ty (T E R : Type) : Type → Type 1 where
+    | int : Ty T E R V
+    | bytes : Ty T E R V
+    | opaque (name : String) (ix : Ix R) : Ty T E R V
+    | var (x : T) : Ty T E R V
+    | list (a : Ty T E R V) : Ty T E R V
+    | record (fields : Fields T E R V) : Ty T E R V
+    | reference (a : Ty T E R V) : Ty T E R V
+    | refined (carrier : Ty T E R V) (predicate : Pred (Option V)) : Ty T E R V
+    | fn (args : Tel T E R V) : Ty T E R V
+  inductive Eff (T E R : Type) : Type → Type 1 where
+    | empty : Eff T E R V
+    | atom (name : String) (ix : Ix R) : Eff T E R V
+    | row (x : E) : Eff T E R V
+    | fail (error : Ty T E R V) : Eff T E R V
+    | union (a b : Eff T E R V) : Eff T E R V
+  inductive Tel (T E R : Type) : Type → Type 1 where
+    | done (ret : Ty T E R V) (latent : Eff T E R V) : Tel T E R V
+    | param (name : String) (arg : Ty T E R V) (rest : Tel T E R (Option V)) : Tel T E R V
+  inductive Fields (T E R : Type) : Type → Type 1 where
+    | nil : Fields T E R V
+    | cons (name : String) (type : Ty T E R V) (rest : Fields T E R V) : Fields T E R V
+end
+mutual
+  def Ty.map (t : T → T') (e : E → E') (r : R → R') (v : V → V') :
+      Ty T E R V → Ty T' E' R' V'
+    | .int => .int
+    | .bytes => .bytes
+    | .opaque n ix => .opaque n (ix.bind (.var ∘ r))
+    | .var x => .var (t x)
+    | .list a => .list (a.map t e r v)
+    | .record fs => .record (fs.map t e r v)
+    | .reference a => .reference (a.map t e r v)
+    | .refined a p => .refined (a.map t e r v) (p.bind (.var ∘ Option.map v))
+    | .fn ts => .fn (ts.map t e r v)
+  def Eff.map (t : T → T') (e : E → E') (r : R → R') (v : V → V') :
+      Eff T E R V → Eff T' E' R' V'
+    | .empty => .empty
+    | .atom n ix => .atom n (ix.bind (.var ∘ r))
+    | .row x => .row (e x)
+    | .fail a => .fail (a.map t e r v)
+    | .union a b => .union (a.map t e r v) (b.map t e r v)
+  def Tel.map (t : T → T') (e : E → E') (r : R → R') (v : V → V') :
+      Tel T E R V → Tel T' E' R' V'
+    | .done a f => .done (a.map t e r v) (f.map t e r v)
+    | .param n a rest => .param n (a.map t e r v) (rest.map t e r (Option.map v))
+  def Fields.map (t : T → T') (e : E → E') (r : R → R') (v : V → V') :
+      Fields T E R V → Fields T' E' R' V'
+    | .nil => .nil
+    | .cons n a fs => .cons n (a.map t e r v) (fs.map t e r v)
+end
+structure Sub (T E R V T' E' R' V' : Type) where
+  types : T → Ty T' E' R' V'
+  rows : E → Eff T' E' R' V'
+  ranges : R → Ix R'
+  values : V → Expr V'
+def Sub.up (θ : Sub T E R V T' E' R' V') : Sub T E R (Option V) T' E' R' (Option V') where
+  types x := (θ.types x).map id id id some
+  rows x := (θ.rows x).map id id id some
+  ranges := θ.ranges
+  values := upExpr θ.values
+mutual
+  def Ty.bind (θ : Sub T E R V T' E' R' V') : Ty T E R V → Ty T' E' R' V'
+    | .int => .int
+    | .bytes => .bytes
+    | .opaque n ix => .opaque n (ix.bind θ.ranges)
+    | .var x => θ.types x
+    | .list a => .list (a.bind θ)
+    | .record fs => .record (fs.bind θ)
+    | .reference a => .reference (a.bind θ)
+    | .refined a p => .refined (a.bind θ) (p.bind (upExpr θ.values))
+    | .fn ts => .fn (ts.bind θ)
+  def Eff.bind (θ : Sub T E R V T' E' R' V') : Eff T E R V → Eff T' E' R' V'
+    | .empty => .empty
+    | .atom n ix => .atom n (ix.bind θ.ranges)
+    | .row x => θ.rows x
+    | .fail a => .fail (a.bind θ)
+    | .union a b => .union (a.bind θ) (b.bind θ)
+  def Tel.bind (θ : Sub T E R V T' E' R' V') : Tel T E R V → Tel T' E' R' V'
+    | .done a f => .done (a.bind θ) (f.bind θ)
+    | .param n a rest => .param n (a.bind θ) (rest.bind θ.up)
+  def Fields.bind (θ : Sub T E R V T' E' R' V') : Fields T E R V → Fields T' E' R' V'
+    | .nil => .nil
+    | .cons n a fs => .cons n (a.bind θ) (fs.bind θ)
+end
+def Sub.typeOnly (f : T → Ty T' E R V) : Sub T E R V T' E R V := ⟨f, .row, .var, .var⟩
+def Sub.rowOnly (f : E → Eff T E' R V) : Sub T E R V T E' R V := ⟨.var, f, .var, .var⟩
+def Sub.rangeOnly (f : R → Ix R') : Sub T E R V T E R' V := ⟨.var, .row, f, .var⟩
+def Sub.valueOnly (f : V → Expr V') : Sub T E R V T E R V' := ⟨.var, .row, .var, f⟩
+
+inductive Event where
+  | atom (name : String) (target : Nat)
+  | fail (error : Value)
+structure World where
+  cell : Nat → Value → Prop
+  call : Nat → List Value → Value → List Event → Prop
+structure Interp (T E R : Type) where
+  types : T → Value → Prop
+  rows : E → Event → Prop
+  ranges : R → Range
+
+def Interp.comap (t : T → T') (e : E → E') (r : R → R') (η : Interp T' E' R') : Interp T E R :=
+  ⟨η.types ∘ t, η.rows ∘ e, η.ranges ∘ r⟩
+
+-- 通常の資源は opaque のまま残す。標準対象型に限り裸の opaque を除く。
+def targetKind : String → Option String
+  | "PathIn" => some "path"
+  | "RequestIn" => some "endpoint"
+  | _ => none
+
+mutual
+  def Ty.Mem (w : World) (η : Interp T E R) (ρ : V → Value) : Ty T E R V → Value → Prop
+    | .int, v => ∃ i, v = .int i
+    | .bytes, v => ∃ xs, v = .list xs ∧ ∀ x ∈ xs, ∃ i, x = .int i ∧ 0 ≤ i ∧ i ≤ 255
+    | .opaque n ix, v => match targetKind n with
+      | some k => ∃ t, v = .target k t ∧ (ix.eval η.ranges).Mem t
+      | none => ∃ i, v = .opaque n i ∧ ix.eval η.ranges = .top
+    | .var x, v => η.types x v
+    | .list a, v => ∃ xs, v = .list xs ∧ ∀ x ∈ xs, a.Mem w η ρ x
+    | .record fs, v => ∃ xs, v = .record xs ∧ fs.Mem w η ρ xs
+    | .reference a, v => ∃ l, v = .ref l ∧ ∀ x, w.cell l x ↔ a.Mem w η ρ x
+    | .refined a p, v => a.Mem w η ρ v ∧ p.Holds (extend ρ v)
+    | .fn tel, v => ∃ code, v = .closure code ∧ ∀ vs result trace,
+        tel.Pre w η ρ vs → w.call code vs result trace → tel.Post w η ρ vs result trace
+  def Eff.Allows (w : World) (η : Interp T E R) (ρ : V → Value) : Eff T E R V → Event → Prop
+    | .empty, _ => False
+    | .atom n ix, ev => ∃ t, ev = .atom n t ∧ (ix.eval η.ranges).Mem t
+    | .row x, ev => η.rows x ev
+    | .fail a, ev => ∃ v, ev = .fail v ∧ a.Mem w η ρ v
+    | .union a b, ev => a.Allows w η ρ ev ∨ b.Allows w η ρ ev
+  def Tel.Pre (w : World) (η : Interp T E R) (ρ : V → Value) : Tel T E R V → List Value → Prop
+    | .done _ _, vs => vs = []
+    | .param _ a rest, vs => ∃ x xs, vs = x :: xs ∧ a.Mem w η ρ x ∧ rest.Pre w η (extend ρ x) xs
+  def Tel.Post (w : World) (η : Interp T E R) (ρ : V → Value) :
+      Tel T E R V → List Value → Value → List Event → Prop
+    | .done a f, vs, result, trace => vs = [] ∧ a.Mem w η ρ result ∧ ∀ ev ∈ trace, f.Allows w η ρ ev
+    | .param _ _ rest, vs, result, trace => ∃ x xs, vs = x :: xs ∧ rest.Post w η (extend ρ x) xs result trace
+  def Fields.Mem (w : World) (η : Interp T E R) (ρ : V → Value) :
+      Fields T E R V → List (String × Value) → Prop
+    | .nil, _ => True
+    | .cons n a fs, xs => ∃ x, xs.lookup n = some x ∧ a.Mem w η ρ x ∧ fs.Mem w η ρ xs
+end
+
+@[simp] theorem extend_comap (ρ : W → Value) (v : V → W) (x : Value) :
+    extend ρ x ∘ Option.map v = extend (ρ ∘ v) x := by
+  funext z; cases z <;> rfl
+
+theorem Ix.eval_bind (f : R → Ix S) (η : S → Range) (ix : Ix R) :
+    (ix.bind f).eval η = ix.eval (fun x => (f x).eval η) := by cases ix <;> rfl
+
+mutual
+  theorem Ty.mem_map (w : World) (η : Interp T' E' R') (ρ : V' → Value)
+      (t : T → T') (e : E → E') (r : R → R') (v : V → V') (a : Ty T E R V) (x : Value) :
+      (a.map t e r v).Mem w η ρ x ↔ a.Mem w (η.comap t e r) (ρ ∘ v) x := by
+    cases hcase : a with
+    | int => rfl
+    | bytes => rfl
+    | «opaque» n ix => cases ix <;> rfl
+    | var z => rfl
+    | list a => simp only [Ty.map, Ty.Mem, Ty.mem_map w η ρ t e r v a]
+    | record fs => simp only [Ty.map, Ty.Mem, Fields.mem_map w η ρ t e r v fs]
+    | reference a => simp only [Ty.map, Ty.Mem, Ty.mem_map w η ρ t e r v a]
+    | refined a p =>
+      simp only [Ty.map, Ty.Mem, Ty.mem_map w η ρ t e r v a,
+        Pred.holds_bind (.var ∘ Option.map v) (extend ρ x) (extend (ρ ∘ v) x)
+          (fun z => by cases z <;> rfl)]
+    | fn ts => simp only [Ty.map, Ty.Mem, Tel.pre_map, Tel.post_map]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Eff.allows_map (w : World) (η : Interp T' E' R') (ρ : V' → Value)
+      (t : T → T') (e : E → E') (r : R → R') (v : V → V') (a : Eff T E R V) (x : Event) :
+      (a.map t e r v).Allows w η ρ x ↔ a.Allows w (η.comap t e r) (ρ ∘ v) x := by
+    cases hcase : a with
+    | empty => rfl
+    | atom n ix => cases ix <;> rfl
+    | row z => rfl
+    | fail a => simp only [Eff.map, Eff.Allows, Ty.mem_map]
+    | union a b => simp only [Eff.map, Eff.Allows, Eff.allows_map w η ρ t e r v a, Eff.allows_map w η ρ t e r v b]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Tel.pre_map (w : World) (η : Interp T' E' R') (ρ : V' → Value)
+      (t : T → T') (e : E → E') (r : R → R') (v : V → V') (a : Tel T E R V) (xs : List Value) :
+      (a.map t e r v).Pre w η ρ xs ↔ a.Pre w (η.comap t e r) (ρ ∘ v) xs := by
+    cases hcase : a with
+    | done a f => rfl
+    | param n a rest => simp only [Tel.map, Tel.Pre, Ty.mem_map, Tel.pre_map, extend_comap]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Tel.post_map (w : World) (η : Interp T' E' R') (ρ : V' → Value)
+      (t : T → T') (e : E → E') (r : R → R') (v : V → V') (a : Tel T E R V)
+      (xs : List Value) (result : Value) (trace : List Event) :
+      (a.map t e r v).Post w η ρ xs result trace ↔ a.Post w (η.comap t e r) (ρ ∘ v) xs result trace := by
+    cases hcase : a with
+    | done a f => simp only [Tel.map, Tel.Post, Ty.mem_map, Eff.allows_map]
+    | param n a rest => simp only [Tel.map, Tel.Post, Tel.post_map, extend_comap]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Fields.mem_map (w : World) (η : Interp T' E' R') (ρ : V' → Value)
+      (t : T → T') (e : E → E') (r : R → R') (v : V → V') (a : Fields T E R V)
+      (xs : List (String × Value)) :
+      (a.map t e r v).Mem w η ρ xs ↔ a.Mem w (η.comap t e r) (ρ ∘ v) xs := by
+    cases hcase : a with
+    | nil => rfl
+    | cons n a fs => simp only [Fields.map, Fields.Mem, Ty.mem_map, Fields.mem_map]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+end
+
+def Sub.pull (θ : Sub T E R V T' E' R' V') (w : World) (η : Interp T' E' R')
+    (ρ : V' → Value) : Interp T E R :=
+  ⟨fun x => (θ.types x).Mem w η ρ, fun x => (θ.rows x).Allows w η ρ,
+   fun x => (θ.ranges x).eval η.ranges⟩
+
+theorem Sub.pull_up (θ : Sub T E R V T' E' R' V') (w : World) (η : Interp T' E' R')
+    (ρ : V' → Value) (x : Value) : θ.up.pull w η (extend ρ x) = θ.pull w η ρ := by
+  have ht : (θ.up.pull w η (extend ρ x)).types = (θ.pull w η ρ).types := by
+    funext z y
+    exact propext (by simpa only [Sub.pull, Sub.up, Interp.comap, Function.comp_def, extend]
+      using Ty.mem_map w η (extend ρ x) id id id some (θ.types z) y)
+  have he : (θ.up.pull w η (extend ρ x)).rows = (θ.pull w η ρ).rows := by
+    funext z y
+    exact propext (by simpa only [Sub.pull, Sub.up, Interp.comap, Function.comp_def, extend]
+      using Eff.allows_map w η (extend ρ x) id id id some (θ.rows z) y)
+  cases h₁ : θ.up.pull w η (extend ρ x)
+  cases h₂ : θ.pull w η ρ
+  simp only [h₁, h₂] at ht he
+  cases ht; cases he
+  congr 1
+  exact congrArg Interp.ranges (show θ.up.pull w η (extend ρ x) = θ.pull w η ρ from rfl)
+
+mutual
+  theorem Ty.mem_bind (w : World) (η : Interp T' E' R') (ρ : V' → Value) (ρ' : V → Value)
+      (θ : Sub T E R V T' E' R' V') (h : ∀ x, (θ.values x).eval ρ = some (ρ' x))
+      (a : Ty T E R V) (x : Value) :
+      (a.bind θ).Mem w η ρ x ↔ a.Mem w (θ.pull w η ρ) ρ' x := by
+    cases hcase : a with
+    | int => rfl
+    | bytes => rfl
+    | «opaque» n ix => simp only [Ty.bind, Ty.Mem, Ix.eval_bind, Sub.pull]
+    | var z => rfl
+    | list a => simp only [Ty.bind, Ty.Mem, Ty.mem_bind w η ρ ρ' θ h a]
+    | record fs => simp only [Ty.bind, Ty.Mem, Fields.mem_bind w η ρ ρ' θ h fs]
+    | reference a => simp only [Ty.bind, Ty.Mem, Ty.mem_bind w η ρ ρ' θ h a]
+    | refined a p => simp only [Ty.bind, Ty.Mem, Ty.mem_bind w η ρ ρ' θ h a,
+        Pred.holds_bind (upExpr θ.values) _ _ (eval_up θ.values ρ ρ' h x)]
+    | fn ts => simp only [Ty.bind, Ty.Mem, Tel.pre_bind w η ρ ρ' θ h ts, Tel.post_bind w η ρ ρ' θ h ts]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Eff.allows_bind (w : World) (η : Interp T' E' R') (ρ : V' → Value) (ρ' : V → Value)
+      (θ : Sub T E R V T' E' R' V') (h : ∀ x, (θ.values x).eval ρ = some (ρ' x))
+      (a : Eff T E R V) (x : Event) :
+      (a.bind θ).Allows w η ρ x ↔ a.Allows w (θ.pull w η ρ) ρ' x := by
+    cases hcase : a with
+    | empty => rfl
+    | atom n ix => simp only [Eff.bind, Eff.Allows, Ix.eval_bind, Sub.pull]
+    | row z => rfl
+    | fail a => simp only [Eff.bind, Eff.Allows, Ty.mem_bind w η ρ ρ' θ h a]
+    | union a b => simp only [Eff.bind, Eff.Allows, Eff.allows_bind w η ρ ρ' θ h a, Eff.allows_bind w η ρ ρ' θ h b]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Tel.pre_bind (w : World) (η : Interp T' E' R') (ρ : V' → Value) (ρ' : V → Value)
+      (θ : Sub T E R V T' E' R' V') (h : ∀ x, (θ.values x).eval ρ = some (ρ' x))
+      (a : Tel T E R V) (xs : List Value) :
+      (a.bind θ).Pre w η ρ xs ↔ a.Pre w (θ.pull w η ρ) ρ' xs := by
+    cases hcase : a with
+    | done a f => rfl
+    | param n a rest =>
+      simp only [Tel.bind, Tel.Pre, Ty.mem_bind w η ρ ρ' θ h a]
+      constructor
+      · rintro ⟨x, ys, hx, ha, hr⟩
+        refine ⟨x, ys, hx, ha, ?_⟩
+        have hr' := (Tel.pre_bind w η (extend ρ x) (extend ρ' x) θ.up
+          (eval_up θ.values ρ ρ' h x) rest ys).mp hr
+        simpa only [Sub.pull_up] using hr'
+      · rintro ⟨x, ys, hx, ha, hr⟩
+        refine ⟨x, ys, hx, ha, ?_⟩
+        apply (Tel.pre_bind w η (extend ρ x) (extend ρ' x) θ.up
+          (eval_up θ.values ρ ρ' h x) rest ys).mpr
+        simpa only [Sub.pull_up] using hr
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Tel.post_bind (w : World) (η : Interp T' E' R') (ρ : V' → Value) (ρ' : V → Value)
+      (θ : Sub T E R V T' E' R' V') (h : ∀ x, (θ.values x).eval ρ = some (ρ' x))
+      (a : Tel T E R V) (xs : List Value) (result : Value) (trace : List Event) :
+      (a.bind θ).Post w η ρ xs result trace ↔ a.Post w (θ.pull w η ρ) ρ' xs result trace := by
+    cases hcase : a with
+    | done a f => simp only [Tel.bind, Tel.Post, Ty.mem_bind w η ρ ρ' θ h a, Eff.allows_bind w η ρ ρ' θ h f]
+    | param n a rest =>
+      simp only [Tel.bind, Tel.Post]
+      constructor
+      · rintro ⟨x, ys, hx, hr⟩
+        refine ⟨x, ys, hx, ?_⟩
+        have hr' := (Tel.post_bind w η (extend ρ x) (extend ρ' x) θ.up
+          (eval_up θ.values ρ ρ' h x) rest ys result trace).mp hr
+        simpa only [Sub.pull_up] using hr'
+      · rintro ⟨x, ys, hx, hr⟩
+        refine ⟨x, ys, hx, ?_⟩
+        apply (Tel.post_bind w η (extend ρ x) (extend ρ' x) θ.up
+          (eval_up θ.values ρ ρ' h x) rest ys result trace).mpr
+        simpa only [Sub.pull_up] using hr
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+  theorem Fields.mem_bind (w : World) (η : Interp T' E' R') (ρ : V' → Value) (ρ' : V → Value)
+      (θ : Sub T E R V T' E' R' V') (h : ∀ x, (θ.values x).eval ρ = some (ρ' x))
+      (a : Fields T E R V) (xs : List (String × Value)) :
+      (a.bind θ).Mem w η ρ xs ↔ a.Mem w (θ.pull w η ρ) ρ' xs := by
+    cases hcase : a with
+    | nil => rfl
+    | cons n a fs => simp only [Fields.bind, Fields.Mem, Ty.mem_bind w η ρ ρ' θ h a, Fields.mem_bind w η ρ ρ' θ h fs]
+  termination_by sizeOf a
+  decreasing_by all_goals simp_all only [hcase]; simp_wf; omega
+end
+end P1

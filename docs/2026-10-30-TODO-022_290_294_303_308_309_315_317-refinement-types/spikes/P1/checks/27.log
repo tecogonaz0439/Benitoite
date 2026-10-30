@@ -1,0 +1,158 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1162:8: error: Application type mismatch: The argument
+  Dedicated.Ty.recordWhere
+    (Dedicated.Fields.cons "values" (Dedicated.Ty.var ()).list
+      (Dedicated.Fields.cons "index" Dedicated.Ty.int
+        (Dedicated.Fields.cons "cell" ((Dedicated.Ty.var ()).listWhere (lengthIs (Expr.var (some (some ()))))).reference
+          Dedicated.Fields.nil)))
+has type
+  Pred (Option (Option (Option Unit))) → Dedicated.Ty Unit ?m.79 ?m.80 (Option (Option Unit))
+but is expected to have type
+  Dedicated.Ty ?m.30 ?m.31 ?m.32 (Option (Option ?m.29))
+in the application
+  Dedicated.Tel.done
+    (Dedicated.Ty.recordWhere
+      (Dedicated.Fields.cons "values" (Dedicated.Ty.var ()).list
+        (Dedicated.Fields.cons "index" Dedicated.Ty.int
+          (Dedicated.Fields.cons "cell"
+            ((Dedicated.Ty.var ()).listWhere (lengthIs (Expr.var (some (some ()))))).reference Dedicated.Fields.nil))))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1169:52: error: unexpected token ')'; expected command
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1175:8: error: Application type mismatch: The argument
+  Indexed.Ty.record
+    (Indexed.Fields.cons "values" ((Indexed.Ty.var () Pred.truth).list Pred.truth)
+      (Indexed.Fields.cons "index" (Indexed.Ty.int Pred.truth)
+        (Indexed.Fields.cons "cell"
+          (((Indexed.Ty.var () Pred.truth).list (lengthIs (Expr.var (some (some ()))))).reference Pred.truth)
+          Indexed.Fields.nil)))
+has type
+  Pred (Option (Option (Option Unit))) → Indexed.Ty Unit ?m.85 ?m.86 (Option (Option Unit))
+but is expected to have type
+  Indexed.Ty ?m.31 ?m.32 ?m.33 (Option (Option ?m.30))
+in the application
+  Indexed.Tel.done
+    (Indexed.Ty.record
+      (Indexed.Fields.cons "values" ((Indexed.Ty.var () Pred.truth).list Pred.truth)
+        (Indexed.Fields.cons "index" (Indexed.Ty.int Pred.truth)
+          (Indexed.Fields.cons "cell"
+            (((Indexed.Ty.var () Pred.truth).list (lengthIs (Expr.var (some (some ()))))).reference Pred.truth)
+            Indexed.Fields.nil))))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1182:52: error: unexpected token ')'; expected command
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1184:0: error: Not a definitional equality: the left-hand side
+  dedicatedType.embed
+is not definitionally equal to the right-hand side
+  openType
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1184:66: error: Type mismatch
+  rfl
+has type
+  ?m.7 = ?m.7
+but is expected to have type
+  dedicatedType.embed = openType
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1187:60: error: unsolved goals
+w : World
+η : Interp Unit Unit Unit
+ρ : Unit → Value
+x : Value
+⊢ Ty.Mem w η ρ sorry.embed x ↔
+    ∃ code,
+      x = Value.closure code ∧
+        ∀ (vs : List Value) (result : Value) (trace : List Event),
+          (∃ x xs,
+              vs = x :: xs ∧
+                ((∃ xs, x = Value.list xs ∧ ∀ (x : Value), x ∈ xs → η.types () x) ∧
+                    Pred.Holds (extend ρ x) (lengthIs (Expr.var ()))) ∧
+                  ∃ x_1 xs_1,
+                    xs = x_1 :: xs_1 ∧
+                      ((∃ i, x_1 = Value.int i) ∧ Pred.Holds (extend (extend ρ x) x_1) (validIndex (Expr.var none))) ∧
+                        xs_1 = []) →
+            w.call code vs result trace →
+              ∃ x xs,
+                vs = x :: xs ∧
+                  ∃ x_1 xs_1,
+                    xs = x_1 :: xs_1 ∧
+                      xs_1 = [] ∧
+                        ((∃ xs,
+                              result = Value.record xs ∧
+                                ∃ x_2,
+                                  List.lookup "values" xs = some x_2 ∧
+                                    (∃ xs, x_2 = Value.list xs ∧ ∀ (x : Value), x ∈ xs → η.types () x) ∧
+                                      ∃ x_3,
+                                        List.lookup "index" xs = some x_3 ∧
+                                          (∃ i, x_3 = Value.int i) ∧
+                                            ∃ x_4,
+                                              List.lookup "cell" xs = some x_4 ∧
+                                                ∃ l,
+                                                  x_4 = Value.ref l ∧
+                                                    ∀ (x_5 : Value),
+                                                      w.cell l x_5 ↔
+                                                        (∃ xs,
+                                                            x_5 = Value.list xs ∧
+                                                              ∀ (x : Value), x ∈ xs → η.types () x) ∧
+                                                          Pred.Holds (extend (extend (extend ρ x) x_1) x_5)
+                                                            (lengthIs (Expr.var (some (some ()))))) ∧
+                            Pred.Holds (extend (extend (extend ρ x) x_1) result) recordRelation) ∧
+                          ∀ (ev : Event),
+                            ev ∈ trace →
+                              (∃ t, ev = Event.atom "Read" t ∧ (Ix.eval η.ranges (Ix.var ())).Mem t) ∨
+                                η.rows () ev ∨
+                                  ∃ v,
+                                    ev = Event.fail v ∧
+                                      (∃ xs, v = Value.list xs ∧ ∀ (x : Value), x ∈ xs → η.types () x) ∧
+                                        Pred.Holds (extend (extend (extend ρ x) x_1) v)
+                                          (lengthIs (Expr.var (some (some ()))))
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1188:13: warning: declaration uses `sorry`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1188:36: warning: This simp argument is unused:
+  Indexed.Ty.embed
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [indexedType, openType, Indexed.Tel.embed, Indexed.Fields.embed, Indexed.Eff.embed, Ty.Mem, Tel.Pre,
+    Tel.Post, Fields.Mem, Eff.Allows, Pred.Holds, and_true, true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1188:54: warning: This simp argument is unused:
+  Indexed.Tel.embed
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [indexedType, openType, Indexed.Ty.embed, Indexed.Fields.embed, Indexed.Eff.embed, Ty.Mem, Tel.Pre,
+    Tel.Post, Fields.Mem, Eff.Allows, Pred.Holds, and_true, true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1189:4: warning: This simp argument is unused:
+  Indexed.Fields.embed
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [indexedType, openType, Indexed.Ty.embed, Indexed.Tel.embed, Indexed.Eff.embed, Ty.Mem, Tel.Pre,
+    Tel.Post, Fields.Mem, Eff.Allows, Pred.Holds, and_true, true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1189:26: warning: This simp argument is unused:
+  Indexed.Eff.embed
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [indexedType, openType, Indexed.Ty.embed, Indexed.Tel.embed, Indexed.Fields.embed, Ty.Mem, Tel.Pre,
+    Tel.Post, Fields.Mem, Eff.Allows, Pred.Holds, and_true, true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1190:16: warning: This simp argument is unused:
+  Pred.Holds
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [indexedType, openType, Indexed.Ty.embed, Indexed.Tel.embed, Indexed.Fields.embed,
+    Indexed.Eff.embed, Ty.Mem, Tel.Pre, Tel.Post, Fields.Mem, Eff.Allows, and_true, true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:1190:38: warning: This simp argument is unused:
+  true_and
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [indexedType, openType, Indexed.Ty.embed, Indexed.Tel.embed, Indexed.Fields.embed,
+    Indexed.Eff.embed, Ty.Mem, Tel.Pre, Tel.Post, Fields.Mem, Eff.Allows, Pred.Holds, and_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'P1.Ty.mem_map' depends on axioms: [propext, Quot.sound]
+'P1.Ty.mem_bind' depends on axioms: [propext, Quot.sound]
+'P1.TyLe.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P1.beta_computation_two' depends on axioms: [propext, Quot.sound]
+'P1.ClosureTwo.run_preserves' depends on axioms: [propext]
+'P1.handler_clause_substitution' depends on axioms: [propext, Quot.sound]
+'P1.Examples.indexed_same_membership' depends on axioms: [propext, sorryAx, Quot.sound]
+        3.55 real         4.38 user         0.27 sys
+time: sysctl kern.clockrate: Operation not permitted

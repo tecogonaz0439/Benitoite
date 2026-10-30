@@ -1,0 +1,50 @@
+@TyLe.rec : ∀ {T E R : Type} {w : World} {η : Interp T E R}
+  {motive_1 : {V : Type} → (a : (V → Value) → Prop) → (a_1 a_2 : Ty T E R V) → TyLe w η a a_1 a_2 → Prop}
+  {motive_2 : {V : Type} → (a : (V → Value) → Prop) → (a_1 a_2 : Tel T E R V) → TelLe w η a a_1 a_2 → Prop}
+  {motive_3 : {V : Type} → (a : (V → Value) → Prop) → (a_1 a_2 : Fields T E R V) → FieldsLe w η a a_1 a_2 → Prop},
+  (∀ {x : Type} {Φ : (x → Value) → Prop} {a : Ty T E R x}, motive_1 Φ a a ⋯) →
+    (∀ {x : Type} {Φ : (x → Value) → Prop} {a b c : Ty T E R x} (a_1 : TyLe w η Φ a b) (a_2 : TyLe w η Φ b c),
+        motive_1 Φ a b a_1 → motive_1 Φ b c a_2 → motive_1 Φ a c ⋯) →
+      (∀ {x : Type} {Φ : (x → Value) → Prop} {a : Ty T E R x} {p : Pred (Option x)}, motive_1 Φ (a.refined p) a ⋯) →
+        (∀ {V : Type} {Φ : (V → Value) → Prop} {a : Ty T E R V} {p : Pred (Option V)}
+            (h : ∀ (ρ : V → Value), Φ ρ → ∀ (x : Value), Ty.Mem w η ρ a x → Pred.Holds (extend ρ x) p),
+            motive_1 Φ a (a.refined p) ⋯) →
+          (∀ {V : Type} {Φ : (V → Value) → Prop} {a b : Ty T E R V} {p q : Pred (Option V)} (hab : TyLe w η Φ a b)
+              (hp :
+                ∀ (ρ : V → Value),
+                  Φ ρ → ∀ (x : Value), Ty.Mem w η ρ a x → Pred.Holds (extend ρ x) p → Pred.Holds (extend ρ x) q),
+              motive_1 Φ a b hab → motive_1 Φ (a.refined p) (b.refined q) ⋯) →
+            (∀ {x : Type} {Φ : (x → Value) → Prop} {a b : Ty T E R x} (a_1 : TyLe w η Φ a b),
+                motive_1 Φ a b a_1 → motive_1 Φ a.list b.list ⋯) →
+              (∀ {x : Type} {a b : Ty T E R x} {Φ : (x → Value) → Prop} (h : a = b),
+                  motive_1 Φ a.reference b.reference ⋯) →
+                (∀ {x : Type} {Φ : (x → Value) → Prop} {a b : Fields T E R x} (a_1 : FieldsLe w η Φ a b),
+                    motive_3 Φ a b a_1 → motive_1 Φ (Ty.record a) (Ty.record b) ⋯) →
+                  (∀ {x : Type} {Φ : (x → Value) → Prop} {n : String} {ia ib : Ix R}
+                      (h : (Ix.eval η.ranges ia).Sub (Ix.eval η.ranges ib))
+                      (htop : Ix.eval η.ranges ia = Range.top → Ix.eval η.ranges ib = Range.top),
+                      motive_1 Φ (Ty.opaque n ia) (Ty.opaque n ib) ⋯) →
+                    (∀ {x : Type} {Φ : (x → Value) → Prop} {a b : Tel T E R x} (a_1 : TelLe w η Φ a b),
+                        motive_2 Φ a b a_1 → motive_1 Φ (Ty.fn a) (Ty.fn b) ⋯) →
+                      (∀ {x : Type} {Φ : (x → Value) → Prop} {a b : Ty T E R x} {g f : Eff T E R x}
+                          (a_1 : TyLe w η Φ a b) (a_2 : Eff.Covers η g f),
+                          motive_1 Φ a b a_1 → motive_2 Φ (Tel.done a f) (Tel.done b g) ⋯) →
+                        (∀ {x : Type} {Φ : (x → Value) → Prop} {b a : Ty T E R x} {as bs : Tel T E R (Option x)}
+                            {name : String} (a_1 : TyLe w η Φ b a)
+                            (a_2 : TelLe w η (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) b (ρ none)) as bs),
+                            motive_1 Φ b a a_1 →
+                              motive_2 (fun ρ => Φ (ρ ∘ some) ∧ Ty.Mem w η (ρ ∘ some) b (ρ none)) as bs a_2 →
+                                motive_2 Φ (Tel.param name a as) (Tel.param name b bs) ⋯) →
+                          (∀ {x : Type} {Φ : (x → Value) → Prop}, motive_3 Φ Fields.nil Fields.nil ⋯) →
+                            (∀ {x : Type} {Φ : (x → Value) → Prop} {a b : Ty T E R x} {as bs : Fields T E R x}
+                                {n : String} (a_1 : TyLe w η Φ a b) (a_2 : FieldsLe w η Φ as bs),
+                                motive_1 Φ a b a_1 →
+                                  motive_3 Φ as bs a_2 → motive_3 Φ (Fields.cons n a as) (Fields.cons n b bs) ⋯) →
+                              ∀ {V : Type} {a : (V → Value) → Prop} {a_1 a_2 : Ty T E R V} (t : TyLe w η a a_1 a_2),
+                                motive_1 a a_1 a_2 t
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Skeleton.lean:602:0: error: failed to infer structural recursion:
+Cannot use parameters h of P1.TyLe.sound, h of P1.TelLe.sound, and h of P1.FieldsLe.sound:
+  failed to eliminate recursive application
+    TyLe.sound h₁ ρ hρ x hx
+        2.90 real         3.26 user         0.22 sys
+time: sysctl kern.clockrate: Operation not permitted

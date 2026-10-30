@@ -1,0 +1,14 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P4/Logic.lean:188:48: warning: This simp argument is unused:
+  he
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [bind, Term.bind_id]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'P4.Entails.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'P4.Entails.bind' depends on axioms: [propext, Quot.sound]
+'P4.Entails.cut' depends on axioms: [propext]
+'P4.Pred.holds_bind' depends on axioms: [propext, Quot.sound]
+'P4.Pred.open_bind' depends on axioms: [propext, Quot.sound]
+        0.89 real         0.79 user         0.37 sys
+time: sysctl kern.clockrate: Operation not permitted

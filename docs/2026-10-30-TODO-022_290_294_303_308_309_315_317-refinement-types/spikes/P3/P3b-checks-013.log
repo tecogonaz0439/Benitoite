@@ -1,0 +1,23 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:16: error: unsolved goals
+case refined
+T E R V T' E' R' V' : Type
+a : Ty T E R V
+t : T → T'
+e : E → E'
+r : R → R'
+v : V → V'
+b : Ty T E R V
+p : Pred (Option V)
+ha : a = b.refined p
+⊢ (Ty.bind { types := Ty.var ∘ t, rows := Eff.row ∘ e, ranges := Ix.var ∘ r, values := Expr.var ∘ v } b).refined
+      (Pred.bind (Expr.var ∘ Option.map v) p) =
+    (Ty.map t e r v b).refined (Pred.bind (Expr.var ∘ Option.map v) p)
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:1012:47: warning: This simp argument is unused:
+  Ty.bind_renaming b
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.bind, Ty.map, Sub.renaming, upExpr_renaming]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+        3.28 real         4.05 user         0.24 sys
+time: sysctl kern.clockrate: Operation not permitted

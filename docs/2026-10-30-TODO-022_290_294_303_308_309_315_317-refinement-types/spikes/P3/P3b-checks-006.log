@@ -1,0 +1,60 @@
+@TyLe.rec : ∀ {w : World} {T E R : Type}
+  {motive_1 : {V : Type} → (a a_1 : Ctx T E R V) → (a_2 a_3 : Ty T E R V) → TyLe w a a_1 a_2 a_3 → Prop}
+  {motive_2 : {V : Type} → (a a_1 : Ctx T E R V) → (a_2 a_3 : Tel T E R V) → TelLe w a a_1 a_2 a_3 → Prop}
+  {motive_3 : {V : Type} → (a a_1 : Ctx T E R V) → (a_2 a_3 : Fields T E R V) → FieldsLe w a a_1 a_2 a_3 → Prop},
+  (∀ {V : Type} {Γ Φ : Ctx T E R V} {a : Ty T E R V}, motive_1 Γ Φ a a ⋯) →
+    (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b c : Ty T E R V} (a_1 : TyLe w Γ Φ a b) (a_2 : TyLe w Γ Φ b c),
+        motive_1 Γ Φ a b a_1 → motive_1 Γ Φ b c a_2 → motive_1 Γ Φ a c ⋯) →
+      (∀ {V : Type} {Γ Φ : Ctx T E R V} {a : Ty T E R V} {p : Pred (Option V)}, motive_1 Γ Φ (a.refined p) a ⋯) →
+        (∀ {V : Type} {Γ Φ : Ctx T E R V} {a : Ty T E R V} {p : Pred (Option V)}
+            (h :
+              ∀ (η : Interp T E R) (ρ : V → Value),
+                Γ η ρ → Φ η ρ → ∀ (x : Value), Ty.Mem w η ρ a x → Pred.Holds (extend ρ x) p),
+            motive_1 Γ Φ a (a.refined p) ⋯) →
+          (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Ty T E R V} {p q : Pred (Option V)} (hab : TyLe w Γ Φ a b)
+              (hp :
+                ∀ (η : Interp T E R) (ρ : V → Value),
+                  Γ η ρ →
+                    Φ η ρ → ∀ (x : Value), Ty.Mem w η ρ a x → Pred.Holds (extend ρ x) p → Pred.Holds (extend ρ x) q),
+              motive_1 Γ Φ a b hab → motive_1 Γ Φ (a.refined p) (b.refined q) ⋯) →
+            (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Ty T E R V} (a_1 : TyLe w Γ Φ a b),
+                motive_1 Γ Φ a b a_1 → motive_1 Γ Φ a.list b.list ⋯) →
+              (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Ty T E R V} (h : a = b),
+                  motive_1 Γ Φ a.reference b.reference ⋯) →
+                (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Fields T E R V} (a_1 : FieldsLe w Γ Φ a b),
+                    motive_3 Γ Φ a b a_1 → motive_1 Γ Φ (Ty.record a) (Ty.record b) ⋯) →
+                  (∀ {V : Type} {Γ Φ : Ctx T E R V} {ia ib : Ix R} {n : String}
+                      (h :
+                        ∀ (η : Interp T E R) (ρ : V → Value),
+                          Γ η ρ → Φ η ρ → (Ix.eval η.ranges ia).Sub (Ix.eval η.ranges ib))
+                      (htop :
+                        ∀ (η : Interp T E R) (ρ : V → Value),
+                          Γ η ρ → Φ η ρ → Ix.eval η.ranges ia = Range.top → Ix.eval η.ranges ib = Range.top),
+                      motive_1 Γ Φ (Ty.opaque n ia) (Ty.opaque n ib) ⋯) →
+                    (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Tel T E R V} (a_1 : TelLe w Γ Φ a b),
+                        motive_2 Γ Φ a b a_1 → motive_1 Γ Φ (Ty.fn a) (Ty.fn b) ⋯) →
+                      (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Ty T E R V} {f g : Eff T E R V} (a_1 : TyLe w Γ Φ a b)
+                          (a_2 : ∀ (η : Interp T E R) (ρ : V → Value), Γ η ρ → Φ η ρ → Eff.Covers η g f),
+                          motive_1 Γ Φ a b a_1 → motive_2 Γ Φ (Tel.done a f) (Tel.done b g) ⋯) →
+                        (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Ty T E R V} {as bs : Tel T E R (Option V)}
+                            {name : String} (a_1 : TyLe w Γ Φ b a) (a_2 : TelLe w (Ctx.extend w Γ b) Φ.lift as bs),
+                            motive_1 Γ Φ b a a_1 →
+                              motive_2 (Ctx.extend w Γ b) Φ.lift as bs a_2 →
+                                motive_2 Γ Φ (Tel.param name a as) (Tel.param name b bs) ⋯) →
+                          (∀ {V : Type} {Γ Φ : Ctx T E R V}, motive_3 Γ Φ Fields.nil Fields.nil ⋯) →
+                            (∀ {V : Type} {Γ Φ : Ctx T E R V} {a b : Ty T E R V} {as bs : Fields T E R V} {n : String}
+                                (a_1 : TyLe w Γ Φ a b) (a_2 : FieldsLe w Γ Φ as bs),
+                                motive_1 Γ Φ a b a_1 →
+                                  motive_3 Γ Φ as bs a_2 → motive_3 Γ Φ (Fields.cons n a as) (Fields.cons n b bs) ⋯) →
+                              ∀ {V : Type} {a a_1 : Ctx T E R V} {a_2 a_3 : Ty T E R V} (t : TyLe w a a_1 a_2 a_3),
+                                motive_1 a a_1 a_2 a_3 t
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P3/P3b-Derivations.lean:784:40: error: Application type mismatch: The argument
+  E
+has type
+  Ctx ?m.36 ?m.37 ?m.38 T
+of sort `Type` but is expected to have type
+  Type
+of sort `Type 1` in the application
+  Sub T E
+        2.82 real         3.39 user         0.23 sys
+time: sysctl kern.clockrate: Operation not permitted

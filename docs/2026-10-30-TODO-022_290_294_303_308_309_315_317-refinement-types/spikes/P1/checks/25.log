@@ -1,0 +1,14 @@
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Constants.lean:30:40: error: unknown tactic
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Constants.lean:30:36: error: unsolved goals
+case V_Const
+B : Builtins
+h : ConstOK B (Const.integer8 128)
+⊢ False
+<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/spikes/P1/Constants.lean:35:69: error: Expected type must not contain free variables
+  ConstOK B (Const.byte 255)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+'P1Constants.bounded_integer8' depends on axioms: [propext]
+'P1Constants.reject_bare_target_top' depends on axioms: [propext]
+        0.43 real         0.23 user         0.17 sys
+time: sysctl kern.clockrate: Operation not permitted
