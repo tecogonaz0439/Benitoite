@@ -12,7 +12,9 @@ private theorem variable_origin_aux {P B store Q C Γ Φ v a}
     ∀ i, v = .var i → ∃ b, Γ[i]? = some (some b) ∧ b.Ordinary := by
   match h with
   | .V_Var hi ho => intro i he; cases he; exact ⟨_, hi, ho⟩
-  | .V_Const _ | .V_Lam _ _ _ _ | .V_List _ _ _ => intro i he; cases he
+  | .V_Const _ | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
+  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+  | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ => intro i he; cases he
   | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
 
 theorem HasTypeVQ.variable_origin {P B store Q C Γ Φ i a}

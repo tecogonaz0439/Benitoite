@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.ValueBinding
+import Benitoite.Release.Refinement.AdmissibleMap
 
 /-!
 # 型付きの値から得る整数観測と篩の事実
@@ -38,13 +38,29 @@ theorem Ty.LeQ.dataCore_source {Γ Φ a b d ts} (h : Ty.LeQ Γ Φ a b)
   | .forget | .introduce _ _ => exact hd
   | .refine hv _ _ _ => exact hv.dataCore_source hd
 
+theorem HasTypeVsQ.length {P B store Q C Γ Φ vs as}
+    (h : HasTypeVsQ P B store Q C Γ Φ vs as) : vs.length = as.length := by
+  match h with
+  | .nil => rfl
+  | .cons _ hs => exact congrArg Nat.succ hs.length
+
 theorem HasTypeVQ.data_observation {P B store Q C Γ Φ v a d ts}
     (h : HasTypeVQ P B store Q C Γ Φ v a) (hd : a.norm.core = .data d ts)
     {t : Term} (ht : v.toTerm? = some t) : Term.HasData P Γ t d ts := by
   match h with
   | .V_Var hi ho => cases ht; exact .var hi hd
   | .V_Const (c := c) _ => cases c <;> cases hd
-  | .V_Lam _ _ _ _ | .V_List _ _ _ => cases hd
+  | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => cases hd
+  | .V_Con hc hn _ _ hv _ =>
+    simp only [Ty.norm, Ty.core, Ty.data.injEq] at hd
+    obtain ⟨rfl, rfl⟩ := hd
+    cases ht
+    exact .value hc rfl (by simpa only [Ty.normTys_eq_map, List.length_map] using hn.symm)
+      (by simpa only [Val.toTermSlots_length, List.length_map] using hv.length)
+  | .V_Super _ _ _ _ => cases hd
+  | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => cases hd
+  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ => cases hd
+  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases hd
   | .V_Sub hv hl _ _ _ => exact hv.data_observation (hl.dataCore_source hd) ht
   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.data_observation hd ht
 
@@ -55,10 +71,29 @@ mutual
     match h with
     | .V_Var hi ho => cases ht; exact ⟨_, hi, ho⟩
     | .V_Const (c := c) _ => cases c <;> cases ht <;> trivial
-    | .V_Lam _ _ _ _ => cases ht
-    | .V_List hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
+    | .V_Lam _ _ _ _ _ => cases ht
+    | .V_List hv _ _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
+    | .V_Con hc _ _ _ hv _ =>
+      cases ht
+      exact ⟨HasTypeVsQ.observation_declared hv, _, hc,
+        by simpa only [Val.toTermSlots_length, List.length_map] using hv.length⟩
+    | .V_Super _ _ _ _ => cases ht
+    | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
+    | .V_Bytes _ => cases ht; trivial
+    | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases ht
+    | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_declared hk, HasTypeEachQ.observation_declared hv⟩
+    | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
     | .V_Sub hv _ _ _ _ => exact hv.observation_declared ht
     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_declared ht
+  theorem HasTypeVsQ.observation_declared {P B store Q C Γ Φ vs as}
+      (h : HasTypeVsQ P B store Q C Γ Φ vs as) : declaredSlots P C Γ (Val.toTermSlots vs) := by
+    match h with
+    | .nil => trivial
+    | .cons hv hs =>
+      refine ⟨?_, HasTypeVsQ.observation_declared hs⟩
+      cases he : Val.toTerm? _ with
+      | none => trivial
+      | some t => exact hv.observation_declared he
   theorem HasTypeEachQ.observation_declared {P B store Q C Γ Φ vs a}
       (h : HasTypeEachQ P B store Q C Γ Φ vs a) :
       declaredSlots P C Γ (Val.toTermSlots vs) := by
@@ -79,10 +114,26 @@ mutual
     match h with
     | .V_Var hg ho => cases ht; exact ⟨_, hg, ho⟩
     | .V_Const (c := c) _ => cases c <;> cases ht <;> trivial
-    | .V_Lam _ _ _ _ => cases ht
-    | .V_List hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
+    | .V_Lam _ _ _ _ _ => cases ht
+    | .V_List hv _ _ _ => cases ht; exact HasTypeEachQ.observation_references hv
+    | .V_Con _ _ _ _ hv _ => cases ht; exact HasTypeVsQ.observation_references hv
+    | .V_Super _ _ _ _ => cases ht
+    | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
+    | .V_Bytes _ => cases ht; trivial
+    | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases ht
+    | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩
+    | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
     | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_references ht
+  theorem HasTypeVsQ.observation_references {P B store Q C Γ Φ vs as}
+      (h : HasTypeVsQ P B store Q C Γ Φ vs as) : varsInSlots Γ.Readable (Val.toTermSlots vs) := by
+    match h with
+    | .nil => trivial
+    | .cons hv hs =>
+      refine ⟨?_, HasTypeVsQ.observation_references hs⟩
+      cases he : Val.toTerm? _ with
+      | none => trivial
+      | some t => exact hv.observation_references he
   theorem HasTypeEachQ.observation_references {P B store Q C Γ Φ vs a}
       (h : HasTypeEachQ P B store Q C Γ Φ vs a) :
       varsInSlots Γ.Readable (Val.toTermSlots vs) := by
@@ -106,10 +157,17 @@ theorem HasTypeVQ.observation {P B store Q C Γ Φ v a sort}
   match h with
   | .V_Var hg ho => exact ⟨_, rfl, ⟨a, hg, ho⟩, a, hg, hi⟩
   | .V_Const hc => exact const_observation hc hi
-  | .V_Lam _ _ _ _ => cases hi
-  | .V_List hv _ _ =>
+  | .V_Lam _ _ _ _ _ => cases hi
+  | .V_List hv _ _ _ =>
     have hs : sort = .list := (Option.some.inj hi).symm
     exact ⟨_, rfl, HasTypeEachQ.observation_references hv, hs⟩
+  | .V_Con _ _ _ _ hv _ => exact ⟨_, rfl, HasTypeVsQ.observation_references hv, (Option.some.inj hi).symm⟩
+  | .V_Super _ _ _ _ => cases hi
+  | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases hi
+  | .V_Bytes _ => exact ⟨_, rfl, trivial, (Option.some.inj hi).symm⟩
+  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases hi
+  | .V_Map hk hv _ _ _ _ => exact ⟨_, rfl, ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩, (Option.some.inj hi).symm⟩
+  | .V_Set hv _ _ => exact ⟨_, rfl, HasTypeEachQ.observation_references hv, (Option.some.inj hi).symm⟩
   | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation hi
 
@@ -136,7 +194,10 @@ theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
   | .V_Const (c := c) _ =>
     cases c <;> simp [Const.type, Ty.assume]
-  | .V_Lam _ _ _ _ | .V_List _ _ _ => intro p hp; cases hp
+  | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
+  | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ => intro p hp; cases hp
   | .V_Sub hv hl _ _ _ =>
     intro p hp
     apply ((hl.assume p hp).bind (fun i => match i with
@@ -164,7 +225,10 @@ theorem HasTypeVQ.assume_optional {P B store Q C Γ Φ v a}
     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
   | .V_Const (c := c) _ =>
     cases c <;> simp [Const.type, Ty.assume]
-  | .V_Lam _ _ _ _ | .V_List _ _ _ => intro p hp; cases hp
+  | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
+  | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ => intro p hp; cases hp
   | .V_Sub hv hl _ _ _ =>
     intro p hp
     apply ((hl.assume p hp).bind (fun i => match i with

@@ -76,6 +76,8 @@ mutual
     /-- 組み込みの関数 `b[T̄; Ē; R̄]`。`rs` は具体化した範囲の列。 -/
     | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List RangeExpr)
     | lam (names : List String) (params : List Ty) (body : Comp)
+    | dependentLam (signature : Tel) (body : Comp)
+    | closure (signature : Tel) (body : Closure)
     | con (c : ConName) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
     /-- 利用者が宣言したエフェクトの操作 `op[T̄]`。 -/
@@ -132,7 +134,23 @@ mutual
   /-- 照合の分岐。本体とガードは分岐ごとに一つだけ持つ。 -/
   inductive Arm where
     | mk (alts : List Alt) (guard : Option Comp) (body : Comp)
+  inductive Capture where
+    | mk (values : List (Option Val))
+
+  inductive Closure where
+    | mk (capture : Capture) (code : Comp)
 end
+
+def Capture.values : Capture → List (Option Val)
+  | .mk vs => vs
+
+def Closure.capture : Closure → Capture
+  | .mk cap _ => cap
+
+def Closure.code : Closure → Comp
+  | .mk _ m => m
+
+def Capture.empty : Capture := .mk []
 
 structure Def where
   tparams : List TParamDecl
@@ -143,7 +161,7 @@ structure Def where
   eff : Eff
   body : Comp
 
-private def Def.ntys (d : Def) : Nat := d.tparams.length
+def Def.ntys (d : Def) : Nat := d.tparams.length
 
 structure ConDecl where
   data : DataName
@@ -188,9 +206,13 @@ structure ClassDecl where
   supers : List ClassName
   methods : MethName → Option MethSig
 
+/-- 旧の各注釈は外側で読まれるため、格納位置の先行引数数だけ移す。 -/
+def embedParameters (ps : List Benitoite.Release.Ty) : List Ty :=
+  ps.zipIdx.map (fun (a, i) => (embedTy a).shiftV i 0)
+
 /-- 旧のメソッド宣言の型・行と制約を保ち、追加のkindはvalueへ写す。 -/
 def embedMethSig (d : Benitoite.Release.MethSig) : MethSig :=
-  ⟨d.tparams.map embedTParam, d.neffs, d.names, embedTys d.params, embedTy d.ret, embedEff d.eff⟩
+  ⟨d.tparams.map embedTParam, d.neffs, d.names, embedParameters d.params, (embedTy d.ret).shiftV d.params.length 0, (embedEff d.eff).shiftV d.params.length 0⟩
 
 def embedClassDecl (d : Benitoite.Release.ClassDecl) : ClassDecl :=
   { argumentKind := .value, supers := d.supers, methods := fun m => (d.methods m).map embedMethSig }
@@ -218,7 +240,7 @@ structure ImplDecl where
   methods : MethName → Option Comp
 
 /-- 辞書の引数 d̄ の型 `Dict[Cl', β']` の並び。 -/
-private def ImplDecl.dictTys (id : ImplDecl) : List Ty :=
+def ImplDecl.dictTys (id : ImplDecl) : List Ty :=
   id.dictParams.map fun p => .dict p.1 (.tvar p.2)
 
 /-- プログラム。定義の集まり Σ、型の宣言、エフェクトの宣言、型クラスの宣言と実装の定義。 -/
@@ -291,6 +313,17 @@ structure Builtins where
   /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
   要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
   valContent : OpaqueName → Option Ty := fun _ => none
+
+/-- 宣言は既に先行する値の引数の下で格納されている。 -/
+def signatureTel : List String → List Ty → Ty → Eff → Tel
+  | n :: ns, a :: ps, r, e => .param n a (signatureTel ns ps r e)
+  | _, _, r, e => .done r e
+
+def Def.tel (d : Def) : Tel := signatureTel d.names d.params d.ret d.eff
+def PrimSig.tel (s : PrimSig) : Tel := signatureTel s.names s.params s.ret s.eff
+def OpDecl.tel (d : OpDecl) : Tel := signatureTel d.names d.params d.ret
+  (.mk (fun a => match a with | .name n (.fixed .top) => decide (n = d.eff) | _ => false) [])
+def MethSig.tel (s : MethSig) : Tel := signatureTel s.names s.params s.ret s.eff
 
 inductive LocTy where
   | builder (kind : BuilderKind)

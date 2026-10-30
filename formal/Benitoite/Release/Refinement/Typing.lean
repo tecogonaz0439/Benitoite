@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.Subst
 import Benitoite.Release.Refinement.Le
-import Benitoite.Release.Refinement.DeclaredTransport
+import Benitoite.Release.Refinement.StoreTransport
+import Benitoite.Release.Refinement.TelArguments
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -18,6 +19,28 @@ def hideBuilders (Ψ : StoreTy) : StoreTy := fun l => match Ψ l with
   | some (.builder _) => none
   | a => a
 
+theorem StoreTy.WF.hide {Ψ : StoreTy} (h : Ψ.WF) : (hideBuilders Ψ).WF := by
+  intro l t ht
+  unfold hideBuilders at ht
+  cases hl : Ψ l with
+  | none => simp [hl] at ht
+  | some x => cases x <;> simp only [hl] at ht <;> try cases ht
+              all_goals exact h _ _ hl
+
+theorem StoreTy.PreservesNormals.hide {Ψ Ψ' : StoreTy} (h : Ψ.PreservesNormals Ψ') :
+    (hideBuilders Ψ).Extends (hideBuilders Ψ') := by
+  intro l t ht
+  unfold hideBuilders at ht ⊢
+  cases hl : Ψ l with
+  | none => simp [hl] at ht
+  | some x => cases x <;> simp only [hl] at ht <;> try cases ht
+              all_goals rw [h _ _ hl trivial]
+
+theorem StoreTy.preserves_hide (Ψ : StoreTy) : Ψ.PreservesNormals (hideBuilders Ψ) := by
+  intro l t ht hn
+  cases t <;> try cases hn
+  all_goals simp [hideBuilders, ht]
+
 def bindParams (Γ : Ctx) (ps : List Ty) : Ctx :=
   (ps.reverse.map (fun a => some (a.shiftV ps.length 0))) ++
     Γ.map (Option.map (Ty.shiftV ps.length 0))
@@ -25,9 +48,44 @@ def bindParams (Γ : Ctx) (ps : List Ty) : Ctx :=
 def liftMany (n : Nat) (Φ : List Pred) : List Pred :=
   Nat.rec Φ (fun _ Ξ => Ξ.map Pred.lift) n
 
-def localExtend (n : Nat) : LocalCtx → LocalCtx
-  | [] => []
-  | x :: xs => List.replicate n none ++ (x :: xs)
+def BuilderKind.contents : BuilderKind → Ty
+  | .string => .base .string
+  | .list a => .list a
+  | .bytes => .bytes
+
+def BuilderKind.item : BuilderKind → Ty
+  | .string => .base .string
+  | .list a => a
+  | .bytes => .base .byte
+
+def BuilderOp.parameters (op : BuilderOp) (kind : BuilderKind) : List Ty := match op with
+  | .append => [kind.item]
+  | .appendAll => [match kind with | .string => .list (.base .string) | _ => kind.contents]
+  | .copy | .length => []
+
+def BuilderOp.resultType (op : BuilderOp) (kind : BuilderKind) : Ty := match op with
+  | .copy => kind.contents
+  | .length => .base .integer
+  | .append | .appendAll => .base .unit
+
+def LocalCtx.extend (x : Option BuilderKind) (L : LocalCtx) : LocalCtx :=
+  x :: L.map (Option.map (renameKind (shiftIndex 1 0)))
+
+def localExtend : Nat → LocalCtx → LocalCtx
+  | 0, L => L
+  | n+1, L => LocalCtx.extend none (localExtend n L)
+
+inductive LocalRef.HasKind (Ψ : StoreTy) (L : LocalCtx) : LocalRef → BuilderKind → Prop where
+  | bound {i b} : L[i]? = some (some b) → LocalRef.HasKind Ψ L (.bound i) b
+  | loc {l b} : Ψ l = some (.builder b) → LocalRef.HasKind Ψ L (.loc l) b
+
+def LocalCtx.Shift (k c : Nat) (L L' : LocalCtx) : Prop :=
+  ∀ i b, L[i]? = some (some b) →
+    L'[shiftIndex k c i]? = some (some (renameKind (shiftIndex k c) b))
+
+noncomputable def LocalSubstOk (Ψ : StoreTy) (L : LocalCtx) (ν : Nat → Val)
+    (ρ : Nat → LocalRef) (L' : LocalCtx) : Prop :=
+  ∀ i b, L[i]? = some (some b) → LocalRef.HasKind Ψ L' (ρ i) (substKind ν b)
 
 mutual
   /-- 値の型付け。経路条件は通常の文脈の番号で読む。 -/
@@ -41,9 +99,57 @@ mutual
         Ty.WF 0 C.length Γ.length (.fn ns ps r ε) → Ty.Sorted Γ (.fn ns ps r ε) →
         HasTypeCQ P B (hideBuilders Ψ) Q C (bindParams (hideConts Γ) ps) (liftMany ps.length Φ)
           (some (r.shiftV ps.length 0)) body (r.shiftV ps.length 0) (Eff.shiftV ps.length 0 ε) [] →
+        Ty.Declared P C Γ (.fn ns ps r ε) →
         HasTypeVQ P B Ψ Q C Γ Φ (.lam ns ps body) (.fn ns ps r ε)
+    | V_Fun {Ψ Q C Γ Φ f d ts es} : P.defs f = some d → NamesWF d.names d.params →
+        Admissible B C Γ.length (d.tparams.map TParamDecl.constraints) d.neffs
+          (Qsig d.params d.ret d.eff) Q ts es d.eff →
+        SignatureInstance P C Γ d.tel (d.tparams.map TParamDecl.kind) ts es →
+        HasTypeVQ P B Ψ Q C Γ Φ (.fnRef f ts es) (.dependentFn (instantiatedTel d.tel ts es))
+    | V_Prim {Ψ Q C Γ Φ b s ts es rs} : B.sig b = some s → B.RangeAdmissible b s rs →
+        NamesWF s.names s.params → PrimitiveAdmissible C Γ.length s Q ts es →
+        SignatureInstance P C Γ (Tel.instR rs s.tel) (s.tparams.map TParamDecl.kind) ts es →
+        HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es rs)
+          (.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es))
+    | V_Op {Ψ Q C Γ Φ o od ts} : P.ops o = some od → NamesWF od.names od.params →
+        SatAll B C ts od.tparams →
+        SignatureInstance P C Γ od.tel (List.replicate od.tparams.length .value) ts [] →
+        HasTypeVQ P B Ψ Q C Γ Φ (.op o ts) (.dependentFn (instantiatedTel od.tel ts []))
+    | V_Map {Ψ Q C Γ Φ ks vs a b} :
+        HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
+        ks.length = vs.length → B.sat C a TParam.keyC →
+        Ty.Annotation P C Γ a → Ty.Annotation P C Γ b →
+        HasTypeVQ P B Ψ Q C Γ Φ (.mapV ks vs) (.map a b)
+    | V_Set {Ψ Q C Γ Φ vs a} : HasTypeEachQ P B Ψ Q C Γ Φ vs a →
+        B.sat C a TParam.keyC → Ty.Annotation P C Γ a →
+        HasTypeVQ P B Ψ Q C Γ Φ (.setV vs) (.set a)
+    | V_Dict {Ψ Q C Γ Φ i id ts vs} : P.impls i = some id → SatAll B C ts id.tparams →
+        TypeAnnotations P C Γ ts → TypeArgsKinded P C ts (List.replicate id.tparams.length .value) →
+        (∀ a ∈ id.dictTys, a.WF 0 id.tparams.length 0) → id.target.WF 0 id.tparams.length 0 →
+        HasTypeVsQ P B Ψ Q C Γ Φ vs (id.dictTys.map (Ty.subst ts [])) →
+        Ty.Annotation P C Γ (.dict id.cls (id.target.subst ts [])) →
+        HasTypeVQ P B Ψ Q C Γ Φ (.dict i ts vs) (.dict id.cls (id.target.subst ts []))
+    | V_Raise {Ψ Q C Γ Φ t e} :
+        Ty.Annotation P C Γ (.fn ["error"] [e] t (Eff.singleFail e)) →
+        HasTypeVQ P B Ψ Q C Γ Φ (.raise t e) (.fn ["error"] [e] t (Eff.singleFail e))
+    | V_LocRef {Ψ Q C Γ Φ l a} : Ψ l = some (.ref a) → Ty.Declared P C Γ a →
+        HasTypeVQ P B Ψ Q C Γ Φ (.loc l) (.reference a)
+    | V_LocLazy {Ψ Q C Γ Φ l a} : Ψ l = some (.lazy a) → Ty.Declared P C Γ a →
+        HasTypeVQ P B Ψ Q C Γ Φ (.loc l) (.lazy a)
+    | V_Bytes {Ψ Q C Γ Φ bs} : (∀ b ∈ bs, b ≤ 255) →
+        HasTypeVQ P B Ψ Q C Γ Φ (.bytesV bs) .bytes
+    | V_Con {Ψ Q C Γ Φ c cd ts vs} : P.cons c = some cd → ts.length = cd.ntys →
+        TypeArgsKinded P C ts (List.replicate cd.ntys .value) →
+        (∀ t ∈ cd.args, t.WF 0 cd.ntys 0) →
+        HasTypeVsQ P B Ψ Q C Γ Φ vs (cd.args.map (Ty.subst ts [])) →
+        Ty.Annotation P C Γ (.data cd.data ts) →
+        HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) (.data cd.data ts)
+    | V_Super {Ψ Q C Γ Φ v cl a cd super} :
+        HasTypeVQ P B Ψ Q C Γ Φ v (.dict cl a) → P.classes cl = some cd → super ∈ cd.supers →
+        Ty.Declared P C Γ a →
+        HasTypeVQ P B Ψ Q C Γ Φ (.super v super) (.dict super a)
     | V_List {Ψ Q C Γ Φ vs a} : HasTypeEachQ P B Ψ Q C Γ Φ vs a →
-        Ty.WF 0 C.length Γ.length a → Ty.Sorted Γ a →
+        Ty.WF 0 C.length Γ.length a → Ty.Sorted Γ a → Ty.Declared P C Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.list vs) (.list a)
     | V_Sub {Ψ Q C Γ Φ v a b} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         Ty.LeQ Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
@@ -69,15 +175,50 @@ mutual
   inductive HasTypeCQ (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →
       Comp → Ty → Eff → (Δ : LocalCtx := []) → Prop where
+    | C_BuilderLet {Ψ Q C Γ Φ Δ R kind body a ε} :
+        Ty.Annotation P C Γ kind.contents → TypeArgsKinded P C [kind.contents] [.value] →
+        HasTypeCQ P B Ψ Q C Γ.extendNone (Φ.map Pred.lift) (R.map (Ty.shiftV 1 0))
+          body (a.shiftV 1 0) (ε.shiftV 1 0)
+          (LocalCtx.extend (some (renameKind (shiftIndex 1 0) kind)) Δ) →
+        Ty.Declared P C Γ a →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.builderLet kind body) a ε Δ
+    | C_BuilderOp {Ψ Q C Γ Φ Δ R kind op ref args} :
+        Ty.Annotation P C Γ kind.contents → TypeArgsKinded P C [kind.contents] [.value] →
+        LocalRef.HasKind Ψ Δ ref kind → HasTypeVsQ P B Ψ Q C Γ Φ args (op.parameters kind) →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.builderOp kind op ref args) (op.resultType kind) Eff.empty Δ
     | C_Return {Ψ Q C Γ Φ Δ R v a} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         HasTypeCQ P B Ψ Q C Γ Φ R (.ret v) a Eff.empty Δ
     | C_Let {Ψ Q C Γ Φ Δ R m n a b ε} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         HasTypeCQ P B Ψ Q C (Γ.extend a) (Φ.map Pred.lift) (R.map (Ty.shiftV 1 0))
           n (b.shiftV 1 0) (Eff.shiftV 1 0 ε) (localExtend 1 Δ) →
+        Ty.Declared P C Γ b →
         HasTypeCQ P B Ψ Q C Γ Φ R (.letIn m n) b ε Δ
     | C_App {Ψ Q C Γ Φ Δ R f args ns as b ε} :
         HasTypeVQ P B Ψ Q C Γ Φ f (.fn ns as b ε) → HasTypeVsQ P B Ψ Q C Γ Φ args as →
         HasTypeCQ P B Ψ Q C Γ Φ R (.app f args) b ε Δ
+    | C_If {Ψ Q C Γ Φ Δ R v m n a ε} :
+        HasTypeVQ P B Ψ Q C Γ Φ v (.base .boolean) →
+        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → HasTypeCQ P B Ψ Q C Γ Φ R n a ε Δ →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.ite v m n) a ε Δ
+    | C_Lazy {Ψ Q C Γ Φ Δ R m a} :
+        HasTypeCQ P B (hideBuilders Ψ) Q C (hideConts Γ) Φ none m a Eff.empty [] →
+        Ty.Annotation P C Γ a →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.lazyC m) (.lazy a) Eff.empty Δ
+    | C_Escape {Ψ Q C Γ Φ Δ r v a ε} :
+        HasTypeVQ P B Ψ Q C Γ Φ v r → Ty.Annotation P C Γ a →
+        HasTypeCQ P B Ψ Q C Γ Φ (some r) (.escape v) a ε Δ
+    | C_Use {Ψ Q C Γ Φ Δ R v o m a ε} :
+        HasTypeVQ P B Ψ Q C Γ Φ v (.opaque o (.fixed .top)) → B.isResource o = true →
+        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → ε.test (.name stateEff (.fixed .top)) = true →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.use v m) a ε Δ
+    | C_Meth {Ψ Q C Γ Φ Δ R v cl τ cd m ms ss es ws as a ε} :
+        HasTypeVQ P B Ψ Q C Γ Φ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
+        NamesWF ms.names ms.params → SatAll B C ss (ms.tparams.map TParamDecl.constraints) →
+        SignatureInstance P C Γ ms.tel (ms.tparams.map TParamDecl.kind ++ [cd.argumentKind]) (ss ++ [τ]) es →
+        MethodRowsAdmissible C Γ.length Q ms es →
+        Tel.arguments (instantiatedTel ms.tel (ss ++ [τ]) es) ws = some (as, a, ε) →
+        HasTypeVsQ P B Ψ Q C Γ Φ ws as → Ty.Annotation P C Γ a →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.meth v m ss es ws) a ε Δ
     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ

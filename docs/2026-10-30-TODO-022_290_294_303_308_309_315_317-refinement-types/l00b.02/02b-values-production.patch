@@ -1,0 +1,1531 @@
+--- before/formal/Benitoite/Release/Refinement/Admissible.lean
++++ after/formal/Benitoite/Release/Refinement/Admissible.lean
+@@ -0,0 +1,102 @@
++import Benitoite.Release.Refinement.DeclaredTransport
++
++/-!
++# 型・行引数と組込みの制約の許容
++
++値を読む注釈を検査する文脈を明示し、kind と組込みの制約を分ける。
++-/
++namespace Benitoite.Release.Refinement
++
++noncomputable section
++
++structure Ty.Annotation (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) : Prop where
++  wf : a.WF 0 C.length Γ.length
++  sorted : a.Sorted Γ
++  declared : a.Declared P C Γ
++
++def SatAll (B : Builtins) (C : List TParam) (ts : List Ty) (tps : List TParam) : Prop :=
++  ts.length = tps.length ∧ ∀ (i : Nat) (t : Ty) (p : TParam),
++    ts[i]? = some t → tps[i]? = some p → B.sat C t p
++
++mutual
++  def QTy : Ty → NoFailCtx
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ | .scoped _ _ _
++    | .pathBases | .scopePattern _ => Qempty
++    | .data _ as | .tapp _ as | .external _ as => QTys as
++    | .list a | .reference a | .lazy a | .set a | .dict _ a | .refined a _ => QTy a
++    | .map a b => fun i => QTy a i ∨ QTy b i
++    | .fn _ ps r e => fun i => QTys ps i ∨ QTy r i ∨ QEff e i
++    | .cont a b e => fun i => QTy a i ∨ QTy b i ∨ QEff e i
++    | .dependentFn t => QTel t
++  def QTel : Tel → NoFailCtx
++    | .done r e => fun i => QTy r i ∨ QEff e i
++    | .param _ a t => fun i => QTy a i ∨ QTel t i
++  def QTys : List Ty → NoFailCtx
++    | [] => Qempty
++    | t :: ts => fun i => QTy t i ∨ QTys ts i
++  def QEff : Eff → NoFailCtx
++    | .mk atoms fs => fun i => (fs ≠ [] ∧ atoms (.rho i) = true) ∨ QTys fs i
++end
++
++mutual
++  def Ty.RowsIn (pe : Nat → Prop) : Ty → Prop
++    | .base _ | .opaque _ _ | .tvar _ | .bytes | .ctor _ | .scoped _ _ _
++    | .pathBases | .scopePattern _ => True
++    | .data _ as | .tapp _ as | .external _ as => Ty.RowsInList pe as
++    | .list a | .reference a | .lazy a | .set a | .dict _ a | .refined a _ => Ty.RowsIn pe a
++    | .map a b => Ty.RowsIn pe a ∧ Ty.RowsIn pe b
++    | .fn _ ps r e => Ty.RowsInList pe ps ∧ Ty.RowsIn pe r ∧ Eff.RowsIn pe e
++    | .cont a b e => Ty.RowsIn pe a ∧ Ty.RowsIn pe b ∧ Eff.RowsIn pe e
++    | .dependentFn t => Tel.RowsIn pe t
++  def Tel.RowsIn (pe : Nat → Prop) : Tel → Prop
++    | .done r e => Ty.RowsIn pe r ∧ Eff.RowsIn pe e
++    | .param _ a t => Ty.RowsIn pe a ∧ Tel.RowsIn pe t
++  def Ty.RowsInList (pe : Nat → Prop) : List Ty → Prop
++    | [] => True
++    | t :: ts => Ty.RowsIn pe t ∧ Ty.RowsInList pe ts
++  def Eff.RowsIn (pe : Nat → Prop) : Eff → Prop
++    | .mk atoms fs => (∀ i, atoms (.rho i) = true → pe i) ∧ Ty.RowsInList pe fs
++end
++
++def Qsig (ps : List Ty) (ret : Ty) (e : Eff) : NoFailCtx :=
++  fun i => QTys ps i ∨ QTy ret i ∨ QEff e i
++
++def NoFail (Q : NoFailCtx) (e : Eff) : Prop :=
++  e.fails = [] ∧ ∀ i, e.test (.rho i) = true → Q i
++
++def Eff.row (i : Nat) : Eff := .mk (fun a => match a with | .rho j => decide (j = i) | _ => false) []
++
++def RowTransport (Qs Qt : NoFailCtx) (es : List Eff) : Prop :=
++  ∀ i, Qs i → NoFail Qt ((es[i]?).getD (Eff.row i))
++
++structure Admissible (B : Builtins) (C : List TParam) (nv : Nat)
++    (tps : List TParam) (ne : Nat) (Qs Qt : NoFailCtx)
++    (ts : List Ty) (es : List Eff) (e : Eff) : Prop where
++  types : SatAll B C ts tps
++  typeScope : ∀ t ∈ ts, Ty.WF 0 C.length nv t ∧ Ordinary t
++  rowCount : es.length = ne
++  rowScope : ∀ f ∈ es, Eff.WF 0 C.length nv f
++  sourceRows : Eff.RowsIn (· < es.length) e
++  sourceQ : ∀ i, Qs i → i < es.length
++  noFailRows : RowTransport Qs Qt es
++
++structure PrimitiveAdmissible (C : List TParam) (nv : Nat) (s : PrimSig)
++    (Q : NoFailCtx) (ts : List Ty) (es : List Eff) : Prop where
++  typeCount : ts.length = s.tparams.length
++  admits : s.admits C ts
++  typeScope : ∀ t ∈ ts, Ty.WF 0 C.length nv t ∧ Ordinary t
++  rowCount : es.length = s.neffs
++  rowScope : ∀ f ∈ es, Eff.WF 0 C.length nv f
++  sourceRows : Eff.RowsIn (· < es.length) s.eff
++  sourceQ : ∀ i, Qsig s.params s.ret s.eff i → i < es.length
++  noFailRows : RowTransport (Qsig s.params s.ret s.eff) Q es
++
++def MethodRowsAdmissible (C : List TParam) (nv : Nat) (Q : NoFailCtx) (ms : MethSig)
++    (es : List Eff) : Prop :=
++  es.length = ms.neffs ∧ (∀ f ∈ es, Eff.WF 0 C.length nv f) ∧
++  Eff.RowsIn (· < es.length) ms.eff ∧
++  (∀ i, Qsig ms.params ms.ret ms.eff i → i < es.length) ∧
++  RowTransport (Qsig ms.params ms.ret ms.eff) Q es
++
++end
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/Narrowing.lean
++++ after/formal/Benitoite/Release/Refinement/Narrowing.lean
+@@ -66,15 +66,15 @@
+   rwa [renameTy_id] at hs
+ 
+ private theorem ContextMap.hide {P B store Q C Γ Δ Ξ}
+-    (h : ContextMap P B store Q C Γ Δ Ξ) :
++    (h : ContextMap P B store Q C Γ Δ Ξ) (hstore : store.WF) :
+     ContextMap P B (hideBuilders store) Q C (hideConts Γ) (hideConts Δ) Ξ := by
+   constructor
+   · simpa only [hideConts, List.length_map] using h.length
+   · intro i a hi ho
+-    exact (h.lookup i a (hideConts_lookup.mp hi).1 ho).hide_context (hideBuilders store)
++    exact (h.lookup i a (hideConts_lookup.mp hi).1 ho).hide_context hstore (hideBuilders store) (StoreTy.preserves_hide _)
+ 
+ private theorem ContextMap.params {P B store Q C Γ Δ Ξ}
+-    (h : ContextMap P B store Q C Γ Δ Ξ) (ps : List Ty) :
++    (h : ContextMap P B store Q C Γ Δ Ξ) (hstore : store.WF) (ps : List Ty) :
+     ContextMap P B store Q C (bindParams Γ ps) (bindParams Δ ps) (liftMany ps.length Ξ) := by
+   constructor
+   · simp only [bindParams, List.length_append, List.length_map, List.length_reverse, h.length]
+@@ -93,12 +93,12 @@
+           simp only [hu, Option.map_some, Option.some.injEq] at hi
+           cases hi
+           have ht := (h.lookup _ u hu ((Ty.ordinary_shiftV _ _ _).mp ho)).shift_values
+-            (store' := store) (ShiftMap.outer Δ ps) (Ξ := liftMany ps.length Ξ)
++            (store' := store) hstore (.refl _) (ShiftMap.outer Δ ps) (Ξ := liftMany ps.length Ξ)
+             (fun p hp => .hyp (List.mem_append_right _ (by rw [liftMany_eq]; exact List.mem_map.mpr ⟨p,hp,rfl⟩)))
+           simpa only [Val.rename, shiftIndex_add, Nat.sub_add_cancel (Nat.le_of_not_gt hil)] using ht
+ 
+ private theorem ContextMap.none {P B store Q C Γ Δ Ξ}
+-    (h : ContextMap P B store Q C Γ Δ Ξ) :
++    (h : ContextMap P B store Q C Γ Δ Ξ) (hstore : store.WF) :
+     ContextMap P B store Q C Γ.extendNone Δ.extendNone (Ξ.map Pred.lift) := by
+   constructor
+   · simp only [Ctx.extendNone, List.length_cons, List.length_map, h.length]
+@@ -115,7 +115,7 @@
+           simp only [hu, Option.map_some, Option.some.injEq] at hi
+           cases hi
+           have ht := (h.lookup i u hu ((Ty.ordinary_shiftV _ _ _).mp ho)).shift_values
+-            (store' := store) (ShiftMap.outerNone Δ) (Ξ := Ξ.map Pred.lift) (fun p hp => by
++            (store' := store) hstore (.refl _) (ShiftMap.outerNone Δ) (Ξ := Ξ.map Pred.lift) (fun p hp => by
+               change Entails _ p.lift
+               exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
+           simpa only [Val.rename, shiftIndex_add] using ht
+@@ -131,62 +131,80 @@
+ 
+ mutual
+   private theorem context_value {P B store Q C Γ Φ v a}
+-      (h : HasTypeVQ P B store Q C Γ Φ v a) {Δ Ξ}
++      (h : HasTypeVQ P B store Q C Γ Φ v a) (hstore : store.WF) {Δ Ξ}
+       (hm : ContextMap P B store Q C Γ Δ Ξ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+       HasTypeVQ P B store Q C Δ Ξ v a := by
+     match h with
+     | .V_Var hi ho => exact hm.lookup _ _ hi ho
+     | .V_Const hc => exact .V_Const hc
+-    | .V_Lam (ps := ps) hn hw hs hb =>
+-      refine .V_Lam hn (by simpa only [hm.length] using hw) (hm.sorted hs) ?_
+-      exact context_comp hb (hm.hide.params ps)
+-        (hm.hide.conditions_params (fun p hp => (hf p hp).hideConts) ps)
+-    | .V_List he hw hs =>
+-      exact .V_List (context_each he hm hf) (by simpa only [hm.length] using hw) (hm.sorted hs)
++    | .V_Lam (ps := ps) hn hw hs hb hd =>
++      refine .V_Lam hn (by simpa only [hm.length] using hw) (hm.sorted hs) ?_ (hd.context hm.declaration)
++      exact context_comp hb hstore.hide ((hm.hide hstore).params hstore.hide ps)
++        ((hm.hide hstore).conditions_params (fun p hp => (hf p hp).hideConts) ps)
++    | .V_List he hw hs hd =>
++      exact .V_List (context_each he hstore hm hf) (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
++    | .V_Raise ha => exact .V_Raise ⟨by simpa only [hm.length] using ha.wf,
++        hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
++    | .V_LocRef hl hd => exact .V_LocRef hl (hd.context hm.declaration)
++    | .V_LocLazy hl hd => exact .V_LocLazy hl (hd.context hm.declaration)
++    | .V_Bytes hb => exact .V_Bytes hb
++    | .V_Con hc hn hw hv ha =>
++      exact .V_Con hc hn hw (context_values hv hstore hm hf)
++        ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
++    | .V_Super hv hc hmemb hd => exact .V_Super (context_value hv hstore hm hf) hc hmemb (hd.context hm.declaration)
+     | .V_Sub hv hl hw hs hd =>
+       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
+       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
+       simp only [renameTy_id] at hl'
+-      exact .V_Sub (context_value hv hm hf) hl' (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
++      exact .V_Sub (context_value hv hstore hm hf) hl' (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
+     | .V_Refine hv hi ht hs hw he hda hdp =>
+-      refine .V_Refine (context_value hv hm hf) hi ht ?_ (by simpa only [hm.length] using hw) ?_ (hda.context hm.declaration) ?_
++      refine .V_Refine (context_value hv hstore hm hf) hi ht ?_ (by simpa only [hm.length] using hw) ?_ (hda.context hm.declaration) ?_
+       · simpa only [upValues_id, predBind_id] using Pred.sorted_bind hs (fun i => some (.var i)) (fun _ h => h) id hm.values hm.references
+       · simpa only [SubstEnv.valuesOnly, predBind_id] using (hm.transport hf).entails he
+       · simpa only [Option.map_some, Ty.rawSubstV_id, upValues_id, predBind_id] using hdp.bind hm.declaration
+   private theorem context_values {P B store Q C Γ Φ vs as}
+-      (h : HasTypeVsQ P B store Q C Γ Φ vs as) {Δ Ξ}
++      (h : HasTypeVsQ P B store Q C Γ Φ vs as) (hstore : store.WF) {Δ Ξ}
+       (hm : ContextMap P B store Q C Γ Δ Ξ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+       HasTypeVsQ P B store Q C Δ Ξ vs as := by
+     match h with
+     | .nil => exact .nil
+-    | .cons hv hs => exact .cons (context_value hv hm hf) (context_values hs hm hf)
++    | .cons hv hs => exact .cons (context_value hv hstore hm hf) (context_values hs hstore hm hf)
+   private theorem context_each {P B store Q C Γ Φ vs a}
+-      (h : HasTypeEachQ P B store Q C Γ Φ vs a) {Δ Ξ}
++      (h : HasTypeEachQ P B store Q C Γ Φ vs a) (hstore : store.WF) {Δ Ξ}
+       (hm : ContextMap P B store Q C Γ Δ Ξ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+       HasTypeEachQ P B store Q C Δ Ξ vs a := by
+     match h with
+     | .nil => exact .nil
+-    | .cons hv hs => exact .cons (context_value hv hm hf) (context_each hs hm hf)
++    | .cons hv hs => exact .cons (context_value hv hstore hm hf) (context_each hs hstore hm hf)
+   private theorem context_comp {P B store Q C Γ Φ R m a e L}
+-      (h : HasTypeCQ P B store Q C Γ Φ R m a e L) {Δ Ξ}
++      (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hstore : store.WF) {Δ Ξ}
+       (hm : ContextMap P B store Q C Γ Δ Ξ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+       HasTypeCQ P B store Q C Δ Ξ R m a e L := by
+     match h with
+-    | .C_Return hv => exact .C_Return (context_value hv hm hf)
+-    | .C_App hv hs => exact .C_App (context_value hv hm hf) (context_values hs hm hf)
++    | .C_Return hv => exact .C_Return (context_value hv hstore hm hf)
++    | .C_App hv hs => exact .C_App (context_value hv hstore hm hf) (context_values hs hstore hm hf)
++    | .C_If hv hm' hn =>
++      exact .C_If (context_value hv hstore hm hf) (context_comp hm' hstore hm hf) (context_comp hn hstore hm hf)
++    | .C_Lazy hb ha =>
++      exact .C_Lazy (context_comp hb hstore.hide (hm.hide hstore) (fun p hp => (hf p hp).hideConts))
++        ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
++    | .C_Escape hv ha =>
++      exact .C_Escape (context_value hv hstore hm hf)
++        ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
++    | .C_Use hv hr hb he => exact .C_Use (context_value hv hstore hm hf) hr (context_comp hb hstore hm hf) he
+     | .C_Sub ht hl hc hw hs hd =>
+       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
+       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
+       simp only [renameTy_id] at hl'
+-      exact .C_Sub (context_comp ht hm hf) hl' hc (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
+-    | .C_Eff ht hc => exact .C_Eff (context_comp ht hm hf) hc
++      exact .C_Sub (context_comp ht hstore hm hf) hl' hc (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
++    | .C_Eff ht hc => exact .C_Eff (context_comp ht hstore hm hf) hc
+     | .C_Let (a := x) ht hb =>
+-      refine .C_Let (context_comp ht hm hf) ?_
+-      have hb' := context_comp hb (hm.params [x]) (hm.conditions_params hf [x])
++      refine .C_Let (context_comp ht hstore hm hf) ?_
++      have hb' := context_comp hb hstore (hm.params hstore [x]) (hm.conditions_params hf [x])
+       simpa only [List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
+         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.map_cons, List.map_nil,
+         List.nil_append, List.cons_append] using hb'
+@@ -207,7 +225,7 @@
+   | under _ _ ih | underNone _ ih => exact congrArg (List.map Pred.lift) ih
+ 
+ private theorem Ctx.Narrows.contextMap {P B store Q C Γ Φ Δ Ξ}
+-    (h : Ctx.Narrows P C Γ Φ Δ Ξ) : ContextMap P B store Q C Γ Δ Ξ := by
++    (h : Ctx.Narrows P C Γ Φ Δ Ξ) (hstore : store.WF) : ContextMap P B store Q C Γ Δ Ξ := by
+   induction h with
+   | @here Γ Φ a b hl hw hs hd =>
+     constructor
+@@ -231,30 +249,30 @@
+       | succ i =>
+         exact .V_Var (by simpa only [Ctx.extend, List.getElem?_cons_succ] using hi) ho
+   | under h a ih =>
+-    have hm := ih.params [a]
++    have hm := ih.params hstore [a]
+     simpa only [List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
+       bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.map_cons, List.map_nil,
+       List.nil_append, List.cons_append] using hm
+-  | underNone h ih => exact ih.none
++  | underNone h ih => exact ih.none hstore
+ 
+ theorem HasTypeVQ.narrow {P B store Q C Γ Φ v a Δ Ξ}
+-    (h : HasTypeVQ P B store Q C Γ Φ v a) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
++    (h : HasTypeVQ P B store Q C Γ Φ v a) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+     HasTypeVQ P B store Q C Δ Ξ v a :=
+-  context_value h hn.contextMap (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
++  context_value h hstore (hn.contextMap hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+ 
+ theorem HasTypeVsQ.narrow {P B store Q C Γ Φ vs as Δ Ξ}
+-    (h : HasTypeVsQ P B store Q C Γ Φ vs as) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
++    (h : HasTypeVsQ P B store Q C Γ Φ vs as) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+     HasTypeVsQ P B store Q C Δ Ξ vs as :=
+-  context_values h hn.contextMap (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
++  context_values h hstore (hn.contextMap hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+ 
+ theorem HasTypeEachQ.narrow {P B store Q C Γ Φ vs a Δ Ξ}
+-    (h : HasTypeEachQ P B store Q C Γ Φ vs a) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
++    (h : HasTypeEachQ P B store Q C Γ Φ vs a) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+     HasTypeEachQ P B store Q C Δ Ξ vs a :=
+-  context_each h hn.contextMap (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
++  context_each h hstore (hn.contextMap hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+ 
+ theorem HasTypeCQ.narrow {P B store Q C Γ Φ R m a e L Δ Ξ}
+-    (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
++    (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+     HasTypeCQ P B store Q C Δ Ξ R m a e L :=
+-  context_comp h hn.contextMap (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
++  context_comp h hstore (hn.contextMap hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+ 
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/NarrowingObstruction.lean
++++ after/formal/Benitoite/Release/Refinement/NarrowingObstruction.lean
+@@ -12,7 +12,8 @@
+     ∀ i, v = .var i → ∃ b, Γ[i]? = some (some b) ∧ b.Ordinary := by
+   match h with
+   | .V_Var hi ho => intro i he; cases he; exact ⟨_, hi, ho⟩
+-  | .V_Const _ | .V_Lam _ _ _ _ | .V_List _ _ _ => intro i he; cases he
++  | .V_Const _ | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
++  | .V_Bytes _ | .V_Con _ _ _ _ _ | .V_Super _ _ _ _ => intro i he; cases he
+   | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
+ 
+ theorem HasTypeVQ.variable_origin {P B store Q C Γ Φ i a}
+--- before/formal/Benitoite/Release/Refinement/StoreTransport.lean
++++ after/formal/Benitoite/Release/Refinement/StoreTransport.lean
+@@ -0,0 +1,48 @@
++import Benitoite.Release.Refinement.Admissible
++
++/-!
++# ストア型の移送
++
++捕捉では builder だけを隠し、通常の場所を保つ。
++-/
++namespace Benitoite.Release.Refinement
++
++def LocTy.WF : LocTy → Prop
++  | .builder .string | .builder .bytes => True
++  | .builder (.list a) | .ref a | .lazy a => a.WF 0 0 0
++  | .cont b t e r => b.WF 0 0 0 ∧ t.WF 0 0 0 ∧ Eff.WF 0 0 0 e ∧ e.Canonical ∧
++      ∀ a, r = some a → a.WF 0 0 0
++
++def StoreTy.WF (Ψ : StoreTy) : Prop := ∀ l t, Ψ l = some t → t.WF
++
++def LocTy.Normal : LocTy → Prop
++  | .builder _ => False
++  | _ => True
++
++def StoreTy.PreservesNormals (Ψ Ψ' : StoreTy) : Prop :=
++  ∀ l t, Ψ l = some t → t.Normal → Ψ' l = some t
++
++def StoreTy.Extends (Ψ Ψ' : StoreTy) : Prop :=
++  ∀ l t, Ψ l = some t → Ψ' l = some t
++
++theorem StoreTy.PreservesNormals.refl (Ψ : StoreTy) : Ψ.PreservesNormals Ψ :=
++  fun _ _ h _ => h
++
++theorem StoreTy.Extends.refl (Ψ : StoreTy) : Ψ.Extends Ψ := fun _ _ h => h
++
++theorem StoreTy.Extends.preservesNormals {Ψ Ψ' : StoreTy} (h : Ψ.Extends Ψ') : Ψ.PreservesNormals Ψ' :=
++  fun l t ht _ => h l t ht
++
++theorem StoreTy.PreservesNormals.trans {Ψ Ψ' Ψ'' : StoreTy} (h : Ψ.PreservesNormals Ψ')
++    (g : Ψ'.PreservesNormals Ψ'') : Ψ.PreservesNormals Ψ'' :=
++  fun l t ht hn => g l t (h l t ht hn) hn
++
++def StoreTy.empty : StoreTy := fun _ => none
++
++theorem StoreTy.WF.empty : StoreTy.WF StoreTy.empty := by
++  intro l t h; cases h
++
++theorem StoreTy.Extends.empty (Ψ : StoreTy) : StoreTy.Extends StoreTy.empty Ψ := by
++  intro l t h; cases h
++
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/Subst.lean
++++ after/formal/Benitoite/Release/Refinement/Subst.lean
+@@ -23,6 +23,10 @@
+   | .bytes => .bytes
+   | .list a => .list (renameTy ξ a)
+ 
++def telBinders : Tel → Nat
++  | .done _ _ => 0
++  | .param _ _ t => telBinders t + 1
++
+ private def armBinders (alts : List Alt) : Nat := Benitoite.Release.Arm.bindersOf alts
+ 
+ mutual
+@@ -32,6 +36,8 @@
+     | .fnRef f tys effs => .fnRef f (tys.map (renameTy ξ)) (effs.map (renameEff ξ))
+     | .prim b tys effs rs => .prim b (tys.map (renameTy ξ)) (effs.map (renameEff ξ)) rs
+     | .lam names params body => .lam names (params.map (renameTy ξ)) (Comp.rename (upRen params.length ξ) body)
++    | .dependentLam t body => .dependentLam (Tel.rawBind (renEnv ξ) t) (Comp.rename (upRen (telBinders t) ξ) body)
++    | .closure t body => .closure t body
+     | .con c tys args => .con c (tys.map (renameTy ξ)) (Val.renameList ξ args)
+     | .list elems => .list (Val.renameList ξ elems)
+     | .op o tys => .op o (tys.map (renameTy ξ))
+@@ -83,7 +89,7 @@
+   ⟨Ty.tvar, [], [], fun i => (σ i).toTerm?⟩
+ noncomputable def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.bind (valEnv σ)
+ noncomputable def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.bind (valEnv σ) e
+-private noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
++noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
+   | .string => .string
+   | .bytes => .bytes
+   | .list a => .list (substTyValues σ a)
+@@ -100,6 +106,8 @@
+     | .fnRef f tys effs => .fnRef f (tys.map (substTyValues σ)) (effs.map (substEffValues σ))
+     | .prim b tys effs rs => .prim b (tys.map (substTyValues σ)) (effs.map (substEffValues σ)) rs
+     | .lam names params body => .lam names (params.map (substTyValues σ)) (Comp.subst (upSubst params.length σ) body (upLocalSubst params.length ρ))
++    | .dependentLam t body => .dependentLam (Tel.bind (valEnv σ) t) (Comp.subst (upSubst (telBinders t) σ) body (upLocalSubst (telBinders t) ρ))
++    | .closure t body => .closure t body
+     | .con c tys args => .con c (tys.map (substTyValues σ)) (Val.substList σ args ρ)
+     | .list elems => .list (Val.substList σ elems ρ)
+     | .op o tys => .op o (tys.map (substTyValues σ))
+@@ -206,6 +214,8 @@
+     | .fnRef f tys effs => .fnRef f (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es))
+     | .prim b tys effs rs => .prim b (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es)) rs
+     | .lam names params body => .lam names (params.map (substTypeAt c ts es)) (Comp.substTyAt c (ts.map (Ty.shiftV params.length 0)) (es.map (Eff.shiftV params.length 0)) body)
++    | .dependentLam t body => .dependentLam (Tel.bind (typeEnvAt c ts es) t) (Comp.substTyAt c (ts.map (Ty.shiftV (telBinders t) 0)) (es.map (Eff.shiftV (telBinders t) 0)) body)
++    | .closure t body => .closure t body
+     | .con k tys args => .con k (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
+     | .list elems => .list (Val.substTyAtList c ts es elems)
+     | .op o tys => .op o (tys.map (substTypeAt c ts es))
+--- before/formal/Benitoite/Release/Refinement/SubstTyping.lean
++++ after/formal/Benitoite/Release/Refinement/SubstTyping.lean
+@@ -105,30 +105,52 @@
+ theorem Ty.shiftV_zero (a : Ty) (c : Nat) : a.shiftV 0 c = a := by
+   rw [Ty.shiftV_eq_renameTy, shiftIndex_zero, renameTy_id]
+ 
++theorem Eff.shiftV_zero (e : Eff) (c : Nat) : Eff.shiftV 0 c e = e := by
++  rw [Eff.shiftV_eq_renameEff, shiftIndex_zero, renameEff_id]
++
+ theorem Pred.shiftV_zero (p : Pred) (c : Nat) : p.shiftV 0 c = p := by
+   simp only [Pred.shiftV, shiftIndex_zero]
+   exact predBind_id p
+ 
+ theorem HasTypeVQ.hide_context {P B store Q C Γ Φ v a}
+-    (h : HasTypeVQ P B store Q C Γ Φ v a) (store' : StoreTy) :
++    (h : HasTypeVQ P B store Q C Γ Φ v a) (hstore : StoreTy.WF store)
++    (store' : StoreTy) (hpres : store.PreservesNormals store') :
+     HasTypeVQ P B store' Q C (hideConts Γ) Φ v a := by
+   have hm : ShiftMap 0 0 Γ (hideConts Γ) := by
+     constructor
+     · simp [hideConts]
+     · intro i a hi ho
+       simpa only [shiftIndex_zero, id_eq, Ty.shiftV_zero] using hideConts_lookup.mpr ⟨hi,ho⟩
+-  have ht := h.shift_values (store' := store') hm (Ξ := Φ) (fun p hp => by
++  have ht := h.shift_values (store' := store') hstore hpres hm (Ξ := Φ) (fun p hp => by
+     rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
+   simpa only [shiftIndex_zero, Val.rename_identity, Ty.shiftV_zero] using ht
+ 
++theorem HasTypeVQ.weaken_empty {P B Q C Γ Φ v a store}
++    (h : HasTypeVQ P B StoreTy.empty Q C Γ Φ v a) : HasTypeVQ P B store Q C Γ Φ v a := by
++  have hm : ShiftMap 0 0 Γ Γ := ⟨by omega, by
++    intro i a hi _; simpa only [shiftIndex_zero, id_eq, Ty.shiftV_zero] using hi⟩
++  have hh := h.shift_values StoreTy.WF.empty (StoreTy.Extends.empty store).preservesNormals hm
++    (Ξ := Φ) (fun p hp => by rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
++  simpa only [shiftIndex_zero, Val.rename_identity, Ty.shiftV_zero] using hh
++
++theorem HasTypeCQ.weaken_empty {P B Q C Γ Φ R m a e L store}
++    (h : HasTypeCQ P B StoreTy.empty Q C Γ Φ R m a e L) : HasTypeCQ P B store Q C Γ Φ R m a e L := by
++  have hm : ShiftMap 0 0 Γ Γ := ⟨by omega, by
++    intro i a hi _; simpa only [shiftIndex_zero, id_eq, Ty.shiftV_zero] using hi⟩
++  have hh := h.shift_values (L' := L) StoreTy.WF.empty (StoreTy.Extends.empty store) hm
++    (Ξ := Φ) (fun p hp => by rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
++  simpa only [shiftIndex_zero, Comp.rename_identity, Ty.shiftV_zero, Eff.shiftV_zero,
++    Option.map_id, id_eq, show Ty.shiftV 0 0 = id from funext (fun t => t.shiftV_zero 0)] using hh
++
+ private theorem TypedImages.hide {P B store Q C Γ Δ Ξ σ}
+-    (h : TypedImages P B store Q C Γ Δ Ξ σ) (store' : StoreTy) :
++    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hstore : StoreTy.WF store)
++    (store' : StoreTy) (hpres : store.PreservesNormals store') :
+     TypedImages P B store' Q C (hideConts Γ) (hideConts Δ) Ξ σ := by
+   intro i a hi ho
+-  exact (h i a (hideConts_lookup.mp hi).1 ho).hide_context store'
++  exact (h i a (hideConts_lookup.mp hi).1 ho).hide_context hstore store' hpres
+ 
+ private theorem TypedImages.params {P B store Q C Γ Δ Ξ σ}
+-    (h : TypedImages P B store Q C Γ Δ Ξ σ) (ps : List Ty) :
++    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hstore : StoreTy.WF store) (ps : List Ty) :
+     TypedImages P B store Q C (bindParams Γ ps) (bindParams Δ (ps.map (substTyValues σ)))
+       (liftMany ps.length Ξ) (upSubst ps.length σ) := by
+   intro i a hi ho
+@@ -157,7 +179,7 @@
+         cases hi
+         rw [Ty.bind_shiftV_values]
+         have ht := (h _ u hu ((Ty.ordinary_shiftV _ _ _).mp ho)).shift_values
+-          (store' := store) (ShiftMap.outer Δ (ps.map (substTyValues σ)))
++          (store' := store) hstore (.refl _) (ShiftMap.outer Δ (ps.map (substTyValues σ)))
+           (Ξ := liftMany ps.length Ξ) (fun p hp => by
+             simp only [List.length_map]
+             exact .hyp (List.mem_append_right _ (by rw [liftMany_eq]; exact List.mem_map.mpr ⟨p,hp,rfl⟩)))
+@@ -226,26 +248,67 @@
+   simpa only [substTyValues, valEnv_valuesOnly] using
+     Ty.sorted_bind_values hs (valEnv σ).values ht.values ht.references
+ 
++private theorem TypedImages.annotation {P B store Q C Γ Δ Ξ σ a}
++    (h : TypedImages P B store Q C Γ Δ Ξ σ) (ha : Ty.Annotation P C Γ a) :
++    Ty.Annotation P C Δ (substTyValues σ a) :=
++  ⟨h.wf ha.wf ha.sorted, h.sorted ha.sorted, ha.declared.bind_values h.declaration⟩
++
++@[simp] theorem Val.substList_length (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
++    (Val.substList ν vs ρ).length = vs.length := by
++  induction vs <;> simp_all [Val.substList]
++
++theorem Eff.bind_singleFail (a : Ty) (ν : Nat → Val) :
++    Eff.bind (valEnv ν) (Eff.singleFail a) = Eff.singleFail (a.bind (valEnv ν)) := by
++  simp [Eff.bind, Eff.singleFail, Eff.rawBind, rawBindTys, rowFails, valEnv,
++    instAtoms_nil, substAtoms_nil, Ty.norm_rawBind, Ty.bind, Ty.norm_idem,
++    Eff.norm, Ty.normTys]
++
+ mutual
+   private theorem subst_value {P B store Q C Γ Φ v a}
+-      (h : HasTypeVQ P B store Q C Γ Φ v a) {Δ Ξ σ} (ρ : Nat → LocalRef)
++      (h : HasTypeVQ P B store Q C Γ Φ v a) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
+       (ht : TypedImages P B store Q C Γ Δ Ξ σ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+       HasTypeVQ P B store Q C Δ Ξ (v.subst σ ρ) (substTyValues σ a) := by
+     match h with
+     | .V_Var hi ho => exact ht _ _ hi ho
+     | .V_Const hc => rw [substTyValues, Const.type_bind_values]; exact .V_Const hc
+-    | .V_Lam (ps := ps) hn hw hs hb =>
+-      apply HasTypeVQ.subst_lam hw hs (ht.transport hf)
+-      have hb' := subst_comp hb (upLocalSubst ps.length ρ)
+-        ((ht.hide (hideBuilders store)).params ps)
+-        ((ht.hide (hideBuilders store)).conditions_params
++    | .V_Lam (ps := ps) hn hw hs hb hd =>
++      apply HasTypeVQ.subst_lam hw hs (ht.transport hf) hd ht.declaration
++      have hb' := subst_comp hb hstore.hide (upLocalSubst ps.length ρ)
++        ((ht.hide hstore (hideBuilders store) (StoreTy.preserves_hide _)).params hstore.hide ps)
++        ((ht.hide hstore (hideBuilders store) (StoreTy.preserves_hide _)).conditions_params
+           (fun p hp => (hf p hp).hideConts) ps)
+       simpa only [Option.map_some, Ty.bind_shiftV_values, Eff.bind_shiftV_values] using hb'
+-    | .V_List he hw hs =>
+-      exact .V_List (subst_each he ρ ht hf) (ht.wf hw hs) (ht.sorted hs)
++    | .V_List he hw hs hd =>
++      exact .V_List (subst_each he hstore ρ ht hf) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
++    | .V_Raise (t := t) (e := e) ha =>
++      have hh := ht.annotation ha
++      simp only [Val.subst, substTyValues, Ty.bind_fn, Eff.bind_singleFail] at hh ⊢
++      exact .V_Raise hh
++    | .V_LocRef (a := a) hl hd =>
++      have he := Ty.subst_values_of_wf_zero (hstore _ _ hl) σ
++      change HasTypeVQ P B store Q C Δ Ξ (.loc _) (.reference (substTyValues σ a))
++      rw [he]
++      exact .V_LocRef hl (by simpa only [← substTyValues_eq_bind, he, valEnv_valuesOnly] using hd.bind_values ht.declaration)
++    | .V_LocLazy (a := a) hl hd =>
++      have he := Ty.subst_values_of_wf_zero (hstore _ _ hl) σ
++      change HasTypeVQ P B store Q C Δ Ξ (.loc _) (.lazy (substTyValues σ a))
++      rw [he]
++      exact .V_LocLazy hl (by simpa only [← substTyValues_eq_bind, he, valEnv_valuesOnly] using hd.bind_values ht.declaration)
++    | .V_Bytes hb => exact .V_Bytes hb
++    | .V_Con (cd := cd) (ts := ts) hc hn hw hv ha =>
++      have hh := subst_values hv hstore ρ ht hf
++      have he : (cd.args.map (Ty.subst ts [])).map (substTyValues σ) =
++          cd.args.map (Ty.subst (ts.map (substTyValues σ)) []) := by
++        rw [List.map_map]
++        exact List.map_congr_left (fun a ha => Ty.substV_subst_closed (hw a ha) ts (valEnv σ).values)
++      rw [he] at hh
++      simp only [Val.subst, substTyValues, Ty.bind_data]
++      exact .V_Con hc (by simpa only [List.length_map] using hn) hw hh (by simpa only [substTyValues_eq_bind, substTyValues, Ty.bind_data] using ht.annotation ha)
++    | .V_Super hv hc hmemb hd =>
++      exact .V_Super (subst_value hv hstore ρ ht hf) hc hmemb (hd.bind_values ht.declaration)
+     | .V_Sub hv hl hw hs hd =>
+-      exact .V_Sub (subst_value hv ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
++      exact .V_Sub (subst_value hv hstore ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
+         (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
+     | .V_Refine (a := a) (t := t) (p := p) hv hi hterm hs hw he hda hdp =>
+       obtain ⟨u, hu, hus⟩ := hv.observation hi
+@@ -254,7 +317,7 @@
+       have hs' := Pred.sorted_bind hs (valEnv σ).values (fun _ h => Ty.hasSort_bind h (valEnv σ))
+         (fun h => Ty.ordinary_bind h (valEnv σ) (ht.transport hf).typeImages)
+         (ht.transport hf).values (ht.transport hf).references
+-      refine .V_Refine (subst_value hv ρ ht hf) (Ty.hasSort_bind hi (valEnv σ))
++      refine .V_Refine (subst_value hv hstore ρ ht hf) (Ty.hasSort_bind hi (valEnv σ))
+         (ht.observation hterm hus ρ) hs' (Pred.wf_of_sorted hs') ?_
+         (hda.bind_values ht.declaration) (hdp.bind_values ht.declaration)
+       obtain ⟨u, hu, _⟩ := Term.hasSort_bind hus _ ht.values ht.references
+@@ -263,40 +326,54 @@
+       rw [← predBind_open_of_some _ p t _ hsuccess]
+       exact (ht.transport hf).entails he
+   private theorem subst_values {P B store Q C Γ Φ vs as}
+-      (h : HasTypeVsQ P B store Q C Γ Φ vs as) {Δ Ξ σ} (ρ : Nat → LocalRef)
++      (h : HasTypeVsQ P B store Q C Γ Φ vs as) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
+       (ht : TypedImages P B store Q C Γ Δ Ξ σ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+       HasTypeVsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (as.map (substTyValues σ)) := by
+     match h with
+     | .nil => exact .nil
+-    | .cons hv hs => exact .cons (subst_value hv ρ ht hf) (subst_values hs ρ ht hf)
++    | .cons hv hs => exact .cons (subst_value hv hstore ρ ht hf) (subst_values hs hstore ρ ht hf)
+   private theorem subst_each {P B store Q C Γ Φ vs a}
+-      (h : HasTypeEachQ P B store Q C Γ Φ vs a) {Δ Ξ σ} (ρ : Nat → LocalRef)
++      (h : HasTypeEachQ P B store Q C Γ Φ vs a) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
+       (ht : TypedImages P B store Q C Γ Δ Ξ σ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+       HasTypeEachQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (substTyValues σ a) := by
+     match h with
+     | .nil => exact .nil
+-    | .cons hv hs => exact .cons (subst_value hv ρ ht hf) (subst_each hs ρ ht hf)
++    | .cons hv hs => exact .cons (subst_value hv hstore ρ ht hf) (subst_each hs hstore ρ ht hf)
+   private theorem subst_comp {P B store Q C Γ Φ R m a e L}
+-      (h : HasTypeCQ P B store Q C Γ Φ R m a e L) {Δ Ξ σ} (ρ : Nat → LocalRef)
++      (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
+       (ht : TypedImages P B store Q C Γ Δ Ξ σ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+       HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (m.subst σ ρ)
+         (substTyValues σ a) (substEffValues σ e) L := by
+     match h with
+-    | .C_Return hv => rw [substEffValues_empty]; exact .C_Return (subst_value hv ρ ht hf)
++    | .C_Return hv => rw [substEffValues_empty]; exact .C_Return (subst_value hv hstore ρ ht hf)
+     | .C_App hv hs =>
+-      have hv' := subst_value hv ρ ht hf
++      have hv' := subst_value hv hstore ρ ht hf
+       rw [substTyValues, Ty.bind_fn] at hv'
+-      exact .C_App hv' (subst_values hs ρ ht hf)
++      exact .C_App hv' (subst_values hs hstore ρ ht hf)
++    | .C_If hv hm hn =>
++      exact .C_If (subst_value hv hstore ρ ht hf) (subst_comp hm hstore ρ ht hf) (subst_comp hn hstore ρ ht hf)
++    | .C_Lazy hb ha =>
++      rw [substEffValues_empty]
++      refine .C_Lazy ?_ (ht.annotation ha)
++      have hh := subst_comp hb hstore.hide ρ
++        (ht.hide hstore (hideBuilders store) (StoreTy.preserves_hide _)) (fun p hp => (hf p hp).hideConts)
++      simpa only [substEffValues_empty, Option.map_none, substTyValues, Ty.bind] using hh
++    | .C_Escape hv ha => exact .C_Escape (subst_value hv hstore ρ ht hf) (ht.annotation ha)
++    | .C_Use hv hr hb he =>
++      refine .C_Use (subst_value hv hstore ρ ht hf) hr (subst_comp hb hstore ρ ht hf) ?_
++      cases e
++      simpa only [substEffValues, Eff.bind, Eff.norm, Eff.rawBind, valEnv,
++        instAtoms_nil, substAtoms_nil, Eff.test, Eff.atoms] using he
+     | .C_Sub hm hl hc hw hs hd =>
+-      exact .C_Sub (subst_comp hm ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
++      exact .C_Sub (subst_comp hm hstore ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
+         (hc.bind (valEnv σ)) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
+-    | .C_Eff hm hc => exact .C_Eff (subst_comp hm ρ ht hf) (hc.bind (valEnv σ))
++    | .C_Eff hm hc => exact .C_Eff (subst_comp hm hstore ρ ht hf) (hc.bind (valEnv σ))
+     | .C_Let (a := x) hm hb =>
+-      refine .C_Let (subst_comp hm ρ ht hf) ?_
+-      have hb' := subst_comp hb (upLocalSubst 1 ρ) (ht.params [x]) (ht.conditions_params hf [x])
++      refine .C_Let (subst_comp hm hstore ρ ht hf) ?_
++      have hb' := subst_comp hb hstore (upLocalSubst 1 ρ) (ht.params hstore [x]) (ht.conditions_params hf [x])
+       simpa only [List.length_cons, List.length_nil, Nat.zero_add, List.map_cons, List.map_nil,
+         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.nil_append,
+         List.cons_append, liftMany_one, Option.map_map, Function.comp_def,
+@@ -305,38 +382,42 @@
+ 
+ theorem HasTypeVQ.subst {P B store Q C Γ Φ v a Δ Ξ R σ}
+     (h : HasTypeVQ P B store Q C Γ Φ v a)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeVQ P B store Q C Δ Ξ (v.subst σ ρ) (substTyValues σ a) :=
+-  subst_value h ρ ht.images hf
++  subst_value h hstore ρ ht.images hf
+ 
+ theorem HasTypeVsQ.subst {P B store Q C Γ Φ vs as Δ Ξ R σ}
+     (h : HasTypeVsQ P B store Q C Γ Φ vs as)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeVsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (as.map (substTyValues σ)) :=
+-  subst_values h ρ ht.images hf
++  subst_values h hstore ρ ht.images hf
+ 
+ theorem HasTypeEachQ.subst {P B store Q C Γ Φ vs a Δ Ξ R σ}
+     (h : HasTypeEachQ P B store Q C Γ Φ vs a)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeEachQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (substTyValues σ a) :=
+-  subst_each h ρ ht.images hf
++  subst_each h hstore ρ ht.images hf
+ 
+ theorem HasTypeCQ.subst {P B store Q C Γ Φ R m a e L Δ Ξ R0 σ}
+     (h : HasTypeCQ P B store Q C Γ Φ R m a e L)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (m.subst σ ρ)
+-      (substTyValues σ a) (substEffValues σ e) L := subst_comp h ρ ht.images hf
++      (substTyValues σ a) (substEffValues σ e) L := subst_comp h hstore ρ ht.images hf
+ 
+ private theorem TypedImages.none {P B store Q C Γ Δ Ξ σ}
+-    (h : TypedImages P B store Q C Γ Δ Ξ σ) :
++    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hstore : StoreTy.WF store) :
+     TypedImages P B store Q C Γ.extendNone Δ.extendNone (Ξ.map Pred.lift) (upSubst 1 σ) := by
+   intro i a hi ho
+   cases i with
+@@ -352,7 +433,7 @@
+         cases hi
+         rw [Ty.bind_shiftV_values]
+         have ht := (h i u hu ((Ty.ordinary_shiftV _ _ _).mp ho)).shift_values
+-          (store' := store) (ShiftMap.outerNone Δ) (Ξ := Ξ.map Pred.lift) (fun p hp => by
++          (store' := store) hstore (.refl _) (ShiftMap.outerNone Δ) (Ξ := Ξ.map Pred.lift) (fun p hp => by
+             change Entails _ p.lift
+             exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
+         simpa only [upSubst, Nat.succ_lt_succ_iff, Nat.not_lt_zero, ↓reduceIte,
+@@ -369,43 +450,47 @@
+ 
+ theorem HasTypeVQ.subst_under_none {P B store Q C Γ Φ v a Δ Ξ R σ}
+     (h : HasTypeVQ P B store Q C Γ.extendNone (Φ.map Pred.lift) v a)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeVQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)
+       (v.subst (upSubst 1 σ) (upLocalSubst 1 ρ)) (substTyValues (upSubst 1 σ) a) :=
+-  subst_value h _ ht.images.none (fun p hp =>
++  subst_value h hstore _ (ht.images.none hstore) (fun p hp =>
+     (ht.transport_extendNone hf).facts p (List.mem_append_right _ hp))
+ 
+ theorem HasTypeVsQ.subst_under_none {P B store Q C Γ Φ vs as Δ Ξ R σ}
+     (h : HasTypeVsQ P B store Q C Γ.extendNone (Φ.map Pred.lift) vs as)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeVsQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)
+       (Val.substList (upSubst 1 σ) vs (upLocalSubst 1 ρ)) (as.map (substTyValues (upSubst 1 σ))) :=
+-  subst_values h _ ht.images.none (fun p hp =>
++  subst_values h hstore _ (ht.images.none hstore) (fun p hp =>
+     (ht.transport_extendNone hf).facts p (List.mem_append_right _ hp))
+ 
+ theorem HasTypeEachQ.subst_under_none {P B store Q C Γ Φ vs a Δ Ξ R σ}
+     (h : HasTypeEachQ P B store Q C Γ.extendNone (Φ.map Pred.lift) vs a)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeEachQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)
+       (Val.substList (upSubst 1 σ) vs (upLocalSubst 1 ρ)) (substTyValues (upSubst 1 σ) a) :=
+-  subst_each h _ ht.images.none (fun p hp =>
++  subst_each h hstore _ (ht.images.none hstore) (fun p hp =>
+     (ht.transport_extendNone hf).facts p (List.mem_append_right _ hp))
+ 
+ theorem HasTypeCQ.subst_under_none {P B store Q C Γ Φ R m a e L Δ Ξ R0 σ}
+     (h : HasTypeCQ P B store Q C Γ.extendNone (Φ.map Pred.lift) R m a e L)
++    (hstore : StoreTy.WF store)
+     (ht : SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
+     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
+     (ρ : Nat → LocalRef := LocalRef.bound) :
+     HasTypeCQ P B store Q C Δ.extendNone (Ξ.map Pred.lift) (R.map (substTyValues (upSubst 1 σ)))
+       (m.subst (upSubst 1 σ) (upLocalSubst 1 ρ))
+       (substTyValues (upSubst 1 σ) a) (substEffValues (upSubst 1 σ) e) L :=
+-  subst_comp h _ ht.images.none (fun p hp =>
++  subst_comp h hstore _ (ht.images.none hstore) (fun p hp =>
+     (ht.transport_extendNone hf).facts p (List.mem_append_right _ hp))
+ 
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean
++++ after/formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean
+@@ -13,9 +13,10 @@
+     (h : HasTypeVQ P B store Q C Γ Φ v a) :
+     ∀ ns ps body, v = .lam ns ps body → Ty.WFList 0 C.length Γ.length ps := by
+   match h with
+-  | .V_Var _ _ | .V_Const _ | .V_List _ _ _ =>
++  | .V_Var _ _ | .V_Const _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
++  | .V_Bytes _ | .V_Con _ _ _ _ _ | .V_Super _ _ _ _ =>
+       intro ns ps body he; cases he
+-  | .V_Lam _ hw _ _ =>
++  | .V_Lam _ hw _ _ _ =>
+       intro ns ps body he; cases he; exact hw.2.1
+   | .V_Sub hv _ _ _ _ => exact lam_annotations hv
+   | .V_Refine hv _ _ _ _ _ _ _ => exact lam_annotations hv
+@@ -30,7 +31,7 @@
+     ∀ v, m = .ret v → ∃ b, HasTypeVQ P B store Q C Γ Φ v b := by
+   match h with
+   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
+-  | .C_Let _ _ | .C_App _ _ => intro v he; cases he
++  | .C_Let _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
+   | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
+ 
+ /-- return の型付けは、部分型・効果拡大の下にも値の導出を含む。 -/
+@@ -163,9 +164,12 @@
+     HasTypeVQ P B store Q [] Γ Φ sourceVal valueTy := by
+   change HasTypeVQ P B store Q [] Γ Φ
+     (.lam ["f"] [sourceTy] (.ret (.const .unit))) (.fn ["f"] [sourceTy] (.base .unit) Eff.empty)
+-  refine .V_Lam ?_ value_wf value_sorted ?_
++  refine .V_Lam ?_ value_wf value_sorted ?_ ?_
+   · exact ⟨rfl, by simp⟩
+   · exact .C_Return (.V_Const trivial)
++  · simp [sourceTy, latent, failure, refinedInt, predBind,
++      termBind, termBind?, Ty.Declared, declaredTys, declaredEff, Pred.Declared, Term.Declared,
++      Ctx.declarationSelf, Ctx.extend, Ctx.Readable, Γ, Ty.shiftV, Ordinary, Eff.empty]
+ 
+ theorem result_declared {P} : Ty.Declared P [] Γ resultTy := by
+   simp [resultTy, valueTy, sourceTy, latent, failure, refinedInt, path, Pred.lift, predBind,
+@@ -214,12 +218,12 @@
+ /-- 修正後は、型付き像から導いた facts を V_Sub の置換で使える。 -/
+ theorem substituted_lambda_typed {P B store Q} :
+     HasTypeVQ P B store Q [] Δ Φ (sourceVal.subst σ) (substTyValues σ resultTy) :=
+-  source_v_sub.subst subst_ok conditions_image
++  ((source_v_sub (store := StoreTy.empty)).subst StoreTy.WF.empty subst_ok conditions_image).weaken_empty
+ 
+ theorem substituted_return_typed {P B store Q Δl} {R : Option Ty} :
+     HasTypeCQ P B store Q [] Δ Φ (R.map (substTyValues σ))
+       ((Comp.ret sourceVal).subst σ) (substTyValues σ resultTy) (substEffValues σ Eff.empty) Δl :=
+-  source_c_sub.subst subst_ok conditions_image
++  ((source_c_sub (store := StoreTy.empty)).subst StoreTy.WF.empty subst_ok conditions_image).weaken_empty
+ 
+ theorem normalized_image_canonical : (substEffValues σ latent).Canonical := Eff.norm_idem _
+ 
+@@ -261,24 +265,24 @@
+     HasTypeVQ P B store Q [] Δ.extendNone (Φ.map Pred.lift)
+       ((sourceVal.rename (fun i => i+1)).subst (upSubst 1 σ) (upLocalSubst 1 LocalRef.bound))
+       (substTyValues (upSubst 1 σ) (resultTy.shiftV 1 0)) := by
+-  have hs := (source_v_sub (P := P) (B := B) (store := store) (Q := Q)).shift_values
+-    (store' := store) (ShiftMap.outerNone Γ)
++  have hs := (source_v_sub (P := P) (B := B) (store := StoreTy.empty) (Q := Q)).shift_values
++    (store' := StoreTy.empty) StoreTy.WF.empty (.refl _) (ShiftMap.outerNone Γ)
+     (Ξ := Φ.map Pred.lift) (fun p hp => by
+       change Entails _ p.lift
+       exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
+-  simpa only [shiftIndex_add] using hs.subst_under_none subst_ok conditions_image
++  simpa only [shiftIndex_add] using (hs.subst_under_none StoreTy.WF.empty subst_ok conditions_image).weaken_empty
+ 
+ theorem substituted_return_under_none {P B store Q} :
+     HasTypeCQ P B store Q [] Δ.extendNone (Φ.map Pred.lift) none
+       ((Comp.ret (sourceVal.rename (fun i => i+1))).subst (upSubst 1 σ) (upLocalSubst 1 LocalRef.bound))
+       (substTyValues (upSubst 1 σ) (resultTy.shiftV 1 0)) Eff.empty [] := by
+   simpa only [substEffValues_empty, shiftIndex_add, Option.map_none] using
+-    (HasTypeCQ.C_Return (P := P) (B := B) (R := none) (Δ := [])
+-      ((source_v_sub (P := P) (B := B) (store := store) (Q := Q)).shift_values (store' := store) (ShiftMap.outerNone Γ)
++    ((HasTypeCQ.C_Return (P := P) (B := B) (R := none) (Δ := [])
++      ((source_v_sub (P := P) (B := B) (store := StoreTy.empty) (Q := Q)).shift_values (store' := StoreTy.empty) StoreTy.WF.empty (.refl _) (ShiftMap.outerNone Γ)
+         (Ξ := Φ.map Pred.lift) (fun p hp => by
+           change Entails _ p.lift
+           exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩))))).subst_under_none
+-          subst_ok conditions_image
++          StoreTy.WF.empty subst_ok conditions_image).weaken_empty
+ 
+ end RawValueSubstCollision
+ 
+@@ -327,7 +331,7 @@
+   .V_Sub (.V_Var rfl (by intro b t e he; cases he)) source_le result_wf result_sorted result_declared
+ 
+ theorem narrowed_value {P B store Q} : HasTypeVQ P B store Q [] target (Φ.map Pred.lift) (.var 0) result :=
+-  source_value.narrow narrows
++  ((source_value (store := StoreTy.empty)).narrow StoreTy.WF.empty narrows).weaken_empty
+ 
+ theorem source_comp {P B store Q} :
+     HasTypeCQ P B store Q [] source (Φ.map Pred.lift) none (.ret (.var 0)) result Eff.empty [] :=
+@@ -336,17 +340,17 @@
+ 
+ theorem narrowed_comp {P B store Q} :
+     HasTypeCQ P B store Q [] target (Φ.map Pred.lift) none (.ret (.var 0)) result Eff.empty [] :=
+-  source_comp.narrow narrows
++  ((source_comp (store := StoreTy.empty)).narrow StoreTy.WF.empty narrows).weaken_empty
+ 
+ theorem narrowed_under_none {P B store Q} :
+     HasTypeVQ P B store Q [] target.extendNone ((Φ.map Pred.lift).map Pred.lift)
+       (.var 1) (result.shiftV 1 0) := by
+-  have hs := (source_value (P := P) (B := B) (store := store) (Q := Q)).shift_values
+-    (store' := store) (ShiftMap.outerNone source)
++  have hs := (source_value (P := P) (B := B) (store := StoreTy.empty) (Q := Q)).shift_values
++    (store' := StoreTy.empty) StoreTy.WF.empty (.refl _) (ShiftMap.outerNone source)
+     (Ξ := (Φ.map Pred.lift).map Pred.lift) (fun p hp => by
+       change Entails _ p.lift
+       exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
+-  exact hs.narrow (.underNone narrows)
++  exact (hs.narrow StoreTy.WF.empty (.underNone narrows)).weaken_empty
+ 
+ end NarrowingExample
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/Syntax.lean
++++ after/formal/Benitoite/Release/Refinement/Syntax.lean
+@@ -76,6 +76,8 @@
+     /-- 組み込みの関数 `b[T̄; Ē; R̄]`。`rs` は具体化した範囲の列。 -/
+     | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List RangeExpr)
+     | lam (names : List String) (params : List Ty) (body : Comp)
++    | dependentLam (signature : Tel) (body : Comp)
++    | closure (signature : Tel) (body : Closure)
+     | con (c : ConName) (tys : List Ty) (args : List Val)
+     | list (elems : List Val)
+     /-- 利用者が宣言したエフェクトの操作 `op[T̄]`。 -/
+@@ -132,7 +134,23 @@
+   /-- 照合の分岐。本体とガードは分岐ごとに一つだけ持つ。 -/
+   inductive Arm where
+     | mk (alts : List Alt) (guard : Option Comp) (body : Comp)
++  inductive Capture where
++    | mk (values : List (Option Val))
++
++  inductive Closure where
++    | mk (capture : Capture) (code : Comp)
+ end
++
++def Capture.values : Capture → List (Option Val)
++  | .mk vs => vs
++
++def Closure.capture : Closure → Capture
++  | .mk cap _ => cap
++
++def Closure.code : Closure → Comp
++  | .mk _ m => m
++
++def Capture.empty : Capture := .mk []
+ 
+ structure Def where
+   tparams : List TParamDecl
+--- before/formal/Benitoite/Release/Refinement/TypedFacts.lean
++++ after/formal/Benitoite/Release/Refinement/TypedFacts.lean
+@@ -38,13 +38,27 @@
+   | .forget | .introduce _ _ => exact hd
+   | .refine hv _ _ _ => exact hv.dataCore_source hd
+ 
++theorem HasTypeVsQ.length {P B store Q C Γ Φ vs as}
++    (h : HasTypeVsQ P B store Q C Γ Φ vs as) : vs.length = as.length := by
++  match h with
++  | .nil => rfl
++  | .cons _ hs => exact congrArg Nat.succ hs.length
++
+ theorem HasTypeVQ.data_observation {P B store Q C Γ Φ v a d ts}
+     (h : HasTypeVQ P B store Q C Γ Φ v a) (hd : a.norm.core = .data d ts)
+     {t : Term} (ht : v.toTerm? = some t) : Term.HasData P Γ t d ts := by
+   match h with
+   | .V_Var hi ho => cases ht; exact .var hi hd
+   | .V_Const (c := c) _ => cases c <;> cases hd
+-  | .V_Lam _ _ _ _ | .V_List _ _ _ => cases hd
++  | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => cases hd
++  | .V_Con hc hn _ hv _ =>
++    simp only [Ty.norm, Ty.core, Ty.data.injEq] at hd
++    obtain ⟨rfl, rfl⟩ := hd
++    cases ht
++    exact .value hc rfl (by simpa only [Ty.normTys_eq_map, List.length_map] using hn.symm)
++      (by simpa only [Val.toTermSlots_length, List.length_map] using hv.length)
++  | .V_Super _ _ _ _ => cases hd
++  | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => cases hd
+   | .V_Sub hv hl _ _ _ => exact hv.data_observation (hl.dataCore_source hd) ht
+   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.data_observation hd ht
+ 
+@@ -55,10 +69,26 @@
+     match h with
+     | .V_Var hi ho => cases ht; exact ⟨_, hi, ho⟩
+     | .V_Const (c := c) _ => cases c <;> cases ht <;> trivial
+-    | .V_Lam _ _ _ _ => cases ht
+-    | .V_List hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
++    | .V_Lam _ _ _ _ _ => cases ht
++    | .V_List hv _ _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
++    | .V_Con hc _ _ hv _ =>
++      cases ht
++      exact ⟨HasTypeVsQ.observation_declared hv, _, hc,
++        by simpa only [Val.toTermSlots_length, List.length_map] using hv.length⟩
++    | .V_Super _ _ _ _ => cases ht
++    | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
++    | .V_Bytes _ => cases ht; trivial
+     | .V_Sub hv _ _ _ _ => exact hv.observation_declared ht
+     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_declared ht
++  theorem HasTypeVsQ.observation_declared {P B store Q C Γ Φ vs as}
++      (h : HasTypeVsQ P B store Q C Γ Φ vs as) : declaredSlots P C Γ (Val.toTermSlots vs) := by
++    match h with
++    | .nil => trivial
++    | .cons hv hs =>
++      refine ⟨?_, HasTypeVsQ.observation_declared hs⟩
++      cases he : Val.toTerm? _ with
++      | none => trivial
++      | some t => exact hv.observation_declared he
+   theorem HasTypeEachQ.observation_declared {P B store Q C Γ Φ vs a}
+       (h : HasTypeEachQ P B store Q C Γ Φ vs a) :
+       declaredSlots P C Γ (Val.toTermSlots vs) := by
+@@ -79,10 +109,23 @@
+     match h with
+     | .V_Var hg ho => cases ht; exact ⟨_, hg, ho⟩
+     | .V_Const (c := c) _ => cases c <;> cases ht <;> trivial
+-    | .V_Lam _ _ _ _ => cases ht
+-    | .V_List hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
++    | .V_Lam _ _ _ _ _ => cases ht
++    | .V_List hv _ _ _ => cases ht; exact HasTypeEachQ.observation_references hv
++    | .V_Con _ _ _ hv _ => cases ht; exact HasTypeVsQ.observation_references hv
++    | .V_Super _ _ _ _ => cases ht
++    | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
++    | .V_Bytes _ => cases ht; trivial
+     | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
+     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_references ht
++  theorem HasTypeVsQ.observation_references {P B store Q C Γ Φ vs as}
++      (h : HasTypeVsQ P B store Q C Γ Φ vs as) : varsInSlots Γ.Readable (Val.toTermSlots vs) := by
++    match h with
++    | .nil => trivial
++    | .cons hv hs =>
++      refine ⟨?_, HasTypeVsQ.observation_references hs⟩
++      cases he : Val.toTerm? _ with
++      | none => trivial
++      | some t => exact hv.observation_references he
+   theorem HasTypeEachQ.observation_references {P B store Q C Γ Φ vs a}
+       (h : HasTypeEachQ P B store Q C Γ Φ vs a) :
+       varsInSlots Γ.Readable (Val.toTermSlots vs) := by
+@@ -106,10 +149,14 @@
+   match h with
+   | .V_Var hg ho => exact ⟨_, rfl, ⟨a, hg, ho⟩, a, hg, hi⟩
+   | .V_Const hc => exact const_observation hc hi
+-  | .V_Lam _ _ _ _ => cases hi
+-  | .V_List hv _ _ =>
++  | .V_Lam _ _ _ _ _ => cases hi
++  | .V_List hv _ _ _ =>
+     have hs : sort = .list := (Option.some.inj hi).symm
+     exact ⟨_, rfl, HasTypeEachQ.observation_references hv, hs⟩
++  | .V_Con _ _ _ hv _ => exact ⟨_, rfl, HasTypeVsQ.observation_references hv, (Option.some.inj hi).symm⟩
++  | .V_Super _ _ _ _ => cases hi
++  | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases hi
++  | .V_Bytes _ => exact ⟨_, rfl, trivial, (Option.some.inj hi).symm⟩
+   | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
+   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation hi
+ 
+@@ -136,7 +183,8 @@
+     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
+   | .V_Const (c := c) _ =>
+     cases c <;> simp [Const.type, Ty.assume]
+-  | .V_Lam _ _ _ _ | .V_List _ _ _ => intro p hp; cases hp
++  | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
++  | .V_Con _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+   | .V_Sub hv hl _ _ _ =>
+     intro p hp
+     apply ((hl.assume p hp).bind (fun i => match i with
+@@ -164,7 +212,8 @@
+     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
+   | .V_Const (c := c) _ =>
+     cases c <;> simp [Const.type, Ty.assume]
+-  | .V_Lam _ _ _ _ | .V_List _ _ _ => intro p hp; cases hp
++  | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
++  | .V_Con _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+   | .V_Sub hv hl _ _ _ =>
+     intro p hp
+     apply ((hl.assume p hp).bind (fun i => match i with
+--- before/formal/Benitoite/Release/Refinement/Typing.lean
++++ after/formal/Benitoite/Release/Refinement/Typing.lean
+@@ -1,6 +1,6 @@
+ import Benitoite.Release.Refinement.Subst
+ import Benitoite.Release.Refinement.Le
+-import Benitoite.Release.Refinement.DeclaredTransport
++import Benitoite.Release.Refinement.StoreTransport
+ 
+ /-!
+ # 有限の文脈と経路条件を持つ値・計算の型付け
+@@ -17,6 +17,28 @@
+ def hideBuilders (Ψ : StoreTy) : StoreTy := fun l => match Ψ l with
+   | some (.builder _) => none
+   | a => a
++
++theorem StoreTy.WF.hide {Ψ : StoreTy} (h : Ψ.WF) : (hideBuilders Ψ).WF := by
++  intro l t ht
++  unfold hideBuilders at ht
++  cases hl : Ψ l with
++  | none => simp [hl] at ht
++  | some x => cases x <;> simp only [hl] at ht <;> try cases ht
++              all_goals exact h _ _ hl
++
++theorem StoreTy.PreservesNormals.hide {Ψ Ψ' : StoreTy} (h : Ψ.PreservesNormals Ψ') :
++    (hideBuilders Ψ).Extends (hideBuilders Ψ') := by
++  intro l t ht
++  unfold hideBuilders at ht ⊢
++  cases hl : Ψ l with
++  | none => simp [hl] at ht
++  | some x => cases x <;> simp only [hl] at ht <;> try cases ht
++              all_goals rw [h _ _ hl trivial]
++
++theorem StoreTy.preserves_hide (Ψ : StoreTy) : Ψ.PreservesNormals (hideBuilders Ψ) := by
++  intro l t ht hn
++  cases t <;> try cases hn
++  all_goals simp [hideBuilders, ht]
+ 
+ def bindParams (Γ : Ctx) (ps : List Ty) : Ctx :=
+   (ps.reverse.map (fun a => some (a.shiftV ps.length 0))) ++
+@@ -41,9 +63,28 @@
+         Ty.WF 0 C.length Γ.length (.fn ns ps r ε) → Ty.Sorted Γ (.fn ns ps r ε) →
+         HasTypeCQ P B (hideBuilders Ψ) Q C (bindParams (hideConts Γ) ps) (liftMany ps.length Φ)
+           (some (r.shiftV ps.length 0)) body (r.shiftV ps.length 0) (Eff.shiftV ps.length 0 ε) [] →
++        Ty.Declared P C Γ (.fn ns ps r ε) →
+         HasTypeVQ P B Ψ Q C Γ Φ (.lam ns ps body) (.fn ns ps r ε)
++    | V_Raise {Ψ Q C Γ Φ t e} :
++        Ty.Annotation P C Γ (.fn ["error"] [e] t (Eff.singleFail e)) →
++        HasTypeVQ P B Ψ Q C Γ Φ (.raise t e) (.fn ["error"] [e] t (Eff.singleFail e))
++    | V_LocRef {Ψ Q C Γ Φ l a} : Ψ l = some (.ref a) → Ty.Declared P C Γ a →
++        HasTypeVQ P B Ψ Q C Γ Φ (.loc l) (.reference a)
++    | V_LocLazy {Ψ Q C Γ Φ l a} : Ψ l = some (.lazy a) → Ty.Declared P C Γ a →
++        HasTypeVQ P B Ψ Q C Γ Φ (.loc l) (.lazy a)
++    | V_Bytes {Ψ Q C Γ Φ bs} : (∀ b ∈ bs, b ≤ 255) →
++        HasTypeVQ P B Ψ Q C Γ Φ (.bytesV bs) .bytes
++    | V_Con {Ψ Q C Γ Φ c cd ts vs} : P.cons c = some cd → ts.length = cd.ntys →
++        (∀ t ∈ cd.args, t.WF 0 cd.ntys 0) →
++        HasTypeVsQ P B Ψ Q C Γ Φ vs (cd.args.map (Ty.subst ts [])) →
++        Ty.Annotation P C Γ (.data cd.data ts) →
++        HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) (.data cd.data ts)
++    | V_Super {Ψ Q C Γ Φ v cl a cd super} :
++        HasTypeVQ P B Ψ Q C Γ Φ v (.dict cl a) → P.classes cl = some cd → super ∈ cd.supers →
++        Ty.Declared P C Γ a →
++        HasTypeVQ P B Ψ Q C Γ Φ (.super v super) (.dict super a)
+     | V_List {Ψ Q C Γ Φ vs a} : HasTypeEachQ P B Ψ Q C Γ Φ vs a →
+-        Ty.WF 0 C.length Γ.length a → Ty.Sorted Γ a →
++        Ty.WF 0 C.length Γ.length a → Ty.Sorted Γ a → Ty.Declared P C Γ a →
+         HasTypeVQ P B Ψ Q C Γ Φ (.list vs) (.list a)
+     | V_Sub {Ψ Q C Γ Φ v a b} : HasTypeVQ P B Ψ Q C Γ Φ v a →
+         Ty.LeQ Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
+@@ -78,6 +119,21 @@
+     | C_App {Ψ Q C Γ Φ Δ R f args ns as b ε} :
+         HasTypeVQ P B Ψ Q C Γ Φ f (.fn ns as b ε) → HasTypeVsQ P B Ψ Q C Γ Φ args as →
+         HasTypeCQ P B Ψ Q C Γ Φ R (.app f args) b ε Δ
++    | C_If {Ψ Q C Γ Φ Δ R v m n a ε} :
++        HasTypeVQ P B Ψ Q C Γ Φ v (.base .boolean) →
++        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → HasTypeCQ P B Ψ Q C Γ Φ R n a ε Δ →
++        HasTypeCQ P B Ψ Q C Γ Φ R (.ite v m n) a ε Δ
++    | C_Lazy {Ψ Q C Γ Φ Δ R m a} :
++        HasTypeCQ P B (hideBuilders Ψ) Q C (hideConts Γ) Φ none m a Eff.empty [] →
++        Ty.Annotation P C Γ a →
++        HasTypeCQ P B Ψ Q C Γ Φ R (.lazyC m) (.lazy a) Eff.empty Δ
++    | C_Escape {Ψ Q C Γ Φ Δ r v a ε} :
++        HasTypeVQ P B Ψ Q C Γ Φ v r → Ty.Annotation P C Γ a →
++        HasTypeCQ P B Ψ Q C Γ Φ (some r) (.escape v) a ε Δ
++    | C_Use {Ψ Q C Γ Φ Δ R v o m a ε} :
++        HasTypeVQ P B Ψ Q C Γ Φ v (.opaque o (.fixed .top)) → B.isResource o = true →
++        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → ε.test (.name stateEff (.fixed .top)) = true →
++        HasTypeCQ P B Ψ Q C Γ Φ R (.use v m) a ε Δ
+     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
+         Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
+         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ
+--- before/formal/Benitoite/Release/Refinement/TypingDeclared.lean
++++ after/formal/Benitoite/Release/Refinement/TypingDeclared.lean
+@@ -0,0 +1,44 @@
++import Benitoite.Release.Refinement.Narrowing
++
++/-!
++# 型付きの値の宣言照合
++
++変数の型は文脈から供給し、値の注釈は導入規則から取り出す。
++-/
++namespace Benitoite.Release.Refinement
++
++/-- lookup が返す型を、その番号を読む文脈で照合する。 -/
++def Ctx.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Prop :=
++  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → Ty.Declared P C Γ a
++
++theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
++    (h : HasTypeVQ P B store Q C Γ Φ v a) (hΓ : Ctx.Declared P C Γ) :
++    Ty.Declared P C Γ a := by
++  match h with
++  | .V_Var hi _ => exact hΓ _ _ hi
++  | .V_Const (c := c) _ => cases c <;> trivial
++  | .V_Lam _ _ _ _ hd => exact hd
++  | .V_List _ _ _ hd => exact hd
++  | .V_Con _ _ _ _ ha => exact ha.declared
++  | .V_Super _ _ _ hd => exact hd
++  | .V_Raise ha => exact ha.declared
++  | .V_LocRef _ hd | .V_LocLazy _ hd => exact hd
++  | .V_Bytes _ => trivial
++  | .V_Sub _ _ _ _ hd => exact hd
++  | .V_Refine _ _ _ _ _ _ hda hdp => exact ⟨hda, hdp⟩
++
++theorem HasTypeVsQ.declared {P B store Q C Γ Φ vs as}
++    (h : HasTypeVsQ P B store Q C Γ Φ vs as) (hΓ : Ctx.Declared P C Γ) :
++    declaredTys P C Γ as := by
++  match h with
++  | .nil => trivial
++  | .cons hv hs => exact ⟨hv.declared hΓ, hs.declared hΓ⟩
++
++/-- narrowing の呼出し元は、元の値の導出から b の宣言照合を供給できる。 -/
++theorem Ctx.Narrows.of_value {P B store Q C Γ Φ v a b}
++    (hb : HasTypeVQ P B store Q C Γ Φ v b) (hΓ : Ctx.Declared P C Γ)
++    (hl : Ty.LeQ Γ Φ a b) (hw : b.WF 0 C.length Γ.length) (hs : b.Sorted Γ) :
++    Ctx.Narrows P C (Γ.extend b) (Φ.map Pred.lift) (Γ.extend a) (Φ.map Pred.lift) :=
++  .here hl hw hs (hb.declared hΓ)
++
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/TypingShift.lean
++++ after/formal/Benitoite/Release/Refinement/TypingShift.lean
+@@ -263,9 +263,27 @@
+   rw [h.length]
+   exact Ty.wf_shiftV ha k c
+ 
++theorem Ty.shiftV_of_wf_zero {nr nt a} (h : Ty.WF nr nt 0 a) (k c : Nat) : a.shiftV k c = a := by
++  rw [Ty.shiftV_eq_renameTy, renameTy_eq_rawSubstV]
++  exact Ty.rawSubstV_of_wf_zero h _
++
++theorem ShiftMap.annotation {P C k c Γ Δ a} (h : ShiftMap k c Γ Δ)
++    (ha : Ty.Annotation P C Γ a) : Ty.Annotation P C Δ (a.shiftV k c) :=
++  ⟨h.wf ha.wf, h.sorted ha.sorted, h.declared ha.declared⟩
++
++@[simp] theorem Val.renameList_length (vs : List Val) (ξ : Nat → Nat) :
++    (Val.renameList ξ vs).length = vs.length := by
++  induction vs <;> simp_all [Val.renameList]
++
++theorem Eff.shiftV_singleFail (a : Ty) (k c : Nat) :
++    Eff.shiftV k c (Eff.singleFail a) = Eff.singleFail (a.shiftV k c) := by
++  simp only [Eff.singleFail, Eff.shiftV, shiftVTys, Ty.norm_shiftV]
++
+ mutual
+   theorem HasTypeVQ.shift_values {P B store Q C Γ Φ v a}
+       (h : HasTypeVQ P B store Q C Γ Φ v a) {k c Δ Ξ store'}
++      (hstore : StoreTy.WF store)
++      (hpres : StoreTy.PreservesNormals store store')
+       (hm : ShiftMap k c Γ Δ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+       HasTypeVQ P B store' Q C Δ Ξ (v.rename (shiftIndex k c)) (a.shiftV k c) := by
+@@ -276,26 +294,55 @@
+         cases con <;> rfl
+       rw [he]
+       exact .V_Const hc
+-    | .V_Lam (ps := ps) hn hw hs hb =>
++    | .V_Lam (ps := ps) hn hw hs hb hd =>
+       simp only [Val.rename, renameTy_shiftIndex, upRen_shiftIndex, Ty.shiftV, shiftVTys_eq_map]
+-      refine .V_Lam (by simpa only [NamesWF, List.length_map] using hn) ?_ ?_ ?_
++      refine .V_Lam (by simpa only [NamesWF, List.length_map] using hn) ?_ ?_ ?_ ?_
+       · simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.wf hw
+       · simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.sorted hs
+-      · have hb' := HasTypeCQ.shift_values (store' := hideBuilders store') (L' := []) hb
++      · have hb' := HasTypeCQ.shift_values (store' := hideBuilders store') (L' := []) hb hstore.hide hpres.hide
+           (hm.hide.underParams ps)
+           (hm.hide.conditions_params (fun p hp => (hf p hp).hideConts) ps)
+         simpa only [List.length_map, Ty.shiftV_comm, Eff.shiftV_comm, Option.map_some] using hb'
+-    | .V_List he hw hs =>
+-      exact .V_List (HasTypeEachQ.shift_values he hm hf) (hm.wf hw) (hm.sorted hs)
++      · simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.declared hd
++    | .V_List he hw hs hd =>
++      exact .V_List (HasTypeEachQ.shift_values he hstore hpres hm hf) (hm.wf hw) (hm.sorted hs) (hm.declared hd)
++    | .V_Raise (t := t) (e := e) ha =>
++      have hh := hm.annotation ha
++      simp only [Val.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys_eq_map,
++        List.map_cons, List.map_nil, Eff.shiftV_singleFail]
++      apply HasTypeVQ.V_Raise
++      simpa only [Ty.shiftV, shiftVTys_eq_map, List.map_cons, List.map_nil, Eff.shiftV_singleFail] using hh
++    | .V_LocRef (a := a) hl hd =>
++      have hw := hstore _ _ hl
++      have he := Ty.shiftV_of_wf_zero hw k c
++      simp only [Val.rename, Ty.shiftV, he]
++      exact .V_LocRef (hpres _ _ hl trivial) (he ▸ hm.declared hd)
++    | .V_LocLazy (a := a) hl hd =>
++      have hw := hstore _ _ hl
++      have he := Ty.shiftV_of_wf_zero hw k c
++      simp only [Val.rename, Ty.shiftV, he]
++      exact .V_LocLazy (hpres _ _ hl trivial) (he ▸ hm.declared hd)
++    | .V_Bytes hb => exact .V_Bytes hb
++    | .V_Con (cd := cd) (ts := ts) hc hn hw hv ha =>
++      have hh := HasTypeVsQ.shift_values hv hstore hpres hm hf
++      have he : (cd.args.map (Ty.subst ts [])).map (Ty.shiftV k c) =
++          cd.args.map (Ty.subst (ts.map (Ty.shiftV k c)) []) := by
++        rw [List.map_map]
++        exact List.map_congr_left (fun a ha => Ty.subst_shiftV_closed (hw a ha) ts k c)
++      rw [he] at hh
++      simp only [Val.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys_eq_map]
++      exact .V_Con hc (by simpa only [List.length_map] using hn) hw hh (by simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.annotation ha)
++    | .V_Super hv hc hmemb hd =>
++      exact .V_Super (HasTypeVQ.shift_values hv hstore hpres hm hf) hc hmemb (hm.declared hd)
+     | .V_Sub hv hl hw hs hd =>
+       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
+       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
+       rw [renameTy_shiftIndex] at hl'
+-      exact .V_Sub (HasTypeVQ.shift_values hv hm hf) hl' (hm.wf hw) (hm.sorted hs) (hm.declared hd)
++      exact .V_Sub (HasTypeVQ.shift_values hv hstore hpres hm hf) hl' (hm.wf hw) (hm.sorted hs) (hm.declared hd)
+     | .V_Refine (a := a) (t := t) (p := p) hv hi ht hs hw he hda hdp =>
+       change HasTypeVQ P B store' Q C Δ Ξ _ (.refined (a.shiftV k c) (p.shiftV k (c+1)))
+       refine .V_Refine (t := termBind (fun i => some (.var (shiftIndex k c i))) t)
+-        (HasTypeVQ.shift_values hv hm hf)
++        (HasTypeVQ.shift_values hv hstore hpres hm hf)
+         ((Ty.hasSort_shiftV _ _ _ _).mpr hi) ?_ ?_ ?_ ?_ (hm.declared hda) (hm.predDeclared hdp)
+       · simp only [Val.toTerm_rename, ht, Option.map_some]
+       · simpa only [Pred.shiftV, ← upValues_shiftIndex] using
+@@ -308,42 +355,62 @@
+         simpa only [renEnv_values, predBind_open_renaming, termBind?, termBind, Pred.shiftV, ← upValues_shiftIndex] using he'
+   theorem HasTypeVsQ.shift_values {P B store Q C Γ Φ vs as}
+       (h : HasTypeVsQ P B store Q C Γ Φ vs as) {k c Δ Ξ store'}
++      (hstore : StoreTy.WF store)
++      (hpres : StoreTy.PreservesNormals store store')
+       (hm : ShiftMap k c Γ Δ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+       HasTypeVsQ P B store' Q C Δ Ξ (Val.renameList (shiftIndex k c) vs) (as.map (Ty.shiftV k c)) := by
+     match h with
+     | .nil => exact .nil
+-    | .cons hv ht => exact .cons (HasTypeVQ.shift_values hv hm hf) (HasTypeVsQ.shift_values ht hm hf)
++    | .cons hv ht => exact .cons (HasTypeVQ.shift_values hv hstore hpres hm hf) (HasTypeVsQ.shift_values ht hstore hpres hm hf)
+   theorem HasTypeEachQ.shift_values {P B store Q C Γ Φ vs a}
+       (h : HasTypeEachQ P B store Q C Γ Φ vs a) {k c Δ Ξ store'}
++      (hstore : StoreTy.WF store)
++      (hpres : StoreTy.PreservesNormals store store')
+       (hm : ShiftMap k c Γ Δ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+       HasTypeEachQ P B store' Q C Δ Ξ (Val.renameList (shiftIndex k c) vs) (a.shiftV k c) := by
+     match h with
+     | .nil => exact .nil
+-    | .cons hv ht => exact .cons (HasTypeVQ.shift_values hv hm hf) (HasTypeEachQ.shift_values ht hm hf)
++    | .cons hv ht => exact .cons (HasTypeVQ.shift_values hv hstore hpres hm hf) (HasTypeEachQ.shift_values ht hstore hpres hm hf)
+   theorem HasTypeCQ.shift_values {P B store Q C Γ Φ R m a e L}
+       (h : HasTypeCQ P B store Q C Γ Φ R m a e L) {k c Δ Ξ store' L'}
++      (hstore : StoreTy.WF store)
++      (hext : StoreTy.Extends store store')
+       (hm : ShiftMap k c Γ Δ)
+       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+       HasTypeCQ P B store' Q C Δ Ξ (R.map (Ty.shiftV k c)) (m.rename (shiftIndex k c))
+         (a.shiftV k c) (Eff.shiftV k c e) L' := by
+     match h with
+-    | .C_Return hv => exact .C_Return (HasTypeVQ.shift_values hv hm hf)
++    | .C_Return hv => exact .C_Return (HasTypeVQ.shift_values hv hstore hext.preservesNormals hm hf)
+     | .C_App hv hs =>
+-      have hv' := HasTypeVQ.shift_values (store' := store') hv hm hf
++      have hv' := HasTypeVQ.shift_values (store' := store') hv hstore hext.preservesNormals hm hf
+       simp only [Ty.shiftV, shiftVTys_eq_map] at hv'
+-      exact .C_App hv' (HasTypeVsQ.shift_values hs hm hf)
++      exact .C_App hv' (HasTypeVsQ.shift_values hs hstore hext.preservesNormals hm hf)
++    | .C_If hv hm' hn =>
++      exact .C_If (HasTypeVQ.shift_values hv hstore hext.preservesNormals hm hf)
++        (HasTypeCQ.shift_values hm' hstore hext hm hf) (HasTypeCQ.shift_values hn hstore hext hm hf)
++    | .C_Lazy hb ha =>
++      refine .C_Lazy ?_ (hm.annotation ha)
++      exact HasTypeCQ.shift_values hb hstore.hide hext.preservesNormals.hide hm.hide
++        (fun p hp => (hf p hp).hideConts)
++    | .C_Escape hv ha =>
++      exact .C_Escape
++        (HasTypeVQ.shift_values hv hstore hext.preservesNormals hm hf) (hm.annotation ha)
++    | .C_Use hv hr hb he =>
++      exact .C_Use
++        (HasTypeVQ.shift_values hv hstore hext.preservesNormals hm hf) hr
++        (HasTypeCQ.shift_values hb hstore hext hm hf) (by cases e; exact he)
+     | .C_Sub ht hl hc hw hs hd =>
+       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
+       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
+       rw [renameTy_shiftIndex] at hl'
+-      exact .C_Sub (HasTypeCQ.shift_values ht hm hf) hl' (hc.shiftV k c) (hm.wf hw) (hm.sorted hs) (hm.declared hd)
+-    | .C_Eff ht hc => exact .C_Eff (HasTypeCQ.shift_values ht hm hf) (hc.shiftV k c)
++      exact .C_Sub (HasTypeCQ.shift_values ht hstore hext hm hf) hl' (hc.shiftV k c) (hm.wf hw) (hm.sorted hs) (hm.declared hd)
++    | .C_Eff ht hc => exact .C_Eff (HasTypeCQ.shift_values ht hstore hext hm hf) (hc.shiftV k c)
+     | .C_Let (a := x) ht hb =>
+       simp only [Comp.rename, upRen_shiftIndex]
+-      refine .C_Let (HasTypeCQ.shift_values ht hm hf) ?_
+-      have hb' := HasTypeCQ.shift_values (store' := store') (L' := localExtend 1 L') hb
++      refine .C_Let (HasTypeCQ.shift_values ht hstore hext hm hf) ?_
++      have hb' := HasTypeCQ.shift_values (store' := store') (L' := localExtend 1 L') hb hstore hext
+         (hm.underParams [x]) (hm.conditions_params hf [x])
+       simp only [List.length_cons, List.length_nil, Nat.zero_add, List.map_cons, List.map_nil,
+         Ty.shiftV_comm, Eff.shiftV_comm, Option.map_map] at hb'
+--- before/formal/Benitoite/Release/Refinement/ValueBinding.lean
++++ after/formal/Benitoite/Release/Refinement/ValueBinding.lean
+@@ -83,7 +83,7 @@
+ mutual
+   theorem Val.rename_identity (v : Val) : v.rename id = v := by
+     cases v <;> simp [Val.rename, upRen_identity,
+-      Val.renameList_identity, Comp.rename_identity, Val.rename_identity]
++      Val.renameList_identity, Comp.rename_identity, Val.rename_identity, Tel.rawBind_id]
+   theorem Val.renameList_identity (vs : List Val) : Val.renameList id vs = vs := by
+     cases vs <;> simp [Val.renameList, Val.rename_identity, Val.renameList_identity]
+   theorem Comp.rename_identity (m : Comp) : m.rename id = m := by
+@@ -229,11 +229,34 @@
+     · simp only [show i-n<c by omega, ↓reduceIte]; omega
+     · simp only [show ¬ i-n<c by omega, ↓reduceIte]; omega
+ 
++theorem Ty.bind_data (d : DataName) (ts : List Ty) (θ : SubstEnv) :
++    (Ty.data d ts).bind θ = .data d (ts.map (Ty.bind θ)) := by
++  simp only [Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map, List.map_map]
++  rfl
++
++theorem Ty.subst_shiftV_closed {nt a} (hw : Ty.WF 0 nt 0 a) (ts : List Ty) (k c : Nat) :
++    (a.subst ts []).shiftV k c = a.subst (ts.map (Ty.shiftV k c)) [] := by
++  have hs := Ty.substV_subst_closed hw ts (fun i => some (.var (shiftIndex k c i)))
++  rw [bindDataArgs_eq_norm, Ty.subst_norm_images] at hs
++  have hi : (a.subst ts []).norm = a.subst ts [] := Ty.norm_idem _
++  have hn : ((a.subst ts []).shiftV k c).norm = (a.subst ts []).shiftV k c := by
++    rw [Ty.norm_shiftV, hi]
++  have he : Ty.rawSubstV (fun i => some (.var (shiftIndex k c i))) = Ty.shiftV k c := by
++    funext t
++    rw [← renameTy_eq_rawSubstV, ← Ty.shiftV_eq_renameTy]
++  simpa only [Ty.substV, Ty.bind, SubstEnv.valuesOnly, ← Ty.rawSubstV_eq_rawBind,
++    he, hn, substVTys_eq_map] using hs
++
++@[simp] theorem Val.toTermSlots_length (vs : List Val) : (Val.toTermSlots vs).length = vs.length := by
++  simp only [Val.toTermSlots_eq_map, List.length_map]
++
+ /-- V_Lam の注釈と帰納仮定の結論を、同じ bind の型へそろえる入口。 -/
+ theorem HasTypeVQ.subst_lam {P B store Q C Γ Φ Δ Ξ ns ps body r e σ ρ}
+     (hw : Ty.WF 0 C.length Γ.length (.fn ns ps r e))
+     (hs : Ty.Sorted Γ (.fn ns ps r e))
+     (ht : Transport (valEnv σ) Γ Φ Δ Ξ)
++    (hd : Ty.Declared P C Γ (.fn ns ps r e))
++    (hdi : DeclarationImages P C Γ Δ (valEnv σ).values)
+     (hb : HasTypeCQ P B (hideBuilders store) Q C
+       (bindParams (hideConts Δ) (ps.map (substTyValues σ)))
+       (liftMany ps.length Ξ) (some ((substTyValues σ r).shiftV ps.length 0))
+@@ -243,13 +266,14 @@
+     HasTypeVQ P B store Q C Δ Ξ ((Val.lam ns ps body).subst σ ρ)
+       ((Ty.fn ns ps r e).bind (valEnv σ)) := by
+   rw [Ty.bind_fn]
+-  refine .V_Lam ?_ ?_ ?_ ?_
++  refine .V_Lam ?_ ?_ ?_ ?_ ?_
+   · simpa only [NamesWF, List.length_map] using hw.1
+   · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using
+       Ty.wf_bind_values hw hs.references (valEnv σ).values ht.imageWF
+   · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using
+       Ty.sorted_bind_values hs (valEnv σ).values ht.values ht.references
+   · simpa only [List.length_map, substTyValues, substEffValues] using hb
++  · simpa only [valEnv_valuesOnly, Ty.bind_fn, substTyValues_eq_bind] using hd.bind_values hdi
+ 
+ mutual
+   theorem Ty.rawSubstV_embed (a : Benitoite.Release.Ty) (σ : ObservationEnv) :
+--- before/formal/Benitoite/Release/Refinement/ValueInstantiation.lean
++++ after/formal/Benitoite/Release/Refinement/ValueInstantiation.lean
+@@ -0,0 +1,137 @@
++import Benitoite.Release.Refinement.ValueBinding
++
++namespace Benitoite.Release.Refinement
++open Order
++
++noncomputable def SubstEnv.normRows (θ : SubstEnv) : SubstEnv :=
++  { θ with rows := θ.rows.map Eff.norm }
++
++@[simp] theorem SubstEnv.normRows_types (θ : SubstEnv) : θ.normRows.types = θ.types := rfl
++@[simp] theorem SubstEnv.normRows_rows (θ : SubstEnv) : θ.normRows.rows = θ.rows.map Eff.norm := rfl
++@[simp] theorem SubstEnv.normRows_ranges (θ : SubstEnv) : θ.normRows.ranges = θ.ranges := rfl
++@[simp] theorem SubstEnv.normRows_values (θ : SubstEnv) : θ.normRows.values = θ.values := rfl
++
++theorem SubstEnv.normRows_up (θ : SubstEnv) : θ.up.normRows = θ.normRows.up := by
++  cases θ
++  simp only [SubstEnv.normRows, SubstEnv.up, List.map_map]
++  congr 2
++  funext e
++  exact Eff.norm_shiftV e 1 0
++
++theorem substAtoms_normRows (es : List Eff) (atoms : Atom → Bool) :
++    substAtoms (es.map Eff.norm) atoms = substAtoms es atoms := by
++  funext x
++  simp only [substAtoms, List.length_map, List.getElem?_map]
++  congr 1
++  apply congrArg (fun f => (List.range es.length).any f)
++  funext i
++  cases es[i]? with
++  | none => rfl
++  | some e => cases e; rfl
++
++theorem Eff.fails_norm (e : Eff) : e.norm.fails = sortUnique tyCompare (Ty.normTys e.fails) := by
++  cases e; rfl
++
++theorem rowFails_normRows (es : List Eff) (atoms : Atom → Bool) :
++    sortUnique tyCompare (Ty.normTys (rowFails (es.map Eff.norm) atoms)) =
++      sortUnique tyCompare (Ty.normTys (rowFails es atoms)) := by
++  apply sortUnique_eq_iff_mem.mpr
++  intro t
++  simp only [Ty.normTys_eq_map, List.mem_map, Eff.mem_rowFails,
++    List.getElem?_map, Option.map_eq_some_iff]
++  constructor
++  · rintro ⟨x, ⟨i, f, ⟨g, hg, rfl⟩, ha, hx⟩, he⟩
++    rw [Eff.fails_norm] at hx
++    rw [Ty.normTys_eq_map] at hx
++    obtain ⟨y, hy, rfl⟩ := List.mem_map.mp (Order.mem_sortUnique.mp hx)
++    exact ⟨y, ⟨i, g, hg, ha, hy⟩, (Ty.norm_idem y).symm.trans he⟩
++  · rintro ⟨x, ⟨i, f, hf, ha, hx⟩, he⟩
++    have hx' : x.norm ∈ f.norm.fails := by
++      rw [Eff.fails_norm]
++      rw [Ty.normTys_eq_map]
++      exact Order.mem_sortUnique.mpr (List.mem_map.mpr ⟨x, hx, rfl⟩)
++    exact ⟨x.norm, ⟨i, f.norm, ⟨f, hf, rfl⟩, ha, hx'⟩, (Ty.norm_idem x).trans he⟩
++
++mutual
++  theorem Ty.bind_normRows (a : Ty) (θ : SubstEnv) :
++      (a.rawBind θ.normRows).norm = (a.rawBind θ).norm := by
++    cases a <;> simp only [Ty.rawBind, Ty.norm, SubstEnv.normRows_types, SubstEnv.normRows_values,
++      SubstEnv.normRows_ranges, Ty.bind_normRows, normBindTys_normRows, Eff.bind_normRows, Tel.bind_normRows]
++    case tapp i as =>
++      rw [← rawApply_norm, normBindTys_normRows, rawApply_norm]
++  theorem Tel.bind_normRows (t : Tel) (θ : SubstEnv) :
++      Tel.norm (Tel.rawBind θ.normRows t) = Tel.norm (Tel.rawBind θ t) := by
++    cases t with
++    | done r e => simp only [Tel.rawBind, Tel.norm, Ty.bind_normRows, Eff.bind_normRows]
++    | param n a t => simp only [Tel.rawBind, Tel.norm, Ty.bind_normRows,
++        ← SubstEnv.normRows_up, Tel.bind_normRows]
++  theorem normBindTys_normRows (as : List Ty) (θ : SubstEnv) :
++      Ty.normTys (rawBindTys θ.normRows as) = Ty.normTys (rawBindTys θ as) := by
++    cases as <;> simp only [rawBindTys, Ty.normTys, Ty.bind_normRows, normBindTys_normRows]
++  theorem Eff.bind_normRows (e : Eff) (θ : SubstEnv) :
++      Eff.norm (Eff.rawBind θ.normRows e) = Eff.norm (Eff.rawBind θ e) := by
++    cases e with
++    | mk a fs =>
++      simp only [Eff.rawBind, Eff.norm, SubstEnv.normRows_rows, SubstEnv.normRows_ranges, substAtoms_normRows, Ty.normTys_append]
++      congr 1
++      apply sortUnique_append_congr
++      · exact congrArg _ (normBindTys_normRows fs θ)
++      · exact rowFails_normRows θ.rows a
++end
++
++theorem Ty.subst_norm_typeImages (a : Ty) (ts : List Ty) (es : List Eff) :
++    a.subst (ts.map Ty.norm) es = a.subst ts es := by
++  apply Ty.bind_sameTypes
++  refine ⟨?_, rfl, rfl, rfl⟩
++  intro i
++  simp only [typeEnvAt, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero,
++    List.length_map, List.getElem?_map]
++  split
++  · cases ht : ts[i]? with
++    | none => rfl
++    | some a => simp only [Option.map_some, Option.getD_some, shiftTypes_zero, Ty.norm_idem]
++  · rfl
++
++theorem Ty.subst_norm_rowImages (a : Ty) (ts : List Ty) (es : List Eff) :
++    a.subst ts (es.map Eff.norm) = a.subst ts es := by
++  have he : typeEnvAt 0 ts (es.map Eff.norm) = (typeEnvAt 0 ts es).normRows := by
++    have hz : shiftRowsTypes 0 0 = id := funext (fun e => shiftRowsTypes_zero e 0)
++    simp only [typeEnvAt, SubstEnv.normRows, hz, List.map_id]
++  change (a.rawBind _).norm = (a.rawBind _).norm
++  rw [he]
++  exact a.bind_normRows _
++
++theorem Ty.subst_norm_images_all (a : Ty) (ts : List Ty) (es : List Eff) :
++    a.subst (ts.map Ty.norm) (es.map Eff.norm) = a.subst ts es := by
++  rw [Ty.subst_norm_typeImages, Ty.subst_norm_rowImages]
++
++theorem Ty.substV_subst_closed_rows {nt a} (hw : Ty.WF 0 nt 0 a)
++    (ts : List Ty) (es : List Eff) (ν : ObservationEnv) :
++    (a.subst ts es).substV ν = a.subst (ts.map (Ty.substV ν)) (es.map (Eff.substV ν)) := by
++  have hs := Ty.substAt_substV a 0 ts es ν
++  rw [Ty.substV_of_wf_zero hw] at hs
++  change (a.subst ts es).substV ν = a.subst _ _ at hs
++  rw [hs]
++  have he : Ty.substV ν = (fun t => (t.rawSubstV ν).norm) := by
++    funext t; simp only [Ty.substV, Ty.bind, SubstEnv.valuesOnly, ← Ty.rawSubstV_eq_rawBind]
++  have hf : Eff.substV ν = (fun e => (Eff.rawSubstV ν e).norm) := by
++    funext e; simp only [Eff.substV, Eff.bind, SubstEnv.valuesOnly, ← Eff.rawSubstV_eq_rawBind]
++  rw [he, hf]
++  simpa only [List.map_map, Function.comp_def] using
++    (Ty.subst_norm_images_all a (ts.map (Ty.rawSubstV ν)) (es.map (Eff.rawSubstV ν))).symm
++
++theorem Ty.subst_shiftV_closed_rows {nt a} (hw : Ty.WF 0 nt 0 a)
++    (ts : List Ty) (es : List Eff) (k c : Nat) :
++    (a.subst ts es).shiftV k c = a.subst (ts.map (Ty.shiftV k c)) (es.map (Eff.shiftV k c)) := by
++  have hs := Ty.substAt_substV a 0 ts es (fun i => some (.var (shiftIndex k c i)))
++  rw [Ty.substV_of_wf_zero hw] at hs
++  have he : Ty.rawSubstV (fun i => some (.var (shiftIndex k c i))) = Ty.shiftV k c := by
++    funext t; rw [← renameTy_eq_rawSubstV, ← Ty.shiftV_eq_renameTy]
++  have hf : Eff.rawSubstV (fun i => some (.var (shiftIndex k c i))) = Eff.shiftV k c := by
++    funext e; rw [← renameEff_eq_rawSubstV, ← Eff.shiftV_eq_renameEff]
++  change (a.subst ts es).substV (fun i => some (.var (shiftIndex k c i))) = a.subst _ _ at hs
++  have hn : ((a.subst ts es).shiftV k c).norm = (a.subst ts es).shiftV k c := by
++    rw [Ty.norm_shiftV]; exact congrArg (Ty.shiftV k c) (Ty.norm_idem _)
++  simpa only [Ty.substV, Ty.bind, SubstEnv.valuesOnly, ← Ty.rawSubstV_eq_rawBind, he, hf, hn] using hs
++
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite.lean
++++ after/formal/Benitoite.lean
+@@ -292,3 +292,6 @@
+ 
+ import Benitoite.Release.Refinement.KindInference
+ import Benitoite.Release.Refinement.ValueReferences
++
++import Benitoite.Release.Refinement.TypingDeclared
++import Benitoite.Release.Refinement.ValueInstantiation

@@ -23,6 +23,10 @@ def renameKind (ξ : Nat → Nat) : BuilderKind → BuilderKind
   | .bytes => .bytes
   | .list a => .list (renameTy ξ a)
 
+def telBinders : Tel → Nat
+  | .done _ _ => 0
+  | .param _ _ t => telBinders t + 1
+
 private def armBinders (alts : List Alt) : Nat := Benitoite.Release.Arm.bindersOf alts
 
 mutual
@@ -32,6 +36,8 @@ mutual
     | .fnRef f tys effs => .fnRef f (tys.map (renameTy ξ)) (effs.map (renameEff ξ))
     | .prim b tys effs rs => .prim b (tys.map (renameTy ξ)) (effs.map (renameEff ξ)) rs
     | .lam names params body => .lam names (params.map (renameTy ξ)) (Comp.rename (upRen params.length ξ) body)
+    | .dependentLam t body => .dependentLam (Tel.rawBind (renEnv ξ) t) (Comp.rename (upRen (telBinders t) ξ) body)
+    | .closure t body => .closure t body
     | .con c tys args => .con c (tys.map (renameTy ξ)) (Val.renameList ξ args)
     | .list elems => .list (Val.renameList ξ elems)
     | .op o tys => .op o (tys.map (renameTy ξ))
@@ -83,7 +89,7 @@ def valEnv (σ : Nat → Val) : SubstEnv :=
   ⟨Ty.tvar, [], [], fun i => (σ i).toTerm?⟩
 noncomputable def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.bind (valEnv σ)
 noncomputable def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.bind (valEnv σ) e
-private noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
+noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
   | .string => .string
   | .bytes => .bytes
   | .list a => .list (substTyValues σ a)
@@ -100,6 +106,8 @@ mutual
     | .fnRef f tys effs => .fnRef f (tys.map (substTyValues σ)) (effs.map (substEffValues σ))
     | .prim b tys effs rs => .prim b (tys.map (substTyValues σ)) (effs.map (substEffValues σ)) rs
     | .lam names params body => .lam names (params.map (substTyValues σ)) (Comp.subst (upSubst params.length σ) body (upLocalSubst params.length ρ))
+    | .dependentLam t body => .dependentLam (Tel.bind (valEnv σ) t) (Comp.subst (upSubst (telBinders t) σ) body (upLocalSubst (telBinders t) ρ))
+    | .closure t body => .closure t body
     | .con c tys args => .con c (tys.map (substTyValues σ)) (Val.substList σ args ρ)
     | .list elems => .list (Val.substList σ elems ρ)
     | .op o tys => .op o (tys.map (substTyValues σ))
@@ -206,6 +214,8 @@ mutual
     | .fnRef f tys effs => .fnRef f (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es))
     | .prim b tys effs rs => .prim b (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es)) rs
     | .lam names params body => .lam names (params.map (substTypeAt c ts es)) (Comp.substTyAt c (ts.map (Ty.shiftV params.length 0)) (es.map (Eff.shiftV params.length 0)) body)
+    | .dependentLam t body => .dependentLam (Tel.bind (typeEnvAt c ts es) t) (Comp.substTyAt c (ts.map (Ty.shiftV (telBinders t) 0)) (es.map (Eff.shiftV (telBinders t) 0)) body)
+    | .closure t body => .closure t body
     | .con k tys args => .con k (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
     | .list elems => .list (Val.substTyAtList c ts es elems)
     | .op o tys => .op o (tys.map (substTypeAt c ts es))
