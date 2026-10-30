@@ -1,0 +1,124 @@
+[
+  {
+    "kind": "local-build",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "build",
+      "Benitoite.Release.Refinement.OpenSubstitution"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T13:13:31.498191+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 8.429942416,
+    "log": "local-build.log"
+  },
+  {
+    "kind": "proof-08",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.08/proof-audit-08.lean"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T13:13:48.201781+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.3348775,
+    "log": "proof-08.log"
+  },
+  {
+    "kind": "proof-09a",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.08/proof-audit-09a.lean"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T13:13:48.601174+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.32085533299999996,
+    "log": "proof-09a.log"
+  },
+  {
+    "kind": "proof-09b",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.08/proof-audit-09b.lean"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T13:13:48.986750+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.3424895,
+    "log": "proof-09b.log"
+  },
+  {
+    "kind": "proof-10",
+    "command": [
+      "rtk",
+      "proxy",
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00a.08/proof-audit-10.lean"
+    ],
+    "cwd": "formal",
+    "started_at": "2026-10-30T13:13:49.396414+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.311952542,
+    "log": "proof-10.log"
+  },
+  {
+    "kind": "dry-run",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "22aaeb3cb1faf65264abad20cab8eb99ec3fcc81",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-30T13:18:37.598878+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.30757637499999996,
+    "log": "dry-run.log"
+  },
+  {
+    "kind": "work",
+    "command": [
+      "rtk",
+      "proxy",
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "22aaeb3cb1faf65264abad20cab8eb99ec3fcc81"
+    ],
+    "cwd": ".",
+    "started_at": "2026-10-30T13:18:45.122979+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1.354807541,
+    "log": "work.log"
+  }
+]

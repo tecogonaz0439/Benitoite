@@ -1,5 +1,11 @@
 import Benitoite.Release.Refinement.Logic
 
+/-!
+# 有限の論理を使う部分型と被覆
+
+構文の導出を旧判断と並置し、Fail の比較には正規形の等号を使う。
+-/
+
 namespace Benitoite.Release.Refinement
 
 /-- 構造上の包含。内側の行を先に置く。 -/
@@ -11,7 +17,7 @@ def Eff.Covers (_Γ : Ctx) (_Φ : List Pred) (outer inner : Eff) : Prop :=
   (∀ a, inner.mem a → ∃ b, outer.mem b ∧ b.Covers a) ∧
   (∀ t, inner.memFail t → outer.memFail t)
 
-private def assumptions (Γ : Ctx) (Φ : List Pred) (a : Ty) : List Pred :=
+def assumptions (Γ : Ctx) (Φ : List Pred) (a : Ty) : List Pred :=
   a.assume ++ (Γ.facts ++ Φ).map Pred.lift
 
 /-- 有限の論理の文脈を持つ部分型判断。 -/

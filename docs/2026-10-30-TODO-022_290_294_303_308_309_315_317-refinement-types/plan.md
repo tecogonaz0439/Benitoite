@@ -162,7 +162,7 @@ L00a.16bで上記の群の表を固定する。L00a末は、中心の補題の�
 | L00b.03・1〜3 | 文脈。Refinement/Context/WF | Γ の None/lookup/外側参照、Φとfacts、引数列の宣言順とextendを一般の構文へ拡張。循環を長さ上限で通さず代表補題を閉じる | .02c |
 | L00b.04・2〜5 | 閉じた評価。Refinement/Logic/評価器 | evalClosed と成功の健全性、Entails.ground、Not/加算/length を閉じる。sort不適格と評価失敗を真へ変えず、新公理を足さない | .03 |
 | L00b.05・1〜3 | 証明書の葉。Refinement/Certificate/写しの署名 | traceなしの列と EqProof/substitute/builtinLemma/sort/捨てる規則の義務を固定。machine_exact・stable・represented、builtin事実を明記し、空でない代表を証明。全sortは L30 | .04 |
-| L00b.11・3〜6 | 構文の逆転。listCore/fnCore/Basic/Canonical | 推移/篩/V_Subから LeQ と TelClosure/names_eq を返す。Reference/Failは正規化後等号。意味上Subtypeや構造的recordだけへ結論を替えない | .05、L00a置換 |
+| L00b.11・3〜6 | 構文の逆転。listCore/fnCore/Basic/Canonical | 推移/篩/V_Subから LeQ と TelClosure/names_eq を返す。Reference/Failは正規化後等号。意味上Subtypeや構造的recordだけへ結論を替えない。型構成子の変数の像に篩（や ctor でも tvar でもない像）が来たとき `rawApply` が型引数を捨てる点（L00a.06b の軽5、L00a.08 の `rawApply_refined`）を、kind の検査（L00b.02a）と合わせてここで扱う（取りまとめが RV-L00a.08 の軽4に従って追記） | .05、L00a置換 |
 | L00b.13・3〜6 | 値の葉。Typing/Canonical/ModelHttp/TargetTable | 整数/List/data欄/保持要求からfactsを取り出す。groundVal/reqTarget一致/valContent区分、Top保持と共変を明記し、要求なし/端点不一致は型付かず資源opaqueは残る | .11 |
 | L00b.14a・2〜4 | 依存β。SubstTyping/StateTyEの並置補題 | 評価済みの一引数を依存結果/効果へ代入し、開始の同じ契約と固定Ebを保つ。全βへの残りを一覧化 | .13 |
 | L00b.14b・2〜5 | 捕捉したΦ。閉包環境/ContTy | 閉じた事実を評価規則から導き、局所名を除いた後も捕捉環境からfactsを構成。環境を捨てる反例を保つ | .14a |
