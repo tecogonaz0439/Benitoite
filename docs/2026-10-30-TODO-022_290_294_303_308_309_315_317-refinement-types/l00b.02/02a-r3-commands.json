@@ -1,0 +1,62 @@
+[
+  {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T03:36:56.157776+09:00",
+    "exit": 0,
+    "elapsed_seconds": 6.194238375,
+    "log": "02a-r3-build.log",
+    "log_sha256": "00e3858a791bfdec0998bea99558a72713247f59c0a6b60c5a3401722ae8dd09"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-reference-map-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T03:37:02.352632+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.3511678750000007,
+    "log": "02a-r3-reference-map.log",
+    "log_sha256": "d2b591df04bc99483354670c6c4f3e78f25a69d94dac0f01f1e57665c452eca5"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-term-syntax-draft.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T03:37:02.704375+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.3629191250000003,
+    "log": "02a-r3-term-draft.log",
+    "log_sha256": "fadd2bebba9bbd15e3ecd8f41858ac489c0c2f384c4a0fa939843d5e564095ad"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r3-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T03:37:04.067944+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.840085708000001,
+    "log": "02a-r3-axioms.log",
+    "log_sha256": "e7a8adf28db42972e53f72a1042447005ce415572656283c0cb69db9b4666970"
+  }
+]

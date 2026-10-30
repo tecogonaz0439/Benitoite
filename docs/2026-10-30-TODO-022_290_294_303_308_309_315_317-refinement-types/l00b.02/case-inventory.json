@@ -1,0 +1,225 @@
+[
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "line": 249,
+    "name": "HasTypeVQ.shift_values",
+    "root_cases": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_List",
+      "V_Sub",
+      "V_Refine"
+    ],
+    "case_count": 6,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "line": 290,
+    "name": "HasTypeVsQ.shift_values",
+    "root_cases": [
+      "nil",
+      "cons"
+    ],
+    "case_count": 2,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "line": 298,
+    "name": "HasTypeEachQ.shift_values",
+    "root_cases": [
+      "nil",
+      "cons"
+    ],
+    "case_count": 2,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "line": 306,
+    "name": "HasTypeCQ.shift_values",
+    "root_cases": [
+      "C_Return",
+      "C_App",
+      "C_Sub",
+      "C_Eff",
+      "C_Let"
+    ],
+    "case_count": 5,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 75,
+    "name": "HasTypeVQ.hide_context",
+    "root_cases": [],
+    "case_count": 0,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 198,
+    "name": "subst_value",
+    "root_cases": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_List",
+      "V_Sub",
+      "V_Refine"
+    ],
+    "case_count": 6,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 227,
+    "name": "subst_values",
+    "root_cases": [
+      "nil",
+      "cons"
+    ],
+    "case_count": 2,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 235,
+    "name": "subst_each",
+    "root_cases": [
+      "nil",
+      "cons"
+    ],
+    "case_count": 2,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 243,
+    "name": "subst_comp",
+    "root_cases": [
+      "C_Return",
+      "C_App",
+      "C_Sub",
+      "C_Eff",
+      "C_Let"
+    ],
+    "case_count": 5,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 267,
+    "name": "HasTypeVQ.subst",
+    "root_cases": [],
+    "case_count": 0,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 291,
+    "name": "HasTypeCQ.subst",
+    "root_cases": [],
+    "case_count": 0,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 361,
+    "name": "HasTypeCQ.subst_under_none",
+    "root_cases": [],
+    "case_count": 0,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 114,
+    "name": "context_value",
+    "root_cases": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_List",
+      "V_Sub",
+      "V_Refine"
+    ],
+    "case_count": 6,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 137,
+    "name": "context_values",
+    "root_cases": [
+      "nil",
+      "cons"
+    ],
+    "case_count": 2,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 145,
+    "name": "context_each",
+    "root_cases": [
+      "nil",
+      "cons"
+    ],
+    "case_count": 2,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 153,
+    "name": "context_comp",
+    "root_cases": [
+      "C_Return",
+      "C_App",
+      "C_Sub",
+      "C_Eff",
+      "C_Let"
+    ],
+    "case_count": 5,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+    "line": 23,
+    "name": "HasTypeVQ.integer_observation",
+    "root_cases": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_List",
+      "V_Sub",
+      "V_Refine"
+    ],
+    "case_count": 6,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+    "line": 33,
+    "name": "HasTypeVQ.toTerm_of_integerCarrier",
+    "root_cases": [],
+    "case_count": 0,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+    "line": 43,
+    "name": "HasTypeVQ.assume",
+    "root_cases": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_List",
+      "V_Sub",
+      "V_Refine"
+    ],
+    "case_count": 6,
+    "note": "根の型付け構成子を展開して数える。系の呼出しだけなら0。"
+  }
+]

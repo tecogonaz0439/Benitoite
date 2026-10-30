@@ -1,0 +1,371 @@
+{
+  "method": "Lean inductive metadata; direct root alternatives of the named mutual proofs. Derived wrappers have zero direct cases. Structural unary roots and binary comparisons are counted separately.",
+  "planned": {
+    "syntax": {
+      "Sort": 14,
+      "Term": 20,
+      "Pred": 14,
+      "Ty": 21,
+      "Tel": 2,
+      "Atom": 2,
+      "RangeExpr": 3,
+      "RangeIx": 2,
+      "Const": 16
+    },
+    "proof_families": {
+      "shift": 15,
+      "subst": 15,
+      "narrow": 15,
+      "facts_planned": 12
+    },
+    "subtype_bind_each": {
+      "Ty.LeQ": 12,
+      "TelLe": 2,
+      "TelClosure": 2
+    },
+    "structural_family": {
+      "Ty": 21,
+      "Tel": 2,
+      "List Ty": 2,
+      "Eff": 1
+    },
+    "old_embedding_family": {
+      "Ty": 15,
+      "List Ty": 2,
+      "Eff": 1,
+      "Const": 16
+    }
+  },
+  "actual_inductive_counts": {
+    "Benitoite.Release.Refinement.Sort": 14,
+    "Benitoite.Release.Refinement.Term": 20,
+    "Benitoite.Release.Refinement.Pred": 14,
+    "Benitoite.Release.Refinement.Ty": 21,
+    "Benitoite.Release.Refinement.Tel": 2,
+    "Benitoite.Release.Refinement.Atom": 2,
+    "Benitoite.Release.Refinement.RangeExpr": 3,
+    "Benitoite.Release.Refinement.RangeIx": 2,
+    "Benitoite.Release.Refinement.Const": 16,
+    "Benitoite.Release.Refinement.PathBase": 5,
+    "Benitoite.Release.Refinement.PathEnv": 1,
+    "Benitoite.Release.Refinement.TargetInput": 2,
+    "Benitoite.Release.Refinement.AtFailure": 7,
+    "Benitoite.Release.Refinement.AtError": 1,
+    "Benitoite.Release.Refinement.ExternalId": 1,
+    "Benitoite.Release.Refinement.ComponentId": 1,
+    "Benitoite.Release.Refinement.ExternalFunctionId": 1,
+    "Benitoite.Release.Refinement.FieldRef": 1,
+    "Benitoite.Release.Refinement.Measure": 7,
+    "Benitoite.Release.Refinement.Comparison": 6,
+    "Benitoite.Release.Refinement.FloatClass": 6,
+    "Benitoite.Release.Refinement.FloatWidth": 2,
+    "Benitoite.Release.Refinement.TyKind": 2,
+    "Benitoite.Release.Refinement.ProperApply": 7,
+    "Benitoite.Release.Refinement.Term.HasData": 3,
+    "Benitoite.Release.Refinement.Ty.LeQ": 12,
+    "Benitoite.Release.Refinement.TelLe": 2,
+    "Benitoite.Release.Refinement.TelClosure": 2,
+    "Benitoite.Release.Refinement.HasTypeVQ": 6,
+    "Benitoite.Release.Refinement.HasTypeCQ": 5,
+    "Benitoite.Release.Refinement.HasTypeVsQ": 2,
+    "Benitoite.Release.Refinement.HasTypeEachQ": 2,
+    "Benitoite.Release.Refinement.Val": 17,
+    "Benitoite.Release.Refinement.Comp": 13,
+    "Benitoite.Release.Refinement.Arm": 1,
+    "Benitoite.Release.Refinement.Clause": 2
+  },
+  "direct_proofs": [
+    {
+      "group": "shift",
+      "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+      "name": "HasTypeVQ.shift_values",
+      "line": 267,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "shift",
+      "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+      "name": "HasTypeVsQ.shift_values",
+      "line": 309,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "shift",
+      "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+      "name": "HasTypeEachQ.shift_values",
+      "line": 317,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "shift",
+      "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+      "name": "HasTypeCQ.shift_values",
+      "line": 325,
+      "constructors": [
+        "C_Return",
+        "C_App",
+        "C_Sub",
+        "C_Eff",
+        "C_Let"
+      ],
+      "count": 5
+    },
+    {
+      "group": "subst",
+      "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+      "name": "subst_value",
+      "line": 230,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "subst",
+      "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+      "name": "subst_values",
+      "line": 265,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "subst",
+      "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+      "name": "subst_each",
+      "line": 273,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "subst",
+      "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+      "name": "subst_comp",
+      "line": 281,
+      "constructors": [
+        "C_Return",
+        "C_App",
+        "C_Sub",
+        "C_Eff",
+        "C_Let"
+      ],
+      "count": 5
+    },
+    {
+      "group": "narrow",
+      "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+      "name": "context_value",
+      "line": 133,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "narrow",
+      "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+      "name": "context_values",
+      "line": 157,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "narrow",
+      "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+      "name": "context_each",
+      "line": 165,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "narrow",
+      "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+      "name": "context_comp",
+      "line": 173,
+      "constructors": [
+        "C_Return",
+        "C_App",
+        "C_Sub",
+        "C_Eff",
+        "C_Let"
+      ],
+      "count": 5
+    },
+    {
+      "group": "facts_planned",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeVQ.observation",
+      "line": 103,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "facts_planned",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeVQ.assume",
+      "line": 130,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "facts_auxiliary",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeVQ.assume_optional",
+      "line": 158,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "facts_auxiliary",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeVQ.observation_references",
+      "line": 76,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "facts_auxiliary",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeEachQ.observation_references",
+      "line": 86,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    },
+    {
+      "group": "facts_auxiliary",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeVQ.data_observation",
+      "line": 41,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "facts_auxiliary",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeVQ.observation_declared",
+      "line": 52,
+      "constructors": [
+        "V_Var",
+        "V_Const",
+        "V_Lam",
+        "V_List",
+        "V_Sub",
+        "V_Refine"
+      ],
+      "count": 6
+    },
+    {
+      "group": "facts_auxiliary",
+      "file": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "name": "HasTypeEachQ.observation_declared",
+      "line": 62,
+      "constructors": [
+        "nil",
+        "cons"
+      ],
+      "count": 2
+    }
+  ],
+  "direct_proof_summary": {
+    "shift": 15,
+    "subst": 15,
+    "narrow": 15,
+    "facts_planned": 12,
+    "facts_auxiliary": 28
+  },
+  "planned_direct_total": 57,
+  "actual_with_auxiliary_total": 85,
+  "subtype_bind_and_rawBind": {
+    "each": 16,
+    "both": 32
+  },
+  "structural_unary_roots_per_family": 26,
+  "binary_tree_matrix": {
+    "Ty_21x21": 441,
+    "Tel_2x2": 4,
+    "old_Ty_15x15": 225
+  },
+  "derived_wrappers": [
+    "HasTypeVQ.integer_observation",
+    "HasTypeVQ.toTerm_of_integerCarrier",
+    "HasTypeVQ.hide_context",
+    "public subst/narrow/subst_under_none",
+    "Transport.integer_values",
+    "HasTypeVQ.refine_integer"
+  ]
+}

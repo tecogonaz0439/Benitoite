@@ -2,10 +2,67 @@ import Benitoite.Release.Refinement.Context
 
 namespace Benitoite.Release.Refinement
 
-abbrev Const := Benitoite.Release.Const
-abbrev BuilderOp := Benitoite.Release.BuilderOp
+inductive Const where
+  | integer (n : Integer64Value)
+  | float64 (bits : UInt64)
+  | string (s : String)
+  | character (c : Char)
+  | boolean (b : Bool)
+  | unit
+  | byte (n : Nat)
+  | decimal (n : Int) (scale : Nat)
+  | opaque (o : OpaqueName) (id : Nat)
+  /-- 幅と符号は構成子で区別する。値域の検査は型付けの条件にしない（設計書 07-04「01-12 との対応」）。 -/
+  | integer8 (n : Int)
+  | integer16 (n : Int)
+  | integer32 (n : Int)
+  | unsignedInteger16 (n : Int)
+  | unsignedInteger32 (n : Int)
+  | unsignedInteger64 (n : Int)
+  /-- binary32 の表現を保ち、旧 Float の値と区別する。丸めの計算は形式化しない。 -/
+  | float32 (bits : UInt32)
 
-def Const.type (c : Const) : Ty := embedTy (Benitoite.Release.Const.type c)
+def Const.type : Const → Ty
+  | .integer _ => .base .integer
+  | .float64 _ => .base .float
+  | .string _ => .base .string
+  | .character _ => .base .character
+  | .boolean _ => .base .boolean
+  | .unit => .base .unit
+  | .byte _ => .base .byte
+  | .decimal _ _ => .base .decimal
+  | .opaque o _ => .opaque o (.fixed .top)
+  | .integer8 _ => .base .integer8
+  | .integer16 _ => .base .integer16
+  | .integer32 _ => .base .integer32
+  | .unsignedInteger16 _ => .base .unsignedInteger16
+  | .unsignedInteger32 _ => .base .unsignedInteger32
+  | .unsignedInteger64 _ => .base .unsignedInteger64
+  | .float32 _ => .base .float32
+
+def embedConst : Benitoite.Release.Const → Const
+  | .integer n => .integer n
+  | .float x => .float64 x.toBits
+  | .string s => .string s
+  | .character c => .character c
+  | .boolean b => .boolean b
+  | .unit  => .unit 
+  | .byte n => .byte n
+  | .decimal n s => .decimal n s
+  | .opaque o i => .opaque o i
+  | .integer8 n => .integer8 n
+  | .integer16 n => .integer16 n
+  | .integer32 n => .integer32 n
+  | .unsignedInteger16 n => .unsignedInteger16 n
+  | .unsignedInteger32 n => .unsignedInteger32 n
+  | .unsignedInteger64 n => .unsignedInteger64 n
+  | .float32 b => .float32 b
+
+theorem Const.type_embed (c : Benitoite.Release.Const) :
+    (embedConst c).type = embedTy c.type := by
+  cases c <;> rfl
+
+abbrev BuilderOp := Benitoite.Release.BuilderOp
 
 inductive BuilderKind where
   | string | list (element : Ty) | bytes
@@ -17,7 +74,7 @@ mutual
     | const (c : Const)
     | fnRef (f : FunName) (tys : List Ty) (effs : List Eff)
     /-- 組み込みの関数 `b[T̄; Ē; R̄]`。`rs` は具体化した範囲の列。 -/
-    | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List Scope.Domain.Range)
+    | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List RangeExpr)
     | lam (names : List String) (params : List Ty) (body : Comp)
     | con (c : ConName) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
@@ -78,7 +135,7 @@ mutual
 end
 
 structure Def where
-  tparams : List TParam
+  tparams : List TParamDecl
   neffs : Nat
   names : List String
   params : List Ty
@@ -118,7 +175,7 @@ private def OpDecl.valueNames (d : OpDecl) : List String := d.names.drop d.dictP
 番号 `0..g-1`（g は γ̄ の個数）、型クラスの引数 P が番号 g である。メソッドが自分の型クラスの制約を持つときは、
 Ā がその制約ごとの辞書の型を値の引数の前に含む。 -/
 structure MethSig where
-  tparams : List TParam
+  tparams : List TParamDecl
   neffs : Nat
   names : List String
   params : List Ty
@@ -127,8 +184,23 @@ structure MethSig where
 
 /-- 型クラスの宣言。上位の型クラスの並びと、メソッドの型。 -/
 structure ClassDecl where
+  argumentKind : TyKind := .value
   supers : List ClassName
   methods : MethName → Option MethSig
+
+/-- 旧のメソッド宣言の型・行と制約を保ち、追加のkindはvalueへ写す。 -/
+def embedMethSig (d : Benitoite.Release.MethSig) : MethSig :=
+  ⟨d.tparams.map embedTParam, d.neffs, d.names, embedTys d.params, embedTy d.ret, embedEff d.eff⟩
+
+def embedClassDecl (d : Benitoite.Release.ClassDecl) : ClassDecl :=
+  { argumentKind := .value, supers := d.supers, methods := fun m => (d.methods m).map embedMethSig }
+
+@[simp] theorem embedMethSig_constraints (d : Benitoite.Release.MethSig) :
+    (embedMethSig d).tparams.map TParamDecl.constraints = d.tparams := by
+  simp [embedMethSig, List.map_map, Function.comp_def]
+
+@[simp] theorem embedClassDecl_argumentKind (d : Benitoite.Release.ClassDecl) :
+    (embedClassDecl d).argumentKind = .value := rfl
 
 /-- 実装の定義 `impl I[β̄](d̄ : Dict[Cl', β̄']) : Dict[Cl, τ] = { S1 = U1, …, Sl = Ul; m1 = D1, …, mk = Dk }`。
 型の中では、実装の型パラメータ β̄ が番号 `0..b-1` である。`dictParams` は辞書の引数 d̄ の型 `Dict[Cl', β']` を、
@@ -166,7 +238,7 @@ inductive Outcome where
   | exit (n : Int)
 
 structure PrimSig where
-  tparams : List TParam
+  tparams : List TParamDecl
   neffs : Nat
   names : List String
   params : List Ty
@@ -190,7 +262,7 @@ structure PrimSig where
 structure Builtins where
   sig : PrimName → Option PrimSig
   /-- IO を行わない組み込みの関数の値 δ(b[T̄; Ē], W̄)（01-12「実行の規則」）。 -/
-  delta : PrimName → List Ty → List Eff → List Scope.Domain.Range → List Val → Option Outcome
+  delta : PrimName → List Ty → List Eff → List RangeExpr → List Val → Option Outcome
   /-- IO を行う組み込みの関数の応答と、その応答で作用した対象の観測（有限列）として起こりうるもの
   （設計書 01-12「実行の規則」。観測は応答の関係に含める）。 -/
   ioResponse : PrimName → List Ty → List Eff → List Val → Outcome → List Scope.Domain.Target → Prop
@@ -215,7 +287,7 @@ structure Builtins where
   /-- 組み込みの関数ごとの範囲の具体化の制約（明示拡大の被覆など。型引数の `admits` に当たる）。全て Top の列は
   この制約によらず許す（`Builtins.RangeAdmissible`）。表のデータであり、正しさは信頼の対象である。既定は何も
   許さない（Top の列だけを許す）。 -/
-  admitsR : PrimName → List Scope.Domain.Range → Prop := fun _ _ => False
+  admitsR : PrimName → List RangeExpr → Prop := fun _ _ => False
   /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
   要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
   valContent : OpaqueName → Option Ty := fun _ => none
@@ -247,14 +319,36 @@ def ConstOK (B : Builtins) : Const → Prop
   | .opaque o _ => B.valKind o = none ∧ B.valContent o = none
   | _ => True
 
-/-- 算術で観測できる値だけを整数項へ写す。 -/
-def Val.toTerm? : Val → Option Term
-  | .var i => some (.var i)
-  | .const (.integer n) => some (.integer n.toInt)
-  | .const (.integer8 n) | .const (.integer16 n) | .const (.integer32 n)
-  | .const (.unsignedInteger16 n) | .const (.unsignedInteger32 n)
-  | .const (.unsignedInteger64 n) => some (.integer n)
-  | .const (.byte n) => some (.integer (Int.ofNat n))
-  | _ => none
+mutual
+  /-- 観測できる部分だけを有限のsnapshotに写す。スロットの欠落を保つ。 -/
+  def Val.toTerm? : Val → Option Term
+    | .var i => some (.var i)
+    | .const (.integer n) => some (.integer n.toInt)
+    | .const (.integer8 n) | .const (.integer16 n) | .const (.integer32 n)
+    | .const (.unsignedInteger16 n) | .const (.unsignedInteger32 n)
+    | .const (.unsignedInteger64 n) => some (.integer n)
+    | .const (.byte n) => some (.integer (Int.ofNat n))
+    | .const (.float64 bits) => some (.float64 bits)
+    | .const (.float32 bits) => some (.float32 bits)
+    | .const (.character c) => some (.character c)
+    | .const (.string s) => some (.string s)
+    | .const (.boolean b) => some (.boolean b)
+    | .const .unit => some .unitValue
+    | .const (.decimal c scale) => some (.decimal c scale)
+    | .con c _ vs => some (.dataValue c (Val.toTermSlots vs))
+    | .list vs => some (.listValue (Val.toTermSlots vs))
+    | .mapV ks vs => some (.mapValue (Val.toTermSlots ks) (Val.toTermSlots vs))
+    | .setV vs => some (.setValue (Val.toTermSlots vs))
+    | .bytesV bs => some (.bytesValue bs)
+    | .checked t | .checkedRequest t _ => some (.targetValue none t)
+    | _ => none
+  def Val.toTermSlots : List Val → List (Option Term)
+    | [] => []
+    | v :: vs => v.toTerm? :: Val.toTermSlots vs
+end
+
+@[simp] theorem Val.toTermSlots_eq_map (vs : List Val) :
+    Val.toTermSlots vs = vs.map Val.toTerm? := by
+  induction vs <;> simp_all [Val.toTermSlots]
 
 end Benitoite.Release.Refinement

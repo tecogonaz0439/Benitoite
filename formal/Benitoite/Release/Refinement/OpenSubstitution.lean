@@ -11,8 +11,8 @@ def Γ : Ctx := [some (.refined (.base .integer) (.eq (.var 0) (.integer 7))), n
 def Δ : Ctx := [some (.refined (.base .integer)
   (.and (.eq (.add (.var 3) (.integer 1)) (.integer 7)) .truth)), none, some (.base .integer)]
 def path : Pred := .eq (.var 0) (.integer 7)
-def σ (i : Nat) : Term :=
-  if i = 0 then .add (.var 2) (.integer 1) else if i = 2 then .integer 99 else .var i
+def σ (i : Nat) : Option Term :=
+  some (if i = 0 then .add (.var 2) (.integer 1) else if i = 2 then .integer 99 else .var i)
 
 /-- 移送先の条件も、文脈の事実から論理規則で導く。 -/
 def Ψ : List Pred := [.or (predBind σ path) .falsity]
@@ -56,18 +56,26 @@ theorem target_conditions_from_facts : ∀ p ∈ Ψ, Entails Δ.facts p := by
 
 theorem transport : Transport θ Γ [path] Δ Ψ := by
   constructor
-  · intro i a hi ha
+  · intro i a sort hi ha
     cases i with
     | zero =>
       simp only [Γ, List.getElem?_cons_zero, Option.some.injEq] at hi
       cases hi
-      exact ⟨⟨.base .integer, rfl, trivial⟩, trivial⟩
-    | succ i =>
-      cases i with
-      | zero => simp [Γ] at hi
-      | succ i => simp [Γ] at hi
+      have hsort : sort = .integer := (Option.some.inj ha).symm
+      subst sort
+      refine ⟨.add (.var 2) (.integer 1), rfl, ?_⟩
+      simp [Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, Term.HasSort, Term.References, Ctx.Readable, Term.VarsIn, Term.Shape, Δ, Ty.HasSort, Ty.sort?]
+    | succ i => cases i <;> simp [Γ] at hi
+  · intro i a hi ho t ht
+    cases i with
+    | zero =>
+      cases ht
+      simp [Term.References, Ctx.Readable, Term.VarsIn, Term.References, Ctx.Readable, Term.VarsIn, Δ]
+    | succ i => cases i <;> simp [Γ] at hi
+  · intro i
+    by_cases hi : i = 0 <;> simp [hi, θ, dependentType, Ty.rawSubstV, Ordinary]
   · intro p hp
-    have hp : p = path := by simpa [Γ, Ctx.facts, Ty.assume, Pred.open, predBind, termBind, path] using hp
+    have hp : p = path := by simpa [termBind?, Γ, Ctx.facts, Ty.assume, Pred.open, predBind, termBind, path] using hp
     subst p
     exact target_path_from_facts.weaken (fun _ h => List.mem_append_left Ψ h)
 
@@ -96,7 +104,7 @@ theorem all_open_covers :
 /-- Γ.facts の path を self の下へ移し、外側の値を観測する篩を導入する。 -/
 theorem source_introduce (Φ : List Pred) : Ty.LeQ Γ Φ (.tvar 0) (.refined (.tvar 0) path.lift) := by
   apply Ty.LeQ.introduce
-  · simp [path, Pred.lift, predBind, termBind, Pred.Sorted, termSorted, Γ, Ty.IntegerCarrier]
+  · simp [termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, path, Pred.lift, predBind, termBind, Pred.Sorted, Γ]
   · exact .hyp (List.mem_append_right _ (List.mem_map.mpr
       ⟨path, List.mem_append_left _ (by rw [context_facts.1]; exact List.mem_cons_self), rfl⟩))
 
@@ -133,8 +141,8 @@ theorem open_images :
 
 /-- 二つの整数項は具体的な整数の割当で等しくなる。閉じた評価の論理規則は仮定しない。 -/
 theorem path_witness :
-    predBind (fun _ => .integer 7) path = .eq (.integer 7) (.integer 7) ∧
-    predBind (fun i => .integer (if i = 2 then 6 else 7)) (predBind σ path) =
+    predBind (fun _ => some (.integer 7)) path = .eq (.integer 7) (.integer 7) ∧
+    predBind (fun i => some (.integer (if i = 2 then 6 else 7))) (predBind σ path) =
       .eq (.add (.integer 6) (.integer 1)) (.integer 7) ∧ (6 : Int)+1 = 7 := by
   exact ⟨rfl, rfl, rfl⟩
 
@@ -142,8 +150,8 @@ theorem path_witness :
 theorem images_wf_sorted :
     (dependentType.rawSubstV σ).WF 2 2 3 ∧ (dependentType.rawSubstV σ).Sorted Δ ∧
     (dependentFail.rawSubstV σ).WF 2 2 3 ∧ (dependentFail.rawSubstV σ).Sorted Δ := by
-  simp [dependentType, dependentFail, Ty.rawSubstV, σ, Ty.WF, Ty.Sorted, Pred.WF,
-    Pred.Sorted, predBind, termWF, termSorted, upValues, termBind, Δ, Ty.IntegerCarrier,
+  simp [termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Pred.VarsIn, Ty.HasSort, Ty.sort?, dependentType, dependentFail, Ty.rawSubstV, σ, Ty.WF, Ty.Sorted, Pred.WF,
+    Pred.Sorted, predBind, upValues, termBind, Δ,
     Ty.NotContCore, Ty.core]
 
 /-- 型・行の像を先に値置換した交換先と一致する。 -/

@@ -13,7 +13,7 @@ private theorem variable_origin_aux {P B store Q C Γ Φ v a}
   match h with
   | .V_Var hi ho => intro i he; cases he; exact ⟨_, hi, ho⟩
   | .V_Const _ | .V_Lam _ _ _ _ | .V_List _ _ _ => intro i he; cases he
-  | .V_Sub hv _ _ _ | .V_Refine hv _ _ _ _ _ => exact variable_origin_aux hv
+  | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
 
 theorem HasTypeVQ.variable_origin {P B store Q C Γ Φ i a}
     (h : HasTypeVQ P B store Q C Γ Φ (.var i) a) :

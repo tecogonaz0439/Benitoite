@@ -7,14 +7,7 @@ import Benitoite.Release.Refinement.TypedFacts
 -/
 namespace Benitoite.Release.Refinement
 
-def Ty.Ordinary (a : Ty) : Prop := ∀ b t e, a ≠ .cont b t e
-
-theorem Ty.ordinary_shiftV (a : Ty) (k c : Nat) :
-    (a.shiftV k c).Ordinary ↔ a.Ordinary := by
-  cases a <;> simp [Ty.Ordinary, Ty.shiftV]
-
-theorem Ty.IntegerCarrier.ordinary {a : Ty} (h : a.IntegerCarrier) : a.Ordinary := by
-  cases a <;> simp_all [Ty.IntegerCarrier, Ty.Ordinary]
+theorem Ty.IntegerCarrier.ordinary {a : Ty} (h : a.IntegerCarrier) : a.Ordinary := Ty.HasSort.ordinary h
 
 theorem Ty.assume_ordinary {a : Ty} {p : Pred} (hp : p ∈ a.assume) : a.Ordinary := by
   cases a <;> simp_all [Ty.assume, Ty.Ordinary]
@@ -28,12 +21,12 @@ theorem Ty.notContCore_of_wf_ordinary {nr nt nv a} (hw : Ty.WF nr nt nv a)
   case refined a p => exact hw.2.2
 
 theorem Ty.LeQ.notContCore {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : a.NotContCore ↔ b.NotContCore := by
-  induction h with
-  | refl => rfl
-  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
-  | fn_effect _ | list _ _ | lazy _ _ | map_value _ _ _ => simp [Ty.NotContCore, Ty.core]
-  | forget | introduce _ _ => rfl
-  | refine _ _ _ _ ih => exact ih
+  match h with
+  | .refl => rfl
+  | .trans h₁ h₂ => exact h₁.notContCore.trans h₂.notContCore
+  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => simp [Ty.NotContCore, Ty.core]
+  | .forget | .introduce _ _ => rfl
+  | .refine hv _ _ _ => exact hv.notContCore
 
 /-- 使える変数だけを移し、None と捕捉時に隠す継続は要求しない。 -/
 structure ShiftMap (k c : Nat) (Γ Δ : Ctx) : Prop where
@@ -47,11 +40,36 @@ theorem renameTy_shiftIndex (k c : Nat) : renameTy (shiftIndex k c) = Ty.shiftV 
 theorem renameEff_shiftIndex (k c : Nat) : renameEff (shiftIndex k c) = Eff.shiftV k c :=
   funext (fun e => (Eff.shiftV_eq_renameEff e k c).symm)
 
+theorem ShiftMap.declarationRenaming {k c Γ Δ} (h : ShiftMap k c Γ Δ) :
+    DeclarationRenaming Γ Δ (shiftIndex k c) := by
+  constructor
+  intro i a hi ho
+  simpa only [renameTy_shiftIndex] using h.lookup i a hi ho
+
+theorem ShiftMap.declared {P C k c Γ Δ a} (h : ShiftMap k c Γ Δ) (ha : Ty.Declared P C Γ a) :
+    Ty.Declared P C Δ (a.shiftV k c) := by
+  have hh := ha.rawSubstV h.declarationRenaming.images
+  simpa only [Ty.rawSubstV_eq_rawBind, renEnv_values, renameTy, renEnv, ← renameTy_shiftIndex] using hh
+
+theorem ShiftMap.predDeclared {P C k c Γ Δ a p} (h : ShiftMap k c Γ Δ)
+    (hp : Pred.Declared P C Γ (some a) p) : Pred.Declared P C Δ (some (a.shiftV k c)) (p.shiftV k (c+1)) := by
+  have hh := hp.bind h.declarationRenaming.images
+  simpa only [Ty.rawSubstV_eq_rawBind, renEnv_values, Option.map_some, renameTy, renEnv,
+    ← renameTy_shiftIndex, Pred.shiftV, ← upValues_shiftIndex] using hh
+
 theorem ShiftMap.values {k c Γ Δ} (h : ShiftMap k c Γ Δ) :
-    ∀ i a, Γ[i]? = some (some a) → a.IntegerCarrier →
-      termSorted Δ (.var (shiftIndex k c i)) := by
-  intro i a hi ha
-  exact ⟨a.shiftV k c, h.lookup i a hi ha.ordinary, (Ty.integerCarrier_shiftV _ _ _).mpr ha⟩
+    Term.ImagesSorted Γ Δ (renEnv (shiftIndex k c)).values := by
+  intro i a sort hi ha
+  have hg := h.lookup i a hi ha.ordinary
+  have hs := (Ty.hasSort_shiftV a k c sort).mpr ha
+  exact ⟨.var (shiftIndex k c i), rfl, ⟨a.shiftV k c, hg, hs.ordinary⟩,
+    a.shiftV k c, hg, hs⟩
+
+theorem ShiftMap.references {k c Γ Δ} (h : ShiftMap k c Γ Δ) :
+    Term.ImageReferences Γ Δ (renEnv (shiftIndex k c)).values := by
+  intro i a hi ho t ht
+  cases ht
+  exact ⟨a.shiftV k c, h.lookup i a hi ho, (Ty.ordinary_shiftV _ _ _).mpr ho⟩
 
 theorem ShiftMap.facts {k c Γ Δ} (h : ShiftMap k c Γ Δ) {p} (hp : p ∈ Γ.facts) :
     p.shiftV k c ∈ Δ.facts := by
@@ -60,12 +78,12 @@ theorem ShiftMap.facts {k c Γ Δ} (h : ShiftMap k c Γ Δ) {p} (hp : p ∈ Γ.f
     h.lookup i a hi (Ty.assume_ordinary hq), ?_, ?_⟩
   · rw [Ty.assume_shiftV]
     exact List.mem_map.mpr ⟨q, hq, rfl⟩
-  · simp only [Pred.shiftV, ← upValues_shiftIndex, predBind_open, termBind]
+  · simp only [Pred.shiftV, ← upValues_shiftIndex, predBind_open_renaming, termBind?, termBind, Option.getD_some]
 
 theorem ShiftMap.transport {k c Γ Δ Φ Ξ} (h : ShiftMap k c Γ Δ)
     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
     Transport (renEnv (shiftIndex k c)) Γ Φ Δ Ξ := by
-  refine ⟨h.values, ?_⟩
+  refine ⟨h.values, h.references, (by intro i; simp [renEnv]), ?_⟩
   intro p hp
   rcases List.mem_append.mp hp with hp | hp
   · exact .hyp (List.mem_append_left _ (h.facts hp))
@@ -143,7 +161,7 @@ theorem ShiftMap.outerNone (Γ : Ctx) : ShiftMap 1 0 Γ Γ.extendNone := by
 
 theorem Entails.under_none {Γ : Ctx} {Φ p} (h : Entails (Γ.facts ++ Φ) p) :
     Entails (Γ.extendNone.facts ++ Φ.map Pred.lift) p.lift := by
-  apply (h.bind (fun i => .var (i+1))).weaken
+  apply (h.bind (fun i => some (.var (i+1)))).weaken
   intro q hq
   obtain ⟨r, hr, rfl⟩ := List.mem_map.mp hq
   rcases List.mem_append.mp hr with hr | hr
@@ -157,8 +175,8 @@ theorem liftMany_eq (n : Nat) (Φ : List Pred) :
     change Φ = Φ.map (Pred.shiftV 0 0)
     have he : Pred.shiftV 0 0 = id := by
       funext p
-      change predBind (fun i => .var (shiftIndex 0 0 i)) p = p
-      have hi : (fun i => Term.var (shiftIndex 0 0 i)) = Term.var := by
+      change predBind (fun i => some (.var (shiftIndex 0 0 i))) p = p
+      have hi : (fun i => some (Term.var (shiftIndex 0 0 i))) = (fun i => some (.var i)) := by
         funext i; simp [shiftIndex]
       rw [hi]; exact predBind_id p
     rw [he, List.map_id]
@@ -181,13 +199,13 @@ theorem liftMany_shiftV (n k c : Nat) (Φ : List Pred) :
   simp only [Function.comp_apply, Pred.shiftV, predBind_comp]
   congr 1
   funext i
-  simp only [termBind, shiftIndex, Nat.not_lt_zero, ↓reduceIte]
+  simp only [Option.bind_some, termBind?, shiftIndex, Nat.not_lt_zero, ↓reduceIte]
   by_cases hi : i<c <;> simp [hi, show (i+n<c+n) ↔ i<c by omega]
   all_goals omega
 
 theorem Entails.under_params {Γ Φ p} (h : Entails (Γ.facts ++ Φ) p) (ps : List Ty) :
     Entails ((bindParams Γ ps).facts ++ liftMany ps.length Φ) (p.shiftV ps.length 0) := by
-  apply (h.bind (fun i => .var (shiftIndex ps.length 0 i))).weaken
+  apply (h.bind (fun i => some (.var (shiftIndex ps.length 0 i)))).weaken
   intro q hq
   obtain ⟨r, hr, rfl⟩ := List.mem_map.mp hq
   rcases List.mem_append.mp hr with hr | hr
@@ -238,7 +256,7 @@ theorem Transport.entails {θ Γ Φ Δ Ξ p} (ht : Transport θ Γ Φ Δ Ξ)
 theorem ShiftMap.sorted {k c Γ Δ a} (h : ShiftMap k c Γ Δ) (ha : Ty.Sorted Γ a) :
     (a.shiftV k c).Sorted Δ := by
   rw [Ty.shiftV_eq_renameTy, renameTy_eq_rawSubstV]
-  exact Ty.sorted_rawSubstV ha _ h.values
+  exact Ty.sorted_rawSubstV ha _ h.values h.references
 
 theorem ShiftMap.wf {k c Γ Δ nr nt a} (h : ShiftMap k c Γ Δ) (ha : Ty.WF nr nt Γ.length a) :
     (a.shiftV k c).WF nr nt Δ.length := by
@@ -255,7 +273,7 @@ mutual
     | .V_Var hi ho => exact .V_Var (hm.lookup _ _ hi ho) ((Ty.ordinary_shiftV _ _ _).mpr ho)
     | .V_Const (c := con) hc =>
       have he : (Const.type con).shiftV k c = Const.type con := by
-        rw [Ty.shiftV_eq_renameTy, renameTy_eq_rawSubstV, Const.type, Ty.rawSubstV_embed]
+        cases con <;> rfl
       rw [he]
       exact .V_Const hc
     | .V_Lam (ps := ps) hn hw hs hb =>
@@ -269,24 +287,25 @@ mutual
         simpa only [List.length_map, Ty.shiftV_comm, Eff.shiftV_comm, Option.map_some] using hb'
     | .V_List he hw hs =>
       exact .V_List (HasTypeEachQ.shift_values he hm hf) (hm.wf hw) (hm.sorted hs)
-    | .V_Sub hv hl hw hs =>
+    | .V_Sub hv hl hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
       rw [renameTy_shiftIndex] at hl'
-      exact .V_Sub (HasTypeVQ.shift_values hv hm hf) hl' (hm.wf hw) (hm.sorted hs)
-    | .V_Refine (a := a) (t := t) (p := p) hv hi ht hs hw he =>
+      exact .V_Sub (HasTypeVQ.shift_values hv hm hf) hl' (hm.wf hw) (hm.sorted hs) (hm.declared hd)
+    | .V_Refine (a := a) (t := t) (p := p) hv hi ht hs hw he hda hdp =>
       change HasTypeVQ P B store' Q C Δ Ξ _ (.refined (a.shiftV k c) (p.shiftV k (c+1)))
-      refine .V_Refine (t := termBind (fun i => .var (shiftIndex k c i)) t)
+      refine .V_Refine (t := termBind (fun i => some (.var (shiftIndex k c i))) t)
         (HasTypeVQ.shift_values hv hm hf)
-        ((Ty.integerCarrier_shiftV _ _ _).mpr hi) ?_ ?_ ?_ ?_
+        ((Ty.hasSort_shiftV _ _ _ _).mpr hi) ?_ ?_ ?_ ?_ (hm.declared hda) (hm.predDeclared hdp)
       · simp only [Val.toTerm_rename, ht, Option.map_some]
       · simpa only [Pred.shiftV, ← upValues_shiftIndex] using
-          Pred.sorted_bind hs (fun i => .var (shiftIndex k c i))
-            (fun hi => (Ty.integerCarrier_shiftV a k c).mpr hi) hm.values
+          Pred.sorted_bind hs (fun i => some (.var (shiftIndex k c i)))
+            (fun sort hi => (Ty.hasSort_shiftV a k c sort).mpr hi)
+            (fun hi => (Ty.ordinary_shiftV _ _ _).mpr hi) hm.values hm.references
       · simpa only [hm.length, Nat.add_assoc, Nat.add_right_comm Γ.length 1 k] using
           Pred.wf_shiftV hw k (c+1)
       · have he' := (hm.transport hf).entails he
-        simpa only [renEnv_values, predBind_open, termBind, Pred.shiftV, ← upValues_shiftIndex] using he'
+        simpa only [renEnv_values, predBind_open_renaming, termBind?, termBind, Pred.shiftV, ← upValues_shiftIndex] using he'
   theorem HasTypeVsQ.shift_values {P B store Q C Γ Φ vs as}
       (h : HasTypeVsQ P B store Q C Γ Φ vs as) {k c Δ Ξ store'}
       (hm : ShiftMap k c Γ Δ)
@@ -315,11 +334,11 @@ mutual
       have hv' := HasTypeVQ.shift_values (store' := store') hv hm hf
       simp only [Ty.shiftV, shiftVTys_eq_map] at hv'
       exact .C_App hv' (HasTypeVsQ.shift_values hs hm hf)
-    | .C_Sub ht hl hc hw hs =>
+    | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
       rw [renameTy_shiftIndex] at hl'
-      exact .C_Sub (HasTypeCQ.shift_values ht hm hf) hl' (hc.shiftV k c) (hm.wf hw) (hm.sorted hs)
+      exact .C_Sub (HasTypeCQ.shift_values ht hm hf) hl' (hc.shiftV k c) (hm.wf hw) (hm.sorted hs) (hm.declared hd)
     | .C_Eff ht hc => exact .C_Eff (HasTypeCQ.shift_values ht hm hf) (hc.shiftV k c)
     | .C_Let (a := x) ht hb =>
       simp only [Comp.rename, upRen_shiftIndex]

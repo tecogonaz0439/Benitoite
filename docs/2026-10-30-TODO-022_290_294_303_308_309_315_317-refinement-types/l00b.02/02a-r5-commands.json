@@ -1,0 +1,88 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:52:52.721557+09:00",
+    "exit": 0,
+    "elapsed_seconds": 8.841366583000001,
+    "log": "02a-r5-build.log",
+    "log_sha256": "f5315f20f7d568af9c4c1402877bb370b03c3356180e715d24a979b144d11b17",
+    "log_bytes": 25444
+  },
+  {
+    "name": "kind-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r5-kind-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:53:01.563197+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.37563695900000127,
+    "log": "02a-r5-kind-boundary.log",
+    "log_sha256": "1b09da9cea78456861a8874912ac4835a2006b502e04518ec63087a643f56e1a",
+    "log_bytes": 2671
+  },
+  {
+    "name": "previous-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r4-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:53:01.939452+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.6739073330000007,
+    "log": "02a-r5-previous-boundary.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "log_bytes": 0
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r5-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:53:02.613620+09:00",
+    "exit": 0,
+    "elapsed_seconds": 4.5393117499999995,
+    "log": "02a-r5-axioms.log",
+    "log_sha256": "5e8a74570ddc005d5a7405ccea91a2118cc0074126d4aa72a0808a73f27246dd",
+    "log_bytes": 643004
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T05:53:07.153963+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07959891700000021,
+    "log": "02a-r5-lean-version.log",
+    "log_sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+    "log_bytes": 106
+  }
+]

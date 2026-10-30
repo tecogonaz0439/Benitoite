@@ -30,23 +30,59 @@ private theorem SubstOk.images {P B store Q C Γ Φ Δ Ξ R σ}
   · exact h.2
   · exact False.elim (ho b t e he)
 
+private theorem TypedImages.values {P B store Q C Γ Δ Ξ σ}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) :
+    Term.ImagesSorted Γ Δ (valEnv σ).values := by
+  intro i a sort hi ha
+  exact (h i a hi ha.ordinary).observation (Ty.hasSort_bind ha (valEnv σ))
+
+private theorem TypedImages.references {P B store Q C Γ Δ Ξ σ}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) :
+    Term.ImageReferences Γ Δ (valEnv σ).values := by
+  intro i a hi ho t ht
+  exact (h i a hi ho).observation_references ht
+
+private theorem TypedImages.declaration {P B store Q C Γ Δ Ξ σ}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) : DeclarationImages P C Γ Δ (valEnv σ).values := by
+  constructor
+  · intro i a hi ho t ht
+    exact (h i a hi ho).observation_declared ht
+  · intro i a d ts hi hd
+    have hv := h i a hi (Ty.ordinary_of_dataCore hd)
+    have hs := Ty.hasSort_bind (Ty.hasSort_of_dataCore hd) (valEnv σ)
+    obtain ⟨t, ht, _⟩ := hv.observation hs
+    have hh : (substTyValues σ a).norm.core = .data d (bindDataArgs (valEnv σ).values ts) := by
+      simpa only [substTyValues, Ty.bind, valEnv, Ty.rawSubstV_eq_rawBind, Ty.norm_idem] using
+        Ty.dataCore_substV hd (valEnv σ).values
+    simpa only [termBind_var, valEnv, ht, Option.getD_some] using hv.data_observation hh ht
+
 private theorem TypedImages.transport {P B store Q C Γ Δ Ξ σ Φ}
     (h : TypedImages P B store Q C Γ Δ Ξ σ)
     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
     Transport (valEnv σ) Γ Φ Δ Ξ := by
-  constructor
-  · intro i a hi ha
-    have ht := h i a hi ha.ordinary
-    obtain ⟨t, he, hs⟩ := ht.integer_observation (ha.bind (valEnv σ))
-    simpa only [valEnv, he, Option.getD_some] using hs
-  · intro p hp
-    rcases List.mem_append.mp hp with hp | hp
-    · obtain ⟨i, a, q, hi, hq, rfl⟩ := Ctx.mem_facts.mp hp
-      have ht := h i a hi (Ty.assume_ordinary hq)
-      have he := ht.assume (predBind (upValues (valEnv σ).values) q)
-        (Ty.assume_bind a (valEnv σ) q hq)
-      simpa only [predBind_open, termBind, valEnv] using he
-    · exact hf p hp
+  refine ⟨h.values, h.references, (by intro i; simp [valEnv]), ?_⟩
+  intro p hp
+  rcases List.mem_append.mp hp with hp | hp
+  · obtain ⟨i, a, q, hi, hq, rfl⟩ := Ctx.mem_facts.mp hp
+    have ht := h i a hi (Ty.assume_ordinary hq)
+    have he := ht.assume_optional (predBind (upValues (valEnv σ).values) q)
+      (Ty.assume_bind a (valEnv σ) q hq)
+    change Entails _ (predBind (valEnv σ).values (q.openOptional (some (.var i))))
+    rw [predBind_open_optional]
+    exact he
+  · exact hf p hp
+
+theorem SubstOk.observations {P B store Q C Γ Φ Δ Ξ R σ}
+    (h : SubstOk P B store Q C Γ Φ Δ Ξ R σ) :
+    Term.ImagesSorted Γ Δ (valEnv σ).values := h.images.values
+
+theorem SubstOk.references {P B store Q C Γ Φ Δ Ξ R σ}
+    (h : SubstOk P B store Q C Γ Φ Δ Ξ R σ) :
+    Term.ImageReferences Γ Δ (valEnv σ).values := h.images.references
+
+theorem SubstOk.declaration {P B store Q C Γ Φ Δ Ξ R σ}
+    (h : SubstOk P B store Q C Γ Φ Δ Ξ R σ) :
+    DeclarationImages P C Γ Δ (valEnv σ).values := h.images.declaration
 
 /-- Γ の事実は型付き像から導き、Φ の像の導出とは別に渡す。 -/
 theorem SubstOk.transport {P B store Q C Γ Φ Δ Ξ R σ}
@@ -135,7 +171,7 @@ theorem predBind_upSubst_shift (p : Pred) (σ : Nat → Val) (k : Nat) :
   congr 1
   funext i
   have hi : ¬ i+k < k := by omega
-  simp [shiftIndex, termBind, upTerms, hi]
+  simp [shiftIndex, termBind?, map_rename_eq_bind, upTerms, hi]
 
 private theorem TypedImages.conditions_params {P B store Q C Γ Δ Ξ σ Φ}
     (_h : TypedImages P B store Q C Γ Δ Ξ σ)
@@ -149,24 +185,20 @@ private theorem TypedImages.conditions_params {P B store Q C Γ Δ Ξ σ Φ}
   rw [predBind_upSubst_shift]
   simpa only [List.length_map] using (hf q hq).under_params (ps.map (substTyValues σ))
 
-private theorem TypedImages.observation {P B store Q C Γ Δ Ξ σ} {v : Val} {t : Term}
+private theorem TypedImages.observation {P B store Q C Γ Δ Ξ σ} {v : Val} {t : Term} {sort : «Sort»}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (ht : v.toTerm? = some t)
-    (hs : termSorted Γ t) (ρ : Nat → LocalRef) :
+    (hs : t.HasSort Γ sort) (ρ : Nat → LocalRef) :
     (v.subst σ ρ).toTerm? = some (termBind (valEnv σ).values t) := by
-  cases v <;> try (simp [Val.toTerm?] at ht)
-  case var i =>
-    cases ht
-    obtain ⟨a, ha, hi⟩ := hs
-    obtain ⟨u, hu, _⟩ := (h i a ha hi.ordinary).integer_observation (hi.bind (valEnv σ))
-    simp only [Val.subst, termBind, valEnv, hu, Option.getD_some]
-  case const con => cases con <;> cases ht <;> rfl
+  rw [Val.toTerm_subst_optional, ht, Option.bind_some]
+  obtain ⟨u, hu, _⟩ := Term.hasSort_bind hs _ h.values h.references
+  simp only [hu, termBind, Option.getD_some]
 
-theorem SubstOk.observation {P B store Q C Γ Φ Δ Ξ R σ v a t}
+theorem SubstOk.observation {P B store Q C Γ Φ Δ Ξ R σ v a t sort}
     (h : SubstOk P B store Q C Γ Φ Δ Ξ R σ)
-    (hv : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.IntegerCarrier)
+    (hv : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.HasSort sort)
     (ht : v.toTerm? = some t) (ρ : Nat → LocalRef) :
     (v.subst σ ρ).toTerm? = some (termBind (valEnv σ).values t) := by
-  obtain ⟨u, hu, hs⟩ := hv.integer_observation hi
+  obtain ⟨u, hu, hs⟩ := hv.observation hi
   cases hu.symm.trans ht
   exact h.images.observation ht hs ρ
 
@@ -185,14 +217,14 @@ private theorem TypedImages.wf {P B store Q C Γ Δ Ξ σ a}
     (substTyValues σ a).WF 0 C.length Δ.length := by
   have ht := h.transport (Φ := []) (by simp)
   simpa only [substTyValues, valEnv_valuesOnly] using
-    Ty.wf_bind_values hw hs (valEnv σ).values ht.values
+    Ty.wf_bind_values hw hs.references (valEnv σ).values ht.imageWF
 
 private theorem TypedImages.sorted {P B store Q C Γ Δ Ξ σ a}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hs : Ty.Sorted Γ a) :
     (substTyValues σ a).Sorted Δ := by
   have ht := h.transport (Φ := []) (by simp)
   simpa only [substTyValues, valEnv_valuesOnly] using
-    Ty.sorted_bind_values hs (valEnv σ).values ht.values
+    Ty.sorted_bind_values hs (valEnv σ).values ht.values ht.references
 
 mutual
   private theorem subst_value {P B store Q C Γ Φ v a}
@@ -212,18 +244,24 @@ mutual
       simpa only [Option.map_some, Ty.bind_shiftV_values, Eff.bind_shiftV_values] using hb'
     | .V_List he hw hs =>
       exact .V_List (subst_each he ρ ht hf) (ht.wf hw hs) (ht.sorted hs)
-    | .V_Sub hv hl hw hs =>
+    | .V_Sub hv hl hw hs hd =>
       exact .V_Sub (subst_value hv ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
-        (ht.wf hw hs) (ht.sorted hs)
-    | .V_Refine (a := a) (t := t) (p := p) hv hi hterm hs hw he =>
-      obtain ⟨u, hu, hus⟩ := hv.integer_observation hi
+        (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
+    | .V_Refine (a := a) (t := t) (p := p) hv hi hterm hs hw he hda hdp =>
+      obtain ⟨u, hu, hus⟩ := hv.observation hi
       have hut : u = t := Option.some.inj (hu.symm.trans hterm)
       subst u
-      have hs' := Pred.sorted_bind hs (valEnv σ).values (fun h => h.bind (valEnv σ))
-        (ht.transport hf).values
-      refine .V_Refine (subst_value hv ρ ht hf) (hi.bind (valEnv σ))
+      have hs' := Pred.sorted_bind hs (valEnv σ).values (fun _ h => Ty.hasSort_bind h (valEnv σ))
+        (fun h => Ty.ordinary_bind h (valEnv σ) (ht.transport hf).typeImages)
+        (ht.transport hf).values (ht.transport hf).references
+      refine .V_Refine (subst_value hv ρ ht hf) (Ty.hasSort_bind hi (valEnv σ))
         (ht.observation hterm hus ρ) hs' (Pred.wf_of_sorted hs') ?_
-      simpa only [predBind_open] using (ht.transport hf).entails he
+        (hda.bind_values ht.declaration) (hdp.bind_values ht.declaration)
+      obtain ⟨u, hu, _⟩ := Term.hasSort_bind hus _ ht.values ht.references
+      have hsuccess : termBind? (valEnv σ).values t = some (termBind (valEnv σ).values t) := by
+        simp only [termBind, hu, Option.getD_some]
+      rw [← predBind_open_of_some _ p t _ hsuccess]
+      exact (ht.transport hf).entails he
   private theorem subst_values {P B store Q C Γ Φ vs as}
       (h : HasTypeVsQ P B store Q C Γ Φ vs as) {Δ Ξ σ} (ρ : Nat → LocalRef)
       (ht : TypedImages P B store Q C Γ Δ Ξ σ)
@@ -252,9 +290,9 @@ mutual
       have hv' := subst_value hv ρ ht hf
       rw [substTyValues, Ty.bind_fn] at hv'
       exact .C_App hv' (subst_values hs ρ ht hf)
-    | .C_Sub hm hl hc hw hs =>
+    | .C_Sub hm hl hc hw hs hd =>
       exact .C_Sub (subst_comp hm ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
-        (hc.bind (valEnv σ)) (ht.wf hw hs) (ht.sorted hs)
+        (hc.bind (valEnv σ)) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
     | .C_Eff hm hc => exact .C_Eff (subst_comp hm ρ ht hf) (hc.bind (valEnv σ))
     | .C_Let (a := x) hm hb =>
       refine .C_Let (subst_comp hm ρ ht hf) ?_

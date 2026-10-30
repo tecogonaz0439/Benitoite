@@ -1,0 +1,135 @@
+have this := fun t =>
+  {
+    values := fun i a hi ha =>
+      Nat.casesAuxOn (motive := fun a =>
+        i = a → termSorted [] ({ types := Ty.tvar, rows := [], ranges := [], values := fun x => t }.values i)) i
+        (fun h =>
+          Eq.ndrec (motive := fun i =>
+            [some (Ty.base Benitoite.Release.BaseTy.integer).list][i]? = some (some a) →
+              termSorted [] ({ types := Ty.tvar, rows := [], ranges := [], values := fun x => t }.values i))
+            (fun hi =>
+              Eq.casesOn (motive := fun a_1 t_1 =>
+                a = a_1 →
+                  Eq.mp
+                        (Eq.trans (Option.some.injEq (some (Ty.base Benitoite.Release.BaseTy.integer).list) (some a))
+                          (Option.some.injEq (Ty.base Benitoite.Release.BaseTy.integer).list a))
+                        hi ≍
+                      t_1 →
+                    termSorted [] ({ types := Ty.tvar, rows := [], ranges := [], values := fun x => t }.values 0))
+                (Eq.mp
+                  (Eq.trans (Option.some.injEq (some (Ty.base Benitoite.Release.BaseTy.integer).list) (some a))
+                    (Option.some.injEq (Ty.base Benitoite.Release.BaseTy.integer).list a))
+                  hi)
+                (fun h =>
+                  Eq.ndrec (motive := fun a =>
+                    a.IntegerCarrier →
+                      ∀ (hi : (Ty.base Benitoite.Release.BaseTy.integer).list = a),
+                        hi ≍ Eq.refl (Ty.base Benitoite.Release.BaseTy.integer).list →
+                          termSorted [] ({ types := Ty.tvar, rows := [], ranges := [], values := fun x => t }.values 0))
+                    (fun ha hi h => False.elim ha) (Eq.symm h) ha
+                    (Eq.mp
+                      (Eq.trans (Option.some.injEq (some (Ty.base Benitoite.Release.BaseTy.integer).list) (some a))
+                        (Option.some.injEq (Ty.base Benitoite.Release.BaseTy.integer).list a))
+                      hi))
+                (Eq.refl a)
+                (HEq.refl
+                  (Eq.mp
+                    (Eq.trans (Option.some.injEq (some (Ty.base Benitoite.Release.BaseTy.integer).list) (some a))
+                      (Option.some.injEq (Ty.base Benitoite.Release.BaseTy.integer).list a))
+                    hi)))
+            (Eq.symm h) hi)
+        (fun i_1 h =>
+          Eq.ndrec (motive := fun i =>
+            [some (Ty.base Benitoite.Release.BaseTy.integer).list][i]? = some (some a) →
+              termSorted [] ({ types := Ty.tvar, rows := [], ranges := [], values := fun x => t }.values i))
+            (fun hi =>
+              False.elim
+                (Eq.mp
+                  (Eq.trans
+                    (congrFun'
+                      (congrArg Eq
+                        (getElem?_neg [some (Ty.base Benitoite.Release.BaseTy.integer).list] (i_1 + 1)
+                          (of_eq_true
+                            (Eq.trans
+                              (congrArg Not
+                                (Eq.trans
+                                  (Eq.trans (congrArg (LT.lt (i_1 + 1)) (Nat.zero_add 1)) Nat.lt_one_iff._simp_1)
+                                  (Eq.trans Nat.add_eq_zero_iff._simp_1
+                                    (Eq.trans (congrArg (And (i_1 = 0)) (Nat.succ_ne_self._simp_1 0))
+                                      (and_false (i_1 = 0))))))
+                              not_false_eq_true))))
+                      (some (some a)))
+                    (eq_false' fun h => False.elim (noConfusion_of_Nat Option.ctorIdx h)))
+                  hi))
+            (Eq.symm h) hi)
+        (Eq.refl i),
+    facts := fun p hp =>
+      False.elim
+        (Eq.mp
+          (Eq.trans
+            (congrFun'
+              (congrArg Membership.mem
+                (Eq.trans
+                  (congrFun'
+                    (congrArg HAppend.hAppend
+                      (Eq.trans
+                        (Eq.trans
+                          (congrArg
+                            (List.flatMap fun x =>
+                              match x.fst with
+                              | none => []
+                              | some a => List.map (fun p => p.open (Term.var x.snd)) a.assume)
+                            (congrArg (List.cons (some (Ty.base Benitoite.Release.BaseTy.integer).list, 0))
+                              (congrArg (@List.zipIdx (Option Ty) []) (Nat.zero_add 1))))
+                          List.flatMap_cons)
+                        (Eq.trans (congr (congrArg HAppend.hAppend List.map_nil) List.flatMap_nil)
+                          (List.append_nil []))))
+                    [])
+                  (List.append_nil [])))
+              p)
+            List.not_mem_nil._simp_1)
+          hp) };
+this : ∀ (t : Term),
+  Transport { types := Ty.tvar, rows := [], ranges := [], values := fun x => t }
+    [some (Ty.base Benitoite.Release.BaseTy.integer).list] [] [] []
+Benitoite.Release.Refinement.Transport.values {θ : SubstEnv} {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ψ : List Pred}
+  (self : Transport θ Γ Φ Δ Ψ) (i : Nat) (a : Ty) : Γ[i]? = some (some a) → a.IntegerCarrier → termSorted Δ (θ.values i)
+Benitoite.Release.Refinement.Pred.sorted_bind {Γ Δ : Ctx} {a b : Ty} {p : Pred} (h : Pred.Sorted Γ (some a) p)
+  (σ : Nat → Term) (ha : a.IntegerCarrier → b.IntegerCarrier)
+  (hs : ∀ (i : Nat) (t : Ty), Γ[i]? = some (some t) → t.IntegerCarrier → termSorted Δ (σ i)) :
+  Pred.Sorted Δ (some b) (predBind (upValues σ) p)
+Benitoite.Release.Refinement.Ty.LeQ.bind {Γ : Ctx} {Φ : List Pred} {a b : Ty} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv)
+  {Δ : Ctx} {Ψ : List Pred} (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ Δ Ψ (Ty.bind θ a) (Ty.bind θ b)
+Benitoite.Release.Refinement.Program.mk (defs : Benitoite.Release.FunName → Option Def)
+  (cons : Benitoite.Release.ConName → Option ConDecl) (ops : Benitoite.Release.OpName → Option OpDecl)
+  (effects : Benitoite.Release.EffName → Option (List Benitoite.Release.OpName))
+  (classes : Benitoite.Release.ClassName → Option ClassDecl) (impls : Benitoite.Release.ImplName → Option ImplDecl) :
+  Program
+Benitoite.Release.Refinement.Builtins.mk (sig : Benitoite.Release.PrimName → Option PrimSig)
+  (delta :
+    Benitoite.Release.PrimName → List Ty → List Eff → List Benitoite.Scope.Domain.Range → List Val → Option Outcome)
+  (ioResponse :
+    Benitoite.Release.PrimName → List Ty → List Eff → List Val → Outcome → List Benitoite.Scope.Domain.Target → Prop)
+  (releaseResponse : Val → Option Benitoite.Release.ErrKind → Prop) (isResource : Benitoite.Release.OpaqueName → Bool)
+  (effects : Benitoite.Release.EffName → Option (List Benitoite.Release.PrimName))
+  (sat : List Benitoite.Release.TParam → Ty → Benitoite.Release.TParam → Prop)
+  (refGet refSet : Benitoite.Release.PrimName)
+  (effKind : Benitoite.Release.EffName → Option Benitoite.Scope.Domain.Kind)
+  (valKind : Benitoite.Release.OpaqueName → Option Benitoite.Scope.Domain.Kind)
+  (admitsR : Benitoite.Release.PrimName → List Benitoite.Scope.Domain.Range → Prop)
+  (valContent : Benitoite.Release.OpaqueName → Option Ty) : Builtins
+'Benitoite.Release.Refinement.Transport' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Pred.sorted_bind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.LeQ.bind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.LeQ.rawBind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.WF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Model.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.ModelTargets.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.ModelHttp.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.le_iff_leOld' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.wf_iff_old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Ty.varsIn_iff_old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Eff.covers_iff_sub_old' depends on axioms: [propext, Classical.choice, Quot.sound]

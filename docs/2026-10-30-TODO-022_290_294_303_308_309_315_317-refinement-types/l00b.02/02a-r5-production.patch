@@ -1,0 +1,332 @@
+--- a/formal/Benitoite/Release/Refinement/KindInference.lean
++++ b/formal/Benitoite/Release/Refinement/KindInference.lean
+@@ -1,75 +1,100 @@
+ import Benitoite.Release.Refinement.Kinds
+ 
+ /-!
+-# 宣言の注釈に出現する型パラメータの kind
++# 宣言した kind と注釈の出現の照合
+ 
+-宣言ごとに有限の出現を集める。使わないパラメータの既定は値の kind とし、
+-値と構成子の混用、異なる arity の混用、宣言の外の番号は失敗させる。
++型パラメータの宣言から kind の列を得る。辞書の引数では型クラスが
++宣言した kind を使い、注釈の出現と実際の適用の形を検査する。
+ -/
+ namespace Benitoite.Release.Refinement
+ 
+ mutual
+-  def Ty.kindUses : Ty → List (Nat × TyKind)
++  def Ty.kindUses (P : Program) : Ty → List (Nat × TyKind)
+     | .tvar i => [(i, .value)]
+-    | .tapp i as => (i, .constructor as.length) :: kindUsesTys as
+-    | .data _ as | .external _ as => kindUsesTys as
+-    | .list a | .reference a | .lazy a | .set a | .dict _ a | .refined a _ => a.kindUses
+-    | .fn _ ps r e => kindUsesTys ps ++ r.kindUses ++ kindUsesEff e
+-    | .dependentFn t => Tel.kindUses t
+-    | .cont a b e => a.kindUses ++ b.kindUses ++ kindUsesEff e
+-    | .map a b => a.kindUses ++ b.kindUses
++    | .tapp i as => (i, .constructor as.length) :: kindUsesTys P as
++    | .data _ as | .external _ as => kindUsesTys P as
++    | .list a | .reference a | .lazy a | .set a | .refined a _ => a.kindUses P
++    | .dict cl a => match P.classes cl with
++      | none => []
++      | some cd => match cd.argumentKind with
++        | .value => a.kindUses P
++        | .constructor n => match a with | .tvar i => [(i, .constructor n)] | _ => []
++    | .fn _ ps r e => kindUsesTys P ps ++ r.kindUses P ++ kindUsesEff P e
++    | .dependentFn t => Tel.kindUses P t
++    | .cont a b e => a.kindUses P ++ b.kindUses P ++ kindUsesEff P e
++    | .map a b => a.kindUses P ++ b.kindUses P
+     | _ => []
+-  def Tel.kindUses : Tel → List (Nat × TyKind)
+-    | .done r e => r.kindUses ++ kindUsesEff e
+-    | .param _ a t => a.kindUses ++ Tel.kindUses t
+-  def kindUsesTys : List Ty → List (Nat × TyKind)
++  def Tel.kindUses (P : Program) : Tel → List (Nat × TyKind)
++    | .done r e => r.kindUses P ++ kindUsesEff P e
++    | .param _ a t => a.kindUses P ++ Tel.kindUses P t
++  def kindUsesTys (P : Program) : List Ty → List (Nat × TyKind)
+     | [] => []
+-    | a :: as => a.kindUses ++ kindUsesTys as
+-  def kindUsesEff : Eff → List (Nat × TyKind)
+-    | .mk _ fs => kindUsesTys fs
++    | a :: as => a.kindUses P ++ kindUsesTys P as
++  def kindUsesEff (P : Program) : Eff → List (Nat × TyKind)
++    | .mk _ fs => kindUsesTys P fs
+ end
+ 
+-def kindCandidate (nt : Nat) (uses : List (Nat × TyKind)) : KindCtx :=
+-  (List.range nt).map fun i => ((uses.find? (fun p => p.1 == i)).map Prod.snd).getD .value
++theorem Ty.kindUses_dict_tvar {P cl cd i} (hc : P.classes cl = some cd) :
++    (Ty.dict cl (.tvar i)).kindUses P = [(i, cd.argumentKind)] := by
++  simp only [Ty.kindUses, hc]
++  cases cd.argumentKind <;> rfl
+ 
+-def inferKinds (nt : Nat) (uses : List (Nat × TyKind)) : Option KindCtx :=
+-  let K := kindCandidate nt uses
+-  if ∀ p ∈ uses, K[p.1]? = some p.2 then some K else none
+ 
+-def Def.kindUses (d : Def) : List (Nat × TyKind) :=
+-  kindUsesTys d.params ++ d.ret.kindUses ++ kindUsesEff d.eff
++def Def.declaredKinds (d : Def) : KindCtx := d.tparams.map TParamDecl.kind
+ 
+-def Def.KindWF (d : Def) (K : KindCtx) : Prop :=
+-  K.length = d.tparams.length ∧ ∀ p ∈ d.kindUses, K[p.1]? = some p.2
++def Def.kindUses (P : Program) (d : Def) : List (Nat × TyKind) :=
++  kindUsesTys P d.params ++ d.ret.kindUses P ++ kindUsesEff P d.eff
+ 
+-def Def.kinds (d : Def) : Option KindCtx := inferKinds d.tparams.length d.kindUses
++/-- 出現との一致に加えて、実際の注釈も検査する。未宣言のクラス、
++値を渡した構成子位置、ctorのarityの不一致を出現なしとして通さない。 -/
++def Def.KindWF (P : Program) (d : Def) (K : KindCtx) : Prop :=
++  K = d.declaredKinds ∧
++    (∀ p ∈ d.kindUses P, K[p.1]? = some p.2) ∧
++    kindsList P K d.params ∧ d.ret.HasKind P K .value ∧ kindsEff P K d.eff
+ 
+-theorem inferKinds_sound {nt uses K} (h : inferKinds nt uses = some K) :
+-    K.length = nt ∧ ∀ p ∈ uses, K[p.1]? = some p.2 := by
+-  dsimp only [inferKinds] at h
++noncomputable def Def.kinds (P : Program) (d : Def) : Option KindCtx := by
++  classical
++  exact if d.KindWF P d.declaredKinds then some d.declaredKinds else none
++
++theorem Def.kinds_sound {P d K} (h : Def.kinds P d = some K) : Def.KindWF P d K := by
++  unfold Def.kinds at h
+   split at h
+-  · rename_i hc
++  · rename_i hw
+     cases h
+-    exact ⟨by simp [kindCandidate], hc⟩
++    exact hw
+   · cases h
+ 
+-theorem Def.kinds_sound {d : Def} {K} (h : d.kinds = some K) : d.KindWF K := inferKinds_sound h
++theorem Def.kinds_complete {P d K} (h : Def.KindWF P d K) : Def.kinds P d = some K := by
++  classical
++  have he := h.1
++  subst K
++  simp only [Def.kinds, ite_eq_left h]
+ 
+-theorem inferKinds_none_of_conflict {nt uses i k l} (hk : (i,k) ∈ uses) (hl : (i,l) ∈ uses)
+-    (hne : k ≠ l) : inferKinds nt uses = none := by
+-  cases h : inferKinds nt uses with
++theorem Def.kinds_eq_some_iff {P d K} : Def.kinds P d = some K ↔ Def.KindWF P d K :=
++  ⟨Def.kinds_sound, Def.kinds_complete⟩
++
++theorem Def.kinds_declared {P d K} (h : Def.kinds P d = some K) : K = d.declaredKinds :=
++  (Def.kinds_sound h).1
++
++theorem Def.kinds_length {P d K} (h : Def.kinds P d = some K) : K.length = d.tparams.length := by
++  rw [Def.kinds_declared h]
++  exact List.length_map _
++
++theorem Def.kinds_none_of_conflict {P d i k} (hu : (i,k) ∈ d.kindUses P)
++    (hne : d.declaredKinds[i]? ≠ some k) : Def.kinds P d = none := by
++  cases h : Def.kinds P d with
+   | none => rfl
+   | some K =>
+-    have hs := (inferKinds_sound h).2
+-    exact False.elim (hne (Option.some.inj ((hs _ hk).symm.trans (hs _ hl))))
++    have hs := Def.kinds_sound h
++    exact False.elim (hne (hs.1 ▸ hs.2.1 _ hu))
+ 
+-theorem inferKinds_none_of_unbound {nt uses i k} (hk : (i,k) ∈ uses) (hi : nt ≤ i) :
+-    inferKinds nt uses = none := by
+-  cases h : inferKinds nt uses with
++theorem Def.kinds_none_of_bad_annotation {P d} (hbad :
++    ¬ (kindsList P d.declaredKinds d.params ∧ d.ret.HasKind P d.declaredKinds .value ∧ kindsEff P d.declaredKinds d.eff)) :
++    Def.kinds P d = none := by
++  cases h : Def.kinds P d with
+   | none => rfl
+   | some K =>
+-    have hs := inferKinds_sound h
+-    have hb := (List.getElem?_eq_some_iff.mp (hs.2 _ hk)).1
+-    omega
++    have hs := Def.kinds_sound h
++    exact False.elim (hbad (hs.1 ▸ hs.2.2))
+ 
+ end Benitoite.Release.Refinement
+--- a/formal/Benitoite/Release/Refinement/Kinds.lean
++++ b/formal/Benitoite/Release/Refinement/Kinds.lean
+@@ -7,13 +7,6 @@
+ 適格な適用の証明には使わない。
+ -/
+ namespace Benitoite.Release.Refinement
+-
+-inductive TyKind where
+-  | value
+-  | constructor (arity : Nat)
+-  deriving DecidableEq
+-
+-abbrev KindCtx := List TyKind
+ 
+ /-- 同じ名目型の宣言が arity について一致し、少なくとも一つ存在する。 -/
+ def Program.DataArity (P : Program) (d : DataName) (n : Nat) : Prop :=
+@@ -39,35 +32,59 @@
+   exact Program.DataArity.unique (Classical.choose_spec (show ∃ n, P.DataArity d n from ⟨n, h⟩)) h
+ 
+ mutual
+-  def Ty.ValueKind (P : Program) (K : KindCtx) : Ty → Prop
+-    | .base _ | .bytes | .opaque _ _ | .scoped _ _ _ | .pathBases | .scopePattern _ => True
+-    | .data d as => TyCon.arity P (.data d) = some as.length ∧ kindsList P K as
+-    | .external _ as => kindsList P K as
+-    | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.ValueKind P K a
+-    | .fn ns ps r e => NamesWF ns ps ∧ kindsList P K ps ∧ Ty.ValueKind P K r ∧ kindsEff P K e
+-    | .dependentFn t => kindsTel P K t
+-    | .tvar i => K[i]? = some .value
+-    | .cont b t e => Ty.ValueKind P K b ∧ Ty.ValueKind P K t ∧ kindsEff P K e
+-    | .map a b => Ty.ValueKind P K a ∧ Ty.ValueKind P K b
+-    | .tapp i as => K[i]? = some (.constructor as.length) ∧ kindsList P K as
+-    | .ctor _ => False
+-    | .refined a _ => Ty.ValueKind P K a ∧ a.NotContCore
++  def Ty.HasKind (P : Program) (K : KindCtx) : Ty → TyKind → Prop
++    | a, .constructor n => match a with
++      | .ctor c => TyCon.arity P c = some n
++      | .tvar i => K[i]? = some (.constructor n)
++      | _ => False
++    | .base _, .value | .bytes, .value | .opaque _ _, .value | .scoped _ _ _, .value
++    | .pathBases, .value | .scopePattern _, .value => True
++    | .data d as, .value => TyCon.arity P (.data d) = some as.length ∧ kindsList P K as
++    | .external _ as, .value => kindsList P K as
++    | .list a, .value | .reference a, .value | .lazy a, .value | .set a, .value => a.HasKind P K .value
++    | .dict cl a, .value => ∃ cd, P.classes cl = some cd ∧ a.HasKind P K cd.argumentKind
++    | .fn ns ps r e, .value => NamesWF ns ps ∧ kindsList P K ps ∧ r.HasKind P K .value ∧ kindsEff P K e
++    | .dependentFn t, .value => kindsTel P K t
++    | .tvar i, .value => K[i]? = some .value
++    | .cont b t e, .value => b.HasKind P K .value ∧ t.HasKind P K .value ∧ kindsEff P K e
++    | .map a b, .value => a.HasKind P K .value ∧ b.HasKind P K .value
++    | .tapp i as, .value => K[i]? = some (.constructor as.length) ∧ kindsList P K as
++    | .ctor _, .value => False
++    | .refined a _, .value => a.HasKind P K .value ∧ a.NotContCore
+   def kindsTel (P : Program) (K : KindCtx) : Tel → Prop
+-    | .done r e => Ty.ValueKind P K r ∧ kindsEff P K e
+-    | .param _ a t => Ty.ValueKind P K a ∧ kindsTel P K t
++    | .done r e => r.HasKind P K .value ∧ kindsEff P K e
++    | .param _ a t => a.HasKind P K .value ∧ kindsTel P K t
+   def kindsList (P : Program) (K : KindCtx) : List Ty → Prop
+     | [] => True
+-    | a :: as => Ty.ValueKind P K a ∧ kindsList P K as
++    | a :: as => a.HasKind P K .value ∧ kindsList P K as
+   def kindsEff (P : Program) (K : KindCtx) : Eff → Prop
+     | .mk _ fs => kindsList P K fs
+ end
+ 
+-def Ty.HasKind (P : Program) (K : KindCtx) (a : Ty) : TyKind → Prop
+-  | .value => Ty.ValueKind P K a
+-  | .constructor n => match a with
+-    | .ctor c => TyCon.arity P c = some n
+-    | .tvar i => K[i]? = some (.constructor n)
+-    | _ => False
++abbrev Ty.ValueKind (P : Program) (K : KindCtx) (a : Ty) : Prop := a.HasKind P K .value
++
++theorem Ty.valueKind_dict_iff (P : Program) (K : KindCtx) (cl : ClassName) (a : Ty) :
++    Ty.ValueKind P K (.dict cl a) ↔ ∃ cd, P.classes cl = some cd ∧ a.HasKind P K cd.argumentKind := Iff.rfl
++
++
++theorem Ty.valueKind_dict_iff_class {P K cl a cd} (hc : P.classes cl = some cd) :
++    Ty.ValueKind P K (.dict cl a) ↔ a.HasKind P K cd.argumentKind := by
++  simp only [Ty.valueKind_dict_iff, hc, Option.some.injEq]
++  constructor
++  · rintro ⟨other, he, hk⟩; cases he; exact hk
++  · intro hk; exact ⟨cd, rfl, hk⟩
++
++/-- 実装の対象を、その型クラスが宣言したkindで検査する。 -/
++def ImplDecl.TargetKinded (P : Program) (K : KindCtx) (d : ImplDecl) : Prop :=
++  ∃ cd, P.classes d.cls = some cd ∧ d.target.HasKind P K cd.argumentKind
++
++theorem ImplDecl.targetKinded_iff {P K d cd} (hc : P.classes d.cls = some cd) :
++    ImplDecl.TargetKinded P K d ↔ d.target.HasKind P K cd.argumentKind := by
++  simp only [ImplDecl.TargetKinded, hc, Option.some.injEq]
++  constructor
++  · rintro ⟨other, he, hk⟩; cases he; exact hk
++  · intro hk; exact ⟨cd, rfl, hk⟩
++
+ 
+ def TypeImagesKinded (P : Program) (K L : KindCtx) (θ : Nat → Ty) : Prop :=
+   ∀ i k, K[i]? = some k → (θ i).HasKind P L k ∧
+--- a/formal/Benitoite/Release/Refinement/Syntax.lean
++++ b/formal/Benitoite/Release/Refinement/Syntax.lean
+@@ -135,7 +135,7 @@
+ end
+ 
+ structure Def where
+-  tparams : List TParam
++  tparams : List TParamDecl
+   neffs : Nat
+   names : List String
+   params : List Ty
+@@ -175,7 +175,7 @@
+ 番号 `0..g-1`（g は γ̄ の個数）、型クラスの引数 P が番号 g である。メソッドが自分の型クラスの制約を持つときは、
+ Ā がその制約ごとの辞書の型を値の引数の前に含む。 -/
+ structure MethSig where
+-  tparams : List TParam
++  tparams : List TParamDecl
+   neffs : Nat
+   names : List String
+   params : List Ty
+@@ -184,8 +184,23 @@
+ 
+ /-- 型クラスの宣言。上位の型クラスの並びと、メソッドの型。 -/
+ structure ClassDecl where
++  argumentKind : TyKind := .value
+   supers : List ClassName
+   methods : MethName → Option MethSig
++
++/-- 旧のメソッド宣言の型・行と制約を保ち、追加のkindはvalueへ写す。 -/
++def embedMethSig (d : Benitoite.Release.MethSig) : MethSig :=
++  ⟨d.tparams.map embedTParam, d.neffs, d.names, embedTys d.params, embedTy d.ret, embedEff d.eff⟩
++
++def embedClassDecl (d : Benitoite.Release.ClassDecl) : ClassDecl :=
++  { argumentKind := .value, supers := d.supers, methods := fun m => (d.methods m).map embedMethSig }
++
++@[simp] theorem embedMethSig_constraints (d : Benitoite.Release.MethSig) :
++    (embedMethSig d).tparams.map TParamDecl.constraints = d.tparams := by
++  simp [embedMethSig, List.map_map, Function.comp_def]
++
++@[simp] theorem embedClassDecl_argumentKind (d : Benitoite.Release.ClassDecl) :
++    (embedClassDecl d).argumentKind = .value := rfl
+ 
+ /-- 実装の定義 `impl I[β̄](d̄ : Dict[Cl', β̄']) : Dict[Cl, τ] = { S1 = U1, …, Sl = Ul; m1 = D1, …, mk = Dk }`。
+ 型の中では、実装の型パラメータ β̄ が番号 `0..b-1` である。`dictParams` は辞書の引数 d̄ の型 `Dict[Cl', β']` を、
+@@ -223,7 +238,7 @@
+   | exit (n : Int)
+ 
+ structure PrimSig where
+-  tparams : List TParam
++  tparams : List TParamDecl
+   neffs : Nat
+   names : List String
+   params : List Ty
+--- a/formal/Benitoite/Release/Refinement/Types.lean
++++ b/formal/Benitoite/Release/Refinement/Types.lean
+@@ -2,6 +2,30 @@
+ import Benitoite.Release.Refinement.Atoms
+ 
+ namespace Benitoite.Release.Refinement
++
++inductive TyKind where
++  | value
++  | constructor (arity : Nat)
++  deriving DecidableEq
++
++abbrev KindCtx := List TyKind
++
++/-- 関数の型パラメータの宣言。操作・実装の値型パラメータの制約とは分ける。 -/
++structure TParamDecl where
++  constraints : Benitoite.Release.TParam := {}
++  kind : TyKind := .value
++
++def embedTParam (p : Benitoite.Release.TParam) : TParamDecl := ⟨p, .value⟩
++
++@[simp] theorem embedTParam_constraints (p : Benitoite.Release.TParam) :
++    (embedTParam p).constraints = p := rfl
++@[simp] theorem embedTParam_kind (p : Benitoite.Release.TParam) :
++    (embedTParam p).kind = .value := rfl
++
++theorem embedTParam_injective : Function.Injective embedTParam := by
++  intro a b h
++  exact congrArg TParamDecl.constraints h
++
+ 
+ mutual
+ /-- 型。旧型の欄を保ち、有限の述語による篩を子にも格納できる。
