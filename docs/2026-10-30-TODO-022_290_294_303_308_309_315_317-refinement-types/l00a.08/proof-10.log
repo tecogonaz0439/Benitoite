@@ -1,0 +1,95 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Benitoite.Release.Refinement.Eff.mem_norm (e : Benitoite.Release.Refinement.Eff) (a : Benitoite.Release.Atom) :
+  e.norm.mem a ↔ e.mem a
+'Benitoite.Release.Refinement.Eff.mem_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.Covers.refl (Γ : Benitoite.Release.Refinement.Ctx)
+  (Φ : List Benitoite.Release.Refinement.Pred) (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ e e
+'Benitoite.Release.Refinement.Eff.Covers.refl' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.Covers.trans {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {e f g : Benitoite.Release.Refinement.Eff}
+  (h : Benitoite.Release.Refinement.Eff.Covers Γ Φ e f) (h' : Benitoite.Release.Refinement.Eff.Covers Γ Φ f g) :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ e g
+'Benitoite.Release.Refinement.Eff.Covers.trans' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.Sub.covers {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {e f : Benitoite.Release.Refinement.Eff} (h : e.Sub f) :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ f e
+'Benitoite.Release.Refinement.Eff.Sub.covers' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.covers_norm_left {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {e f : Benitoite.Release.Refinement.Eff} :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ e.norm f ↔ Benitoite.Release.Refinement.Eff.Covers Γ Φ e f
+'Benitoite.Release.Refinement.Eff.covers_norm_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.covers_norm_right {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {e f : Benitoite.Release.Refinement.Eff} :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ e f.norm ↔ Benitoite.Release.Refinement.Eff.Covers Γ Φ e f
+'Benitoite.Release.Refinement.Eff.covers_norm_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Eff.mem_rawBind (θ : Benitoite.Release.Refinement.SubstEnv)
+  (e : Benitoite.Release.Refinement.Eff) (a : Benitoite.Release.Atom) :
+  (Benitoite.Release.Refinement.Eff.rawBind θ e).mem a ↔
+    (∃ b,
+        e.mem b ∧
+          Benitoite.Release.Atom.instR θ.ranges b = a ∧
+            match b with
+            | Benitoite.Release.Atom.name l ix => True
+            | Benitoite.Release.Atom.rho i => θ.rows.length ≤ i) ∨
+      ∃ i f, θ.rows[i]? = some f ∧ e.mem (Benitoite.Release.Atom.rho i) ∧ f.mem a
+'Benitoite.Release.Refinement.Eff.mem_rawBind' depends on axioms: [propext, Quot.sound]
+Benitoite.Release.Refinement.atomCovers_instR {a b : Benitoite.Release.Atom} (h : a.Covers b)
+  (rs : List Benitoite.Scope.Domain.Range) :
+  (Benitoite.Release.Atom.instR rs a).Covers (Benitoite.Release.Atom.instR rs b)
+'Benitoite.Release.Refinement.atomCovers_instR' depends on axioms: [propext]
+Benitoite.Release.Refinement.Eff.Covers.bind {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ψ : List Benitoite.Release.Refinement.Pred} {outer inner : Benitoite.Release.Refinement.Eff}
+  (h : Benitoite.Release.Refinement.Eff.Covers Γ Φ outer inner) (θ : Benitoite.Release.Refinement.SubstEnv) :
+  Benitoite.Release.Refinement.Eff.Covers Δ Ψ (Benitoite.Release.Refinement.Eff.bind θ outer)
+    (Benitoite.Release.Refinement.Eff.bind θ inner)
+'Benitoite.Release.Refinement.Eff.Covers.bind' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.cannot_split_one_atom (Γ : Benitoite.Release.Refinement.Ctx)
+  (Φ : List Benitoite.Release.Refinement.Pred) (l : Benitoite.Release.EffName)
+  (host : Benitoite.Scope.Domain.HostPattern) :
+  ¬Benitoite.Release.Refinement.Eff.Covers Γ Φ
+      (Benitoite.Release.Refinement.EffR.mk
+        (fun a =>
+          decide
+            (a =
+                Benitoite.Release.Atom.name l
+                  (Benitoite.Scope.Signature.Ix.fixed
+                    (Benitoite.Scope.Domain.Range.endpoint { host := host, ports := { lo := 0, hi := 4 } })) ∨
+              a =
+                Benitoite.Release.Atom.name l
+                  (Benitoite.Scope.Signature.Ix.fixed
+                    (Benitoite.Scope.Domain.Range.endpoint { host := host, ports := { lo := 5, hi := 9 } }))))
+        [])
+      (Benitoite.Release.Refinement.EffR.mk
+        (fun a =>
+          decide
+            (a =
+              Benitoite.Release.Atom.name l
+                (Benitoite.Scope.Signature.Ix.fixed
+                  (Benitoite.Scope.Domain.Range.endpoint { host := host, ports := { lo := 0, hi := 9 } }))))
+        [])
+'Benitoite.Release.Refinement.cannot_split_one_atom' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.covers_not_sub (Γ : Benitoite.Release.Refinement.Ctx)
+  (Φ : List Benitoite.Release.Refinement.Pred) (l : Benitoite.Release.EffName) :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ
+      (Benitoite.Release.Refinement.EffR.mk (fun a => decide (a = Benitoite.Release.Atom.nameTop l)) [])
+      (Benitoite.Release.Refinement.EffR.mk
+        (fun a =>
+          decide
+            (a =
+              Benitoite.Release.Atom.name l
+                (Benitoite.Scope.Signature.Ix.fixed
+                  (Benitoite.Scope.Domain.Range.path (Benitoite.Scope.Domain.PathPattern.tree [])))))
+        []) ∧
+    ¬Benitoite.Release.Refinement.Eff.Sub
+        (Benitoite.Release.Refinement.EffR.mk
+          (fun a =>
+            decide
+              (a =
+                Benitoite.Release.Atom.name l
+                  (Benitoite.Scope.Signature.Ix.fixed
+                    (Benitoite.Scope.Domain.Range.path (Benitoite.Scope.Domain.PathPattern.tree [])))))
+          [])
+        (Benitoite.Release.Refinement.EffR.mk (fun a => decide (a = Benitoite.Release.Atom.nameTop l)) [])
+'Benitoite.Release.Refinement.covers_not_sub' depends on axioms: [propext, Classical.choice, Quot.sound]

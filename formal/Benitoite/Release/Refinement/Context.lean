@@ -1,15 +1,21 @@
 import Benitoite.Release.Refinement.Normalize
 
+/-!
+# 文脈・事実・整形式と同時置換
+
+None と値の番号を保ち、篩の self を外側の値から区別する。
+-/
+
 namespace Benitoite.Release.Refinement
 
 abbrev Ctx := List (Option Ty)
 
-private def termBind (σ : Nat → Term) : Term → Term
+def termBind (σ : Nat → Term) : Term → Term
   | .var i => σ i
   | .integer n => .integer n
   | .add a b => .add (termBind σ a) (termBind σ b)
 
-private def predBind (σ : Nat → Term) : Pred → Pred
+def predBind (σ : Nat → Term) : Pred → Pred
   | .truth => .truth
   | .falsity => .falsity
   | .eq a b => .eq (termBind σ a) (termBind σ b)
@@ -26,7 +32,7 @@ def Pred.lift (p : Pred) : Pred := predBind (fun i => .var (i+1)) p
 def Pred.open (p : Pred) (t : Term) : Pred :=
   predBind (fun i => match i with | 0 => t | j+1 => .var j) p
 
-private def termWF (nv : Nat) : Term → Prop
+def termWF (nv : Nat) : Term → Prop
   | .var i => i < nv
   | .integer _ => True
   | .add a b => termWF nv a ∧ termWF nv b
@@ -45,7 +51,7 @@ def Ty.IntegerCarrier : Ty → Prop
   | .refined a _ => a.IntegerCarrier
   | _ => False
 
-private def termSorted (Γ : Ctx) : Term → Prop
+def termSorted (Γ : Ctx) : Term → Prop
   | .var i => ∃ a, Γ[i]? = some (some a) ∧ a.IntegerCarrier
   | .integer _ => True
   | .add a b => termSorted Γ a ∧ termSorted Γ b
@@ -98,10 +104,10 @@ mutual
     | .cont b t e => b.Sorted Γ ∧ t.Sorted Γ ∧ sortedEff Γ e
     | .map a b => a.Sorted Γ ∧ b.Sorted Γ
     | .refined a p => a.Sorted Γ ∧ p.Sorted Γ (some a)
-  private def sortedTys (Γ : Ctx) : List Ty → Prop
+  def sortedTys (Γ : Ctx) : List Ty → Prop
     | [] => True
     | a :: as => a.Sorted Γ ∧ sortedTys Γ as
-  private def sortedEff (Γ : Ctx) : Eff → Prop
+  def sortedEff (Γ : Ctx) : Eff → Prop
     | .mk _ fs => sortedTys Γ fs
 end
 
@@ -125,7 +131,7 @@ mutual
     | .ctor φ => .ctor φ
     | .refined a p => .refined (a.shiftV k c)
         (predBind (fun i => .var (if i < c+1 then i else i+k)) p)
-  private def shiftVTys (k c : Nat) : List Ty → List Ty
+  def shiftVTys (k c : Nat) : List Ty → List Ty
     | [] => []
     | a :: as => a.shiftV k c :: shiftVTys k c as
   def Eff.shiftV (k c : Nat) : Eff → Eff
@@ -172,11 +178,11 @@ structure SubstEnv where
   ranges : List Scope.Domain.Range
   values : Nat → Term
 
-private def upValues (σ : Nat → Term) : Nat → Term
+def upValues (σ : Nat → Term) : Nat → Term
   | 0 => .var 0
   | i+1 => termBind (fun j => .var (j+1)) (σ i)
 
-private def rawApply (t : Ty) (as : List Ty) : Ty :=
+def rawApply (t : Ty) (as : List Ty) : Ty :=
   match t with
   | .ctor (.data d) => .data d as
   | .ctor .list => .list (as.headD (.base .unit))
@@ -187,14 +193,14 @@ private def rawApply (t : Ty) (as : List Ty) : Ty :=
   | .tvar i => .tapp i as
   | t => t
 
-private def substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
+def substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
   let kept := match x with
     | .name l r => a (.name l r)
     | .rho i => if i < es.length then false else a (.rho i)
   kept || (List.range es.length).any (fun i =>
     a (.rho i) && match es[i]? with | some e => e.test x | none => false)
 
-private def rowFails (es : List Eff) (a : Atom → Bool) : List Ty :=
+def rowFails (es : List Eff) (a : Atom → Bool) : List Ty :=
   ((List.range es.length).filter (fun i => a (.rho i))).flatMap (fun i =>
     match es[i]? with | some e => e.fails | none => [])
 
@@ -217,7 +223,7 @@ mutual
     | .tapp i as => rawApply (θ.types i) (rawBindTys θ as)
     | .ctor φ => .ctor φ
     | .refined a p => .refined (a.rawBind θ) (predBind (upValues θ.values) p)
-  private def rawBindTys (θ : SubstEnv) : List Ty → List Ty
+  def rawBindTys (θ : SubstEnv) : List Ty → List Ty
     | [] => []
     | a :: as => a.rawBind θ :: rawBindTys θ as
   def Eff.rawBind (θ : SubstEnv) : Eff → Eff

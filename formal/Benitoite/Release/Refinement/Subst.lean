@@ -1,11 +1,17 @@
 import Benitoite.Release.Refinement.Syntax
 
+/-!
+# 項の改名と置換
+
+値・計算・腕・節の型注釈も移し、束縛を越えるときに像を移動する。
+-/
+
 namespace Benitoite.Release.Refinement
 
-private def renEnv (ξ : Nat → Nat) : SubstEnv :=
+def renEnv (ξ : Nat → Nat) : SubstEnv :=
   ⟨Ty.tvar, [], [], fun i => .var (ξ i)⟩
-private def renameTy (ξ : Nat → Nat) (a : Ty) : Ty := a.rawBind (renEnv ξ)
-private def renameEff (ξ : Nat → Nat) (e : Eff) : Eff := Eff.rawBind (renEnv ξ) e
+def renameTy (ξ : Nat → Nat) (a : Ty) : Ty := a.rawBind (renEnv ξ)
+def renameEff (ξ : Nat → Nat) (e : Eff) : Eff := Eff.rawBind (renEnv ξ) e
 private def renameKind (ξ : Nat → Nat) : BuilderKind → BuilderKind
   | .string => .string
   | .bytes => .bytes
@@ -67,10 +73,10 @@ mutual
 end
 
 
-private def valEnv (σ : Nat → Val) : SubstEnv :=
+def valEnv (σ : Nat → Val) : SubstEnv :=
   ⟨Ty.tvar, [], [], fun i => (σ i).toTerm?.getD (.integer 0)⟩
-private def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.rawBind (valEnv σ)
-private def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.rawBind (valEnv σ) e
+def substTyValues (σ : Nat → Val) (a : Ty) : Ty := a.rawBind (valEnv σ)
+def substEffValues (σ : Nat → Val) (e : Eff) : Eff := Eff.rawBind (valEnv σ) e
 private def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
   | .string => .string
   | .bytes => .bytes
@@ -139,7 +145,7 @@ end
 
 
 mutual
-  private def shiftTypes (k c : Nat) : Ty → Ty
+  def shiftTypes (k c : Nat) : Ty → Ty
     | .base b => .base b
     | .opaque o ix => .opaque o ix
     | .data d as => .data d (shiftTypesList k c as)
@@ -156,20 +162,20 @@ mutual
     | .tapp i as => .tapp (if i < c then i else i+k) (shiftTypesList k c as)
     | .ctor φ => .ctor φ
     | .refined a p => .refined (shiftTypes k c a) p
-  private def shiftTypesList (k c : Nat) : List Ty → List Ty
+  def shiftTypesList (k c : Nat) : List Ty → List Ty
     | [] => []
     | a :: as => shiftTypes k c a :: shiftTypesList k c as
-  private def shiftRowsTypes (k c : Nat) : Eff → Eff
+  def shiftRowsTypes (k c : Nat) : Eff → Eff
     | .mk a fs => .mk a (shiftTypesList k c fs)
 end
 
-private def typeEnvAt (c : Nat) (ts : List Ty) (es : List Eff) : SubstEnv :=
+def typeEnvAt (c : Nat) (ts : List Ty) (es : List Eff) : SubstEnv :=
   ⟨(fun i => if i < c then .tvar i
     else if i-c < ts.length then shiftTypes c 0 ((ts[i-c]?).getD (.tvar i))
     else .tvar (i-ts.length)), es.map (shiftRowsTypes c 0), [], Term.var⟩
-private noncomputable def substTypeAt (c : Nat) (ts : List Ty) (es : List Eff) (t : Ty) : Ty :=
+noncomputable def substTypeAt (c : Nat) (ts : List Ty) (es : List Eff) (t : Ty) : Ty :=
   t.bind (typeEnvAt c ts es)
-private noncomputable def substRowAt (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff) : Eff :=
+noncomputable def substRowAt (c : Nat) (ts : List Ty) (es : List Eff) (e : Eff) : Eff :=
   Eff.bind (typeEnvAt c ts es) e
 private noncomputable def substBuilderAt (c : Nat) (ts : List Ty) (es : List Eff) : BuilderKind → BuilderKind
   | .string => .string

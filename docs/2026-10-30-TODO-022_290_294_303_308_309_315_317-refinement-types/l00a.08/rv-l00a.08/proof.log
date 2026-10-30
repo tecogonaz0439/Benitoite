@@ -1,0 +1,270 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Benitoite.Release.Refinement.Ctx.mem_facts_extendNone {Γ : Benitoite.Release.Refinement.Ctx}
+  {q : Benitoite.Release.Refinement.Pred} : q ∈ Γ.extendNone.facts ↔ ∃ p, p ∈ Γ.facts ∧ p.lift = q
+'Benitoite.Release.Refinement.Ctx.mem_facts_extendNone' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.Transport.extendNone {θ : Benitoite.Release.Refinement.SubstEnv}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {Δ : Benitoite.Release.Refinement.Ctx} {Ψ : List Benitoite.Release.Refinement.Pred}
+  (ht : Benitoite.Release.Refinement.Transport θ Γ Φ Δ Ψ) :
+  Benitoite.Release.Refinement.Transport θ.up Γ.extendNone (List.map Benitoite.Release.Refinement.Pred.lift Φ)
+    Δ.extendNone (List.map Benitoite.Release.Refinement.Pred.lift Ψ)
+'Benitoite.Release.Refinement.Transport.extendNone' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.Ψ : List Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.OpenSubstitution.Ψ' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.target_path_from_facts :
+  Benitoite.Release.Refinement.Entails Benitoite.Release.Refinement.OpenSubstitution.Δ.facts
+    (Benitoite.Release.Refinement.predBind Benitoite.Release.Refinement.OpenSubstitution.σ
+      Benitoite.Release.Refinement.OpenSubstitution.path)
+'Benitoite.Release.Refinement.OpenSubstitution.target_path_from_facts' depends on axioms: [propext]
+Benitoite.Release.Refinement.OpenSubstitution.target_conditions_from_facts (p : Benitoite.Release.Refinement.Pred) :
+  p ∈ Benitoite.Release.Refinement.OpenSubstitution.Ψ →
+    Benitoite.Release.Refinement.Entails Benitoite.Release.Refinement.OpenSubstitution.Δ.facts p
+'Benitoite.Release.Refinement.OpenSubstitution.target_conditions_from_facts' depends on axioms: [propext]
+Benitoite.Release.Refinement.OpenSubstitution.source_introduce (Φ : List Benitoite.Release.Refinement.Pred) :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.OpenSubstitution.Γ Φ
+    (Benitoite.Release.Refinement.Ty.tvar 0)
+    ((Benitoite.Release.Refinement.Ty.tvar 0).refined Benitoite.Release.Refinement.OpenSubstitution.path.lift)
+'Benitoite.Release.Refinement.OpenSubstitution.source_introduce' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.introduce_bind :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.OpenSubstitution.Δ
+    Benitoite.Release.Refinement.OpenSubstitution.Ψ
+    (Benitoite.Release.Refinement.Ty.bind Benitoite.Release.Refinement.OpenSubstitution.θ
+      (Benitoite.Release.Refinement.Ty.tvar 0))
+    (Benitoite.Release.Refinement.Ty.bind Benitoite.Release.Refinement.OpenSubstitution.θ
+      ((Benitoite.Release.Refinement.Ty.tvar 0).refined Benitoite.Release.Refinement.OpenSubstitution.path.lift))
+'Benitoite.Release.Refinement.OpenSubstitution.introduce_bind' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.introduce_bind_shape :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.OpenSubstitution.Δ
+    Benitoite.Release.Refinement.OpenSubstitution.Ψ
+    ((Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.integer).refined
+      (Benitoite.Release.Refinement.Pred.le (Benitoite.Release.Refinement.Term.var 0)
+        ((Benitoite.Release.Refinement.Term.var 3).add (Benitoite.Release.Refinement.Term.integer 1))))
+    (((Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.integer).refined
+          (Benitoite.Release.Refinement.Pred.le (Benitoite.Release.Refinement.Term.var 0)
+            ((Benitoite.Release.Refinement.Term.var 3).add (Benitoite.Release.Refinement.Term.integer 1)))).refined
+      (Benitoite.Release.Refinement.Pred.eq
+        ((Benitoite.Release.Refinement.Term.var 3).add (Benitoite.Release.Refinement.Term.integer 1))
+        (Benitoite.Release.Refinement.Term.integer 7)))
+'Benitoite.Release.Refinement.OpenSubstitution.introduce_bind_shape' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.introduce_bind_under_none :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.OpenSubstitution.Δ.extendNone
+    (List.map Benitoite.Release.Refinement.Pred.lift Benitoite.Release.Refinement.OpenSubstitution.Ψ)
+    (Benitoite.Release.Refinement.Ty.bind Benitoite.Release.Refinement.OpenSubstitution.θ.up
+      (Benitoite.Release.Refinement.Ty.shiftV 1 0 (Benitoite.Release.Refinement.Ty.tvar 0)))
+    (Benitoite.Release.Refinement.Ty.bind Benitoite.Release.Refinement.OpenSubstitution.θ.up
+      (Benitoite.Release.Refinement.Ty.shiftV 1 0
+        ((Benitoite.Release.Refinement.Ty.tvar 0).refined Benitoite.Release.Refinement.OpenSubstitution.path.lift)))
+'Benitoite.Release.Refinement.OpenSubstitution.introduce_bind_under_none' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.Γ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.OpenSubstitution.Γ' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.Δ : Benitoite.Release.Refinement.Ctx
+'Benitoite.Release.Refinement.OpenSubstitution.Δ' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.path : Benitoite.Release.Refinement.Pred
+'Benitoite.Release.Refinement.OpenSubstitution.path' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.σ (i : Nat) : Benitoite.Release.Refinement.Term
+'Benitoite.Release.Refinement.OpenSubstitution.σ' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.dependentType : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.OpenSubstitution.dependentType' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.dependentFail : Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.OpenSubstitution.dependentFail' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.rowImage : Benitoite.Release.Refinement.Eff
+'Benitoite.Release.Refinement.OpenSubstitution.rowImage' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.θ : Benitoite.Release.Refinement.SubstEnv
+'Benitoite.Release.Refinement.OpenSubstitution.θ' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.inner : Benitoite.Release.Refinement.Eff
+'Benitoite.Release.Refinement.OpenSubstitution.inner' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.outer : Benitoite.Release.Refinement.Eff
+'Benitoite.Release.Refinement.OpenSubstitution.outer' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.source (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.Ty
+'Benitoite.Release.Refinement.OpenSubstitution.source' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.context_facts :
+  Benitoite.Release.Refinement.OpenSubstitution.Γ.facts = [Benitoite.Release.Refinement.OpenSubstitution.path] ∧
+    Benitoite.Release.Refinement.OpenSubstitution.Δ.facts =
+      [(Benitoite.Release.Refinement.predBind Benitoite.Release.Refinement.OpenSubstitution.σ
+              Benitoite.Release.Refinement.OpenSubstitution.path).and
+          Benitoite.Release.Refinement.Pred.truth]
+'Benitoite.Release.Refinement.OpenSubstitution.context_facts' depends on axioms: [propext]
+Benitoite.Release.Refinement.OpenSubstitution.context_none :
+  Benitoite.Release.Refinement.OpenSubstitution.Γ[1]? = some none ∧
+    Benitoite.Release.Refinement.OpenSubstitution.Δ[1]? = some none
+'Benitoite.Release.Refinement.OpenSubstitution.context_none' depends on axioms: [propext]
+Benitoite.Release.Refinement.OpenSubstitution.transport :
+  Benitoite.Release.Refinement.Transport Benitoite.Release.Refinement.OpenSubstitution.θ
+    Benitoite.Release.Refinement.OpenSubstitution.Γ [Benitoite.Release.Refinement.OpenSubstitution.path]
+    Benitoite.Release.Refinement.OpenSubstitution.Δ Benitoite.Release.Refinement.OpenSubstitution.Ψ
+'Benitoite.Release.Refinement.OpenSubstitution.transport' depends on axioms: [propext]
+Benitoite.Release.Refinement.OpenSubstitution.source_covers :
+  Benitoite.Release.Refinement.Eff.Covers Benitoite.Release.Refinement.OpenSubstitution.Γ
+    [Benitoite.Release.Refinement.OpenSubstitution.path] Benitoite.Release.Refinement.OpenSubstitution.outer
+    Benitoite.Release.Refinement.OpenSubstitution.inner
+'Benitoite.Release.Refinement.OpenSubstitution.source_covers' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.all_open_derivation :
+  Benitoite.Release.Refinement.Ty.LeQ Benitoite.Release.Refinement.OpenSubstitution.Δ
+    Benitoite.Release.Refinement.OpenSubstitution.Ψ
+    (Benitoite.Release.Refinement.Ty.bind Benitoite.Release.Refinement.OpenSubstitution.θ
+      (Benitoite.Release.Refinement.OpenSubstitution.source Benitoite.Release.Refinement.OpenSubstitution.inner))
+    (Benitoite.Release.Refinement.Ty.bind Benitoite.Release.Refinement.OpenSubstitution.θ
+      (Benitoite.Release.Refinement.OpenSubstitution.source Benitoite.Release.Refinement.OpenSubstitution.outer))
+'Benitoite.Release.Refinement.OpenSubstitution.all_open_derivation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.all_open_covers :
+  Benitoite.Release.Refinement.Eff.Covers Benitoite.Release.Refinement.OpenSubstitution.Δ
+    Benitoite.Release.Refinement.OpenSubstitution.Ψ
+    (Benitoite.Release.Refinement.Eff.bind Benitoite.Release.Refinement.OpenSubstitution.θ
+      Benitoite.Release.Refinement.OpenSubstitution.outer)
+    (Benitoite.Release.Refinement.Eff.bind Benitoite.Release.Refinement.OpenSubstitution.θ
+      Benitoite.Release.Refinement.OpenSubstitution.inner)
+'Benitoite.Release.Refinement.OpenSubstitution.all_open_covers' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.open_images :
+  Benitoite.Release.Refinement.OpenSubstitution.θ.types 0 =
+      (Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.integer).refined
+        (Benitoite.Release.Refinement.Pred.le (Benitoite.Release.Refinement.Term.var 0)
+          ((Benitoite.Release.Refinement.Term.var 3).add (Benitoite.Release.Refinement.Term.integer 1))) ∧
+    Benitoite.Release.Refinement.OpenSubstitution.θ.types 1 = Benitoite.Release.Refinement.Ty.tvar 1 ∧
+      Benitoite.Release.Refinement.mapIx
+            (Benitoite.Release.Refinement.rangeAt 0 Benitoite.Release.Refinement.OpenSubstitution.θ.ranges)
+            (Benitoite.Scope.Signature.Ix.rvar 1) =
+          Benitoite.Scope.Signature.Ix.rvar 1 ∧
+        (Benitoite.Release.Refinement.Eff.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+                Benitoite.Release.Refinement.OpenSubstitution.rowImage).mem
+            (Benitoite.Release.Atom.rho 1) ∧
+          (Benitoite.Release.Refinement.Eff.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+                  Benitoite.Release.Refinement.OpenSubstitution.rowImage).mem
+              (Benitoite.Release.Atom.name "Write" (Benitoite.Scope.Signature.Ix.rvar 1)) ∧
+            (Benitoite.Release.Refinement.Eff.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+                  Benitoite.Release.Refinement.OpenSubstitution.rowImage).mem
+              (Benitoite.Release.Atom.nameTop "Read")
+'Benitoite.Release.Refinement.OpenSubstitution.open_images' depends on axioms: [propext, Classical.choice, Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.path_witness :
+  Benitoite.Release.Refinement.predBind (fun x => Benitoite.Release.Refinement.Term.integer 7)
+        Benitoite.Release.Refinement.OpenSubstitution.path =
+      Benitoite.Release.Refinement.Pred.eq (Benitoite.Release.Refinement.Term.integer 7)
+        (Benitoite.Release.Refinement.Term.integer 7) ∧
+    Benitoite.Release.Refinement.predBind (fun i => Benitoite.Release.Refinement.Term.integer (if i = 2 then 6 else 7))
+          (Benitoite.Release.Refinement.predBind Benitoite.Release.Refinement.OpenSubstitution.σ
+            Benitoite.Release.Refinement.OpenSubstitution.path) =
+        Benitoite.Release.Refinement.Pred.eq
+          ((Benitoite.Release.Refinement.Term.integer 6).add (Benitoite.Release.Refinement.Term.integer 1))
+          (Benitoite.Release.Refinement.Term.integer 7) ∧
+      6 + 1 = 7
+'Benitoite.Release.Refinement.OpenSubstitution.path_witness' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.images_wf_sorted :
+  Benitoite.Release.Refinement.Ty.WF 2 2 3
+      (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+        Benitoite.Release.Refinement.OpenSubstitution.dependentType) ∧
+    Benitoite.Release.Refinement.Ty.Sorted Benitoite.Release.Refinement.OpenSubstitution.Δ
+        (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+          Benitoite.Release.Refinement.OpenSubstitution.dependentType) ∧
+      Benitoite.Release.Refinement.Ty.WF 2 2 3
+          (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+            Benitoite.Release.Refinement.OpenSubstitution.dependentFail) ∧
+        Benitoite.Release.Refinement.Ty.Sorted Benitoite.Release.Refinement.OpenSubstitution.Δ
+          (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+            Benitoite.Release.Refinement.OpenSubstitution.dependentFail)
+'Benitoite.Release.Refinement.OpenSubstitution.images_wf_sorted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.type_value_exchange :
+  Benitoite.Release.Refinement.Ty.substV Benitoite.Release.Refinement.OpenSubstitution.σ
+      (Benitoite.Release.Refinement.Ty.substAt 0 [Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+        [Benitoite.Release.Refinement.OpenSubstitution.rowImage]
+        (Benitoite.Release.Refinement.OpenSubstitution.source Benitoite.Release.Refinement.OpenSubstitution.inner)) =
+    Benitoite.Release.Refinement.Ty.substAt 0
+      [Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+          Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+      [Benitoite.Release.Refinement.Eff.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+          Benitoite.Release.Refinement.OpenSubstitution.rowImage]
+      (Benitoite.Release.Refinement.Ty.substV Benitoite.Release.Refinement.OpenSubstitution.σ
+        (Benitoite.Release.Refinement.OpenSubstitution.source Benitoite.Release.Refinement.OpenSubstitution.inner))
+'Benitoite.Release.Refinement.OpenSubstitution.type_value_exchange' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.row_value_exchange :
+  Benitoite.Release.Refinement.Eff.substV Benitoite.Release.Refinement.OpenSubstitution.σ
+      (Benitoite.Release.Refinement.Eff.substAt 0 [Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+        [Benitoite.Release.Refinement.OpenSubstitution.rowImage] Benitoite.Release.Refinement.OpenSubstitution.inner) =
+    Benitoite.Release.Refinement.Eff.substAt 0
+      [Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+          Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+      [Benitoite.Release.Refinement.Eff.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+          Benitoite.Release.Refinement.OpenSubstitution.rowImage]
+      (Benitoite.Release.Refinement.Eff.substV Benitoite.Release.Refinement.OpenSubstitution.σ
+        Benitoite.Release.Refinement.OpenSubstitution.inner)
+'Benitoite.Release.Refinement.OpenSubstitution.row_value_exchange' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.type_range_exchange :
+  Benitoite.Release.Refinement.Ty.mapRanges (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+      (Benitoite.Release.Refinement.Ty.substAt 0 [Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+        [Benitoite.Release.Refinement.OpenSubstitution.rowImage]
+        (Benitoite.Release.Refinement.OpenSubstitution.source Benitoite.Release.Refinement.OpenSubstitution.inner)) =
+    Benitoite.Release.Refinement.Ty.substAt 0
+      [Benitoite.Release.Refinement.Ty.rawMapRanges
+          (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+          Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+      [Benitoite.Release.Refinement.Eff.rawMapRanges
+          (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+          Benitoite.Release.Refinement.OpenSubstitution.rowImage]
+      (Benitoite.Release.Refinement.Ty.mapRanges
+        (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+        (Benitoite.Release.Refinement.OpenSubstitution.source Benitoite.Release.Refinement.OpenSubstitution.inner))
+'Benitoite.Release.Refinement.OpenSubstitution.type_range_exchange' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.row_range_exchange :
+  Benitoite.Release.Refinement.Eff.mapRanges (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+      (Benitoite.Release.Refinement.Eff.substAt 0 [Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+        [Benitoite.Release.Refinement.OpenSubstitution.rowImage] Benitoite.Release.Refinement.OpenSubstitution.inner) =
+    Benitoite.Release.Refinement.Eff.substAt 0
+      [Benitoite.Release.Refinement.Ty.rawMapRanges
+          (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+          Benitoite.Release.Refinement.OpenSubstitution.dependentType]
+      [Benitoite.Release.Refinement.Eff.rawMapRanges
+          (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+          Benitoite.Release.Refinement.OpenSubstitution.rowImage]
+      (Benitoite.Release.Refinement.Eff.mapRanges
+        (Benitoite.Release.Refinement.rangeAt 0 [Benitoite.Scope.Domain.Range.top])
+        Benitoite.Release.Refinement.OpenSubstitution.inner)
+'Benitoite.Release.Refinement.OpenSubstitution.row_range_exchange' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Benitoite.Release.Refinement.OpenSubstitution.image_not_reapplied :
+  Benitoite.Release.Refinement.Ty.rawBind Benitoite.Release.Refinement.OpenSubstitution.θ
+      (Benitoite.Release.Refinement.Ty.tvar 0) =
+    Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+      Benitoite.Release.Refinement.OpenSubstitution.dependentType
+'Benitoite.Release.Refinement.OpenSubstitution.image_not_reapplied' depends on axioms: [propext]
+Benitoite.Release.Refinement.OpenSubstitution.double_value_substitution_changes_image :
+  Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+      (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+        Benitoite.Release.Refinement.OpenSubstitution.dependentType) ≠
+    Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+      Benitoite.Release.Refinement.OpenSubstitution.dependentType
+'Benitoite.Release.Refinement.OpenSubstitution.double_value_substitution_changes_image' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.double_value_substitution_changes_fail :
+  Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+      (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+        Benitoite.Release.Refinement.OpenSubstitution.dependentFail) ≠
+    Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+      Benitoite.Release.Refinement.OpenSubstitution.dependentFail
+'Benitoite.Release.Refinement.OpenSubstitution.double_value_substitution_changes_fail' does not depend on any axioms
+Benitoite.Release.Refinement.OpenSubstitution.row_image_not_reapplied :
+  (Benitoite.Release.Refinement.Eff.rawBind Benitoite.Release.Refinement.OpenSubstitution.θ
+        Benitoite.Release.Refinement.OpenSubstitution.inner).memFail
+    (Benitoite.Release.Refinement.Ty.rawSubstV Benitoite.Release.Refinement.OpenSubstitution.σ
+      Benitoite.Release.Refinement.OpenSubstitution.dependentFail)
+'Benitoite.Release.Refinement.OpenSubstitution.row_image_not_reapplied' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

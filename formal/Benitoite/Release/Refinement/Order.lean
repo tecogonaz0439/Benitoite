@@ -1,5 +1,11 @@
 import Benitoite.Release.Refinement.Types
 
+/-!
+# 篩を含む型の辞書式比較
+
+有限の項と述語を木へ写し、子の型と Fail の生の構造を区別する。
+-/
+
 namespace Benitoite.Release.Refinement
 open Std Order
 
@@ -10,7 +16,7 @@ private def intTree : Int → Tree Label
 private theorem intTree_injective {a b : Int} (h : intTree a = intTree b) : a = b := by
   cases a <;> cases b <;> simp_all [intTree, Tree.node.injEq]
 
-private def termTree : Term → Tree Label
+def termTree : Term → Tree Label
   | .var i => .node (.rank 0) [.node (.nat i) []]
   | .integer n => .node (.rank 1) [intTree n]
   | .add a b => .node (.rank 2) [termTree a, termTree b]
@@ -27,7 +33,7 @@ private theorem termTree_injective {a b : Term} (h : termTree a = termTree b) : 
       have hb := termTree_injective hb
       cases ha; cases hb; rfl
 
-private def predTree : Pred → Tree Label
+def predTree : Pred → Tree Label
   | .truth => .node (.rank 0) []
   | .falsity => .node (.rank 1) []
   | .eq a b => .node (.rank 2) [termTree a, termTree b]
@@ -55,7 +61,7 @@ private theorem predTree_injective {a b : Pred} (h : predTree a = predTree b) : 
 
 mutual
   /-- 欄の境界を子の木で区切り、名前・引数・結果・潜在効果をすべて保持する。 -/
-  private def Ty.toTree : Ty → Tree Label
+  def Ty.toTree : Ty → Tree Label
     | .base b => .node (.rank 0) [.node (.nat b.rank) []]
     | .opaque o r => .node (.rank 1) [.node (.text o) [], .node (.nat (Order.ixCode r)) []]
     | .data d args => .node (.rank 2) [.node (.text d) [], .node (.rank 0) (Ty.toTrees args)]
@@ -76,11 +82,11 @@ mutual
     | .refined a p => .node (.rank 15) [a.toTree, predTree p]
 
   /-- 効果の欄と Fail 列の順序を保持する。 -/
-  private def Eff.toTree : Eff → Tree Label
+  def Eff.toTree : Eff → Tree Label
     | .mk a fs => .node (.atoms a) (Ty.toTrees fs)
 
   /-- 型列をそのままの順序で木の列へ写す。 -/
-  private def Ty.toTrees : List Ty → List (Tree Label)
+  def Ty.toTrees : List Ty → List (Tree Label)
     | [] => []
     | a :: as => a.toTree :: Ty.toTrees as
 end
