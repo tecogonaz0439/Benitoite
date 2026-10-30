@@ -729,3 +729,131 @@ O002/O004/O006/O009/O029/O040/O042/O159等は、この起動単位の定義・34
 - コマンド: `/usr/bin/time -l scripts/check.sh --level work --base fb9afed8a9dc800ea558c07ccdc7c589b40118f8`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。最大常駐量が Lean の検査を表すように、先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
 - 結果: 終了0（selected checks passed）。外側の時間は36.72秒、最大常駐量は966,918,144バイト（約0.90 GiB）。
 - 計画からのずれ: 起動単位の表の見込みどおりの範囲を、停止と再開（案 A）を挟んで閉じた。
+
+## `.02b-external`：外部と依存する実引数列の群末（2026-10-31）
+
+**この起動単位の実装と群末の検査を終えた。** 次のσ/Atの群へは進んでいない。群末の独立レビューは条件付き可（重なし、中1・軽4）であり、所見への対応は本節末「レビューの所見の対応」に記す。work・受け入れは取りまとめ・設計者の担当であり、今回の完了には含めない。基準B_WORKは `9184a3ced427d4897fcb234d2ac277f95b60ac0f`、指定ブランチは `m014/l00b.02b-external` である。前の群の取り込み08f9ac72・f42ab9aaは依頼の指定値を使い、gitによる照合・操作を行っていない。処理系・現行設計書・plan.mdは変更していない。
+
+### 置いた構成子と閉じた定義・補題
+
+| 群 | 本番へ置いたものと閉じた範囲 |
+|---|---|
+| 外部の値・計算と5導出 | Val.externalRef/externalHandle、Comp.externalCall。V_ExternalRef/ExternalHandle、C_External、HasTypeTelArgsQ.done/param。既存の値・計算を除かず、V_ExternalRefはSignatureInstance、ハンドルはID・component/resource・arity・Annotationを照合する |
+| 宣言表と名目性 | 外部の型/関数/成分のID、ExternalMode/TypeDecl/Position/PathStep/Use/Signature/Decl/Key/Handle、Program.externals/externalType/externalFunction/ExternalWF。有限表のkeyと宣言内ID・重複を検査し、ExternalWF.type_lookup/function_lookupで適格性を取り出す。Ty.Declaredのexternalで未知のID・不正なarity・全型引数を検査し、Declaredの置換/正規化の保存も追随した |
+| 外部の署名 | ExternalValueType、ExternalMapKey、ExternalOccurrence、ExternalUseAt、ExternalTelWF、ExternalSignature.WF、ExternalCallAdmissible。非再帰の具体化の有限な導出、全入れ子の外部型、引数borrow/結果own、component、usesの過不足、外部型がある場合だけState、単相・arity 0を検査する。WITのABI全体の照合器ではない |
+| 3族 | **HasTypeVQ/VsQ/EachQ/CQ/TelArgsQのshift_values/subst/narrowを累計各39場合で閉じた。** TypedFactsの全入口と、値・値列・計算のDeclared正則性も新しい葉へ追随した。TelArgsのhide_context/subst_under_noneはRを持たず、任意の局所参照の像を保つ |
+| 依存列の交換 | Tel.bind_norm/bind_renaming/open_shift/open_subst、instantiate_eq_arguments/instantiate_subst/instantiate_shift。paramの下のup/cutoffと、実引数の部分観測を保つ逐次具体化を交換する。前の群のbind_open_exchange等を再利用し、外側の値依存を除外していない |
+| TelArgsからの取り出し | result_annotation/declared/normal/instantiate/length/arguments。最終契約、検査した引数型列、HasTypeVsQ、結果型のWF/Sorted/Declaredを同じ導出から取り出す。ExternalArgs.instantiateで外部署名の具体化へ接続した |
+| 閉性と応答の三欄 | Val/Comp/Arm/Clause/Capture/ClosureのClosedAtとVal.Ground、ExternalArgs、Outcome.Typed、ExternalSignature.instantiate。Builtins.ExternalAssumptionsのexternal_typed/exists/no_targetsをCoreAssumptionsへ接続し、external_typedのno-exitを保った。第四の外部仮定は加えていない |
+| 意味論と実行関数 | E_ExternalApply/External/ExternalErrを既存Stepへ追加し、すべてnoneのラベルとした。Closure.viewで型引数と実引数を捕捉環境で閉じる。stepがExternalOracleを使い、val/errだけを無事象で実行する。Eventはio/releaseの2形のまま、E_ExternalExitはない |
+| 埋め込みと既存の障害例 | 旧Programの外部表を空列に写し、embedProgram_externalsを置いた。旧Val17/Comp13等の埋め込みはそのまま維持する。既存の生の置換・narrowingの障害例は言明を変えず、新しい構成子の不可能な場合だけを追加した |
+
+本番の新規Leanは [External](../../../formal/Benitoite/Release/Refinement/External.lean)、[ExternalResponse](../../../formal/Benitoite/Release/Refinement/ExternalResponse.lean)、[Ground](../../../formal/Benitoite/Release/Refinement/Ground.lean)、[TelTyping](../../../formal/Benitoite/Release/Refinement/TelTyping.lean) の**4ファイル**であり、すべて既定importに含む。新規4・既存20、合計24ファイルを変更した。これらの行数は5,239→5,897、純増658行である。[全ファイルとSHA-256](02b-external-source-changes.json)、[差分](02b-external-production.patch)、[追加した公開宣言62名](02b-external-public-api.md)を保存した。62名は手で付けた名前であり、構成子・射影・recursor等を重ねて数えていない。
+
+### 場合の数の予定と実際
+
+| 対象 | 予定 | 実際と確認方法 |
+|---|---:|---|
+| 追加した導出 | V2/C1/TelArgs2=5 | **5**。V_ExternalRef/ExternalHandle、C_External、done/param |
+| 3族の累計 | 各39 | **V20/C13/Vs2/Each2/TelArgs2=39、三族で117**。前の34から各5場合追加。相互のmatchの網羅性はLeanが検査し、構成子数もmetadataで照合した |
+| TypedFactsの予定の2入口 | observation20＋assume20 | **40**。追加2葉×2=4場合。整数の系を別の場合へ重ねていない |
+| TypedFactsの補助入口 | 全葉・関係する列 | **assume_optional20/data_observation20/observation_declared24/observation_references24=88**。後二つはV20/Vs2/Each2を含む |
+| 宣言照合の正則性 | 新しい葉・外部計算 | V20/Vs2/C13とTelArgs2。TelArgsから結果のAnnotationも導く |
+| 構文 | Val21/Comp14/Step71 | **予定どおり**。Capture1/Closure1、Frame7/Cell6/LocTy4/State4、Event2/Steps2も維持 |
+| 旧遷移 | 旧68をすべて維持 | **旧68件の名前と順序を維持し、新規3件を追加**。[照合](02b-external-step-coverage.json) |
+
+TelArgsの直接の相互入口はTypingShiftの `HasTypeTelArgsQ.shift_values`、SubstTypingのprivate `subst_telArgs`、Narrowingのprivate `context_telArgs` である。公開のsubst/narrow/hide/None版やinstantiate等の系へ同じ根の場合を重ねて配賦していない。第12.2節どおり、外部型のWF/宣言照合の追随をL10から1時間、依存列の相互置換と逐次具体化をL20から1〜2時間移す枠として扱う。今回閉じた分をL10/L20で再計上しない。この額は能動時間の配分であり、今回の実測時間ではない。
+
+### 補助契約で決めたこと
+
+[signatures第25節](signatures.md)に完全な入口と、採った案・理由・捨てた案を記録した。
+
+1. Ty.Declaredのexternalでも、有限表のID・arityと型引数を検査する。葉だけに検査を置く案は捨て、全入れ子の注釈にも適用した。
+2. 受け渡すdataは、全構成子の有限一覧と具体化後の全欄の有限な導出で検査する。祖先のdata名だけで一律に循環とする案は、有限の同名の入れ子も拒むため採らなかった。
+3. Mapの鍵は篩のcarrierを辿る。最外のbaseだけを許す案は採らない。Unitの省略等を含むWITのABIの細部は既定の表層・交換で照合し、表示名から標準型を推測しない。
+4. 外部呼出しの型引数はcount/kind/SatAll/Annotationを明示して検査し、ExternalSignature.WFから現行の空列を導く。一般の型引数の外部型や値依存型まで制限せず、ソースの多相externalも追加していない。
+5. 外部ハンドルにはAnnotation、外部関数の参照にはSignatureInstanceを渡す。WFだけからDeclaredを得る案は採らない。
+6. TelArgsは同じΓ/Φで各実引数を読み、restを逐次bindする。非依存Vsだけの検査や、Γへ全実引数を先に束縛する案は採らない。paramの下の交換、Rを持たない相互補題、hide/None版は今回閉じた。
+7. 外部応答は三欄とno-exitをCoreAssumptionsへ接続した。Event.external・E_ExternalExit・第四の外部条件・delta/IO/releaseへの自動追加は採らない。
+8. Groundは型・行・範囲・値の自由変数を有限構文で検査する。varだけの不存在や、任意の置換に対する意味上の不変性へ置き換えない。
+
+### 群末の検査と証拠
+
+[再実行用台本](02b-external-validate.py)、[検査全体](02b-external-validation.json)、[コマンド・終了・外側の時間](02b-external-commands.json)、[本番397入力のSHA-256](02b-external-inputs-final.json)、[補助入力のSHA-256](02b-external-artifact-inputs.json)を保存した。最終検査中の本番入力のハッシュは前後で一致した。Leanは4.34.1、既定・単独とも **-M 12288** であり、固定版・lake設定は変更していない。
+
+| 検査 | 結果 | 証拠 |
+|---|---|---|
+| 旧体系・並置体系・全既定ターゲットのLeanビルド | **`cd formal && lake build`、終了0、640 jobs、2.287秒**。変更した本番は途中の関係するビルドでもコンパイルし、最終入口は既存の成果物も再利用する。全640ファイルを新たに検査した時間とは呼ばない | [出力](02b-external-build.log) |
+| 新しい外部と依存列の境界 | **終了0、0.957秒**。pure呼出しの型付け/無事象遷移/step、トラップの無事象エラー、名目IDの区別とbind後の保持、未知ID/重複key/不正arity/異なるcomponent、入れ子のborrow/ownと逆向きの拒否、開いた型注釈の非Ground、依存結果の逐次具体化とTelArgsの実導出、exitを返す表の三条件の拒否、不適格oracleの非遷移、有限のBox[Box[Integer]]、篩付きMap鍵を確認。補助入力の61宣言の公理依存も照合 | [入力](02b-external-boundary.lean) / [出力](02b-external-boundary.log) |
+| 既存の参照・sort等の境界 | r4を変えず実行、**終了0、0.642秒**。None/cont・snapshot・self/外側・宣言照合等を保持 | [出力](02b-external-previous-boundary.log) |
+| 既存kindの境界 | r5を変えず実行、**終了0、0.380秒**。21宣言の公理依存も照合 | [出力](02b-external-kind-boundary.log) |
+| 前の値の群の境界 | 元の記録を変えず、今回の新構成子の不可能な場合を追加した写しを実行。**終了0、0.677秒**。Mapの重複と依存鍵・場所の削除拒否・捕捉環境等を保持し、30宣言の公理依存も照合 | [今回の入力](02b-external-values-boundary.lean) / [出力](02b-external-values-boundary.log) |
+| 新規・変更宣言の公理依存（A-L） | **終了0、6.347秒、67モジュールと旧の指定7宣言、計8,019宣言**。private/生成宣言を含み、報告件数・一意な件数・モジュール別件数＋旧7宣言が一致。使用は **propext/Quot.sound/Classical.choiceだけ**。独自公理・sorryAxなし | [入力](02b-external-axioms.lean) / [集計](02b-external-axioms-summary.json) |
+| 構成子数・抜け道・設定 | Lean metadataで39場合・Step71等を照合。本番Refinementにsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの語の検出なし | [検査全体](02b-external-validation.json) |
+| work・RSS・Rust・独立レビュー | workは依頼どおり取りまとめへ残した。RSSは未取得（計画上の非採取）。Rustテストの追加・変更・削除は0件。今回の自己点検を独立レビューとして数えない | [レビュー依頼](../reviews/RV-L00b.02b-external-request.md) |
+
+A-Lの旧7宣言はModel/ModelTargets/ModelHttp.assumptions、Ty.le_iff_leOld/wf_iff_old/varsIn_iff_old、Eff.covers_iff_sub_oldである。外部の新しい三モデルの条件充足をこれらの旧モデルの照合で代用しない。公理依存の生の全出力は最終822,591バイトであるため一時領域へ置き、[large-records.md](large-records.md)に大きさとSHA-256だけを残した。途中の全出力も同じ表で区別した。差分61,194バイトは100 KB以下なので改造内に保存した。文書・台本に手元の絶対パスは記していない。
+
+途中の局所検査では、新しい型/相互導出の参照、正規化とbindの表記、暗黙引数、全構成子を直接消去する既存の補助証明で失敗した。既定ビルドの最初の実行ではSubstTypingObstruction、続く局所検査ではNarrowingObstructionの新しい場合が不足していた。言明を弱めず不可能な場合を追加して修正した。前の群の境界入力も構成子追加で場所の逆転の網羅性が不足し、[初回コマンド記録](02b-external-first-commands.json)と[初回出力](02b-external-first-values-boundary.log)に残した。今回の写しに二つの不可能な場合を追加し、元のr2の入力・出力は変更していない。失敗時の回復用sorryAxを成功の証拠には使わず、最終の入力で全件を照合した。
+
+### テストの作成時の関門
+
+新しい補助入力の持ち主は、本番Leanの宣言表・型付け・逐次具体化・Step/stepである。独立した契約は、外部pureの無事象、外部応答のno-exit、IDの名目性、全入れ子のborrow/own、閉じた型注釈、依存列の具体化である。Event.external/exitの追加、表示名による同一視、未知IDやarityの検査漏れ、param下のup/cutoffの誤り、型注釈を無視したGround、有限の同名の入れ子や篩付き鍵の誤拒否があれば失敗する。前の群には外部の構成子とTelArgsの型付けがなく、この失敗は捕まえられなかった。検査用の本番API・フラグ・差し込み口は加えていない。前の群の境界の写しは今回の構成子でも既存の負の言明を維持できるかを照合するための記録であり、新しいRustのテストを重ねたものではない。
+
+### 閉じた義務・残りと送り先
+
+| 義務・残り | 今回の判定と証拠 | 残る担当・時期 |
+|---|---|---|
+| 第12.2節のexternalの5導出・三族39・TypedFacts・TelArgsのup/bindと逐次具体化・Rなしの各入口 | **この群の担当分を完了**。本節・本番ソース・境界・A-L。L10/L20へ同じ証明を後送していない | 後の群で構成子を増やすとき、その新しい場合だけを追加する |
+| O002/O004/O006/O009/O029/O040/O042/O087/O088/O159等のexternalの骨格・依存列・移動/置換/埋め込み | 今回の範囲の定義・39場合・Step71・旧構文の空の外部表を閉じた。外部型を通常opaque/Unit/Topに消していない | 型付き状態と主定理の合成、旧全導出/遷移の埋め込みはL20/L60/L70。義務全体を今回閉鎖したとは数えない |
+| O016のA-L | 現在の67モジュールと旧7宣言を8,019件照合した | L00b末と後続各L段のA-L、信頼条件の新旧対照は`.15`/L70 |
+| O010/O160の所要の記録 | 通常の外側の時間を本節へ記録した | 能動時間の比の較正・全体見込みの更新は取りまとめ |
+| 外部の三モデルのtyped/exists/no_targetsとexternal_adequate | 三欄とno-exitの言明・CoreAssumptionsへの供給・型付き入力の具体化を置いた。モデルの充足とadequateの一般補題は未完 | 第5節どおりL60/L70。第四の仮定にせず、型の構造から導く |
+| σ/Atと保持値 | 今回は実装していない | **次の`.02b-at`**。新しい値/計算をGround・Capture・全構文操作・三族・TypedFacts・Declared正則性へ同時に追加する。現在のGroundは全注釈のWFを検査するため、単なるvarなしへ弱めない |
+| ExternalWFのProgram.WellTypedとの接続、宣言と外側kindの供給 | 補助のWFとkindを今回接続済みの全宣言の適格性とは数えない | `.03`。第24節軽2のKを宣言のkind列へ固定する義務を維持 |
+| 第24節のRV-values中1/中2・軽1〜5 | 全7行の担当と依存を変更していない。この表でexternalへ新たに割り当てられた行はない | kind表付き埋め込みはL20/L70、関数型の対応はclosures/`.11`/L20/L70、場所のDeclaredはclosures/L20、骨格のエフェクトはL50、旧lamのNamesWFはL20/L70 |
+| handlers/closuresと保存・effect_soundness/step_sound | 外部遷移を既存Stepへ加えたが全状態の保存の証明は未主張 | 既定の各群・`.14`/L20/L60/L70。外部oracleの応答の条件をstep_soundへ渡し、σ/Ebの固定と無事象を保つ |
+| 提供範囲・交換・CLIと受け入れ | 今回のLeanの境界を実CLIや全比較の成功とは呼ばない | 既定のR段/L70、独立レビュー・work・取り込み・受け入れは取りまとめ・設計者 |
+
+### 計画との差と外側の時間
+
+5導出・三族39場合・TypedFacts・3遷移・既定ビルドという起動表の範囲は変更していない。補助の具体化はsignatures第25節に集めた。Groundと外部の型の全入れ子のDeclaredを外部の入力条件に必要な範囲で同じ群に置き、後続のσ/Atの葉は追加していない。主な定理や提供範囲の変更、新しい公理、精密な外部状態、第四の外部仮定を追加していない。
+
+最初の時計の取得は2026-10-31 **07:47:58 JST**（[開始記録](02b-external-start.json)）、最終検査終了は **08:06:46 JST** で、その間の外側の時間は **1,128.10秒（約18.80分）** だった。時計の取得より前にも共通依頼文等を読んでおり、その初動の時間は採取していない。文書・依頼の仕上げを含む受け渡し時点は `02b-external-delivery.json` に残す。能動時間と待ちを分離していないため、能動時間の実測・較正の比とは扱わない。見込み2〜3時間の上端の2倍（6時間）には達していない。
+
+
+### レビューの所見の対応（RV-L00b.02b-external、2026-10-31）
+
+[群末レビュー](../reviews/RV-L00b.02b-external.md)は**条件付き可（重なし、中1・軽4）**であった。plan「計画の変更と取りまとめへの確認点」の2026-10-31の先頭の判断に従い、以下を修正した。変更はsignatures.md、本小節、境界の補助入力と今回の検査記録だけである。本番のLean・処理系・現行設計書・plan.mdを変えず、gitの操作、work、次の群の実装は行っていない。
+
+| 所見 | 直した箇所 | 対応・残る義務 |
+|---|---|---|
+| 中1 | signatures **第25節のレビュー後の扱い・第25.3節・第25.4節の決定の表、第24節の義務の対応表、第12.2節のexternalの行と後続`.04`/`.05`/L60の表**。第5節の署名にも暫定の注記 | 篩付きの型を外部境界で受け付け、受信後の全入れ子の篩の所属検査を必須にする案を固定した。external_typedの結論は全入れ子の篩を除いた型（carrier）までへ弱め、E_Externalで結果・Mapの鍵・dataの欄等の述語を閉じて評価し、違反はerrにする。信頼条件と遷移・stepの本番の改訂を`.04`・`.05`でそろえ、L60のModel/ModelTargets/ModelHttpで三条件の充足と検査後の所属・違反時のerrを示す。R50・L70で表層・交換を照合する。**現行の本番が篩までを信頼するのは、その改訂までの暫定である**。本番の改訂を今回済ませたとは数えない |
+| 軽1 | signatures **第25.1節、第24節の対応表** | L70が示すのは「処理系が受理する外部署名ならExternalSignature.WFを満たす」という向きだけとした。dataのUnitや予算等で補助判断の上限が広いため、逆向きの受理は主張しない |
+| 軽2 | signatures **第25.2節、第24節の対応表** | 現行ExternalCallAdmissible.typesは空のΓで検査し、SignatureInstanceは呼出し側のΓを使うことを明記した。現在は単相・ts=[]なので影響しない。多相の外部宣言を加える改造でTypeAnnotations P C Γ tsへ改め、SignatureInstanceと文脈をそろえ、外側の値依存を含む移送とmapを証明し直す義務を残した |
+| 軽3 | signatures **第12.2節の`.02b-closures`の行、第24節の対応表** | C_DependentAppの実引数をHasTypeTelArgsQで検査してE_ExternalApplyの後のC_Externalへ渡す道筋を固定した。Tel.argumentsとVsを使う場合は、文脈の正則性から各引数のAnnotationを得てTelArgsを作る逆向きの補題を同じ群で閉じる。L20はこの接続と捕捉環境の具体化からE_ExternalApplyの保存を示す。今回のHasTypeTelArgsQ.argumentsの一方向だけで代用しない |
+| 軽4 | **02b-external-boundary.leanのStatefulとRecursive**、signatures第24節の対応表 | `get(c: Cell) -> Integer uses State`のExternalSignature.WF（Stateful.get_wf）、ハンドルを渡すC_Externalの型付け（Stateful.get_call_typed）、自分自身を欄に持つ`Nil | Cons(L)`がすべてのcomponent/unitについてExternalValueTypeを持たないこと（Recursive.recursive_rejected）を追加し、Leanで検査した |
+
+第24節の元のRV-valuesの7行は維持し、今回の5行を同じ義務の表へ追加した。上の実装時点の「残りと送り先」の表は当時の記録であり、外部の受信検査とE_ExternalApplyの接続の最新の割り当てはこの小節とsignatures第24節を正とする。受信後の所属検査は後続の未実施の義務であり、今回の文書の修正を検査の実装・三モデルの充足・再レビューによる受け入れとは扱わない。
+
+境界の3例は既存の本番の宣言表・WF・型付けの導出を使う。非空usesの逆向きが構成できない、Stateの効果が正規形でなくなる、ハンドルのTelArgsからC_Externalへ接続できない、自己参照dataを有限な受渡し型として通す、という退行を捕まえる。以前のpureSigは引数なし・emptyであり、これらを確かめていなかった。本番の検査用API・フラグ・差し込み口は追加していない。
+
+実行したコマンドはリポジトリの根から見て次の相対入力である。
+
+```sh
+cd formal
+lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-external-boundary.lean
+```
+
+**終了0、外側1.024秒、警告0件**であった。境界入力の87宣言の公理依存も照合し、使用はpropext・Quot.sound・Classical.choiceだけで、独自公理・sorryAxはなかった。[最終出力](02b-external-r2-boundary.log)と[入力・出力のSHA-256、コマンド・終了・時間・公理依存の記録](02b-external-r2-validation.json)を保存した。初回の局所検査は、名前空間の前のdocコメント、具体化後のdoneのAnnotationの明示、再帰型の拒否の帰納法の書き方で失敗した。コメントを通常のコメントにし、終端の型を明示し、有限な導出の帰納仮定を直接使って修正した後、上の最終入力で成功を確かめた。
+
+前回の境界61宣言の記録は実装時点の入力に対する結果であり、今回の追加後の境界はr2の87宣言の記録を正とする。本番は変更していないので、前回の本番397入力・640 jobsのビルド・8,019宣言のA-Lを再実行していない。変更禁止範囲と本番入力のハッシュ、相対リンク、今回の入力・出力の一致は [r2の範囲の照合](02b-external-r2-scope-check.json) に記録する。
+
+最初の時計の取得08:25:16 JSTから、この文書と入力の照合までの外側の時間は約5.10分であった。能動時間と待ちを分離した値ではない。今回の30分以内の目安を超えていない。再レビューと受け入れは未実施である。
+
+## .02b-external の作業末の work（取りまとめ、2026-10-31）
+
+- 基準: `9184a3ced427d4897fcb234d2ac277f95b60ac0f`。作業ツリーは群の実装を終えた状態。その後の RV-L00b.02b-external の所見の対応は文書と境界の補助入力だけで、本番の Lean は変えていない。
+- コマンド: `/usr/bin/time -l scripts/check.sh --level work --base 9184a3ced427d4897fcb234d2ac277f95b60ac0f`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
+- 結果: 終了0（selected checks passed）。外側の時間は38.66秒、最大常駐量は983,564,288バイト（約0.92 GiB）。
+- 計画からのずれ: なし。

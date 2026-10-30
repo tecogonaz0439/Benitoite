@@ -1,0 +1,1132 @@
+--- before/formal/Benitoite/Release/Refinement/Capture.lean
++++ after/formal/Benitoite/Release/Refinement/Capture.lean
+@@ -41,6 +41,8 @@
+     | .bytesV bs => .bytesV bs
+     | .dict i ts vs => .dict i (ts.map cap.closeTy) (closeVals cap vs)
+     | .super v s => .super (closeVal cap v) s
++    | .externalRef f ts => .externalRef f (ts.map cap.closeTy)
++    | .externalHandle h ts => .externalHandle h (ts.map cap.closeTy)
+     | .checked t => .checked t
+     | .checkedRequest t v => .checkedRequest t (closeVal cap v)
+   def closeVals (cap : Capture) : List Val → List Val
+@@ -62,6 +64,7 @@
+   | .use v m => .use (closeVal q.capture v) m
+   | .handle m h => .handle m h
+   | .resume k v => .resume (closeVal q.capture k) (closeVal q.capture v)
++  | .externalCall f ts vs => .externalCall f (ts.map q.capture.closeTy) (closeVals q.capture vs)
+   | .meth v m ts es vs => .meth (closeVal q.capture v) m (ts.map q.capture.closeTy)
+       (es.map q.capture.closeEff) (closeVals q.capture vs)
+ 
+--- before/formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean
++++ after/formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean
+@@ -1,4 +1,5 @@
+ import Benitoite.Release.Refinement.TypedFacts
++import Benitoite.Release.Refinement.ExternalResponse
+ 
+ /-!
+ # 組込みの制約と値注釈の移送の条件
+@@ -37,7 +38,7 @@
+ 
+ /-- 既存の組込み・応答の条件は、それらの判断を追加する群で同じ構造体へ加える。 -/
+ structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
+-    Builtins.ValueAssumptions P B
++    Builtins.ValueAssumptions P B, Builtins.ExternalAssumptions P B
+ 
+ /-- 主定理のCoreAssumptionsから、補助の移送が使う四条件を供給する。 -/
+ theorem Builtins.CoreAssumptions.values {P B} (h : Builtins.CoreAssumptions P B) :
+--- before/formal/Benitoite/Release/Refinement/Declared.lean
++++ after/formal/Benitoite/Release/Refinement/Declared.lean
+@@ -66,7 +66,9 @@
+   def Ty.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop
+     | .base _ | .bytes | .opaque _ _ | .scoped _ _ _ | .pathBases | .scopePattern _ | .tvar _ => True
+     | .data d as => (∃ n, P.DataArity d n ∧ as.length = n) ∧ declaredTys P C Γ as
+-    | .external _ as | .tapp _ as => declaredTys P C Γ as
++    | .external id as => (∃ td, P.externalType id = some td ∧ td.id = id ∧ as.length = td.arity) ∧
++        declaredTys P C Γ as
++    | .tapp _ as => declaredTys P C Γ as
+     | .ctor (.data d) => ∃ n, P.DataArity d n
+     | .ctor _ => True
+     | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.Declared P C Γ a
+--- before/formal/Benitoite/Release/Refinement/DeclaredTransport.lean
++++ after/formal/Benitoite/Release/Refinement/DeclaredTransport.lean
+@@ -313,7 +313,9 @@
+     | list a | reference a | lazy a | set a | dict _ a => exact Ty.Declared.rawSubstV (a := a) h hm
+     | data d as => exact ⟨by simpa only [substVTys_eq_map, List.length_map] using h.1,
+         declaredTys_rawSubstV (as := as) h.2 hm⟩
+-    | external _ as | tapp _ as => exact declaredTys_rawSubstV (as := as) h hm
++    | external _ as => exact ⟨by simpa only [substVTys_eq_map, List.length_map] using h.1,
++        declaredTys_rawSubstV (as := as) h.2 hm⟩
++    | tapp _ as => exact declaredTys_rawSubstV (as := as) h hm
+     | dependentFn t => exact Tel.Declared.rawSubstV (t := t) h hm
+     | fn ns ps r e => exact ⟨declaredTys_rawSubstV (as := ps) h.1 hm,
+         Ty.Declared.rawSubstV (a := r) h.2.1 hm, declaredEff_rawSubstV (e := e) h.2.2 hm⟩
+@@ -377,7 +379,9 @@
+     | ctor c => cases c <;> exact h
+     | list a | reference a | lazy a | set a | dict _ a => exact Ty.Declared.norm (a := a) h
+     | data d as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1, declaredTys_norm (as := as) h.2⟩
+-    | external _ as | tapp _ as => exact declaredTys_norm (as := as) h
++    | external _ as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1,
++        declaredTys_norm (as := as) h.2⟩
++    | tapp _ as => exact declaredTys_norm (as := as) h
+     | dependentFn t => exact Tel.Declared.norm (t := t) h
+     | fn ns ps r e => exact ⟨declaredTys_norm (as := ps) h.1, Ty.Declared.norm (a := r) h.2.1, declaredEff_norm (e := e) h.2.2⟩
+     | cont b t e => exact ⟨Ty.Declared.norm (a := b) h.1, Ty.Declared.norm (a := t) h.2.1, declaredEff_norm (e := e) h.2.2⟩
+--- before/formal/Benitoite/Release/Refinement/Embedding.lean
++++ after/formal/Benitoite/Release/Refinement/Embedding.lean
+@@ -77,7 +77,9 @@
+ def embedProgram (P : Benitoite.Release.Program) : Program :=
+   ⟨fun f => (P.defs f).map embedDef, fun c => (P.cons c).map embedConDecl,
+     fun o => (P.ops o).map embedOpDecl, P.effects, fun c => (P.classes c).map embedClassDecl,
+-    fun i => (P.impls i).map embedImplDecl⟩
++    (fun i => (P.impls i).map embedImplDecl), []⟩
++
++@[simp] theorem embedProgram_externals (P : Benitoite.Release.Program) : (embedProgram P).externals = [] := rfl
+ 
+ def embedFrame : Benitoite.Release.Frame → Frame
+   | .letF m => .letF (.pure (embedComp m))
+--- before/formal/Benitoite/Release/Refinement/External.lean
++++ after/formal/Benitoite/Release/Refinement/External.lean
+@@ -0,0 +1,143 @@
++import Benitoite.Release.Refinement.Admissible
++
++/-!
++# 外部宣言の有限な表と受け渡す型
++
++名目IDと成分内のresourceの対応を保ち、所有権ヒープは表現しない。
++型の展開は有限な導出と全構成子の有限列で検査する。有限の同名の入れ子は除外しない。
++-/
++namespace Benitoite.Release.Refinement
++noncomputable section
++
++def typeEnv (ts : List Ty) : SubstEnv := typeEnvAt 0 ts []
++
++/-- 外部ABIに渡せる基本型。Unitは結果位置で別に認める。 -/
++def ExternalScalar : BaseTy → Prop
++  | .integer | .integer8 | .integer16 | .integer32 | .unsignedInteger16
++  | .unsignedInteger32 | .unsignedInteger64 | .byte | .float | .float32
++  | .boolean | .character | .string => True
++  | _ => False
++
++/-- 篩はABIの鍵のcarrierを変えない。浮動小数と複合型は鍵として渡さない。 -/
++def ExternalMapKey : Ty → Prop
++  | .base b => ExternalScalar b ∧ b ≠ .float ∧ b ≠ .float32
++  | .refined a _ => ExternalMapKey a
++  | _ => False
++
++/-- 有限に展開できる受渡し型。ABIのUnitの省略等の細部は交換側で照合する。 -/
++inductive ExternalValueType (P : Program) (component : ComponentId) : Bool → Ty → Prop where
++  | scalar {unit b} : ExternalScalar b → ExternalValueType P component unit (.base b)
++  | unit : ExternalValueType P component true (.base .unit)
++  | bytes {unit} : ExternalValueType P component unit .bytes
++  | handle {unit id ts td} : P.externalType id = some td → td.component = component →
++      td.id = id → td.arity = 0 → ts = [] → ExternalValueType P component unit (.external id ts)
++  | list {unit a} : ExternalValueType P component false a → ExternalValueType P component unit (.list a)
++  | map {unit k v} : ExternalMapKey k → ExternalValueType P component false v →
++      ExternalValueType P component unit (.map k v)
++  | flags {unit d ts} (cs : List ConName) : cs.Nodup → 1 ≤ cs.length → cs.length ≤ 32 →
++      (∀ c, c ∈ cs ↔ ∃ cd, P.cons c = some cd ∧ cd.data = d) → P.DataArity d ts.length →
++      (∀ c cd, P.cons c = some cd → cd.data = d → cd.args = []) →
++      ExternalValueType P component unit (.set (.data d ts))
++  | data {unit d ts} (cs : List ConName) : cs.Nodup → cs ≠ [] →
++      (∀ c, c ∈ cs ↔ ∃ cd, P.cons c = some cd ∧ cd.data = d) → P.DataArity d ts.length →
++      (∀ c cd, P.cons c = some cd → cd.data = d →
++        ∀ a ∈ cd.args, ExternalValueType P component true (a.subst ts [])) →
++      ExternalValueType P component unit (.data d ts)
++  | refined {unit a p} : ExternalValueType P component unit a →
++      ExternalValueType P component unit (.refined a p)
++
++/-- usesの過不足を検査するための、型の全入れ子にある外部型の出現。 -/
++inductive ExternalOccurrence (P : Program) : Ty → List ExternalPathStep → ExternalId → Prop where
++  | root {id ts} : ExternalOccurrence P (.external id ts) [] id
++  | element {a path id} : ExternalOccurrence P a path id → ExternalOccurrence P (.list a) (.element :: path) id
++  | key {a b path id} : ExternalOccurrence P a path id → ExternalOccurrence P (.map a b) (.key :: path) id
++  | value {a b path id} : ExternalOccurrence P b path id → ExternalOccurrence P (.map a b) (.value :: path) id
++  | field {d ts c cd i a path id} : P.cons c = some cd → cd.data = d → cd.ntys = ts.length →
++      cd.args[i]? = some a → ExternalOccurrence P (a.subst ts []) path id →
++      ExternalOccurrence P (.data d ts) (.field c i :: path) id
++  | refined {a p path id} : ExternalOccurrence P a path id → ExternalOccurrence P (.refined a p) path id
++
++/-- Telの宣言順の番号と結果位置を保持する。 -/
++inductive ExternalUseAt (P : Program) : Nat → Tel → ExternalUse → Prop where
++  | argument {n name a rest path id} : ExternalOccurrence P a path id →
++      ExternalUseAt P n (.param name a rest) ⟨.argument n, path, .borrow, id⟩
++  | next {n name a rest use} : ExternalUseAt P (n+1) rest use →
++      ExternalUseAt P n (.param name a rest) use
++  | result {n a e path id} : ExternalOccurrence P a path id →
++      ExternalUseAt P n (.done a e) ⟨.result, path, .own, id⟩
++
++inductive ExternalTelWF (P : Program) (component : ComponentId) (effect : Eff) : Tel → Prop where
++  | done {a e} : ExternalValueType P component true a → e = effect →
++      ExternalTelWF P component effect (.done a e)
++  | param {name a rest} : ExternalValueType P component false a →
++      ExternalTelWF P component effect rest → ExternalTelWF P component effect (.param name a rest)
++
++structure ExternalSignature.WF (P : Program) (d : ExternalSignature) : Prop where
++  monomorphic : d.tparams = []
++  kinds : d.kinds = []
++  annotation : Ty.Annotation P [] [] (.dependentFn d.parameters)
++  kinded : Ty.HasKind P [] (.dependentFn d.parameters) .value
++  uses_exact : ∀ use, use ∈ d.uses ↔ ExternalUseAt P 0 d.parameters use
++  uses_unique : d.uses.Nodup
++  shape : ExternalTelWF P d.component (if d.uses = [] then Eff.empty else (EffR.mk (fun a => match a with | .name n (.fixed .top) => decide (n = stateEff) | _ => false) [])) d.parameters
++
++structure Program.ExternalWF (P : Program) : Prop where
++  unique : (P.externals.map Prod.fst).Nodup
++  keys : ∀ key decl, (key, decl) ∈ P.externals → match key, decl with
++    | .type id, .type td => td.id = id ∧ td.arity = 0
++    | .function id, .function id' d => id = id' ∧ ExternalSignature.WF P d
++    | _, _ => False
++
++private theorem externalLookup_mem {P : Program} {key : ExternalKey} {decl : ExternalDecl}
++    (h : P.externals.lookup key = some decl) : (key, decl) ∈ P.externals := by
++  obtain ⟨l₁, l₂, he, _⟩ := List.lookup_eq_some_iff.mp h
++  rw [he]
++  exact List.mem_append_right _ (List.mem_cons_self)
++
++theorem Program.ExternalWF.type_lookup {P : Program} (hw : P.ExternalWF) {id td}
++    (h : P.externalType id = some td) : td.id = id ∧ td.arity = 0 := by
++  unfold Program.externalType at h
++  cases he : P.externals.lookup (.type id) with
++  | none => simp [he] at h
++  | some decl =>
++    cases decl with
++    | type d =>
++      simp only [he, Option.some.injEq] at h
++      cases h
++      exact hw.keys _ _ (externalLookup_mem he)
++    | function _ _ => simp [he] at h
++
++theorem Program.ExternalWF.function_lookup {P : Program} (hw : P.ExternalWF) {f d}
++    (h : P.externalFunction f = some d) : d.WF P := by
++  unfold Program.externalFunction at h
++  cases he : P.externals.lookup (.function f) with
++  | none => simp [he] at h
++  | some decl =>
++    cases decl with
++    | type _ => simp [he] at h
++    | function id sg =>
++      simp only [he, Option.some.injEq] at h
++      cases h
++      exact (hw.keys _ _ (externalLookup_mem he)).2
++
++/-- 宣言は単相であるが、コアの呼出しは型引数の個数・kind・制約を明示して照合する。 -/
++structure ExternalCallAdmissible (P : Program) (B : Builtins) (C : List TParam)
++    (d : ExternalSignature) (ts : List Ty) : Prop where
++  count : ts.length = d.tparams.length
++  kinds : TypeArgsKinded P C ts d.kinds
++  constraints : SatAll B C ts d.tparams
++  types : TypeAnnotations P C [] ts
++
++theorem ExternalCallAdmissible.types_nil {P B C d ts} (h : ExternalCallAdmissible P B C d ts)
++    (hw : d.WF P) : ts = [] := by
++  have := h.count
++  rw [hw.monomorphic] at this
++  exact List.eq_nil_of_length_eq_zero this
++
++theorem ExternalCallAdmissible.map {P B C d ts} (h : ExternalCallAdmissible P B C d ts)
++    (hw : d.WF P) (g : Ty → Ty) : ExternalCallAdmissible P B C d (ts.map g) := by
++  rw [h.types_nil hw] at *
++  exact h
++
++end
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/ExternalResponse.lean
++++ after/formal/Benitoite/Release/Refinement/ExternalResponse.lean
+@@ -0,0 +1,40 @@
++import Benitoite.Release.Refinement.Typing
++import Benitoite.Release.Refinement.Ground
++
++/-!
++# 外部応答の型付き入力と三つの信頼条件
++
++errは実行時エラー、exitは外部応答では禁止する。正常応答の存在と決定性は要求しない。
++-/
++namespace Benitoite.Release.Refinement
++
++noncomputable def ExternalSignature.instantiate (d : ExternalSignature) (ts : List Ty) (vs : List Val) :
++    Option (Ty × Eff) :=
++  if ts.length = d.tparams.length then Tel.instantiate (Tel.bind (typeEnv ts) d.parameters) vs else none
++
++structure ExternalArgs (P : Program) (B : Builtins) (Ψ : StoreTy) (d : ExternalSignature)
++    (ts : List Ty) (vs : List Val) (a : Ty) (e : Eff) : Prop where
++  admissible : ExternalCallAdmissible P B [] d ts
++  arguments : HasTypeTelArgsQ P B Ψ Qempty [] [] [] vs (Tel.bind (typeEnv ts) d.parameters) a e
++  ground : ∀ v ∈ vs, v.Ground
++  types : ∀ t ∈ ts, t.WF 0 0 0 ∧ t.Canonical
++  result : a.WF 0 0 0 ∧ a.Canonical
++  effect : Eff.WF 0 0 0 e ∧ e.Canonical
++
++def Outcome.Typed (P : Program) (B : Builtins) (Ψ : StoreTy) (out : Outcome) (a : Ty) : Prop :=
++  match out with
++  | .val v => HasTypeV P B Ψ [] [] [] v a ∧ v.Ground
++  | .err _ | .exit _ => True
++
++structure Builtins.ExternalAssumptions (P : Program) (B : Builtins) : Prop where
++  external_typed : ∀ Ψ f d ts vs a e out obs,
++    P.ExternalWF → P.externalFunction f = some d → ExternalArgs P B Ψ d ts vs a e →
++    B.externalResponse f ts vs out obs → Outcome.Typed P B Ψ out a ∧ (∀ n : Int, out ≠ .exit n)
++  external_exists : ∀ Ψ f d ts vs a e,
++    P.ExternalWF → P.externalFunction f = some d → ExternalArgs P B Ψ d ts vs a e →
++    ∃ out obs, B.externalResponse f ts vs out obs
++  external_no_targets : ∀ Ψ f d ts vs a e out obs,
++    P.ExternalWF → P.externalFunction f = some d → ExternalArgs P B Ψ d ts vs a e →
++    B.externalResponse f ts vs out obs → obs = []
++
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/Ground.lean
++++ after/formal/Benitoite/Release/Refinement/Ground.lean
+@@ -0,0 +1,75 @@
++import Benitoite.Release.Refinement.Admissible
++
++/-!
++# 実引数と応答の閉性
++
++型・行・範囲・値の自由変数を構文で検査する。場所番号と名目IDは束縛変数ではない。
++-/
++namespace Benitoite.Release.Refinement
++
++private def localBound (n : Nat) : LocalRef → Prop
++  | .bound i => i < n
++  | .loc _ => True
++private def builderBound (nt n : Nat) : BuilderKind → Prop
++  | .list a => a.WF 0 nt n
++  | _ => True
++
++mutual
++  def Val.ClosedAt (nt nv : Nat) : Val → Prop
++    | .var i => i < nv
++    | .const _ | .loc _ | .bytesV _ | .checked _ => True
++    | .fnRef _ ts es => (∀ a ∈ ts, a.WF 0 nt nv) ∧ (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical)
++    | .prim _ ts es rs => (∀ a ∈ ts, a.WF 0 nt nv) ∧
++        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ r ∈ rs, r.WF)
++    | .externalRef _ ts | .externalHandle _ ts => ∀ a ∈ ts, a.WF 0 nt nv
++    | .lam ns ps body => NamesWF ns ps ∧ (∀ a ∈ ps, a.WF 0 nt nv) ∧
++        Comp.ClosedAt nt (nv + ps.length) body
++    | .dependentLam t body => Tel.WF 0 nt nv t ∧ Comp.ClosedAt nt (nv + telBinders t) body
++    | .closure t q => Tel.WF 0 0 0 t ∧ Closure.ClosedAt (telBinders t) q
++    | .con _ ts vs | .dict _ ts vs => (∀ a ∈ ts, a.WF 0 nt nv) ∧ Val.ClosedList nt nv vs
++    | .list vs | .setV vs => Val.ClosedList nt nv vs
++    | .op _ ts => ∀ a ∈ ts, a.WF 0 nt nv
++    | .raise a e => a.WF 0 nt nv ∧ e.WF 0 nt nv
++    | .mapV ks vs => Val.ClosedList nt nv ks ∧ Val.ClosedList nt nv vs
++    | .super v _ => v.ClosedAt nt nv
++    | .checkedRequest _ req => req.ClosedAt 0 0
++  def Val.ClosedList (nt nv : Nat) : List Val → Prop
++    | [] => True
++    | v :: vs => v.ClosedAt nt nv ∧ Val.ClosedList nt nv vs
++  def Comp.ClosedAt (nt nv : Nat) : Comp → Prop
++    | .builderLet b m => builderBound nt nv b ∧ m.ClosedAt nt (nv+1)
++    | .builderOp b _ r vs => builderBound nt nv b ∧ localBound nv r ∧ Val.ClosedList nt nv vs
++    | .ret v | .escape v => v.ClosedAt nt nv
++    | .letIn m n => m.ClosedAt nt nv ∧ n.ClosedAt nt (nv+1)
++    | .app v vs => v.ClosedAt nt nv ∧ Val.ClosedList nt nv vs
++    | .ite v m n => v.ClosedAt nt nv ∧ m.ClosedAt nt nv ∧ n.ClosedAt nt nv
++    | .match v arms => v.ClosedAt nt nv ∧ Arm.ClosedList nt nv arms
++    | .lazyC m => m.ClosedAt nt nv
++    | .use v m => v.ClosedAt nt nv ∧ m.ClosedAt nt nv
++    | .handle m cs => m.ClosedAt nt nv ∧ Clause.ClosedList nt nv cs
++    | .resume k v => k.ClosedAt nt nv ∧ v.ClosedAt nt nv
++    | .meth v _ ts es vs => v.ClosedAt nt nv ∧ (∀ a ∈ ts, a.WF 0 nt nv) ∧
++        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ Val.ClosedList nt nv vs
++    | .externalCall _ ts vs => (∀ a ∈ ts, a.WF 0 nt nv) ∧ Val.ClosedList nt nv vs
++  def Arm.ClosedList (nt nv : Nat) : List Arm → Prop
++    | [] => True
++    | .mk alts guard body :: arms =>
++        (match guard with | none => True | some g => g.ClosedAt nt (nv + Benitoite.Release.Arm.bindersOf alts)) ∧
++        body.ClosedAt nt (nv + Benitoite.Release.Arm.bindersOf alts) ∧ Arm.ClosedList nt nv arms
++  def Clause.ClosedList (nt nv : Nat) : List Clause → Prop
++    | [] => True
++    | .mk _ arity ntys body :: cs => body.ClosedAt (nt+ntys) (nv+arity+1) ∧ Clause.ClosedList nt nv cs
++    | .fail e body :: cs => e.WF 0 nt nv ∧ body.ClosedAt (nt+1) (nv+2) ∧ Clause.ClosedList nt nv cs
++  def Capture.Closed : Capture → Prop
++    | .mk vs => captureSlotsClosed vs
++  def captureSlotsClosed : List (Option Val) → Prop
++    | [] => True
++    | none :: vs => captureSlotsClosed vs
++    | some v :: vs => v.ClosedAt 0 0 ∧ captureSlotsClosed vs
++  def Closure.ClosedAt (inputs : Nat) : Closure → Prop
++    | .mk cap m => cap.Closed ∧ m.ClosedAt 0 (cap.values.length + inputs)
++end
++
++def Val.Ground (v : Val) : Prop := v.ClosedAt 0 0
++
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/MethodArguments.lean
++++ after/formal/Benitoite/Release/Refinement/MethodArguments.lean
+@@ -54,6 +54,42 @@
+ theorem Tel.bind_done (r e θ) : Tel.bind θ (.done r e) = .done (r.bind θ) (Eff.bind θ e) := rfl
+ 
+ /-- 部分観測のNoneを保ったまま、逐次具体化と外側の値置換を交換する。 -/
++theorem Tel.bind_norm (t : Tel) (θ : SubstEnv) : Tel.bind θ t.norm = Tel.bind θ t := Tel.norm_rawBind θ t
++
++theorem Tel.bind_renaming (t : Tel) (k c : Nat) :
++    Tel.bind (renEnv (shiftIndex k c)) t = (Tel.shiftV k c t).norm := by
++  rw [Tel.shiftV_eq_rawBind]
++  rfl
++
++/-- paramの一束縛を除く具体化と、外側の単調な移動の交換。 -/
++theorem Tel.open_shift (t : Tel) (v : Val) (k c : Nat) :
++    Tel.bind (Tel.argumentsEnv (v.rename (shiftIndex k c))) (Tel.shiftV k (c+1) t) =
++      Tel.shiftV k c (Tel.bind (Tel.argumentsEnv v) t) := by
++  have hh := Tel.bind_open_exchange t (renEnv (shiftIndex k c)).values v.toTerm?
++  have hv : (v.rename (shiftIndex k c)).toTerm? =
++      v.toTerm?.bind (termBind? (renEnv (shiftIndex k c)).values) := by
++    rw [Val.toTerm_rename]
++    cases v.toTerm? <;> simp [renEnv, termBind?_renaming]
++  have hup : SubstEnv.valuesOnly (upValues (renEnv (shiftIndex k c)).values) =
++      renEnv (shiftIndex k (c+1)) := by
++    rw [renEnv_values, upValues_shiftIndex]
++    rfl
++  rw [hup, Tel.bind_renaming, Tel.bind_norm] at hh
++  rw [← argumentsEnv_eq] at hh
++  change Tel.bind (renEnv (shiftIndex k c)) (Tel.bind (Tel.argumentsEnv v) t) = _ at hh
++  rw [Tel.bind_renaming, Tel.norm_shiftV] at hh
++  have hn : (Tel.bind (Tel.argumentsEnv v) t).norm = Tel.bind (Tel.argumentsEnv v) t := Tel.norm_idem _
++  rw [hn] at hh
++  rw [argumentsEnv_eq, hv]
++  exact hh.symm
++
++theorem Tel.open_subst (t : Tel) (v : Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
++    Tel.bind (Tel.argumentsEnv (v.subst ν ρ)) (Tel.bind (valEnv (upSubst 1 ν)) t) =
++      Tel.bind (valEnv ν) (Tel.bind (Tel.argumentsEnv v) t) := by
++  rw [argumentsEnv_eq, argumentsEnv_eq, Val.toTerm_subst_optional]
++  rw [valEnv_upSubst_one]
++  exact (Tel.bind_open_exchange t (valEnv ν).values v.toTerm?).symm
++
+ theorem Tel.arguments_subst (t : Tel) (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
+     Tel.arguments (Tel.bind (valEnv ν) t) (Val.substList ν vs ρ) =
+       (Tel.arguments t vs).map (fun (as, r, e) => (as.map (substTyValues ν), substTyValues ν r, substEffValues ν e)) := by
+@@ -163,5 +199,31 @@
+   rw [hl] at hh
+   exact hh
+ 
++theorem Tel.instantiate_eq_arguments (t : Tel) (vs : List Val) :
++    Tel.instantiate t vs = (Tel.arguments t vs).map (fun (_, r, e) => (r, e)) := by
++  induction vs generalizing t with
++  | nil => cases t <;> simp [Tel.instantiate, Tel.arguments]
++  | cons v vs ih =>
++    cases t with
++    | done r e => simp [Tel.instantiate, Tel.arguments]
++    | param n a t =>
++      simp only [Tel.instantiate, Tel.arguments, Option.map_map, ih]
++      rfl
++
++theorem Tel.instantiate_subst (t : Tel) (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
++    Tel.instantiate (Tel.bind (valEnv ν) t) (Val.substList ν vs ρ) =
++      (Tel.instantiate t vs).map (fun (r, e) => (substTyValues ν r, substEffValues ν e)) := by
++  simp only [Tel.instantiate_eq_arguments, Tel.arguments_subst, Option.map_map]
++  rfl
++
++theorem Tel.instantiate_shift {t vs r e} (h : Tel.instantiate t vs = some (r, e)) (k c : Nat) :
++    Tel.instantiate (Tel.shiftV k c t) (Val.renameList (shiftIndex k c) vs) =
++      some (r.shiftV k c, e.shiftV k c) := by
++  rw [Tel.instantiate_eq_arguments] at h ⊢
++  obtain ⟨⟨as, r', e'⟩, hh, he⟩ := Option.map_eq_some_iff.mp h
++  cases he
++  rw [Tel.arguments_shift hh k c]
++  rfl
++
+ end
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/Narrowing.lean
++++ after/formal/Benitoite/Release/Refinement/Narrowing.lean
+@@ -158,6 +158,8 @@
+     | .V_Fun hd hn ha hi => exact .V_Fun hd hn (by simpa only [hm.length] using ha) (hm.signature hi)
+     | .V_Prim hb hr hn ha hi => exact .V_Prim hb hr hn (by simpa only [hm.length] using ha) (hm.signature hi)
+     | .V_Op ho hn ha hi => exact .V_Op ho hn ha (hm.signature hi)
++    | .V_ExternalRef hd hw ha hi => exact .V_ExternalRef hd hw ha (hm.signature hi)
++    | .V_ExternalHandle h td hd hc hr hn ha => exact .V_ExternalHandle h td hd hc hr hn (hm.annotation ha)
+     | .V_Map hk hv hn hs ha hb =>
+       exact .V_Map (context_each hk hA hstore hm hf)
+         (context_each hv hA hstore hm hf) hn hs (hm.annotation ha) (hm.annotation hb)
+@@ -226,6 +228,7 @@
+     | .C_Meth hv hc hmeth hn hs hi hr hargs hvs ha =>
+       exact .C_Meth (context_value hv hA hstore hm hf) hc hmeth hn hs (hm.signature hi)
+         (by simpa only [hm.length] using hr) hargs (context_values hvs hA hstore hm hf) (hm.annotation ha)
++    | .C_External hd hw ha hargs => exact .C_External hd hw ha (context_telArgs hargs hA hstore hm hf)
+     | .C_Sub ht hl hc hw hs hd =>
+       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
+       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
+@@ -238,6 +241,18 @@
+       simpa only [List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
+         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.map_cons, List.map_nil,
+         List.nil_append, List.cons_append] using hb'
++  private theorem context_telArgs {P B store Q C Γ Φ vs t a e}
++      (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
++      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
++      (hm : ContextMap P B store Q C Γ Δ Ξ)
++      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
++      HasTypeTelArgsQ P B store Q C Δ Ξ vs t a e := by
++    match h with
++    | .done ha => exact .done (hm.annotation ha)
++    | .param ha hv ht =>
++      exact .param (hm.annotation ha) (context_value hv hA hstore hm hf)
++        (context_telArgs ht hA hstore hm hf)
++
+ end
+ 
+ /-- 外側で検査した部分型による一位置の置換と、後続の束縛の列。 -/
+@@ -305,4 +320,11 @@
+     HasTypeCQ P B store Q C Δ Ξ R m a e L :=
+   context_comp h hA hstore (hn.contextMap hA hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+ 
++theorem HasTypeTelArgsQ.narrow {P B store Q C Γ Φ vs t a e Δ Ξ}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
++    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
++    HasTypeTelArgsQ P B store Q C Δ Ξ vs t a e :=
++  context_telArgs h hA hstore (hn.contextMap hA hstore)
++    (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
++
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/NarrowingObstruction.lean
++++ after/formal/Benitoite/Release/Refinement/NarrowingObstruction.lean
+@@ -14,6 +14,7 @@
+   | .V_Var hi ho => intro i he; cases he; exact ⟨_, hi, ho⟩
+   | .V_Const _ | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
+   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
++  | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
+   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ => intro i he; cases he
+   | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
+ 
+--- before/formal/Benitoite/Release/Refinement/Semantics.lean
++++ after/formal/Benitoite/Release/Refinement/Semantics.lean
+@@ -65,6 +65,17 @@
+   | E_Lam {q : Closure} {signature body ws k μ} :
+       q.view = .app (.closure signature body) ws → ws.length = signature.arity →
+       Step P B σ (.run q k μ) none (.run (body.apply ws) (markPush k) μ)
++  | E_ExternalApply {q : Closure} {f ts ws k μ} :
++      q.view = .app (.externalRef f ts) ws →
++      Step P B σ (.run q k μ) none (.run (Closure.pure (.externalCall f ts ws)) k μ)
++  | E_External {q : Closure} {f ts ws k μ decl v obs} :
++      q.view = .externalCall f ts ws → P.externalFunction f = some decl →
++      B.externalResponse f ts ws (.val v) obs →
++      Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
++  | E_ExternalErr {q : Closure} {f ts ws k μ decl r obs} :
++      q.view = .externalCall f ts ws → P.externalFunction f = some decl →
++      B.externalResponse f ts ws (.err r) obs →
++      Step P B σ (.run q k μ) none (.error [r] k μ)
+   | E_Fun {f ts es ws k μ d} {q : Closure} :
+       q.view = (.app (.fnRef f ts es) ws) →
+       P.defs f = some d →
+--- before/formal/Benitoite/Release/Refinement/Step.lean
++++ after/formal/Benitoite/Release/Refinement/Step.lean
+@@ -18,7 +18,7 @@
+   | none => some (some (.release v none), ok)
+   | some r => some (some (.release v (some r)), err r)
+ 
+-private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (rel : Val → Option ErrKind)
++private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (externalOracle : ExternalOracle) (rel : Val → Option ErrKind)
+     (fresh : Store → Nat) (q : Closure) : Comp → Cont → Store → Option (Option Event × State)
+   | (.builderLet kind body), k, μ =>
+       let l := fresh μ
+@@ -51,6 +51,15 @@
+   | (.ret _), [], _ => none
+   | (.app (.closure signature body) ws), k, μ =>
+       if ws.length = signature.arity then some (none, .run (body.apply ws) (markPush k) μ) else none
++  | (.app (.externalRef f ts) ws), k, μ =>
++      some (none, .run (Closure.pure (.externalCall f ts ws)) k μ)
++  | (.externalCall f ts ws), k, μ =>
++      match P.externalFunction f with
++      | none => none
++      | some _ => match externalOracle f ts ws with
++        | (.val v, _) => some (none, .run (Closure.pure (.ret v)) k μ)
++        | (.err r, _) => some (none, .error [r] k μ)
++        | (.exit _, _) => none
+   | (.app (.fnRef f ts es) ws), k, μ =>
+       match P.defs f with
+       | some d =>
+@@ -176,10 +185,10 @@
+           | some g => some (none, .run (Closure.mk (cap.extendMany ws) g)
+               (.guardF v cap arms (next+1) body :: k) μ)
+ 
+-/-- σは固定し、外部oracleを使う場合は外部の起動単位で追加する。 -/
+-def step (P : Program) (B : Builtins) (_σ : PathEnv) (oracle : Oracle) (_externalOracle : ExternalOracle)
++/-- σは固定し、外部応答も事象を発生させない。 -/
++def step (P : Program) (B : Builtins) (_σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle)
+     (rel : Val → Option ErrKind) (fresh : Store → Nat) : State → Option (Option Event × State)
+-  | .run q k μ => stepRun P B oracle rel fresh q q.view k μ
++  | .run q k μ => stepRun P B oracle externalOracle rel fresh q q.view k μ
+   | .matchRun v cap arms next k μ => stepMatch v cap arms next k μ
+   | .error rs (.release v :: k) σ =>
+       releaseStep rel v (.error rs k σ) (fun r => .error (rs ++ [r]) k σ)
+--- before/formal/Benitoite/Release/Refinement/Subst.lean
++++ after/formal/Benitoite/Release/Refinement/Subst.lean
+@@ -48,6 +48,8 @@
+     | .bytesV bs => .bytesV bs
+     | .dict i tys args => .dict i (tys.map (renameTy ξ)) (Val.renameList ξ args)
+     | .super v cl => .super (Val.rename ξ v) cl
++    | .externalRef f tys => .externalRef f (tys.map (renameTy ξ))
++    | .externalHandle h tys => .externalHandle h (tys.map (renameTy ξ))
+     | .checked t => .checked t
+     | .checkedRequest t c => .checkedRequest t c
+ 
+@@ -68,6 +70,7 @@
+     | .use v m => .use (Val.rename ξ v) (Comp.rename ξ m)
+     | .handle m h => .handle (Comp.rename ξ m) (Clause.renameList ξ h)
+     | .resume k v => .resume (Val.rename ξ k) (Val.rename ξ v)
++    | .externalCall f tys args => .externalCall f (tys.map (renameTy ξ)) (Val.renameList ξ args)
+     | .meth d m tys effs args => .meth (Val.rename ξ d) m (tys.map (renameTy ξ)) (effs.map (renameEff ξ)) (Val.renameList ξ args)
+ 
+   def Arm.renameList (ξ : Nat → Nat) : List Arm → List Arm
+@@ -118,6 +121,8 @@
+     | .bytesV bs => .bytesV bs
+     | .dict i tys args => .dict i (tys.map (substTyValues σ)) (Val.substList σ args ρ)
+     | .super v cl => .super (Val.subst σ v ρ) cl
++    | .externalRef f tys => .externalRef f (tys.map (substTyValues σ))
++    | .externalHandle h tys => .externalHandle h (tys.map (substTyValues σ))
+     | .checked t => .checked t
+     | .checkedRequest t c => .checkedRequest t c
+ 
+@@ -140,6 +145,7 @@
+     | .use v m => .use (Val.subst σ v ρ) (Comp.subst σ m ρ)
+     | .handle m h => .handle (Comp.subst σ m ρ) (Clause.substList σ h ρ)
+     | .resume k v => .resume (Val.subst σ k ρ) (Val.subst σ v ρ)
++    | .externalCall f tys args => .externalCall f (tys.map (substTyValues σ)) (Val.substList σ args ρ)
+     | .meth d m tys effs args => .meth (Val.subst σ d ρ) m (tys.map (substTyValues σ)) (effs.map (substEffValues σ)) (Val.substList σ args ρ)
+ 
+   def Arm.substList (σ : Nat → Val) (arms : List Arm) (ρ : Nat → LocalRef := LocalRef.bound) : List Arm :=
+@@ -226,6 +232,8 @@
+     | .bytesV bs => .bytesV bs
+     | .dict i tys args => .dict i (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
+     | .super v cl => .super (Val.substTyAt c ts es v) cl
++    | .externalRef f tys => .externalRef f (tys.map (substTypeAt c ts es))
++    | .externalHandle h tys => .externalHandle h (tys.map (substTypeAt c ts es))
+     | .checked t => .checked t
+     | .checkedRequest t c => .checkedRequest t c
+ 
+@@ -246,6 +254,7 @@
+     | .use v m => .use (Val.substTyAt c ts es v) (Comp.substTyAt c ts es m)
+     | .handle m h => .handle (Comp.substTyAt c ts es m) (Clause.substTyAtList c ts es h)
+     | .resume k v => .resume (Val.substTyAt c ts es k) (Val.substTyAt c ts es v)
++    | .externalCall f tys args => .externalCall f (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
+     | .meth d m tys effs args =>
+         .meth (Val.substTyAt c ts es d) m (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es))
+           (Val.substTyAtList c ts es args)
+--- before/formal/Benitoite/Release/Refinement/SubstTyping.lean
++++ after/formal/Benitoite/Release/Refinement/SubstTyping.lean
+@@ -112,6 +112,10 @@
+   simp only [Pred.shiftV, shiftIndex_zero]
+   exact predBind_id p
+ 
++theorem Tel.shiftV_zero (t : Tel) (c : Nat) : Tel.shiftV 0 c t = t := by
++  rw [Tel.shiftV_eq_rawBind, shiftIndex_zero]
++  exact Tel.rawBind_id t
++
+ theorem HasTypeVQ.hide_context {P B store Q C Γ Φ v a}
+     (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store)
+     (store' : StoreTy) (hpres : store.PreservesNormals store') :
+@@ -124,6 +128,20 @@
+   have ht := h.shift_values (store' := store') hA hstore hpres hm (Ξ := Φ) (fun p hp => by
+     rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
+   simpa only [shiftIndex_zero, Val.rename_identity, Ty.shiftV_zero] using ht
++
++theorem HasTypeTelArgsQ.hide_context {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
++    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
++    (store' : StoreTy) (hpres : store.PreservesNormals store') :
++    HasTypeTelArgsQ P B store' Q C (hideConts Γ) Φ vs t a e := by
++  have hm : ShiftMap 0 0 Γ (hideConts Γ) := by
++    constructor
++    · simp [hideConts]
++    · intro i a hi ho
++      simpa only [shiftIndex_zero, id_eq, Ty.shiftV_zero] using hideConts_lookup.mpr ⟨hi,ho⟩
++  have hh := h.shift_values hA hstore hpres hm (Ξ := Φ) (fun p hp => by
++    rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
++  simpa only [shiftIndex_zero, Val.renameList_identity, Ty.shiftV_zero, Eff.shiftV_zero, Tel.shiftV_zero] using hh
+ 
+ theorem HasTypeVQ.weaken_empty {P B Q C Γ Φ v a store}
+     (h : HasTypeVQ P B StoreTy.empty Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) : HasTypeVQ P B store Q C Γ Φ v a := by
+@@ -369,6 +387,15 @@
+       have hs := ha.map (substTyValues σ) (fun a hm p hp => hA.sat_values store Q C Γ Δ Ξ σ a p ht (hi.types a hm) hp)
+       have hh := HasTypeVQ.V_Op (Q := Q) (Ψ := store) (Φ := Ξ) ho hn hs (ht.signature hi)
+       simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh
++    | .V_ExternalRef hd hw ha hi =>
++      have hh := HasTypeVQ.V_ExternalRef (Q := Q) (Ψ := store) (Φ := Ξ) hd hw
++        (ha.map hw (substTyValues σ)) (ht.signature hi)
++      simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh
++    | .V_ExternalHandle h td hd hc hr hn ha =>
++      simpa only [Val.subst, substTyValues, Ty.bind_external, substTyValues_eq_bind] using
++        HasTypeVQ.V_ExternalHandle (Ψ := store) (Φ := Ξ) h td hd hc hr
++          (by simpa only [List.length_map] using hn)
++          (by simpa only [substTyValues, Ty.bind_external, substTyValues_eq_bind] using ht.annotation ha)
+     | .V_Map hk hv hn hs ha hb =>
+       exact .V_Map (subst_each hk hA hstore ρ ht hf) (subst_each hv hA hstore ρ ht hf)
+         (by simpa using hn) (hA.sat_values store Q C Γ Δ Ξ σ _ _ ht ha hs) (ht.annotation ha) (ht.annotation hb)
+@@ -496,6 +523,13 @@
+       exact .C_Meth (subst_value hv hA hstore ρ ht hf) hc hmeth hn hs'
+         (by simpa only [List.map_append, List.map_cons, List.map_nil, substTyValues, Ty.bind] using ht.signature hi)
+         (ht.methodRows hi.rows hr) hargs' (subst_values hvs hA hstore ρ ht hf) (ht.annotation ha)
++    | .C_External (ts := ts) hd hw ha hargs =>
++      have hh := subst_telArgs hargs hA hstore ρ ht hf
++      have he := instantiatedTel_subst_eq hw.annotation.wf ts [] σ
++      simp only [List.map_nil] at he
++      change Tel.bind (valEnv σ) (Tel.bind (typeEnv ts) _) = _ at he
++      rw [he] at hh
++      exact .C_External hd hw (ha.map hw _) hh
+     | .C_Sub hm hl hc hw hs hd =>
+       exact .C_Sub (subst_comp hm hA hstore ρ ht hL hf) (hl.bind (valEnv σ) (ht.transport hf))
+         (hc.bind (valEnv σ)) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
+@@ -507,6 +541,22 @@
+         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.nil_append,
+         List.cons_append, liftMany_one, Option.map_map, Function.comp_def,
+         Ty.bind_shiftV_values, Eff.bind_shiftV_values, Option.map_none, localExtend] using hb'
++  private theorem subst_telArgs {P B store Q C Γ Φ vs t a e}
++      (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
++      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ σ} (ρ : Nat → LocalRef)
++      (ht : TypedImages P B store Q C Γ Δ Ξ σ)
++      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
++      HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (Tel.bind (valEnv σ) t)
++        (substTyValues σ a) (substEffValues σ e) := by
++    match h with
++    | .done ha => exact .done (ht.annotation ha)
++    | .param (rest := rest) (v := v) (vs := vs) ha hv hs =>
++      apply HasTypeTelArgsQ.param (ht.annotation ha) (subst_value hv hA hstore ρ ht hf)
++      change HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ)
++        (Tel.bind (Tel.argumentsEnv (v.subst σ ρ)) (Tel.bind (valEnv σ).up rest)) _ _
++      rw [← valEnv_upSubst_one, Tel.open_subst]
++      exact subst_telArgs hs hA hstore ρ ht hf
++
+ end
+ 
+ theorem HasTypeVQ.subst {P B store Q C Γ Φ v a Δ Ξ R σ}
+@@ -548,6 +598,16 @@
+     (ρ : Nat → LocalRef) (hL : LocalSubstOk store L σ ρ L') :
+     HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (m.subst σ ρ)
+       (substTyValues σ a) (substEffValues σ e) L' := subst_comp h hA hstore ρ ht.images hL hf
++
++theorem HasTypeTelArgsQ.subst {P B store Q C Γ Φ vs t a e Δ Ξ R0 σ}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
++    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
++    (ht : SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
++    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
++    (ρ : Nat → LocalRef := LocalRef.bound) :
++    HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (Tel.bind (valEnv σ) t)
++      (substTyValues σ a) (substEffValues σ e) :=
++  subst_telArgs h hA hstore ρ ht.images hf
+ 
+ /-- None の束縛では新しい像や事実を仮定せず、親の移送を extendNone する。 -/
+ theorem SubstOk.transport_extendNone {P B store Q C Γ Φ Δ Ξ R σ}
+@@ -607,4 +667,16 @@
+   subst_comp h hA hstore _ (ht.images.none hA hstore) hL (fun p hp =>
+     Transport.facts (ht.transport_extendNone hf) p (List.mem_append_right _ hp))
+ 
++theorem HasTypeTelArgsQ.subst_under_none {P B store Q C Γ Φ vs t a e Δ Ξ R0 σ}
++    (h : HasTypeTelArgsQ P B store Q C Γ.extendNone (Φ.map Pred.lift) vs t a e)
++    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
++    (ht : SubstOk P B store Q C Γ Φ Δ Ξ R0 σ)
++    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
++    (ρ : Nat → LocalRef := LocalRef.bound) :
++    HasTypeTelArgsQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)
++      (Val.substList (upSubst 1 σ) vs (upLocalSubst 1 ρ)) (Tel.bind (valEnv (upSubst 1 σ)) t)
++      (substTyValues (upSubst 1 σ) a) (substEffValues (upSubst 1 σ) e) :=
++  subst_telArgs h hA hstore _ (ht.images.none hA hstore) (fun p hp =>
++    Transport.facts (ht.transport_extendNone hf) p (List.mem_append_right _ hp))
++
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean
++++ after/formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean
+@@ -15,6 +15,7 @@
+   match h with
+   | .V_Var _ _ | .V_Const _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
+   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
++  | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
+   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ =>
+       intro ns ps body he; cases he
+   | .V_Lam _ hw _ _ _ =>
+@@ -32,6 +33,7 @@
+     ∀ v, m = .ret v → ∃ b, HasTypeVQ P B store Q C Γ Φ v b := by
+   match h with
+   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
++  | .C_External _ _ _ _
+   | .C_BuilderLet _ _ _ _ | .C_BuilderOp _ _ _ _ | .C_Meth _ _ _ _ _ _ _ _ _ _
+   | .C_Let _ _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
+   | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
+--- before/formal/Benitoite/Release/Refinement/Syntax.lean
++++ after/formal/Benitoite/Release/Refinement/Syntax.lean
+@@ -66,6 +66,58 @@
+ 
+ inductive BuilderKind where
+   | string | list (element : Ty) | bytes
++
++inductive ExternalMode where
++  | borrow | own
++  deriving DecidableEq, BEq
++
++structure ExternalTypeDecl where
++  id : ExternalId
++  component : ComponentId
++  displayName : String
++  arity : Nat
++  resource : Nat
++
++inductive ExternalPosition where
++  | argument (index : Nat)
++  | result
++  deriving DecidableEq, BEq
++
++inductive ExternalPathStep where
++  | element | key | value
++  | field (constructor : ConName) (index : Nat)
++  deriving DecidableEq, BEq
++
++structure ExternalUse where
++  position : ExternalPosition
++  path : List ExternalPathStep
++  mode : ExternalMode
++  typeId : ExternalId
++  deriving DecidableEq, BEq
++
++structure ExternalSignature where
++  component : ComponentId
++  displayName : String
++  tparams : List TParam
++  kinds : KindCtx
++  parameters : Tel
++  uses : List ExternalUse
++
++inductive ExternalDecl where
++  | type (declaration : ExternalTypeDecl)
++  | function (id : ExternalFunctionId) (signature : ExternalSignature)
++
++inductive ExternalKey where
++  | type (id : ExternalId)
++  | function (id : ExternalFunctionId)
++  deriving DecidableEq
++
++structure ExternalHandle where
++  typeId : ExternalId
++  component : ComponentId
++  resource : Nat
++  identity : Nat
++  deriving DecidableEq, BEq
+ 
+ mutual
+   /-- 値。 -/
+@@ -97,6 +149,8 @@
+     /-- 上位の型クラスの辞書 `V↑S`。 -/
+     | super (v : Val) (s : ClassName)
+     /-- 検査済みの対象。対象自身に型や値の自由変数はない（設計書 01-12「構文」）。 -/
++    | externalRef (id : ExternalFunctionId) (types : List Ty)
++    | externalHandle (handle : ExternalHandle) (types : List Ty)
+     | checked (t : Scope.Domain.Target)
+     /-- 要求と検査済みの endpoint を保持する。型付けの葉では閉じた要求の型付けに加え、
+     groundVal と reqTarget による端点一致を検査する。葉の規則は構文と別に追加する。 -/
+@@ -122,6 +176,7 @@
+     /-- `resume κ V`。κ は節の変数か、継続の場所。 -/
+     | resume (k : Val) (v : Val)
+     /-- メソッドの呼び出し `V.m[S̄; Ē](W̄)`。 -/
++    | externalCall (id : ExternalFunctionId) (types : List Ty) (arguments : List Val)
+     | meth (d : Val) (m : MethName) (tys : List Ty) (effs : List Eff) (args : List Val)
+ 
+   /-- 節 `op(x̄) k ⇒ N`。`arity` は x̄ の個数、`ntys` は操作の型パラメータの個数である。N の中で、番号 0 が k、
+@@ -252,6 +307,18 @@
+   effects : EffName → Option (List OpName)
+   classes : ClassName → Option ClassDecl
+   impls : ImplName → Option ImplDecl
++  externals : List (ExternalKey × ExternalDecl) := []
++
++
++def Program.externalType (P : Program) (id : ExternalId) : Option ExternalTypeDecl :=
++  match P.externals.lookup (.type id) with
++  | some (.type d) => some d
++  | _ => none
++
++def Program.externalFunction (P : Program) (id : ExternalFunctionId) : Option ExternalSignature :=
++  match P.externals.lookup (.function id) with
++  | some (.function _ d) => some d
++  | _ => none
+ 
+ 
+ inductive Outcome where
+@@ -313,6 +380,8 @@
+   /-- 範囲付きの値型の名前の値が保持する要求の型（`Http.RequestIn` は `Http.ClientRequest` のレコードの型）。検査済みの
+   要求の値の規則 V-CheckedRequest が読む。表のデータであり、正しさは信頼の対象である。既定は全て `none`。 -/
+   valContent : OpaqueName → Option Ty := fun _ => none
++  externalResponse : ExternalFunctionId → List Ty → List Val → Outcome → List Scope.Domain.Target → Prop :=
++    fun _ _ _ _ _ => False
+ 
+ /-- 宣言は既に先行する値の引数の下で格納されている。 -/
+ def signatureTel : List String → List Ty → Ty → Eff → Tel
+--- before/formal/Benitoite/Release/Refinement/TelTyping.lean
++++ after/formal/Benitoite/Release/Refinement/TelTyping.lean
+@@ -0,0 +1,53 @@
++import Benitoite.Release.Refinement.TypingDeclared
++import Benitoite.Release.Refinement.ExternalResponse
++
++/-!
++# 依存する実引数列の逐次具体化
++
++各paramの後続に実引数をbindし、最終契約と型付き列を同じ結果から取り出す。
++-/
++namespace Benitoite.Release.Refinement
++noncomputable section
++
++theorem HasTypeTelArgsQ.normal {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : a.norm = a ∧ e.norm = e := by
++  match h with
++  | .done ha => exact ⟨Ty.canonical_of_wf ha.wf.1, ha.wf.2.2⟩
++  | .param _ _ ht => exact ht.normal
++
++theorem HasTypeTelArgsQ.instantiate {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : Tel.instantiate t vs = some (a, e) := by
++  match h with
++  | .done _ =>
++    simp only [Tel.instantiate]
++    change some (a.norm, e.norm) = some (a, e)
++    rw [h.normal.1, h.normal.2]
++  | .param _ _ ht =>
++    simpa only [Tel.instantiate] using ht.instantiate
++
++theorem HasTypeTelArgsQ.length {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : vs.length = t.arity :=
++  (Tel.instantiate_length h.instantiate).symm
++
++theorem HasTypeTelArgsQ.arguments {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) :
++    ∃ as, Tel.arguments t vs = some (as, a, e) ∧ HasTypeVsQ P B store Q C Γ Φ vs as := by
++  match h with
++  | .done _ =>
++    refine ⟨[], ?_, .nil⟩
++    simp only [Tel.arguments]
++    change some ([], a.norm, e.norm) = some ([], a, e)
++    rw [h.normal.1, h.normal.2]
++  | .param (a := x) ha hv ht =>
++    obtain ⟨as, he, hs⟩ := ht.arguments
++    refine ⟨x :: as, ?_, .cons hv hs⟩
++    simp only [Tel.arguments, he, Option.map_some]
++    rw [show x.norm = x from Ty.canonical_of_wf ha.wf]
++
++theorem ExternalArgs.instantiate {P B store d ts vs a e}
++    (h : ExternalArgs P B store d ts vs a e) : d.instantiate ts vs = some (a, e) := by
++  simp only [ExternalSignature.instantiate, h.admissible.count, ↓reduceIte]
++  exact h.arguments.instantiate
++
++end
++end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/TypedFacts.lean
++++ after/formal/Benitoite/Release/Refinement/TypedFacts.lean
+@@ -59,7 +59,7 @@
+       (by simpa only [Val.toTermSlots_length, List.length_map] using hv.length)
+   | .V_Super _ _ _ _ => cases hd
+   | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => cases hd
+-  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ => cases hd
++  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases hd
+   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases hd
+   | .V_Sub hv hl _ _ _ => exact hv.data_observation (hl.dataCore_source hd) ht
+   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.data_observation hd ht
+@@ -80,7 +80,7 @@
+     | .V_Super _ _ _ _ => cases ht
+     | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
+     | .V_Bytes _ => cases ht; trivial
+-    | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases ht
++    | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases ht
+     | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_declared hk, HasTypeEachQ.observation_declared hv⟩
+     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
+     | .V_Sub hv _ _ _ _ => exact hv.observation_declared ht
+@@ -120,7 +120,7 @@
+     | .V_Super _ _ _ _ => cases ht
+     | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
+     | .V_Bytes _ => cases ht; trivial
+-    | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases ht
++    | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases ht
+     | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩
+     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
+     | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
+@@ -165,7 +165,7 @@
+   | .V_Super _ _ _ _ => cases hi
+   | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases hi
+   | .V_Bytes _ => exact ⟨_, rfl, trivial, (Option.some.inj hi).symm⟩
+-  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases hi
++  | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases hi
+   | .V_Map hk hv _ _ _ _ => exact ⟨_, rfl, ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩, (Option.some.inj hi).symm⟩
+   | .V_Set hv _ _ => exact ⟨_, rfl, HasTypeEachQ.observation_references hv, (Option.some.inj hi).symm⟩
+   | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
+@@ -197,7 +197,8 @@
+   | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
+   | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+-  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ => intro p hp; cases hp
++  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _
++  | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
+   | .V_Sub hv hl _ _ _ =>
+     intro p hp
+     apply ((hl.assume p hp).bind (fun i => match i with
+@@ -228,7 +229,8 @@
+   | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
+   | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+-  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ => intro p hp; cases hp
++  | .V_Map _ _ _ _ _ _ | .V_Set _ _ _
++  | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
+   | .V_Sub hv hl _ _ _ =>
+     intro p hp
+     apply ((hl.assume p hp).bind (fun i => match i with
+--- before/formal/Benitoite/Release/Refinement/Typing.lean
++++ after/formal/Benitoite/Release/Refinement/Typing.lean
+@@ -2,6 +2,7 @@
+ import Benitoite.Release.Refinement.Le
+ import Benitoite.Release.Refinement.StoreTransport
+ import Benitoite.Release.Refinement.TelArguments
++import Benitoite.Release.Refinement.External
+ 
+ /-!
+ # 有限の文脈と経路条件を持つ値・計算の型付け
+@@ -115,6 +116,14 @@
+         SatAll B C ts od.tparams →
+         SignatureInstance P C Γ od.tel (List.replicate od.tparams.length .value) ts [] →
+         HasTypeVQ P B Ψ Q C Γ Φ (.op o ts) (.dependentFn (instantiatedTel od.tel ts []))
++    | V_ExternalRef {Ψ Q C Γ Φ f d ts} : P.externalFunction f = some d → d.WF P →
++        ExternalCallAdmissible P B C d ts →
++        SignatureInstance P C Γ d.parameters d.kinds ts [] →
++        HasTypeVQ P B Ψ Q C Γ Φ (.externalRef f ts) (.dependentFn (instantiatedTel d.parameters ts []))
++    | V_ExternalHandle {Ψ Q C Γ Φ ts} (h : ExternalHandle) (td : ExternalTypeDecl) :
++        P.externalType h.typeId = some td → td.component = h.component → td.resource = h.resource →
++        ts.length = td.arity → Ty.Annotation P C Γ (.external h.typeId ts) →
++        HasTypeVQ P B Ψ Q C Γ Φ (.externalHandle h ts) (.external h.typeId ts)
+     | V_Map {Ψ Q C Γ Φ ks vs a b} :
+         HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
+         ks.length = vs.length → B.sat C a TParam.keyC →
+@@ -219,11 +228,25 @@
+         Tel.arguments (instantiatedTel ms.tel (ss ++ [τ]) es) ws = some (as, a, ε) →
+         HasTypeVsQ P B Ψ Q C Γ Φ ws as → Ty.Annotation P C Γ a →
+         HasTypeCQ P B Ψ Q C Γ Φ R (.meth v m ss es ws) a ε Δ
++    | C_External {Ψ Q C Γ Φ Δ R f d ts vs a e} :
++        P.externalFunction f = some d → d.WF P → ExternalCallAdmissible P B C d ts →
++        HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (typeEnv ts) d.parameters) a e →
++        HasTypeCQ P B Ψ Q C Γ Φ R (.externalCall f ts vs) a e Δ
+     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
+         Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
+         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ
+     | C_Eff {Ψ Q C Γ Φ Δ R m a ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
+         Eff.Covers Γ Φ ε' ε → HasTypeCQ P B Ψ Q C Γ Φ R m a ε' Δ
++  /-- 実引数ごとに後続を具体化する。Rを持たず、各引数は同じΓ/Φで読む。 -/
++  inductive HasTypeTelArgsQ (P : Program) (B : Builtins) :
++      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → Tel → Ty → Eff → Prop where
++    | done {Ψ Q C Γ Φ a e} : Ty.Annotation P C Γ (.dependentFn (.done a e)) →
++        HasTypeTelArgsQ P B Ψ Q C Γ Φ [] (.done a e) a e
++    | param {Ψ Q C Γ Φ name a rest v vs r e} : Ty.Annotation P C Γ a →
++        HasTypeVQ P B Ψ Q C Γ Φ v a →
++        HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (Tel.argumentsEnv v) rest) r e →
++        HasTypeTelArgsQ P B Ψ Q C Γ Φ (v :: vs) (.param name a rest) r e
++
+ end
+ 
+ theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
+@@ -232,6 +255,8 @@
+     (hs : Pred.Sorted Γ (some a) p) (hw : p.WF (Γ.length+1))
+     (he : Entails (Γ.facts ++ Φ) (p.open t)) : HasTypeVQ P B store Q C Γ Φ v (.refined a p) :=
+   .V_Refine h hi ht hs hw he hda hdp
++
++abbrev HasTypeTelArgs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeTelArgsQ P B Ψ Qempty
+ 
+ abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty
+ abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty
+--- before/formal/Benitoite/Release/Refinement/TypingDeclared.lean
++++ after/formal/Benitoite/Release/Refinement/TypingDeclared.lean
+@@ -20,6 +20,8 @@
+   | .V_Lam _ _ _ _ hd => exact hd
+   | .V_List _ _ _ hd => exact hd
+   | .V_Fun _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi => exact hi.result.declared
++  | .V_ExternalRef _ _ _ hi => exact hi.result.declared
++  | .V_ExternalHandle _ _ _ _ _ _ ha => exact ha.declared
+   | .V_Map _ _ _ _ ha hb => exact ⟨ha.declared, hb.declared⟩
+   | .V_Set _ _ ha => exact ha.declared
+   | .V_Dict _ _ _ _ _ _ _ ha => exact ha.declared
+@@ -38,10 +40,21 @@
+   | .nil => trivial
+   | .cons hv hs => exact ⟨hv.declared hΓ, hs.declared hΓ⟩
+ 
++theorem HasTypeTelArgsQ.result_annotation {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : Ty.Annotation P C Γ a := by
++  match h with
++  | .done ha => exact ⟨ha.wf.1, ha.sorted.1, ha.declared.1⟩
++  | .param _ _ ht => exact ht.result_annotation
++
++theorem HasTypeTelArgsQ.declared {P B store Q C Γ Φ vs t a e}
++    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : Ty.Declared P C Γ a :=
++  h.result_annotation.declared
++
+ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
+     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hΓ : Ctx.Declared P C Γ) :
+     Ty.Declared P C Γ a := by
+   match h with
++  | .C_External _ _ _ ht => exact ht.declared
+   | .C_Return hv => exact hv.declared hΓ
+   | .C_Let _ _ hd | .C_BuilderLet _ _ _ hd => exact hd
+   | .C_App hv _ => exact (hv.declared hΓ).2.1
+--- before/formal/Benitoite/Release/Refinement/TypingShift.lean
++++ after/formal/Benitoite/Release/Refinement/TypingShift.lean
+@@ -394,6 +394,15 @@
+       have hh := HasTypeVQ.V_Op (Q := Q) (Ψ := store') (Φ := Ξ) ho hn hs (hm.signature hi)
+       simpa only [Val.rename, renameTy_shiftIndex, renameEff_shiftIndex, List.map_nil,
+         instantiatedTel_shift hi.source] using hh
++    | .V_ExternalRef hd hw ha hi =>
++      have hh := HasTypeVQ.V_ExternalRef (Q := Q) (Ψ := store') (Φ := Ξ) hd hw
++        (ha.map hw (Ty.shiftV k c)) (hm.signature hi)
++      simpa only [Val.rename, renameTy_shiftIndex, List.map_nil, instantiatedTel_shift hi.source] using hh
++    | .V_ExternalHandle h td hd hc hr hn ha =>
++      simpa only [Val.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys_eq_map] using
++        HasTypeVQ.V_ExternalHandle (Ψ := store') (Φ := Ξ) h td hd hc hr
++          (by simpa only [List.length_map] using hn)
++          (by simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.annotation ha)
+     | .V_Map hk hv hn hs ha hb =>
+       exact .V_Map (HasTypeEachQ.shift_values hk hA hstore hpres hm hf)
+         (HasTypeEachQ.shift_values hv hA hstore hpres hm hf) (by simpa using hn)
+@@ -543,6 +552,13 @@
+         (by simpa only [List.map_append, List.map_cons, List.map_nil] using hm.signature hi)
+         (hm.methodRows hi.rows hr) hargs' (HasTypeVsQ.shift_values hvs hA hstore hext.preservesNormals hm hf)
+         (hm.annotation ha)
++    | .C_External (ts := ts) hd hw ha hargs =>
++      have hh := HasTypeTelArgsQ.shift_values hargs hA hstore hext.preservesNormals hm hf
++      have he := instantiatedTel_shift_eq hw.annotation.wf ts [] k c
++      simp only [List.map_nil] at he
++      change Tel.shiftV k c (Tel.bind (typeEnv _) _) = _ at he
++      rw [he] at hh
++      simpa only [Comp.rename, renameTy_shiftIndex] using HasTypeCQ.C_External hd hw (ha.map hw _) hh
+     | .C_Sub ht hl hc hw hs hd =>
+       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
+       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
+@@ -562,6 +578,21 @@
+         List.nil_append, List.map_cons, List.map_nil, List.cons_append, List.nil_append,
+         List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
+         Option.map_map, Function.comp_def, hr] using hb'
++
++  theorem HasTypeTelArgsQ.shift_values {P B store Q C Γ Φ vs t a e}
++      (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) {k c Δ Ξ store'}
++      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
++      (hpres : StoreTy.PreservesNormals store store') (hm : ShiftMap k c Γ Δ)
++      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
++      HasTypeTelArgsQ P B store' Q C Δ Ξ (Val.renameList (shiftIndex k c) vs)
++        (Tel.shiftV k c t) (a.shiftV k c) (e.shiftV k c) := by
++    match h with
++    | .done ha => exact .done (hm.annotation ha)
++    | .param ha hv ht =>
++      apply HasTypeTelArgsQ.param (hm.annotation ha) (HasTypeVQ.shift_values hv hA hstore hpres hm hf)
++      rw [Tel.open_shift]
++      exact HasTypeTelArgsQ.shift_values ht hA hstore hpres hm hf
++
+ end
+ 
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/ValueBinding.lean
++++ after/formal/Benitoite/Release/Refinement/ValueBinding.lean
+@@ -231,6 +231,11 @@
+ 
+ theorem Ty.bind_data (d : DataName) (ts : List Ty) (θ : SubstEnv) :
+     (Ty.data d ts).bind θ = .data d (ts.map (Ty.bind θ)) := by
++  simp only [Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map, List.map_map]
++  rfl
++
++theorem Ty.bind_external (id : ExternalId) (ts : List Ty) (θ : SubstEnv) :
++    (Ty.external id ts).bind θ = .external id (ts.map (Ty.bind θ)) := by
+   simp only [Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map, List.map_map]
+   rfl
+ 
+--- before/formal/Benitoite.lean
++++ after/formal/Benitoite.lean
+@@ -297,3 +297,5 @@
+ import Benitoite.Release.Refinement.ValueInstantiation
+ 
+ import Benitoite.Release.Refinement.Embedding
++
++import Benitoite.Release.Refinement.TelTyping

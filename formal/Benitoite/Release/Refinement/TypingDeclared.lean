@@ -20,6 +20,8 @@ theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
   | .V_Lam _ _ _ _ hd => exact hd
   | .V_List _ _ _ hd => exact hd
   | .V_Fun _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi => exact hi.result.declared
+  | .V_ExternalRef _ _ _ hi => exact hi.result.declared
+  | .V_ExternalHandle _ _ _ _ _ _ ha => exact ha.declared
   | .V_Map _ _ _ _ ha hb => exact ⟨ha.declared, hb.declared⟩
   | .V_Set _ _ ha => exact ha.declared
   | .V_Dict _ _ _ _ _ _ _ ha => exact ha.declared
@@ -38,10 +40,21 @@ theorem HasTypeVsQ.declared {P B store Q C Γ Φ vs as}
   | .nil => trivial
   | .cons hv hs => exact ⟨hv.declared hΓ, hs.declared hΓ⟩
 
+theorem HasTypeTelArgsQ.result_annotation {P B store Q C Γ Φ vs t a e}
+    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : Ty.Annotation P C Γ a := by
+  match h with
+  | .done ha => exact ⟨ha.wf.1, ha.sorted.1, ha.declared.1⟩
+  | .param _ _ ht => exact ht.result_annotation
+
+theorem HasTypeTelArgsQ.declared {P B store Q C Γ Φ vs t a e}
+    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : Ty.Declared P C Γ a :=
+  h.result_annotation.declared
+
 theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hΓ : Ctx.Declared P C Γ) :
     Ty.Declared P C Γ a := by
   match h with
+  | .C_External _ _ _ ht => exact ht.declared
   | .C_Return hv => exact hv.declared hΓ
   | .C_Let _ _ hd | .C_BuilderLet _ _ _ hd => exact hd
   | .C_App hv _ => exact (hv.declared hΓ).2.1

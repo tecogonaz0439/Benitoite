@@ -54,6 +54,42 @@ theorem Tel.bind_param (n a t θ) : Tel.bind θ (.param n a t) = .param n (a.bin
 theorem Tel.bind_done (r e θ) : Tel.bind θ (.done r e) = .done (r.bind θ) (Eff.bind θ e) := rfl
 
 /-- 部分観測のNoneを保ったまま、逐次具体化と外側の値置換を交換する。 -/
+theorem Tel.bind_norm (t : Tel) (θ : SubstEnv) : Tel.bind θ t.norm = Tel.bind θ t := Tel.norm_rawBind θ t
+
+theorem Tel.bind_renaming (t : Tel) (k c : Nat) :
+    Tel.bind (renEnv (shiftIndex k c)) t = (Tel.shiftV k c t).norm := by
+  rw [Tel.shiftV_eq_rawBind]
+  rfl
+
+/-- paramの一束縛を除く具体化と、外側の単調な移動の交換。 -/
+theorem Tel.open_shift (t : Tel) (v : Val) (k c : Nat) :
+    Tel.bind (Tel.argumentsEnv (v.rename (shiftIndex k c))) (Tel.shiftV k (c+1) t) =
+      Tel.shiftV k c (Tel.bind (Tel.argumentsEnv v) t) := by
+  have hh := Tel.bind_open_exchange t (renEnv (shiftIndex k c)).values v.toTerm?
+  have hv : (v.rename (shiftIndex k c)).toTerm? =
+      v.toTerm?.bind (termBind? (renEnv (shiftIndex k c)).values) := by
+    rw [Val.toTerm_rename]
+    cases v.toTerm? <;> simp [renEnv, termBind?_renaming]
+  have hup : SubstEnv.valuesOnly (upValues (renEnv (shiftIndex k c)).values) =
+      renEnv (shiftIndex k (c+1)) := by
+    rw [renEnv_values, upValues_shiftIndex]
+    rfl
+  rw [hup, Tel.bind_renaming, Tel.bind_norm] at hh
+  rw [← argumentsEnv_eq] at hh
+  change Tel.bind (renEnv (shiftIndex k c)) (Tel.bind (Tel.argumentsEnv v) t) = _ at hh
+  rw [Tel.bind_renaming, Tel.norm_shiftV] at hh
+  have hn : (Tel.bind (Tel.argumentsEnv v) t).norm = Tel.bind (Tel.argumentsEnv v) t := Tel.norm_idem _
+  rw [hn] at hh
+  rw [argumentsEnv_eq, hv]
+  exact hh.symm
+
+theorem Tel.open_subst (t : Tel) (v : Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
+    Tel.bind (Tel.argumentsEnv (v.subst ν ρ)) (Tel.bind (valEnv (upSubst 1 ν)) t) =
+      Tel.bind (valEnv ν) (Tel.bind (Tel.argumentsEnv v) t) := by
+  rw [argumentsEnv_eq, argumentsEnv_eq, Val.toTerm_subst_optional]
+  rw [valEnv_upSubst_one]
+  exact (Tel.bind_open_exchange t (valEnv ν).values v.toTerm?).symm
+
 theorem Tel.arguments_subst (t : Tel) (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
     Tel.arguments (Tel.bind (valEnv ν) t) (Val.substList ν vs ρ) =
       (Tel.arguments t vs).map (fun (as, r, e) => (as.map (substTyValues ν), substTyValues ν r, substEffValues ν e)) := by
@@ -162,6 +198,32 @@ theorem Tel.arguments_shift {t vs as r e} (h : Tel.arguments t vs = some (as, r,
     rw [hb, Ty.norm_shiftV, ha a hm]
   rw [hl] at hh
   exact hh
+
+theorem Tel.instantiate_eq_arguments (t : Tel) (vs : List Val) :
+    Tel.instantiate t vs = (Tel.arguments t vs).map (fun (_, r, e) => (r, e)) := by
+  induction vs generalizing t with
+  | nil => cases t <;> simp [Tel.instantiate, Tel.arguments]
+  | cons v vs ih =>
+    cases t with
+    | done r e => simp [Tel.instantiate, Tel.arguments]
+    | param n a t =>
+      simp only [Tel.instantiate, Tel.arguments, Option.map_map, ih]
+      rfl
+
+theorem Tel.instantiate_subst (t : Tel) (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :
+    Tel.instantiate (Tel.bind (valEnv ν) t) (Val.substList ν vs ρ) =
+      (Tel.instantiate t vs).map (fun (r, e) => (substTyValues ν r, substEffValues ν e)) := by
+  simp only [Tel.instantiate_eq_arguments, Tel.arguments_subst, Option.map_map]
+  rfl
+
+theorem Tel.instantiate_shift {t vs r e} (h : Tel.instantiate t vs = some (r, e)) (k c : Nat) :
+    Tel.instantiate (Tel.shiftV k c t) (Val.renameList (shiftIndex k c) vs) =
+      some (r.shiftV k c, e.shiftV k c) := by
+  rw [Tel.instantiate_eq_arguments] at h ⊢
+  obtain ⟨⟨as, r', e'⟩, hh, he⟩ := Option.map_eq_some_iff.mp h
+  cases he
+  rw [Tel.arguments_shift hh k c]
+  rfl
 
 end
 end Benitoite.Release.Refinement

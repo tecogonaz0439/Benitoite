@@ -313,7 +313,9 @@ mutual
     | list a | reference a | lazy a | set a | dict _ a => exact Ty.Declared.rawSubstV (a := a) h hm
     | data d as => exact ⟨by simpa only [substVTys_eq_map, List.length_map] using h.1,
         declaredTys_rawSubstV (as := as) h.2 hm⟩
-    | external _ as | tapp _ as => exact declaredTys_rawSubstV (as := as) h hm
+    | external _ as => exact ⟨by simpa only [substVTys_eq_map, List.length_map] using h.1,
+        declaredTys_rawSubstV (as := as) h.2 hm⟩
+    | tapp _ as => exact declaredTys_rawSubstV (as := as) h hm
     | dependentFn t => exact Tel.Declared.rawSubstV (t := t) h hm
     | fn ns ps r e => exact ⟨declaredTys_rawSubstV (as := ps) h.1 hm,
         Ty.Declared.rawSubstV (a := r) h.2.1 hm, declaredEff_rawSubstV (e := e) h.2.2 hm⟩
@@ -377,7 +379,9 @@ mutual
     | ctor c => cases c <;> exact h
     | list a | reference a | lazy a | set a | dict _ a => exact Ty.Declared.norm (a := a) h
     | data d as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1, declaredTys_norm (as := as) h.2⟩
-    | external _ as | tapp _ as => exact declaredTys_norm (as := as) h
+    | external _ as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1,
+        declaredTys_norm (as := as) h.2⟩
+    | tapp _ as => exact declaredTys_norm (as := as) h
     | dependentFn t => exact Tel.Declared.norm (t := t) h
     | fn ns ps r e => exact ⟨declaredTys_norm (as := ps) h.1, Ty.Declared.norm (a := r) h.2.1, declaredEff_norm (e := e) h.2.2⟩
     | cont b t e => exact ⟨Ty.Declared.norm (a := b) h.1, Ty.Declared.norm (a := t) h.2.1, declaredEff_norm (e := e) h.2.2⟩

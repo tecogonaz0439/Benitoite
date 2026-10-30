@@ -2,6 +2,7 @@ import Benitoite.Release.Refinement.Subst
 import Benitoite.Release.Refinement.Le
 import Benitoite.Release.Refinement.StoreTransport
 import Benitoite.Release.Refinement.TelArguments
+import Benitoite.Release.Refinement.External
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -115,6 +116,14 @@ mutual
         SatAll B C ts od.tparams →
         SignatureInstance P C Γ od.tel (List.replicate od.tparams.length .value) ts [] →
         HasTypeVQ P B Ψ Q C Γ Φ (.op o ts) (.dependentFn (instantiatedTel od.tel ts []))
+    | V_ExternalRef {Ψ Q C Γ Φ f d ts} : P.externalFunction f = some d → d.WF P →
+        ExternalCallAdmissible P B C d ts →
+        SignatureInstance P C Γ d.parameters d.kinds ts [] →
+        HasTypeVQ P B Ψ Q C Γ Φ (.externalRef f ts) (.dependentFn (instantiatedTel d.parameters ts []))
+    | V_ExternalHandle {Ψ Q C Γ Φ ts} (h : ExternalHandle) (td : ExternalTypeDecl) :
+        P.externalType h.typeId = some td → td.component = h.component → td.resource = h.resource →
+        ts.length = td.arity → Ty.Annotation P C Γ (.external h.typeId ts) →
+        HasTypeVQ P B Ψ Q C Γ Φ (.externalHandle h ts) (.external h.typeId ts)
     | V_Map {Ψ Q C Γ Φ ks vs a b} :
         HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
         ks.length = vs.length → B.sat C a TParam.keyC →
@@ -219,11 +228,25 @@ mutual
         Tel.arguments (instantiatedTel ms.tel (ss ++ [τ]) es) ws = some (as, a, ε) →
         HasTypeVsQ P B Ψ Q C Γ Φ ws as → Ty.Annotation P C Γ a →
         HasTypeCQ P B Ψ Q C Γ Φ R (.meth v m ss es ws) a ε Δ
+    | C_External {Ψ Q C Γ Φ Δ R f d ts vs a e} :
+        P.externalFunction f = some d → d.WF P → ExternalCallAdmissible P B C d ts →
+        HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (typeEnv ts) d.parameters) a e →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.externalCall f ts vs) a e Δ
     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ
     | C_Eff {Ψ Q C Γ Φ Δ R m a ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         Eff.Covers Γ Φ ε' ε → HasTypeCQ P B Ψ Q C Γ Φ R m a ε' Δ
+  /-- 実引数ごとに後続を具体化する。Rを持たず、各引数は同じΓ/Φで読む。 -/
+  inductive HasTypeTelArgsQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → Tel → Ty → Eff → Prop where
+    | done {Ψ Q C Γ Φ a e} : Ty.Annotation P C Γ (.dependentFn (.done a e)) →
+        HasTypeTelArgsQ P B Ψ Q C Γ Φ [] (.done a e) a e
+    | param {Ψ Q C Γ Φ name a rest v vs r e} : Ty.Annotation P C Γ a →
+        HasTypeVQ P B Ψ Q C Γ Φ v a →
+        HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (Tel.argumentsEnv v) rest) r e →
+        HasTypeTelArgsQ P B Ψ Q C Γ Φ (v :: vs) (.param name a rest) r e
+
 end
 
 theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
@@ -232,6 +255,8 @@ theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
     (hs : Pred.Sorted Γ (some a) p) (hw : p.WF (Γ.length+1))
     (he : Entails (Γ.facts ++ Φ) (p.open t)) : HasTypeVQ P B store Q C Γ Φ v (.refined a p) :=
   .V_Refine h hi ht hs hw he hda hdp
+
+abbrev HasTypeTelArgs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeTelArgsQ P B Ψ Qempty
 
 abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty
 abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty

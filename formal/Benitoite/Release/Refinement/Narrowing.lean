@@ -158,6 +158,8 @@ mutual
     | .V_Fun hd hn ha hi => exact .V_Fun hd hn (by simpa only [hm.length] using ha) (hm.signature hi)
     | .V_Prim hb hr hn ha hi => exact .V_Prim hb hr hn (by simpa only [hm.length] using ha) (hm.signature hi)
     | .V_Op ho hn ha hi => exact .V_Op ho hn ha (hm.signature hi)
+    | .V_ExternalRef hd hw ha hi => exact .V_ExternalRef hd hw ha (hm.signature hi)
+    | .V_ExternalHandle h td hd hc hr hn ha => exact .V_ExternalHandle h td hd hc hr hn (hm.annotation ha)
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (context_each hk hA hstore hm hf)
         (context_each hv hA hstore hm hf) hn hs (hm.annotation ha) (hm.annotation hb)
@@ -226,6 +228,7 @@ mutual
     | .C_Meth hv hc hmeth hn hs hi hr hargs hvs ha =>
       exact .C_Meth (context_value hv hA hstore hm hf) hc hmeth hn hs (hm.signature hi)
         (by simpa only [hm.length] using hr) hargs (context_values hvs hA hstore hm hf) (hm.annotation ha)
+    | .C_External hd hw ha hargs => exact .C_External hd hw ha (context_telArgs hargs hA hstore hm hf)
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
@@ -238,6 +241,18 @@ mutual
       simpa only [List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.map_cons, List.map_nil,
         List.nil_append, List.cons_append] using hb'
+  private theorem context_telArgs {P B store Q C Γ Φ vs t a e}
+      (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
+      (hm : ContextMap P B store Q C Γ Δ Ξ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+      HasTypeTelArgsQ P B store Q C Δ Ξ vs t a e := by
+    match h with
+    | .done ha => exact .done (hm.annotation ha)
+    | .param ha hv ht =>
+      exact .param (hm.annotation ha) (context_value hv hA hstore hm hf)
+        (context_telArgs ht hA hstore hm hf)
+
 end
 
 /-- 外側で検査した部分型による一位置の置換と、後続の束縛の列。 -/
@@ -304,5 +319,12 @@ theorem HasTypeCQ.narrow {P B store Q C Γ Φ R m a e L Δ Ξ}
     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
     HasTypeCQ P B store Q C Δ Ξ R m a e L :=
   context_comp h hA hstore (hn.contextMap hA hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+
+theorem HasTypeTelArgsQ.narrow {P B store Q C Γ Φ vs t a e Δ Ξ}
+    (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
+    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+    HasTypeTelArgsQ P B store Q C Δ Ξ vs t a e :=
+  context_telArgs h hA hstore (hn.contextMap hA hstore)
+    (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
 
 end Benitoite.Release.Refinement

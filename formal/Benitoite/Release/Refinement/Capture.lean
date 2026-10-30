@@ -41,6 +41,8 @@ mutual
     | .bytesV bs => .bytesV bs
     | .dict i ts vs => .dict i (ts.map cap.closeTy) (closeVals cap vs)
     | .super v s => .super (closeVal cap v) s
+    | .externalRef f ts => .externalRef f (ts.map cap.closeTy)
+    | .externalHandle h ts => .externalHandle h (ts.map cap.closeTy)
     | .checked t => .checked t
     | .checkedRequest t v => .checkedRequest t (closeVal cap v)
   def closeVals (cap : Capture) : List Val → List Val
@@ -62,6 +64,7 @@ def Closure.view (q : Closure) : Comp := match q.code with
   | .use v m => .use (closeVal q.capture v) m
   | .handle m h => .handle m h
   | .resume k v => .resume (closeVal q.capture k) (closeVal q.capture v)
+  | .externalCall f ts vs => .externalCall f (ts.map q.capture.closeTy) (closeVals q.capture vs)
   | .meth v m ts es vs => .meth (closeVal q.capture v) m (ts.map q.capture.closeTy)
       (es.map q.capture.closeEff) (closeVals q.capture vs)
 

@@ -1,0 +1,103 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T08:02:09.382426+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.750236667,
+    "output": {
+      "name": "02b-external-build.log",
+      "bytes": 24460,
+      "sha256": "1b2be81db0217e5f0dc69ff1fd90c131687ec99f588dd587d6fb47d5cfe1fc51",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-external-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T08:02:11.133095+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.950786417,
+    "output": {
+      "name": "02b-external-boundary.log",
+      "bytes": 5563,
+      "sha256": "cfc9e275796b582332ec93f7094f3037a31e6f373a0b7d73e73dcdc865849deb",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "previous-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r4-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T08:02:12.084787+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.6781223340000002,
+    "output": {
+      "name": "02b-external-previous-boundary.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "kind-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r5-kind-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T08:02:12.763449+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.38332445800000015,
+    "output": {
+      "name": "02b-external-kind-boundary.log",
+      "bytes": 2671,
+      "sha256": "1b09da9cea78456861a8874912ac4835a2006b502e04518ec63087a643f56e1a",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "values-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-values-r2-constraint-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T08:02:13.147389+09:00",
+    "exit": 1,
+    "elapsed_seconds": 0.8578125829999999,
+    "output": {
+      "name": "02b-external-values-boundary.log",
+      "bytes": 5025,
+      "sha256": "3af31b3342794b39bc412bd395034c3baacdb7d02206d530730023947b7cbfae",
+      "storage": "改造/l00b.02"
+    }
+  }
+]
