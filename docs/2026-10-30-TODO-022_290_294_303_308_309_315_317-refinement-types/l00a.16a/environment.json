@@ -1,0 +1,1467 @@
+{
+  "system": "Darwin",
+  "release": "27.2.0",
+  "machine": "arm64",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "default_import": "Benitoite",
+  "memory_limit_mib": 12288,
+  "base": "9863c0141511dc225aff9ec787a4b733d65a9431",
+  "head_verification": "起動依頼の固定値を使用し、gitでの再取得はしていない",
+  "lean": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)"
+  },
+  "lake": {
+    "command": [
+      "lake",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)"
+  },
+  "elan": {
+    "command": [
+      "elan",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "elan 4.2.4 (227caca13 2026-08-25)"
+  },
+  "compiled_inputs": {
+    "formal/.lake/build/lib/lean/Benitoite/Checked/Access.olean": {
+      "bytes": 284440,
+      "sha256": "c31c8ab0a4b8c3314337625ec3b11cd7338a5ed022f98629037fbe82aaba4c5e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Checked/ListIndex.olean": {
+      "bytes": 268024,
+      "sha256": "41a332d8489c8e4d9d62d93457b24f86892699d08c5958bad87079e1ec4b87e2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Checked/ListLength.olean": {
+      "bytes": 405408,
+      "sha256": "fb03c145262308c3388f3d47f609e4a4b13c008e89b357f9467720cac6e57c6d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Checked/NonEmptyList.olean": {
+      "bytes": 164200,
+      "sha256": "34687f38614505257ad74bf3b872594361a7d81eaa8541404a1afcfd80e0a882"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Checked/Range.olean": {
+      "bytes": 424936,
+      "sha256": "45f732858a754f79aa58eed249ddda2e72565f9ff28f7e87f7c2ae6e5c581ba5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Checked/Scope.olean": {
+      "bytes": 1804008,
+      "sha256": "8a3a2514c9761884b95d642d908314fa43e1dd5baf49b3e0f09069b1972963d6"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Assumptions.olean": {
+      "bytes": 58992,
+      "sha256": "4418d88c5156d32d7d81f21b0133778a7d5ea51ea97dc974d2550073898d0bcc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Examples.olean": {
+      "bytes": 390552,
+      "sha256": "ffcdb241bee2a3ef264c592d795e5c3058159ac111237206a4fb9e32e9c14ed0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/Basic.olean": {
+      "bytes": 250288,
+      "sha256": "d1609ea08eeb8b5bb88c651e28a1a198fba23d439c00c7e564cb943b32e117f8"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/Canonical.olean": {
+      "bytes": 1527456,
+      "sha256": "26681fc31e3fc19a3f9c4f09f85fd8dca5fab3149a3c2a333e4385c5712d4b97"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/Compose.olean": {
+      "bytes": 430360,
+      "sha256": "acb8f64f36ca78fa25e3a1ccefacb52253de1086b920b772c8bbe03dd8a9b5cf"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/Inversion.olean": {
+      "bytes": 2661680,
+      "sha256": "99ff104847114c52758dde2d9457500bed0090c9e30eac4927b0941abacd84c1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/Preservation.olean": {
+      "bytes": 474768,
+      "sha256": "2483588e31fd284a494e02d064029f775eaa9e45dc7d1ba60c8736d7aa8b0f12"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/Rename.olean": {
+      "bytes": 1672616,
+      "sha256": "ee72053f571fe06d07cd159bf65799401a8cb8ec28cbde50731445a063f032a8"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/SubstTyping.olean": {
+      "bytes": 1774664,
+      "sha256": "58efa6f6fcf03bd37b041d7cbc451cf54267d66b16e10e6beed07f3f187be6fc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Lemmas/TySubst.olean": {
+      "bytes": 1837896,
+      "sha256": "8ee18dd4943498e13271bf9ac6f58a2bd4b09a2c9a1b27f9863cfbbe9c00e464"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Semantics.olean": {
+      "bytes": 422592,
+      "sha256": "430b215c97b3d4441f4cf3a9fb0e535cae89522c63d37800fca3cbe30c7fab4b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Subst.olean": {
+      "bytes": 477064,
+      "sha256": "d33ead4e8a486d24341111a27a40d7f422d917d2862049366e2a74f2fb71769a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Syntax.olean": {
+      "bytes": 1027176,
+      "sha256": "7ebdcdd5ae5974cb9b71db5e233501eafd59b2327e38a00b75f71dd8516d74a4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Theorems.olean": {
+      "bytes": 977720,
+      "sha256": "10fbc16de35bcd009eeb17662b36d3783c9ce579f22a5fcc4617b1e20fb9e6dd"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/Typing.olean": {
+      "bytes": 1068536,
+      "sha256": "3b6d58f8621ad95ecfbd92217fbe92ba88ce40210caa050bc3692a10b7b977b3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Core/WellFormed.olean": {
+      "bytes": 97296,
+      "sha256": "366c4f9fa7b4348ac608a051e696f4b26ed98c4710e2291f00bf61e74dc16e4c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/BuilderExamples.olean": {
+      "bytes": 79400,
+      "sha256": "3e1cad1d1fa347628679f26d80557b45b62bbbc0e5ce500d9baad8c8dcf9aa6f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/Builtins.olean": {
+      "bytes": 1972952,
+      "sha256": "96e3b0c06cc21bbd164a3a6387a11bee331f741e43c8adece2765565d0643b3d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/CheckInput.olean": {
+      "bytes": 1389752,
+      "sha256": "cfa38a363f0bf00a6b7ff9a36c73c495b0693c8e00e6f74c4c86611afffb951f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/Convert.olean": {
+      "bytes": 4070144,
+      "sha256": "65d76c62a268f967cc228f20b08f49d6d646d99a3b837306053cb458b8876f68"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/FormatExamples.olean": {
+      "bytes": 124000,
+      "sha256": "a86f819426fbf8f6fbbd5195dd7f590a0d8ef5435b90d9245740bd586ab8333e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/IntegerExamples.olean": {
+      "bytes": 132608,
+      "sha256": "fa28bfea0a73620b8663806b3697e979b9a694a574935c30b15cabfff38cbe68"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/Observe.olean": {
+      "bytes": 730808,
+      "sha256": "edf0d6c4cae7ae7c0a31a6c988190c4574518a1b09d7d13f7afdd02a6967507d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/ObserveExamples.olean": {
+      "bytes": 142296,
+      "sha256": "a8e2c3c41dda50695af8354a54d60b3f9fda1fc0a9f369238c82f0168df54822"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/Range.olean": {
+      "bytes": 1134144,
+      "sha256": "20c56c9a52e3ed243ddd4716936ee00a9d0390549c1fef018b734351ea75f753"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/RangeExamples.olean": {
+      "bytes": 148768,
+      "sha256": "1eae5ed72a5554d80eff5c841f762dd77e8a2ea1a25c60602e32ecd4dbc66e8d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/Syntax.olean": {
+      "bytes": 12416736,
+      "sha256": "2dcc097619a158560e452ffa84cea3882e3db438f8b70ebb599875d668d93c5a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Exchange/Version.olean": {
+      "bytes": 1500432,
+      "sha256": "decd3d4f1545390e3db736b8dea1f2c566b372c7396a030a875ce13740510b19"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Analyze.olean": {
+      "bytes": 588000,
+      "sha256": "a540dfcd9037e8ca477bc75e6bcc70f55e1d0a6eb6da179d09b344e844ffa98f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Arithmetic.olean": {
+      "bytes": 1474168,
+      "sha256": "6c0efeb97810bb03e0e536b222d2f65dba10175d698289f2cd4b0ec6f87137d0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BindingScope.olean": {
+      "bytes": 155200,
+      "sha256": "7b60b7ddd3b6ef3b475a1607519e0124deac942fdc55c761c5612917aa837858"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Budget.olean": {
+      "bytes": 1730232,
+      "sha256": "ab6cee80406cf4c69cbcacb1610178d150328e7805de63f4b6fc1ae5bd59b7da"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetAnalysisExamples.olean": {
+      "bytes": 251544,
+      "sha256": "491f1a1080f3a2160494b062a6dc577d132b5d5bc75565d818ff7fed6e890556"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetAnalyze.olean": {
+      "bytes": 1767232,
+      "sha256": "831a8bb1a56d4151774153550aed8e18ae81029854888f98ec2bf69ca4edd26b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetBody.olean": {
+      "bytes": 90696,
+      "sha256": "57a70a378d3ef093fec928e0127edc1470960077f592e6f10a4ef5bd9b0cd0af"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetCallReach.olean": {
+      "bytes": 3317368,
+      "sha256": "bf5a82a12a1aedb096ae8a60c1f63938686929fc7a438b05485b2ca9eda81322"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetCause.olean": {
+      "bytes": 822352,
+      "sha256": "0026d84547d20049792511b55e86e63d0d0b8547b864eb80b8c7022ae82fbf4e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetChildren.olean": {
+      "bytes": 1535896,
+      "sha256": "713ae7e49451193a6485a67e84c8ab3200bb7493757888e675de9fc413171b0c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetChildrenExamples.olean": {
+      "bytes": 130848,
+      "sha256": "31fb7381ca75dc76abc180c3069a5afb9c5603b46c3d22078ee924b44fbe40f0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetCount.olean": {
+      "bytes": 2189560,
+      "sha256": "a41bf35cef1427f25547d479a88aa33dc80d0a06daf17c9ad8bb0b7e74f0b0a9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscover.olean": {
+      "bytes": 926648,
+      "sha256": "486b03fcdf5bf439f06d946f2e6050057405e8d91264887a45a922ecff9e7edd"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscoverProof.olean": {
+      "bytes": 2887888,
+      "sha256": "c7678fe51348df731a87fb3cd832e25729f1dc0d6296dcbcf2da8a9cf20f692e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDiscoveryExamples.olean": {
+      "bytes": 105904,
+      "sha256": "25712ec83bb0c138e6ab8f456af4daec30335f7888ac7635b80fc6c6b25f998c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetDomainScan.olean": {
+      "bytes": 425808,
+      "sha256": "a8b781fa779173408824373c045cf1a5514051266e61b5fac19db184164da29b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetEnvironment.olean": {
+      "bytes": 2776720,
+      "sha256": "66b7c8d8b98718bbd404c443d9c48fb40446bc410a387719cf63cd33c9802b37"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetExamples.olean": {
+      "bytes": 3320,
+      "sha256": "d49e37e399975c77dd62ab03f2dc7338f86fa0d12eb34111e7284f7cbbdedd83"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetIndependent.olean": {
+      "bytes": 457416,
+      "sha256": "150af2e53c42377f86c5abbd7d439763b65e5e75d461d859d32e6cf01cc8c7d4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetIndependentExamples.olean": {
+      "bytes": 112592,
+      "sha256": "4ce47e5bb7e3c5c304fc7c674e063c00249531567dae7dae0776ab2a5623f96a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetIndependentPosition.olean": {
+      "bytes": 1136704,
+      "sha256": "b6f719a214fac705ec1e1f6c164578667452d241b8f2b9f46499dee85648b35f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetIndependentRun.olean": {
+      "bytes": 74200,
+      "sha256": "92159baa22a6e82ecfa2947b9d9c48954aeab5dbcb21c86857cca3ec800b6b14"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetIndependentSound.olean": {
+      "bytes": 2077776,
+      "sha256": "51b9707bba9be12893a3c3b3fad07394450310baf493c3ceb51f636ad61733cc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetLocated.olean": {
+      "bytes": 2176464,
+      "sha256": "82b4d2040e2cd11bf19ea18d1b5ba2f91a759070cc5e71b5ae07e13d305de001"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetNormal.olean": {
+      "bytes": 12546776,
+      "sha256": "b7f77a1491590b47e094483342ccc5f01dbf591c30ca11f7289bee667be50382"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetPatterns.olean": {
+      "bytes": 1275936,
+      "sha256": "53f8efaa680f31d3026f77be997fa5e2bbce468f1d12502d310746320e88f9f2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetProof.olean": {
+      "bytes": 543232,
+      "sha256": "6424e939732e1fc85001b4da5b841d8f38cade27cd9de255da59707369785124"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetRange.olean": {
+      "bytes": 3077896,
+      "sha256": "920647d219dbd304b4fdc31a36f2ef47a275d973ab80d084f21192684da53fb6"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetRangeBorrow.olean": {
+      "bytes": 699728,
+      "sha256": "f384aa1673996d675c70307f3a2f5674e27fbb4a132fee0da092e59e871e4acb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetReach.olean": {
+      "bytes": 414160,
+      "sha256": "d6f818aa2322837497e5cfcf3fbeff525deffc36c817d43c9ae43e626afdc42b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetScan.olean": {
+      "bytes": 651248,
+      "sha256": "ba73d358a32857d2ce376fc43e92cc55aea7c6bd0549cf1bb67d1d97382c3010"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetScanExamples.olean": {
+      "bytes": 51064,
+      "sha256": "35d06e09d1018ac5a578a075e03cc2428b78581df23711e8488adba1916ab549"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSelect.olean": {
+      "bytes": 104984,
+      "sha256": "94415a856c05162b5e6d103840116fa7d10b89b3958eb0d7634db664aa36b9f0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetSound.olean": {
+      "bytes": 9772816,
+      "sha256": "f25674dad8e6879d7b582e7b6e1edf4375996c1819f6efa9300caff62d2a0d86"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetTraversal.olean": {
+      "bytes": 4245768,
+      "sha256": "3a4a67cd3913de5e1433ef58d23d0991a852252f3249e8b8fff9c815914adf76"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetWalk.olean": {
+      "bytes": 741320,
+      "sha256": "6363bc6a1b97148acb88843d2f53b18d135d6fb7ab5aa8540da808256c559682"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetWhole.olean": {
+      "bytes": 861936,
+      "sha256": "ae4630fc58c49f8b3bfeb15e6f1add25095e19489600e1ee7be3a3d008417b90"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/BudgetWholeExamples.olean": {
+      "bytes": 102544,
+      "sha256": "135ae7e2fc25a2a4fb09fb3d53378e032bd11295e24198898126360ad950ff98"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/CallReach.olean": {
+      "bytes": 3705784,
+      "sha256": "04b65fe8142bec3d42f0efb6485fd0dcdddc004fbda12eaa415f8d2f73bab9c7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/CallReachIndependent.olean": {
+      "bytes": 1963808,
+      "sha256": "aca1dabb27e5e5eb02bd1d8d9809d53f1f0f3012e6534d24938a0bf2d9da28b3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/CallReachSound.olean": {
+      "bytes": 99552,
+      "sha256": "d1c51e030d3d0710f4b41f128b19b25d56c40f412ff0b442358707d8f72465d3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/CallReachWhole.olean": {
+      "bytes": 397432,
+      "sha256": "3f35f04401d84a9104ceaf8ab4ee5557f0a1355564fa3213e2af5a6b6b925544"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/CallTables.olean": {
+      "bytes": 13248,
+      "sha256": "31cc38f718ea85abfc16d8470b32a16abef6575b7ae5088f0ece30fed41b38d0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Domain.olean": {
+      "bytes": 874624,
+      "sha256": "2ae4843c17d6380cc4248a6a2f6477e9d00398f468d3651b2886d655bc426a4f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/DomainExamples.olean": {
+      "bytes": 591760,
+      "sha256": "0ba2483efe5633e7723a6a7645ca3bf55c620dbce7039f21d02c6572e15a8f1b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Environment.olean": {
+      "bytes": 1948496,
+      "sha256": "aba7b35d3869bcc7389d2d5e16cf73d82f24ed43d06ccc777a9de9daf1efe496"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Eval.olean": {
+      "bytes": 27540848,
+      "sha256": "0ad95c0950ac526b0b9c950ef560b6bca0e64c096a1736a3c6e09f5c6ff05ef7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/EvalClosed.olean": {
+      "bytes": 8529720,
+      "sha256": "cdbada801a3bd81dc46b6a5ee7148b86011a3e04c41077467c493e18181aaa9b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Examples.olean": {
+      "bytes": 1755176,
+      "sha256": "705a9435b27a1076c35e73b5b6ea4ab4906a5085875aef6ecc4fb6ffc1f3c92e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Exchange.olean": {
+      "bytes": 4495568,
+      "sha256": "ead7eaa0d7e703e47dc7fded7f40f7ca161f7c8a8dac6b68d07d9aed646eae7d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/ExchangeExamples.olean": {
+      "bytes": 567368,
+      "sha256": "fc59c2257a602d889afcc41301a915bed06484418ad16ee6bd53d7481524ae89"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/FixedDomain.olean": {
+      "bytes": 630056,
+      "sha256": "b22e6dcc961c73321346dd45421d152a8e151afb6e46582a3836c916753d0701"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/FixedDomainExamples.olean": {
+      "bytes": 107248,
+      "sha256": "03ee35d996b6333cbbb22f63bdc9ad7dfa8b75f2430b9b847e262cefdc57c8e2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Flow.olean": {
+      "bytes": 8553456,
+      "sha256": "b51f6958fb1e2eced0071d8207416e1c8aba39a404716eb97467349200665015"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/FlowExamples.olean": {
+      "bytes": 97008,
+      "sha256": "9566620759657d8e44a6e0c47a89eea836106cc1aff8864de3ea34ec3dfa67ac"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Identity.olean": {
+      "bytes": 2677704,
+      "sha256": "3ea90328509c683afb0f38b79a8eadecea107792171318ec92c5a824ec25d802"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/IdentityExamples.olean": {
+      "bytes": 194328,
+      "sha256": "b50f35fac2aa24c8193349a4befcf1af7e4a9080ed7a607c77b21ce0402f4fd7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Range.olean": {
+      "bytes": 6886248,
+      "sha256": "821795e82328cc62efb3ad23b38f6ebe07ee58ec7d5d35e2bf2d3ecd100e37b1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/RangeBorrowed.olean": {
+      "bytes": 2549232,
+      "sha256": "b3c0f2d1693ee3f703ae75c524b6f7c26e2b18139b539f0c20effbf1f364e7e4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/RangeState.olean": {
+      "bytes": 234944,
+      "sha256": "132700931fce1fcac739dc93633143092bf04c9a2cf048752229dab908fe1c6f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/Sound.olean": {
+      "bytes": 23725592,
+      "sha256": "bd89d2320b4ccb2c136dd3ff02bde56c6971bc0798f7a76e1629adc92a1c89a9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/SyntacticReach.olean": {
+      "bytes": 3706960,
+      "sha256": "640eb8159108e0f2765f3cc1f00400ab225cff79c8d390dfae897f0514bc59b9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/SyntacticReachExamples.olean": {
+      "bytes": 149616,
+      "sha256": "a679c3a2c1cdd817ff65c107622d421a7fc78afd4f92ecc33d266d3f4c314898"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Interval/TablePreservation.olean": {
+      "bytes": 560304,
+      "sha256": "edcf444c51d4fe34cc55905bea98eab201e684f6fccdd9982b1a834568aada1c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Library/ResultLaws.olean": {
+      "bytes": 337968,
+      "sha256": "10e9a19d42a42ed4c1d45e8262d2d86670c97820ecad31ae9925de5a97d19e03"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Admissible.olean": {
+      "bytes": 77880,
+      "sha256": "ac17d6da2081e0a61957b189aa9d76f0f1a6f872ab918d072075a040c9d4fdf1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Assumptions.olean": {
+      "bytes": 209112,
+      "sha256": "d880f8837e4013d8744d9b44ac19ddbdf42ed67e5cbddf23d6c25579211880b3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Atom.olean": {
+      "bytes": 168736,
+      "sha256": "38fb85e987597ec442a1829c9fdf34a2e5b00b2c9a28717f368d03824c27c76c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/BuilderContents.olean": {
+      "bytes": 228856,
+      "sha256": "be1e6727da72ed00dc7c3b14720855b435511c0fdd193ab81bd86a94c905fcb0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/BuilderExamples.olean": {
+      "bytes": 233272,
+      "sha256": "13e4dd717d5e36c223c6e6d26299c416ad4b1a36be3daa4277ed0eb15c29f8a9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/BuilderExec.olean": {
+      "bytes": 1084400,
+      "sha256": "ee956d94158c0dce1afa3c2a88529e278862e4d1a2a87503a4ba3e2398962eea"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/BuiltinTable.olean": {
+      "bytes": 612088,
+      "sha256": "f5d38c4898dbd64213b87937deda741f8991e5b20d87b1bf07346b575227d98b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/CoverCompat.olean": {
+      "bytes": 74208,
+      "sha256": "f4ed851aa268f2c04b9745833b66961fbcba3b33dca1768b35e9f65179910a67"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/CoverExamples.olean": {
+      "bytes": 428576,
+      "sha256": "6666f290e1948ea89b6e71f2495cac613c68678cd30f9c5536364f899780cb22"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Coverage.olean": {
+      "bytes": 11873088,
+      "sha256": "1cc3d49e90f5a13a45f15ccb23db69b9a62c3b57c1721662af94b9e56333c62f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/CoverageExtension.olean": {
+      "bytes": 9568104,
+      "sha256": "92f24dc7775c3d1c276fd216f039b1e842e9db84c7a901547909554d03516529"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/CoverageIntegerExamples.olean": {
+      "bytes": 32520,
+      "sha256": "575ea7be3999f516bd5a603719ecf49d01a2d144f81fbf64814bd4c0faa08f43"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/CoverageShow.olean": {
+      "bytes": 284328,
+      "sha256": "dcceea0eb35efedae3b13ce1393c61148c9454858c367ab7474fedb70a540637"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/CoverageTypes.olean": {
+      "bytes": 1147008,
+      "sha256": "1034db6d930d70f716ec3e4c6e73c9ebdcb647ee4f0a7e6e06b9d7196715ee72"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Effect.olean": {
+      "bytes": 176272,
+      "sha256": "c395b099b9899f8411eefb233b296eee8df12a080b49a0fea0d17cc4a54e70d5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/EffectCover.olean": {
+      "bytes": 387552,
+      "sha256": "f1fb161cf84258b169c7b660509269821547b813f2384f26ad71f2129bf0cfb8"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/EffectCoverDef.olean": {
+      "bytes": 475024,
+      "sha256": "f53a7e8961ec0048af79d01f946ae5e1c71981822c593343833eaa6b85473b7c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Examples.olean": {
+      "bytes": 954328,
+      "sha256": "25931bf48d5b8060ea817008d42ba45a748efd5e4b50de450614f5c463e24545"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/FailureEffects.olean": {
+      "bytes": 19808,
+      "sha256": "35010bd2d84480c402cbb2a3bd7603773af356256c937f4067a390bb9777c85a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/FailureExamples.olean": {
+      "bytes": 516080,
+      "sha256": "8d82859f21ecc16520f758ebaef18f31964bae3ef9fe9c6a4bf09c6940aed5f3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Finite.olean": {
+      "bytes": 2245176,
+      "sha256": "e5057f7ae69fd2e798f9790dbc7a517422ba63cd68b543ed69cdec0edd8bae1f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/FiniteSupport.olean": {
+      "bytes": 656272,
+      "sha256": "6b15dd2ebf8c76e64b73b9e7144de278b9b1d68d79e0fb369d630179b04aa58a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/HandlerTargetExamples.olean": {
+      "bytes": 772000,
+      "sha256": "a99c283fb57e75acda754f5399a887c6b8fa4f78e396c00282bfdab08d9574b5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Basic.olean": {
+      "bytes": 190416,
+      "sha256": "4d019b7ab186d15479eebf4d136f35bf916f48c6fbb149c0deef9828c885e1f5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/BuilderStore.olean": {
+      "bytes": 2312512,
+      "sha256": "66846b9505ddf33f371c074ce88e62180d517e1647c2b3a6855ce287abbdb3e0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/BuilderTyping.olean": {
+      "bytes": 2286976,
+      "sha256": "fa6e383e66b3550c5922bf410858afd90347e9ea4a289ed1c65fabf38b9d4d2f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Canonical.olean": {
+      "bytes": 7020128,
+      "sha256": "b8a0cd91eefb922514f94d6da5f6b3ebab4aba1d3531e5f267b15a03eac58c7d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/ClauseIx.olean": {
+      "bytes": 783488,
+      "sha256": "7e1a11540c3fc2aba2fbd1811f65f640ff0f8f449c8d0a702385337b6c14b01b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Closed.olean": {
+      "bytes": 2820176,
+      "sha256": "c5058f8803c6d9a1fb195b513e4a2a498241055495bf005946fdad6c4f4f3d1f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/ContLemmas.olean": {
+      "bytes": 1888128,
+      "sha256": "82f8e5f169badf473887e9878ea9d08969776d136ff8881cc7382a00f12af518"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/CoverageRuntime.olean": {
+      "bytes": 526728,
+      "sha256": "452433da038584a83cc6ae98bd10cc328e79fffd809f579f66212a41ed6efc04"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Dict.olean": {
+      "bytes": 976064,
+      "sha256": "6c34fffebc21baecb1b1ed5e6c25fb468083249722fb68a56a54a1dabcbdef66"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/EffectSound.olean": {
+      "bytes": 916056,
+      "sha256": "2b834aac40db49b4154eb0cd2cb3b59b884ae211381ab7a9b9a242694bd1d71f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureBase.olean": {
+      "bytes": 748248,
+      "sha256": "53560f82ae98f5b0fb534aedf4fe92e232f02c4f78e0173e018b9eaba58a50bd"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/FailureCont.olean": {
+      "bytes": 10281968,
+      "sha256": "5058f1fc00d9ba6379503c97b36ab6d3a38003250d0c47311146b0d749500f43"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Inversion.olean": {
+      "bytes": 54577912,
+      "sha256": "08920b2037302b01ec8f36f74fa51feeed5a26ba0636fb68c2bd8125297a33c8"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Irrelevant.olean": {
+      "bytes": 6873152,
+      "sha256": "9d2a5c199a68818a6d1f6af3ad464aaea50d6b0d19e8f9c22c781c9bac2ab8c3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/LocalInvariant.olean": {
+      "bytes": 308552,
+      "sha256": "76e712542ebcea16f0c0945d8799922f29e7c3e47945f41c5fc057ccf275d246"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Membership.olean": {
+      "bytes": 1466304,
+      "sha256": "40386ff0e070946c25b4bbc3d84b47147127b080243acf9d63699e499920d974"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/MembershipBase.olean": {
+      "bytes": 671352,
+      "sha256": "f5600983f565f9021b1c8b5ecd317f7df946b3d873bc5d66ed419f3be0965834"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Names.olean": {
+      "bytes": 7342288,
+      "sha256": "78e2d95c2c3299e321852b89e707d9b7dd0ca0bbac3fa8d4ef436e5cfdc9ba27"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/NoFailContext.olean": {
+      "bytes": 5782648,
+      "sha256": "7117ae08798e80575897e3563624a2acaaf768dba1297e230fd9f95d2534c7db"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Observation.olean": {
+      "bytes": 703760,
+      "sha256": "bc85e4c881fcfd95f2e050c862955aa540e3e109575602392643708fa8f1bd93"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/OuterC.olean": {
+      "bytes": 6152608,
+      "sha256": "9990d93263954e8f208a29436c9d3963bcc920c43fba5e5b2f6af84825060946"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresBase.olean": {
+      "bytes": 634536,
+      "sha256": "a5d3b813ab67e4d57bd50efd8317e3c41f6d3b16dff6b3c6a304907d8cdaccce"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresFailure.olean": {
+      "bytes": 367992,
+      "sha256": "eef0802903130a8a31258aeaf5d5edcf849841995909a47ccc6197c7fec768c1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresHelpers.olean": {
+      "bytes": 949656,
+      "sha256": "9a3b331256eceec76af60bde7bac847f0e21e055aef3f4051fec722d4706b572"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PresMain.olean": {
+      "bytes": 3790744,
+      "sha256": "0c0916bdb3d87238ec88453cf55a35219c39853468b066b1c9e456399c4fc74c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Preservation.olean": {
+      "bytes": 646944,
+      "sha256": "160c5e6a16e7b4d5872ac494bbfc62528c22dfb969560095f1405b4d5e8d5d72"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/PrimRanges.olean": {
+      "bytes": 720664,
+      "sha256": "054fb78beb0bdc60c5572de1ae75ab1b5388634e4f4ca7b91f3af6bcef89222f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Progress.olean": {
+      "bytes": 4655552,
+      "sha256": "3484ec9d21b55a5a6dd39d2381eb3c25cfd1bf7d52a3ea7eff627773addfcb21"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Regularity.olean": {
+      "bytes": 5397200,
+      "sha256": "f835612e61b50df14e6d1b175afea029ca9ea62390699a462778c0558dd01bd4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/Rename.olean": {
+      "bytes": 13224392,
+      "sha256": "2064d20d28f13bdda51d3828091ef82608295db842e4291852fe0413297a08eb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/StepSound.olean": {
+      "bytes": 4065312,
+      "sha256": "107be0bca0b215c887123d44afd474d4fde13a7925c77acd87e84d2129c22860"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/StoreLemmas.olean": {
+      "bytes": 1623192,
+      "sha256": "530b1d5d62b1766fe517d3f6101371612fbcdc1af1d71ba13b96520e6836b975"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/SubstTyping.olean": {
+      "bytes": 8450032,
+      "sha256": "b12e505d08480b3a805cdce367ece798c741939315faf729647526294cfffcad"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TargetPropagation.olean": {
+      "bytes": 249280,
+      "sha256": "7dc04c4ca79ffeb37a055f76903f73ebb3e6d82545e2664dddae0c9841ab53a4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TargetSound.olean": {
+      "bytes": 595160,
+      "sha256": "8dc81be6d99851fd6f5ae77f394f5a67f7c50ce6147f296dac4c7319f5de7f20"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TargetStep.olean": {
+      "bytes": 1059472,
+      "sha256": "16d38bfcb24871943ca24992813d4c2ef8f822f64af22bf1e528fb4086206b6f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TyLemmas.olean": {
+      "bytes": 259592,
+      "sha256": "a5fe25fe070365f39882d21bb5a1241ab3a81a23b704def2f95c057b532f98ad"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubst.olean": {
+      "bytes": 616896,
+      "sha256": "53a917a39bfb35ca73603d8066cd4601852f5e4bc3d854cda18cefc9dd34dc0e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/TySubstMain.olean": {
+      "bytes": 9141152,
+      "sha256": "db60bfc86b978d5301155c1c8a3cb06ce16a775f5556ca131d11220cb82bf08e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Lemmas/VariableBind.olean": {
+      "bytes": 141768,
+      "sha256": "522036bd14f47c4e897f2638cc2e633a2225166d1b809a505753246ae401d701"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/LocalRef.olean": {
+      "bytes": 118632,
+      "sha256": "685b67e024afa42ee556684c6ae77f3045742a1c3f24447999b38a0e839f77d6"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/LocalScope.olean": {
+      "bytes": 6488264,
+      "sha256": "26290946860fbc45f97caa12e7d9965f7ac068db60319da08651f86eb8b4837c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/LocalTyping.olean": {
+      "bytes": 220936,
+      "sha256": "c7dc1884bf564887a6b8fb5c75859acf9c9ee3d182691f99c2605f8229bc3a44"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Model.olean": {
+      "bytes": 2847664,
+      "sha256": "a9636bc6b965aa7f14bce57ba7469a296f951330a826a88b8299e8650b24bdc4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/ModelHttp.olean": {
+      "bytes": 2847672,
+      "sha256": "c20cb08ac29c8fe55be4a83b4a9f86458a5636059a411054b5356fbcc02bbef9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/ModelTargets.olean": {
+      "bytes": 2490640,
+      "sha256": "783cd3f64a6d5bc797fb7d0aba7eb99b9eb59926c73328c8cf4f2e1f85723109"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/NoFail.olean": {
+      "bytes": 565808,
+      "sha256": "5710201605618c41dd555ca837f7229d278c7b59036fa3f373c7debc96c5f6cd"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Normalize.olean": {
+      "bytes": 620976,
+      "sha256": "6b75fc3a452d68b155ae0a88a4c647284aa4b1fcd9a69f8317937d1cb756a4ec"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/Atoms.olean": {
+      "bytes": 402624,
+      "sha256": "fa58ab4723c97a638115ae83bd88a742ff4f70e448adecf4f15a9abf6a81b72e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/FiniteAtoms.olean": {
+      "bytes": 194672,
+      "sha256": "df81c9eaf97be74967cc3de5caf68405ae51b18a223b045f4dd1d2b5c6fe5413"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/Labels.olean": {
+      "bytes": 514712,
+      "sha256": "88114c5b7e474f348737d9a64b0e0f9df33f1233e2fe7407fd8de61792393eba"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/Range.olean": {
+      "bytes": 919952,
+      "sha256": "8d4f40c55d9f93b670be8dd1e858bbb5158fc073160791cefbdf071213b28a9f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/Shift.olean": {
+      "bytes": 33928,
+      "sha256": "1a0ce4421b6b706779f942919e2d869042ae1d260f06624557e7ece8c0f162e3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/SortUnique.olean": {
+      "bytes": 268040,
+      "sha256": "405ab8ced32197e8bf57eb8cc9763755cfda96907dbf43e87896507898963609"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/Tree.olean": {
+      "bytes": 345272,
+      "sha256": "d48e0e801c8c4704af1292b729a4ce2b7ac7377c0725e4b1667f9df90684f7f2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Order/Types.olean": {
+      "bytes": 3175160,
+      "sha256": "c4ea1812a20d5f2318bd67b4daa1094901c30dec140d826109ee8e5de872fa70"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/RangeInst.olean": {
+      "bytes": 1983264,
+      "sha256": "8a34a54318bf4f5de96edebbe77498ee5cefdfbe8b39dff17dee9b8a51fae9a0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/RangeInstDef.olean": {
+      "bytes": 149128,
+      "sha256": "0e6dea69da722e805ec18588a47c2d655629159d7a3d00165eb2eab3e90f4740"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/RangeIxExamples.olean": {
+      "bytes": 15304,
+      "sha256": "b516a0776b1593c567016a424cb1df2b9bb170f1c634b02772fb44950ba39739"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/RangeNormalize.olean": {
+      "bytes": 212112,
+      "sha256": "cb441d6815994e7de36000eabba5b3e9cc35bfd9344a43a8fa0153d04a83c028"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/RangeWF.olean": {
+      "bytes": 1076576,
+      "sha256": "161ad6f798373cad83e47f3fc5843113940c1805ec6c8875511c32cbe51737fb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Basic.olean": {
+      "bytes": 848984,
+      "sha256": "4af706b4e2b13f511931a0f431bb31e6e5a570007531d0dbfe85363ebf2add65"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Bind.olean": {
+      "bytes": 532016,
+      "sha256": "ef3dc521ae3f0ede09de92e79c94f4babb306506a9c7e4c12914fea61ce9f26b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Context.olean": {
+      "bytes": 1586736,
+      "sha256": "a37986d42586c19d7f9b597791e5ba5137afa8afb771e3d05764962037f5ce83"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/EffectCover.olean": {
+      "bytes": 256608,
+      "sha256": "4165106b8693f367e2982bb88e721e88e4eccf322e0e6f1ce75edf4f14a741fc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Exchange.olean": {
+      "bytes": 500312,
+      "sha256": "e6b0fcaabfe8d82abf0e475efbea2668da63bbdc2c010fb453c0dbd02a574e3c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Le.olean": {
+      "bytes": 237208,
+      "sha256": "d1c22287407b7c466e1107492c25a56b3d13d22390209a75ae43d9e608317f23"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Logic.olean": {
+      "bytes": 228216,
+      "sha256": "395bba317f075bfc78ce8b6b4ac968368359253cf66cef2479fd7925c64aaa02"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Narrowing.olean": {
+      "bytes": 2604040,
+      "sha256": "64c2c958103b9a07b9bff5b940b5e32f539d21c7b4fcdb418bd8da48302690a5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/NarrowingObstruction.olean": {
+      "bytes": 658664,
+      "sha256": "43f24fe4c751d6ad304c99faa5f4ca93eb46137313ba084558329296a2514e49"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Normalize.olean": {
+      "bytes": 440936,
+      "sha256": "d3be7e4e8f3e494656e4fe2f0e722fa930efeb924a6c28a72cf18bad830f3654"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/OpenSubstitution.olean": {
+      "bytes": 453680,
+      "sha256": "4ef8e10315941372e9a54f89ade6d79bd1c40c2bddba96a40ef767de554bfd46"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Order.olean": {
+      "bytes": 1704872,
+      "sha256": "6b810a955f46caf5244d49423d08b8183f6134496a919ba9fe716a9f12cecc44"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/RangeExchange.olean": {
+      "bytes": 599616,
+      "sha256": "af384641c82d8ec9a1dd341a4b439aee9ab15b7793ac6c80fde1b6e123eae58d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/RangeSubst.olean": {
+      "bytes": 769048,
+      "sha256": "13ff62115b6572bda74cfaa75416d4601118875240c5aede368ee399544e5ff9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Shift.olean": {
+      "bytes": 742320,
+      "sha256": "a539a43db23c3aa03f4bae1e1fa473219b243651265eb15faa46f1851d6d7ccb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/ShiftOrder.olean": {
+      "bytes": 1371544,
+      "sha256": "a42e010f04a2b112f571fc68fc8a251eaf9cc2c3c1213bb31f4dab56059c84e4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Subst.olean": {
+      "bytes": 489680,
+      "sha256": "a2dbd8c22313d3dd80af0269d2ed0250ef86a691bba11c383884ee9087bba701"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/SubstTyping.olean": {
+      "bytes": 3549144,
+      "sha256": "1379d077a7ba97c72a28f08b621e945b0279af26b7006ee7bc71581b5d5688bb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/SubstTypingObstruction.olean": {
+      "bytes": 1751808,
+      "sha256": "ca86c40ba7e61537c0c82d85c15c8d2f21e2f279b270a1c9ba367ec88e78c72f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Syntax.olean": {
+      "bytes": 1606112,
+      "sha256": "994d0ff0b6fca8d18a48b571359a9a06198d904db0959a6bcef8a5147120fd59"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Transport.olean": {
+      "bytes": 352776,
+      "sha256": "ba6d7af4bb643c9fdd376d6f76f5a18639deebdc8c63328cd620fa656b73f4e8"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypeSubst.olean": {
+      "bytes": 810464,
+      "sha256": "f892eff650e1879bbc87ca6011a940fb8717b9cc83bcdb9b8d38af103fc51c3b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypedFacts.olean": {
+      "bytes": 1570840,
+      "sha256": "4bedec2017cce9770b17a7cb61d88c5e31064f1ed0fd1fdd54bc12b5d24d68fc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Types.olean": {
+      "bytes": 977600,
+      "sha256": "05da6a57d27b3a6a90b68fa225fe49ea6c798dbe239b6c5c3bef224d4df4f7d5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/Typing.olean": {
+      "bytes": 760488,
+      "sha256": "9c70fc0f3a0fecf7ed2961aeaa51a2b2d168b24fd1159b5d1d56e02c6d0148a5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypingShift.olean": {
+      "bytes": 3436776,
+      "sha256": "6dc1bc46ae0d92ef006459642272c6867a2ae5865fb17516b8444d31c3efe286"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/ValueBinding.olean": {
+      "bytes": 1279608,
+      "sha256": "a6d54289721cbe69b1a36b4103c8ede468818eccfa128bcc3d25833372c7fc9d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/ValueExchange.olean": {
+      "bytes": 800384,
+      "sha256": "1ab2159c74c1347902d6938c566a7dd63d7ca4ec2566eac8cd56c7577676f6b9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/ValueRegularity.olean": {
+      "bytes": 799048,
+      "sha256": "a54bb3012aaf703e10d1309592a34af59fbadaa0a77a8c0979949ce9cf6ef19b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Refinement/ValueSubst.olean": {
+      "bytes": 56776,
+      "sha256": "e742c9ff9790eca9bf0920b51246cf016f981e515d20ea9919c36b9c5ace2d53"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Semantics.olean": {
+      "bytes": 1819072,
+      "sha256": "3b73c70400c6953840443464675ef9035a648b0d2e7487d53ce62bcd78d2dd91"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/ShapeOk.olean": {
+      "bytes": 291888,
+      "sha256": "bfa993517d99470f2e492f219a7ebf08e063ab25c4068066e445fba36c9af0f3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Subst.olean": {
+      "bytes": 791328,
+      "sha256": "bddad41215727e274ed290e4f29a693d98b6df3c49e59697c91fa15a5d6689f5"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/SubstEnv.olean": {
+      "bytes": 61712,
+      "sha256": "d2c3cb7966d399ea908ae1850cc13eab36ebc343c170ea001d8fc49539bd88f0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/SubstExamples.olean": {
+      "bytes": 11536,
+      "sha256": "7fe68762552ad34905672d358ebf8086b6aa6adf64cd76469a01845f68951ec7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Syntax.olean": {
+      "bytes": 2129032,
+      "sha256": "37d24833d5b4be7afc29ffcadbf139655468aba11f36aed65bdeed3734052ded"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TargetReachExamples.olean": {
+      "bytes": 423744,
+      "sha256": "f52163a47298e566700ffd0001ade195fea4c1d6119fbbd16b6605bde8087621"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TargetStepExamples.olean": {
+      "bytes": 232880,
+      "sha256": "0b0d07362d6e70b72d395b05cad26e2664209603e0ec3fa55b318bfae6fff8b3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TargetTable.olean": {
+      "bytes": 758856,
+      "sha256": "47d8e883599654a733c93b4b3eab59f40a923cc2a6784ee91239c65578ff43ce"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Theorems.olean": {
+      "bytes": 69136,
+      "sha256": "2853ee8254935da99505ae6ccadb95dc899e73527ca35e46e4fdacf78388aae4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeBounds.olean": {
+      "bytes": 640856,
+      "sha256": "cbd2c00528a2b971b02138ed5b2bd92b3ca85b8b10990b23ce2a2ee740c2f781"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeComposition.olean": {
+      "bytes": 803520,
+      "sha256": "bf97b698f67d2144d767a27e9c1172b77e20e42de8ee6bf6d5254c1dca47c46a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeCongruence.olean": {
+      "bytes": 196464,
+      "sha256": "436a8e038b6324803047aa2fed21381141ba7138fc42c3da88aaf2c07c9ca473"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeRegularity.olean": {
+      "bytes": 476560,
+      "sha256": "e7990a6863e9fc80c2df91e738166a91ac4086623503fc63a03ae32455ff81b9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeRows.olean": {
+      "bytes": 351376,
+      "sha256": "0a611203faba2d3982a9d140d29703ef419e497d421412c6bc3f57be63f0c217"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeScopedSubst.olean": {
+      "bytes": 411456,
+      "sha256": "a28fd7430e07d465e4497c816e56db5b99774e29952b19167de6a0ef1eab22b4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeShift.olean": {
+      "bytes": 2721896,
+      "sha256": "1cd2b15536781fccaa7f7cc7cfff24cf1fe4339809d2abeb6eac15c9997119a0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeSubst.olean": {
+      "bytes": 408952,
+      "sha256": "28a83d3ae24abc5944be2031b41d791639bbf31b2fe1d18c64fa0126508c2ecf"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeSubstLemmas.olean": {
+      "bytes": 1162000,
+      "sha256": "5ccf46aa1ea20d00a13ecac4c87700880c2022636468c2721ec89d3b5ea8df87"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeSupport.olean": {
+      "bytes": 658744,
+      "sha256": "d6f05024e6bc0a8822a45e3867dd67f6aecc3452337f8dd10803219e64ad24da"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/TypeVariables.olean": {
+      "bytes": 463408,
+      "sha256": "af9bc63653557295e820fcaeaeca7d0009c35031d5b45139b435da8e489bbda1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Types.olean": {
+      "bytes": 705136,
+      "sha256": "c4df6024c527d49a3ef0e2fdb2373b3846b1a3042371e31dc25392651c1156d7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/Typing.olean": {
+      "bytes": 5596512,
+      "sha256": "6d5ae34e21ce683bb3606afad6e25d9c5f6f5024404db44d37d2f269ad8d7f5e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Release/WellFormed.olean": {
+      "bytes": 165128,
+      "sha256": "3aa108a884a277a3fe1d6713ee588461730309de66b7773f3d368d4113a790f4"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/CompatExamples.olean": {
+      "bytes": 75808,
+      "sha256": "7ffe64e5410dc23ba8cd0eb7403935cd1a3edd644ebfa3ded18067f37c421f5c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/Cover.olean": {
+      "bytes": 400672,
+      "sha256": "100750f17fe63260d58f5087c572f765ceff5bf1fea08970caa93293158c11dc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/Domain.olean": {
+      "bytes": 2136336,
+      "sha256": "b8dce804f1743a0ce090da2e5d4ed674185a37bad9a0799538ec9fc525552fa7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/IPCover.olean": {
+      "bytes": 628128,
+      "sha256": "d17a41bf8fc9409db5f31e5ea82dc420ac5633050701f3f0f706c8fe86df7881"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/Inference.olean": {
+      "bytes": 907432,
+      "sha256": "8412951b56dcc76edc52a82e76cd2996fd29206ebbe29647d09e97aa65ae97d2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/InferenceExamples.olean": {
+      "bytes": 7639680,
+      "sha256": "e532a7c065c2c8d478e9e9a7c0920d441c22202405c4a0f2c081f43439207d79"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/RangeCover.olean": {
+      "bytes": 1234344,
+      "sha256": "ccee5d7b7574a5ba05f3223854f2557b6a221cf629811b51d56b9896aaca4c2b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/RepresentationExamplesI.olean": {
+      "bytes": 1063528,
+      "sha256": "936fc781e8d5f85e71aa5ee3df2ac994d7cf0a168d522cdf6d245ca4c13ee93d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/Signature.olean": {
+      "bytes": 327008,
+      "sha256": "75c718e7942b38d6f2f83b274917dd70c59a6395b32b751f77eae3a96571767e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/SignatureExamples.olean": {
+      "bytes": 3774376,
+      "sha256": "59f67272de54d2825ab7159cd7f004a09eea099ead6a3e94f16491223b40db45"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/SwitchExamples.olean": {
+      "bytes": 910504,
+      "sha256": "3c8d38a29d0c2a0855d968670ce2b039e5d203417901e5cfeb7719e58ada55b3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Scope/TopCompat.olean": {
+      "bytes": 363376,
+      "sha256": "164a3503efa3bf1cc5ca1012304079b0fca56905073febf41b7a0cb0f71d25bc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/AdmissibleCheck.olean": {
+      "bytes": 660784,
+      "sha256": "e1c4776a80c64e64608a7b71c3cc1d701e2719c7e797e606e82a1af2ecd8d84b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/BuilderCheck.olean": {
+      "bytes": 112584,
+      "sha256": "c8f218be8f3eda57705a2e83bd13c6d501223a69ab7a8eac1c24035b650f7245"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/BuilderExamples.olean": {
+      "bytes": 758288,
+      "sha256": "18b45fd87ea1e72853872152249fa6ee20b3fb003828f636140189e7edbc11ec"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/BuilderFree.olean": {
+      "bytes": 2581808,
+      "sha256": "b59cea93bf93af483e79824b4da52316310d4eefe4fac92971f1cef933611419"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/BuilderLower.olean": {
+      "bytes": 10720,
+      "sha256": "950d91b79609d721b7d0f038a04be9b87fc3de436a1b454c216c7c6f3e7d8e44"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/BuilderSyntax.olean": {
+      "bytes": 13304,
+      "sha256": "78da7af431e9b20289a17da8c5a82cbb6271afa2802a56e5fdb070ac97d18859"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Builders.olean": {
+      "bytes": 203608,
+      "sha256": "9cd11b76ea3a772cdabb8661811e744492064ef6d65e5ebfe7a6398eb22f25f7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Check.olean": {
+      "bytes": 4232840,
+      "sha256": "b960d5c56dbd36dabb6f681d309e040774ea72d6027bee48dff06f1901568b54"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckAccept.olean": {
+      "bytes": 736992,
+      "sha256": "044505a7ae6e5d4d54957fd5c7ce3df7e1bb8260c3bac43fbacb0dd7ee71f478"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckAcceptExamples.olean": {
+      "bytes": 223968,
+      "sha256": "1500f7819da51ff36e170fef8f89dc4ef96ae06805cd12d448f956cd4c6f8901"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeAtoms.olean": {
+      "bytes": 395128,
+      "sha256": "7f4e1f56d46ba67d94d58c3381caf33806164219010b35d2484f9f20b454b98d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeCalls.olean": {
+      "bytes": 552168,
+      "sha256": "a3af311bc9c0bbcfab1c03fe919f029d6d9c8e6f1f0aacd53e04dc15d589d06a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeCases.olean": {
+      "bytes": 3391368,
+      "sha256": "c6f5078a9ef2fd41306e2415ad09f5a4d6102ae9b18a028883a488c318741982"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeControl.olean": {
+      "bytes": 526128,
+      "sha256": "cf3fbf0fdfc47f7dc3d9f6bceecb54adf9475ee156a85209b8617b7ab9df3b90"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputePipe.olean": {
+      "bytes": 189832,
+      "sha256": "33de53056f76aed02161cbd8b52156b3f3dbdc76a3b67e6614634ea0eea10e82"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckComputeSound.olean": {
+      "bytes": 1418480,
+      "sha256": "bbc2b3c66f410e2794b030b4bbfbb38a6fe9aca9bb0aa9146722c484944ad57a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckCounterexamples.olean": {
+      "bytes": 220568,
+      "sha256": "718e5c91caeecf8d86a951ee35696c0fe0537d2a7348ca35c0cf8e912887bc51"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckDictSupport.olean": {
+      "bytes": 981536,
+      "sha256": "da1cd454c54a85b8b901d9f8197288b68dd3607d061692ac2799ccebd661e7d7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckExamples.olean": {
+      "bytes": 1831848,
+      "sha256": "ae109cca69d1eb71f96d91d4953a2aec69d1e27890b83d1a5c5efd599b777501"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckInduction.olean": {
+      "bytes": 4789952,
+      "sha256": "ed22e4239cdf7672198df20329d36cab124868cedbe83815b4d793b179538f59"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckLemmas.olean": {
+      "bytes": 1031400,
+      "sha256": "06a5a2d9958563099aeb6bca8b853a8d8fcfbc9dbe198d05f7e62b8fbf9f3561"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckPatterns.olean": {
+      "bytes": 1343192,
+      "sha256": "3e852aaa05dc0f55ebf55c901f230df092dcb255084807aedabbc98cbf1e2ccb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckPredicates.olean": {
+      "bytes": 4477144,
+      "sha256": "98e90283f714db9ae750c0a9bcf074c5ecd7ded4f493b4596be9bcebff45dc4d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckProgramSound.olean": {
+      "bytes": 348200,
+      "sha256": "7578ca89db309cdfc627d4bb795b474a210c0e7697424cc93370044be6fd359e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckRanges.olean": {
+      "bytes": 338896,
+      "sha256": "31dfcbd7c39ea4aad736d8b5312040f74c1ce1f5933054f9190758b333f16da2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSound.olean": {
+      "bytes": 95952,
+      "sha256": "716f92df94fcd5f965a152c7b5ca9d8df01a8f3a19e1d1ab83c1d346b74e151f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundBasicExpr.olean": {
+      "bytes": 2229536,
+      "sha256": "f462a97fbff575fc855f53ca262e9b82e74cc25c11be97b60883dc769790a23f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundCalls.olean": {
+      "bytes": 1562144,
+      "sha256": "cd6925438544cabc9d44a13a70f1affa6abef636e558915f3d8b4bd62d5211bf"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundCollections.olean": {
+      "bytes": 1093544,
+      "sha256": "fd86247b190944de19a04e57f776cf7ca0f87029c7db0da9d6cd2bb508d3101f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundControl.olean": {
+      "bytes": 2239416,
+      "sha256": "c7572148382fbd4a1019630b8fee4bb03ecd2d6047ca3892b69f7ebdc8328abd"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundDicts.olean": {
+      "bytes": 773712,
+      "sha256": "f7f878dcf07c04a1e485aa1eff3197fc13b3161547e0dc677c8cf7165e8562f2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundDie.olean": {
+      "bytes": 1036784,
+      "sha256": "921645d250947c6d20cd3a4e47387587b4054c98d9ea6b2101e37e10c8dd7bd3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSoundSequence.olean": {
+      "bytes": 791056,
+      "sha256": "5cb3b2b5e8511a15af5823ce7e4f02a798b66e10ba71f1dcd56359956066b7ed"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckSupport.olean": {
+      "bytes": 4312208,
+      "sha256": "1aeecddbb80c08c65c990d631ad99b3949334fe8f467ddc84867880a1383e239"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckTables.olean": {
+      "bytes": 684016,
+      "sha256": "e53afd5f7c535e30e68ecca3c7131f778a1263b6b202735d4488aaa446fd5cc6"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckTablesSound.olean": {
+      "bytes": 174760,
+      "sha256": "525938b1a8f356f01a92ea863ef9ecb961bd79e7cffacf9d65573bcb4d880934"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckTools.olean": {
+      "bytes": 368496,
+      "sha256": "1189fbf1f3725a698b7b55e01b9489189b9807d7085e7d94c77280cc66fc3ad9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CheckToolsExamples.olean": {
+      "bytes": 483024,
+      "sha256": "60ad5ecc2f80be469d1bb66ef003d5a8a7889b3ed3c356c288975c67b1f9c30e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ClauseIxExamples.olean": {
+      "bytes": 167144,
+      "sha256": "d886a252174f5b870c90e831b3b193bee75915171a76007421d908ba9deaa27d"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ClauseIxRule.olean": {
+      "bytes": 415880,
+      "sha256": "9d6d73fee322ac9b2c03781fd4543db62650c3a3a72571cf740d92bc1bfde347"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/CoverExamples.olean": {
+      "bytes": 1915840,
+      "sha256": "543bd51d4d8d0921ebc8ec7c0e9102356b62775a9a45aff2fbb5195f58c17f45"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Desugar.olean": {
+      "bytes": 1293528,
+      "sha256": "3cfb11223fc12ef14b5696127ad14a9083ac97d3db0384ed895029c816ce7d6f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/DesugarRange.olean": {
+      "bytes": 714568,
+      "sha256": "d90fe0b6ff21ab0d8635c8d5b8e7969f35f5d257b4de843b648b88d86f49eff0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Examples.olean": {
+      "bytes": 9467592,
+      "sha256": "0be8eaffad3866c0190d4b02aa29b36f7bbd80cbd16e1c0b309077e61cc7bdc3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/FailureExamples.olean": {
+      "bytes": 265800,
+      "sha256": "3f164ea12f31286c61aa163d3a366564fba0726eb5c726f0ebeef2c0732c82f1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/FiniteExamples.olean": {
+      "bytes": 84912,
+      "sha256": "d30ad1966f333683bd566ff213f1bcb5d9997140298653f1e42c7833f47b1545"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/FinitePredicates.olean": {
+      "bytes": 797184,
+      "sha256": "58133ba65d89702f3bcf0d37269365a27470450f36d84046ec3d0eb0db098b1b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/FiniteTools.olean": {
+      "bytes": 2095392,
+      "sha256": "ced6a3f4dfd96c7051265d78574666c1425a6e5b3b8df18d0e81406d4697989b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/FormatSpec.olean": {
+      "bytes": 1799696,
+      "sha256": "1847c790269ea7d984a7a3565af9efb20918079c53e901936892f988052c7414"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BlockSequence.olean": {
+      "bytes": 1557512,
+      "sha256": "c1cc0c079606fbe3a0b3e8226dc4c95371140f93bf034df3569cf99e1a0aa70e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderCapture.olean": {
+      "bytes": 13180656,
+      "sha256": "787c6653795e631beebae34f051e2d4bd123563d532c0274f1d4f675e12c3040"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderCaptureAll.olean": {
+      "bytes": 1092080,
+      "sha256": "5480e893f4fa960feb2d7a6c0bfbe9bd09ed28e57df86768d43bad9a2caaab88"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderCaptureCompose.olean": {
+      "bytes": 548232,
+      "sha256": "a17bcc24d0d71df064602e858021b932f4e6ba6fe8c993ae6bbe71bf94b2468b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderLower.olean": {
+      "bytes": 153272,
+      "sha256": "76f174a0c13a629e3a7dfa029ead859de8a3879f2633881315ce8bb09e7afa45"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/BuilderNoCapture.olean": {
+      "bytes": 11192680,
+      "sha256": "01b8733edcb62050b8025c36cfe19c1276f4a6db69be9d23ff629ae0a4868cfd"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Builders.olean": {
+      "bytes": 74504,
+      "sha256": "3115fbb2aff532fb86417fa31c0058dbf476106e16c207a4249513885eddfae0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/CallHead.olean": {
+      "bytes": 3429240,
+      "sha256": "0f2cc1ecbe19570fef8af39afe790a8245348d4eab97ada72cb3f14433ce7db6"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Calls.olean": {
+      "bytes": 846184,
+      "sha256": "472ca29a20628f7dabb92378e8580b525a642890dcadd213d404e22fa1302fdb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Dict.olean": {
+      "bytes": 329120,
+      "sha256": "bbf23f6f014f94fc068c4e1a8ac2be176a701652e2c9a0bb38519b43cef08e3f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/DictSupport.olean": {
+      "bytes": 279264,
+      "sha256": "f0023c3d7e1d1e73e7c83e29e123ef935fa5a335e457503f4a38faa04a0b13e9"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Extensions.olean": {
+      "bytes": 1936416,
+      "sha256": "d2bcf79bc27f69d3872d0d354c8f935937443a11c6dfd5e40f090ec5ddc1cd58"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/ExtensionsScoped.olean": {
+      "bytes": 735000,
+      "sha256": "f8f141b451df29f2afb4831b1599b79e3b943679e1727bf8ecc67ac00350db67"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Invariants.olean": {
+      "bytes": 9715408,
+      "sha256": "d0fda2e03db189c67439339e54de2381d31f256a60c8e2cb3e47f3d4c7bc7f9c"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/NoFailSignature.olean": {
+      "bytes": 33280,
+      "sha256": "ea3cd7b6a651de7b36345624f035950b410dc164a83ca339e6670bfc5ba75323"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/PatternSupport.olean": {
+      "bytes": 652192,
+      "sha256": "8cf888d307f1a1f6e78115c2adcc5d48ee424aaeee983a0d29b4dc3be5d4b274"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Patterns.olean": {
+      "bytes": 224816,
+      "sha256": "308e759d55a09cbabceda45872e0fb64f0d4a61a94efa0e596231a99834558d6"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Program.olean": {
+      "bytes": 493720,
+      "sha256": "ac50c7a02c183415f88fe59431b519c15636e96f9bee7da855614ec7d7e3e1d0"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Records.olean": {
+      "bytes": 687880,
+      "sha256": "5fc72b2452fd3fbb38c1e4fdc653c29d0bdfe7cca8aebfe5110e45b0cb601343"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/ReturnTry.olean": {
+      "bytes": 4226064,
+      "sha256": "c64a6969e85e07a42cad1c2d201833e4e0263569e948e0741e3388dde02d09b2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Scoped.olean": {
+      "bytes": 12938016,
+      "sha256": "9dd956c4515e3d9111da20803589fc89f69f1f5e9801558aedb89a2b6bfd8a11"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/ScopedRename.olean": {
+      "bytes": 35408,
+      "sha256": "c53fcbf4e1a4d468e78efbd85a35aeb485f71b9a2ea6df2871e3f5ea9726b698"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/ScopedSupport.olean": {
+      "bytes": 420696,
+      "sha256": "33a1843279246ee92276a31b12871520a1d7df81ac1b964656b043cb2bdf50dc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Sequence.olean": {
+      "bytes": 880280,
+      "sha256": "5d005cd931c977532bd3c0bc01177cef1aaea27012c1d99cb717092107293f85"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/ShiftClean.olean": {
+      "bytes": 277272,
+      "sha256": "863e5135f5ca98587145a4ea58d2e302c05643f8b4ff6e86557bea969bdfc907"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/SubstClean.olean": {
+      "bytes": 84016,
+      "sha256": "b03138e3d7b655791abe017b0e13a39368a3c8a86c5a32ded98e1ca63d9e7927"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Lemmas/Typing.olean": {
+      "bytes": 13543528,
+      "sha256": "2ca53fc644f9bfa6e693f04ce63ca43e0afcf3386bf929fb3ca902d7d8c136f7"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/LogExamples.olean": {
+      "bytes": 413528,
+      "sha256": "ea9dded688353e4efb42adbddc8e5b36a8f12cff026dbcdfee60fd9d24371729"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Monad2Examples.olean": {
+      "bytes": 1972392,
+      "sha256": "2bf597cc2950941eb1bfe6a8cb62d0357bb33e1e2a99ba152d130d4e8349ff53"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/NoFailCheck.olean": {
+      "bytes": 501224,
+      "sha256": "92b50a0295e79191cf79f020a4f8ca29adf62e3edd0681659659928d39f37a83"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/NoFailCheckExamples.olean": {
+      "bytes": 33968,
+      "sha256": "6e6affdc4e08e45a44921d8c0c7fa431ace742bdb5c30045c8cb8657bc24109b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/PrimRange.olean": {
+      "bytes": 2046040,
+      "sha256": "8c283628056f0e9ef717e6c5e3b421d700cbaa90fc1e6e2a4ca6af8747b6405b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/RangeFree.olean": {
+      "bytes": 84624,
+      "sha256": "163146618817e683fb097bc41e219b5f531cbecb682049bd4bba54a0639491e2"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeAccept.olean": {
+      "bytes": 1729544,
+      "sha256": "26d6779affc40158f19b481a4d3601290df37063fe4f61ca97b6cfc8fde55130"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeAcceptExamples.olean": {
+      "bytes": 425768,
+      "sha256": "25594e92e85b407fb67818a6706bd33cf14e15c9c728b518c1a8683ff24a4252"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeLower.olean": {
+      "bytes": 7659064,
+      "sha256": "c7a9df112c1dada4618836a4d832fb44fb5b53f11ac8e1b189e09178b03c27d1"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeLowerExamples.olean": {
+      "bytes": 450912,
+      "sha256": "39c904fbf518308d074b19ece7848002d564fdbb3fa77aa1d885b7720ecfe6bc"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeOccurrence.olean": {
+      "bytes": 6249296,
+      "sha256": "856fa001c1f84745a504f55bf031a5cf6a430c0a8acea5b051a2c28846549940"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeSound.olean": {
+      "bytes": 1996136,
+      "sha256": "5ea744743d4aca09433ad26efded1d05fa3c545dc013e927a6ed752bc07195bf"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeSoundExamples.olean": {
+      "bytes": 851104,
+      "sha256": "eac983a75dee450a32571515487192ec105622a39166dcd31b67c2af61cbf38e"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeState.olean": {
+      "bytes": 10098168,
+      "sha256": "c84a113e6f6049e5ee45ed80889fbdcb49948035306709f2f8b31f5807469a6b"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/ScopeStateExamples.olean": {
+      "bytes": 191848,
+      "sha256": "b35ae80e628832638a952dc6290e84bd49da19995340e23b10e92fde07ff4fca"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/SingleFail.olean": {
+      "bytes": 69624,
+      "sha256": "23ea8ecb6c7fa51c44bba0d5d5123d2d88d2476a16787b920d6552561dab7c13"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/SingleFailCheck.olean": {
+      "bytes": 716264,
+      "sha256": "b904f5cd4a6fee8312ea6d94c8492fd8c7dde667b4dcd34cdee93f0a6697ebeb"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Syntax.olean": {
+      "bytes": 3916552,
+      "sha256": "df06a61d3d07b63f5095dac16226010e277b8d12edb7ea4d9e4dc89c84bf6345"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Theorems.olean": {
+      "bytes": 63208,
+      "sha256": "65ca9def04278eab70a08ed246f7b533410920a31ace427060b98c53468d54d3"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/Typing.olean": {
+      "bytes": 22960912,
+      "sha256": "9c4ce81efcc1d83c59fcfdf4dc498b90909b590bdcfcf6ee1b9d9e9c8c77bd6a"
+    },
+    "formal/.lake/build/lib/lean/Benitoite/Surface/WellFormed.olean": {
+      "bytes": 269496,
+      "sha256": "916382b46c8899a0d9b59a8a210265a9f1867cd52448415620946121c2c2e58f"
+    },
+    "formal/.lake/build/lib/lean/Benitoite.olean": {
+      "bytes": 30256,
+      "sha256": "fa0331f329f5f78d9d5ac20a4b2ea70d283c1c2e7357065adacce73fdab1d98a"
+    },
+    "formal/.lake/build/lib/lean/BuiltinCheck/Main.olean": {
+      "bytes": 1168856,
+      "sha256": "e036ad1d3b2d87735cdd90ab032585f26401bb449d0dc4ee907c8d7154af7bec"
+    },
+    "formal/.lake/build/lib/lean/CoverageDiff/Main.olean": {
+      "bytes": 2349240,
+      "sha256": "a3f8899d7793bc59b130a0b4fbf96b83ba236ece029ad309412fa6dbfc869244"
+    },
+    "formal/.lake/build/lib/lean/CoverageProgramDiff/Main.olean": {
+      "bytes": 1179400,
+      "sha256": "6cb53a079699f7d9178a653e0c80b0e20f13f2f09a02e664d63d31260e5ecb69"
+    },
+    "formal/.lake/build/lib/lean/DesugarDiff/Main.olean": {
+      "bytes": 1929320,
+      "sha256": "05a9042f0467ef0ab18ce7481f855af3acad522a7a5437e7c8793e35f3d4dce4"
+    },
+    "formal/.lake/build/lib/lean/IntervalDiff/Main.olean": {
+      "bytes": 176144,
+      "sha256": "cc087be231933c6b39c5175dffbc337fff9732f6103933917ad72c248753c32c"
+    },
+    "formal/.lake/build/lib/lean/SurfaceCheck/All.olean": {
+      "bytes": 79336,
+      "sha256": "39696c70cba68ccae483d2b21a05abb339340bdd01beb7b8ce44aeba10a0a4e9"
+    },
+    "formal/.lake/build/lib/lean/SurfaceCheck/Batch.olean": {
+      "bytes": 1494568,
+      "sha256": "c943c45838c7f23e715b2ec8e87e767ed8f488e08eae34ff094a8127d7b9eabf"
+    },
+    "formal/.lake/build/lib/lean/SurfaceCheck/Main.olean": {
+      "bytes": 568440,
+      "sha256": "cfb6f8ea8bb9744fac29fcf77301c4f185bd1b3d056b186dc676ac7a1905082d"
+    },
+    "formal/.lake/build/lib/lean/SurfaceCheck/Validation.olean": {
+      "bytes": 342712,
+      "sha256": "3e5b20804130ad1845ac3da82ed8373483715d79c7603e821a3440831d0ef1b6"
+    },
+    "formal/.lake/build/lib/lean/SurfaceCheck/Walk.olean": {
+      "bytes": 864704,
+      "sha256": "89789836690ac7d29ae9e9a3934472ffeb109fc8c0b247f677a5f2ca589f51c7"
+    }
+  },
+  "compiled_input_count": 357
+}
