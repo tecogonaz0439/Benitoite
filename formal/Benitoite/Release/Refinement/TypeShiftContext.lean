@@ -4,9 +4,6 @@ import Benitoite.Release.Refinement.Admissible
 
 namespace Benitoite.Release.Refinement
 
-def Ctx.WF (nr nt : Nat) (Γ : Ctx) : Prop :=
-  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.WF nr nt Γ.length
-
 structure TypeCtxMap (k c : Nat) (Γ Δ : Ctx) : Prop where
   length : Δ.length = Γ.length
   lookup : ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → Δ[i]? = some (some (Refinement.shiftTypes k c a))

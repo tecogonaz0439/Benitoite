@@ -17,6 +17,7 @@ theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
   match h with
   | .V_Var hi _ => exact hΓ _ _ hi
   | .V_Const (c := c) _ => cases c <;> trivial
+  | .V_DependentLam ha _ | .V_Closure ha _ _ => exact ha.declared
   | .V_Lam _ _ _ _ hd => exact hd
   | .V_List _ _ _ hd => exact hd
   | .V_Fun _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi => exact hi.result.declared
@@ -68,7 +69,7 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
     cases ha with
     | mk hs _ _ _ _ _ _ _ =>
       exact ⟨⟨2, hs.arity, rfl⟩, trivial, hs.errorType_declared, trivial⟩
-  | .C_External _ _ _ ht => exact ht.declared
+  | .C_DependentApp _ ht | .C_External _ _ _ ht => exact ht.declared
   | .C_Return hv => exact hv.declared hΓ
   | .C_Let _ _ hd | .C_BuilderLet _ _ _ hd => exact hd
   | .C_App hv _ => exact (hv.declared hΓ).2.1

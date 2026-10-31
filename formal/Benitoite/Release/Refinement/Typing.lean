@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Subst
+import Benitoite.Release.Refinement.LocalResolve
 import Benitoite.Release.Refinement.Le
 import Benitoite.Release.Refinement.StoreTransport
 import Benitoite.Release.Refinement.TelArguments
@@ -6,6 +7,8 @@ import Benitoite.Release.Refinement.External
 import Benitoite.Release.Refinement.AtContracts
 import Benitoite.Release.Refinement.AtInput
 import Benitoite.Release.Refinement.HandlerContracts
+import Benitoite.Release.Refinement.Capture
+import Benitoite.Release.Refinement.Ground
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -91,6 +94,29 @@ noncomputable def LocalSubstOk (Ψ : StoreTy) (L : LocalCtx) (ν : Nat → Val)
     (ρ : Nat → LocalRef) (L' : LocalCtx) : Prop :=
   ∀ i b, L[i]? = some (some b) → LocalRef.HasKind Ψ L' (ρ i) (substKind ν b)
 
+/-- 局所の構築器の参照を、捕捉によるkindの像を持つ場所へ対応させる。 -/
+def CaptureLocals (Ψ : StoreTy) (ν : Nat → Val) (L : LocalCtx) (ρ : Nat → LocalRef) : Prop :=
+  ∀ i kind, L[i]? = some (some kind) →
+    ∃ l, ρ i = .loc l ∧ Ψ l = some (.builder (substKind ν kind))
+
+
+/-- 捕捉した継続のソースの行は読まず、入力と結果の型を検査する。 -/
+def Ty.CaptureWF (nr nt nv : Nat) : Ty → Prop
+  | .cont b t _ => b.WF nr nt nv ∧ t.WF nr nt nv
+  | a => a.WF nr nt nv
+
+def Ty.CaptureSorted (Γ : Ctx) : Ty → Prop
+  | .cont b t _ => b.Sorted Γ ∧ t.Sorted Γ
+  | a => a.Sorted Γ
+
+def Ty.CaptureDeclared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop
+  | .cont b t _ => b.Declared P C Γ ∧ t.Declared P C Γ
+  | a => a.Declared P C Γ
+
+def Ctx.CaptureWF (nr nt : Nat) (Γ : Ctx) : Prop :=
+  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.CaptureWF nr nt Γ.length
+
+
 mutual
   /-- 値の型付け。経路条件は通常の文脈の番号で読む。 -/
   inductive HasTypeVQ (P : Program) (B : Builtins) :
@@ -105,6 +131,12 @@ mutual
           (some (r.shiftV ps.length 0)) body (r.shiftV ps.length 0) (Eff.shiftV ps.length 0 ε) [] →
         Ty.Declared P C Γ (.fn ns ps r ε) →
         HasTypeVQ P B Ψ Q C Γ Φ (.lam ns ps body) (.fn ns ps r ε)
+    | V_DependentLam {Ψ Q C Γ Φ t body} : Ty.Annotation P C Γ (.dependentFn t) →
+        TelBodyTy P B (hideBuilders Ψ) Q C (hideConts Γ) Φ t body →
+        HasTypeVQ P B Ψ Q C Γ Φ (.dependentLam t body) (.dependentFn t)
+    | V_Closure {Ψ Q C Γ Φ runtime t body} : Ty.Annotation P C Γ (.dependentFn t) →
+        Tel.RuntimeShape runtime t → DependentClosureTy P B Ψ body t →
+        HasTypeVQ P B Ψ Q C Γ Φ (.closure runtime body) (.dependentFn t)
     | V_Fun {Ψ Q C Γ Φ f d ts es} : P.defs f = some d → NamesWF d.names d.params →
         Admissible B C Γ.length (d.tparams.map TParamDecl.constraints) d.neffs
           (Qsig d.params d.ret d.eff) Q ts es d.eff →
@@ -226,6 +258,10 @@ mutual
     | C_App {Ψ Q C Γ Φ Δ R f args ns as b ε} :
         HasTypeVQ P B Ψ Q C Γ Φ f (.fn ns as b ε) → HasTypeVsQ P B Ψ Q C Γ Φ args as →
         HasTypeCQ P B Ψ Q C Γ Φ R (.app f args) b ε Δ
+    | C_DependentApp {Ψ Q C Γ Φ Δ R f args t a e} :
+        HasTypeVQ P B Ψ Q C Γ Φ f (.dependentFn t) →
+        HasTypeTelArgsQ P B Ψ Q C Γ Φ args t a e →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.app f args) a e Δ
     | C_If {Ψ Q C Γ Φ Δ R v m n a ε} :
         HasTypeVQ P B Ψ Q C Γ Φ v (.base .boolean) →
         HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → HasTypeCQ P B Ψ Q C Γ Φ R n a ε Δ →
@@ -247,11 +283,11 @@ mutual
         HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → ε.test (.name stateEff (.fixed .top)) = true →
         HasTypeCQ P B Ψ Q C Γ Φ R (.use v m) a ε Δ
     | C_Handle {Ψ Q C Γ Φ Δ R m h t εm ε} : HasTypeCQ P B Ψ Q C Γ Φ R m t εm Δ →
-        Eff.Covers Γ Φ (Eff.union ε (handled P B h)) εm →
+        Eff.Sub εm (Eff.union ε (handled P B h)) →
         HasTypeClausesQ P B Ψ Q C Γ Φ R εm h t ε Δ →
         HasTypeCQ P B Ψ Q C Γ Φ R (.handle m h) t ε Δ
     | C_Handle_Fail {Ψ Q C Γ Φ Δ R m h t E eb rest ec} : HasTypeCQ P B Ψ Q C Γ Φ R m t eb Δ →
-        Eff.Covers Γ Φ (Eff.union (Eff.singleFail E) rest) eb → NoFail Q rest →
+        Eff.Sub eb (Eff.union (Eff.singleFail E) rest) → NoFail Q rest →
         HasFailureClause P B Ψ Q C Γ Φ E R h t ec Δ →
         HasTypeCQ P B Ψ Q C Γ Φ R (.handle m h) t (Eff.union rest ec) Δ
     | C_Resume {Ψ Q C Γ Φ Δ R i v b t ε} :
@@ -296,6 +332,37 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ v a →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (Tel.argumentsEnv v) rest) r e →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ (v :: vs) (.param name a rest) r e
+
+  /-- 本体は全引数を束縛した位置で検査し、doneの結果を自分のreturn契約とする。 -/
+  inductive TelBodyTy (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Tel → Comp → Prop where
+    | done {Ψ Q C Γ Φ a e body} :
+        HasTypeCQ P B Ψ Q C Γ Φ (some a) body a e [] →
+        TelBodyTy P B Ψ Q C Γ Φ (.done a e) body
+    | param {Ψ Q C Γ Φ name a rest body} :
+        TelBodyTy P B Ψ Q C (Γ.extend a) (Φ.map Pred.lift) rest body →
+        TelBodyTy P B Ψ Q C Γ Φ (.param name a rest) body
+
+  /-- 捕捉時の文脈と有限環境の型付き像を同時に保持する。 -/
+  inductive CaptureOk (P : Program) (B : Builtins) :
+      StoreTy → Option Ty → Ctx → List Pred → Capture → Prop where
+    | mk {Ψ R Γ Φ cap} : Ctx.CaptureWF 0 0 Γ →
+        cap.values.length = Γ.length →
+        (∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → ∃ v, cap.values[i]? = some (some v)) →
+        (∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.CaptureSorted Γ ∧ a.CaptureDeclared P [] Γ) →
+        (∀ p ∈ Φ, p.WF Γ.length ∧ Pred.Sorted Γ none p ∧ Pred.Declared P [] Γ none p) →
+        (∀ ov ∈ cap.values, ∀ v, ov = some v → v.Ground) →
+        (∀ i a, Γ[i]? = some (some a) → ImageOk P B Ψ Qempty [] [] [] R cap.env i a) →
+        (∀ p ∈ Γ.facts ++ Φ, Entails [] (predBind (valEnv cap.env).values p)) →
+        CaptureOk P B Ψ R Γ Φ cap
+
+  inductive DependentClosureTy (P : Program) (B : Builtins) : StoreTy → Closure → Tel → Prop where
+    | mk {Ψ cap code Γ Φ t} :
+        CaptureOk P B (hideBuilders Ψ) none Γ Φ cap →
+        TelBodyTy P B (hideBuilders Ψ) Qempty [] (hideConts Γ) Φ t code →
+        Ty.Annotation P [] (hideConts Γ) (.dependentFn t) →
+        Ty.Annotation P [] [] (.dependentFn (cap.closeTel t)) →
+        DependentClosureTy P B Ψ (.mk cap code) (cap.closeTel t)
 
   inductive CheckedWitness (P : Program) (B : Builtins) :
       StoreTy → OpaqueName → Scope.Domain.Kind → RangeExpr → Option PathEnv →
@@ -379,6 +446,23 @@ mutual
         Δ[j]? = some (some (substTyValues ν a)) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
 
 end
+
+/-- 本体の局所参照はcode0とLで検査し、実行用codeとの対応をρで保持する。 -/
+inductive ClosureTy (P : Program) (B : Builtins) :
+    StoreTy → List Ty → Option Ty → Closure → Ty → Eff → Prop where
+  | mk {Ψ ss R cap code0 code Γ Φ Rs a e L ρ} :
+      CaptureOk P B Ψ R Γ Φ cap →
+      HasTypeCQ P B Ψ Qempty [] (bindParams Γ ss) (liftMany ss.length Φ) Rs code0 a e L →
+      CaptureLocals Ψ (upSubst ss.length cap.env) L ρ →
+      code = code0.resolveLocals ρ → TypeAnnotations P [] Γ ss →
+      TypeAnnotations P [] [] (ss.map cap.closeTy) → cap.closeRAt ss.length Rs = R →
+      Ty.Annotation P [] (bindParams [] (ss.map cap.closeTy)) (cap.closeTyAt ss.length a) →
+      Ty.Annotation P [] (bindParams [] (ss.map cap.closeTy))
+        (.dependentFn (.done (cap.closeTyAt ss.length a) (cap.closeEffAt ss.length e))) →
+      (∀ r, Rs = some r → Ty.Declared P [] (bindParams Γ ss) r) →
+      (∀ r, R = some r → Ty.Declared P [] (bindParams [] (ss.map cap.closeTy)) r) →
+      ClosureTy P B Ψ (ss.map cap.closeTy) R (.mk cap code)
+        (cap.closeTyAt ss.length a) (cap.closeEffAt ss.length e)
 
 theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
     (h : HasTypeVQ P B store Q C Γ Φ v a) (hi : a.IntegerCarrier) (ht : v.toTerm? = some t)

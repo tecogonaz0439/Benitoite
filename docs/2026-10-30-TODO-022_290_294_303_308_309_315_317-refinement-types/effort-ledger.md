@@ -32,3 +32,11 @@
 | 2026-10-31 | L00b.02b-handlers 再開1（型パラメータの改名の一般形で仕上げ） | Codex | 01a18f71 の再開 | 約91分 | 累計1,152,370（差864,065） | 14/14 導出（C5・Arms3・Clauses2・Failure1・ImageOk3）、PatTy7／PatTys2／AltsTy・Inhabits・Exhaustive、三族の被覆義務63。TypeParamRenaming による sat/admits の保存を TypeAssumptions に。ビルド669ジョブ、公理は三つだけ |
 | 2026-10-31 | RV-L00b.02b-handlers | Opus 5.5（medium） | 新規 | 約11分 | 233,000 | 条件付き可（重1・中1・軽3）。重1は guard の文脈が外側の構築器の専用操作を拒む点、中1は標準エラーの構成子一覧の固定 |
 | 2026-10-31 | L00b.02b-handlers 再開2（所見の対応） | Codex | 01a18f71 の再開 | 約12分 | 累計1,246,352（差93,982） | 重1は guard を元の Ψ と広げた局所文脈に戻し三族の guard の場合を閉じ直す、中1は StandardErrorComplete を宣言表の構成子一覧で一般化、軽1〜3は署名と義務の表。ビルド669ジョブ、公理は三つだけ |
+| 2026-10-31 | L00b.02b-closures | Codex | 新規（01a18fea） | 約37分 | 434,422 | 8/8導出（V_DependentLam/Closure、C_DependentApp、TelBody2/CaptureOk/ClosureTy/DependentClosureTy）、ContTy10・CellOk6・StoreOk・StateTyE4・StateTy、三族の被覆義務71、TypedFacts V28。ビルド671ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.02b-closures | Opus 5.5（medium） | 新規 | 約18分 | 369,938 | 不可（重3・中1・軽5）。StateTy が Step で保たれない反例を Lean で証明。開いたコードへ閉じた型を渡す箇所が三つ、中1は C_Handle の Eff.Covers |
+| 2026-10-31 | L00b.02b-closures 再開1（所見の対応） | Codex | 01a18fea の再開 | 約54分 | 累計832,824（差398,402） | 重1〜3・中1・軽1を本番で修正、StoreTy.CaptureView、OpenCodeTy11／OpenArmsTy4 を追加、C_Handle を Eff.Sub へ戻す、遷移の正例23行19種類。ビルド671ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.02b-closures-r2 | Opus 5.5（medium） | 新規 | 約18分 | 334,916 | 条件付き可（重なし、中3・軽3）。前回の重1〜3・中1は解消。中2は OpenCodeTy より局所文脈に kind を残す案が軽い、中1はソースの行の Annotation、中3は遷移の表の不足 |
+| 2026-10-31 | L00b.02b-closures 再開2（構造の差し替え） | Codex | 01a18fea の再開 | 約35分 | 累計1,412,356（差579,532） | OpenCodeTy など7定義を削除し、ClosureTy.mk が code0・L・ρ を保持する形へ。ClosureTy を相互帰納の外へ（17→14型）。resolveLocals と交換の補題、遷移の正例30行23種類。ビルド673ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.02b-closures-r3 | Opus 5.5（medium） | 新規 | 約21分 | 382,582 | 条件付き可（重なし、中3・軽3）。差し替えの本体は成立。中1は K_Handle と CaptureOk の接続、中2は全遷移が依存する補題の不足（証明済み）、中3は builderBody_keepsBound の前提 |
+| 2026-10-31 | L00b.02b-closures 再開3（所見の対応） | Codex | 01a18fea の再開 | 約18分 | 累計1,945,974（差533,618） | CaptureOk の継続の項目で行を読まない形へ（案 (a)）、K_Handle にソースの ts、恒等・開放の補題を本番へ、builderBody_image、遷移の正例37行23種類。ビルド673ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.02b-closures-r4（絞った確認） | Opus 5.5（medium） | 新規 | 約9分 | 230,591 | 条件付き可（重なし、中1・軽2）。緩和の範囲は正しい。定義の変更なし、義務を L20 へ |

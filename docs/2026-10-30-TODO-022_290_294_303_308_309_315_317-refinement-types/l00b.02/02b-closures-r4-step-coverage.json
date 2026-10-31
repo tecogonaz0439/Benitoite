@@ -1,0 +1,328 @@
+{
+  "rows": [
+    {
+      "transition": "E_Let",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.let_push",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Return",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.let_pop",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Return",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.input_builder_return",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Lam",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.mark_push",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Mark",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.mark_pop",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Force",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.update_push",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Update",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.update_pop",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Use",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.release_push",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Release",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.release_pop",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Handle",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.handle_push_checked",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Handle",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.handle_fail_push",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_HRet",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.fail_handle_pop",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_OpFail",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.continuation_new",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Drop",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.drop_pop",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_MatchGuard",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.guard_push",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_GuardF",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.guard_false",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_RefNew",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.ref_new",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Lazy",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.lazy_new",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_BuilderNew",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.builder_new",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_BuilderNew",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.nested_builder_new",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Resume",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.resume_transition",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": false,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Match",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.match_transition",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Match",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.builder_match_transition",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_BuilderOp",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4.builder_op",
+      "file": "02b-closures-r4-boundary.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_MatchBody",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Extra.match_body",
+      "file": "02b-closures-r4-extra.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_GuardT",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Extra.guard_true",
+      "file": "02b-closures-r4-extra.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Handle",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Extra.normal_handle",
+      "file": "02b-closures-r4-extra.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Op",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Extra.normal_op",
+      "file": "02b-closures-r4-extra.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Resume",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Extra.normal_resume",
+      "file": "02b-closures-r4-extra.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_HRet",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Extra.normal_hret",
+      "file": "02b-closures-r4-extra.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_MatchGuard",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Guard.builder_guard_push",
+      "file": "02b-closures-r4-guard.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_GuardT",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Guard.builder_guard_true",
+      "file": "02b-closures-r4-guard.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_GuardF",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Guard.builder_guard_false",
+      "file": "02b-closures-r4-guard.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Handle",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Rows.dup_handle",
+      "file": "02b-closures-r4-rows.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Op",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Rows.dup_op",
+      "file": "02b-closures-r4-rows.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Handle",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Rows.narrow_handle",
+      "file": "02b-closures-r4-rows.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    },
+    {
+      "transition": "E_Op",
+      "declaration": "Benitoite.Release.Refinement.ClosureR4Rows.narrow_op",
+      "file": "02b-closures-r4-rows.lean",
+      "type_depends_on_capture": true,
+      "state_type_occurrences": 2,
+      "step_occurrences": 1
+    }
+  ],
+  "row_count": 37,
+  "transition_count": 23,
+  "transitions": [
+    "E_BuilderNew",
+    "E_BuilderOp",
+    "E_Drop",
+    "E_Force",
+    "E_GuardF",
+    "E_GuardT",
+    "E_HRet",
+    "E_Handle",
+    "E_Lam",
+    "E_Lazy",
+    "E_Let",
+    "E_Mark",
+    "E_Match",
+    "E_MatchBody",
+    "E_MatchGuard",
+    "E_Op",
+    "E_OpFail",
+    "E_RefNew",
+    "E_Release",
+    "E_Resume",
+    "E_Return",
+    "E_Update",
+    "E_Use"
+  ],
+  "scope": "全76遷移の保存の証明ではない"
+}

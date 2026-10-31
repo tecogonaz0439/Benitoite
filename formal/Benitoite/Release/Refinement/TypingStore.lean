@@ -2,26 +2,6 @@ import Benitoite.Release.Refinement.TypingShift
 
 namespace Benitoite.Release.Refinement
 
-theorem shiftIndex_zero (c : Nat) : shiftIndex 0 c = id := by
-  funext i; simp [shiftIndex]
-
-theorem shiftIndex_add (k : Nat) : shiftIndex k 0 = (fun i => i+k) := by
-  funext i; simp [shiftIndex]
-
-theorem Ty.shiftV_zero (a : Ty) (c : Nat) : a.shiftV 0 c = a := by
-  rw [Ty.shiftV_eq_renameTy, shiftIndex_zero, renameTy_id]
-
-theorem Eff.shiftV_zero (e : Eff) (c : Nat) : Eff.shiftV 0 c e = e := by
-  rw [Eff.shiftV_eq_renameEff, shiftIndex_zero, renameEff_id]
-
-theorem Pred.shiftV_zero (p : Pred) (c : Nat) : p.shiftV 0 c = p := by
-  simp only [Pred.shiftV, shiftIndex_zero]
-  exact predBind_id p
-
-theorem Tel.shiftV_zero (t : Tel) (c : Nat) : Tel.shiftV 0 c t = t := by
-  rw [Tel.shiftV_eq_rawBind, shiftIndex_zero]
-  exact Tel.rawBind_id t
-
 theorem HasTypeVQ.hide_context {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store)
     (store' : StoreTy) (hpres : store.PreservesNormals store') :

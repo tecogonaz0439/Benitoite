@@ -777,6 +777,39 @@ theorem LocalSubstOk.localExtend {Ψ L L' ν ρ} (h : LocalSubstOk Ψ L ν ρ L'
   | succ n ih =>
     simpa only [Refinement.localExtend, Option.map_none, upSubst_add, upLocalSubst_add] using ih.extend hw none
 
+/-- 同じ像が二つの異なるreturn契約で型付けば、継続場所の枝は使われていない。 -/
+private theorem ImageOk.changeReturn {P B Ψ Q C Δ Ξ ν i a}
+    (h : ImageOk P B Ψ Q C Δ Ξ none ν i a)
+    (h1 : ImageOk P B Ψ Q C Δ Ξ (some (.base .unit)) ν i a) (R : Option Ty) :
+    ImageOk P B Ψ Q C Δ Ξ R ν i a := by
+  cases h with
+  | ordinary ho hv => exact .ordinary ho hv
+  | contVar ha hv ht => exact .contVar ha hv ht
+  | contLoc ha hb hc hl hs hr =>
+    cases h1 with
+    | ordinary ho hv => subst a; exact False.elim (ho _ _ _ rfl)
+    | contVar ha1 hv1 ht1 => rw [hl] at hv1; cases hv1
+    | contLoc ha1 hb1 hc1 hl1 hs1 hr1 =>
+      rw [hl] at hl1
+      cases hl1
+      rw [hs] at hs1
+      cases hs1
+
+private def ReturnFreeImages (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx)
+    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) (ν : Nat → Val) : Prop :=
+  ∀ R, SubstOk P B Ψ Q C Γ [] Δ Ξ R ν
+
+private theorem ReturnFreeImages.up {P B Ψ Q C Γ Δ Ξ ν}
+    (h : ReturnFreeImages P B Ψ Q C Γ Δ Ξ ν) (hA : Builtins.ValueAssumptions P B)
+    (hw : Ψ.WF) (a : Ty) :
+    ReturnFreeImages P B Ψ Q C (Γ.extend a) (Δ.extend (substTyValues ν a))
+      (Ξ.map Pred.lift) (upSubst 1 ν) := by
+  intro R i b hi
+  have h0 := (h none).upValue hA hw a i b hi
+  have h1 := (h (some (.base .unit))).upValue hA hw a i b hi
+  exact ImageOk.changeReturn h0 (by simpa only [Option.map_some, Ty.shiftV] using h1) R
+
+
 mutual
   private theorem subst_value {P B store Q C Γ Φ v a}
       (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hT : Builtins.TypeAssumptions P B) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
@@ -796,6 +829,19 @@ mutual
         ((ht.hide hA hstore (hideBuilders store) (StoreTy.preserves_hide _)).conditions_params
           (fun p hp => (hf p hp).hideConts) ps)
       simpa only [Option.map_some, Ty.bind_shiftV_values, Eff.bind_shiftV_values, Option.map_none, localExtend] using hb'
+    | .V_DependentLam (t := t) ha hb =>
+      have hhide := ht.hide hA hstore (hideBuilders store) (StoreTy.preserves_hide _)
+      have hh := subst_telBody hb hA hT hstore.hide ρ
+        (show ReturnFreeImages P B (hideBuilders store) Q C (hideConts Γ) (hideConts Δ) Ξ σ from
+          fun R => ht.hide_substOk hA hstore _ (StoreTy.preserves_hide _) R)
+        (fun p hp => (hf p hp).hideConts)
+      simpa only [Val.subst, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Tel.bind] using
+        HasTypeVQ.V_DependentLam (ht.annotation ha) hh
+    | .V_Closure (runtime := runtime) (t := t) ha hw hb =>
+      have he := Ty.subst_values_of_wf_zero (show (Ty.dependentFn t).WF 0 0 0 from hw.contract_wf) σ
+      simpa only [Val.subst, he] using
+        HasTypeVQ.V_Closure (Ψ := store) (Q := Q) (Φ := Ξ)
+          (by simpa only [he] using ht.annotation ha) hw hb
     | .V_List he hw hs hd =>
       exact .V_List (subst_each he hA hT hstore ρ ht hf) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
     | .V_Fun hd hn ha hi =>
@@ -928,6 +974,9 @@ mutual
         (hr.subst hstore hL)
         (by simpa only [BuilderOp.parameters_subst] using subst_values hv hA hT hstore ρ ht.images hf)
     | .C_Return hv => rw [substEffValues_empty]; exact .C_Return (subst_value hv hA hT hstore ρ ht.images hf)
+    | .C_DependentApp hv ha =>
+      exact .C_DependentApp (subst_value hv hA hT hstore ρ ht.images hf)
+        (subst_telArgs ha hA hT hstore ρ ht.images hf)
     | .C_App hv hs =>
       have hv' := subst_value hv hA hT hstore ρ ht.images hf
       rw [substTyValues, Ty.bind_fn] at hv'
@@ -1110,6 +1159,28 @@ mutual
       rw [← valEnv_upSubst_one, Tel.open_subst]
       exact subst_telArgs hs hA hT hstore ρ ht hf
 
+  private theorem subst_telBody {P B store Q C Γ Φ t body}
+      (h : TelBodyTy P B store Q C Γ Φ t body)
+      (hA : Builtins.ValueAssumptions P B) (hT : Builtins.TypeAssumptions P B) (hw : store.WF) (ρ : Nat → LocalRef)
+      {Δ Ξ σ} (ht : ReturnFreeImages P B store Q C Γ Δ Ξ σ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+      TelBodyTy P B store Q C Δ Ξ (Tel.bind (valEnv σ) t)
+        (body.subst (upSubst (telBinders t) σ) (upLocalSubst (telBinders t) ρ)) := by
+    match h with
+    | .done (a := a) hb =>
+      have hx : SubstOk P B store Q C Γ Φ Δ Ξ (some (substTyValues σ a)) σ := ht _
+      have hh := subst_comp (L' := []) hb hA hT hw ρ hx (.empty _ _ _ _) hf
+      simpa only [←substTyValues_eq_bind, ←substEffValues_eq_bind,Tel.bind_done,telBinders,upSubst_zero,upLocalSubst_zero] using TelBodyTy.done hh
+    | .param (a := a) (rest := rest) hb =>
+      have hh := subst_telBody hb hA hT hw (upLocalSubst 1 ρ) (ht.up hA hw a) (by
+        have hx := ((ht none).transport (Φ := Φ) hf).up a
+        intro p hp
+        simpa only [←valEnv_upSubst_one, ←substTyValues_eq_bind] using hx.facts p (List.mem_append_right _ hp))
+      rw [Tel.bind_param]
+      apply TelBodyTy.param
+      simpa only [←substTyValues_eq_bind, valEnv_upSubst_one, telBinders, upSubst_add, upLocalSubst_add,
+        Nat.add_comm 1] using hh
+
   private theorem subst_at_call {P B store Q C Γ Φ kind name shape bases pattern input index}
       (h : AtCallAdmissible P B store Q C Γ Φ kind name shape bases pattern input index)
       (hA : Builtins.ValueAssumptions P B) (hT : Builtins.TypeAssumptions P B) (hstore : store.WF) {Δ Ξ σ} (ρ : Nat → LocalRef)
@@ -1199,6 +1270,16 @@ theorem HasTypeArmsQ.subst {P B store Q C Γ Φ R arms a b e L L' Δ Ξ σ}
     HasTypeArmsQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (Arm.substList σ arms ρ)
       (substTyValues σ a) (substTyValues σ b) (substEffValues σ e) L' :=
   subst_arms h hA.toValueAssumptions hA.toTypeAssumptions hstore ρ ht hL hf
+
+/-- 本体のreturn契約はTelの終端で決まる。像は継続場所に依存しない。 -/
+theorem TelBodyTy.subst {P B Ψ Q C Γ Φ t body Δ Ξ ν}
+    (h : TelBodyTy P B Ψ Q C Γ Φ t body) (hA : Builtins.SubstitutionAssumptions P B)
+    (hw : Ψ.WF) (ht : ∀ R0, SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
+    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv ν).values p))
+    (ρ : Nat → LocalRef := LocalRef.bound) :
+    TelBodyTy P B Ψ Q C Δ Ξ (Tel.bind (valEnv ν) t)
+      (body.subst (upSubst (telBinders t) ν) (upLocalSubst (telBinders t) ρ)) :=
+  subst_telBody h hA.toValueAssumptions hA.toTypeAssumptions hw ρ ht hf
 
 /-- None の束縛では新しい像や事実を仮定せず、親の移送を extendNone する。 -/
 theorem HasTypeClausesQ.subst {P B store Q C Γ Φ R eb cs t e L L' Δ Ξ σ}

@@ -1279,3 +1279,405 @@ A-Lは生成された宣言と非公開の証明も含めて全件を検査し�
 - コマンド: `/usr/bin/time -l scripts/check.sh --level work --base 5a602b7a2adc40e487f60c8ffc738d2f4595289c`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
 - 結果: 終了0（selected checks passed）。外側の時間は53.65秒、最大常駐量は1,078,444,032バイト（約1.00 GiB）。
 - 計画からのずれ: なし。
+
+## `.02b-closures`：閉包・状態・依存呼出しの群末（2026-10-31）
+
+第12.2節の8導出と三族への接続、捕捉環境・依存βの構文の交換、ContTy10/CellOk6/StoreOk/StateTyE4/StateTyを本番へ置いた。`.02c`の共有層には進んでいない。B_WORKは `1170a4a6d81d49a6d098d2f222ed33c8f22c9230`、指定ブランチは `m014/l00b.02b-closures` である。いずれも起動依頼の指定値であり、gitで照合していない。gitの操作、処理系・現行設計書・planの編集は行っていない。新しい主定理・全状態の保存・独立レビュー・受け入れは今回の完成に含めない。
+
+### 置いた定義と閉じた補題
+
+| 対象 | 本番へ置いた内容 |
+|---|---|
+| 型付けの8導出 | V_DependentLam/Closure、C_DependentApp、TelBodyTy.done/param、CaptureOk/ClosureTy/DependentClosureTyのmk。CaptureOkをImageOk/HasTypeVQと同じ正の相互帰納に置いた |
+| 捕捉の型付き像 | 元のΓ/Φ、各注釈の正則性、Noneを含む列の位置と長さ、保持値のGround、全some位置のImageOk、閉じたΓ.facts/ΦのEntails。CaptureOk.substOk/conditions/transport/wf/declared/empty、型付き閉包のannotation/pure |
+| 三族と型の移動 | 既存のHasTypeVQ/CQ等のshift_values/subst/narrowと、型パラメータのshift_typesに新しい場合を接続。TelBodyTyの4入口、CaptureOk/ImageOk/ClosureTy/DependentClosureTy.storeを追加。既存のhide_context・None版も追加の場合を通る |
+| 逆向きのTelArgs | openValue/valEnv_openValue、Ty.openValue_shift、SubstOk.openValue/annotation、HasTypeVQ.notContCore、HasTypeTelArgsQ.of_arguments。元のTelのAnnotationとΓのWFから、各引数の後に具体化したTelのAnnotationを導く。実引数の型付けを新しい外部前提にはしていない |
+| 依存βと旧lam | Tel.SameInputs/RuntimeShape、Closure.instantiate、bindParams_cons、TelBodyTy.toTel_iff、閉じたTelのbindの不変性、closeVal/closeValsの観測の一致、Tel.instantiate_observations、Capture.closeTel_instantiate/runtime、Capture.openTel/instantiate。逐次bindと実行のextendManyは同じ終端の型・行を返す。旧lamの実行用Unit終端と静的なBoolean等の結果契約を区別する |
+| 継続・セル・状態 | ContTyの10構成子、BuilderCellOk/EndsWithHandle、CellOk6、StoreOk、BuiltinOnly、StateTyE4/StateTy。Frame/Cont/Cell/StoreのClosed、ContTy/CellOk/StoreOkのadequate。StateTyは固定σのValidだけを要求し、EbをStateTyEの添字に保つ |
+| 宣言照合とguard | LocTy/StoreTy.Declared、StoreOkのreference_declared/lazy_declared/cont_result_declared。閉包のソースと出力のR、Tel、腕・節のソース契約のDeclaredを保持する。K_Guardの元のΨ・全Φ・元のR/効果、HasTypeArmsQ.guard_contextのlocalExtendを接続した |
+| 既存の葉の追随 | TypedFactsの全6直接入口、TypingDeclaredのV/C、変数とResumeLの逆転、既存のSubstTypingObstruction/NarrowingObstruction。旧の反例をimportから外していない |
+
+新規の本番ファイルは **ClosureTyping.lean と StateTyping.lean の2件**である。既存16ファイルを変更し、計18ファイルの差分となった。[公開宣言](02b-closures-public-api.md)は実名、[source-changes](02b-closures-source-changes.json)は全本番変更と開始時/最終のハッシュを示す。Semantics/Step/RuntimeSyntaxと旧Releaseのソースは開始時と同一で、Frame7/Cell6/LocTy4/State4、旧68場合を含むStep76/stepを維持した。
+
+### 場合の数の予定と実際
+
+| 対象 | 予定 | 実際 |
+|---|---:|---:|
+| V/Cの追加 | 2/1 | 2/1。累計V28/C21 |
+| TelBody/CaptureOk/ClosureTy/DependentClosureTy | 2/1/1/1 | 2/1/1/1 |
+| この起動単位の追加 | 8 | **8/8** |
+| 三族の被覆義務 | 各63+8=71 | **各71**。閉じた捕捉の証拠の再利用を下記のとおり含む |
+| TypedFacts | V28、主となる観測/事実の入口に各2場合 | V28。data_observation/observation_declared/observation_references/observation/assume/assume_optionalの6直接入口に各2場合。整数の系はobservationから導く |
+| ContTy | 10 | 10。K_HandleとK_Handle_Failを別に数える |
+| CellOk/StateTyE | 6/4 | 6/4。定義の各場合であり、相互型付けの71へ加算しない |
+| 実行の構文・遷移 | 新規0 | 新規0。Val25/Comp16/Frame7/Cell6/State4/Step76を維持 |
+
+71の内訳はV28/C21/Vs2/Each2/TelArgs2/Arms3/Clauses2/Failure1/CheckedWitness2/ImageOk3/TelBody2/CaptureOk1/ClosureTy1/DependentClosureTy1である。AtCallAdmissibleの補助1構成子は別である。[環境からの件数と構成子名](02b-closures-case-inventory.json)で照合した。
+
+値の移動の相互入口はHasTypeVQ/VsQ/EachQ/CQ/ArmsQ/ClausesQ、HasFailureClause、HasTypeTelArgsQ、TelBodyTy、CheckedWitness.shift_store、ImageOk.store、CaptureOk.store、ClosureTy.store、DependentClosureTy.storeとAtCallAdmissibleである。置換の内部はsubst_value/values/each/comp/arms/clauses/failure/telArgs/telBody/at_call、narrowingはcontext_value/values/each/comp/arms/clauses/failure/telArgs/telBody/at_callである。既に閉じたCheckedWitness/CaptureOk/ClosureTy/DependentClosureTyは、外側の文脈の操作を再適用せず証拠を再利用し、ImageOkは専用の移送・narrowingの3場合を通る。**各族に71個の同形のmatchを書いたという件数ではない。**
+
+### 補助契約で決めたことと計画との差
+
+[signatures第30節](signatures.md)に、案・理由・捨てた案を記した。採った判断は次のとおりである。
+
+- V_Closureの実行用署名と静的TelはSameInputsで入力だけを照合する。結果・効果はDependentClosureTyの本体から検査する。旧lamのUnit/emptyを静的契約に使わない。
+- CaptureOkは元のΓ/Φと全some位置の型付き像・閉じた事実を保持し、利用可能なsome位置に実値を要求する。Noneの位置に残る実行値は型付き像・事実として読まない。Ctx.WFの意味を変更せず、定義だけをTypingより下へ移した。
+- ClosureTyは未束縛入力を残して外側だけをcloseTyAt等で具体化する。ソースと出力のR、依存閉包のソースと出力Tel、腕・節のソースの契約のDeclaredを保持する。
+- 値置換のTelBodyでは、終端の自分のreturn契約を選べる像をReturnFreeImagesで作る。これは新しい信頼条件ではなく、hideで作った像とcontVarの下で内部に構成する証拠である。通常のCQのR0拘束は維持した。
+- 逆向きのTelArgsは元のTelのAnnotationとΓのWFから各段のAnnotationを供給する。実行のcloseValsにも観測の一致を証明し、Val.substListだけの交換を実行の完成と扱わない。
+- StoreOkは場所のDeclaredをWFと別に保持する。K_GuardはHasTypeArmsQ.guardedと同じ元のΨ/localExtendを使う。matchRunの実行値はGroundとし、腕のAdequateも保持する。
+
+新しい停止点、CoreAssumptionsの変更、提供範囲や利用者の書ける形の変更はない。型付き閉包の移送を循環importなしで証明するため、ゼロ移動の既存6補題をTypingStoreからTypingShiftへ、Ctx.WFをTypeShiftContextからAdmissibleへ移した。これらは同名・同じ言明の移動であり、完成件数へ新規として加算していない。群末の自己点検で捕捉した腕・節のソース契約のDeclaredも明示した。実際のFail遷移と照合し、Noneスロットの値を必ずnoneとする初案も撤回して、番号を保ち型付き像として読まない条件に直した。その後の最終入力で検査を再実行した。`.03/.14a/.14b`やL20の全状態の証明を前倒しして完了にした変更はない。
+
+### 群末の検査と証拠
+
+[台本](02b-closures-validate.py)、[コマンドと所要](02b-closures-commands.json)、[検査全体](02b-closures-validation.json)、[全428入力のハッシュ](02b-closures-inputs-final.json)、[補助入力のハッシュ](02b-closures-artifact-inputs.json)を保存した。最終検査の前後で本番入力は一致した。既定lakefileと単独のLean検査はいずれも **-M 12288**、固定版は **Lean 4.34.1** である。
+
+| 検査 | 結果 | 証拠 |
+|---|---|---|
+| 全既定ターゲット | `cd formal && lake build`、**終了0、671 jobs、0.153秒**。最終の局所ビルド後の生成済み成果物の再利用であり、この値を全ソースの新規検査の時間とは扱わない。旧Interval等の既存lint警告は再表示されたが、今回のRefinementの警告・誤りは0件 | [出力](02b-closures-build.log) |
+| 行の境界 | `lake env lean -M 12288`、**終了0、1.211秒、57宣言**。非空のΓ/ΦとNoneの捕捉、None位置に残る継続場所の許容、閉じた事実、依存ラムダ・逆向きのTelArgs・依存呼出し・捕捉の相互置換、実際のE_Lam、逐次βとextendManyの一致、旧lamのUnit終端/Boolean契約、Declared以外の全条件を満たす未宣言の継続場所の拒否、外側の構築器を読むK_Guard、ValidだけのStateTyを確認 | [入力](02b-closures-boundary.lean) / [出力](02b-closures-boundary.log) |
+| 公理依存A-L | 同じ上限で **終了0、9.228秒**。Refinement全**98モジュール**と指定の旧7宣言、計**10,618宣言**。一意な件数とモジュール別件数+7が一致 | [入力](02b-closures-axioms.lean) / [集計](02b-closures-axioms-summary.json) |
+| 許可外依存・抜け道 | 本番10,618宣言と補助57宣言は **propext・Quot.sound・Classical.choiceだけ**。sorryAx・独自公理・許可外依存は0件。本番Refinementのsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの検出も0件 | [検査全体](02b-closures-validation.json) |
+| work・RSS・全比較・レビュー | workは依頼に従い取りまとめが実行する。RSSは**未取得（計画上の非採取）**。Rustの検査・全比較・独立レビュー・受け入れは未実施 | [群末のレビュー依頼](../reviews/RV-L00b.02b-closures-request.md) |
+
+公理依存の全出力は **1,106,308バイト** のため`<tmp>`へ置き、[large-records](large-records.md)に大きさとSHA-256を記録した。初回照合、ソースの契約を補足した後の照合、None位置の契約を修正した後の最終照合は、依存の列挙自体が同一なので全出力のハッシュも同じである。最終入力のハッシュと時刻は別に記録した。100 KBを超える生の出力や差分の写しを改造に置いていない。
+
+途中の局所検査では、相互帰納の消去の書き方、暗黙の文脈・束縛数、正規化と生のshiftの書換えで型検査に失敗し、実装・補助入力を修正した。最終の公理依存に回復用のsorryAxは含まれない。初回の全既定ビルドも671 jobsで成功したが、その後に本番の補助・契約を追加したため、その結果を最終の証拠として引用せず、上表を最終状態の結果とする。
+
+### テストの作成時の関門
+
+持ち主は本番の型付け・捕捉・状態の契約である。境界入力は、Noneを詰める又は残る実行値を禁止する、捕捉したΦを捨てる、依存入力の型を一括で具体化する、実行用Unit終端を結果契約と取り違える、WFだけで未宣言の場所を受け入れる、guardで構築器を隠す、という退行を対象とする。前群の入力にはCaptureOk/DependentClosureTy/ContTy/StoreOkがなかったため、この接続は検査できなかった。正の型付き導出と、Declared以外のStoreOkの全条件を満たす未宣言の継続場所についてのStoreOkの否定を本物の判断で示した。テスト専用のAPI・フラグ・差し込み口は追加していない。
+
+### 義務の判定・残りと次群への申し送り
+
+| 義務・出どころ | 今回の判定 | 残る担当・閉じる条件 |
+|---|---|---|
+| 第12.2節の8導出・三族・捕捉・依存βの構文 | **完了**。本番と群末の検査を保存 | 同じ一般の構文の交換・移送をL10/L20へ戻して再計上しない。後続の新構成子の追加の場合は各群で追随 |
+| RV-values中2・D29のfn/Tel | C_DependentApp、旧lamのtoTel_iff、V_Closureの入力形と静的契約の照合を完了 | `.11`がfn/dependentFnの正規化後の等号、L20/L70がkind表付きの旧導出の埋め込みと合成 |
+| RV-external軽3 | **この群の担当分を完了**。of_argumentsと捕捉のinstantiate/extendManyの交換 | L20がE_ExternalApplyの到達先のC_Externalの保存を示す。外部の受信後の篩の評価は既定の`.04/.05` |
+| RV-values軽4・RV-handlers軽1 | **この群の担当分を完了**。StoreOkのDeclaredと場所の宣言照合の供給、捕捉した契約のDeclared | L20がE_RefNew/E_Lazy/継続生成・保存、L20/L70がD29のResumeL等に接続 |
+| RV-handlers重1 | **K_Guardへの接続を完了**。元のΨ/localExtend、成功/失敗後の元の契約、構築器を読む枠を検査 | `.14a`の固定Ebの代表とL20の全状態の保存・進行 |
+| 参照順序・初期/捕捉の代表 | 型と契約の判断を本番へ置いた | `.03`が参照順序/None/extend、`.14a`が固定Eb、`.14b`がgroundからΦを導く代表。一般のgroundの評価は`.04` |
+| 全76遷移の保存・進行・step_sound | **未完了（今回の完了条件外）** | L20が全状態の葉を、L70が主定理・表層・交換を合成。StateTyEを定義したことを保存の証明に数えない |
+| O016・D28 | 最終入力の全A-Lを完了。今回のCoreAssumptionsの変更は0件 | L50の三モデル、`.15`の既採択の値/型改名の信頼条件の対照、後続段のA-Lは残る |
+| `.02c`共有層 | **未着手** | 既定importから新2モジュールへ到達できる。共有層での読者の整理は次群の担当 |
+| 独立レビュー・受け入れ | **未実施** | 取りまとめ・設計者。今回の自己点検を独立レビューに数えない |
+
+### 外側の時間
+
+開始は **2026-10-31 12:04:19 JST**、最終検査終了は **12:37:47.864 JST**、外側は **2,008.864秒（約33.48分）** である。能動時間と待ちを分離していないため、能動時間の実測とは扱わない。結果・レビュー依頼の仕上げと提出前の照合までを含む外側の時間は [受け渡し](02b-closures-delivery.json)へ記録する。12時間の停止条件には達していない。
+
+### レビューの所見の対応（RV-L00b.02b-closures、2026-10-31）
+
+[独立レビュー](../reviews/RV-L00b.02b-closures.md)は不可（重3・中1・軽5）であった。planの「計画の変更と取りまとめへの確認点」の先頭の判断と、再開依頼の範囲に従って修正した。レビューの記録と[反例](rv-02b-closures-closed-param.lean)は変更していない。先の群末の検査は当時の定義を検査した記録であり、保存の成立の証拠としては引用しない。
+
+#### 所見ごとの修正
+
+| 所見 | 修正した箇所と確認 |
+|---|---|
+| 重1 / ClosureTyの入力 | `Typing.lean`のmkはソースの入力ssを持ち、`bindParams Γ ss`で本体を検査する。添字のpsは`ss.map cap.closeTy`として結ぶ。K_Letの専用の規則は増やさなかった。境界入力の`n_closure`・`s1_typed`・`let_push`で、元の`s1_untyped`と同じ状態が型付くことを確認した |
+| 重2 / ソースのストア | 案aを採り、`StoreTy.CaptureView`を追加した。通常の場所の型を保ち、builderの種類だけを捕捉値で閉じた像に結ぶ。入力が残る場合は`upSubst inputs cap.env`を使う。`s3_typed`・`builder_new`が元の`s3_untyped`と同じ状態を型付ける。案bのStepの変更、案cの種類の値依存の禁止は採らなかった |
+| 重2と同じ原因の追加箇所 / 内側の束縛 | 固定した開いたΨsを元のCQへ渡すだけでは、letや腕の束縛の下で操作の種類だけが移動して型付けできない。`old_nested_store_obstruction`でこの案の障害を確認した。`OpenCodeTy`・`OpenArmsTy`を追加し、束縛の下では`Ψs.shiftBuilders n`を使う。元の判断を使うtypedはΨs.WF又はBuilderLocFreeを要求する。`CaptureView.shift`、`nested_builder_new`、`input_builder_return`、`builder_match_transition`で対応を確認した |
+| 重3 / matchRunの実行値とソース | `StateTyping.lean`のmatchRunは`∃ vs, v = closeVal cap vs ∧ ClosureTy … (mk cap (match vs arms)) …`とした。実行値のGroundと、捕捉の長さに対する腕の閉性を分けた。K_GuardもソースのΨsとCaptureView/OpenArmsTyを持つ。`match_transition`・`guard_push`・`guard_false`は、捕捉に依存するReference型を使う。腕の束縛値を同じReference型の引数注釈を持つlambdaへ渡すので、ソースの型を使う箇所も明示している |
+| 中1 / handlerの包含 | `C_Handle`・`C_Handle_Fail`をEff.Subに戻した。`Eff.Sub.bind`・`shiftV`・`shiftTypes`を置き、三族の該当の場合を閉じ直した。K_HandleのSubは保持した。`handle_push_checked`・`handle_fail_push`は修正した二つの入口を実際に使う |
+| 軽1 / localExtend | ClosureTyの局所文脈をNoneだけの列へ広げ、`LocalCtx.NoBuilders.empty`・`localExtend`を置いた。`n_closure`、`let_unit_input`、`input_builder_closure`が`localExtend 1 []`を使う |
+| 軽2 / closeValとCaptureOkのhide | 第24節と第30.3節へ、closeValの一般の型付け、hideConts/hideBuilders/R=noneへの捕捉の移送を別々のL20の義務として登録した。lamがclosureへ変わる場合のfn/dependentFnの接続を`.11`の後で閉じる。今回の具体例を一般の補題の代わりとしない |
+| 軽3 / 結果型の正則性 | CQ/OpenCodeTyの結果のWF・SortedをL20の義務として両節へ登録した。今回の正例は必要なAnnotationを直接構成している |
+| 軽4 / 腕の効果の拡大 | HasTypeArmsQ/OpenArmsTyの結果・効果を広げ、K_GuardのSubを供給する補題をL20の義務として両節へ登録した |
+| 軽5 / 遷移の先の検査 | 下表の23行で、前のStateTy、Step、先のStateTyを同時に与えた。Frame7の各種類について積む場合・外す場合を含み、場所の生成、resume、K_Handle_Failの経路も含む |
+
+#### 遷移の正例
+
+すべて[新しい境界入力](02b-closures-r2-boundary.lean)の`Benitoite.Release.Refinement.ClosureR2`名前空間にある。右欄は**型又は種類が捕捉に依存するか**を示す。「なし」の例にも捕捉した値を読むものがあるが、それを型の依存と数えない。各宣言の前提は実行環境σのValid、および必要な場合だけ`P.effects State = none`であり、先のStateTyを前提にしていない。
+
+| 遷移 | 正例の宣言名 | 型・種類の捕捉への依存 |
+|---|---|---|
+| E_Let：letFを積む | `let_push`（`s0_typed`・`s1_typed`） | あり。関数の入力の篩が捕捉したxを読む |
+| E_Return：letFを外す | `let_pop` | なし。Unitの入力 |
+| E_Return：構築器を読むlet本体へ入力を渡す | `input_builder_return` | あり。未束縛入力の下の種類R(1)を、環境の延長後も保持する |
+| E_Lam：markを積む | `mark_push` | なし。入力0個・Unitの依存lambda |
+| E_Mark：markを外す | `mark_pop` | なし |
+| E_Force：updateを積む | `update_push` | なし。Unitを返すthunk |
+| E_Update：updateを外しdoneセルへ替える | `update_pop` | なし |
+| E_Use：releaseを積む | `release_push` | なし。opaque資源とState |
+| E_Release：releaseを外す | `release_pop` | なし |
+| E_Handle：handleFを積む | `handle_push_checked` | なし。通常のC_HandleとK_Handle |
+| E_Handle：FailのhandleFを積む | `handle_fail_push` | なし。C_Handle_FailとK_Handle_Fail |
+| E_HRet：handleFを外す | `fail_handle_pop` | なし。K_Handle_Failの後へ戻る |
+| E_OpFail：継続の場所を作りdropを積む | `continuation_new` | なし。contの型のWF・DeclaredをStoreOkへ供給 |
+| E_Drop：使用済みの継続のdropを外す | `drop_pop` | なし |
+| E_MatchGuard：guardFを積む | `guard_push` | あり。Referenceの内容の篩が捕捉したxを読む |
+| E_GuardF：guardFを外し次の腕へ戻る | `guard_false` | あり。同じ開いた腕を保持 |
+| E_RefNew：refの場所を作る | `ref_new` | なし。捕捉したInteger8の値を保存 |
+| E_Lazy：lazyの場所を作る | `lazy_new` | あり。結果の篩R(0)と閉じたrefTy |
+| E_BuilderNew：builderの場所を作る | `builder_new`（`s2_typed`・`s3_typed`） | あり。種類list(R(0)) |
+| E_BuilderNew：本体のletも残す | `nested_builder_new` | あり。操作は内側のletの下のlist(R(1)) |
+| E_Resume：contセルをusedへ替えて継続を復元する | `resume_transition` | なし。復元したFailハンドラとdropの両方を型付ける |
+| E_Match：matchRunへ移る | `match_transition` | あり。捕捉に依存するReferenceの入力 |
+| E_Match：構築器の場所を読む腕を残す | `builder_match_transition` | あり。パターン束縛の下の種類list(R(1))。guardの局所文脈もNone1個を保持 |
+
+23行は19種類の遷移を含む。継続の場所を実際に割り当てる規則はE_OpFailであり、E_Handleそのものは枠を積む。両方を上表で別々に確認した。全76遷移の保存・進行・固定EbのpreservationEをこの表で完了と数えない。
+
+#### 補助契約の決定と場合の数
+
+第30.2節に、採った案・理由・捨てた案を反映した。sourceの型をclosedの型に置き換える案を撤回し、捕捉前の注釈を保持する判断へそろえた。StoreOkの実行時の場所の型は引き続き閉じたWFとDeclaredを持つ。ソースのストアの見方は実行時のStoreTyと区別し、実行時の場所の拡張を許すために片向きの対応とした。
+
+新しい補助判断を追加した分が当初の群末からの差である。OpenCodeTyは11、OpenArmsTyは4構成子である。ソースの相互判断71（V28・C21を含む）、ClosureTy1・CaptureOk1・TelBody2・DependentClosureTy1の件数は維持した。移動の2入口、値の相互置換、narrowingのそれぞれでhandlerの2場合を再検査した。論理上の三族では2×3=6場合、値の移動と型パラメータの移動を別の入口として数えると2×4=8場合である。型付きの捕捉の外側の操作では、OpenCodeTyの証拠を再利用する。ContTy10・Frame7・Cell6・LocTy4・State4・Step76も維持した。
+
+補助判断の追加により、内側の束縛の種類の注釈まで同じ原因を調べた。主な定理の前提と結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態、Step/stepは変更していない。開いたストアを対象とするように元のHasTypeCQの全規則を変更する案も採っていない。
+
+#### ビルドと公理依存
+
+[検査台本](02b-closures-r2-validate.py)、[コマンドの記録](02b-closures-r2-commands.json)、[集計](02b-closures-r2-validation.json)、[公理依存の集計](02b-closures-r2-axioms-summary.json)を置いた。Leanの各プロセスの上限は`-M 12288`であり、既定ビルドは既存のlakefileの指定を使う。
+
+| 検査 | 結果 |
+|---|---|
+| 既定の`cd formal && lake build` | 終了0、671 jobs。`sorry`なし |
+| 境界の正例・旧案の障害・全境界宣言の公理依存 | 終了0、336宣言。23行の各前状態・Step・後状態をLeanで検査 |
+| 公開宣言の型の書き出し | 終了0。[公開宣言の一覧](02b-closures-r2-public-api.md)と[入力](02b-closures-r2-public-api.lean)を置いた |
+| 本番98モジュールの全宣言と旧の三モデル等7宣言 | 終了0、10,740宣言。生成・非公開の宣言も含む |
+| 許可した公理 | `propext`・`Quot.sound`・`Classical.choice`のみ。許可外0件 |
+| 本番の抜け道の語の検査 | `sorry`・`admit`・`axiom`・`native_decide`・`implemented_by`・`unsafe`・`partial`の該当0ファイル |
+| 入力の固定 | formalの428入力を検査前後で照合し一致。再開時からの本番の変更8ファイル、新規0ファイル |
+| work / git / 次群 | 依頼に従いworkとgitの操作は実行していない。`.02c`へ進んでいない |
+
+境界の宣言名の末尾に`'`がある2件を集計台本の正規表現が数え落とし、最初の集計がassertionで停止した。Lean自体は終了0であった。宣言名全体を読むよう台本を直し、修正したmatchの正例も含む最終入力で再実行した。上表は最終入力に対応する記録である。
+
+100 KBを超える生の出力は改造へ置かず、`<tmp>`へ保存した。公開型の出力104,637バイトと、公理依存の全出力1,121,008バイトのSHA-256は[large-records](large-records.md)へ追記した。手元の絶対パスは記録していない。
+
+#### 残りと申し送り
+
+L20に残すのは、全状態の保存・進行、closeValの型付けとCaptureOkのhide、結果型のWF/Sorted、腕の結果・効果の拡大、開いた実行コードへの局所構築器の置換と環境の適用の一般の証明である。`.11`のfn/dependentFnの接続との依存も第24節・第30.3節に書いた。`.02c`はこの本番の定義と公開入口の整合を確認する。代表の遷移を通したことを、L20の一般の定理の証明や独立レビューの受け入れの代わりとしない。
+
+再レビューの依頼は[RV-L00b.02b-closures-r2-request](../reviews/RV-L00b.02b-closures-r2-request.md)に置いた。追加した実行コードの補助判断、typedの条件、束縛下のソースのストアの移動を重点の観点に含めた。
+
+#### 外側の時間（レビュー対応）
+
+開始は2026-10-31 13:01:21 JST、終了は13:54:40 JST、外側は約53分である。読み取り、実装、境界入力、失敗した試行と集計台本の修正、既定ビルド、公理依存、文書と再レビュー依頼の作成を含む。CPU時間・最大常駐は取得していない。`effort-ledger.md`は変更していない。
+
+### 再レビューの所見の対応（RV-L00b.02b-closures-r2、2026-10-31）
+
+[再レビュー](../reviews/RV-L00b.02b-closures-r2.md)の条件付き可（重なし・中3・軽3）を受け、planの先頭の取りまとめ判断と今回の依頼に従って修正した。本節の記録と第3版の検査を現在の定義の根拠とする。前節のOpenCodeTyを使う構成は撤回した案として残す。レビューの記録、`rv-*`、plan、effort-ledger、処理系、設計書は変更していない。
+
+#### 所見ごとの修正
+
+| 所見 | 修正と検査 |
+|---|---|
+| 中2 / 構造の差し替え | `ClosureTy.mk`は元の本体`code0`、局所文脈`L`、局所参照の置換`ρ`を持つ。元の`HasTypeCQ`は実行時の閉じた`Ψ`のままで検査し、`code = code0.resolveLocals ρ`で実行コードへ結ぶ。`CaptureLocals`は`L`の種類と場所の種類を捕捉環境の像で結ぶ。通常の場所の型は同じΨから読む |
+| 中2 / 注釈と構文の交換 | 新規`LocalResolve.lean`のVal/Comp/Arm/Clauseの相互関数は、型・効果の注釈を変更せず局所参照だけを置換する。`LocalResolveLemmas.lean`に恒等・合成、`subst_resolveLocals`、`resolveLocals_builderSubst`の相互補題と`Comp.builderBody_resolve`を置いた。`HasTypeCQ.builderBody_keepsBound`は、構築器の値束縛を除く際に局所参照をboundのまま保持する。当時は核の補題として移したが、再々レビュー中3で必要な正準性を供給できないと分かり、今回builderBody_imageへ差し替えた |
+| 中2 / 束縛とストアの移送 | letの本体は`localExtend 1 L`と`upLocalSubst 1 ρ`、腕はパターンの束縛数分の延長を使う。`CaptureLocals.localExtend`・`localExtend_many`・`pushBuilder`・`substOk`を置き、`ClosureTy.store`を元のCQと場所の像の双方で閉じ直した。`s1_typed`・`s3_typed`、内側のlet、未束縛入力、パターン束縛の下の構築器を読む正例を保持した |
+| 中1 / 余分なソース前提 | `K_Guard`のソースのdone型のDeclaredを除いた。`K_Handle`のソースのdone型のAnnotationと`declaredEff ebs`を除き、閉じた`Ty.Annotation P [] [] (.dependentFn (.done t ec))`へ替えた。旧ReleaseのK_Handleは`Ty.WF 0 0 t`だけを持つことを確認した。`C_Handle`にEff.WFは足していない |
+| 中3 / 遷移の追加 | 既存23行を新しい定義で組み直し、下表の7行を追加した。通常のhandlerは非空の節、捕捉に依存する結果型、操作の型引数を使い、`E_Handle → E_Op → E_Resume → E_HRet`を同じ状態列で型付けた。`E_BuilderOp`、`matchState 1`からの`E_MatchBody`、trueの`E_GuardT`も両側を示した |
+| 軽1 / K_Guardの局所構築器 | `K_Guard`も元の`arms0`、L、ρ、CaptureLocalsと、実行時のarmsとの等号を持つ。HasTypeArmsQがguardとbodyの元のΨとlocalExtendを検査する。OpenArmsTyとNoBuildersを除いた |
+| 軽2 / 相互帰納 | ClosureTyを相互帰納の直後へ出した。相互帰納の型は17から14へ減り、独立したClosureTyは1型である。ソースの71構成子（ClosureTy.mkを含む）は不変。Lean環境から型数・構成子数を検査した |
+| 軽3 / 署名・義務の表 | signatures第30.2節に採用案と理由、OpenCodeTy等を捨てた理由を記録した。第8.2節のK_Guard/K_Handle/matchRunとCaptureOkの欄を実装にそろえた。第24節・第30.3節の義務を、元のCQ/Armsと局所参照の交換補題の適用へ更新した |
+
+削除した定義は`OpenCodeTy`・`OpenArmsTy`・`StoreTy.CaptureView`・`StoreTy.shiftBuilders`・`Comp.BuilderLocFree`・`Arms.BuilderLocFree`・`LocalCtx.NoBuilders`と、それらの移送・構成補題である。WF又はBuilderLocFreeを要求するtypedの入口も除いた。実行時のStep/step、値・計算の構文、利用者の書ける形を変えていない。
+
+#### 更新した遷移の表
+
+全行が「前のStateTy ∧ Step ∧ 先のStateTy」を証明する。既存23行と`builder_op`は[境界入力](02b-closures-r3-boundary.lean)の`Benitoite.Release.Refinement.ClosureR3`、`Extra.`の6行は[追加の境界入力](02b-closures-r3-extra.lean)の`Benitoite.Release.Refinement.ClosureR3Extra`にある。`Extra.`は表内の略記である。後状態の型付けを前提にした宣言はない。
+
+| 遷移 | 正例の宣言名 | 型・種類の捕捉への依存 |
+|---|---|---|
+| E_Let：letFを積む | `let_push`（`s0_typed`・`s1_typed`） | あり。関数の入力の篩が捕捉したxを読む |
+| E_Return：letFを外す | `let_pop` | なし。Unitの入力 |
+| E_Return：構築器を読むlet本体へ入力を渡す | `input_builder_return` | あり。未束縛入力の下の種類R(1)を、環境の延長後も保持する |
+| E_Lam：markを積む | `mark_push` | なし。入力0個・Unitの依存lambda |
+| E_Mark：markを外す | `mark_pop` | なし |
+| E_Force：updateを積む | `update_push` | なし。Unitを返すthunk |
+| E_Update：updateを外しdoneセルへ替える | `update_pop` | なし |
+| E_Use：releaseを積む | `release_push` | なし。opaque資源とState |
+| E_Release：releaseを外す | `release_pop` | なし |
+| E_Handle：handleFを積む | `handle_push_checked` | なし。通常のC_HandleとK_Handle |
+| E_Handle：FailのhandleFを積む | `handle_fail_push` | なし。C_Handle_FailとK_Handle_Fail |
+| E_HRet：handleFを外す | `fail_handle_pop` | なし。K_Handle_Failの後へ戻る |
+| E_OpFail：継続の場所を作りdropを積む | `continuation_new` | なし。contの型のWF・DeclaredをStoreOkへ供給 |
+| E_Drop：使用済みの継続のdropを外す | `drop_pop` | なし |
+| E_MatchGuard：guardFを積む | `guard_push` | あり。Referenceの内容の篩が捕捉したxを読む |
+| E_GuardF：guardFを外し次の腕へ戻る | `guard_false` | あり。同じ開いた腕を保持 |
+| E_RefNew：refの場所を作る | `ref_new` | なし。捕捉したInteger8の値を保存 |
+| E_Lazy：lazyの場所を作る | `lazy_new` | あり。結果の篩R(0)と閉じたrefTy |
+| E_BuilderNew：builderの場所を作る | `builder_new`（`s2_typed`・`s3_typed`） | あり。種類list(R(0)) |
+| E_BuilderNew：本体のletも残す | `nested_builder_new` | あり。操作は内側のletの下のlist(R(1)) |
+| E_Resume：contセルをusedへ替えて継続を復元する | `resume_transition` | なし。復元したFailハンドラとdropの両方を型付ける |
+| E_Match：matchRunへ移る | `match_transition` | あり。捕捉に依存するReferenceの入力 |
+| E_Match：構築器の場所を読む腕を残す | `builder_match_transition` | あり。パターン束縛の下の種類list(R(1))。guardの局所文脈もNone1個を保持 |
+| E_BuilderOp：捕捉した値をlist構築器へappendする | `builder_op` | あり。list(R(0))の像と、実際のlist(refTy)セルを照合 |
+| E_MatchBody：matchState 1からパターン本体へ入る | `Extra.match_body` | あり。束縛したReferenceをR(2)を含む引数型へ渡す |
+| E_GuardT：trueのguardから成功時の本体へ戻る | `Extra.guard_true` | あり。Referenceの篩と捕捉した全腕を保持 |
+| E_Handle：節を持つ通常のhandlerを積む | `Extra.normal_handle` | あり。ソースの結果R(0)と閉じた結果refTy |
+| E_Op：通常の操作を捕捉し、継続の場所を作る | `Extra.normal_op` | あり。型引数R(0)をrefTyへ閉じ、継続の入力・結果と節の捕捉に保持 |
+| E_Resume：通常のhandlerの継続を復元する | `Extra.normal_resume` | あり。refTyの値、handleFとdrop、使用済みセルを同時に型付ける |
+| E_HRet：通常のhandlerを外す | `Extra.normal_hret` | あり。戻り値のrefTyを後続のdropへ渡す |
+
+30行は23種類の遷移を含む。mark・update・release・dropの枠とrefの場所について、右欄が「なし」の行は、それらの枠・場所が捕捉したコードの型注釈を読まないため、型の捕捉への依存を追加する対象から除いた。通常のhandlerの枠と継続の場所は、追加した非空の節の連鎖で依存を実際に検査した。全76遷移の保存の定理を完了と数えない。
+
+#### 場合の数と補助契約の残り
+
+本番の6ファイルを変更した（新規2ファイルを含む）。Val25・Comp16・Arm1・Clause2、ソースの71導出、ContTy10・Frame7・Cell6・LocTy4・State4・Step76を保持した。ソース規則の構成子の追加・削除はない。ClosureTyを相互帰納から外したことに伴う移動の再構成は独立の補題へ移し、値置換・narrowingなどの既存の捕捉証拠の再利用を保った。再レビュー中1は状態の補助前提の修正であり、前回直したhandlerの構造上の包含`Eff.Sub`と三族のhandlerの2場合はそのまま保持する。
+
+`code0.subst (fun i => var i) ρ`との等号を直接使う案は、型注釈の正規化が元の構文を変えるため採らなかった。相互帰納のresolveLocalsとComp.substの合成補題を使い、構築器の生成ではboundを残したソースの値置換から実行の場所置換へ接続する。例では必要なAnnotationと捕捉の型付き像を直接構成した。一般のcloseValの型付け、CaptureOkのhide、CQの結果型のWF/Sorted、腕の型・効果の拡大、各遷移への交換補題の適用と全状態の保存はL20に残る。第24節と第30.3節へ個別に記録した。
+
+#### ビルドと公理依存
+
+[台本](02b-closures-r3-validate.py)、[コマンド](02b-closures-r3-commands.json)、[検査の集計](02b-closures-r3-validation.json)、[公開型](02b-closures-r3-public-api.md)、[件数の一覧](02b-closures-r3-case-inventory.json)を置いた。境界の共通入力を`.lake`の検査用モジュールへ写して検査し、追加入力はその同じモジュールをimportする。コピー元と検査時の入力のSHA-256をコマンド記録に残した。本番の既定importに検査専用のモジュールを加えていない。
+
+| 検査 | 結果 |
+|---|---|
+| 既定`cd formal && lake build` | 終了0、673 jobs、sorryなし。既存の生成物を再利用した群末の検査である |
+| 共通の境界入力 | 終了0、341宣言。既存23行と構築器操作の正例を新定義で検査 |
+| 追加の境界入力 | 終了0、88宣言。match本体、trueのguard、通常handlerの4遷移 |
+| 本番の公理依存 | 既定importの100モジュールの全宣言と既存7確認対象、計10,891宣言。生成・非公開の宣言も対象 |
+| 許可公理 | propext・Quot.sound・Classical.choiceのみ。許可外0件 |
+| 環境の件数・削除 | 相互14型、ClosureTy単独1型、ソース71構成子、Step76。撤回した6補助の名前がないことも確認 |
+| 入力・抜け道の照合 | formalの430入力が検査前後で一致。Refinementのsorry/admit/axiom/native_decide/implemented_by/unsafe/partialは該当0ファイル |
+| Leanの上限 | 単体検査はすべて-M 12288、既定ビルドもlakefileの同じ指定を使用 |
+
+大きな生の公理依存出力は`<tmp>`に保存し、バイト数とSHA-256を[large-records](large-records.md)へ記録した。本番の変更一覧は[入力差](02b-closures-r3-source-changes.json)にある。gitの操作、workの実行、次群への着手はしていない。
+
+再々レビューの依頼は[RV-L00b.02b-closures-r3-request](../reviews/RV-L00b.02b-closures-r3-request.md)に置く。`.02c`には、元のCQ/Arms、独立したClosureTy、局所参照の解決と公開入口のimportの整合を引き継ぐ。独立レビューと受け入れは取りまとめ・設計者の担当である。
+
+#### 外側の時間（再レビュー対応）
+
+開始は2026-10-31 14:15:26 JSTである。実装・境界入力・既定ビルド・公理依存・文書と依頼の照合を含む終了時刻と外側の秒数は[受け渡し](02b-closures-r3-delivery.json)に記録する。能動時間と待ちを分けていない。CPU時間・最大常駐は未取得であり、effort-ledgerは変更していない。
+
+### 再々レビューの所見の対応（RV-L00b.02b-closures-r3、2026-10-31）
+
+[再々レビュー](../reviews/RV-L00b.02b-closures-r3.md)の条件付き可（重なし・中3・軽3）と、plan先頭の取りまとめの判断に従って、案(a)の範囲で修正した。通常handlerのE_Handle/E_Opの正例を、ソースの行に重複Failがあり、枠の下のεと節のecが異なる場合へ拡張できた。案(b)・(c)へは移っていない。レビューの記録とrv-*はそのまま保管し、以下の新しい入力を検査した。
+
+#### 所見ごとの修正
+
+| 所見 | 修正と確認 |
+|---|---|
+| 中1 / 案(a) | CaptureOk.mkの最初の欄をCtx.CaptureWFへ、some型のSorted/DeclaredをCaptureSorted/CaptureDeclaredへ替えた。継続の項目は入力bと結果tの全条件を保持し、行だけを読まない。閉じた像の行を含む全WFはImageOk.contLocに残し、CaptureOk.continuation_image_wfで取り出せる。K_HandleにソースtsのAnnotationを戻し、ecsは要求しない。C_Handleは変更していない |
+| 中1 / 読み手の追随 | CaptureOk.wf/declaredの結論を緩めた欄と一致させた。wf_ordinaryは全some項目が通常値の場合だけ元のCtx.WFを返す。SubstOk.openValueの継続の枝は入力・結果の正準性と行の正準性を明示して取消しを作る形へ改めた。この通常のソースの補題のCtx.WF前提は維持し、CaptureWFから無条件にCtx.WFを導いていない。既存の境界のTelArgsへの適用では、Γ0が通常値だけであることを明示した |
+| 中1 / dupEと効果の差 | dup_context_not_wfとdup_capture_wfで、重複Failの継続項目は旧Ctx.WFを満たさず、新しい捕捉の条件を満たすことを確認した。dup_closed_image_wfは閉じた像の全WFを示す。dup_handle/dup_opはFailを扱う外側の枠も含む状態で、E_HandleからE_Opの先まで型付ける |
+| 中2 / 恒等と開放 | rvの解決の恒等をLocalResolveLemmasへ移した。値・節などは任意のρ、CQ/ArmsはLocalsFixedの下で不変である。CaptureLocals.apply_one/extendManyと必要なTy.open_up/substKind_applyをClosureTypingへ移した。義務の表は、構築器の生成に交換、入力と腕に開放、値と節に恒等を使う形へ書き分けた |
+| 中3 / 本体の像 | builderBody_keepsBoundを除き、rvのbuilderBody_imageへ差し替えた。結果はR/a/eとimageLocal Lの像で述べる。substKind_imageに加え、CaptureLocals.imageLocalとCapture.closeTy_builder_image/closeEff_builder_imageを置き、閉じた契約の一致を示した。境界のbuilder_sub_chainはC_Subを二つ重ねた導出へbuilderBody_imageを適用し、既存の相互置換による正規化の接続を確認する |
+| 軽1 / 構築器を持つguard | rvの三行を新しい定義へそろえて移した。L=[some kind0]と場所を指すρを使うK_GuardのE_MatchGuard/E_GuardT/E_GuardFを、前StateTy・Step・後StateTyの連言で検査した |
+| 軽2 / 余分な欄 | K_Handleの閉じたt単独のAnnotationを除いた。K_Guardの等号をv = closeVal cap vsへ替えた。解決後の値との一致はHasTypeVQ.resolve_id/closeVal_resolvedが供給する |
+| 軽3 / 内側の行と効果の拡大 | done_annotation_of_coversをClosureTypingへ移した。Eff.Covers.widen_atomsはεの原子とecのFailの行に対するCoversとεへのSub、done_annotation_with_atomsはその行のAnnotationを返す。row_contでは外側のAnnotationから内側のAnnotationを作り、op_afterでは実際にC_Effで広げてStateTyEのSubへ接続した。narrow_not_subはecからεへの構造上のSubがないことを示す |
+
+#### 緩めた欄の前後の差
+
+| 対象 | 修正前 | 修正後 |
+|---|---|---|
+| some(cont b t e)のWF | b.WF、t.WF、e.WF、e.Canonical | b.WFとt.WF。ソースeを読まない |
+| 同じ項目のSorted/Declared | b、t、eの全条件 | bとtの全条件。ソースeを読まない |
+| 継続の閉じた像 | ImageOk.contLocの型のWF、場所型との一致、元のRのWF | 同じ。閉じた行のWFとCanonicalも保持 |
+| 通常の値のsome項目 | 型全体のWF/Sorted/DeclaredとImageOk | 同じ。ordinary_capture_annotationで取り出せる。ordinary_dup_rejectedは、通常の関数型の重複Failまで許したわけではないことを示す |
+| 継続の入力・結果 | 型全体のWF/Sorted/Declared | 同じ。continuation_capture_typesで両方のAnnotationを取り出す |
+| None、長さ、someの実値、Ground | Noneの番号を保つ。全体の長さ一致、全some位置に実値、保持値のGround | 同じ。Noneを詰めたりsomeの像を省いたりしない |
+| ΦとΓ.facts | ΦのWF/Sorted/Declared、閉じたΦ/factsのEntails | 同じ |
+| 一般のCtx.WF、ソースの規則 | 行を含む型全体を検査するCtx.WF。C_Handleは従来のまま | 同じ。変更はCaptureOkの補助の検査だけである |
+
+#### 更新した遷移の表
+
+元の30行も第4版の入力で再検査した。以下の無印は[共通入力](02b-closures-r4-boundary.lean)のClosureR4、Extraは[追加の入力](02b-closures-r4-extra.lean)のClosureR4Extra、Guardは[局所構築器を持つguard](02b-closures-r4-guard.lean)のClosureR4Guard、Rowsは[Failと効果の拡大の入力](02b-closures-r4-rows.lean)のClosureR4Rowsの略記である。いずれもBenitoite.Release.Refinementの下にある。全行が前StateTy・Step・後StateTyの連言であり、後状態の型付けを前提にしていない。
+
+| 遷移 | 正例の宣言名 | 型・種類の捕捉への依存 |
+|---|---|---|
+| E_Let：letFを積む | `let_push`（`s0_typed`・`s1_typed`） | あり。関数の入力の篩が捕捉したxを読む |
+| E_Return：letFを外す | `let_pop` | なし。Unitの入力 |
+| E_Return：構築器を読むlet本体へ入力を渡す | `input_builder_return` | あり。未束縛入力の下の種類R(1)を、環境の延長後も保持する |
+| E_Lam：markを積む | `mark_push` | なし。入力0個・Unitの依存lambda |
+| E_Mark：markを外す | `mark_pop` | なし |
+| E_Force：updateを積む | `update_push` | なし。Unitを返すthunk |
+| E_Update：updateを外しdoneセルへ替える | `update_pop` | なし |
+| E_Use：releaseを積む | `release_push` | なし。opaque資源とState |
+| E_Release：releaseを外す | `release_pop` | なし |
+| E_Handle：handleFを積む | `handle_push_checked` | なし。通常のC_HandleとK_Handle |
+| E_Handle：FailのhandleFを積む | `handle_fail_push` | なし。C_Handle_FailとK_Handle_Fail |
+| E_HRet：handleFを外す | `fail_handle_pop` | なし。K_Handle_Failの後へ戻る |
+| E_OpFail：継続の場所を作りdropを積む | `continuation_new` | なし。contの型のWF・DeclaredをStoreOkへ供給 |
+| E_Drop：使用済みの継続のdropを外す | `drop_pop` | なし |
+| E_MatchGuard：guardFを積む | `guard_push` | あり。Referenceの内容の篩が捕捉したxを読む |
+| E_GuardF：guardFを外し次の腕へ戻る | `guard_false` | あり。同じ開いた腕を保持 |
+| E_RefNew：refの場所を作る | `ref_new` | なし。捕捉したInteger8の値を保存 |
+| E_Lazy：lazyの場所を作る | `lazy_new` | あり。結果の篩R(0)と閉じたrefTy |
+| E_BuilderNew：builderの場所を作る | `builder_new`（`s2_typed`・`s3_typed`） | あり。種類list(R(0)) |
+| E_BuilderNew：本体のletも残す | `nested_builder_new` | あり。操作は内側のletの下のlist(R(1)) |
+| E_Resume：contセルをusedへ替えて継続を復元する | `resume_transition` | なし。復元したFailハンドラとdropの両方を型付ける |
+| E_Match：matchRunへ移る | `match_transition` | あり。捕捉に依存するReferenceの入力 |
+| E_Match：構築器の場所を読む腕を残す | `builder_match_transition` | あり。パターン束縛の下の種類list(R(1))。guardの局所文脈もNone1個を保持 |
+| E_BuilderOp：捕捉した値をlist構築器へappendする | `builder_op` | あり。list(R(0))の像と、実際のlist(refTy)セルを照合 |
+| E_MatchBody：matchState 1からパターン本体へ入る | `Extra.match_body` | あり。束縛したReferenceをR(2)を含む引数型へ渡す |
+| E_GuardT：trueのguardから成功時の本体へ戻る | `Extra.guard_true` | あり。Referenceの篩と捕捉した全腕を保持 |
+| E_Handle：節を持つ通常のhandlerを積む | `Extra.normal_handle` | あり。ソースの結果R(0)と閉じた結果refTy |
+| E_Op：通常の操作を捕捉し、継続の場所を作る | `Extra.normal_op` | あり。型引数R(0)をrefTyへ閉じ、継続の入力・結果と節の捕捉に保持 |
+| E_Resume：通常のhandlerの継続を復元する | `Extra.normal_resume` | あり。refTyの値、handleFとdrop、使用済みセルを同時に型付ける |
+| E_HRet：通常のhandlerを外す | `Extra.normal_hret` | あり。戻り値のrefTyを後続のdropへ渡す |
+| E_MatchGuard：局所構築器を持つguardを積む | `Guard.builder_guard_push` | あり。L=[some kind0]、ρはloc 0 |
+| E_GuardT：局所構築器を読む本体へ進む | `Guard.builder_guard_true` | あり。パターンの束縛数分の局所文脈と捕捉を保持 |
+| E_GuardF：局所構築器を持つ次の腕へ戻る | `Guard.builder_guard_false` | あり。同じL/ρと元のarms0を保持 |
+| E_Handle：重複Failの通常節を持つhandlerを積む | `Rows.dup_handle` | あり。結果R(0)、ソースdupE、ε≠ec、外側のFailの枠 |
+| E_Op：重複Failの節へ入る | `Rows.dup_op` | あり。継続の型・捕捉と閉じた像、C_Effによるεへの拡大 |
+| E_Handle：範囲の被覆が必要な通常節を持つhandlerを積む | `Rows.narrow_handle` | あり。重複Failに加え、IO.Secrets.Readの範囲の差を使用 |
+| E_Op：CoversだがSubではない行から節へ入る | `Rows.narrow_op` | あり。ecのsecretsをεのtopで被覆し、εの原子・ecのFailへC_Effで広げる |
+
+合計37行・23種類の遷移である。37行を全76遷移の保存と数えない。mark/update/release/dropの枠とrefの場所の「なし」の行について、枠・場所が捕捉したコードの型注釈を読まないため型の捕捉への依存を追加しない、という前回の表の注は維持する。
+
+RowsのdupEは原子なし・UnitのFailが二重の形で、レビューのdupEに一致する。narrowの例も同じ二重のFailを持つ。実行時のεはIO.Secrets.Read(top)とUnitのFail、節のecはそれぞれ原子なし、又はIO.Secrets.Read(secrets)とUnitのFailである。後者にはEff.Sub ec εが成り立たず、C_Effによる拡大を必要とすることを負例で照合した。型付けのための中間の行はεの原子とecのFailを持ち、StateTyEではその行からεへの構造上の包含を使う。Failを末尾Ebへ残さず、外側のFailのhandlerで処理する。末尾Ebは組込みのIOだけである。
+
+#### 残りと義務の表
+
+第24節と第30.3節に、補題の用途を分けて記録した。構築器の生成はbuilderBody_imageと構文の交換、入力と腕はCaptureLocalsの開放、値と節は解決の恒等を使う。分岐では同じL/ρを用いる。一般のcloseValの型付け、CaptureOkのhide、結果のWF/Sorted、腕の拡大、先頭の反転・ContTy.store・全状態の保存と進行はL20に残る。builderBody_imageのCtx.WFはソースの補題の前提であり、緩めたCaptureOkから全Ctx.WFを無条件に取り出せるとはしていない。
+
+今回の本番の変更はTyping・LocalResolveLemmas・ClosureTyping・StateTypingの4ファイルで、新しい本番ファイルはない。sourceの構成子は71、相互帰納の型数14、ClosureTy1、ContTy10、Frame7/Cell6/LocTy4/State4、Step76を保持した。主な定理の前提と結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態、Step/stepを変えていない。`.02c`へ進んでいない。
+
+#### ビルドと公理依存
+
+[検査台本](02b-closures-r4-validate.py)、[コマンド](02b-closures-r4-commands.json)、[検査の集計](02b-closures-r4-validation.json)、[公開型](02b-closures-r4-public-api.md)、[公理依存の集計](02b-closures-r4-axioms-summary.json)を置く。Leanの各プロセスは-M 12288であり、既定ビルドは既存lakefileの同じ設定を使う。
+
+| 検査 | 結果 |
+|---|---|
+| 既定cd formal && lake build | 終了0、673 jobs、sorryなし。局所の修正後の生成物を再利用した群末の検査 |
+| 共通の境界入力 | 終了0、341宣言 |
+| 前回の追加の入力 | 終了0、88宣言 |
+| 構築器を持つguard | 終了0、23宣言 |
+| Fail・効果の拡大・捕捉の条件・C_Subの連なり | 終了0、55宣言 |
+| 本番100モジュールと既存7確認対象の公理依存 | 終了0、10,967宣言。生成・非公開の宣言も含む |
+| 許可公理 | propext・Quot.sound・Classical.choiceのみ、許可外0件 |
+| 入力 | formalの430入力が検査前後で一致。本番変更4ファイル、新規0ファイル |
+| 抜け道の語 | Refinementのsorry/admit/axiom/native_decide/implemented_by/unsafe/partial/externは該当0ファイル |
+
+100 KBを超える生の出力は`<tmp>`に置き、[large-records](large-records.md)へ大きさとSHA-256を記録した。レビュー・rv-*・処理系・設計書・plan・effort-ledgerの固定対象の照合と、37行の言明の形の照合は[最終確認](02b-closures-r4-final-check.json)に置く。本番の入力差は[変更一覧](02b-closures-r4-source-changes.json)にある。workとgitは実行していない。
+
+#### 外側の時間と受け渡し
+
+開始は2026-10-31 15:13:11 JSTである。実装・失敗した試行と修正・正例・既定ビルド・公理依存・文書・最終の照合を含む終了と外側の時間は[受け渡し](02b-closures-r4-delivery.json)に記録する。能動時間と待ちは分離せず、CPU時間と最大常駐は取得していない。独立した確認と受け入れは取りまとめ・設計者の担当である。
+
+今回の新規ファイルは次の一覧である。本番の新規ファイルはない。
+
+- [02b-closures-r4-artifact-inputs.json](02b-closures-r4-artifact-inputs.json)
+- [02b-closures-r4-axioms-summary.json](02b-closures-r4-axioms-summary.json)
+- [02b-closures-r4-axioms.lean](02b-closures-r4-axioms.lean)
+- [02b-closures-r4-boundary.lean](02b-closures-r4-boundary.lean)
+- [02b-closures-r4-boundary.log](02b-closures-r4-boundary.log)
+- [02b-closures-r4-build.log](02b-closures-r4-build.log)
+- [02b-closures-r4-case-inventory.json](02b-closures-r4-case-inventory.json)
+- [02b-closures-r4-commands.json](02b-closures-r4-commands.json)
+- [02b-closures-r4-delivery.json](02b-closures-r4-delivery.json)
+- [02b-closures-r4-extra.lean](02b-closures-r4-extra.lean)
+- [02b-closures-r4-extra.log](02b-closures-r4-extra.log)
+- [02b-closures-r4-final-check.json](02b-closures-r4-final-check.json)
+- [02b-closures-r4-guard.lean](02b-closures-r4-guard.lean)
+- [02b-closures-r4-guard.log](02b-closures-r4-guard.log)
+- [02b-closures-r4-inputs-final.json](02b-closures-r4-inputs-final.json)
+- [02b-closures-r4-lean-version.log](02b-closures-r4-lean-version.log)
+- [02b-closures-r4-public-api.lean](02b-closures-r4-public-api.lean)
+- [02b-closures-r4-public-api.log](02b-closures-r4-public-api.log)
+- [02b-closures-r4-public-api.md](02b-closures-r4-public-api.md)
+- [02b-closures-r4-rows.lean](02b-closures-r4-rows.lean)
+- [02b-closures-r4-rows.log](02b-closures-r4-rows.log)
+- [02b-closures-r4-source-changes.json](02b-closures-r4-source-changes.json)
+- [02b-closures-r4-start.json](02b-closures-r4-start.json)
+- [02b-closures-r4-step-coverage.json](02b-closures-r4-step-coverage.json)
+- [02b-closures-r4-validate.py](02b-closures-r4-validate.py)
+- [02b-closures-r4-validation.json](02b-closures-r4-validation.json)
+
+### `.02b-closures` の作業末の work
+
+取りまとめが sandbox の外で実行した。基準は `1170a4a6d81d49a6d098d2f222ed33c8f22c9230`。Refinement の生成物を消してから `/usr/bin/time -l scripts/check.sh --level work --base 1170a4a6d81d49a6d098d2f222ed33c8f22c9230` を実行した。選ばれたのは `formal_build` だけで、終了0、外側の時間57.41秒、最大常駐量 1,140,686,848 B（約1.06 GiB）である。群末のレビューは4回（不可 → 条件付き可 → 条件付き可 → 絞った確認で条件付き可）で、最後の所見は定義を変えず [signatures.md 第31節](signatures.md) の義務として L20 へ送った。
