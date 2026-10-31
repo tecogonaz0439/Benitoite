@@ -1,0 +1,105 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:91:35: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.34 = ?m.34
+but is expected to have type
+  Term.HasData prog (some (Ty.data "Opt" (shiftVTys 1 0 [])) :: List.map (Option.map (Ty.shiftV 1 0)) []) (Term.var 0)
+    "Opt" []
+in the application
+  And.intro rfl
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:91:43: error(lean.unknownIdentifier): Unknown constant `Eq.var`
+
+Note: Inferred this name from the expected resulting type of `.var`:
+  noneDecl.data = "Opt"
+KLEENE_BOUNDARY_DECLARATIONS 55
+'Benitoite.Release.Refinement.KleeneBoundary.none_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.cond' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.prog' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.neg_none_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.prog.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.ill_sorted_not_rescued' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.tacticCheck_receive' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.violating_some_err' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.cond.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.none_facts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.optT' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.noneV.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.noneDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.positive_some_receive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.violating_some_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.reverse_none_receive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.reverseCond' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.undecided_evals' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.undecided.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.neg_none_receive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.someField.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.none_outcome_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.reverse_none_eval' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.ill_sorted_receive_err' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_ground' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.closed' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary._aux__stdin___macroRules_Benitoite_Release_Refinement_KleeneBoundary_tacticCheck_receive_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.undecided' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someField' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.violating_neg_some_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.cond_ann' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.undecided_err' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_outcome' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_receive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.decided_without_observable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.unknown' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.or_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.optT.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.opt_ann' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.someV' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.positive.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.noneV' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.undecided_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.someV.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.noneDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.and_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.opt_arity' depends on axioms: [propext]
+'Benitoite.Release.Refinement.KleeneBoundary.not_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.negCond' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.unknown_observation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_carrier' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.positive' does not depend on any axioms

@@ -45,3 +45,7 @@
 | 2026-10-31 | L00b.03 | Codex | 新規（01a190cf） | 約29分 | 377,306 | Context/ の4モジュール（公開定義18・定理69）。Ctx.Ordered／Regular、facts の再構成、宣言順の入力列、kind の固定、緩い捕捉の延長。入口の正例・負例54定理。ビルド687ジョブ、公理は三つだけ |
 | 2026-10-31 | RV-L00b.03 | Opus 5.5（medium） | 新規 | 約12分 | 303,714 | 条件付き可（重なし、中2・軽6）。中1は参照順序を読む判断がないこと、中2は extendNone の形を作る遷移がないこと |
 | 2026-10-31 | L00b.03 再開1（所見の対応） | Codex | 01a190cf の再開 | 約9分 | 累計443,082（差65,776） | 順序をソースの注釈の判断に、Regular.hideConts／bindParams、extendHidden／extendCont、Ctx.Depends、Pred.WellFormed へ改名。ビルド687ジョブ、公理は三つだけ |
+| 2026-10-31 | L00b.04 | Codex | 新規（01a19100） | 約31分 | 322,468 | 7モジュール。Term.observe、Pred.evalClosed と健全性・完全性、Entails.closed／ground、全入れ子の carrier、externalCheck と checked_typed。正例・負例81定理。ビルド694ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.04 | Opus 5.5（medium） | 新規 | 約11分 | 264,037 | 条件付き可（重なし、中1・軽6）。中1は And/Or が両側の成功を要求し、型付けできる値を受信検査が拒む点（設計者の判断へ） |
+| 2026-10-31 | L00b.04 再開1（軽の対応） | Codex | 01a19100 の再開 | 約13分 | 累計747,413（差424,945） | ExternalCarrier.accepted、鍵の縮約の一致、termReady_observation、再帰する data の正例と負例 |
+| 2026-10-31 | L00b.04 再開2（強い Kleene の三値） | Codex | 01a19100 の再開 | 約9分 | 累計857,182（差109,769） | evalWith の And／Or を改め、片側で決まる場合の補題8、真理値表と境界29定理。ビルド694ジョブ、公理は三つだけ |

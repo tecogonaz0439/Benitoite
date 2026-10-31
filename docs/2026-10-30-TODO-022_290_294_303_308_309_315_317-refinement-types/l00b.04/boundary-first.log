@@ -1,0 +1,144 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:25:23: error: Tactic `decide` failed for proposition
+  Pred.Sorted [] (some scalar) condition
+because its `Decidable` instance
+  Pred.sortedDecidable [] (some scalar) condition
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decidable_of_decidable_of_iff`, `decidable_of_iff`, `instDecidableAnd`, `Ctx.readableDecidable`, `Pred.sortedDecidable`, `Term.hasSortDecidable`, `Term.referencesDecidable`, and `Term.varsDecidable`, reduction got stuck at the `Decidable` instance
+  ⋯ ▸ inferInstance
+
+Hint: Reduction got stuck on `▸` (Eq.rec), which suggests that one of the `Decidable` instances is defined using tactics such as `rw` or `simp`. To avoid tactics, make use of functions such as `«inferInstanceAs»` or `decidable_of_decidable_of_iff` to alter a proposition.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:87:66: error: Tactic `decide` failed for proposition
+  Key.equal dec1 dec2 = some true
+because its `Decidable` instance
+  (Key.equal dec1 dec2).instDecidableEq (some true)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableTrue`, `Option.instDecidableEq`, `Term.closedDecidable`, and `Term.varsDecidable`, reduction got stuck at the `Decidable` instance
+  match Key.equal dec1 dec2 with
+  | none =>
+    match some true with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some true with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqBool a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:89:82: error: Tactic `decide` failed for proposition
+  Key.normalizeMap [some dec1, some dec2] [some (Term.integer 1), some (Term.integer 2)] =
+    some [(dec1, some (Term.integer 2))]
+because its `Decidable` instance
+  (Key.normalizeMap [some dec1, some dec2] [some (Term.integer 1), some (Term.integer 2)]).instDecidableEq
+    (some [(dec1, some (Term.integer 2))])
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableTrue`, `Option.instDecidableEq`, `Term.closedDecidable`, and `Term.varsDecidable`, reduction got stuck at the `Decidable` instance
+  match Key.normalizeMap [some dec1, some dec2] [some (Term.integer 1), some (Term.integer 2)] with
+  | none =>
+    match some [(dec1, some (Term.integer 2))] with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some [(dec1, some (Term.integer 2))] with
+    | none => isFalse ⋯
+    | some b =>
+      match (fun a b => instDecidableEqList a b) a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:91:122: error: Tactic `decide` failed for proposition
+  (Pred.eq (Term.measure Measure.mapSize (Term.mapValue [some dec1, some dec2] [none, none]))
+        (Term.integer 1)).evalClosed =
+    some true
+because its `Decidable` instance
+  (Pred.eq (Term.measure Measure.mapSize (Term.mapValue [some dec1, some dec2] [none, none]))
+          (Term.integer 1)).evalClosed.instDecidableEq
+    (some true)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqNat`, `instDecidableTrue`, `Bool.decEq`, `Nat.decEq`, `Option.instDecidableEq`, `instDecidableEqSort`, `slotVarsDecidable`, `slotsVarsDecidable`, `Pred.sortedDecidable`, `Pred.varsDecidable`, `Pred.wfDecidable`, `Term.hasSortDecidable`, `Term.referencesDecidable`, `Term.shapeDecidable`, `Term.varsDecidable`, and `instDecidableEqSort.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    (Pred.eq (Term.measure Measure.mapSize (Term.mapValue [some dec1, some dec2] [none, none]))
+        (Term.integer 1)).evalClosed with
+  | none =>
+    match some true with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some true with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqBool a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:93:110: error: Tactic `decide` failed for proposition
+  (Pred.eq (Term.measure Measure.setSize (Term.setValue [some dec1, some dec2])) (Term.integer 1)).evalClosed =
+    some true
+because its `Decidable` instance
+  (Pred.eq (Term.measure Measure.setSize (Term.setValue [some dec1, some dec2]))
+          (Term.integer 1)).evalClosed.instDecidableEq
+    (some true)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqNat`, `instDecidableTrue`, `Bool.decEq`, `Nat.decEq`, `Option.instDecidableEq`, `instDecidableEqSort`, `slotVarsDecidable`, `slotsVarsDecidable`, `Pred.sortedDecidable`, `Pred.varsDecidable`, `Pred.wfDecidable`, `Term.hasSortDecidable`, `Term.referencesDecidable`, `Term.shapeDecidable`, `Term.varsDecidable`, and `instDecidableEqSort.decEq`, reduction got stuck at the `Decidable` instance
+  match (Pred.eq (Term.measure Measure.setSize (Term.setValue [some dec1, some dec2])) (Term.integer 1)).evalClosed with
+  | none =>
+    match some true with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some true with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqBool a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:97:78: error: Tactic `decide` failed for proposition
+  Key.equal (Term.float64 0) (Term.float64 0) = none
+because its `Decidable` instance
+  (Key.equal (Term.float64 0) (Term.float64 0)).decidableEqNone
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableTrue`, `Option.decidableEqNone`, `Term.closedDecidable`, and `Term.varsDecidable`, reduction got stuck at the `Decidable` instance
+  match Key.equal (Term.float64 0) (Term.float64 0) with
+  | none => isTrue ⋯
+  | some val => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:150:99: error: Tactic `decide` failed for proposition
+  externalCheck program (Val.con "Box" [] [seven]) (Ty.data "Box" []) = true
+because its `Decidable` instance
+  instDecidableEqBool (externalCheck program (Val.con "Box" [] [seven]) (Ty.data "Box" [])) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool` and `Bool.decEq`, reduction got stuck at the `Decidable` instance
+  match externalCheck program (Val.con "Box" [] [seven]) (Ty.data "Box" []), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:151:104: error: Tactic `decide` failed for proposition
+  externalCheck program (Val.con "Box" [] [zero]) (Ty.data "Box" []) = false
+because its `Decidable` instance
+  instDecidableEqBool (externalCheck program (Val.con "Box" [] [zero]) (Ty.data "Box" [])) false
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool` and `Bool.decEq`, reduction got stuck at the `Decidable` instance
+  match externalCheck program (Val.con "Box" [] [zero]) (Ty.data "Box" []), false with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean:153:96: error: Tactic `decide` failed for proposition
+  externalCheck program (Val.list [Val.con "Box" [] [zero]]) (Ty.data "Box" []).list = false
+because its `Decidable` instance
+  instDecidableEqBool (externalCheck program (Val.list [Val.con "Box" [] [zero]]) (Ty.data "Box" []).list) false
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool` and `Bool.decEq`, reduction got stuck at the `Decidable` instance
+  match externalCheck program (Val.list [Val.con "Box" [] [zero]]) (Ty.data "Box" []).list, false with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯

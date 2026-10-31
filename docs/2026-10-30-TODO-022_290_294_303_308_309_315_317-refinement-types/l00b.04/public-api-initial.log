@@ -1,0 +1,245 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/public-api.lean:2:0: error: Unknown option `pp.width`
+Benitoite.Release.Refinement.Comparison.allowedDecidable (s : Benitoite.Release.Refinement.Sort)
+  (o : Benitoite.Release.Refinement.Comparison) : Decidable (Benitoite.Release.Refinement.Comparison.Allowed s o)
+Benitoite.Release.Refinement.Comparison.fromEqLt (o : Benitoite.Release.Refinement.Comparison) (eq lt gt : Bool) : Bool
+Benitoite.Release.Refinement.Ctx.readableDecidable (Γ : Benitoite.Release.Refinement.Ctx) (i : Nat) :
+  Decidable (Γ.Readable i)
+Benitoite.Release.Refinement.Eff.RefinementFree : Benitoite.Release.Refinement.Eff → Prop
+Benitoite.Release.Refinement.Eff.carrier : Benitoite.Release.Refinement.Eff → Benitoite.Release.Refinement.Eff
+Benitoite.Release.Refinement.Eff.carrier_free (e : Benitoite.Release.Refinement.Eff) : e.carrier.RefinementFree
+Benitoite.Release.Refinement.Eff.carrier_idem (e : Benitoite.Release.Refinement.Eff) : e.carrier.carrier = e.carrier
+Benitoite.Release.Refinement.Entails.bind {Ξ : List Benitoite.Release.Refinement.Pred}
+  {p : Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.Entails Ξ p)
+  (σ : Benitoite.Release.Refinement.ObservationEnv) :
+  Benitoite.Release.Refinement.Entails (List.map (Benitoite.Release.Refinement.predBind σ) Ξ)
+    (Benitoite.Release.Refinement.predBind σ p)
+Benitoite.Release.Refinement.Entails.closed {Ξ : List Benitoite.Release.Refinement.Pred}
+  {p : Benitoite.Release.Refinement.Pred} :
+  Benitoite.Release.Refinement.Pred.WF 0 p →
+    Benitoite.Release.Refinement.Pred.Sorted [] none p →
+      p.evalClosed = some true → Benitoite.Release.Refinement.Entails Ξ p
+Benitoite.Release.Refinement.Entails.cut {Ξ : List Benitoite.Release.Refinement.Pred}
+  {p : Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.Entails Ξ p)
+  {Δ : List Benitoite.Release.Refinement.Pred}
+  (hm : ∀ (q : Benitoite.Release.Refinement.Pred), q ∈ Ξ → Benitoite.Release.Refinement.Entails Δ q) :
+  Benitoite.Release.Refinement.Entails Δ p
+Benitoite.Release.Refinement.Entails.ground {p : Benitoite.Release.Refinement.Pred}
+  (hw : Benitoite.Release.Refinement.Pred.WF 0 p) (hs : Benitoite.Release.Refinement.Pred.Sorted [] none p)
+  (he : p.evalClosed = some true) : Benitoite.Release.Refinement.Entails [] p
+Benitoite.Release.Refinement.Entails.sound {Φ : List Benitoite.Release.Refinement.Pred}
+  {p : Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.Entails Φ p)
+  (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  (∀ (q : Benitoite.Release.Refinement.Pred), q ∈ Φ → Benitoite.Release.Refinement.Pred.interpret η q = true) →
+    Benitoite.Release.Refinement.Pred.interpret η p = true
+Benitoite.Release.Refinement.Entails.weaken {Ξ : List Benitoite.Release.Refinement.Pred}
+  {p : Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.Entails Ξ p)
+  {Δ : List Benitoite.Release.Refinement.Pred} (hm : ∀ (q : Benitoite.Release.Refinement.Pred), q ∈ Ξ → q ∈ Δ) :
+  Benitoite.Release.Refinement.Entails Δ p
+Benitoite.Release.Refinement.ExternalCarrier (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (Ψ : Benitoite.Release.Refinement.StoreTy) :
+  Benitoite.Release.Refinement.Val → Benitoite.Release.Refinement.Ty → Prop
+Benitoite.Release.Refinement.ExternalCarrier.checked_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {v : Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.ExternalCarrier P B Ψ v a)
+  (hc : Benitoite.Release.Refinement.externalCheck P v a = true) :
+  Benitoite.Release.Refinement.HasTypeV P B Ψ [] [] [] v a
+Benitoite.Release.Refinement.ExternalCarrierEach (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (Ψ : Benitoite.Release.Refinement.StoreTy) :
+  List Benitoite.Release.Refinement.Val → Benitoite.Release.Refinement.Ty → Prop
+Benitoite.Release.Refinement.ExternalCarrierEach.checked_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {vs : List Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.ExternalCarrierEach P B Ψ vs a)
+  (hc : Benitoite.Release.Refinement.externalCheckEach P vs a = true) :
+  Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Benitoite.Release.Qempty [] [] [] vs a
+Benitoite.Release.Refinement.ExternalCarrierFields (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (Ψ : Benitoite.Release.Refinement.StoreTy) :
+  List Benitoite.Release.Refinement.Val → List Benitoite.Release.Refinement.Ty → Prop
+Benitoite.Release.Refinement.ExternalCarrierFields.checked_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {vs : List Benitoite.Release.Refinement.Val} {as : List Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.ExternalCarrierFields P B Ψ vs as)
+  (hc : Benitoite.Release.Refinement.externalCheckFields P vs as = true) :
+  Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Benitoite.Release.Qempty [] [] [] vs as
+Benitoite.Release.Refinement.Key.code? (t : Benitoite.Release.Refinement.Term) : Option (List Nat)
+Benitoite.Release.Refinement.Key.equal (a b : Benitoite.Release.Refinement.Term) : Option Bool
+Benitoite.Release.Refinement.Key.equal_sound {a b : Benitoite.Release.Refinement.Term} {r : Bool}
+  (h : Benitoite.Release.Refinement.Key.equal a b = some r) :
+  ∃ x y,
+    Benitoite.Release.Refinement.Key.code? a = some x ∧
+      Benitoite.Release.Refinement.Key.code? b = some y ∧ r = decide (x = y)
+Benitoite.Release.Refinement.Key.normalizeMap (keys values : List (Option Benitoite.Release.Refinement.Term)) :
+  Option (List (Benitoite.Release.Refinement.Term × Option Benitoite.Release.Refinement.Term))
+Benitoite.Release.Refinement.Key.normalizeSet (elements : List (Option Benitoite.Release.Refinement.Term)) :
+  Option (List Benitoite.Release.Refinement.Term)
+Benitoite.Release.Refinement.KeyTerm (t : Benitoite.Release.Refinement.Term) : Prop
+Benitoite.Release.Refinement.Observation : Type
+Benitoite.Release.Refinement.Observation.compare (o : Benitoite.Release.Refinement.Comparison)
+  (a b : Benitoite.Release.Refinement.Observation) : Bool
+Benitoite.Release.Refinement.Observation.default :
+  Benitoite.Release.Refinement.Sort → Benitoite.Release.Refinement.Observation
+Benitoite.Release.Refinement.Observation.integerD : Option Benitoite.Release.Refinement.Observation → Int
+Benitoite.Release.Refinement.Observation.keyCode? : Benitoite.Release.Refinement.Observation → Option (List Nat)
+Benitoite.Release.Refinement.Observation.measure (m : Benitoite.Release.Refinement.Measure)
+  (o : Benitoite.Release.Refinement.Observation) : Option Benitoite.Release.Refinement.Observation
+Benitoite.Release.Refinement.Observation.sort :
+  Benitoite.Release.Refinement.Observation → Benitoite.Release.Refinement.Sort
+Benitoite.Release.Refinement.Outcome.Carrier (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (Ψ : Benitoite.Release.Refinement.StoreTy)
+  (out : Benitoite.Release.Refinement.Outcome) (a : Benitoite.Release.Refinement.Ty) : Prop
+Benitoite.Release.Refinement.Pred.Atomic : Benitoite.Release.Refinement.Pred → Prop
+Benitoite.Release.Refinement.Pred.ClosedObservable : Benitoite.Release.Refinement.Pred → Prop
+Benitoite.Release.Refinement.Pred.atomReady (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Pred → Bool
+Benitoite.Release.Refinement.Pred.atomValue (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Pred → Bool
+Benitoite.Release.Refinement.Pred.bind_closed {p : Benitoite.Release.Refinement.Pred}
+  (h : Benitoite.Release.Refinement.Pred.WF 0 p) (ν : Benitoite.Release.Refinement.ObservationEnv) :
+  Benitoite.Release.Refinement.predBind ν p = p
+Benitoite.Release.Refinement.Pred.closedTrue (p : Benitoite.Release.Refinement.Pred) : Bool
+Benitoite.Release.Refinement.Pred.closedTrue_entails {p : Benitoite.Release.Refinement.Pred} (h : p.closedTrue = true) :
+  Benitoite.Release.Refinement.Pred.WF 0 p ∧
+    Benitoite.Release.Refinement.Pred.Sorted [] none p ∧ Benitoite.Release.Refinement.Entails [] p
+Benitoite.Release.Refinement.Pred.evalClosed (p : Benitoite.Release.Refinement.Pred) : Option Bool
+Benitoite.Release.Refinement.Pred.evalClosed_complete {p : Benitoite.Release.Refinement.Pred}
+  (hw : Benitoite.Release.Refinement.Pred.WF 0 p) (hs : Benitoite.Release.Refinement.Pred.Sorted [] none p)
+  (h : p.ClosedObservable) : p.evalClosed = some (Benitoite.Release.Refinement.Pred.interpret (fun x => none) p)
+Benitoite.Release.Refinement.Pred.evalClosed_not_failure {p : Benitoite.Release.Refinement.Pred}
+  (h : p.evalClosed = none) : p.not.evalClosed = none
+Benitoite.Release.Refinement.Pred.evalClosed_open {p : Benitoite.Release.Refinement.Pred}
+  (h : ¬Benitoite.Release.Refinement.Pred.WF 0 p) : p.evalClosed = none
+Benitoite.Release.Refinement.Pred.evalClosed_sound {p : Benitoite.Release.Refinement.Pred} {b : Bool}
+  (_hw : Benitoite.Release.Refinement.Pred.WF 0 p) (_hs : Benitoite.Release.Refinement.Pred.Sorted [] none p)
+  (h : p.evalClosed = some b) : Benitoite.Release.Refinement.Pred.interpret (fun x => none) p = b
+Benitoite.Release.Refinement.Pred.evalClosed_unsorted {p : Benitoite.Release.Refinement.Pred}
+  (h : ¬Benitoite.Release.Refinement.Pred.Sorted [] none p) : p.evalClosed = none
+Benitoite.Release.Refinement.Pred.evalWith (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Pred → Option Bool
+Benitoite.Release.Refinement.Pred.evalWith_sound {p : Benitoite.Release.Refinement.Pred} {b : Bool}
+  {η : Benitoite.Release.Refinement.ObservationEnvModel} (h : Benitoite.Release.Refinement.Pred.evalWith η p = some b) :
+  Benitoite.Release.Refinement.Pred.interpret η p = b
+Benitoite.Release.Refinement.Pred.interpret (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Pred → Bool
+Benitoite.Release.Refinement.Pred.interpret_closed {p : Benitoite.Release.Refinement.Pred}
+  (h : Benitoite.Release.Refinement.Pred.WF 0 p) (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Pred.interpret η p = Benitoite.Release.Refinement.Pred.interpret (fun x => none) p
+Benitoite.Release.Refinement.Pred.interpret_congr {p : Benitoite.Release.Refinement.Pred}
+  {η ξ : Benitoite.Release.Refinement.ObservationEnvModel}
+  (h : Benitoite.Release.Refinement.Pred.VarsIn (fun i => η i = ξ i) p) :
+  Benitoite.Release.Refinement.Pred.interpret η p = Benitoite.Release.Refinement.Pred.interpret ξ p
+Benitoite.Release.Refinement.Pred.sortedDecidable (Γ : Benitoite.Release.Refinement.Ctx)
+  (self : Option Benitoite.Release.Refinement.Ty) (p : Benitoite.Release.Refinement.Pred) :
+  Decidable (Benitoite.Release.Refinement.Pred.Sorted Γ self p)
+Benitoite.Release.Refinement.Pred.varsDecidable (P : Nat → Prop) [DecidablePred P]
+  (p : Benitoite.Release.Refinement.Pred) : Decidable (Benitoite.Release.Refinement.Pred.VarsIn P p)
+Benitoite.Release.Refinement.Pred.wfDecidable (n : Nat) (p : Benitoite.Release.Refinement.Pred) :
+  Decidable (Benitoite.Release.Refinement.Pred.WF n p)
+Benitoite.Release.Refinement.Tel.RefinementFree : Benitoite.Release.Refinement.Tel → Prop
+Benitoite.Release.Refinement.Tel.carrier : Benitoite.Release.Refinement.Tel → Benitoite.Release.Refinement.Tel
+Benitoite.Release.Refinement.Tel.carrier_free (t : Benitoite.Release.Refinement.Tel) : t.carrier.RefinementFree
+Benitoite.Release.Refinement.Tel.carrier_idem (t : Benitoite.Release.Refinement.Tel) : t.carrier.carrier = t.carrier
+Benitoite.Release.Refinement.Term.closedDecidable (t : Benitoite.Release.Refinement.Term) : Decidable t.Closed
+Benitoite.Release.Refinement.Term.hasSortDecidable (Γ : Benitoite.Release.Refinement.Ctx)
+  (t : Benitoite.Release.Refinement.Term) (s : Benitoite.Release.Refinement.Sort) :
+  Decidable (Benitoite.Release.Refinement.Term.HasSort Γ t s)
+Benitoite.Release.Refinement.Term.interpret (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Term → Option Benitoite.Release.Refinement.Observation
+Benitoite.Release.Refinement.Term.interpret_closed {t : Benitoite.Release.Refinement.Term} (h : t.Closed)
+  (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Term.interpret η t = Benitoite.Release.Refinement.Term.interpret (fun x => none) t
+Benitoite.Release.Refinement.Term.interpret_congr {t : Benitoite.Release.Refinement.Term}
+  {η ξ : Benitoite.Release.Refinement.ObservationEnvModel}
+  (h : Benitoite.Release.Refinement.Term.VarsIn (fun i => η i = ξ i) t) :
+  Benitoite.Release.Refinement.Term.interpret η t = Benitoite.Release.Refinement.Term.interpret ξ t
+Benitoite.Release.Refinement.Term.observe (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Term → Option Benitoite.Release.Refinement.Observation
+Benitoite.Release.Refinement.Term.observe_closed {t : Benitoite.Release.Refinement.Term} (h : t.Closed)
+  (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  Benitoite.Release.Refinement.Term.observe η t = Benitoite.Release.Refinement.Term.observe (fun x => none) t
+Benitoite.Release.Refinement.Term.observe_congr {t : Benitoite.Release.Refinement.Term}
+  {η ξ : Benitoite.Release.Refinement.ObservationEnvModel}
+  (h : Benitoite.Release.Refinement.Term.VarsIn (fun i => η i = ξ i) t) :
+  Benitoite.Release.Refinement.Term.observe η t = Benitoite.Release.Refinement.Term.observe ξ t
+Benitoite.Release.Refinement.Term.observe_sound {t : Benitoite.Release.Refinement.Term}
+  {η : Benitoite.Release.Refinement.ObservationEnvModel} {o : Benitoite.Release.Refinement.Observation}
+  (h : Benitoite.Release.Refinement.Term.observe η t = some o) :
+  Benitoite.Release.Refinement.Term.interpret η t = some o
+Benitoite.Release.Refinement.Term.referencesDecidable (Γ : Benitoite.Release.Refinement.Ctx)
+  (t : Benitoite.Release.Refinement.Term) : Decidable (Benitoite.Release.Refinement.Term.References Γ t)
+Benitoite.Release.Refinement.Term.shapeDecidable (Γ : Benitoite.Release.Refinement.Ctx)
+  (t : Benitoite.Release.Refinement.Term) (s : Benitoite.Release.Refinement.Sort) :
+  Decidable (Benitoite.Release.Refinement.Term.Shape Γ t s)
+Benitoite.Release.Refinement.Term.varsDecidable (P : Nat → Prop) [DecidablePred P]
+  (t : Benitoite.Release.Refinement.Term) : Decidable (Benitoite.Release.Refinement.Term.VarsIn P t)
+Benitoite.Release.Refinement.Ty.RefinementFree : Benitoite.Release.Refinement.Ty → Prop
+Benitoite.Release.Refinement.Ty.carrier : Benitoite.Release.Refinement.Ty → Benitoite.Release.Refinement.Ty
+Benitoite.Release.Refinement.Ty.carrier_free (a : Benitoite.Release.Refinement.Ty) : a.carrier.RefinementFree
+Benitoite.Release.Refinement.Ty.carrier_idem (a : Benitoite.Release.Refinement.Ty) : a.carrier.carrier = a.carrier
+Benitoite.Release.Refinement.Ty.hasSortDecidable (a : Benitoite.Release.Refinement.Ty)
+  (s : Benitoite.Release.Refinement.Sort) : Decidable (a.HasSort s)
+Benitoite.Release.Refinement.carrierTys : List Benitoite.Release.Refinement.Ty → List Benitoite.Release.Refinement.Ty
+Benitoite.Release.Refinement.carrierTys_free (as : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.refinementFreeTys (Benitoite.Release.Refinement.carrierTys as)
+Benitoite.Release.Refinement.carrierTys_idem (as : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.carrierTys (Benitoite.Release.Refinement.carrierTys as) =
+    Benitoite.Release.Refinement.carrierTys as
+Benitoite.Release.Refinement.decimalNormal (c : Int) : Nat → Int × Nat
+Benitoite.Release.Refinement.externalCheck (P : Benitoite.Release.Refinement.Program)
+  (v : Benitoite.Release.Refinement.Val) : Benitoite.Release.Refinement.Ty → Bool
+Benitoite.Release.Refinement.externalCheckEach (P : Benitoite.Release.Refinement.Program)
+  (vs : List Benitoite.Release.Refinement.Val) (a : Benitoite.Release.Refinement.Ty) : Bool
+Benitoite.Release.Refinement.externalCheckEach_eq_true_iff (P : Benitoite.Release.Refinement.Program)
+  (vs : List Benitoite.Release.Refinement.Val) (a : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.externalCheckEach P vs a = true ↔
+    ∀ (v : Benitoite.Release.Refinement.Val), v ∈ vs → Benitoite.Release.Refinement.externalCheck P v a = true
+Benitoite.Release.Refinement.externalCheckFields (P : Benitoite.Release.Refinement.Program)
+  (vs : List Benitoite.Release.Refinement.Val) (as : List Benitoite.Release.Refinement.Ty) : Bool
+Benitoite.Release.Refinement.externalCheckedOutcome (P : Benitoite.Release.Refinement.Program)
+  (a : Benitoite.Release.Refinement.Ty) : Benitoite.Release.Refinement.Outcome → Benitoite.Release.Refinement.Outcome
+Benitoite.Release.Refinement.externalCheckedOutcome_reject {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val}
+  (h : Benitoite.Release.Refinement.externalCheck P v a = false) :
+  Benitoite.Release.Refinement.externalCheckedOutcome P a (Benitoite.Release.Refinement.Outcome.val v) =
+    Benitoite.Release.Refinement.Outcome.err "ExternalRefinement"
+Benitoite.Release.Refinement.externalCheckedOutcome_typed {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {a : Benitoite.Release.Refinement.Ty} {out : Benitoite.Release.Refinement.Outcome}
+  (h : Benitoite.Release.Refinement.Outcome.Carrier P B Ψ out a) :
+  Benitoite.Release.Refinement.Outcome.Typed P B Ψ (Benitoite.Release.Refinement.externalCheckedOutcome P a out) a
+Benitoite.Release.Refinement.ieeeClass (fraction exponent bits : Nat) (c : Benitoite.Release.Refinement.FloatClass) :
+  Bool
+Benitoite.Release.Refinement.ieeeCompare (fraction exponent x y : Nat) (o : Benitoite.Release.Refinement.Comparison) :
+  Bool
+Benitoite.Release.Refinement.ieeeNaN (fraction exponent bits : Nat) : Bool
+Benitoite.Release.Refinement.ieeeZero (fraction exponent bits : Nat) : Bool
+Benitoite.Release.Refinement.insertKey {α : Type} (key : List Nat) (value : α) :
+  List (List Nat × α) → List (List Nat × α)
+Benitoite.Release.Refinement.integerAs (η : Benitoite.Release.Refinement.ObservationEnvModel)
+  (t : Benitoite.Release.Refinement.Term) : Int
+Benitoite.Release.Refinement.keyMapCodes :
+  List (Option Benitoite.Release.Refinement.Observation) →
+    List (Option Benitoite.Release.Refinement.Observation) →
+      List (List Nat × List Nat) → Option (List (List Nat × List Nat))
+Benitoite.Release.Refinement.keySetCodes :
+  List (Option Benitoite.Release.Refinement.Observation) → List (List Nat) → Option (List (List Nat))
+Benitoite.Release.Refinement.keySlotCodes :
+  List (Option Benitoite.Release.Refinement.Observation) → Option (List (List Nat))
+Benitoite.Release.Refinement.mapKeys (ks vs : List (Option Benitoite.Release.Refinement.Observation)) :
+  Option (List (List Nat × Option Benitoite.Release.Refinement.Observation))
+Benitoite.Release.Refinement.memberReady (η : Benitoite.Release.Refinement.ObservationEnvModel)
+  (k : Benitoite.Scope.Domain.Kind) (a : Benitoite.Release.Refinement.Term)
+  (r : Benitoite.Release.Refinement.RangeExpr) : Bool
+Benitoite.Release.Refinement.observeAs (η : Benitoite.Release.Refinement.ObservationEnvModel)
+  (s : Benitoite.Release.Refinement.Sort) (t : Benitoite.Release.Refinement.Term) :
+  Benitoite.Release.Refinement.Observation
+Benitoite.Release.Refinement.observeSlots (η : Benitoite.Release.Refinement.ObservationEnvModel) :
+  List (Option Benitoite.Release.Refinement.Term) → List (Option Benitoite.Release.Refinement.Observation)
+Benitoite.Release.Refinement.refinementFreeTys : List Benitoite.Release.Refinement.Ty → Prop
+Benitoite.Release.Refinement.slotVarsDecidable (P : Nat → Prop) [DecidablePred P]
+  (t : Option Benitoite.Release.Refinement.Term) : Decidable (Benitoite.Release.Refinement.varsInSlot P t)
+Benitoite.Release.Refinement.slotsVarsDecidable (P : Nat → Prop) [DecidablePred P]
+  (ts : List (Option Benitoite.Release.Refinement.Term)) : Decidable (Benitoite.Release.Refinement.varsInSlots P ts)
+Benitoite.Release.Refinement.sortCodes (xs : List (List Nat)) : List (List Nat)
+Benitoite.Release.Refinement.termReady (η : Benitoite.Release.Refinement.ObservationEnvModel)
+  (s : Benitoite.Release.Refinement.Sort) (t : Benitoite.Release.Refinement.Term) : Bool

@@ -1,0 +1,401 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:16:62: error: Application type mismatch: The argument
+  n
+has type
+  Int
+but is expected to have type
+  Integer64Value
+in the application
+  Const.integer n
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:58:2: error: Alternative `atom` has not been provided
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:68:82: error: Tactic `decide` failed for proposition
+  ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (cond.open (Term.dataValue "None" [])).closedTrue) =
+    true
+because its `Decidable` instance
+  instDecidableEqBool
+    ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (cond.open (Term.dataValue "None" [])).closedTrue)
+    true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `instDecidableTrue`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    (match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (cond.open (Term.dataValue "None" [])).closedTrue,
+    true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:68:82: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:70:97: error: Tactic `decide` failed for proposition
+  ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (reverseCond.open (Term.dataValue "None" [])).closedTrue) =
+    true
+because its `Decidable` instance
+  instDecidableEqBool
+    ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (reverseCond.open (Term.dataValue "None" [])).closedTrue)
+    true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `instDecidableTrue`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    (match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (reverseCond.open (Term.dataValue "None" [])).closedTrue,
+    true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:70:97: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:72:89: error: Tactic `decide` failed for proposition
+  ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (negCond.open (Term.dataValue "None" [])).closedTrue) =
+    true
+because its `Decidable` instance
+  instDecidableEqBool
+    ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (negCond.open (Term.dataValue "None" [])).closedTrue)
+    true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `instDecidableTrue`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    (match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      (negCond.open (Term.dataValue "None" [])).closedTrue,
+    true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:72:89: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:74:95: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:74:8: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:76:98: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:76:8: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:78:105: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:78:8: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:88:30: error: Tactic `decide` failed for proposition
+  List.map
+      (fun p =>
+        (match
+            if True then some { data := "Opt", ntys := 0, args := [] }
+            else
+              if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+          | none => false
+          | some cd =>
+            decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+              externalCheckFields
+                { defs := fun x => none,
+                  cons := fun c =>
+                    if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                    else
+                      if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+                  ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+                [] (List.map (Ty.subst [] []) cd.args)) &&
+          (p.open (Term.dataValue "None" [])).closedTrue)
+      undecided =
+    [false, false, false]
+because its `Decidable` instance
+  instDecidableEqList
+    (List.map
+      (fun p =>
+        (match
+            if True then some { data := "Opt", ntys := 0, args := [] }
+            else
+              if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+          | none => false
+          | some cd =>
+            decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+              externalCheckFields
+                { defs := fun x => none,
+                  cons := fun c =>
+                    if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                    else
+                      if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+                  ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+                [] (List.map (Ty.subst [] []) cd.args)) &&
+          (p.open (Term.dataValue "None" [])).closedTrue)
+      undecided)
+    [false, false, false]
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `instDecidableTrue`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    (fun p =>
+        (match
+            if True then some { data := "Opt", ntys := 0, args := [] }
+            else
+              if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+          | none => false
+          | some cd =>
+            decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+              externalCheckFields
+                { defs := fun x => none,
+                  cons := fun c =>
+                    if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                    else
+                      if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+                  ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+                [] (List.map (Ty.subst [] []) cd.args)) &&
+          (p.open (Term.dataValue "None" [])).closedTrue)
+      (positive.or Pred.falsity),
+    false with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:88:30: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:105:2: error: Tactic `decide` failed for proposition
+  ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      ((Pred.truth.or (Pred.eq (Term.boolean true) (Term.integer 0))).open (Term.dataValue "None" [])).closedTrue) =
+    false
+because its `Decidable` instance
+  instDecidableEqBool
+    ((match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      ((Pred.truth.or (Pred.eq (Term.boolean true) (Term.integer 0))).open (Term.dataValue "None" [])).closedTrue)
+    false
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableOr`, `instDecidableTrue`, `BitVec.decEq`, `Bool.decEq`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `String.decEq`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match
+    (match
+        if True then some { data := "Opt", ntys := 0, args := [] }
+        else if "None" = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none with
+      | none => false
+      | some cd =>
+        decide (cd.data = "Opt" ∧ cd.ntys = [].length) &&
+          externalCheckFields
+            { defs := fun x => none,
+              cons := fun c =>
+                if c = "None" then some { data := "Opt", ntys := 0, args := [] }
+                else if c = "Some" then some { data := "Opt", ntys := 0, args := [Ty.base BaseTy.integer] } else none,
+              ops := fun x => none, effects := fun x => none, classes := fun x => none, impls := fun x => none }
+            [] (List.map (Ty.subst [] []) cd.args)) &&
+      ((Pred.truth.or (Pred.eq (Term.boolean true) (Term.integer 0))).open (Term.dataValue "None" [])).closedTrue,
+    false with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:105:2: warning: declaration uses `sorry`
+KLEENE_BOUNDARY_DECLARATIONS 45
+'Benitoite.Release.Refinement.KleeneBoundary.cond' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.prog' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.neg_none_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.prog.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.ill_sorted_not_rescued' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.tacticCheck_receive' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.violating_some_err' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_facts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.optT' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.noneV.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.noneDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.positive_some_receive' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.violating_some_rejected' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.reverse_none_receive' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.reverseCond' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.undecided_evals' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.undecided.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.neg_none_receive' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.reverse_none_eval' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.ill_sorted_receive_err' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_ground' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.closed' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary._aux__stdin___macroRules_Benitoite_Release_Refinement_KleeneBoundary_tacticCheck_receive_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.undecided' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someField' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.violating_neg_some_rejected' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.undecided_err' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.none_receive' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.decided_without_observable' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.unknown' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.or_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.optT.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someV' depends on axioms: [sorryAx]
+'Benitoite.Release.Refinement.KleeneBoundary.noneV' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.undecided_rejected' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.someV.eq_1' depends on axioms: [sorryAx]
+'Benitoite.Release.Refinement.KleeneBoundary.noneDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.someDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.and_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.not_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.negCond' does not depend on any axioms
+'Benitoite.Release.Refinement.KleeneBoundary.unknown_observation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.KleeneBoundary.positive' does not depend on any axioms
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean:111:0: warning: declaration uses `sorry`

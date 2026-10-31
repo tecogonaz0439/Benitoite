@@ -1,0 +1,130 @@
+[
+  {
+    "label": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "timing": "起動から完了確認までの上限（並行した境界入力作成を含む）",
+    "elapsed_upper_bound_seconds": 49.305726289749146,
+    "output": {
+      "name": "r3-build-final.log",
+      "bytes": 3700,
+      "sha256": "3eb17ee8f854c6125704dfdabadab94616921dd614d0f723bd528f6e7908ce63",
+      "storage": "改造/l00b.04"
+    },
+    "initial_output": "先頭の既存警告はツールの出力制限で省略。末尾の完了と終了0を保存"
+  },
+  {
+    "label": "old-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:15:37.686079+00:00",
+    "exit": 0,
+    "elapsed_seconds": 1.253095042,
+    "input_sha256": "8ecb3fa349a941be72a671554c2e9960d526832a4b6ca04af31b3f458929f6e9",
+    "output": {
+      "name": "r3-old-boundary.log",
+      "bytes": 13441,
+      "sha256": "3346972de66ea0d3ff75bbf32cbec3da5c0d5e2818388210e004f416cd529b07",
+      "storage": "改造/l00b.04"
+    }
+  },
+  {
+    "label": "light-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r2-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:15:38.939928+00:00",
+    "exit": 0,
+    "elapsed_seconds": 0.9888643750000001,
+    "input_sha256": "d488e5b58b7df67376c7cdd761abece700ad91c0fe8cca03dbcf879260657f9a",
+    "output": {
+      "name": "r3-light-boundary.log",
+      "bytes": 3810,
+      "sha256": "961ffd493f15f609198b22f183c62b7a0362e64b794ca7b2038aa87195dd1c84",
+      "storage": "改造/l00b.04"
+    }
+  },
+  {
+    "label": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:15:39.929376+00:00",
+    "exit": 0,
+    "elapsed_seconds": 1.206623,
+    "input_sha256": "221532690acf038a3140d218e98278c48d6ea12b7bd0e44764ae68330bb063dd",
+    "output": {
+      "name": "r3-boundary.log",
+      "bytes": 5856,
+      "sha256": "14807a73789fff225287b89358293fc3462382a66a58a1c5a73cf3da1355c4ff",
+      "storage": "改造/l00b.04"
+    }
+  },
+  {
+    "label": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:15:41.136616+00:00",
+    "exit": 0,
+    "elapsed_seconds": 0.7143772080000002,
+    "input_sha256": "6435c7660ae097c2dd78a09acd3dbd7def09885b4c3c1a49d6146e5cdb865bcd",
+    "output": {
+      "name": "r3-public-api.log",
+      "bytes": 40264,
+      "sha256": "711681b45e36af995dc6250ac3b4f1104004dc2b834f72b672424d08434e0012",
+      "storage": "改造/l00b.04"
+    }
+  },
+  {
+    "label": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.04/r3-axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:15:41.851837+00:00",
+    "exit": 0,
+    "elapsed_seconds": 11.141243333,
+    "input_sha256": "0ba438b1b81ffdf2c406b5b269df50197f250b8db72598b2e3a7fef29ded1380",
+    "output": {
+      "name": "r3-axioms.log",
+      "bytes": 1411612,
+      "sha256": "f3f1d83ee01ac946974cd31c3bfa70a1d3a62639f593e98b3ab88e6530ac9997",
+      "storage": "<tmp>"
+    }
+  }
+]

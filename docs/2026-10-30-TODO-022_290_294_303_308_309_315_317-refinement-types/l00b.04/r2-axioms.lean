@@ -1,0 +1,292 @@
+import Lean
+import Benitoite
+
+open Lean Elab Command in
+run_cmd do
+  let env ← getEnv
+  for (name, expected) in [
+      (`Benitoite.Release.Refinement.«Sort», 14),
+      (`Benitoite.Release.Refinement.Term, 20),
+      (`Benitoite.Release.Refinement.Observation, 14),
+      (`Benitoite.Release.Refinement.Entails, 18),
+      (`Benitoite.Release.Refinement.Pred.ClosedObservable, 4),
+      (`Benitoite.Release.Refinement.ExternalCarrier, 8),
+      (`Benitoite.Release.Refinement.ExternalPredicates, 8),
+      (`Benitoite.Release.Refinement.ExternalPredicatesEach, 2),
+      (`Benitoite.Release.Refinement.ExternalPredicatesFields, 2),
+      (`Benitoite.Release.Refinement.ExternalCarrierEach, 2),
+      (`Benitoite.Release.Refinement.ExternalCarrierFields, 2),
+      (`Benitoite.Release.Refinement.Pred, 14),
+      (`Benitoite.Release.Refinement.Ty, 21),
+      (`Benitoite.Release.Refinement.Tel, 2),
+      (`Benitoite.Release.Refinement.Atom, 2),
+      (`Benitoite.Release.Refinement.RangeExpr, 3),
+      (`Benitoite.Release.Refinement.RangeIx, 2),
+      (`Benitoite.Release.Refinement.Const, 16),
+      (`Benitoite.Release.Refinement.PathBase, 5),
+      (`Benitoite.Release.Refinement.PathEnv, 1),
+      (`Benitoite.Release.Refinement.TargetInput, 3),
+      (`Benitoite.Release.Refinement.AtFailure, 7),
+      (`Benitoite.Release.Refinement.AtError, 1),
+      (`Benitoite.Release.Refinement.ExternalId, 1),
+      (`Benitoite.Release.Refinement.ComponentId, 1),
+      (`Benitoite.Release.Refinement.ExternalFunctionId, 1),
+      (`Benitoite.Release.Refinement.FieldRef, 1),
+      (`Benitoite.Release.Refinement.Measure, 7),
+      (`Benitoite.Release.Refinement.Comparison, 6),
+      (`Benitoite.Release.Refinement.FloatClass, 6),
+      (`Benitoite.Release.Refinement.FloatWidth, 2),
+      (`Benitoite.Release.Refinement.TyKind, 2),
+      (`Benitoite.Release.Refinement.TParamDecl, 1),
+      (`Benitoite.Release.Refinement.ClassDecl, 1),
+      (`Benitoite.Release.Refinement.Def, 1),
+      (`Benitoite.Release.Refinement.MethSig, 1),
+      (`Benitoite.Release.Refinement.PrimSig, 1),
+      (`Benitoite.Release.Refinement.ProperApply, 7),
+      (`Benitoite.Release.Refinement.Term.HasData, 3),
+      (`Benitoite.Release.Refinement.Ty.LeQ, 12),
+      (`Benitoite.Release.Refinement.TelLe, 2),
+      (`Benitoite.Release.Refinement.TelClosure, 2),
+      (`Benitoite.Release.Refinement.CheckedWitness, 2),
+      (`Benitoite.Release.Refinement.AtCallAdmissible, 1),
+      (`Benitoite.Release.Refinement.PathEnv.Required, 2),
+      (`Benitoite.Release.Refinement.PreparationNode.Reachable, 2),
+      (`Benitoite.Release.Refinement.PrimKind, 9),
+      (`Benitoite.Release.Refinement.ResultShape, 1),
+      (`Benitoite.Release.Refinement.HasTypeVQ, 28),
+      (`Benitoite.Release.Refinement.HasTypeArmsQ, 3),
+      (`Benitoite.Release.Refinement.HasTypeClausesQ, 2),
+      (`Benitoite.Release.Refinement.HasFailureClause, 1),
+      (`Benitoite.Release.Refinement.ImageOk, 3),
+      (`Benitoite.Release.Refinement.PatTy, 7),
+      (`Benitoite.Release.Refinement.PatTys, 2),
+      (`Benitoite.Release.Refinement.Inhabits, 23),
+      (`Benitoite.Release.Refinement.InhabitsAll, 2),
+      (`Benitoite.Release.Refinement.InhabitsEach, 2),
+      (`Benitoite.Release.Refinement.HasTypeCQ, 21),
+      (`Benitoite.Release.Refinement.HasTypeTelArgsQ, 2),
+      (`Benitoite.Release.Refinement.TelBodyTy, 2),
+      (`Benitoite.Release.Refinement.CaptureOk, 1),
+      (`Benitoite.Release.Refinement.ClosureTy, 1),
+      (`Benitoite.Release.Refinement.DependentClosureTy, 1),
+      (`Benitoite.Release.Refinement.ContTy, 10),
+      (`Benitoite.Release.Refinement.ExternalMode, 2),
+      (`Benitoite.Release.Refinement.ExternalKey, 2),
+      (`Benitoite.Release.Refinement.ExternalDecl, 2),
+      (`Benitoite.Release.Refinement.ExternalPosition, 2),
+      (`Benitoite.Release.Refinement.ExternalPathStep, 4),
+      (`Benitoite.Release.Refinement.ExternalValueType, 9),
+      (`Benitoite.Release.Refinement.ExternalOccurrence, 6),
+      (`Benitoite.Release.Refinement.ExternalUseAt, 3),
+      (`Benitoite.Release.Refinement.ExternalTelWF, 2),
+      (`Benitoite.Release.Refinement.HasTypeVsQ, 2),
+      (`Benitoite.Release.Refinement.HasTypeEachQ, 2),
+      (`Benitoite.Release.Refinement.Val, 25),
+      (`Benitoite.Release.Refinement.Comp, 16),
+      (`Benitoite.Release.Refinement.Capture, 1),
+      (`Benitoite.Release.Refinement.Closure, 1),
+      (`Benitoite.Release.Refinement.LocTy, 4),
+      (`Benitoite.Release.Refinement.Frame, 7),
+      (`Benitoite.Release.Refinement.Cell, 6),
+      (`Benitoite.Release.Refinement.State, 4),
+      (`Benitoite.Release.Refinement.Event, 3),
+      (`Benitoite.Release.Refinement.BuilderContents, 3),
+      (`Benitoite.Release.Refinement.LocalRef.HasKind, 2),
+      (`Benitoite.Release.Refinement.Step, 76),
+      (`Benitoite.Release.Refinement.Steps, 2),
+      (`Benitoite.Release.Refinement.Arm, 1),
+      (`Benitoite.Release.Refinement.Clause, 2)] do
+    let some (.inductInfo info) := env.find? name
+      | throwError "not an inductive type: {name}"
+    unless info.ctors.length == expected do
+      throwError "constructor count mismatch: {name}, expected {expected}, actual {info.ctors.length}"
+    logInfo m!"CONSTRUCTORS {name}: {info.ctors.length}: {info.ctors}"
+  for (name, expected) in [(`Benitoite.Release.Refinement.HasTypeVQ,14), (`Benitoite.Release.Refinement.ClosureTy,1)] do
+    let some (.inductInfo info) := env.find? name | throwError "not inductive: {name}"
+    unless info.all.length == expected do throwError "mutual count mismatch: {name}"
+    logInfo m!"MUTUAL_TYPES {name}: {info.all.length}"
+  for name in [`Benitoite.Release.Refinement.OpenCodeTy,`Benitoite.Release.Refinement.OpenArmsTy,
+      `Benitoite.Release.Refinement.StoreTy.CaptureView,`Benitoite.Release.Refinement.StoreTy.shiftBuilders,
+      `Benitoite.Release.Refinement.Comp.BuilderLocFree,`Benitoite.Release.Refinement.LocalCtx.NoBuilders,
+      `Benitoite.Release.Refinement.HasTypeCQ.builderBody_keepsBound] do
+    if (env.find? name).isSome then throwError "removed declaration remains: {name}"
+  for (name, expected) in [(`Benitoite.Shared.ValueApprox, 4),
+      (`Benitoite.Shared.ApproxValue, 3), (`Benitoite.Shared.FlowApprox, 1),
+      (`Benitoite.Shared.EvalResult, 3)] do
+    let some (.inductInfo info) := env.find? name | throwError "missing shared type: {name}"
+    unless info.ctors.length == expected do throwError "shared constructor mismatch: {name}"
+    logInfo m!"SHARED_CONSTRUCTORS {name}: {info.ctors.length}"
+  for (name, expected) in [(`Benitoite.Release.Refinement.Ctx.Regular, 1),
+      (`Benitoite.Release.Refinement.Pred.WellFormed, 1),
+      (`Benitoite.Release.Refinement.SignatureInstanceAt, 1)] do
+    let some (.inductInfo info) := env.find? name | throwError "missing context type: {name}"
+    unless info.ctors.length == expected do throwError "context constructor mismatch: {name}"
+    logInfo m!"CONTEXT_CONSTRUCTORS {name}: {info.ctors.length}"
+  let sourceNames := [`Benitoite.Release.Refinement.HasTypeVQ,`Benitoite.Release.Refinement.HasTypeCQ,
+    `Benitoite.Release.Refinement.HasTypeVsQ,`Benitoite.Release.Refinement.HasTypeEachQ,
+    `Benitoite.Release.Refinement.HasTypeTelArgsQ,`Benitoite.Release.Refinement.HasTypeArmsQ,
+    `Benitoite.Release.Refinement.HasTypeClausesQ,`Benitoite.Release.Refinement.HasFailureClause,
+    `Benitoite.Release.Refinement.CheckedWitness,`Benitoite.Release.Refinement.ImageOk,
+    `Benitoite.Release.Refinement.TelBodyTy,`Benitoite.Release.Refinement.CaptureOk,
+    `Benitoite.Release.Refinement.ClosureTy,`Benitoite.Release.Refinement.DependentClosureTy]
+  let mut total := 0
+  for name in sourceNames do
+    let some (.inductInfo info) := env.find? name | throwError "missing source type: {name}"
+    total := total + info.ctors.length
+  unless total == 71 do throwError "source constructor count mismatch: {total}"
+  logInfo m!"SOURCE_CONSTRUCTORS {total}"
+  for mod in [
+      `Benitoite.Release.Refinement.Observation,
+      `Benitoite.Release.Refinement.ClosedDecidable,
+      `Benitoite.Release.Refinement.ClosedEvaluation,
+      `Benitoite.Release.Refinement.ClosedKeys,
+      `Benitoite.Release.Refinement.LogicSound,
+      `Benitoite.Release.Refinement.Carrier,
+      `Benitoite.Release.Refinement.ExternalCheck,
+      `Benitoite.Release.Refinement.Context.WF,
+      `Benitoite.Release.Refinement.Context.Facts,
+      `Benitoite.Release.Refinement.Context.Declarations,
+      `Benitoite.Release.Refinement.Context.Capture,
+      `Benitoite.Shared.Integer,
+      `Benitoite.Shared.Interval,
+      `Benitoite.Shared.Approximation,
+      `Benitoite.Interval.TypeAdapter,
+      `Benitoite.Interval.Domain,
+      `Benitoite.Interval.ApproxAdapter,
+      `Benitoite.Release.Syntax,
+      `Benitoite.Release.ApproxAdapter,
+      `Benitoite.Release.Refinement.ApproxAdapter,
+
+      `Benitoite.Release.Refinement.LocalResolve,
+      `Benitoite.Release.Refinement.LocalResolveLemmas,
+      `Benitoite.Release.Refinement.ClosureTyping,
+      `Benitoite.Release.Refinement.StateTyping,
+      `Benitoite.Release.Refinement.Adequate,
+      `Benitoite.Release.Refinement.Admissible,
+      `Benitoite.Release.Refinement.AdmissibleMap,
+      `Benitoite.Release.Refinement.AtContracts,
+      `Benitoite.Release.Refinement.AtInput,
+      `Benitoite.Release.Refinement.AtPatterns,
+      `Benitoite.Release.Refinement.AtPrepare,
+      `Benitoite.Release.Refinement.AtSound,
+      `Benitoite.Release.Refinement.AtTyping,
+      `Benitoite.Release.Refinement.AtomOrder,
+      `Benitoite.Release.Refinement.Atoms,
+      `Benitoite.Release.Refinement.Basic,
+      `Benitoite.Release.Refinement.Bind,
+      `Benitoite.Release.Refinement.BindCongr,
+      `Benitoite.Release.Refinement.BindingShift,
+      `Benitoite.Release.Refinement.BuilderExec,
+      `Benitoite.Release.Refinement.BuiltinResponse,
+      `Benitoite.Release.Refinement.Capture,
+      `Benitoite.Release.Refinement.Codes,
+      `Benitoite.Release.Refinement.ConstraintAssumptions,
+      `Benitoite.Release.Refinement.Context,
+      `Benitoite.Release.Refinement.ContextFacts,
+      `Benitoite.Release.Refinement.ContextMap,
+      `Benitoite.Release.Refinement.Declared,
+      `Benitoite.Release.Refinement.DeclaredTransport,
+      `Benitoite.Release.Refinement.EffectCover,
+      `Benitoite.Release.Refinement.Embedding,
+      `Benitoite.Release.Refinement.Exchange,
+      `Benitoite.Release.Refinement.External,
+      `Benitoite.Release.Refinement.ExternalResponse,
+      `Benitoite.Release.Refinement.Ground,
+      `Benitoite.Release.Refinement.HandlerAlgebra,
+      `Benitoite.Release.Refinement.HandlerContracts,
+      `Benitoite.Release.Refinement.HandlerTyping,
+      `Benitoite.Release.Refinement.KindInference,
+      `Benitoite.Release.Refinement.KindValues,
+      `Benitoite.Release.Refinement.Kinds,
+      `Benitoite.Release.Refinement.Le,
+      `Benitoite.Release.Refinement.LocalTransport,
+      `Benitoite.Release.Refinement.Logic,
+      `Benitoite.Release.Refinement.MethodArguments,
+      `Benitoite.Release.Refinement.Narrowing,
+      `Benitoite.Release.Refinement.NarrowingObstruction,
+      `Benitoite.Release.Refinement.Normalize,
+      `Benitoite.Release.Refinement.OpenSubstitution,
+      `Benitoite.Release.Refinement.Order,
+      `Benitoite.Release.Refinement.PathResolution,
+      `Benitoite.Release.Refinement.PatternSemantics,
+      `Benitoite.Release.Refinement.PatternTransport,
+      `Benitoite.Release.Refinement.PatternTypeShift,
+      `Benitoite.Release.Refinement.Patterns,
+      `Benitoite.Release.Refinement.Preparation,
+      `Benitoite.Release.Refinement.RangeExchange,
+      `Benitoite.Release.Refinement.RangeSubst,
+      `Benitoite.Release.Refinement.RuntimeMatch,
+      `Benitoite.Release.Refinement.RuntimeSyntax,
+      `Benitoite.Release.Refinement.ScopeSyntax,
+      `Benitoite.Release.Refinement.Semantics,
+      `Benitoite.Release.Refinement.Shift,
+      `Benitoite.Release.Refinement.ShiftOrder,
+      `Benitoite.Release.Refinement.Source,
+      `Benitoite.Release.Refinement.Step,
+      `Benitoite.Release.Refinement.StoreTransport,
+      `Benitoite.Release.Refinement.Subst,
+      `Benitoite.Release.Refinement.SubstTyping,
+      `Benitoite.Release.Refinement.SubstTypingObstruction,
+      `Benitoite.Release.Refinement.Syntax,
+      `Benitoite.Release.Refinement.TelArguments,
+      `Benitoite.Release.Refinement.TelTyping,
+      `Benitoite.Release.Refinement.Telescope,
+      `Benitoite.Release.Refinement.TermSyntax,
+      `Benitoite.Release.Refinement.Transport,
+      `Benitoite.Release.Refinement.TypeRenaming,
+      `Benitoite.Release.Refinement.TypeShiftAlgebra,
+      `Benitoite.Release.Refinement.TypeShiftContext,
+      `Benitoite.Release.Refinement.TypeShiftContracts,
+      `Benitoite.Release.Refinement.TypeShiftExchange,
+      `Benitoite.Release.Refinement.TypeShiftKinds,
+      `Benitoite.Release.Refinement.TypeShiftOrder,
+      `Benitoite.Release.Refinement.TypeShiftSyntax,
+      `Benitoite.Release.Refinement.TypeShiftTyping,
+      `Benitoite.Release.Refinement.TypeSubst,
+      `Benitoite.Release.Refinement.TypedFacts,
+      `Benitoite.Release.Refinement.Types,
+      `Benitoite.Release.Refinement.Typing,
+      `Benitoite.Release.Refinement.TypingDeclared,
+      `Benitoite.Release.Refinement.TypingShift,
+      `Benitoite.Release.Refinement.TypingStore,
+      `Benitoite.Release.Refinement.ValueBinding,
+      `Benitoite.Release.Refinement.ValueClosed,
+      `Benitoite.Release.Refinement.ValueExchange,
+      `Benitoite.Release.Refinement.ValueInstantiation,
+      `Benitoite.Release.Refinement.ValueReferences,
+      `Benitoite.Release.Refinement.ValueRegularity,
+      `Benitoite.Release.Refinement.ValueRenameAlgebra,
+      `Benitoite.Release.Refinement.ValueSubst] do
+    let some moduleIdx := env.getModuleIdx? mod
+      | throwError "module not imported by default: {mod}"
+    let names := env.constants.toList.filterMap fun (name, _) =>
+      if env.getModuleIdxFor? name == some moduleIdx then some name else none
+    let names := names.mergeSort (fun a b => a.toString < b.toString)
+    logInfo m!"MODULE {mod}: {names.length}"
+    for name in names do
+      elabCommand (← `(#print axioms $(mkIdent name)))
+
+#print axioms Benitoite.Release.Model.assumptions
+#print axioms Benitoite.Release.ModelTargets.assumptions
+#print axioms Benitoite.Release.ModelHttp.assumptions
+#print axioms Benitoite.Release.Ty.le_iff_leOld
+#print axioms Benitoite.Release.Ty.wf_iff_old
+#print axioms Benitoite.Release.Ty.varsIn_iff_old
+#print axioms Benitoite.Release.Eff.covers_iff_sub_old
+
+#print axioms Benitoite.Release.step_sound
+#print axioms Benitoite.Release.progress
+#print axioms Benitoite.Release.preservation
+#print axioms Benitoite.Release.effect_soundness
+#print axioms Benitoite.Release.effect_soundness_noLamNames
+
+open Lean Elab Command in
+run_cmd do
+  let env ← getEnv
+  for name in [`Benitoite.Release.Refinement.Pred.Valid,
+      `Benitoite.Release.Refinement.Ty.assume_valid,
+      `Benitoite.Release.Refinement.CaptureOk.extendNone,
+      `Benitoite.Release.Refinement.Capture.closeTy_shift_none,
+      `Benitoite.Release.Refinement.Capture.bind_extendNone_lift,
+      `Benitoite.Release.Refinement.Capture.facts_extendNone] do
+    if (env.find? name).isSome then throwError "removed name remains: {name}"
