@@ -351,6 +351,16 @@ theorem ShiftMap.methodRows {P C k c Γ Δ Q ms es} (h : ShiftMap k c Γ Δ)
   ha.map _ (fun e hm => (h.annotation (he e hm)).wf.2.2.2.1)
     (ha.2.2.2.2.map _ (fun _ hn => hn.shift_values k c) (fun _ => rfl))
 
+private theorem retained_shiftIndex_zero : shiftIndex 0 0 = id := by
+  funext i; simp [shiftIndex]
+private theorem retained_shift_zero (a : Ty) : a.shiftV 0 0 = a := by
+  rw [Ty.shiftV_eq_renameTy, retained_shiftIndex_zero, renameTy_id]
+private theorem retained_shift_empty : ShiftMap 0 0 [] [] :=
+  ⟨rfl, by intro i a hi; simp at hi⟩
+
+theorem Eff.shiftV_single (l : EffName) (k c : Nat) :
+    Eff.shiftV k c (Eff.single l) = Eff.single l := rfl
+
 mutual
   theorem HasTypeVQ.shift_values {P B store Q C Γ Φ v a}
       (h : HasTypeVQ P B store Q C Γ Φ v a) {k c Δ Ξ store'}
@@ -403,6 +413,18 @@ mutual
         HasTypeVQ.V_ExternalHandle (Ψ := store') (Φ := Ξ) h td hd hc hr
           (by simpa only [List.length_map] using hn)
           (by simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.annotation ha)
+    | .V_PathBases hs => exact .V_PathBases hs
+    | .V_ScopePattern hw hc hk => exact .V_ScopePattern hw hc hk
+    | .V_Checked hk hc hm => exact .V_Checked hk hc hm
+    | .V_CheckedRequest hk hc hv hg ht hm =>
+      have hh := HasTypeVQ.shift_values (store' := store') hv hA hstore hpres retained_shift_empty
+        (Ξ := []) (by simp)
+      simp only [retained_shiftIndex_zero, Val.rename_identity, retained_shift_zero] at hh
+      exact .V_CheckedRequest hk hc hh hg ht hm
+    | .V_CheckedAt hw => exact .V_CheckedAt (CheckedWitness.shift_store hw hA hstore hpres)
+    | .V_AtError (shape := shape) hs =>
+      simpa only [Val.rename, hs.errorType_eq, atErrorType, Ty.shiftV, shiftVTys] using
+        (HasTypeVQ.V_AtError (Ψ := store') (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs)
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (HasTypeEachQ.shift_values hk hA hstore hpres hm hf)
         (HasTypeEachQ.shift_values hv hA hstore hpres hm hf) (by simpa using hn)
@@ -471,6 +493,7 @@ mutual
           Pred.wf_shiftV hw k (c+1)
       · have he' := (hm.transport hf).entails he
         simpa only [renEnv_values, predBind_open_renaming, termBind?, termBind, Pred.shiftV, ← upValues_shiftIndex] using he'
+  termination_by structural h
   theorem HasTypeVsQ.shift_values {P B store Q C Γ Φ vs as}
       (h : HasTypeVsQ P B store Q C Γ Φ vs as) {k c Δ Ξ store'}
       (hA : Builtins.ValueAssumptions P B)
@@ -482,6 +505,7 @@ mutual
     match h with
     | .nil => exact .nil
     | .cons hv ht => exact .cons (HasTypeVQ.shift_values hv hA hstore hpres hm hf) (HasTypeVsQ.shift_values ht hA hstore hpres hm hf)
+  termination_by structural h
   theorem HasTypeEachQ.shift_values {P B store Q C Γ Φ vs a}
       (h : HasTypeEachQ P B store Q C Γ Φ vs a) {k c Δ Ξ store'}
       (hA : Builtins.ValueAssumptions P B)
@@ -493,6 +517,7 @@ mutual
     match h with
     | .nil => exact .nil
     | .cons hv ht => exact .cons (HasTypeVQ.shift_values hv hA hstore hpres hm hf) (HasTypeEachQ.shift_values ht hA hstore hpres hm hf)
+  termination_by structural h
   theorem HasTypeCQ.shift_values {P B store Q C Γ Φ R m a e L}
       (h : HasTypeCQ P B store Q C Γ Φ R m a e L) {k c Δ Ξ store' L'}
       (hA : Builtins.ValueAssumptions P B)
@@ -559,6 +584,14 @@ mutual
       change Tel.shiftV k c (Tel.bind (typeEnv _) _) = _ at he
       rw [he] at hh
       simpa only [Comp.rename, renameTy_shiftIndex] using HasTypeCQ.C_External hd hw (ha.map hw _) hh
+    | .C_IssuePathBases b sg hb hk ho hp hr he =>
+      exact .C_IssuePathBases b sg hb hk ho hp hr he
+    | .C_CheckAt (bases := bases) hc =>
+      have hh := AtCallAdmissible.shift_values hc hA hstore hext.preservesNormals hm hf
+      cases bases <;> simpa only [Comp.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys,
+        Eff.shiftV, Eff.empty] using
+        (HasTypeCQ.C_CheckAt (R := R.map (Ty.shiftV k c)) (Δ := L')
+          hh)
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
@@ -579,6 +612,7 @@ mutual
         List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
         Option.map_map, Function.comp_def, hr] using hb'
 
+  termination_by structural h
   theorem HasTypeTelArgsQ.shift_values {P B store Q C Γ Φ vs t a e}
       (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) {k c Δ Ξ store'}
       (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
@@ -593,6 +627,53 @@ mutual
       rw [Tel.open_shift]
       exact HasTypeTelArgsQ.shift_values ht hA hstore hpres hm hf
 
+  termination_by structural h
+  theorem CheckedWitness.shift_store {P B store o kind range snapshot target request}
+      (h : CheckedWitness P B store o kind range snapshot target request) {store'}
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+      (hpres : store.PreservesNormals store') :
+      CheckedWitness P B store' o kind range snapshot target request := by
+    match h with
+    | .plain hk hc ht hm => exact .plain hk hc ht hm
+    | .request hk hc hv hg ht hm =>
+      have hh := HasTypeVQ.shift_values (store' := store') hv hA hstore hpres retained_shift_empty
+        (Ξ := []) (by simp)
+      simp only [retained_shiftIndex_zero, Val.rename_identity, retained_shift_zero] at hh
+      exact .request hk hc hh hg ht hm
+
+  termination_by structural h
+  theorem AtCallAdmissible.shift_values {P B store Q C Γ Φ kind name shape bases pattern input index}
+      (h : AtCallAdmissible P B store Q C Γ Φ kind name shape bases pattern input index)
+      {k c Δ Ξ store'} (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+      (hpres : store.PreservesNormals store') (hm : ShiftMap k c Γ Δ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+      AtCallAdmissible P B store' Q C Δ Ξ kind name
+        {shape with errorType := shape.errorType.shiftV k c}
+        (match bases with | none => none | some b => some (b.rename (shiftIndex k c)))
+        (pattern.rename (shiftIndex k c)) (input.rename (shiftIndex k c)) index := by
+    match h with
+    | .mk hs hk hb hp ht hv hw hi =>
+      have hb' := fun b (he : bases = some b) =>
+        HasTypeVQ.shift_values (hb b he) hA hstore hpres hm hf
+      have he : {shape with errorType := shape.errorType.shiftV k c} = shape := by
+        have hx : shape.errorType.shiftV k c = shape.errorType := by
+          rw [hs.errorType_eq]; rfl
+        simp only [hx]
+      rw [he]
+      refine .mk hs hk ?_ (HasTypeVQ.shift_values hp hA hstore hpres hm hf) ?_
+        (HasTypeVQ.shift_values hv hA hstore hpres hm hf) hw hi
+      · intro v he
+        cases bases with
+        | none => cases he
+        | some b =>
+          cases he
+          exact hb' b rfl
+      · rcases ht with ⟨rfl, ht⟩ | ht
+        · exact Or.inl ⟨rfl, ht⟩
+        · exact Or.inr ⟨by rw [Ty.shiftV_of_wf_zero ht.2]; exact ht.1,
+            by rw [Ty.shiftV_of_wf_zero ht.2]; exact ht.2⟩
+
+  termination_by structural h
 end
 
 end Benitoite.Release.Refinement

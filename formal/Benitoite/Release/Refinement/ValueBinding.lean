@@ -87,7 +87,10 @@ mutual
   theorem Val.renameList_identity (vs : List Val) : Val.renameList id vs = vs := by
     cases vs <;> simp [Val.renameList, Val.rename_identity, Val.renameList_identity]
   theorem Comp.rename_identity (m : Comp) : m.rename id = m := by
-    cases m <;> simp [Comp.rename, renameKind_id, localRename_id, upRen_identity,
+    cases m
+    case checkAt k o sh bs p v ix =>
+      cases bs <;> simp only [Comp.rename, Val.rename_identity, renameTy_id]
+    all_goals simp [Comp.rename, renameKind_id, localRename_id, upRen_identity,
       Val.rename_identity, Val.renameList_identity, Comp.rename_identity,
       Arm.renameList_identity, Clause.renameList_identity]
   theorem Arm.renameList_identity (as : List Arm) : Arm.renameList id as = as := by

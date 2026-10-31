@@ -36,5 +36,6 @@ inductive State where
 inductive Event where
   | io (name : PrimName) (arguments : List Val) (outcome : Outcome) (observed : List Scope.Domain.Target)
   | release (value : Val) (error : Option ErrKind)
+  | pathBases (primitive : PrimName) (snapshot : PathEnv)
 
 end Benitoite.Release.Refinement

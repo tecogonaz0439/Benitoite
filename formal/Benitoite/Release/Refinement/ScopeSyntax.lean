@@ -9,7 +9,7 @@ namespace Benitoite.Release.Refinement
 
 inductive PathBase where
   | root | cwd | home | work | tmp
-  deriving DecidableEq
+  deriving DecidableEq, Repr
 
 structure PathEnv where
   root : Scope.Domain.Word
@@ -18,13 +18,13 @@ structure PathEnv where
   work : Option Scope.Domain.Word
   tmp : Option Scope.Domain.Word
   secrets : Option (List Scope.Domain.PathPattern)
-  deriving DecidableEq
+  deriving DecidableEq, Repr
 
 inductive RangeExpr where
   | absolute (range : Scope.Domain.Range)
   | based (base : PathBase) (pattern : Scope.Domain.PathPattern)
   | secrets
-  deriving DecidableEq
+  deriving DecidableEq, Repr
 
 inductive RangeIx where
   | fixed (range : RangeExpr)
@@ -136,7 +136,8 @@ theorem embedIx_wf {nr : Nat} {ix : Scope.Signature.Ix} (h : ix.WF nr) :
 inductive TargetInput where
   | absolute (target : Scope.Domain.Target)
   | relativePath (segments : Scope.Domain.Word)
-  deriving DecidableEq
+  | homePath (segments : Scope.Domain.Word)
+  deriving DecidableEq, Repr
 
 inductive AtFailure where
   | outsideScope
@@ -146,7 +147,7 @@ inductive AtFailure where
   | invalidTarget
   | dynamicCondition
   | staticIndex
-  deriving DecidableEq
+  deriving DecidableEq, Repr
 
 structure AtError where
   failure : AtFailure
@@ -157,6 +158,11 @@ structure AtError where
   patternBase : Option PathBase
   targetBase : Option PathBase
   deriving DecidableEq
+
+/-- 診断の全データを切り詰めずに保持する内部の七欄。利用者向けShowとは分ける。 -/
+def AtError.textFields (d : AtError) : List String :=
+  [reprStr d.failure, reprStr d.originalPattern, reprStr d.originalTarget,
+   reprStr d.resolvedPatterns, reprStr d.resolvedTarget, reprStr d.patternBase, reprStr d.targetBase]
 
 inductive ExternalId where
   | mk (declaration : Nat)

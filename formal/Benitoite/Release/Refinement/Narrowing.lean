@@ -160,6 +160,12 @@ mutual
     | .V_Op ho hn ha hi => exact .V_Op ho hn ha (hm.signature hi)
     | .V_ExternalRef hd hw ha hi => exact .V_ExternalRef hd hw ha (hm.signature hi)
     | .V_ExternalHandle h td hd hc hr hn ha => exact .V_ExternalHandle h td hd hc hr hn (hm.annotation ha)
+    | .V_PathBases hs => exact .V_PathBases hs
+    | .V_ScopePattern hw hc hk => exact .V_ScopePattern hw hc hk
+    | .V_Checked hk hc hm => exact .V_Checked hk hc hm
+    | .V_CheckedRequest hk hc hv hg ht hm => exact .V_CheckedRequest hk hc hv hg ht hm
+    | .V_CheckedAt hw => exact .V_CheckedAt hw
+    | .V_AtError hs => exact .V_AtError hs
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (context_each hk hA hstore hm hf)
         (context_each hv hA hstore hm hf) hn hs (hm.annotation ha) (hm.annotation hb)
@@ -229,6 +235,8 @@ mutual
       exact .C_Meth (context_value hv hA hstore hm hf) hc hmeth hn hs (hm.signature hi)
         (by simpa only [hm.length] using hr) hargs (context_values hvs hA hstore hm hf) (hm.annotation ha)
     | .C_External hd hw ha hargs => exact .C_External hd hw ha (context_telArgs hargs hA hstore hm hf)
+    | .C_IssuePathBases b sg hb hk ho hp hr he => exact .C_IssuePathBases b sg hb hk ho hp hr he
+    | .C_CheckAt hc => exact .C_CheckAt (context_at_call hc hA hstore hm hf)
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
@@ -252,6 +260,17 @@ mutual
     | .param ha hv ht =>
       exact .param (hm.annotation ha) (context_value hv hA hstore hm hf)
         (context_telArgs ht hA hstore hm hf)
+
+  private theorem context_at_call {P B store Q C Γ Φ kind name shape bases pattern input index}
+      (h : AtCallAdmissible P B store Q C Γ Φ kind name shape bases pattern input index)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
+      (hm : ContextMap P B store Q C Γ Δ Ξ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+      AtCallAdmissible P B store Q C Δ Ξ kind name shape bases pattern input index := by
+    match h with
+    | .mk hs hk hb hp ht hv hw hi =>
+      exact .mk hs hk (fun v he => context_value (hb v he) hA hstore hm hf)
+        (context_value hp hA hstore hm hf) ht (context_value hv hA hstore hm hf) hw hi
 
 end
 

@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Context
+import Benitoite.Release.Refinement.PathResolution
 
 namespace Benitoite.Release.Refinement
 
@@ -119,6 +120,12 @@ structure ExternalHandle where
   identity : Nat
   deriving DecidableEq, BEq
 
+structure ResultShape where
+  owner : DataName
+  ok : ConName
+  error : ConName
+  errorType : Ty
+
 mutual
   /-- 値。 -/
   inductive Val where
@@ -151,6 +158,11 @@ mutual
     /-- 検査済みの対象。対象自身に型や値の自由変数はない（設計書 01-12「構文」）。 -/
     | externalRef (id : ExternalFunctionId) (types : List Ty)
     | externalHandle (handle : ExternalHandle) (types : List Ty)
+    | pathBases (snapshot : PathEnv)
+    | scopePattern (range : RangeExpr)
+    | checkedAt (range : RangeExpr) (snapshot : Option PathEnv)
+        (target : Scope.Domain.Target) (request : Option Val)
+    | atError (detail : AtError)
     | checked (t : Scope.Domain.Target)
     /-- 要求と検査済みの endpoint を保持する。型付けの葉では閉じた要求の型付けに加え、
     groundVal と reqTarget による端点一致を検査する。葉の規則は構文と別に追加する。 -/
@@ -177,6 +189,9 @@ mutual
     | resume (k : Val) (v : Val)
     /-- メソッドの呼び出し `V.m[S̄; Ē](W̄)`。 -/
     | externalCall (id : ExternalFunctionId) (types : List Ty) (arguments : List Val)
+    | issuePathBases (primitive : PrimName)
+    | checkAt (kind : Scope.Domain.Kind) (name : OpaqueName) (result : ResultShape)
+        (bases : Option Val) (pattern input : Val) (index : RangeIx)
     | meth (d : Val) (m : MethName) (tys : List Ty) (effs : List Eff) (args : List Val)
 
   /-- 節 `op(x̄) k ⇒ N`。`arity` は x̄ の個数、`ntys` は操作の型パラメータの個数である。N の中で、番号 0 が k、
@@ -326,6 +341,16 @@ inductive Outcome where
   | err (r : ErrKind)
   | exit (n : Int)
 
+inductive PrimKind where
+  | pure | io | exit | refNew | refGet | refSet | refUpdate | force | pathBases
+  deriving DecidableEq
+
+def embedPrimKind : Benitoite.Release.PrimKind → PrimKind
+  | .pure => .pure | .io => .io | .exit => .exit | .refNew => .refNew
+  | .refGet => .refGet | .refSet => .refSet | .refUpdate => .refUpdate | .force => .force
+
+def processEnvironmentEff : EffName := "Process.Environment"
+
 structure PrimSig where
   tparams : List TParamDecl
   neffs : Nat
@@ -421,6 +446,8 @@ def ConstOK (B : Builtins) : Const → Prop
   | .opaque o _ => B.valKind o = none ∧ B.valContent o = none
   | _ => True
 
+def AtError.values (d : AtError) : List Val := d.textFields.map (fun s => .const (.string s))
+
 mutual
   /-- 観測できる部分だけを有限のsnapshotに写す。スロットの欠落を保つ。 -/
   def Val.toTerm? : Val → Option Term
@@ -443,6 +470,8 @@ mutual
     | .setV vs => some (.setValue (Val.toTermSlots vs))
     | .bytesV bs => some (.bytesValue bs)
     | .checked t | .checkedRequest t _ => some (.targetValue none t)
+    | .checkedAt _ snapshot t _ => some (.targetValue snapshot t)
+    | .atError d => some (.dataValue "Scope.ScopeError.At" (d.textFields.map (fun s => some (.string s))))
     | _ => none
   def Val.toTermSlots : List Val → List (Option Term)
     | [] => []

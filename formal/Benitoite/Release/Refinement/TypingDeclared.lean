@@ -30,6 +30,9 @@ theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
   | .V_Raise ha => exact ha.declared
   | .V_LocRef _ hd | .V_LocLazy _ hd => exact hd
   | .V_Bytes _ => trivial
+  | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => trivial
+  | .V_AtError hs => exact hs.errorType_declared
   | .V_Sub _ _ _ _ hd => exact hd
   | .V_Refine _ _ _ _ _ _ hda hdp => exact ⟨hda, hdp⟩
 
@@ -54,6 +57,11 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hΓ : Ctx.Declared P C Γ) :
     Ty.Declared P C Γ a := by
   match h with
+  | .C_IssuePathBases _ _ _ _ _ _ _ _ => trivial
+  | .C_CheckAt ha =>
+    cases ha with
+    | mk hs _ _ _ _ _ _ _ =>
+      exact ⟨⟨2, hs.arity, rfl⟩, trivial, hs.errorType_declared, trivial⟩
   | .C_External _ _ _ ht => exact ht.declared
   | .C_Return hv => exact hv.declared hΓ
   | .C_Let _ _ hd | .C_BuilderLet _ _ _ hd => exact hd

@@ -3,6 +3,8 @@ import Benitoite.Release.Refinement.Le
 import Benitoite.Release.Refinement.StoreTransport
 import Benitoite.Release.Refinement.TelArguments
 import Benitoite.Release.Refinement.External
+import Benitoite.Release.Refinement.AtContracts
+import Benitoite.Release.Refinement.AtInput
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -124,6 +126,24 @@ mutual
         P.externalType h.typeId = some td → td.component = h.component → td.resource = h.resource →
         ts.length = td.arity → Ty.Annotation P C Γ (.external h.typeId ts) →
         HasTypeVQ P B Ψ Q C Γ Φ (.externalHandle h ts) (.external h.typeId ts)
+    | V_PathBases {Ψ Q C Γ Φ snapshot} : snapshot.Valid →
+        HasTypeVQ P B Ψ Q C Γ Φ (.pathBases snapshot) .pathBases
+    | V_ScopePattern {Ψ Q C Γ Φ range kind} : range.WF → range.Canonical → range.FitsKind kind →
+        HasTypeVQ P B Ψ Q C Γ Φ (.scopePattern range) (.scopePattern kind)
+    | V_Checked {Ψ Q C Γ Φ o k range target} : B.valKind o = some k → B.valContent o = none →
+        Scope.Domain.Range.MemK k range target →
+        HasTypeVQ P B Ψ Q C Γ Φ (.checked target) (.scoped o k (.fixed (.absolute range)))
+    | V_CheckedRequest {Ψ Q C Γ Φ o range target req T} : B.valKind o = some .endpoint →
+        B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T →
+        req.Ground → req.reqTarget = some target →
+        Scope.Domain.Range.MemK .endpoint range target →
+        HasTypeVQ P B Ψ Q C Γ Φ (.checkedRequest target req)
+          (.scoped o .endpoint (.fixed (.absolute range)))
+    | V_CheckedAt {Ψ Q C Γ Φ o k range snapshot target request} :
+        CheckedWitness P B Ψ o k range snapshot target request →
+        HasTypeVQ P B Ψ Q C Γ Φ (.checkedAt range snapshot target request) (.scoped o k (.fixed range))
+    | V_AtError {Ψ Q C Γ Φ} {shape : ResultShape} {detail : AtError} : shape.Declared P →
+        HasTypeVQ P B Ψ Q C Γ Φ (.atError detail) shape.errorType
     | V_Map {Ψ Q C Γ Φ ks vs a b} :
         HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
         ks.length = vs.length → B.sat C a TParam.keyC →
@@ -232,6 +252,14 @@ mutual
         P.externalFunction f = some d → d.WF P → ExternalCallAdmissible P B C d ts →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (typeEnv ts) d.parameters) a e →
         HasTypeCQ P B Ψ Q C Γ Φ R (.externalCall f ts vs) a e Δ
+    | C_IssuePathBases {Ψ Q C Γ Φ Δ R} (b : PrimName) (sg : PrimSig) :
+        B.sig b = some sg → sg.kind = .pathBases → sg.opEff = some processEnvironmentEff →
+        sg.params = [] → sg.ret = .pathBases → sg.eff = Eff.single processEnvironmentEff →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.issuePathBases b) .pathBases (Eff.single processEnvironmentEff) Δ
+    | C_CheckAt {Ψ Q C Γ Φ Δ R kind name shape bases pattern input index} :
+        AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.checkAt kind name shape bases pattern input index)
+          (.data shape.owner [.scoped name kind index, shape.errorType]) Eff.empty Δ
     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ
@@ -246,6 +274,29 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ v a →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ vs (Tel.bind (Tel.argumentsEnv v) rest) r e →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ (v :: vs) (.param name a rest) r e
+
+  inductive CheckedWitness (P : Program) (B : Builtins) :
+      StoreTy → OpaqueName → Scope.Domain.Kind → RangeExpr → Option PathEnv →
+        Scope.Domain.Target → Option Val → Prop where
+    | plain {Ψ o k range snapshot target} : B.valKind o = some k → B.valContent o = none →
+        target.kind = k → SnapshotMem snapshot k range target →
+        CheckedWitness P B Ψ o k range snapshot target none
+    | request {Ψ o range snapshot target req T} : B.valKind o = some .endpoint →
+        B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T →
+        req.Ground → req.reqTarget = some target → SnapshotMem snapshot .endpoint range target →
+        CheckedWitness P B Ψ o .endpoint range snapshot target (some req)
+
+  inductive AtCallAdmissible (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Scope.Domain.Kind →
+      OpaqueName → ResultShape → Option Val → Val → Val → RangeIx → Prop where
+    | mk {Ψ Q C Γ Φ kind name shape bases pattern input index inputTy} :
+        shape.Declared P → B.valKind name = some kind →
+        (∀ v, bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v .pathBases) →
+        HasTypeVQ P B Ψ Q C Γ Φ pattern (.scopePattern kind) →
+        (inputTy = .base .string ∧ B.valContent name = none ∨ B.valContent name = some inputTy ∧ inputTy.WF 0 0 0) →
+        HasTypeVQ P B Ψ Q C Γ Φ input inputTy → index.WF 0 →
+        (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
+        AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 
 end
 

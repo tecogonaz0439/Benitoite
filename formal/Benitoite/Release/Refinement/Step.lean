@@ -18,7 +18,7 @@ def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : Err
   | none => some (some (.release v none), ok)
   | some r => some (some (.release v (some r)), err r)
 
-private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (externalOracle : ExternalOracle) (rel : Val → Option ErrKind)
+private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle) (rel : Val → Option ErrKind)
     (fresh : Store → Nat) (q : Closure) : Comp → Cont → Store → Option (Option Event × State)
   | (.builderLet kind body), k, μ =>
       let l := fresh μ
@@ -94,7 +94,7 @@ private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (externalOrac
               | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
               | some (.err r) => some (none, .error [r] k μ)
               | _ => none
-          | .io, _ | .exit, _ =>
+          | .io, _ | .exit, _ | .pathBases, _ =>
               match splitHandler (.prim b) k with
               | some (k1, hcap, h, k2) =>
                   match findClause h (.prim b) with
@@ -104,7 +104,11 @@ private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (externalOrac
                         (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))
                   | none => none
               | none =>
-                  match s.kind, oracle b ts es ws with
+                if s.kind = .pathBases then
+                  if ts.isEmpty && es.isEmpty && rs.isEmpty && ws.isEmpty then
+                    some (none, .run (.mk q.capture (.issuePathBases b)) k μ)
+                  else none
+                else match s.kind, oracle b ts es ws with
                   | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (Closure.pure (.ret v)) k μ)
                   | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k μ)
                   | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k μ)
@@ -127,6 +131,30 @@ private def stepRun (P : Program) (B : Builtins) (oracle : Oracle) (externalOrac
               | some (.thunk m) => some (none, .run m (.update l :: k) μ)
               | _ => none
           | _, _ => none
+  | (.issuePathBases b), k, μ =>
+      match B.sig b with
+      | some sg =>
+        if sg.kind = .pathBases ∧ sg.opEff = some processEnvironmentEff ∧ σ.Valid then
+          some (some (.pathBases b σ), .run (Closure.pure (.ret (.pathBases σ))) k μ)
+        else none
+      | none => none
+  | (.checkAt _ _ _ _ _ _ _), k, μ =>
+      match q.code with
+      | .checkAt kind name shape bases pattern input index =>
+        let errorTy := q.capture.closeTy shape.errorType
+        match AtPrepare B q.capture kind name bases pattern input index with
+        | .error detail => some (none, .run (Closure.pure (.ret
+            (.con shape.error [.scoped name kind index, errorTy] [.atError detail]))) k μ)
+        | .ok (snapshot, pat, target, bound) =>
+          if (match snapshot with | none => true | some ρ => decide (ρ = σ)) then
+            match checkAt snapshot kind pat target bound with
+            | .ok t => some (none, .run (Closure.pure (.ret
+                (.con shape.ok [.scoped name kind (.fixed bound), errorTy]
+                  [.checkedAt bound snapshot t (AtRequest B name (closeVal q.capture input))]))) k μ)
+            | .error detail => some (none, .run (Closure.pure (.ret
+                (.con shape.error [.scoped name kind (.fixed bound), errorTy] [.atError detail]))) k μ)
+          else none
+      | _ => none
   | (.app _ _), _, _ => none
   | (.meth (.dict i ts vs) m ss es ws), k, μ =>
       match P.impls i with
@@ -186,9 +214,9 @@ private def stepMatch (v : Val) (cap : Capture) (arms : List Arm) (next : Nat) (
               (.guardF v cap arms (next+1) body :: k) μ)
 
 /-- σは固定し、外部応答も事象を発生させない。 -/
-def step (P : Program) (B : Builtins) (_σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle)
+def step (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle)
     (rel : Val → Option ErrKind) (fresh : Store → Nat) : State → Option (Option Event × State)
-  | .run q k μ => stepRun P B oracle externalOracle rel fresh q q.view k μ
+  | .run q k μ => stepRun P B σ oracle externalOracle rel fresh q q.view k μ
   | .matchRun v cap arms next k μ => stepMatch v cap arms next k μ
   | .error rs (.release v :: k) σ =>
       releaseStep rel v (.error rs k σ) (fun r => .error (rs ++ [r]) k σ)

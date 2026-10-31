@@ -857,3 +857,190 @@ lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-r
 - コマンド: `/usr/bin/time -l scripts/check.sh --level work --base 9184a3ced427d4897fcb234d2ac277f95b60ac0f`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
 - 結果: 終了0（selected checks passed）。外側の時間は38.66秒、最大常駐量は983,564,288バイト（約0.92 GiB）。
 - 計画からのずれ: なし。
+
+
+## `.02b-at`：σ/Atと保持値の群末（2026-10-31）
+
+以下の初回記録の後に、同節末の「レビューの所見の対応」を追記した。**RV-L00b.02b-at後のD28の改訂・本番・最新の検査は、その小節を正とする。**
+
+**この起動単位の実装と群末の検査を終えた。** 腕・節・ハンドラの型付けには進んでいない。独立レビュー・work・取り込み・受け入れは取りまとめ・設計者の担当であり、今回の完了には含めない。B_WORKは `1874fe91aa3684662dca4c69b284ea9614b9fb56`、指定ブランチは `m014/l00b.02b-at` である。前の取り込み08f9ac72・f42ab9aa・5ed7029bとブランチは起動依頼の指定値を使い、gitの照合・操作・コミットを行っていない。処理系・現行設計書・plan.md・旧Release本体を変更していない。
+
+### 置いた構成子と閉じた定義・補題
+
+| 群 | 本番に残したもの |
+|---|---|
+| 有限な起点と解決 | PathEnv.Valid/lookup/Binds、PathPattern.atBase、RangeExpr.resolve/Mem、TargetInput.resolve、SnapshotMem。必須のroot/cwd/homeと任意のwork/tmp/secretsを区別する。明示した空のsecretsは束縛済みである |
+| 初期準備 | PreparationNode.Child/Reachable、帰納的PathEnv.Required、Ready、InitialPrepared/ready。型・行・篩のmember・既知の名目型の全構成子の欄・到達した宣言・組込み署名を辿る。動的ScopePatternの内容を静的な必須起点へ加えない。全宣言の列挙を仮定しない |
+| 値と計算 | Val.pathBases/scopePattern/checkedAt/atError、Comp.issuePathBases/checkAt。既存のchecked/checkedRequestも型付けへ接続した。Ground・改名・値置換・型置換・Capture/Closure.view・Sourceに新しい場合を加えた |
+| 型付け | V_PathBases/ScopePattern/Checked/CheckedRequest/CheckedAt/AtError、C_IssuePathBases/CheckAt、CheckedWitness.plain/request、相互のAtCallAdmissible.mk。Requestの空C/Γ/Φの型付け、Ground、reqTargetの一致を保つ |
+| Resultとエラー | ResultShape、StandardError/DeclaredとerrorType_eq/errorType_declared/error_data/error_observation_declared。Resultのarity2と両構成子の欄位置、閉じた標準Scope.ScopeErrorの宣言を検査する。AtError.textFields/valuesとvalues_typedで、全七欄の文字列表現・snapshot・構成子パターンの束縛をそろえた。利用者向けShowの切詰めは行わない |
+| Atの準備と検査 | parseAtInput/parseAtPattern、parseUrlTarget、Val.reqTarget/target?、groundTy/groundValとWF/Groundの補題、AtRequest/AtPrepare/AtPrepared。AtPrepared.fixed_index、AtPrepare.fixed_index/no_staticIndex、AtCallAdmissible.fixed_index/no_staticIndex、checkAt.soundを閉じた。未束縛・動的条件・静的添字・形式不良をErrorにする |
+| 保持値の適格性 | Val/Comp/Capture/Closure/Frame/Cont/Cell/Store/Outcome.Adequate、SnapshotAdequate、AdequateResult。場所からストアへ無限に再帰せず、有限の保持箇所のsnapshotを同じσと照合する。SnapshotMem.kind/current、CheckedWitness.kind/membershipを閉じた |
+| 旧の絶対形との対応 | CheckedWitness.absolute_plain/absolute_request、HasTypeVQ.checked_opaque/checkedRequest_opaque、checkedAt_subst。旧のopaqueへの互換はscoped_forgetから導き、裸の標準opaqueや要求のないRequestInを認めない |
+| 組込み応答の条件 | BuiltinArgs、Builtins.ResponseAssumptions、CoreAssumptionsへの包含とresponses。delta_typed/io_typedの結果に、同じoutに対する全有効σのAdequateResultを置いた。io_kind/io_existsとTargetAgreement.io_targetも型付き入力の同じ束を使う。外部の第四の条件は加えていない |
+| 意味論と実行器 | 新PrimKind.pathBasesと旧8形のembedPrimKind、Event.pathBases、E_PathBasesApply/IssuePathBases/AtOk/AtError/AtPrepareError。旧68遷移と外部3遷移を維持した。E_OpPrimとstepの通常のhandler経路にpathBasesを加え、発行だけがProcess.Environmentの事象を出す |
+| 既存の補題 | shift_values、値の相互subst、narrowing、TypedFactsの全入口、hide/None版、Declaredの正則性。CheckedWitness.shift_storeはrequestのHasTypeVを同じ相互証明で移す。値置換・narrowingでは空文脈と同じストアの保持要求の証拠を再利用する。snapshotとmemberの値置換・WFも既存の全構文操作とAtTypingの系で照合した |
+
+追加した手書きの公開名は **107名** であり、[公開宣言の一覧](02b-at-public-api.md)に全名を置いた。生成された射影・recursor・等式定理・Repr等をこの数へ重ねていない。新規Leanは **10ファイル**、既存は **22ファイル**、合計 **32ファイル** である。全て既定importに含む。全ファイルとハッシュ・前後の行数は [変更の一覧](02b-at-source-changes.json)、本番407入力は [最終入力](02b-at-inputs-final.json)で照合する。変更対象の行数は **5385→6746、純増1361行** である。
+
+新規10ファイルはAdequate、AtContracts、AtInput、AtPrepare、AtSound、AtTyping、BuiltinResponse、PathResolution、Preparation、Sourceである。既存22ファイルと、新規の改造内の入力・記録の全一覧は[レビュー依頼](../reviews/RV-L00b.02b-at-request.md)にある。
+
+### 場合の数の予定と実際
+
+| 対象 | 第12.2節の予定 | 本番・実際のmatchと再利用 |
+|---|---|---|
+| 値・計算・事象・遷移 | Val25/Comp16/Event3/Step76 | **25/16/3/76**。旧68の名前・順序を保持し、外部3と今回5を加えた。[照合](02b-at-step-coverage.json) |
+| 型付けと保持の証拠 | V26/C15/Vs2/Each2/TelArgs2/Witness2、計49 | **49構成子を置いた**。AtCallAdmissibleの補助1は別記する |
+| 移動 | この群の10場合を含む49 | HasTypeVQ.shift_values、Vs/Each/CQ/TelArgsの同名入口とCheckedWitness.shift_storeの相互matchで49。AtCallAdmissible.shift_valuesの補助1を加えると**50** |
+| 値の相互置換 | 同じ49を保つ | subst_value/values/each/comp/telArgsの根は**47**、subst_at_callの補助1で**48**。Witnessの空文脈・同じストア・保持要求は変わらないため、その証拠を再利用し、別の2matchと数えない。HasTypeVQ.checkedAt_substを実際の構文の系にした |
+| narrowing | 同じ49を保つ | context_value/values/each/comp/telArgsの根は**47**、context_at_callの補助1で**48**。Witnessの二つの証拠を同じ理由で再利用する。narrowの公開入口はこの相互証明から導く |
+| TypedFactsの主な入口 | observation/assume各26、追加6×2 | **各26、計52**。すべての新しい値を処理した |
+| TypedFactsの補助 | 全入口を追随 | data_observation/assume_optional各26、observation_declared/observation_referencesはVs/Each各2も含め各30。補助は**112**、主な入口と合わせて**164** |
+| 正則性とhide | 新しい葉・計算と保持要求を追随 | HasTypeVQ.declaredは26、CQ.declaredは15。hide/None版は更新した三族を使う。Each.nilから要素型のDeclaredを導く偽の一般化は加えていない |
+| TargetInput | 予約はabsolute/relativePathの2形 | **3形**。既に決定済みの~と~/をhomeとして保つ内部homePathを追加した。新しい変数展開や利用者の書ける形の追加ではない |
+
+49は判断の構成子数であり、三族に別々の147個のmatchを追加したという実績へ読み替えない。移動50・置換48・narrowing48はAtCallの補助を含めた実際の根の数である。上の再利用を採ったことはsignatures第26節に記録した。新しい三モデル・全状態の保存・閉じた評価・L70の旧導出の埋め込みを、この件数へ混ぜていない。
+
+### 補助契約で決めたこと
+
+[signatures第26節](signatures.md)に採用案・理由・捨てた案を置いた。主なものは次である。
+
+1. Required/Ready/InitialPreparedへBを加え、組込み署名の固定起点と既知の名目型の全欄も辿る。動的ScopePatternの内容をReadyへ混ぜない。
+2. BuiltinArgsへbを加え、同じ署名を持つ別名のadmitsRを取り違えない。
+3. AtCallAdmissibleを型付けと同じ相互帰納へ置き、someのtokenの型付けと入力型・indexの構文の適格性を検査する。valContentの宣言型はWF 0 0 0とする。
+4. 保持要求は空文脈で型付けし、改名・各置換・捕捉でそのまま保つ。ストアの移送だけは相互のshift_valuesで追随する。
+5. Adequateは全有限保持箇所を調べ、someのsnapshotを同じσ、noneをabsoluteに限る。Readyは保存の前提へ加えない。
+6. 標準Result/Scope.ScopeErrorの宣言・arity・欄を照合する。String型の七欄は実際の値と同じsnapshotにし、AtError.values_typedとmatchValにも接続する。最初のnone七欄の下書きは撤回した。
+7. checkAtは未解決のpattern/boundの字句WFを検査し、起点に含むリテラルの*をパターンのワイルドカードとして拒まない。
+8. TargetInput.homePathで既定の~を保ち、cwd相対形から区別する。途中のdot・空要素・余分な末尾/・..・~userは拒否する。
+9. 準備のstaticIndexをrvarだけに限定し、privateなPreparationErrorの証明からno_staticIndexを導く。成功時のindex=.fixed boundも証明する。
+10. PathBasesは通常のhandler経路を通し、専用のσの発行からだけ事象を出す。δ/IOが任意の別実行のtokenを選ぶ経路は加えない。
+
+これらは起動依頼で委ねられた補助の具体化として採った。主な定理の前提・結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態の変更はないという担当の判断を、群末レビューでも確認してもらう。
+
+### 群末の検査と証拠
+
+[再実行用台本](02b-at-validate.py)、[検査全体](02b-at-validation.json)、[コマンド・終了・外側の時間](02b-at-commands.json)、[補助入力のハッシュ](02b-at-artifact-inputs.json)を保存した。本番の最終407入力は検査の前後で一致した。Lean4.34.1、既定と単独の双方で **-M 12288** を使い、固定版とlake設定を変更していない。
+
+| 検査 | 最終結果 | 証拠 |
+|---|---|---|
+| 旧・並置体系と全既定ターゲットのビルド | `cd formal && lake build`、**終了0、650 jobs、1.105秒**。変更箇所は途中の局所ビルドでも検査した。最終入口は成果物を再利用し、650ファイル全てを新たに検査した時間とはしない | [出力](02b-at-build.log) |
+| 今回の境界 | **終了0、1.956秒、73宣言の公理依存も照合**。別σのtoken、型付きRequestのGround/端点/要求なしの拒否、openな保持要求、secrets未指定/空、動的条件/静的添字、At準備のindex、C_CheckAt、既知の未束縛起点、名目型の欄の到達、Stepとstep、標準エラーのString観測と構成子パターンを確認した。大きいURLとパスの字句例は実行による照合とし、真偽を証明へ注入していない | [入力](02b-at-boundary.lean) / [出力](02b-at-boundary.log) |
+| 前の参照・sort・None/cont/snapshotの境界 | r4を変更せず実行、**終了0、0.644秒** | [出力](02b-at-previous-boundary.log) |
+| 前のkindの境界 | r5を変更せず実行、**終了0、0.381秒**、21宣言の公理依存を照合 | [出力](02b-at-kind-boundary.log) |
+| 前の値の葉の境界 | 新しい不可能な場合を足した写しで、**終了0、0.858秒**。重複Map・依存鍵・場所の削除・捕捉環境を保ち、30宣言の公理依存を照合 | [写し](02b-at-values-boundary.lean) / [出力](02b-at-values-boundary.log) |
+| 前の外部の境界 | レビュー修正後の入力を変更せず実行、**終了0、1.050秒**。Statefulの署名/ハンドル引数、再帰拒否も含め87宣言の公理依存を照合 | [出力](02b-at-external-boundary.log) |
+| A-L | **終了0、7.279秒、77モジュールと旧の指定7宣言、計8,944宣言**。private/生成宣言を含め、報告数・一意な数・モジュール別件数+7が一致。使用は **propext/Quot.sound/Classical.choiceだけ**。独自公理・sorryAxはない | [入力](02b-at-axioms.lean) / [集計](02b-at-axioms-summary.json) |
+| 構成子数・抜け道・範囲 | Lean metadataで49構成子、Val25/Comp16/Event3/Step76等を照合。本番のsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの語の検出0件 | [検査全体](02b-at-validation.json) / [範囲の照合](02b-at-scope-check.json) |
+| work/RSS/Rust/全比較/独立レビュー | workは依頼どおり取りまとめへ残した。RSSは未取得（計画上の非採取）。Rustのテストの変更0件。今回の自己点検を独立レビューや全比較の成功と数えない | [レビュー依頼](../reviews/RV-L00b.02b-at-request.md) |
+
+旧の指定7宣言はModel/ModelTargets/ModelHttp.assumptions、Ty.le_iff_leOld/wf_iff_old/varsIn_iff_old、Eff.covers_iff_sub_oldである。旧モデルの照合を、新しいσ/At・外部の三モデルの充足の代用にはしない。最終の公理依存の全出力は **918,089バイト**、差分の全出力は **101,245バイト** なので一時領域へ置き、[large-records](large-records.md)に大きさとSHA-256を残した。改造に100 KBを超える生の記録を置いていない。
+
+途中は構造的再帰の判定、Optionalなtokenの依存消去、型付きエラーの正則性、既存の障害例の不足、境界の暗黙引数とStringの閉じた評価で失敗した。処理系の言明や期待する契約を弱めずに修正した。[初回のビルド](02b-at-first-build.log)、[初回の境界](02b-at-first-boundary.log)、[途中の検査の扱い](02b-at-development-checks.json)を保存した。初回入力の当時の写し・時間は未採取であり、これらを再実行可能な最終入力の証拠とはしない。失敗時のLeanの回復用sorryAxを、成功の証拠には用いていない。Stringの長い字句のcbvによる証明作成は中断し、実行による字句の照合と、型付きRequestの形に関する証明を分けた。
+
+### テストの作成時の関門
+
+持ち主は本番Leanの保持値の型付け、Adequate、At準備、Step/step、RuntimeMatchである。守る独立した契約は同じσの保持、RequestのGround/端点一致、準備の具体化済みindex、静的な既知契約の必須起点、純粋なAtとProcess.Environmentの発行の区別、標準エラーの観測である。snapshotの等式やRequestの条件の脱落、rvarの残留、空secretsの未束縛扱い、動的条件/静的添字の混同、名目型の欄の起点の見落とし、エラーのString欄のnone化があれば失敗する。前群にはこれらの値・計算・保持の証拠がないため、同じ境界では捕まえられなかった。検査用の本番API・フラグ・差し込み口は加えていない。前の群の写しは既存の負の契約を維持するためであり、元の記録は変更していない。
+
+### 義務の判定・残りと送り先
+
+| 義務 | 今回の判定・証拠 | 残る担当・時期 |
+|---|---|---|
+| 第12.2節のatの行、構成子と三族・TypedFacts・保持要求・WF/Declared | **この群の担当分を完了**。上の本番、境界、A-L。Witnessの再利用と補助の数は明記した | 後続の群は新しく増やす場合だけを追加し、今回の一般の移送をL10/L20で重ねない |
+| O002/O004/O006/O009/O029/O040/O042/O085/O159の骨格・移送・並置 | σ/Atの有限構文・49判断・Ground/Source・既定importと、型/行/値参照を保つ追随を置いた | 義務全体の閉鎖ではない。全状態の保存・旧の全導出と遷移の埋め込みはL20/L70、共有層は`.02c` |
+| O016のA-L | 現時点の77モジュール+旧7宣言、8,944宣言を照合した | L00b末と後続各L段、信頼条件の新旧対照は`.15`/L70 |
+| O010/O160の所要 | 通常の外側の時間を下に記録した | 能動時間の比・改造全体の見込み更新は取りまとめ |
+| O061/O062/O063/O082/O092/O096/O097/O165/O166/O168 | 固定σ・At・保持値・準備・全σのAdequateResult・絶対の互換入口と失敗情報の骨格を置いた。checkAt.soundと保持対象の所属の橋も閉じた | 全有効σでのCoversの健全性、IO対象と標準契約・三モデルの充足、文字列解析/reqTarget/標準エラーの公開構成子とShowの対応はL50。表層・交換・CLIは既定のR段/L70/V10 |
+| 第24節のRV-values全7行 | 担当を変更していない。今回の構成子でも前群の境界を保った | kind表付きD29はL20/L70、fn/Telの対応はclosures/`.11`、外側kindは`.03`、場所のDeclaredはclosures/L20、三モデルの骨格はL50、旧lamのNamesWFはL20/L70 |
+| 第24節のRV-external全5行 | 範囲を変更していない。Stateful/Recursiveの正負の例も再実行した | 受信後の篩は`.04`/`.05`/L60、受理からWFへの向きはL70、多相externalは別改造、TelArgsへつなぐC_DependentAppはclosures/L20 |
+| 腕・節・ハンドラ | **次の`.02b-handlers`へ渡す**。今回C_Match/Handle/Resume等は追加していない | ImageOk3、R0の結び付け、SubstOk.hide/up/None/多相節の全束縛、Arms3/Clauses2/Failure1、PatTy等と全新構成子の正準形を同群で閉じる。AtErrorの構成子パターンには今回置いたvalues/values_typedを使う |
+| 閉包/状態と主定理 | Adequateを置いたことをStateTyの全接続・保存と数えない。CoreAssumptionsもこの群の応答の改訂分であり、後続の宣言/ストア等の全欄の完了とはしていない | closures/`.03`/`.14`/L20/L50/L60/L70で固定σ/Eb、全状態、step_sound/effect_soundnessとモデルへ接続する |
+| 受け入れ | 自己点検と検査まで | 群末の独立レビュー・work・取り込み・受け入れは取りまとめ・設計者 |
+
+### 計画との差と外側の時間
+
+Val25/Comp16/Event3/Step76と保持値の49判断は起動表どおりである。補助のRequiredへのB、BuiltinArgsへのb、TargetInputのhomePath、AtCallの相互判断、閉じたvalContent、Witnessの再利用、エラーの七欄の観測を第26節で具体化した。RuntimeMatchの変更は追加したatErrorの一場合だけであり、次の腕・節・ハンドラの型付けを先取りしていない。主な定理の変更・新公理・提供範囲の変更・外部の第四の条件・精密な外部状態を加えていない。
+
+最初の時計の取得は2026-10-31 **08:31:53 JST**、最終検査終了は **09:16:01 JST** で、外側は **2,648.00秒（約44.13分）** であった。[開始](02b-at-start.json)、[検査全体](02b-at-validation.json)、[受け渡し](02b-at-delivery.json)に時計を残す。文書の仕上げを含む受け渡しまでの時間はdeliveryを正とする。能動時間と待ちを分離していないため、能動時間の実測や較正の比にはしない。見込み2〜4時間の上端の2倍（8時間）には達していない。
+
+
+### レビューの所見の対応（RV-L00b.02b-at、2026-10-31）
+
+[独立レビュー](../reviews/RV-L00b.02b-at.md)は条件付き可（重なし、中2・軽4）であった。plan「計画の変更と取りまとめへの確認点」の2026-10-31の先頭の判断に従い、下表の対応を本番と義務の対応表へ反映した。修正後の独立レビュー・work・取り込み・受け入れは行っていない。
+
+| 所見 | 対応と確認 | 残る義務 |
+|---|---|---|
+| 中1 / PathBasesの署名の形と旧四欄 | CoreAssumptionsにpathBases_shapeを加え、型パラメータ・行・範囲・実引数が空、結果が.pathBases、効果がProcess.Environmentの一原子、opEffが同じ名前である形を供給する。opEff_io/effect_opsのkindの分類へpathBasesを加え、store_shape/store_admitsから除いた。pathBasesを含む同じ組込み表BEでCoreAssumptions全体が成立する境界のcore_with_pathBasesを証明した | **D28の意味の変更**としてsignatures第27節に記録した。取りまとめ・.15で設計者への報告と07-04の新旧対照、L50で三モデルの充足を行う |
+| 中1 / E_PathBasesApplyの局所の場合 | issuePathBases_typed、pathBases_empty_arguments、pathBases_empty_values、pathBases_apply_destinationを本番で閉じた。lookupとkindから到達先のC_IssuePathBases、型付きの具体化と実引数の空性を供給する。境界で実際の遷移と到達先の計算の型付けを照合した | 状態全体の保存・進行はL20・L70、節との接続は.02b-handlers |
+| 中1 / 事象と効果 | SemanticsにEvent.Coveredを置き、σ発行はProcess.EnvironmentのTopの被覆を要求する。covered_pathBasesを証明し、境界でその効果による被覆と空効果での拒否を示した。IOの範囲は存在量化するため、これをIO対象の許可の健全性の証明とは数えない | effect_soundnessの**結論の形は変更しない**。事象と継続末尾の効果の接続・空効果の無事象の証明はL20・L70に残し、第24節へ明記した |
+| 中2 / handlerのある発行がstuck | E_IssuePathBasesのNoHandler前提とstepのissue枝のsplitHandler検査を削除した。appでのhandler選択は維持する。旧handled_stuckに当たるhandler付きの内部issueで、handlerがあること、Stepの発行、実行器の発行の三つを証明した | 次の群は改訂後の発行を使う。Sourceからissueを直接作る経路を追加したとは扱わない |
+| 軽1 / 文言・公開API・網羅性 | 第24節へ、textFieldsを処理系の文言の契約から定める表示関数に差し替える義務を追加した。現在のreprStrの七欄を公開APIの確定や処理系との対応済みと扱わない | L50・L70でU02の公開構成子にStandardError・RuntimeMatch・TypedFactsをそろえる。.02b-handlersで内部と公開の構成子一覧を一致させて網羅性を検査する |
+| 軽2 / 常に真のClosed | 推す案としてAtError.Closedの定義とV_AtErrorの前提を削除した。AtErrorは値・型の変数の構文を含まず、データ型が閉性を保証するためである。三族、TypedFacts、Declaredと二つの障害例のmatchも追随し、境界でClosedなしの型付けを示した | 今回の局所修正を完了。常に真の前提を残す案や、WF/所属の条件を「閉性」に混ぜる案は採らない |
+| 軽3 / Sourceと.loc | Val.Sourceの.locをFalseへ変更した。単独の場所とList内の場所をSourceが拒否する境界を示した。表層から作る構文の区別だけを直し、場所の型付けを削除していない | 今回の局所修正を完了。SourceをStoreOkの代用にはしない |
+| 軽4 / 旧絶対形のD20の前提 | 第24節のD29の義務へ、旧V_CheckedはvalContent=none、旧V_CheckedRequestはGroundとreqTargetの端点一致を前提にして埋め込むことを追加した | L20・L70でD29へ明示し、D20/O044と07-04・現行01-12の対照を行う |
+
+今回のD28の追加は、初回実装時の補助契約の具体化の判断を訂正するものである。取りまとめが承認した主な定理の前提の改訂として扱い、「主な定理の前提を変えていない」とは報告しない。主な定理の結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態への変更はない。レビューの指摘を超える判断を理由に停止する箇所はなかった。
+
+本番の新規ファイルは0件、変更は既存のRefinement内の13ファイルである。[今回の差分](02b-at-r2-production.patch)と[変更の一覧](02b-at-r2-source-changes.json)は、レビュー後の修正に入る直前の写しを基準にする。群全体のB_WORKからの差分と混同しない。Val25/Comp16/Event3/Step76、型付けと保持の証拠49構成子は変わらない。今回はV_AtErrorとE_IssuePathBasesの前提を減らしたので、対応する各matchの引数だけを追随した。
+
+[signatures第24節・第27節](signatures.md)に送り先、採った案・理由・捨てた案を置いた。新しく加えた主要な宣言はPrimSig.PathBasesShape、PrimSig.StoreShape、CoreAssumptionsの五欄、上記四補題、Event.Covered/covered_pathBasesである。削除した公開名はAtError.Closedである。初回の107名の公開宣言一覧は初回時点の記録であり、削除後の現行一覧と読み替えない。
+
+検査の作成時の関門: 守る独立した契約は、PathBasesを含む表で信頼条件が両立すること、型付き発行への署名の供給、handler付きの内部issueの進行、σ発行とProcess.Environmentの対応、実行時の場所をSourceが受け付けないことである。旧の四欄の分類や発行時のhandler検査が残れば境界が失敗する。core_with_pathBasesはPathBasesのkindを持つ実際の表を構成するため、存在しないCoreAssumptionsを前提にした局所補題だけを検査する形ではない。検査のためだけの本番APIは加えていない。
+
+再検査の結果は次のとおりである。Lean4.34.1、単独のLeanと既定ビルドのLeanの双方に-M 12288を適用した。固定版とlake設定を変更していない。
+
+| 検査 | 修正後の結果 | 証拠 |
+|---|---|---|
+| 既定のcd formal && lake build | 終了0、0.155秒、650 jobs。変更箇所は途中の局所ビルドで再検査済みであり、最終入口は既存成果物を再利用した | [出力](02b-at-r2-build.log) |
+| 今回の境界 | 終了0、2.055秒、94宣言の公理依存も照合 | [出力](02b-at-r2-boundary.log) |
+| 前の参照・sort等の境界 | 終了0、0.636秒 | [出力](02b-at-r2-previous-boundary.log) |
+| 前のkindの境界 | 終了0、0.386秒 | [出力](02b-at-r2-kind-boundary.log) |
+| 前の保持値の境界 | 終了0、0.849秒、V_AtErrorの前提削除に対応するmatchだけを直した写し。30宣言の公理依存も照合 | [出力](02b-at-r2-values-boundary.log) |
+| 前の外部の境界 | 終了0、1.032秒 | [出力](02b-at-r2-external-boundary.log) |
+| A-L（新規・変更宣言と依存先を含む） | 終了0、7.267秒、77モジュールと旧の指定7宣言、計8,979宣言。件数・一意な数・モジュール別件数+7が一致 | [集計](02b-at-r2-axioms-summary.json) |
+| 固定版 | 終了0、0.077秒 | [出力](02b-at-r2-lean-version.log) |
+
+依存した公理は **propext・Quot.sound・Classical.choiceのみ** である。sorryAx・新公理・許可外の公理はない。本番のsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの語の検出は0件。最終の407入力は検査前後で一致した。[全体の判定](02b-at-r2-validation.json)、[コマンドと時刻](02b-at-r2-commands.json)、[最終入力](02b-at-r2-inputs-final.json)、[台本と補助入力のハッシュ](02b-at-r2-artifact-inputs.json)、[再実行用台本](02b-at-r2-validate.py)を残した。初回の02b-at-*の検査記録は書き換えていない。
+
+公理依存の全出力は921,882バイトで、一時領域へ置いた。大きさとSHA-256は[large-records](large-records.md)に追記した。今回の差分は100 KB以下なので改造内に置いた。改造内の新規の生記録で100 KBを超えるものはない。
+
+途中の局所検査では、旧のEff.singleAtと新しいEffの型の取り違え、Listの補題名、V_AtErrorの障害例のmatch、境界の被覆の暗黙引数、実行器側のhandler検査の残存を検出して修正した。依存先の再ビルド中に境界を起動した回は、生成物がまだなく失敗した。これらの途中の失敗を成功の証拠に数えず、上表は全修正後に台本で改めて実行した結果である。元の値の境界は前提が減った後のmatchと合わなかったため、元の記録を保ち、r2の写しを再実行した。
+
+新規の改造内ファイルは次のとおりであり、本番の新規ファイルはない。
+
+- [02b-at-r2-artifact-inputs.json](02b-at-r2-artifact-inputs.json)
+- [02b-at-r2-axioms-summary.json](02b-at-r2-axioms-summary.json)
+- [02b-at-r2-axioms.lean](02b-at-r2-axioms.lean)
+- [02b-at-r2-boundary.lean](02b-at-r2-boundary.lean)
+- [02b-at-r2-boundary.log](02b-at-r2-boundary.log)
+- [02b-at-r2-build.log](02b-at-r2-build.log)
+- [02b-at-r2-commands.json](02b-at-r2-commands.json)
+- [02b-at-r2-delivery.json](02b-at-r2-delivery.json)
+- [02b-at-r2-external-boundary.log](02b-at-r2-external-boundary.log)
+- [02b-at-r2-inputs-final.json](02b-at-r2-inputs-final.json)
+- [02b-at-r2-kind-boundary.log](02b-at-r2-kind-boundary.log)
+- [02b-at-r2-lean-version.log](02b-at-r2-lean-version.log)
+- [02b-at-r2-previous-boundary.log](02b-at-r2-previous-boundary.log)
+- [02b-at-r2-production.patch](02b-at-r2-production.patch)
+- [02b-at-r2-scope-check.json](02b-at-r2-scope-check.json)
+- [02b-at-r2-source-changes.json](02b-at-r2-source-changes.json)
+- [02b-at-r2-step-coverage.json](02b-at-r2-step-coverage.json)
+- [02b-at-r2-validate.py](02b-at-r2-validate.py)
+- [02b-at-r2-validation.json](02b-at-r2-validation.json)
+- [02b-at-r2-values-boundary.lean](02b-at-r2-values-boundary.lean)
+- [02b-at-r2-values-boundary.log](02b-at-r2-values-boundary.log)
+
+開始の時計は2026-10-31 **09:39:56 JST**、最終検査終了は **09:46:45 JST**、外側は **409.39秒（約6.82分）** である。文書と提出時の照合までの時間は[受け渡し](02b-at-r2-delivery.json)を正とし、能動時間と待ちは分離していない。目安の1時間以内に収まった。gitの操作、Rustの処理系・現行設計書・plan.mdの変更、work、次の群の実装は行っていない。
+
+| 残る手順 | 担当・内容 | 見込み時間 |
+|---|---|---|
+| 修正後の確認・独立レビュー | 取りまとめ・レビュー担当。D28の五欄と局所補題、handler付き発行、軽の送り先を確認する | 不明 |
+| 作業末のwork | 取りまとめ。共通入口で選ばれる形式化のビルドと禁止宣言の拒否を行う。今回の担当は実行していない | 不明 |
+| 受け入れと取り込み | 取りまとめ・設計者。D28の意味の変更の報告と残る義務を確認する | 不明 |
+
+## .02b-at の作業末の work（取りまとめ、2026-10-31）
+
+- 基準: `1874fe91aa3684662dca4c69b284ea9614b9fb56`。作業ツリーは RV-L00b.02b-at の所見の対応（本番の Lean の修正を含む）を終えた状態。
+- コマンド: `/usr/bin/time -l scripts/check.sh --level work --base 1874fe91aa3684662dca4c69b284ea9614b9fb56`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
+- 結果: 終了0（selected checks passed）。外側の時間は44.41秒、最大常駐量は1,070,383,104バイト（約1.00 GiB）。
+- 計画からのずれ: なし。

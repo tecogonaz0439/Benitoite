@@ -17,7 +17,8 @@ private def builderBound (nt n : Nat) : BuilderKind → Prop
 mutual
   def Val.ClosedAt (nt nv : Nat) : Val → Prop
     | .var i => i < nv
-    | .const _ | .loc _ | .bytesV _ | .checked _ => True
+    | .const _ | .loc _ | .bytesV _ | .checked _ | .pathBases _ | .scopePattern _ | .atError _ => True
+    | .checkedAt _ _ _ req => match req with | none => True | some v => v.ClosedAt 0 0
     | .fnRef _ ts es => (∀ a ∈ ts, a.WF 0 nt nv) ∧ (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical)
     | .prim _ ts es rs => (∀ a ∈ ts, a.WF 0 nt nv) ∧
         (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ r ∈ rs, r.WF)
@@ -50,6 +51,10 @@ mutual
     | .resume k v => k.ClosedAt nt nv ∧ v.ClosedAt nt nv
     | .meth v _ ts es vs => v.ClosedAt nt nv ∧ (∀ a ∈ ts, a.WF 0 nt nv) ∧
         (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ Val.ClosedList nt nv vs
+    | .issuePathBases _ => True
+    | .checkAt _ _ shape bases p v ix => shape.errorType.WF 0 nt nv ∧ ix.WF 0 ∧
+        (match bases with | none => True | some b => b.ClosedAt nt nv) ∧
+        p.ClosedAt nt nv ∧ v.ClosedAt nt nv
     | .externalCall _ ts vs => (∀ a ∈ ts, a.WF 0 nt nv) ∧ Val.ClosedList nt nv vs
   def Arm.ClosedList (nt nv : Nat) : List Arm → Prop
     | [] => True

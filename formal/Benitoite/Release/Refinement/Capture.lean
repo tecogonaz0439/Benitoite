@@ -43,8 +43,12 @@ mutual
     | .super v s => .super (closeVal cap v) s
     | .externalRef f ts => .externalRef f (ts.map cap.closeTy)
     | .externalHandle h ts => .externalHandle h (ts.map cap.closeTy)
+    | .pathBases σ => .pathBases σ
+    | .scopePattern r => .scopePattern r
+    | .checkedAt r σ t req => .checkedAt r σ t req
+    | .atError d => .atError d
     | .checked t => .checked t
-    | .checkedRequest t v => .checkedRequest t (closeVal cap v)
+    | .checkedRequest t v => .checkedRequest t v
   def closeVals (cap : Capture) : List Val → List Val
     | [] => []
     | v :: vs => closeVal cap v :: closeVals cap vs
@@ -65,6 +69,9 @@ def Closure.view (q : Closure) : Comp := match q.code with
   | .handle m h => .handle m h
   | .resume k v => .resume (closeVal q.capture k) (closeVal q.capture v)
   | .externalCall f ts vs => .externalCall f (ts.map q.capture.closeTy) (closeVals q.capture vs)
+  | .issuePathBases b => .issuePathBases b
+  | .checkAt k o sh bs p v ix => .checkAt k o {sh with errorType := q.capture.closeTy sh.errorType}
+      (bs.map (closeVal q.capture)) (closeVal q.capture p) (closeVal q.capture v) ix
   | .meth v m ts es vs => .meth (closeVal q.capture v) m (ts.map q.capture.closeTy)
       (es.map q.capture.closeEff) (closeVals q.capture vs)
 
