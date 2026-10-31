@@ -1,0 +1,46 @@
+[
+  {
+    "name": "build",
+    "command": "lake build",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:30:14.986747+00:00",
+    "elapsed_seconds": 4.092,
+    "exit_code": 0,
+    "bytes": 26027,
+    "sha256": "befae958f565a1389a677481093ddbaa2622ac095c7c355d11dd71142ab7aa84",
+    "output": "build.log"
+  },
+  {
+    "name": "boundary",
+    "command": "lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.05/boundary.lean",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:30:19.079156+00:00",
+    "elapsed_seconds": 1.285,
+    "exit_code": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "output": "boundary.log"
+  },
+  {
+    "name": "axioms",
+    "command": "lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.05/axioms.lean",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:30:20.364701+00:00",
+    "elapsed_seconds": 1.408,
+    "exit_code": 0,
+    "bytes": 148307,
+    "sha256": "91bbadf77dc9056d46e300fd0d159ff9f663046e827c1bf83504022785031533",
+    "output": "<tmp>"
+  },
+  {
+    "name": "public-api",
+    "command": "lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.05/public-api.lean",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:30:21.774530+00:00",
+    "elapsed_seconds": 0.737,
+    "exit_code": 0,
+    "bytes": 26188,
+    "sha256": "9be648c39b384b69082c5d2b539b0d2682daa0763922091eb23f3102faadd5dc",
+    "output": "public-api.log"
+  }
+]

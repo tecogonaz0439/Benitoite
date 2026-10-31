@@ -1,0 +1,39 @@
+Benitoite.Release.Refinement.Builtins.ExternalAssumptions.received_value {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {f : Benitoite.Release.Refinement.ExternalFunctionId} {d : Benitoite.Release.Refinement.ExternalSignature}
+  {ts : List Benitoite.Release.Refinement.Ty} {vs : List Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {out : Benitoite.Release.Refinement.Outcome} {obs : List Benitoite.Scope.Domain.Target}
+  {v : Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.Builtins.ExternalAssumptions P B)
+  (hw : P.ExternalWF) (hd : P.externalFunction f = some d)
+  (ha : Benitoite.Release.Refinement.ExternalArgs P B Ψ d ts vs a e) (hr : B.externalResponse f ts vs out obs)
+  (hrec :
+    Benitoite.Release.Refinement.externalReceive P d ts vs out = some (Benitoite.Release.Refinement.Outcome.val v))
+  (σ : Benitoite.Release.Refinement.PathEnv) :
+  Benitoite.Release.Refinement.HasTypeV P B Ψ [] [] [] v a ∧ v.Ground ∧ Benitoite.Release.Refinement.Val.Adequate σ v
+Benitoite.Release.Refinement.Builtins.ExternalAssumptions.receive_no_exit {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {f : Benitoite.Release.Refinement.ExternalFunctionId} {d : Benitoite.Release.Refinement.ExternalSignature}
+  {ts : List Benitoite.Release.Refinement.Ty} {vs : List Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {out : Benitoite.Release.Refinement.Outcome} {obs : List Benitoite.Scope.Domain.Target} {n : Int}
+  (h : Benitoite.Release.Refinement.Builtins.ExternalAssumptions P B) (hw : P.ExternalWF)
+  (hd : P.externalFunction f = some d) (ha : Benitoite.Release.Refinement.ExternalArgs P B Ψ d ts vs a e)
+  (hr : B.externalResponse f ts vs out obs) :
+  Benitoite.Release.Refinement.externalReceive P d ts vs out ≠ some (Benitoite.Release.Refinement.Outcome.exit n)
+'Benitoite.Release.Refinement.Builtins.ExternalAssumptions.external_adequate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Builtins.ExternalAssumptions.receive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Builtins.ExternalAssumptions.receive_no_exit' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Builtins.ExternalAssumptions.received_value' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Step.external_accept' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Step.external_reject' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.externalReceive.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.externalReceive_of_args' depends on axioms: [propext, Classical.choice, Quot.sound]

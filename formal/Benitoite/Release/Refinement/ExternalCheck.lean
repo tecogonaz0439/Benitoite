@@ -1,5 +1,6 @@
-import Benitoite.Release.Refinement.ExternalResponse
+import Benitoite.Release.Refinement.Typing
 import Benitoite.Release.Refinement.Carrier
+import Benitoite.Release.Refinement.Adequate
 import Benitoite.Release.Refinement.ClosedEvaluation
 
 /-!
@@ -9,6 +10,12 @@ carrierは篩の述語を信用しない。dataの欄は元の宣言を具体化
 -/
 namespace Benitoite.Release.Refinement
 noncomputable section
+
+def Outcome.Typed (P : Program) (B : Builtins) (Ψ : StoreTy) (out : Outcome) (a : Ty) : Prop :=
+  match out with
+  | .val v => HasTypeV P B Ψ [] [] [] v a ∧ v.Ground
+  | .err _ | .exit _ => True
+
 
 /-- some trueだけを成功とし、失敗と偽をともに拒否する。 -/
 def Pred.closedTrue (p : Pred) : Bool := p.evalClosed == some true
@@ -268,6 +275,30 @@ mutual
     | cons hv hs =>
       simp only [externalCheckFields, Bool.and_eq_true] at hc
       exact .cons (ExternalCarrier.checked_typed hv hc.1) (ExternalCarrierFields.checked_typed hs hc.2)
+end
+
+mutual
+  /-- 外部の値構造には、実行に由来するScopeの保持値が入らない。 -/
+  theorem ExternalCarrier.adequate {P B Ψ v a} (h : ExternalCarrier P B Ψ v a)
+      (σ : PathEnv) : v.Adequate σ := by
+    match h with
+    | .scalar hv => obtain ⟨c,rfl,_⟩ := leafShape_typed hv rfl; trivial
+    | .bytes hv => obtain ⟨bs,rfl,_⟩ := leafShape_typed hv rfl; trivial
+    | .handle hv => obtain ⟨h,ts,rfl,_⟩ := leafShape_typed hv rfl; trivial
+    | .list hv _ | .set hv _ _ => exact ExternalCarrierEach.adequate hv σ
+    | .map hk hv _ _ _ _ => exact ⟨ExternalCarrierEach.adequate hk σ, ExternalCarrierEach.adequate hv σ⟩
+    | .data _ _ _ _ hv _ => exact ExternalCarrierFields.adequate hv σ
+    | .refined hv _ => exact ExternalCarrier.adequate hv σ
+  theorem ExternalCarrierEach.adequate {P B Ψ vs a} (h : ExternalCarrierEach P B Ψ vs a)
+      (σ : PathEnv) : adequateVals σ vs := by
+    match h with
+    | .nil => trivial
+    | .cons hv hs => exact ⟨ExternalCarrier.adequate hv σ,ExternalCarrierEach.adequate hs σ⟩
+  theorem ExternalCarrierFields.adequate {P B Ψ vs as} (h : ExternalCarrierFields P B Ψ vs as)
+      (σ : PathEnv) : adequateVals σ vs := by
+    match h with
+    | .nil => trivial
+    | .cons hv hs => exact ⟨ExternalCarrier.adequate hv σ,ExternalCarrierFields.adequate hs σ⟩
 end
 
 theorem externalCheckEach_eq_true_iff (P : Program) (vs : List Val) (a : Ty) :

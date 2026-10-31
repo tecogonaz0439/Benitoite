@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.RuntimeSyntax
 import Benitoite.Release.Refinement.RuntimeMatch
 import Benitoite.Release.Refinement.AtPrepare
+import Benitoite.Release.Refinement.ExternalResponse
 
 namespace Benitoite.Release.Refinement
 noncomputable section
@@ -82,13 +83,13 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
   | E_ExternalApply {q : Closure} {f ts ws k μ} :
       q.view = .app (.externalRef f ts) ws →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.externalCall f ts ws)) k μ)
-  | E_External {q : Closure} {f ts ws k μ decl v obs} :
+  | E_External {q : Closure} {f ts ws k μ decl v obs out} :
       q.view = .externalCall f ts ws → P.externalFunction f = some decl →
-      B.externalResponse f ts ws (.val v) obs →
+      B.externalResponse f ts ws out obs → externalReceive P decl ts ws out = some (.val v) →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
-  | E_ExternalErr {q : Closure} {f ts ws k μ decl r obs} :
+  | E_ExternalErr {q : Closure} {f ts ws k μ decl r obs out} :
       q.view = .externalCall f ts ws → P.externalFunction f = some decl →
-      B.externalResponse f ts ws (.err r) obs →
+      B.externalResponse f ts ws out obs → externalReceive P decl ts ws out = some (.err r) →
       Step P B σ (.run q k μ) none (.error [r] k μ)
   | E_PathBasesApply {q : Closure} {b sg k μ} :
       q.view = .app (.prim b [] [] []) [] → B.sig b = some sg → sg.kind = .pathBases →
