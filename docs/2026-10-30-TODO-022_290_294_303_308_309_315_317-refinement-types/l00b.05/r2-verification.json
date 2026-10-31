@@ -1,0 +1,35 @@
+[
+  {
+    "name": "build",
+    "command": "lake build",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:47:57.103563+00:00",
+    "elapsed_seconds": 0.782,
+    "exit_code": 0,
+    "bytes": 25239,
+    "sha256": "508bc06a7ac102e6f05a121a23f8386d00ff0ba8a447775d6af9283c41a765c9",
+    "output": "r2-build.log"
+  },
+  {
+    "name": "boundary",
+    "command": "lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.05/boundary.lean",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:47:57.886075+00:00",
+    "elapsed_seconds": 1.503,
+    "exit_code": 0,
+    "bytes": 4844,
+    "sha256": "c62a5f7ec07b5415422e7ff5e14521f1de3371991fecff62d044e76a391ae4de",
+    "output": "r2-boundary.log"
+  },
+  {
+    "name": "axioms",
+    "command": "lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.05/r2-axioms.lean",
+    "cwd": "formal",
+    "started_utc": "2026-10-31T09:47:59.390038+00:00",
+    "elapsed_seconds": 0.778,
+    "exit_code": 0,
+    "bytes": 3086,
+    "sha256": "147a26c27ad3e17b6d31acfe8d090dbc5fe614da0d4bb155e51cf5127dad937b",
+    "output": "r2-axioms.log"
+  }
+]

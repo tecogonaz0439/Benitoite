@@ -56,10 +56,11 @@ private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle
   | (.externalCall f ts ws), k, μ =>
       match P.externalFunction f with
       | none => none
-      | some _ => match externalOracle f ts ws with
-        | (.val v, _) => some (none, .run (Closure.pure (.ret v)) k μ)
-        | (.err r, _) => some (none, .error [r] k μ)
-        | (.exit _, _) => none
+      | some d =>
+          match externalReceive P d ts ws (externalOracle f ts ws).1 with
+          | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
+          | some (.err r) => some (none, .error [r] k μ)
+          | _ => none
   | (.app (.fnRef f ts es) ws), k, μ =>
       match P.defs f with
       | some d =>

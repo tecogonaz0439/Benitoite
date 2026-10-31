@@ -334,3 +334,6 @@ import Benitoite.Release.Refinement.Context.Capture
 import Benitoite.Release.Refinement.LogicSound
 import Benitoite.Release.Refinement.ClosedKeys
 import Benitoite.Release.Refinement.ExternalCheck
+
+import Benitoite.Release.Refinement.Certificate
+import Benitoite.Release.Refinement.ExternalConnection
